@@ -2,96 +2,97 @@ Return-Path: <SRS0=k4B3=A3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91299C433E5
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 12:52:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2C8C433E0
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 13:15:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 55B4B20739
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 12:52:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5EDF120760
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 13:15:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sOjZAMG0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55B4B20739
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=semihalf-com.20150623.gappssmtp.com header.i=@semihalf-com.20150623.gappssmtp.com header.b="SmB/X2pt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EDF120760
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=semihalf.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E80242002B;
-	Thu, 16 Jul 2020 12:52:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4AFC487F18;
+	Thu, 16 Jul 2020 13:15:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0dseHbXJ7L07; Thu, 16 Jul 2020 12:52:15 +0000 (UTC)
+	with ESMTP id 85gZd6h3FD5n; Thu, 16 Jul 2020 13:15:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1C2B720030;
-	Thu, 16 Jul 2020 12:52:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C03A387D71;
+	Thu, 16 Jul 2020 13:15:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F2465C07FF;
-	Thu, 16 Jul 2020 12:52:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 65E8AC08A2
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 12:52:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA307C0893;
+	Thu, 16 Jul 2020 13:15:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DF0C0C0733
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 13:15:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5776A2002B
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 12:52:14 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D4CAD88BD4
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 13:15:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LRGyT10mbY5c for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jul 2020 12:52:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
- [209.85.208.193])
- by silver.osuosl.org (Postfix) with ESMTPS id 509D92549C
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 12:52:08 +0000 (UTC)
-Received: by mail-lj1-f193.google.com with SMTP id q7so7049330ljm.1
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 05:52:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ with ESMTP id 7irxSIVN-Bye for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jul 2020 13:15:13 +0000 (UTC)
+X-Greylist: delayed 00:17:46 by SQLgrey-1.7.6
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+ [209.85.210.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4902D88B87
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 13:15:13 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id q17so3668016pfu.8
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 06:15:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=semihalf-com.20150623.gappssmtp.com; s=20150623;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=HCnwyZoMzuPKsERhk3jj3Z4cbSkn3iN0nOs3nxQkMq0=;
- b=sOjZAMG0GZhuc7hKNYzLVK9cSOp5waHIXzYWhb43Fz8ZgX9z9+bNavNcAEpG70dgBk
- ymAxg8CBGeGJogHJ8EZfOJxQxQrcVu4fbyFxrtPhw/lrQtdZwuFiFnU3Ns9+2O77tI7T
- t+cLNEO2tso3H8qv2p3wup/rHCTC9UnJFDeLIR9S3z+CUU/XMjzPHMO8ZlQKuTNz6l/0
- eNvh5dAs47H6r7AMj0WyGKIZ3da6n+akTPo1vtDqAr7R9LVFcAQzgEkzK7V29ThxVSfl
- tlafLPmggszgOc2KgLZv3yeFkDfhxzR7uBKLqBJdhVoSPaG7IxVDNowwB3Q79TU4M5aw
- Us8w==
+ :cc:content-transfer-encoding;
+ bh=a2Z0NyBzSRfYPlTqQi5HC5Y/ZVbqT0rGo94ALPxovzk=;
+ b=SmB/X2ptMLN6Gh28Aa1yG24xaAVEeCpLhMr2iyuzGOTVrugnhWM1xvD/ugry/VvPZt
+ eBJSCTqtYpRYDYKlyF0KkdJlKNyIHywxoSLf9LaVEOWbumxa9Ayj4KTIA4wITulEZvYS
+ wK3OQIn4XaNcDh0xP9KeVgHZ9jML6mGH1D3miOz/z7jtGjeNt/bWPaedkA9eLFDSsuTM
+ NbfcGz++6PL52tLhylCYVajWFt0Jk+ji1XeXbCEWf5RQA1mpFJQVJ9eKWLFLiWrHeuDS
+ PBDgUPTKzqLHwgjSJcl5TV6y++HVe2Xnan9bKzstyoDqZSS0Gj7zl3Y+2mcu1NQYj8d2
+ kHgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=HCnwyZoMzuPKsERhk3jj3Z4cbSkn3iN0nOs3nxQkMq0=;
- b=rEMNFwKETCd/VEXIrkwvCT2wJlBEGDKSRHEcX9JWsvMdKjzFpXqxeYzyL1OfGyl/AS
- O28q1GjOfslG78z+m34L6OEH35X6kxZv+IisHJF351c1V8RS/b6h5fDvxe+Dcw4jkjX1
- 0qm8CVvKjCTHge6YTBLPq/YaFFtITCZFyZL+7E3Tojf3b7MkeFf6CRoQvQw5tu5TMIFX
- bhZe2BZEdcfZV/oBHVwWaDQrqdf9X2t+1rrMHlmSVUOJw1tZXVljdG8FVaigM4z/4I4L
- u4FqnHmh4zIjIdlze1x462ZKKittGhoWij8IeU9Ce/RQR8pw/ZM2TpR2PyHJ5HYKNMG+
- uceg==
-X-Gm-Message-State: AOAM531yd1q0FEFPs5QBaH9KkG9XkUEGEnrc+DtjL1XmCadyK71P6mp2
- 1ftbyVZNwXOkbjn6dxZgofx5uWne+PNLzFROEqRk4A==
-X-Google-Smtp-Source: ABdhPJw/BhPEYT/8575MJQZaoQ8ocAWYoTgsBn5QFuT7ytXA0Q8/v+AT4JkXs2IK1Vyo3oIafinMzE0ToIsQaj9hRe4=
-X-Received: by 2002:a2e:810a:: with SMTP id d10mr1900535ljg.144.1594903926142; 
- Thu, 16 Jul 2020 05:52:06 -0700 (PDT)
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=a2Z0NyBzSRfYPlTqQi5HC5Y/ZVbqT0rGo94ALPxovzk=;
+ b=FrhwErAH8NwI9hs9UNh5tcwVFqTeFV7Fh8jtAF1EQK8BA4D1+dW3i/UDAJPdRujPtN
+ h6PhT4a0TZjWwtI3X4zRMIurbBPefddH7URGc/ereMTjMBhK3+usjvmBr+sRmi3Db38J
+ bQ7bwaUAIsRw6xmUhIi9AwTIHPUS0mKmBdwu2SDaL116Qu906VOlUeS1/t3ejFF+uQzV
+ XcrEaC9ndcIGdEoZ5yk/vErKXVBXMt/DF06DjZPOr5tyk919EW18uakoRB9coxJHrF5k
+ 5Kv+KhNOKYGrKWQASty8hPhPfAycuQCK/ffAyrbJ+wJ3IGORgDfMZnqsPzIABG4yCg7b
+ 3lrA==
+X-Gm-Message-State: AOAM530NijFdQ+VwBrX7zRIz2BRVkQRa1iXpBqu0V0Dnnc8DyTYW0/eN
+ vaK2ZSnsLfenexGDymkEgFaolkNAc98oBvjduD9JFEIjw0A=
+X-Google-Smtp-Source: ABdhPJxMytH+NnNlQOn18gFigcvdXRMSyJe5kNmIjQVXJv41s/Kb4YrRfwI56uD/iLzp1GAHBqKKWpn7i7KV+arkG7Y=
+X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr3940006qvf.247.1594903772528; 
+ Thu, 16 Jul 2020 05:49:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200710231824.60699-1-john.stultz@linaro.org>
-In-Reply-To: <20200710231824.60699-1-john.stultz@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 16 Jul 2020 14:51:55 +0200
-Message-ID: <CACRpkdaSiUwa0i5nQy8EZOg7smN3g2a+1AV2x+1PShNc071UFg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/3] Allow for qcom-pdc to be loadable as a module
-To: John Stultz <john.stultz@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- lkml <linux-kernel@vger.kernel.org>, Lina Iyer <ilina@codeaurora.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Andy Gross <agross@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, MSM <linux-arm-msm@vger.kernel.org>,
- Todd Kjos <tkjos@google.com>
+References: <20200715070649.18733-1-tn@semihalf.com>
+ <159488817559.3788855.4350396507732052751.b4-ty@kernel.org>
+ <20200716120202.GA7485@willie-the-truck>
+In-Reply-To: <20200716120202.GA7485@willie-the-truck>
+From: Marcin Wojtas <mw@semihalf.com>
+Date: Thu, 16 Jul 2020 14:49:21 +0200
+Message-ID: <CAPv3WKc5hNhDCjgrX8uuJJm9MRS520QcD1NYTY1LWFHEBqJMfg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Add system mmu support for Armada-806
+To: =?UTF-8?Q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>
+Cc: devicetree@vger.kernel.org, kernel-team@android.com,
+ Will Deacon <will@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, nadavh@marvell.com,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+ Hanna Hawa <hannah@marvell.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,34 +105,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Jul 11, 2020 at 1:18 AM John Stultz <john.stultz@linaro.org> wrote:
-
-> This patch series provides exports and config tweaks to allow
-> the qcom-pdc driver to be able to be configured as a permement
-> modules (particularlly useful for the Android Generic Kernel
-> Image efforts).
->
-> This was part of a larger patch series, to enable qcom_scm
-> driver to be a module as well, but I've split it out as there
-> are some outstanding objections I still need to address with
-> the follow-on patches, and wanted to see if progress could be
-> made on this subset of the series in the meantime.
->
-> New in v3:
-> *  Drop conditional usage of IRQCHIP_DECLARE as suggested by
->    Stephen Boyd and Marc Zyngier
-
-This patch set looks entirely reasonable to me.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Y3p3LiwgMTYgbGlwIDIwMjAgbyAxNDowMiBXaWxsIERlYWNvbiA8d2lsbEBrZXJuZWwub3JnPiBu
+YXBpc2HFgihhKToKPgo+IE9uIFRodSwgSnVsIDE2LCAyMDIwIGF0IDAxOjAwOjQzUE0gKzAxMDAs
+IFdpbGwgRGVhY29uIHdyb3RlOgo+ID4gT24gV2VkLCAxNSBKdWwgMjAyMCAwOTowNjo0NSArMDIw
+MCwgVG9tYXN6IE5vd2lja2kgd3JvdGU6Cj4gPiA+IFRoZSBzZXJpZXMgaXMgbWVhbnQgdG8gc3Vw
+cG9ydCBTTU1VIGZvciBBUDgwNiBhbmQgYSB3b3JrYXJvdW5kCj4gPiA+IGZvciBhY2Nlc3Npbmcg
+QVJNIFNNTVUgNjRiaXQgcmVnaXN0ZXJzIGlzIHRoZSBnaXN0IG9mIGl0Lgo+ID4gPgo+ID4gPiBG
+b3IgdGhlIHJlY29yZCwgQVAtODA2IGNhbid0IGFjY2VzcyBTTU1VIHJlZ2lzdGVycyB3aXRoIDY0
+Yml0IHdpZHRoLgo+ID4gPiBUaGlzIHBhdGNoZXMgc3BsaXQgdGhlIHJlYWRxL3dyaXRlcSBpbnRv
+IHR3byAzMmJpdCBhY2Nlc3NlcyBpbnN0ZWFkCj4gPiA+IGFuZCB1cGRhdGUgRFQgYmluZGluZ3Mu
+Cj4gPiA+Cj4gPiA+IFsuLi5dCj4gPgo+ID4gQXBwbGllZCB0byB3aWxsIChmb3Itam9lcmcvYXJt
+LXNtbXUvdXBkYXRlcyksIHRoYW5rcyEKPiA+Cj4gPiBbMS8zXSBpb21tdS9hcm0tc21tdTogQ2Fs
+bCBjb25maWd1cmF0aW9uIGltcGwgaG9vayBiZWZvcmUgY29uc3VtaW5nIGZlYXR1cmVzCj4gPiAg
+ICAgICBodHRwczovL2dpdC5rZXJuZWwub3JnL3dpbGwvYy82YTc5YTVhMzg0MmIKPiA+IFsyLzNd
+IGlvbW11L2FybS1zbW11OiBXb3JrYXJvdW5kIGZvciBNYXJ2ZWxsIEFybWFkYS1BUDgwNiBTb0Mg
+ZXJyYXR1bSAjNTgyNzQzCj4gPiAgICAgICBodHRwczovL2dpdC5rZXJuZWwub3JnL3dpbGwvYy9m
+MmQ5ODQ4YWViOWYKPiA+IFszLzNdIGR0LWJpbmRpbmdzOiBhcm0tc21tdTogYWRkIGNvbXBhdGli
+bGUgc3RyaW5nIGZvciBNYXJ2ZWxsIEFybWFkYS1BUDgwNiBTTU1VLTUwMAo+ID4gICAgICAgaHR0
+cHM6Ly9naXQua2VybmVsLm9yZy93aWxsL2MvZTg1ZTg0ZDE5YjlkCj4KPiAobm90ZSB0aGF0IEkg
+bGVmdCBwYXRjaCA0IGZvciBhcm0tc29jLCBhcyB0aGF0J3MganVzdCB1cGRhdGluZyAuZHRzIGZp
+bGVzKQo+CgpIaSBHcmVnb3J5LAoKQ2FuIHlvdSBwbGVhc2UgaGVscCB3aXRoIHRoZSByZXZpZXcv
+bWVyZ2Ugb2YgcGF0Y2ggIzQ/CgpCZXN0IHJlZ2FyZHMsCk1hcmNpbgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
+b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
