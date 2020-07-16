@@ -2,92 +2,110 @@ Return-Path: <SRS0=k4B3=A3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B682C433E6
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 07:52:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AEBC433E4
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 07:57:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 104462081A
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 07:52:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 557A02074B
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 07:57:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HaUlz8wk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 104462081A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="VsJgQucN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 557A02074B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DB32E87EC3;
-	Thu, 16 Jul 2020 07:52:25 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2B42D226E5;
+	Thu, 16 Jul 2020 07:57:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id J1XYunLTfYMa; Thu, 16 Jul 2020 07:57:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 67D9B20532;
+	Thu, 16 Jul 2020 07:57:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FE6BC0893;
+	Thu, 16 Jul 2020 07:57:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E5FACC0733
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:57:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D44FF88D9C
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:57:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FzkYHxA3Vzfy; Thu, 16 Jul 2020 07:52:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7699C87AD4;
-	Thu, 16 Jul 2020 07:52:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DC3BC0893;
-	Thu, 16 Jul 2020 07:52:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8093C0733
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:52:23 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9798E8A49F
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:52:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KjvccuhcmR0d for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jul 2020 07:52:23 +0000 (UTC)
+ with ESMTP id BFQozd_k2uWM for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jul 2020 07:57:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0CE118A477
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:52:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1594885941;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=u05tKeUEsAaeYGPCQa0ls+uddt7PTxRvgt5ZWaTMPQo=;
- b=HaUlz8wkS5n5fYfG8nUJHq5nsgKzQJxWWA/sQuLEBPSgPj845uADNFqJHfdSq2m8kiytyx
- IL+Nlmh6bvp05qSxNtli/w3L3b0b17vH++JeZdD8qoAbbT7Pj5QaUxa1vOt7SD+RE/Mgu6
- 0wnuKtTXf1HI9hb9YKij6cCOC8t9KT0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-425-Xb-UOX7jPue6gqhzV6DN-Q-1; Thu, 16 Jul 2020 03:52:19 -0400
-X-MC-Unique: Xb-UOX7jPue6gqhzV6DN-Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 80B4388DCE
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 07:57:08 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B41DBC746A;
- Thu, 16 Jul 2020 07:52:17 +0000 (UTC)
-Received: from [10.36.115.54] (ovpn-115-54.ams2.redhat.com [10.36.115.54])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id CC70C1002391;
- Thu, 16 Jul 2020 07:52:15 +0000 (UTC)
-Subject: Re: [PATCH v4 3/7] iommu/vt-d: Fix PASID devTLB invalidation
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>
-References: <1594080774-33413-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1594080774-33413-4-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <caab5726-e322-7da0-bcd0-2353a43be929@redhat.com>
-Date: Thu, 16 Jul 2020 09:52:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ by mail.kernel.org (Postfix) with ESMTPSA id 3472120657;
+ Thu, 16 Jul 2020 07:57:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594886228;
+ bh=lF6V4pThpgd1ETqa/+C0kE0OsT7SQmJj3FXX4kf+cNU=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+ b=VsJgQucNe+tORSuGENCHPNa2BMvAsbolf2wFejeM2VFlX2cbvvZUjPeT2UhxohJQv
+ u4qIHJNBHt7wYmWQnDf9Ow829zQsoMD8NiqTe1Ebs+tmttdHnQMVmV+OuwzzjBm5S5
+ T/6aNfgNS271UBnzQ227W+foVJvVP2lSFXLJEcIs=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+ by disco-boy.misterjones.org with esmtpsa
+ (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.92)
+ (envelope-from <maz@kernel.org>)
+ id 1jvylO-00CEd7-OZ; Thu, 16 Jul 2020 08:57:06 +0100
 MIME-Version: 1.0
-In-Reply-To: <1594080774-33413-4-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>
+Date: Thu, 16 Jul 2020 08:57:06 +0100
+From: Marc Zyngier <maz@kernel.org>
+To: Makarand Pawagi <makarand.pawagi@nxp.com>
+Subject: Re: [EXT] Re: [PATCH v2 12/12] bus: fsl-mc: Add ACPI support for
+ fsl-mc
+In-Reply-To: <DB7PR04MB498603933E805C0E4053D4B7EB7F0@DB7PR04MB4986.eurprd04.prod.outlook.com>
+References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-13-lorenzo.pieralisi@arm.com>
+ <a7845603-9bc9-9099-dfc4-19b7bc4f4e44@nxp.com>
+ <20200709091950.GA18149@e121166-lin.cambridge.arm.com>
+ <DB7PR04MB4986D1A0BB7B685911DF4831EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
+ <203372be-144c-54ba-d011-30d0746dd615@nxp.com>
+ <DB7PR04MB4986C63772CB47A2A827D028EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
+ <d41589da-c2f9-a750-f57a-25dccf51e69f@oss.nxp.com>
+ <DB7PR04MB4986A56021750A3D104CA244EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
+ <20200715100636.GA31330@e121166-lin.cambridge.arm.com>
+ <DB7PR04MB498603933E805C0E4053D4B7EB7F0@DB7PR04MB4986.eurprd04.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.5
+Message-ID: <20ac0bcf43a621e7b51d9badb91d2a71@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: makarand.pawagi@nxp.com, lorenzo.pieralisi@arm.com,
+ diana.craciun@oss.nxp.com, laurentiu.tudor@nxp.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-pci@vger.kernel.org, robh+dt@kernel.org, rjw@rjwysocki.net,
+ joro@8bytes.org, guohanjun@huawei.com, bhelgaas@google.com,
+ sudeep.holla@arm.com, robin.murphy@arm.com, catalin.marinas@arm.com,
+ will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+ Will Deacon <will@kernel.org>, linux-pci@vger.kernel.org,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Sudeep Holla <sudeep.holla@arm.com>, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ "Diana Madalina Craciun
+ \(OSS\)" <diana.craciun@oss.nxp.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,60 +118,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+On 2020-07-16 04:23, Makarand Pawagi wrote:
+>> -----Original Message-----
+>> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-On 7/7/20 2:12 AM, Jacob Pan wrote:
-> DevTLB flush can be used for both DMA request with and without PASIDs.
-> The former uses PASID#0 (RID2PASID), latter uses non-zero PASID for SVA
-> usage.
-> 
-> This patch adds a check for PASID value such that devTLB flush with
-> PASID is used for SVA case. This is more efficient in that multiple
-> PASIDs can be used by a single device, when tearing down a PASID entry
-> we shall flush only the devTLB specific to a PASID.
-> 
-> Fixes: 6f7db75e1c46 ("iommu/vt-d: Add second level page table")
-> Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-sent on v3.
+[...]
 
-Thanks
+>> Anyway - you need to seek feedback from Marc on whether patches
+>> 11 and 12 are OK from an irqchip perspective, it is possible we can 
+>> take the rest
+>> of the series independently if everyone agrees but I don't necessarily 
+>> see a
+>> reason for that.
+>> 
+>> Long story short: you need Marc's ACK on [11-12], it is your code.
+>> 
+> Hi Marc, can you please review/ack this patch?
 
-Eric
-> ---
->  drivers/iommu/intel/pasid.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index c81f0f17c6ba..fa0154cce537 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -486,7 +486,16 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
->  	qdep = info->ats_qdep;
->  	pfsid = info->pfsid;
->  
-> -	qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 - VTD_PAGE_SHIFT);
-> +	/*
-> +	 * When PASID 0 is used, it indicates RID2PASID(DMA request w/o PASID),
-> +	 * devTLB flush w/o PASID should be used. For non-zero PASID under
-> +	 * SVA usage, device could do DMA with multiple PASIDs. It is more
-> +	 * efficient to flush devTLB specific to the PASID.
-> +	 */
-> +	if (pasid == PASID_RID2PASID)
-> +		qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 - VTD_PAGE_SHIFT);
-> +	else
-> +		qi_flush_dev_iotlb_pasid(iommu, sid, pfsid, pasid, qdep, 0, 64 - VTD_PAGE_SHIFT);
->  }
->  
->  void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
-> 
+https://lore.kernel.org/linux-acpi/bd07f44dad1d029e0d023202cbf5fc94@kernel.org/
 
+         M.
+-- 
+Jazz is not dead. It just smells funny...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
