@@ -6,136 +6,135 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C573C433E5
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 03:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E094C433E0
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 05:15:06 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E8EC3205CB
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 03:23:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E5845207BC
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 05:15:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="c9IDHD9E"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8EC3205CB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="KEtm/NyG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5845207BC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CBC7E88C09;
-	Thu, 16 Jul 2020 03:23:53 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A50748A156;
+	Thu, 16 Jul 2020 05:15:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id U-b5ywnhI5vK; Thu, 16 Jul 2020 03:23:52 +0000 (UTC)
+	with ESMTP id F1WfJeImW1Dw; Thu, 16 Jul 2020 05:15:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DE44B88B61;
-	Thu, 16 Jul 2020 03:23:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B4CFD8A141;
+	Thu, 16 Jul 2020 05:15:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CFE88C07FF;
-	Thu, 16 Jul 2020 03:23:52 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2F808C0733
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 03:23:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4F46C07FF;
+	Thu, 16 Jul 2020 05:15:04 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5943DC0733
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 05:15:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 16F5388B61
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 03:23:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4B6C98A9AC
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 05:15:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uLhT91MmSnTj for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jul 2020 03:23:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com
- (mail-eopbgr10076.outbound.protection.outlook.com [40.107.1.76])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0B08988BAE
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 03:23:50 +0000 (UTC)
+ with ESMTP id DpRsB9WqQs90 for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jul 2020 05:15:01 +0000 (UTC)
+X-Greylist: delayed 00:17:51 by SQLgrey-1.7.6
+Received: from JPN01-OS2-obe.outbound.protection.outlook.com
+ (mail-eopbgr1410120.outbound.protection.outlook.com [40.107.141.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7D2418A97F
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 05:15:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TtsxNrkevzEkg+zIP3Rg9sRY9BzfjsbHuop3wS0V3HLwsa1aOKCLye8gwsK28TqmqED7RJNOMeTh9nZ6v2Bri9F7YOnZ7gZJ6HLWMK2SFWIIZM6TxpWVVdgs9sW/r6ZEbeu2c5v1bqLNbqfTRIlESZrzeuvbO1VK72BJMYsDfAyK9mkCJC4HQ+p7noEG5x81Kl/Qs+opiciR8qR/1ufQJ0J5AdsBOrIl13bvlYvTOqUdXMQyctg213n49qxnGyeSYeJKl0zn7YmMr4sIzet0h0OHTJ8X8AmgrJwnoGNMsyX9iHBCYlqJDrZvx7uMYvsQKkjV/ZnxIwbXyE+sauHAFA==
+ b=SIjgIw/++zk6fGfjfHjnVdbXDgM+cmAh4vG/wTAApGZLquU+42lwKEdgdRsrqqhjCBueLq/erWhX0IzePddeMwbSiEKt6q+JpPztSdJA3+ViBmJNvKmLkiUHZ+Rgk6eBvK929gwHyC5SD3krDq4Srjh9yQ/3AGIaGMgzIdXzxjTfMYqon1KQ9wvgGIuhHv4d+Q/oNJWOQMLullok+f+qhgJlp+JqVJY0veuB/QxboozvRCunWuMO37IaAJFWIPmlslx+XiV6n/CxuVbVPfRqUV1H3Zmvw6iJc46eJwXeyeA9TeQ6bwINo3R7N0hOPZuVCaADsx7Pv/pacRoNxOJldw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QTvseORo/eoEqYavPhwNm+cmgsW5Bsl6Z97Ekk5E6w4=;
- b=Sibl0JGZDMBzR4D/F/kKibJ+DzjBjjjSuENfg4dz+z6iJ5VfmTf0nAYAXCjcRW6FR1Z9mK+6DPGYbSGLxVTYv4JVemDdodEALikBw4VDvPYKpBRFE1yhvOzOyFT+cz+jpVMSHpJSlo6zNsjeEpyVdEM2SUJdc/8567pNgtb2yb4iKXbh8p63VddeLxUxBOGEh153XGI5kjUIl6ZVD6IEA7Q9diYj4PHmFQsIIYtoWQBwvLfqUpi1SUeznkmg2lspJfc1CJE7RvzEn/H/aVxKgMGamv1BrD1s+umxG2xzqx9iZ/M0x7HxA8VuHYNZ57mIxA53+NZ5lMQH7jb9ji1nfA==
+ bh=7DVXuK7GGEsLWJlaOFlMVK7TjEgvAtSeGuZSvF7Sxeo=;
+ b=fVUBFBXDvZ+zsperyvp9sRIkTCCLjcd1Tor9JQQ6j2T8WqjYcUcBQVLhzwImphhHR0dLOcGSRoxl3rVGPRiM8OLIzXlmzFTGs2rfsN7W37JYyhqWev4y68qAkSQvi4jrG/YYaz5vz4Q03eM7xGIDVrfC4LKjdH6d10jxBmG+m6tccNJ9jw9cEV7sPhERFQYO0I0OFajvs46p/2upeAu51pHdCkMxFeaFLUS9TCVrZshAUIDPvpmnm8YeTJSMC9zbp0azY8cZcUaaaagaCMh+a+VBCUCGuvzVTas/L8HeQEdHoPHUULpMfjXRy7x/QO/olMxAp1p8dNgCEZR75IzQkA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QTvseORo/eoEqYavPhwNm+cmgsW5Bsl6Z97Ekk5E6w4=;
- b=c9IDHD9EhqmM98H4xGAr94UsOTWgTcVhu8eK2iQvqZawAyZefwZozhcHC6Qrz/IJuZhJXzjYnxD0FD43Cc7kyeAkuNH7SQBjNaMCWeFIHUM3qtpRDXYMfaIPsFQ6kOltD6hwuGeLwytc48/xPrNm5bYWvQTgduk7jEzZgl4w0O4=
-Received: from DB7PR04MB4986.eurprd04.prod.outlook.com (2603:10a6:10:13::25)
- by DBBPR04MB6060.eurprd04.prod.outlook.com (2603:10a6:10:c4::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.17; Thu, 16 Jul
- 2020 03:23:45 +0000
-Received: from DB7PR04MB4986.eurprd04.prod.outlook.com
- ([fe80::d133:55be:7303:108e]) by DB7PR04MB4986.eurprd04.prod.outlook.com
- ([fe80::d133:55be:7303:108e%6]) with mapi id 15.20.3195.018; Thu, 16 Jul 2020
- 03:23:45 +0000
-From: Makarand Pawagi <makarand.pawagi@nxp.com>
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: RE: [EXT] Re: [PATCH v2 12/12] bus: fsl-mc: Add ACPI support for
- fsl-mc
-Thread-Topic: [EXT] Re: [PATCH v2 12/12] bus: fsl-mc: Add ACPI support for
- fsl-mc
-Thread-Index: AQHWT8hvhkZ6PFIXKUip8fS0U4S+lKj/BKAAgAABSiCAAA4OgIAAA0vwgAAFwICAAAET0IAJYZgAgAEhl1A=
-Date: Thu, 16 Jul 2020 03:23:45 +0000
-Message-ID: <DB7PR04MB498603933E805C0E4053D4B7EB7F0@DB7PR04MB4986.eurprd04.prod.outlook.com>
-References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-13-lorenzo.pieralisi@arm.com>
- <a7845603-9bc9-9099-dfc4-19b7bc4f4e44@nxp.com>
- <20200709091950.GA18149@e121166-lin.cambridge.arm.com>
- <DB7PR04MB4986D1A0BB7B685911DF4831EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
- <203372be-144c-54ba-d011-30d0746dd615@nxp.com>
- <DB7PR04MB4986C63772CB47A2A827D028EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
- <d41589da-c2f9-a750-f57a-25dccf51e69f@oss.nxp.com>
- <DB7PR04MB4986A56021750A3D104CA244EB640@DB7PR04MB4986.eurprd04.prod.outlook.com>
- <20200715100636.GA31330@e121166-lin.cambridge.arm.com>
-In-Reply-To: <20200715100636.GA31330@e121166-lin.cambridge.arm.com>
-Accept-Language: en-US
-Content-Language: en-US
+ bh=7DVXuK7GGEsLWJlaOFlMVK7TjEgvAtSeGuZSvF7Sxeo=;
+ b=KEtm/NyGi5hK2HI9ojd+4gDXDjKMIKzBX9A6TTFPNS2MJFutbsUn8J1ixbc6kGNnXLoH1mg6zj/fzUEvgY6zidBeBv29UfIZ4n5HmLq8Q+Y7g0jsuLeLoed9tqcPP1v2fcqFAhzfR7+MT7OYuhkgvNSRcMIkF+6FCgkYKuIT8Hw=
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
+ by TYAPR01MB2671.jpnprd01.prod.outlook.com (2603:1096:404:8d::11)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.22; Thu, 16 Jul
+ 2020 04:42:21 +0000
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::9083:6001:8090:9f3]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::9083:6001:8090:9f3%6]) with mapi id 15.20.3195.017; Thu, 16 Jul 2020
+ 04:42:21 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: RE: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
+Thread-Topic: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
+Thread-Index: AQHWWV2MbTXg+hkXBUeG2IKsFpTIWqkGuXGAgAAF1ACAAAM3gIAALMKggAAVtICAAp3DYA==
+Date: Thu, 16 Jul 2020 04:42:21 +0000
+Message-ID: <TY2PR01MB3692CFA8B51F91FB9735026FD87F0@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdV4zzrk_=-2Cmgq8=PKTeU457iveJ58gYekJ-Z8SXqaCQ@mail.gmail.com>
+ <CA+V-a8tB0mA17f51GMQQ-Cj_CUXze_JjTahrpoAtmwuOFHQV6g@mail.gmail.com>
+ <CAMuHMdXM3qf266exJtJrN0XAogEsJoM-k3FON9CjX+stLpuMFA@mail.gmail.com>
+ <TY2PR01MB3692A868DD4E67D770C610E3D8610@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+ <CAMuHMdUry12MnLvVgmd7NJ+Gv4mA86qKKfsQobP1o-ohzKm=RQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdUry12MnLvVgmd7NJ+Gv4mA86qKKfsQobP1o-ohzKm=RQ@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [223.230.100.12]
+authentication-results: linux-m68k.org; dkim=none (message not signed)
+ header.d=none; linux-m68k.org; dmarc=none action=none header.from=renesas.com; 
+x-originating-ip: [240f:60:5f3e:1:999:df6f:dcad:bd95]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9278c75d-c6ab-45ae-2287-08d82937a5e4
-x-ms-traffictypediagnostic: DBBPR04MB6060:
+x-ms-office365-filtering-correlation-id: 86c67283-184a-47a2-e326-08d82942a0aa
+x-ms-traffictypediagnostic: TYAPR01MB2671:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBBPR04MB606035D8E9067DD89C5E9EAAEB7F0@DBBPR04MB6060.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <TYAPR01MB26710915A5EDF2C69467A2FBD87F0@TYAPR01MB2671.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1169;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ErHnI3+SftFm/lMLeucydwsAUnluyVxwte9DCvZFCvo4gXRbV8Qrkp9MS45v+XY25gr1ddE2AF7CakZ+Zgv/117D+9v94jCrZTlLXyOm9QmReN3TINW3WYJRhMWtT2/N2vR/QThy0OC1bXkEZngzP4lUsf9juGxlKSwi4v5/eUXkc7cowwhtaoulPqW5cRAFh5hQtpSAPANtdz1QQDC/i9U7lxtazS4WeXOvn9D3M3q4vUYTt7xGben79lxY2jnaCnEZ1rHv4zyMedjF/mEj2egibjMqEeEcCGgl+FtgOIfrf1S0Brc9Ou1r759VJtfXFu+e7x601N5qpye/10CVLQ==
+x-microsoft-antispam-message-info: M4RkfSw2dSVC0Ylu4gbH8smqKZ1JZ5nYHnfx1DAInZC9j4sYADG5ObrAdZAMl3mtRkvB7OprMG3AJKRWYCSPyQ76yK9OCIEOOlbiYIOrq89jGyYAy/jhjFq2FXw0Y5HLUBvQcsPZ/mYMRGLiT46/sfCYFcll+3Gubt0TmwmaB2aGu/S0XpTlg0RhgJ7Rb1TdK3TI418OVdYSeJ5R8KucXEsBTBqlayvpdE+ZZoc7Qa8buA03KhcTTppzm2WnfGi5oXIg2sKr1F5lrMuvWH5v6V8zKkJ/WgfQt3E40jcDGXOz2iKZgN6XI6kqGMn78a3uE4d0EKM+7u+Z/+OOusn5GfT1zcfL5ijZuG/mREODedYd6NLBAdpzpma+L/m39peEmYPJaiub+wHgYbhjLKyW3A==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DB7PR04MB4986.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
+ IPV:NLI; SFV:NSPM; H:TY2PR01MB3692.jpnprd01.prod.outlook.com; PTR:; CAT:NONE;
  SFTY:;
- SFS:(4636009)(366004)(346002)(376002)(39860400002)(136003)(396003)(26005)(4326008)(66946007)(76116006)(316002)(86362001)(55016002)(6916009)(7696005)(71200400001)(2906002)(44832011)(186003)(6506007)(53546011)(83380400001)(7416002)(52536014)(33656002)(66476007)(8676002)(478600001)(9686003)(54906003)(66446008)(64756008)(8936002)(66556008)(5660300002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: I+7jV2pRmZuHFO+NY6bkgqGlb8vrgSdFlaRPFYGnQPyfON3Noi3nr84Ozho0p1vIUyfL1VYLlLPE4YT8y1Dahvszi3fPmqbe9H2B2UuLyJO1EDYa5g0h+6dNCOVqRICzwlR3ASS5nr0OAJdoH6c5HWNcPN/zhr1dFYljxKlTfaJu/G+sfX8tKvXhN+WTNvlnZEYo1pW3TLwkKvSL5hyEulScBoNdXNIEBCoFbs3wKkFpwXhIlEHeAHq8BxPtCRhJhJdjpfi5G5xCKNBzWsMXQAaizi33kjVyRCRMp8rerqpqB8Wj9Zqyrx/xZSeEtAybgyKI6tm14vRF3YUAzw6U34ZOwg44tCBFTy3hEQV2XkfGrl9JsVjXK4uk34icAcxogfxSrSNqJPdfYXFsepSn2FcYGOo9Sn2FKXJtKJduGVY/zofOG1S0zTKN3pOwjmKr+yifWEVM+I4ZsSo6wQI9Ij/Gk/IHro/olQWZOxha940Zy+SNzY/WrBuGLRJU6Z2T
+ SFS:(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(316002)(6916009)(76116006)(86362001)(66946007)(66446008)(71200400001)(7416002)(2906002)(66556008)(9686003)(54906003)(55016002)(64756008)(66476007)(8676002)(7696005)(4326008)(33656002)(5660300002)(52536014)(6506007)(53546011)(186003)(8936002)(478600001)(52103002)(158003001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: BZQ062kPob81tYpmM06yPo4OBfHiNnEJ8giVl1UFBgDYuTwdu7M5YZDWvNT5KJeG6pXVCLn55g5mkAYx36RmQ7E3Gjx0OnEPMaRdS0prhfvpi0cgwdSaiEVWnAC4QTLXzKh26CxPzOli4cH3RtaNZdNwfe+npuKrsc06/RtMLsQR4kwvpf2toLSEOcDp5moi0OQtvgABmYWwofNEgMXYEF/oYpnzfV09YU9ZZEukQ6T/6g6iuHLIHt5QzMXKrLXpvmnTfQ8tN4am/H9U7lLW/hjrsdZV36OrXh4G0AcTPjUY5d/TPBjG2cgkknHTbITbejmpl82xQAXVtMSnMuQA3WiLE3bIFbixhQkOIzZu9POrgGan7bls5VRycI3Q4itPixUwerBT064vBVH33/bSjNMwhaX3LJFXuRihuu86Ugr+FoBp+MqV90ODVcSmB2p6PV0SqVX9n8xy6+xOWDIvAAgjJPP0AqjrKgMJ2aTEhjmriXq/GH+8rMFedIHReEj5RQV62ow+H7Q9pvp1xFO06bTOo1sRUn5qDkbQS6GdVTE=
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-OriginatorOrg: renesas.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB4986.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9278c75d-c6ab-45ae-2287-08d82937a5e4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 03:23:45.4627 (UTC)
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86c67283-184a-47a2-e326-08d82942a0aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2020 04:42:21.1420 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mZZ2DXuhAel+rImsdm+sWvafweUGBXt+e9vbTsDNPilyX4xdEyhqMBuCyiR27FrW3QNiEo8LXqtzi9Wnspj7Qw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6060
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Sudeep Holla <sudeep.holla@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
- Will Deacon <will@kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>, Marc Zyngier <maz@kernel.org>,
- "Diana Madalina Craciun \(OSS\)" <diana.craciun@oss.nxp.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+X-MS-Exchange-CrossTenant-userprincipalname: 7z1K7SMbli5BPYc4Xt56Di64XGWfm2KzcRHuABMz1c2N0cl7vXzA/k6lasM5dL9KvKFVlSeE6tSb//WFbZoNg66zzlUpdTVp/8P+GlxDkXtAc3LE6MB0kjUCd+65XFIQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2671
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, "David S.
+ Miller" <davem@davemloft.net>, netdev <netdev@vger.kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+ Magnus Damm <magnus.damm@gmail.com>, "Lad,
+ Prabhakar" <prabhakar.csengg@gmail.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vinod Koul <vkoul@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ dmaengine <dmaengine@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -153,150 +152,60 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Geert-san,
 
-
-> -----Original Message-----
-> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Sent: Wednesday, July 15, 2020 3:37 PM
-> To: Makarand Pawagi <makarand.pawagi@nxp.com>
-> Cc: Diana Madalina Craciun (OSS) <diana.craciun@oss.nxp.com>; Laurentiu
-> Tudor <laurentiu.tudor@nxp.com>; linux-arm-kernel@lists.infradead.org;
-> iommu@lists.linux-foundation.org; linux-acpi@vger.kernel.org;
-> devicetree@vger.kernel.org; linux-pci@vger.kernel.org; Rob Herring
-> <robh+dt@kernel.org>; Rafael J. Wysocki <rjw@rjwysocki.net>; Joerg Roedel
-> <joro@8bytes.org>; Hanjun Guo <guohanjun@huawei.com>; Bjorn Helgaas
-> <bhelgaas@google.com>; Sudeep Holla <sudeep.holla@arm.com>; Robin
-> Murphy <robin.murphy@arm.com>; Catalin Marinas
-> <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>; Marc Zyngier
-> <maz@kernel.org>
-> Subject: Re: [EXT] Re: [PATCH v2 12/12] bus: fsl-mc: Add ACPI support for fsl-mc
+> From: Geert Uytterhoeven, Sent: Tuesday, July 14, 2020 9:40 PM
 > 
-> Caution: EXT Email
+> Hi Shimoda-san,
 > 
-> On Thu, Jul 09, 2020 at 10:52:52AM +0000, Makarand Pawagi wrote:
-> 
-> [...]
-> 
-> > > >>>> fsl_mc_bus_probe(struct platform_device *pdev)
-> > > >>>>>>      struct fsl_mc_io *mc_io = NULL;
-> > > >>>>>>      int container_id;
-> > > >>>>>>      phys_addr_t mc_portal_phys_addr;
-> > > >>>>>> -   u32 mc_portal_size;
-> > > >>>>>> -   struct resource res;
-> > > >>>>>> +   u32 mc_portal_size, mc_stream_id;
-> > > >>>>>> +   struct resource *plat_res;
-> > > >>>>>> +
-> > > >>>>>> +   if (!iommu_present(&fsl_mc_bus_type))
-> > > >>>>>> +           return -EPROBE_DEFER;
-> > > >>>>>>
-> > > >>>>>>      mc = devm_kzalloc(&pdev->dev, sizeof(*mc), GFP_KERNEL);
-> > > >>>>>>      if (!mc)
-> > > >>>>>> @@ -874,19 +887,33 @@ static int fsl_mc_bus_probe(struct
-> > > >>>>>> platform_device *pdev)
-> > > >>>>>>
-> > > >>>>>>      platform_set_drvdata(pdev, mc);
-> > > >>>>>>
-> > > >>>>>> +   plat_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> > > >>>>>> +   mc->fsl_mc_regs = devm_ioremap_resource(&pdev->dev,
-> plat_res);
-> > > >>>>>> +   if (IS_ERR(mc->fsl_mc_regs))
-> > > >>>>>> +           return PTR_ERR(mc->fsl_mc_regs);
-> > > >>>>>> +
-> > > >>>>>> +   if (IS_ENABLED(CONFIG_ACPI) && !dev_of_node(&pdev->dev)) {
-> > > >>>>>> +           mc_stream_id = readl(mc->fsl_mc_regs + FSL_MC_FAPR);
-> > > >>>>>> +           /*
-> > > >>>>>> +            * HW ORs the PL and BMT bit, places the result in bit 15 of
-> > > >>>>>> +            * the StreamID and ORs in the ICID. Calculate it accordingly.
-> > > >>>>>> +            */
-> > > >>>>>> +           mc_stream_id = (mc_stream_id & 0xffff) |
-> > > >>>>>> +                           ((mc_stream_id & (MC_FAPR_PL | MC_FAPR_BMT)) ?
-> > > >>>>>> +                                   0x4000 : 0);
-> > > >>>>>> +           error = acpi_dma_configure_id(&pdev->dev,
-> > > DEV_DMA_COHERENT,
-> > > >>>>>> +                                         &mc_stream_id);
-> > > >>>>>> +           if (error)
-> > > >>>>>> +                   dev_warn(&pdev->dev, "failed to configure dma: %d.\n",
-> > > >>>>>> +                            error);
-> > > >>>>>> +   }
-> > > >>>>>> +
-> > > >>>>>>      /*
-> > > >>>>>>       * Get physical address of MC portal for the root DPRC:
-> > > >>>>>>       */
-> > > >>>>>> -   error = of_address_to_resource(pdev->dev.of_node, 0, &res);
-> > > >>>>>> -   if (error < 0) {
-> > > >>>>>> -           dev_err(&pdev->dev,
-> > > >>>>>> -                   "of_address_to_resource() failed for %pOF\n",
-> > > >>>>>> -                   pdev->dev.of_node);
-> > > >>>>>> -           return error;
-> > > >>>>>> -   }
-> > > >>>>>> -
-> > > >>>>>> -   mc_portal_phys_addr = res.start;
-> > > >>>>>> -   mc_portal_size = resource_size(&res);
-> > > >>>>>> +   plat_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > >>>>>> +   mc_portal_phys_addr = plat_res->start;
-> > > >>>>>> +   mc_portal_size = resource_size(plat_res);
-> > > >>>>>>      error = fsl_create_mc_io(&pdev->dev, mc_portal_phys_addr,
-> > > >>>>>>                               mc_portal_size, NULL,
-> > > >>>>>>
-> > > >>>>>> FSL_MC_IO_ATOMIC_CONTEXT_PORTAL, &mc_io); @@ -903,11
-> +930,13
-> > > >>>>>> @@ static int fsl_mc_bus_probe(struct
-> > > >>>> platform_device *pdev)
-> > > >>>>>>      dev_info(&pdev->dev, "MC firmware version: %u.%u.%u\n",
-> > > >>>>>>               mc_version.major, mc_version.minor,
-> > > >>>>>> mc_version.revision);
-> > > >>>>>>
-> > > >>>>>> -   error = get_mc_addr_translation_ranges(&pdev->dev,
-> > > >>>>>> -                                          &mc->translation_ranges,
-> > > >>>>>> -                                          &mc->num_translation_ranges);
-> > > >>>>>> -   if (error < 0)
-> > > >>>>>> -           goto error_cleanup_mc_io;
-> > > >>>>>> +   if (dev_of_node(&pdev->dev)) {
-> > > >>>>>> +           error = get_mc_addr_translation_ranges(&pdev->dev,
-> > > >>>>>> +                                           &mc->translation_ranges,
-> > > >>>>>> +                                           &mc->num_translation_ranges);
-> > > >>>>>> +           if (error < 0)
-> > > >>>>>> +                   goto error_cleanup_mc_io;
-> > > >>>>>> +   }
-> > > >>>>>>
-> > > >>>>>>      error = dprc_get_container_id(mc_io, 0, &container_id);
-> > > >>>>>>      if (error < 0) {
-> > > >>>>>> @@ -934,6 +963,7 @@ static int fsl_mc_bus_probe(struct
-> > > >>>>>> platform_device
-> > > >>>> *pdev)
-> > > >>>>>>              goto error_cleanup_mc_io;
-> > > >>>>>>
-> > > >>>>>>      mc->root_mc_bus_dev = mc_bus_dev;
-> > > >>>>>> +   mc_bus_dev->dev.fwnode = pdev->dev.fwnode;
-> > > >>>>> Makarand, this looks a bit weird. Is there really a reason for it?
-> > > >>>> Can you clarify please so that we can reach a conclusion on this matter ?
-> > > >>>>
-> > > >>> Laurentiu, can you clarify what exactly is the doubt here? Are
-> > > >>> you asking about
-> > > >> fwnode assignment from pdev to mc_bus_dev?
-> > > >> Yes. I remember that a while ago I tested without this fwnode
-> > > >> assignment and didn't encounter any issues. Maybe we can just drop it?
-> > > > Did you tested with PHY changes? Because this is needed for MAC
-> > > > driver,
-> > > where it needs the mc bus node.
+> On Tue, Jul 14, 2020 at 1:42 PM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > > From: Geert Uytterhoeven, Sent: Tuesday, July 14, 2020 5:42 PM
+> > > On Tue, Jul 14, 2020 at 10:30 AM Lad, Prabhakar
+> > > <prabhakar.csengg@gmail.com> wrote:
+> > > > On Tue, Jul 14, 2020 at 9:09 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > > > On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
+> > > > Also the recent patch to add
+> > > > "r8a77961" just adds to soc_rcar_gen3_whitelist.
 > > >
-> > > Maybe it worth a comment or maybe have it in a different patch?
-> > >
-> > Since this change is needed for ACPI case and this is ACPI support
-> > case, I feel we should have this change in this patch only instead of
-> > separate patch.
+> > > Oops, commit 17fe16181639801b ("iommu/renesas: Add support for r8a77961")
+> > > did it wrong, too.
+> >
+> > Thank you for the point it out. We should add r8a77961 to the soc_rcar_gen3[].
+> > However, I don't know why I could not realize this issue...
+> > So, I investigated this a little and then, IIUC, glob_match() which
+> > soc_device_match() uses seems to return true, if *pat = "r8a7796" and *str = "r8a77961".
 > 
-> Anyway - you need to seek feedback from Marc on whether patches
-> 11 and 12 are OK from an irqchip perspective, it is possible we can take the rest
-> of the series independently if everyone agrees but I don't necessarily see a
-> reason for that.
-> 
-> Long story short: you need Marc's ACK on [11-12], it is your code.
-> 
-Hi Marc, can you please review/ack this patch?
+> Are you sure about this?
 
-> Thanks,
-> Lorenzo
+I'm very sorry. I completely misunderstood the glob_match() behavior.
+And, now I understood why the current code can use IPMMU on r8a77961...
+# Since the first soc_device_match() will return false, ipmmu_slave_whitelist()
+# will return true and then the ipmmu_of_xlate() will be succeeded.
+
+> I enabled CONFIG_GLOB_SELFTEST, and globtest succeeded.
+> It does test glob_match("a", "aa"), which is a similar test.
+> 
+> To be 100% sure, I added:
+> 
+> --- a/lib/globtest.c
+> +++ b/lib/globtest.c
+> @@ -59,6 +59,7 @@ static char const glob_tests[] __initconst =
+>         "1" "a\0" "a\0"
+>         "0" "a\0" "b\0"
+>         "0" "a\0" "aa\0"
+> +       "0" "r8a7796\0" "r8a77961\0"
+>         "0" "a\0" "\0"
+>         "1" "\0" "\0"
+>         "0" "\0" "a\0"
+> 
+> and it still succeeded.
+
+I'm very sorry to waste your time about this...
+
+Best regards,
+Yoshihiro Shimoda
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
