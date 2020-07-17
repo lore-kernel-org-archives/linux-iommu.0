@@ -2,92 +2,178 @@ Return-Path: <SRS0=Ppoz=A4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0B5C433E3
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 20:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 156FCC433E2
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 22:36:41 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 644A32070E
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 20:00:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D01FE2074B
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 22:36:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eb4ynWAU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 644A32070E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="fWxI/9ON"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D01FE2074B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2744986591;
-	Fri, 17 Jul 2020 20:00:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9DD58861CE;
+	Fri, 17 Jul 2020 22:36:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8UZybN0rj44z; Fri, 17 Jul 2020 20:00:10 +0000 (UTC)
+	with ESMTP id thT6833qfaUp; Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1CF9286481;
-	Fri, 17 Jul 2020 20:00:10 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 53E00861A3;
+	Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA7F4C07FF;
-	Fri, 17 Jul 2020 20:00:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A5618C0733
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 20:00:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 438FBC0865;
+	Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20C5DC0733
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1AFBF86234
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 20:00:08 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 07AF187967
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cwTnrJKMvfq3 for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jul 2020 20:00:07 +0000 (UTC)
+ with ESMTP id srIwBn7LXEp4 for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jul 2020 22:36:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D2C1286475
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 20:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595016005;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=7Gv1jNzlACRPqmY6vRiycrdFArUhOKgso2MAgacjPLY=;
- b=eb4ynWAUnTUMAkNtYG0fHbhnad/O1ZQ/AzE21b3l+BqhAWHQAem0f+e1ZNESEQgPTd9Z0R
- WqKD71hTq6rH9ZR3ke3g1+/Yi/xofIRxJEV8z653MCK6gfGt9Sv1zkgP2nUpAciDuna/Fq
- cW3JAYEBLM1HXyQg7EG5UcNPvhVrmQM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-jofWes2qNeuBqrH622lXeg-1; Fri, 17 Jul 2020 16:00:01 -0400
-X-MC-Unique: jofWes2qNeuBqrH622lXeg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C26E51081;
- Fri, 17 Jul 2020 19:59:59 +0000 (UTC)
-Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 92C4F6FED1;
- Fri, 17 Jul 2020 19:59:55 +0000 (UTC)
-Date: Fri, 17 Jul 2020 13:59:54 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 4/5] iommu/uapi: Handle data and argsz filled by users
-Message-ID: <20200717135954.6ddbbac9@x1.home>
-In-Reply-To: <1594925117-64892-5-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1594925117-64892-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1594925117-64892-5-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: Red Hat
+Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 186808790E
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:36 +0000 (UTC)
+Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.9]) by
+ nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5f1227f20000>; Sat, 18 Jul 2020 06:36:34 +0800
+Received: from HKMAIL102.nvidia.com ([10.18.16.11])
+ by hkpgpgate101.nvidia.com (PGP Universal service);
+ Fri, 17 Jul 2020 15:36:34 -0700
+X-PGP-Universal: processed;
+ by hkpgpgate101.nvidia.com on Fri, 17 Jul 2020 15:36:34 -0700
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 17 Jul
+ 2020 22:36:29 +0000
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
+ by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 17 Jul 2020 22:36:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OX9zrvKHyh4lW/0GZ31SPDNDvtzFan1i3T5OdskeUeKBj1yzVegK5KYOzjlJX+MPbb8QnMdFAkPvmsmnkTwE4gVTLvznezOofeHyA5r+55OYUBm7tQOeMkLic3AVdkcNcCBk8oPU5AWmM9lhR+umCKDcPetucG2j8+n7GDRhRKSyt0LIhXSfQsXRt3aZAIRqlbNJGnJO8WvmtYEMllLzas3+hpFSbHfVQ5o8fblTc1stpohrPCrJwg+R1zP2Xa5cjX+ypoM7fJVmf9QZ6bqY0DqCbEjlczZGHRcaZG7+xHn+dp/YFWf4DTpCJL6UW44sxCoYD6y4x6IxxSI0sCGSAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UkrYAjYfVKTm/Fz1tRs8wCjeVh9SOkeqD8yWVv7kcp8=;
+ b=fErKPcCzp2tTBUbj/LmwxO6yQnENgE87toag3iZ9/nMGHDIc9PI5zi6TQaHJ5JMjA9U3m0YOIaAKtkB1HzvTSld0DgYVdI4//5uwASmJb02rCvQVcieYIIaqhWgxpJQkz425HYxEojDQCtsVo5EnQL+dU9b1NSLp4ixSZlnCYrzyXNqDbnvXJwtXfScY9PEz+C7FM1UH88hblnlOVXYn5hMoBqJ94vTYyR/L9wO7SbrVIjdrJX+FLkrYJ09p2y/oZ8c2nBwGbcrUBkBKdVpensfZVtkdeH4x/VXKG4rpM3/v4a1pHYvUUBlU89nm2fFAVMe7qrEx79bzCU/+aiLqWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2822.namprd12.prod.outlook.com (2603:10b6:a03:9a::17)
+ by BYAPR12MB2821.namprd12.prod.outlook.com (2603:10b6:a03:9b::30)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Fri, 17 Jul
+ 2020 22:36:27 +0000
+Received: from BYAPR12MB2822.namprd12.prod.outlook.com
+ ([fe80::70bd:803f:78b6:ebf2]) by BYAPR12MB2822.namprd12.prod.outlook.com
+ ([fe80::70bd:803f:78b6:ebf2%2]) with mapi id 15.20.3174.029; Fri, 17 Jul 2020
+ 22:36:27 +0000
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Subject: RE: [PATCH v10 0/5] NVIDIA ARM SMMU Implementation
+Thread-Topic: [PATCH v10 0/5] NVIDIA ARM SMMU Implementation
+Thread-Index: AQHWVOS0Ssba+jgpK0ibL49hlWjwHakFj04AgAYJ/QCAAM/dMA==
+Date: Fri, 17 Jul 2020 22:36:26 +0000
+Message-ID: <BYAPR12MB282220FED958EED2AA6AA860B37C0@BYAPR12MB2822.namprd12.prod.outlook.com>
+References: <20200708050017.31563-1-vdumpa@nvidia.com>
+ <20200713135020.GD2739@willie-the-truck>
+ <20200717100337.GA8673@willie-the-truck>
+In-Reply-To: <20200717100337.GA8673@willie-the-truck>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2020-07-17T22:36:02.8245596Z;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=a8b4efad-5909-4d32-8ba8-5e4fbc13f4f7;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [71.202.129.3]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1f43ccf2-27ac-475f-82cd-08d82aa1d7c8
+x-ms-traffictypediagnostic: BYAPR12MB2821:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB2821AA084A4E1372D78CE5FDB37C0@BYAPR12MB2821.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VLJkIttkMXZGf96T4bUOiYtNSr+kP/Qs5zMNe04Kltc/5ertyWFunuEAjk89x6U67PoBPwLvuUCuqH0QXd8DqMT9fjiSlj925qtnjiXVnAU9d9WOPNag+BXIVmX4/p4QGmiMo3ajttG4bLljDvma7i1ZrUg6nteyRD6kAd8k+z47voE3MMTZSbmppRFc6FDBuY8KIR9KOC2xOmjrM1CvoNCxh/C3C21AKG2m9UgW7SQn5eQCxH8ovsQ05+3t6AuDHaEx0iasWcGvwqQsyRCeVM17C06+uuPA94+XV9o4i6c3V1JNQdZ/IXMm/H/4F0PI6C2lC3jWOVZU8lkciU8yzGPCiQJ5zeoj3iUjS+55fU6ceXM89VGqi87mxBfT1UifDfyNQaq7f8ajAM+JBVZ9CA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB2822.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(76116006)(33656002)(66946007)(66446008)(64756008)(71200400001)(66556008)(66476007)(5660300002)(86362001)(6506007)(7696005)(4326008)(2906002)(52536014)(8936002)(8676002)(4744005)(83380400001)(54906003)(186003)(26005)(316002)(478600001)(7416002)(55016002)(6916009)(9686003)(966005);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata: jJ5uhKVSRmLjUag+gCG/mb0KPdIlinSiFT46whYv2yVsEInnT4cJjWlbDBFT/p9IZAp10S09KzBcrjAsP/NKTkO3zHPO4xuMNPid1crk3PAA0gHDUKPnVgRTls/fyd3MJpkDQ+OmyX+BLmM6az2qDMO0UDX944tN+d2b9s9ltiYXD5Jo5717xJSkbzG4aEhHn4G73HdJrZMqZ/V8MCu8Lc7VuGxtNbANv4jbbMO82Mkijx01uaMLLFHDS4rIqmHlsnNlhmios9a6xCrcO+QOaruzkyVUpXQMobRfN7GhjIV6zG7G0R6fc66yYPJ0lpFcW7HaeZkRFkQdqpVuLVNmqswhnuliOo8XAoNR2v+Y5vD60f0AsIil1c0k6A/q7KendjohP+c1/vhcl0ibMM9NA92Heu+iro0pcB8TCJPrlwFfkjkO9j0FC8oLiy/KLFVapjaqSGBR8kiFhF57Do5ozwEon2MbbJ21p2OfjLgbFSQ=
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph
- Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2822.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f43ccf2-27ac-475f-82cd-08d82aa1d7c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2020 22:36:27.0389 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UTEiFUDXxYcavpU0OcvZE33pvO1K9tTMZdzIGWhlAQSMw0sXbD+cqb6mTnBV/YGfiiMieC3zhKSXTe3m58vGUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2821
+X-OriginatorOrg: Nvidia.com
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1595025394; bh=UkrYAjYfVKTm/Fz1tRs8wCjeVh9SOkeqD8yWVv7kcp8=;
+ h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+ ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+ Thread-Index:Date:Message-ID:References:In-Reply-To:
+ Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
+ authentication-results:x-originating-ip:x-ms-publictraffictype:
+ x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+ x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+ x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+ x-microsoft-antispam:x-microsoft-antispam-message-info:
+ x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+ MIME-Version:X-MS-Exchange-CrossTenant-AuthAs:
+ X-MS-Exchange-CrossTenant-AuthSource:
+ X-MS-Exchange-CrossTenant-Network-Message-Id:
+ X-MS-Exchange-CrossTenant-originalarrivaltime:
+ X-MS-Exchange-CrossTenant-fromentityheader:
+ X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+ X-MS-Exchange-CrossTenant-userprincipalname:
+ X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
+ Content-Language:Content-Type:Content-Transfer-Encoding;
+ b=fWxI/9ONLx4mZ4H1aNPRira/xOuvxRETYb6iW34eOdkfkfehvHAzx6N3eWveNHOOL
+ WdPk3t4teVq9PYER6+b10nQRVJEap9p2vm4LAMhKMO5TlxwaKakdX+20mLRxWNltIG
+ MYDjFNOjfmxwtu5R/FEEWw6K2+hnJD9/dnhM2xfZjvms3WMz1sjDhKPTuNyftBd0SB
+ My3wwjB2njiaaQsYcaXRfbngaU09f0SDjRFuTIz7EXUsumJJgpQtX9B0raIBZX5FIS
+ CIbYUTBDY253vEg2eQtE61FKHZRBEGuomPXpJ9D9HYE78AaWGpyc0v+Gh/vVmPKCAc
+ xp9cAzbXr4jpg==
+Cc: Sachin Nikam <Snikam@nvidia.com>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Mikko Perttunen <mperttunen@nvidia.com>,
+ Pritesh Raithatha <praithatha@nvidia.com>,
+ Bryan Huntsman <bhuntsman@nvidia.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Timo Alho <talho@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ Yu-Huan Hsu <YHsu@nvidia.com>, Thierry
+ Reding <treding@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Bitan Biswas <bbiswas@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,337 +191,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 16 Jul 2020 11:45:16 -0700
-Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+>On Mon, Jul 13, 2020 at 02:50:20PM +0100, Will Deacon wrote:
+>> On Tue, Jul 07, 2020 at 10:00:12PM -0700, Krishna Reddy wrote:
+> >> Changes in v10:
+>> > Perform SMMU base ioremap before calling implementation init.
+>> > Check for Global faults across both ARM MMU-500s during global interrupt.
+>> > Check for context faults across all contexts of both ARM MMU-500s during context fault interrupt.
+> >> Add new DT binding nvidia,smmu-500 for NVIDIA implementation.
+>>
+>> Please repost based on my SMMU queue, as this doesn't currently apply.
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=
+>> for-joerg/arm-smmu/updates
 
-> IOMMU UAPI data has a user filled argsz field which indicates the data
-> length comes with the API call. User data is not trusted, argsz must be
-> validated based on the current kernel data size, mandatory data size,
-> and feature flags.
-> 
-> User data may also be extended, results in possible argsz increase.
-> Backward compatibility is ensured based on size and flags checking.
-> 
-> This patch adds sanity checks in the IOMMU layer. In addition to argsz,
-> reserved/unused fields in padding, flags, and version are also checked.
-> Details are documented in Documentation/userspace-api/iommu.rst
-> 
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 192 ++++++++++++++++++++++++++++++++++++++++++++++++--
->  include/linux/iommu.h |  20 ++++--
->  2 files changed, 200 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d43120eb1dc5..fe30a940d19e 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1950,36 +1950,214 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(iommu_attach_device);
->  
-> +/*
-> + * Check flags and other user privided data for valid combinations. We also
-> + * make sure no reserved fields or unused flags are not set. This is to ensure
-> + * not breaking userspace in the future when these fields or flags are used.
-> + */
-> +static int iommu_check_cache_invl_data(struct iommu_cache_invalidate_info *info)
-> +{
-> +	u32 mask;
-> +
-> +	if (info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	mask = (1 << IOMMU_CACHE_INV_TYPE_NR) - 1;
-> +	if (info->cache & ~mask)
-> +		return -EINVAL;
-> +
-> +	if (info->granularity >= IOMMU_INV_GRANU_NR)
-> +		return -EINVAL;
-> +
-> +	switch (info->granularity) {
-> +	case IOMMU_INV_GRANU_ADDR:
-> +		mask = IOMMU_INV_ADDR_FLAGS_PASID |
-> +			IOMMU_INV_ADDR_FLAGS_ARCHID |
-> +			IOMMU_INV_ADDR_FLAGS_LEAF;
-> +
-> +		if (info->granu.addr_info.flags & ~mask)
-> +			return -EINVAL;
-> +		break;
-> +	case IOMMU_INV_GRANU_PASID:
-> +		mask = IOMMU_INV_PASID_FLAGS_PASID |
-> +			IOMMU_INV_PASID_FLAGS_ARCHID;
-> +		if (info->granu.pasid_info.flags & ~mask)
-> +			return -EINVAL;
-> +
-> +		break;
-> +	case IOMMU_INV_GRANU_DOMAIN:
-> +		/* No flags to check */
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (info->padding[0] || info->padding[1])
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
->  int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-> -			   struct iommu_cache_invalidate_info *inv_info)
-> +			   void __user *uinfo)
->  {
-> +	struct iommu_cache_invalidate_info inv_info = { 0 };
-> +	u32 minsz, maxsz;
-> +	int ret = 0;
-> +
->  	if (unlikely(!domain->ops->cache_invalidate))
->  		return -ENODEV;
->  
-> -	return domain->ops->cache_invalidate(domain, dev, inv_info);
-> +	/* Current kernel data size is the max to be copied from user */
-> +	maxsz = sizeof(struct iommu_cache_invalidate_info);
-> +
-> +	/*
-> +	 * No new spaces can be added before the variable sized union, the
-> +	 * minimum size is the offset to the union.
-> +	 */
-> +	minsz = offsetof(struct iommu_cache_invalidate_info, granu);
-> +
-> +	/* Copy minsz from user to get flags and argsz */
-> +	if (copy_from_user(&inv_info, uinfo, minsz))
-> +		return -EFAULT;
-> +
-> +	/* Fields before variable size union is mandatory */
-> +	if (inv_info.argsz < minsz)
-> +		return -EINVAL;
-> +
-> +	/* PASID and address granu requires additional info beyond minsz */
-> +	if (inv_info.argsz == minsz &&
-> +		((inv_info.granularity == IOMMU_INV_GRANU_PASID) ||
-> +			(inv_info.granularity == IOMMU_INV_GRANU_ADDR)))
-> +		return -EINVAL;
-> +	/*
-> +	 * User might be using a newer UAPI header which has a larger data
-> +	 * size, we shall support the existing flags within the current
-> +	 * size. Copy the remaining user data _after_ minsz but not more
-> +	 * than the current kernel supported size.
-> +	 */
-> +	if (copy_from_user((void *)&inv_info + minsz, uinfo + minsz,
-> +				min(inv_info.argsz, maxsz) - minsz))
-> +		return -EFAULT;
+>Any update on this, please? It would be a shame to miss 5.9 now that the patches look alright.
 
-To further clarify previous comments about maxsz usage:
+Thanks for pinging.
+I have been out of the office this week. Just started working on reposting patches.
 
-s/maxsz/sizeof(inv_info)/
-
-> +
-> +	/* Now the argsz is validated, check the content */
-> +	ret = iommu_check_cache_invl_data(&inv_info);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return domain->ops->cache_invalidate(domain, dev, &inv_info);
->  }
->  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
-
-
-Remainder of comments for above provided in 1/5.
-
->  
-> -int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> -			   struct device *dev, struct iommu_gpasid_bind_data *data)
-> +
-> +static int iommu_check_bind_data(struct iommu_gpasid_bind_data *data)
->  {
-> +	u32 mask;
-> +	int i;
-> +
-> +	if (data->version != IOMMU_GPASID_BIND_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	/* Check all supported format, for now just VT-d */
-> +	mask = IOMMU_PASID_FORMAT_INTEL_VTD;
-> +	if (data->format & ~mask)
-> +		return -EINVAL;
-> +
-> +	/* Check all flags */
-> +	mask = IOMMU_SVA_GPASID_VAL;
-> +	if (data->flags & ~mask)
-> +		return -EINVAL;
-> +
-> +	/* Check reserved padding fields */
-> +	for (i = 0; i < 12; i++) {
-> +		if (data->padding[i])
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int iommu_sva_prepare_bind_data(void __user *udata,
-> +				       struct iommu_gpasid_bind_data *data)
-> +{
-> +	u32 minsz, maxsz;
-> +
-> +	/* Current kernel data size is the max to be copied from user */
-> +	maxsz = sizeof(struct iommu_gpasid_bind_data);
-> +	memset((void *)data, 0, maxsz);
-
-Let the caller pass a zero'd structure.
-
-> +
-> +	/*
-> +	 * No new spaces can be added before the variable sized union, the
-> +	 * minimum size is the offset to the union.
-> +	 */
-> +	minsz = offsetof(struct iommu_gpasid_bind_data, vendor);
-> +
-> +	/* Copy minsz from user to get flags and argsz */
-> +	if (copy_from_user(data, udata, minsz))
-> +		return -EFAULT;
-> +
-> +	/* Fields before variable size union is mandatory */
-> +	if (data->argsz < minsz)
-> +		return -EINVAL;
-> +	/*
-> +	 * User might be using a newer UAPI header, we shall let IOMMU vendor
-> +	 * driver decide on what size it needs. Since the guest PASID bind data
-> +	 * can be vendor specific, larger argsz could be the result of extension
-> +	 * for one vendor but it should not affect another vendor.
-> +	 * Copy the remaining user data _after_ minsz
-> +	 */
-> +	if (copy_from_user((void *)data + minsz, udata + minsz,
-> +				min(data->argsz, maxsz) - minsz))
-
-
-We could replace maxsz entirely with sizeof(*data)
-
-> +		return -EFAULT;
-> +
-> +	return iommu_check_bind_data(data);
-> +}
-> +
-> +int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +						void __user *udata)
-
-iommu_uapi_sva_bind_gpasid(...
-
-> +{
-> +
-> +	struct iommu_gpasid_bind_data data;
-
-	= { 0 }
-
-> +	int ret;
-> +
->  	if (unlikely(!domain->ops->sva_bind_gpasid))
->  		return -ENODEV;
->  
-> -	return domain->ops->sva_bind_gpasid(domain, dev, data);
-> +	ret = iommu_sva_prepare_bind_data(udata, &data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return domain->ops->sva_bind_gpasid(domain, dev, &data);
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
->  
->  int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> -			     ioasid_t pasid)
-> +			struct iommu_gpasid_bind_data *data)
->  {
->  	if (unlikely(!domain->ops->sva_unbind_gpasid))
->  		return -ENODEV;
->  
-> -	return domain->ops->sva_unbind_gpasid(dev, pasid);
-> +	return domain->ops->sva_unbind_gpasid(dev, data->hpasid);
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
->  
-> +int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +			void __user *udata)
-> +{
-> +	struct iommu_gpasid_bind_data data;
-
-	= { 0 };
-
-> +	int ret;
-> +
-> +	if (unlikely(!domain->ops->sva_bind_gpasid))
-> +		return -ENODEV;
-> +
-> +	ret = iommu_sva_prepare_bind_data(udata, &data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return iommu_sva_unbind_gpasid(domain, dev, &data);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_uapi_sva_unbind_gpasid);
-> +
->  static void __iommu_detach_device(struct iommu_domain *domain,
->  				  struct device *dev)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5f0b7859d2eb..439f34a7b5b2 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -432,11 +432,14 @@ extern void iommu_detach_device(struct iommu_domain *domain,
->  				struct device *dev);
->  extern int iommu_cache_invalidate(struct iommu_domain *domain,
-
-uapi
-
->  				  struct device *dev,
-> -				  struct iommu_cache_invalidate_info *inv_info);
-> +				  void __user *uinfo);
-> +
->  extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-
-uapi
-
-> -		struct device *dev, struct iommu_gpasid_bind_data *data);
-> +				struct device *dev, void __user *udata);
-> +extern int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
-> +				        struct device *dev, void __user *udata);
->  extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> -				struct device *dev, ioasid_t pasid);
-> +				   struct device *dev, struct iommu_gpasid_bind_data *data);
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> @@ -1062,13 +1065,20 @@ iommu_cache_invalidate(struct iommu_domain *domain,
->  	return -ENODEV;
->  }
->  static inline int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-> -				struct device *dev, struct iommu_gpasid_bind_data *data)
-> +				struct device *dev, void __user *udata)
->  {
->  	return -ENODEV;
->  }
->  
->  static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> -					   struct device *dev, int pasid)
-> +					   struct device *dev, void __user *udata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int __iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-
-
-These don't match the previous semantics.  Thanks,
-
-Alex
-
-> +					struct device *dev,
-> +					struct iommu_gpasid_bind_data *data)
->  {
->  	return -ENODEV;
->  }
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
