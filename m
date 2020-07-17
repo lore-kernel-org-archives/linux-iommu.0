@@ -2,94 +2,92 @@ Return-Path: <SRS0=Ppoz=A4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B864CC433E2
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 17:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC1EC433E0
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 19:37:42 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7FC5F208C7
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 17:34:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 246732064C
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 19:37:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Jx/KtPBF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7FC5F208C7
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="J4n9veP/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 246732064C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 54A3B220D0;
-	Fri, 17 Jul 2020 17:34:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id BA27120469;
+	Fri, 17 Jul 2020 19:37:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3WD6H9aQLjOS; Fri, 17 Jul 2020 17:34:47 +0000 (UTC)
+	with ESMTP id GmHrGy1h+aPD; Fri, 17 Jul 2020 19:37:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id EE48D220C1;
-	Fri, 17 Jul 2020 17:34:46 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9859F2034D;
+	Fri, 17 Jul 2020 19:37:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7E93C07FF;
-	Fri, 17 Jul 2020 17:34:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D9382C0733
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:34:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C729C07FF;
+	Fri, 17 Jul 2020 19:37:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D03CC0733
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 19:37:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C8B47220C2
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:34:45 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 08A5F87EE3
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 19:37:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nP8vFu-J6ATA for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jul 2020 17:34:43 +0000 (UTC)
+ with ESMTP id EiF6diIopzH6 for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jul 2020 19:37:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by silver.osuosl.org (Postfix) with ESMTPS id 2FDB4220C1
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:34:43 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7582787EE0
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 19:37:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595007281;
+ s=mimecast20190719; t=1595014655;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=xOYTxw3r0CL+8Q4MvBrIEj3j12LO6u9nDXOleZT0OGs=;
- b=Jx/KtPBFnDBeeekF4V6MRauABFD7bnv3JgEkVZWzM660exIVruDS1dyWj+PfuQA8X5VfCD
- SxHFAvrzOSbQENnrxP2JJjLpwapnirqZxtUdajqG8gur0Dykj7Ny+xphcrIKGMMLzOGZ4J
- JpdPWSgRUjQVJU8OzOnyg4Xam+qth5Y=
+ bh=wf7sBj7qpPp3/65SbuC0yGngnSQ5SAaarcN51oLFweo=;
+ b=J4n9veP/iQaPfZU4TupmvDxby8foT4BI0IP/7Kzr7Y1lEWXl3tnCq/jg65ciuVO+Un57Cv
+ 5WdCmPk6M2aU0rvxIEvCENrGwecRdrYxd7WsOyAHUd4pf/m3kTbL0dhhWYFnuX/3taWJCS
+ 2Y8+50mNNrWtF7TQMWPHl1ligAaV4Kw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-319-bYS67CsaOxOXfs0P_w4BaA-1; Fri, 17 Jul 2020 13:34:37 -0400
-X-MC-Unique: bYS67CsaOxOXfs0P_w4BaA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
+ us-mta-224-FH4QtK-YPgOE3PPSR8k2mA-1; Fri, 17 Jul 2020 15:37:31 -0400
+X-MC-Unique: FH4QtK-YPgOE3PPSR8k2mA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5FB3C80183C;
- Fri, 17 Jul 2020 17:34:35 +0000 (UTC)
-Received: from [10.36.115.54] (ovpn-115-54.ams2.redhat.com [10.36.115.54])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id EE8846FECD;
- Fri, 17 Jul 2020 17:34:25 +0000 (UTC)
-Subject: Re: [PATCH v5 04/15] vfio/type1: Report iommu nesting info to
- userspace
-To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
- baolu.lu@linux.intel.com, joro@8bytes.org
-References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
- <1594552870-55687-5-git-send-email-yi.l.liu@intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <2eb692fc-a399-8298-4b4b-68adb0357404@redhat.com>
-Date: Fri, 17 Jul 2020 19:34:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 990BE18A1DE4;
+ Fri, 17 Jul 2020 19:37:29 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id BA0F719724;
+ Fri, 17 Jul 2020 19:37:25 +0000 (UTC)
+Date: Fri, 17 Jul 2020 13:37:25 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 1/5] docs: IOMMU user API
+Message-ID: <20200717133725.02d0057b@x1.home>
+In-Reply-To: <1594925117-64892-2-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1594925117-64892-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1594925117-64892-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <1594552870-55687-5-git-send-email-yi.l.liu@intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
- kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- yi.y.sun@intel.com, hao.wu@intel.com
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph
+ Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,279 +105,417 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Yi,
+On Thu, 16 Jul 2020 11:45:13 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-On 7/12/20 1:20 PM, Liu Yi L wrote:
-> This patch exports iommu nesting capability info to user space through
-> VFIO. User space is expected to check this info for supported uAPIs (e.g.
-it is not only to check the supported uAPIS but rather to know which
-callbacks it must call upon vIOMMU events and which features are
-supported by the physical IOMMU.
-> PASID alloc/free, bind page table, and cache invalidation) and the vendor
-> specific format information for first level/stage page table that will be
-> bound to.
+> IOMMU UAPI is newly introduced to support communications between guest
+> virtual IOMMU and host IOMMU. There has been lots of discussions on how
+> it should work with VFIO UAPI and userspace in general.
 > 
-> The nesting info is available only after the nesting iommu type is set
-> for a container.
-to NESTED type
- Current implementation imposes one limitation - one
-> nesting container should include at most one group. The philosophy of
-> vfio container is having all groups/devices within the container share
-> the same IOMMU context. When vSVA is enabled, one IOMMU context could
-> include one 2nd-level address space and multiple 1st-level address spaces.
-> While the 2nd-level address space is reasonably sharable by multiple groups
-> , blindly sharing 1st-level address spaces across all groups within the
-> container might instead break the guest expectation. In the future sub/
-> super container concept might be introduced to allow partial address space
-> sharing within an IOMMU context. But for now let's go with this restriction
-> by requiring singleton container for using nesting iommu features. Below
-> link has the related discussion about this decision.
-
-Maybe add a note about SMMU related changes spotted by Jean.
+> This document is indended to clarify the UAPI design and usage. The
+> mechanics of how future extensions should be achieved are also covered
+> in this documentation.
 > 
-> https://lkml.org/lkml/2020/5/15/1028
-> 
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Cc: Eric Auger <eric.auger@redhat.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
 > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
-> v4 -> v5:
-> *) address comments from Eric Auger.
-> *) return struct iommu_nesting_info for VFIO_IOMMU_TYPE1_INFO_CAP_NESTING as
->    cap is much "cheap", if needs extension in future, just define another cap.
->    https://lore.kernel.org/kvm/20200708132947.5b7ee954@x1.home/
+>  Documentation/userspace-api/iommu.rst | 339 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 339 insertions(+)
+>  create mode 100644 Documentation/userspace-api/iommu.rst
 > 
-> v3 -> v4:
-> *) address comments against v3.
-> 
-> v1 -> v2:
-> *) added in v2
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 102 +++++++++++++++++++++++++++++++++++-----
->  include/uapi/linux/vfio.h       |  19 ++++++++
->  2 files changed, 109 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 3bd70ff..ed80104 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -62,18 +62,20 @@ MODULE_PARM_DESC(dma_entry_limit,
->  		 "Maximum number of user DMA mappings per container (65535).");
->  
->  struct vfio_iommu {
-> -	struct list_head	domain_list;
-> -	struct list_head	iova_list;
-> -	struct vfio_domain	*external_domain; /* domain for external user */
-> -	struct mutex		lock;
-> -	struct rb_root		dma_list;
-> -	struct blocking_notifier_head notifier;
-> -	unsigned int		dma_avail;
-> -	uint64_t		pgsize_bitmap;
-> -	bool			v2;
-> -	bool			nesting;
-> -	bool			dirty_page_tracking;
-> -	bool			pinned_page_dirty_scope;
-> +	struct list_head		domain_list;
-> +	struct list_head		iova_list;
-> +	/* domain for external user */
-> +	struct vfio_domain		*external_domain;
-> +	struct mutex			lock;
-> +	struct rb_root			dma_list;
-> +	struct blocking_notifier_head	notifier;
-> +	unsigned int			dma_avail;
-> +	uint64_t			pgsize_bitmap;
-> +	bool				v2;
-> +	bool				nesting;
-> +	bool				dirty_page_tracking;
-> +	bool				pinned_page_dirty_scope;
-> +	struct iommu_nesting_info	*nesting_info;
->  };
->  
->  struct vfio_domain {
-> @@ -130,6 +132,9 @@ struct vfio_regions {
->  #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
->  					(!list_empty(&iommu->domain_list))
->  
-> +#define CONTAINER_HAS_DOMAIN(iommu)	(((iommu)->external_domain) || \
-> +					 (!list_empty(&(iommu)->domain_list)))
+> diff --git a/Documentation/userspace-api/iommu.rst b/Documentation/userspace-api/iommu.rst
+> new file mode 100644
+> index 000000000000..efc3e1838235
+> --- /dev/null
+> +++ b/Documentation/userspace-api/iommu.rst
+> @@ -0,0 +1,339 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +.. iommu:
 > +
->  #define DIRTY_BITMAP_BYTES(n)	(ALIGN(n, BITS_PER_TYPE(u64)) / BITS_PER_BYTE)
->  
->  /*
-> @@ -1929,6 +1934,13 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
->  
->  	list_splice_tail(iova_copy, iova);
->  }
+> +=====================================
+> +IOMMU Userspace API
+> +=====================================
 > +
-> +static void vfio_iommu_release_nesting_info(struct vfio_iommu *iommu)
-> +{
-> +	kfree(iommu->nesting_info);
-> +	iommu->nesting_info = NULL;
-> +}
+> +IOMMU UAPI is used for virtualization cases where communications are
+> +needed between physical and virtual IOMMU drivers. For native
+> +usage, IOMMU is a system device which does not need to communicate
+> +with user space directly.
 > +
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  					 struct iommu_group *iommu_group)
->  {
-> @@ -1959,6 +1971,12 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  		}
->  	}
->  
-> +	/* Nesting type container can include only one group */
-> +	if (iommu->nesting && CONTAINER_HAS_DOMAIN(iommu)) {
-> +		mutex_unlock(&iommu->lock);
+> +The primary use cases are guest Shared Virtual Address (SVA) and
+> +guest IO virtual address (IOVA), wherein a virtual IOMMU (vIOMMU) is
+> +required to communicate with the physical IOMMU in the host.
+> +
+> +.. contents:: :local:
+> +
+> +Functionalities
+> +===============
+> +Communications of user and kernel involve both directions. The
+> +supported user-kernel APIs are as follows:
+> +
+> +1. Alloc/Free PASID
+> +2. Bind/unbind guest PASID (e.g. Intel VT-d)
+> +3. Bind/unbind guest PASID table (e.g. ARM sMMU)
+> +4. Invalidate IOMMU caches
+> +5. Service IO page faults (page request and response)
+> +
+> +Requirements
+> +============
+> +The IOMMU UAPIs are generic and extensible to meet the following
+> +requirements:
+> +
+> +1. Emulated and para-virtualised vIOMMUs
+> +2. Multiple vendors (Intel VT-d, ARM sMMU, etc.)
+> +3. Extensions to the UAPI shall not break existing user space
+> +
+> +Interfaces
+> +==========
+> +Although the data structures defined in IOMMU UAPI are self-contained,
+> +there is no user API functions introduced. Instead, IOMMU UAPI is
+> +designed to work with existing user driver frameworks such as VFIO.
+> +
+> +Extension Rules & Precautions
+> +-----------------------------
+> +When IOMMU UAPI gets extended, the data structures can *only* be
+> +modified in two ways:
+> +
+> +1. Adding new fields by re-purposing the padding[] field. No size change.
+> +2. Adding new union members at the end. May increase in size.
+> +
+> +No new fields can be added *after* the variable sized union in that it
+> +will break backward compatibility when offset moves. In both cases, a
+> +new flag must be accompanied with a new field such that the IOMMU
+> +driver can process the data based on the new flag. Version field is
+> +only reserved for the unlikely event of UAPI upgrade at its entirety.
+> +
+> +It's *always* the caller's responsibility to indicate the size of the
+> +structure passed by setting argsz appropriately.
+> +Though at the same time, argsz is user provided data which is not
+> +trusted. The argsz field allows the user to indicate how much data
+> +they're providing, it's still the kernel's responsibility to validate
+> +whether it's correct and sufficient for the requested operation.
+> +
+> +Compatibility Checking
+> +----------------------
+> +When IOMMU UAPI extension results in size increase, IOMMU UAPI core
+> +and vendor driver shall handle the following cases:
+> +
+> +1. User and kernel has exact size match
+> +2. An older user with older kernel header (smaller UAPI size) running on a
+> +   newer kernel (larger UAPI size)
+> +3. A newer user with newer kernel header (larger UAPI size) running
+> +   on an older kernel.
+> +4. A malicious/misbehaving user pass illegal/invalid size but within
+> +   range. The data may contain garbage.
+> +
+> +Feature Checking
+> +----------------
+> +While launching a guest with vIOMMU, it is important to ensure that host
+> +can support the UAPI data structures to be used for vIOMMU-pIOMMU
+> +communications. Without upfront compatibility checking, future faults
+> +are difficult to report even in normal conditions. For example, TLB
+> +invalidations should always succeed. There is no architectural way to
+> +report back to the vIOMMU if the UAPI data is incompatible. If that
+> +happens, in order to protect IOMMU iosolation guarantee, we have to
+> +resort to not giving completion status in vIOMMU. This may result in
+> +VM hang.
+> +
+> +For this reason the following IOMMU UAPIs cannot fail:
+> +
+> +1. Free PASID
+> +2. Unbind guest PASID
+> +3. Unbind guest PASID table (SMMU)
+> +4. Cache invalidate
+> +
+> +User applications such as QEMU are expected to import kernel UAPI
+> +headers. Backward compatibility is supported per feature flags.
+> +For example, an older QEMU (with older kernel header) can run on newer
+> +kernel. Newer QEMU (with new kernel header) may refuse to initialize
+> +on an older kernel if new feature flags are not supported by older
+> +kernel. Simply recompiling existing code with newer kernel header should
+> +not be an issue in that only existing flags are used.
+> +
+> +IOMMU vendor driver should report the below features to IOMMU UAPI
+> +consumers (e.g. via VFIO).
+> +
+> +1. IOMMU_NESTING_FEAT_SYSWIDE_PASID
+> +2. IOMMU_NESTING_FEAT_BIND_PGTBL
+> +3. IOMMU_NESTING_FEAT_BIND_PASID_TABLE
+> +4. IOMMU_NESTING_FEAT_CACHE_INVLD
+> +5. IOMMU_NESTING_FEAT_PAGE_REQUEST
+> +
+> +Take VFIO as example, upon request from VFIO user space (e.g. QEMU),
+> +VFIO kernel code shall query IOMMU vendor driver for the support of
+> +the above features. Query result can then be reported back to the
+> +user-space caller. Details can be found in
+> +Documentation/driver-api/vfio.rst.
+> +
+> +
+> +Data Passing Example with VFIO
+> +------------------------------
+> +As the ubiquitous userspace driver framework, VFIO is already IOMMU
+> +aware and shares many key concepts such as device model, group, and
+> +protection domain. Other user driver frameworks can also be extended
+> +to support IOMMU UAPI but it is outside the scope of this document.
+> +
+> +In this tight-knit VFIO-IOMMU interface, the ultimate consumer of the
+> +IOMMU UAPI data is the host IOMMU driver. VFIO facilitates user-kernel
+> +transport, capability checking, security, and life cycle management of
+> +process address space ID (PASID).
+> +
+> +Unlike normal user data passed via VFIO UAPI IOTCL, IOMMU driver is the
+> +ultimate consumer of its UAPI data. At VFIO layer, the IOMMU UAPI data
+> +is wrapped in a VFIO UAPI data. It follows the
+> +pattern below::
+> +
+> +   struct {
+> +	__u32 argsz;
+> +	__u32 flags;
+> +	__u8  data[];
+> +   };
+> +
+> +Here data[] contains the IOMMU UAPI data structures. VFIO has the
+> +freedom to bundle the data as well as parse data size based on its own flags.
+> +
+> +In order to determine the size and feature set of the user data, argsz
+> +and flags are also embedded in the IOMMU UAPI data structures.
+> +A "__u32 argsz" field is *always* at the beginning of each structure.
+> +
+> +For example:
+> +::
+> +
+> +   struct iommu_cache_invalidate_info {
+> +	__u32	argsz;
+> +	#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
+> +	__u32	version;
+> +	/* IOMMU paging structure cache */
+> +	#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
+> +	#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
+> +	#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
+> +	#define IOMMU_CACHE_INV_TYPE_NR		(3)
+> +	__u8	cache;
+> +	__u8	granularity;
+> +	__u8	padding[6];
+> +	union {
+> +		struct iommu_inv_pasid_info pasid_info;
+> +		struct iommu_inv_addr_info addr_info;
+> +	} granu;
+> +   };
+> +
+> +VFIO is responsible for checking its own argsz and flags then invokes
+> +appropriate IOMMU UAPI functions. User pointer is passed to IOMMU
+> +layer for further processing. The responsibilities are divided as
+> +follows:
+> +
+> +- Generic IOMMU layer checks argsz range based on UAPI data in the
+> +  current kernel version
+> +
+> +- Generic IOMMU layer checks content of the UAPI data for non-zero
+> +  reserved bits in flags, padding fields, and unsupported version.
+> +  This is to ensure not breaking userspace in the future when these
+> +  fields or flags are used.
+> +
+> +- Vendor IOMMU driver checks argsz based on vendor flags, UAPI data
+> +  is consumed based on flags. Vendor driver has access to
+> +  unadulterated argsz value in case of vendor specific future
+> +  extensions.
+> +
+> +To illustrate the two cases with and without vendor data, cache
+> +invalidation and bind guest PASID are given as examples respectively.
+> +
+> +Example 1: Guest issues IOTLB invalidation, all guest provided data
+> +are generic. Vendor driver does not need to check argsz.
+> +
+> +::
+> +
+> + static int iommu_check_cache_invl_data(struct iommu_cache_invalidate_info *info)
+> + {
+> +	u32 mask;
+> +
+> +	if (info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
+> +		return -EINVAL;
+> +
+> +	mask = (1 << IOMMU_CACHE_INV_TYPE_NR) - 1;
+> +	if (info->cache & ~mask)
+> +		return -EINVAL;
+> +
+> +	if (info->granularity >= IOMMU_INV_GRANU_NR)
+> +		return -EINVAL;
+> +
+
+
+The table defining valid cache/granularity combinations specifically
+indicates the following are not available:
+
+ IOMMU_INV_GRANU_DOMAIN + IOMMU_CACHE_INV_TYPE_DEV_IOTLB
+ IOMMU_INV_GRANU_ADDR + IOMMU_CACHE_INV_TYPE_PASID
+
+So shouldn't we also have the following rejected?
+
+> +	switch (info->granularity) {
+> +	case IOMMU_INV_GRANU_ADDR:
+
+		if (info->cache & IOMMU_CACHE_INV_TYPE_PASID)
+			return -EINVAL;
+
+> +		mask = IOMMU_INV_ADDR_FLAGS_PASID |
+> +			IOMMU_INV_ADDR_FLAGS_ARCHID |
+> +			IOMMU_INV_ADDR_FLAGS_LEAF;
+> +
+> +		if (info->granu.addr_info.flags & ~mask)
+> +			return -EINVAL;
+> +		break;
+> +	case IOMMU_INV_GRANU_PASID:
+> +		mask = IOMMU_INV_PASID_FLAGS_PASID |
+> +			IOMMU_INV_PASID_FLAGS_ARCHID;
+> +		if (info->granu.pasid_info.flags & ~mask)
+> +			return -EINVAL;
+> +
+> +		break;
+> +	case IOMMU_INV_GRANU_DOMAIN:
+> +		/* No flags to check */
+
+		if (info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB)
+			return -EINVAL;
+
+> +		break;
+> +	default:
 > +		return -EINVAL;
 > +	}
 > +
->  	group = kzalloc(sizeof(*group), GFP_KERNEL);
->  	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->  	if (!group || !domain) {
-> @@ -2029,6 +2047,32 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	if (ret)
->  		goto out_domain;
->  
-> +	/* Nesting cap info is available only after attaching */
-> +	if (iommu->nesting) {
-> +		struct iommu_nesting_info tmp = { .size = 0, };
-> +
-> +		/* First get the size of vendor specific nesting info */
-> +		ret = iommu_domain_get_attr(domain->domain,
-> +					    DOMAIN_ATTR_NESTING,
-> +					    &tmp);
-> +		if (ret)
-> +			goto out_detach;
-> +
-> +		iommu->nesting_info = kzalloc(tmp.size, GFP_KERNEL);
-> +		if (!iommu->nesting_info) {
-> +			ret = -ENOMEM;
-> +			goto out_detach;
-> +		}
-> +
-> +		/* Now get the nesting info */
-> +		iommu->nesting_info->size = tmp.size;
-> +		ret = iommu_domain_get_attr(domain->domain,
-> +					    DOMAIN_ATTR_NESTING,
-> +					    iommu->nesting_info);
-> +		if (ret)
-> +			goto out_detach;
-> +	}
-> +
->  	/* Get aperture info */
->  	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY, &geo);
->  
-> @@ -2138,6 +2182,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	return 0;
->  
->  out_detach:
-> +	vfio_iommu_release_nesting_info(iommu);
->  	vfio_iommu_detach_group(domain, group);
->  out_domain:
->  	iommu_domain_free(domain->domain);
-> @@ -2338,6 +2383,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  					vfio_iommu_unmap_unpin_all(iommu);
->  				else
->  					vfio_iommu_unmap_unpin_reaccount(iommu);
-> +
-> +				vfio_iommu_release_nesting_info(iommu);
->  			}
->  			iommu_domain_free(domain->domain);
->  			list_del(&domain->next);
-> @@ -2546,6 +2593,31 @@ static int vfio_iommu_migration_build_caps(struct vfio_iommu *iommu,
->  	return vfio_info_add_capability(caps, &cap_mig.header, sizeof(cap_mig));
->  }
->  
-> +static int vfio_iommu_info_add_nesting_cap(struct vfio_iommu *iommu,
-> +					   struct vfio_info_cap *caps)
-> +{
-> +	struct vfio_info_cap_header *header;
-> +	struct vfio_iommu_type1_info_cap_nesting *nesting_cap;
-> +	size_t size;
-> +
-> +	size = offsetof(struct vfio_iommu_type1_info_cap_nesting, info) +
-> +		iommu->nesting_info->size;
-> +
-> +	header = vfio_info_cap_add(caps, size,
-> +				   VFIO_IOMMU_TYPE1_INFO_CAP_NESTING, 1);
-> +	if (IS_ERR(header))
-> +		return PTR_ERR(header);
-> +
-> +	nesting_cap = container_of(header,
-> +				   struct vfio_iommu_type1_info_cap_nesting,
-> +				   header);
-> +
-> +	memcpy(&nesting_cap->info, iommu->nesting_info,
-> +	       iommu->nesting_info->size);
-you must check whether nesting_info is non NULL before doing that.
+> +	if (info->padding[0] || info->padding[1])
 
-Besides I agree with Jean on the fact it may be better to not report the
-capability if nested is not supported.
+More padding bytes to test now.
+
+> +		return -EINVAL;
 > +
 > +	return 0;
-> +}
+> + }
 > +
->  static int vfio_iommu_type1_get_info(struct vfio_iommu *iommu,
->  				     unsigned long arg)
->  {
-> @@ -2581,6 +2653,12 @@ static int vfio_iommu_type1_get_info(struct vfio_iommu *iommu,
->  	if (!ret)
->  		ret = vfio_iommu_iova_build_caps(iommu, &caps);
->  
-> +	if (iommu->nesting_info) {
-> +		ret = vfio_iommu_info_add_nesting_cap(iommu, &caps);
-> +		if (ret)
-> +			return ret;
-> +	}
+> + int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+> +			   void __user *uinfo)
+> + {
+> +	struct iommu_cache_invalidate_info inv_info = { 0 };
+> +	u32 minsz, maxsz;
+> +	int ret = 0;
 > +
->  	mutex_unlock(&iommu->lock);
->  
->  	if (ret)
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 9204705..46a78af 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -14,6 +14,7 @@
->  
->  #include <linux/types.h>
->  #include <linux/ioctl.h>
-> +#include <linux/iommu.h>
->  
->  #define VFIO_API_VERSION	0
->  
-> @@ -1039,6 +1040,24 @@ struct vfio_iommu_type1_info_cap_migration {
->  	__u64	max_dirty_bitmap_size;		/* in bytes */
->  };
->  
-> +/*
-> + * The nesting capability allows to report the related capability
-> + * and info for nesting iommu type.
-> + *
-> + * The structures below define version 1 of this capability.
-> + *
-> + * User space selected VFIO_TYPE1_NESTING_IOMMU type should check
-> + * this capto get supported features.
-s/capto/capability to get
-> + *
-> + * @info: the nesting info provided by IOMMU driver.
-> + */
-> +#define VFIO_IOMMU_TYPE1_INFO_CAP_NESTING  3
+> +	if (unlikely(!domain->ops->cache_invalidate))
+> +		return -ENODEV;
 > +
-> +struct vfio_iommu_type1_info_cap_nesting {
-> +	struct	vfio_info_cap_header header;
-> +	struct iommu_nesting_info info;
-> +};
+> +	/* Current kernel data size is the max to be copied from user */
+> +	maxsz = sizeof(struct iommu_cache_invalidate_info);
 > +
->  #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
->  
->  /**
-> 
+> +	/*
+> +	 * No new spaces can be added before the variable sized union, the
+> +	 * minimum size is the offset to the union.
+> +	 */
+> +	minsz = offsetof(struct iommu_cache_invalidate_info, granu);
+> +
+> +	/* Copy minsz from user to get flags and argsz */
+> +	if (copy_from_user(&inv_info, uinfo, minsz))
+> +		return -EFAULT;
+> +
+> +	/* Fields before variable size union is mandatory */
+> +	if (inv_info.argsz < minsz)
+> +		return -EINVAL;
+> +
+> +	/* PASID and address granu requires additional info beyond minsz */
+> +	if (inv_info.argsz == minsz &&
+> +		((inv_info.granularity == IOMMU_INV_GRANU_PASID) ||
+> +			(inv_info.granularity == IOMMU_INV_GRANU_ADDR)))
+> +		return -EINVAL;
 
-Thanks
+We only validated that argsz is at least (minsz + 1).
 
-Eric
+> +	/*
+> +	 * User might be using a newer UAPI header which has a larger data
+> +	 * size, we shall support the existing flags within the current
+> +	 * size. Copy the remaining user data _after_ minsz but not more
+> +	 * than the current kernel supported size.
+> +	 */
+> +	if (copy_from_user((void *)&inv_info + minsz, uinfo + minsz,
+> +				min(inv_info.argsz, maxsz) - minsz))
+> +		return -EFAULT;
+> +
+> +	/* Now the argsz is validated, check the content */
+
+If we want to assert that IOMMU_INV_GRANU_PASID requires a struct
+iommu_inv_pasid_info and IOMMU_INV_GRANU_ADDR requires a struct
+iommu_inv_addr_info, then we've done a pretty poor job of validating
+argsz against that.  Do you want the switch in
+iommu_check_cache_invl_data() to also check info->argsz in the pasid
+and addr cases?  If so, we could always copy min(argsz, sizeof) and
+remove the previous check.
+
+> +	ret = iommu_check_cache_invl_data(&inv_info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return domain->ops->cache_invalidate(domain, dev, &inv_info);
+> + }
+> + EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> +
+> +
+> +Example 2: Bind guest PASID which includes vendor specific data.
+> +The IOMMU core processing of UAPI data follows the same flow as
+> +Example 1. Vendor driver handles the additional vendor specific flags
+> +as in VT-d driver below:
+> +
+> +::
+> +
+> + int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+> +			  struct iommu_gpasid_bind_data *data)
+> + {
+> +	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+> +	struct dmar_domain *dmar_domain;
+> +	struct intel_svm_dev *sdev;
+> +	struct intel_svm *svm;
+> +	int ret = 0;
+> +
+> +	if (WARN_ON(!iommu) || !data)
+> +		return -EINVAL;
+> +
+> +	if (data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
+> +		return -EINVAL;
+> +
+> +	/* IOMMU core ensures argsz is more than the start of the union */
+> +	if (data->argsz < offsetofend(struct iommu_gpasid_bind_data,
+> +            vendor.vtd))
+> +		return -EINVAL;
+
+So at this point the vendor driver assumes the core has copied
+min(argsz, sizeof(uapi struct)) and it only needs to validate, not
+perform the copy itself (until we get to some future scenario where
+there's vendor data outside of the structure definition and we'll need
+to provide a __user pointer for the vendor driver to fetch it).
+
+> +   ...
+> + }
+> +
+> +
+> +Sharing UAPI with in-kernel users
+> +---------------------------------
+> +For UAPIs that are shared with in-kernel users, a wrapper function is
+> +provided to distinguish the callers. For example,
+> +
+> +Userspace caller ::
+> +
+> +  int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
+> +                                   struct device *dev,
+> +                                   void __user *udata)
+> +
+> +In-kernel caller ::
+> +
+> +  int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> +                                   struct device *dev,
+> +                                   struct iommu_gpasid_bind_data *data)
+
+Shouldn't we start that precedent with the iommu_cache_invalidate()
+example above?  The "that are shared with in-kernel users" qualifier
+doesn't really make sense to me, then we'll have uapi functions named
+as if they're in-kernel just because there isn't an in-kernel user yet.
+That's inconsistency that'll get us into trouble.  Thanks,
+
+Alex
 
 _______________________________________________
 iommu mailing list
