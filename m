@@ -7,87 +7,88 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33960C433E5
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 00:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E15CC433EA
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 00:16:30 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 04782207CB
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 00:16:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5271120787
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 00:16:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hR7K/50Y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04782207CB
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HFN+J5la"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5271120787
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E2FDC88090;
-	Fri, 17 Jul 2020 00:16:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2E36688092;
+	Fri, 17 Jul 2020 00:16:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 17zsJqVIjrHu; Fri, 17 Jul 2020 00:16:27 +0000 (UTC)
+	with ESMTP id h1j7LgbtWu4E; Fri, 17 Jul 2020 00:16:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1D3588805C;
-	Fri, 17 Jul 2020 00:16:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 868E287FB0;
+	Fri, 17 Jul 2020 00:16:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01746C07FF;
-	Fri, 17 Jul 2020 00:16:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10CE2C0733
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72380C07FF;
+	Fri, 17 Jul 2020 00:16:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 940E4C0733
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E3605203EF
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:24 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 916BF863C5
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OoDcqcydeWxV for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jul 2020 00:16:23 +0000 (UTC)
+ with ESMTP id uW-dCs5QPLKq for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jul 2020 00:16:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
  [209.85.215.194])
- by silver.osuosl.org (Postfix) with ESMTPS id B7B8A203E4
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:23 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id d4so5775282pgk.4
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 17:16:23 -0700 (PDT)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B1CB58639F
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 00:16:26 +0000 (UTC)
+Received: by mail-pg1-f194.google.com with SMTP id n5so5775607pgf.7
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 17:16:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=Gz5Zo50XaaYCZ/NxMlikYXYKHZLd81NtOvGkTA8cH8o=;
- b=hR7K/50YBRAiYbzC5YEsIbA8rrB/9x+7sISP+RCiE+PEZ4V1DcU4bLgQSvldNsZ0c8
- DlWjm7LoKVY9Rz8e9IgppsSankyzITQqSY5b/cGexfVASMUQP3opQJ1PjW8bqK6geipV
- zSVYGSqXW0FVUmM3/qy2HG22nBoC6cvLoqstJ0bhcsawn5tbuBgigq9soHAc1TbbbrXI
- ygJEnHbepx4gjwD2rGloW4NabRJXyVxcmxqAPB5n1cfQloJRJi4jmiqmPJbLGPeOQVO1
- zKZqZBmmmRchgEeyycJ7FTZbWWgOm7MNjc4uGjYm6V4G7tYor5UqiYvFokYU6C0EjdDM
- C8TA==
+ bh=uWqUMnqB20Yorh5LQCiLslCOOm0+DCqawJ+UCE1bquU=;
+ b=HFN+J5lasdtEzt8WaDQDidUq/66N+NwxdcjPVhWpvCd+d0hZ5zNSLuBzBCKO+fjAOK
+ C8nKyAjwFqxuDObJnah2wuyJoJ2ffpvR5fWK8OkvnlSYCccjKz9rrM/TXwPfAQzddKXp
+ JegnspuFxDCFrVLUsvFTDz2sEWZMKfmsZDCWl7v+E+v74347FvLqBFFcl354G2qMbekZ
+ CZw7OAC26K6gtekJV0WnxnzqtDWPvg3aZFxlc3AFEfFeKAnJnR8VesnoH5Ln6MN1a6LP
+ 94BkbVX/W5v3NeO0S5E4tZtZFQDXPnct1E0y/1HPGl1JKar2q9ypxL2cnAewiG2S6oco
+ 2I/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=Gz5Zo50XaaYCZ/NxMlikYXYKHZLd81NtOvGkTA8cH8o=;
- b=ijY5y8hWROqLv1+BhhqkPXDFUYlAt6XzV7xsSt/Leefpqjx1/BdohvS7vgXHVr//35
- ggjgFMMQSANtgVYZ5DZe8aAMaQqep2KVZiElVicCyRf7AVvK7uQ+ZNPV+MW8S7gIkjF7
- 9VIRj1nrK6YWvYr2aWcvSoLBspHJazYYwOVFR5ud15sLTHdF2phLOdDBQaSVohFc9SrI
- p/+JXHxGs0JeWdApmc+BjRGPd03Mttj3KTAvDZjlZCNV01SpsCOsKMhkspSuDDS2BctW
- FZ9wRRsv2hUWHRbq7DEVbyMKRdMvTvHi0n5SCStS7iz8p6GqFPbMYV0bbgtusStw0sZM
- YcgA==
-X-Gm-Message-State: AOAM531OPXxpKPY8HWwN2viQl6ozoJxivzOghJsguRneyWiijp3bael4
- vZwMLzULmi8MHZ9oQZlCgTizmg==
-X-Google-Smtp-Source: ABdhPJy2pM1sb1dp82VBoREb9XieM3FFWojiWZR5vj1MXdZyzILDiZXH1IyjW0siveAEKiPXPp07Lw==
-X-Received: by 2002:a63:e00c:: with SMTP id e12mr6451848pgh.413.1594944983134; 
- Thu, 16 Jul 2020 17:16:23 -0700 (PDT)
+ bh=uWqUMnqB20Yorh5LQCiLslCOOm0+DCqawJ+UCE1bquU=;
+ b=VWpAXxoE/DKU5u+H0gj3TobW9nD7OoiHaHOtMcDA1gS5xoZoaO4pFDwe9R2kVZ+9f3
+ XPZ3bESY44OC0pUN/1j1scM0+xuXJlKx672IfVcTfBjW4yPGr6Ss+zA5v82zggu21PCv
+ sTE53EPc8MGY7K+89EmDE/e0hDQPPXK4zzoQPTxUZDiY+N4SOgY4xMB/VAPt2b7N4Tzh
+ pd9dA4BsfwjPZm7DViKtTBR9en1Yd1RNXV6pG2qq+ghpanPbAVr93UeQvr2vgZV46iB7
+ GUb1N3g5pj9wivZzf/n4PoGobRJD+v1Z+CB13cGbncBEmikPqbv8XZJ0dHdSdSMwLyEd
+ 8myg==
+X-Gm-Message-State: AOAM530lyTp2hfIcF6lnGznHXw2D0oLVFZ+d0B9GHR8Cbmnx8IO0LmGf
+ K9GUV/+yfknjY7byYxoH0kjwyA==
+X-Google-Smtp-Source: ABdhPJzhp8wrF9EsgCUoqrojoUNB4BkSM3/fWxyDMIkhZTNNrxXnc9QP6rLIKqr2mcsWBO8ZpScFnA==
+X-Received: by 2002:a63:140f:: with SMTP id u15mr6116836pgl.94.1594944986245; 
+ Thu, 16 Jul 2020 17:16:26 -0700 (PDT)
 Received: from localhost.localdomain
  (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
- by smtp.gmail.com with ESMTPSA id r7sm6211950pgu.51.2020.07.16.17.16.21
+ by smtp.gmail.com with ESMTPSA id r7sm6211950pgu.51.2020.07.16.17.16.24
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 16 Jul 2020 17:16:22 -0700 (PDT)
+ Thu, 16 Jul 2020 17:16:25 -0700 (PDT)
 From: Bjorn Andersson <bjorn.andersson@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Thierry Reding <thierry.reding@gmail.com>,
  Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: [PATCH v2 1/5] iommu/arm-smmu: Make all valid stream mappings BYPASS
-Date: Thu, 16 Jul 2020 17:16:15 -0700
-Message-Id: <20200717001619.325317-2-bjorn.andersson@linaro.org>
+Subject: [PATCH v2 3/5] iommu/arm-smmu: Move SMR and S2CR definitions to
+ header file
+Date: Thu, 16 Jul 2020 17:16:17 -0700
+Message-Id: <20200717001619.325317-4-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200717001619.325317-1-bjorn.andersson@linaro.org>
 References: <20200717001619.325317-1-bjorn.andersson@linaro.org>
@@ -113,62 +114,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Turn all stream mappings marked as valid into BYPASS. This allows the
-platform specific implementation to configure stream mappings to match
-the boot loader's configuration for e.g. display to continue to function
-through the reset of the SMMU.
+Expose the SMR and S2CR structs in the header file, to allow platform
+specific implementations to populate/initialize the smrs and s2cr
+arrays.
 
 Tested-by: John Stultz <john.stultz@linaro.org>
 Tested-by: Vinod Koul <vkoul@kernel.org>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
 
 Changes since v1:
-- Mark arm_smmu_setup_identity() static
-- Picked up tested-by tags
+- Picked up tested-by
 
- drivers/iommu/arm-smmu.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/iommu/arm-smmu.c | 14 --------------
+ drivers/iommu/arm-smmu.h | 15 +++++++++++++++
+ 2 files changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 243bc4cb2705..fb85e716ae9a 100644
+index 5d5fe6741ed4..08a650fe02e3 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1924,6 +1924,22 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	return 0;
+@@ -68,24 +68,10 @@ module_param(disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+ 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+ 
+-struct arm_smmu_s2cr {
+-	struct iommu_group		*group;
+-	int				count;
+-	enum arm_smmu_s2cr_type		type;
+-	enum arm_smmu_s2cr_privcfg	privcfg;
+-	u8				cbndx;
+-};
+-
+ #define s2cr_init_val (struct arm_smmu_s2cr){				\
+ 	.type = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS,	\
  }
  
-+static int arm_smmu_setup_identity(struct arm_smmu_device *smmu)
-+{
-+	int i;
-+
-+	for (i = 0; i < smmu->num_mapping_groups; i++) {
-+		if (smmu->smrs[i].valid) {
-+			smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
-+			smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
-+			smmu->s2crs[i].cbndx = 0xff;
-+			smmu->s2crs[i].count++;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- struct arm_smmu_match_data {
- 	enum arm_smmu_arch_version version;
- 	enum arm_smmu_implementation model;
-@@ -2181,6 +2197,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
+-struct arm_smmu_smr {
+-	u16				mask;
+-	u16				id;
+-	bool				valid;
+-};
+-
+ struct arm_smmu_cb {
+ 	u64				ttbr[2];
+ 	u32				tcr[2];
+diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+index a71d193073e4..bcd160d01c53 100644
+--- a/drivers/iommu/arm-smmu.h
++++ b/drivers/iommu/arm-smmu.h
+@@ -251,6 +251,21 @@ enum arm_smmu_implementation {
+ 	QCOM_SMMUV2,
+ };
  
-+	err = arm_smmu_setup_identity(smmu);
-+	if (err)
-+		return err;
++struct arm_smmu_s2cr {
++	struct iommu_group		*group;
++	int				count;
++	enum arm_smmu_s2cr_type		type;
++	enum arm_smmu_s2cr_privcfg	privcfg;
++	u8				cbndx;
++};
 +
- 	if (smmu->version == ARM_SMMU_V2) {
- 		if (smmu->num_context_banks > smmu->num_context_irqs) {
- 			dev_err(dev,
++struct arm_smmu_smr {
++	u16				mask;
++	u16				id;
++	bool				valid;
++	bool				pinned;
++};
++
+ struct arm_smmu_device {
+ 	struct device			*dev;
+ 
 -- 
 2.26.2
 
