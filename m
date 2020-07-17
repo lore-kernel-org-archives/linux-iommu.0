@@ -2,89 +2,90 @@ Return-Path: <SRS0=Ppoz=A4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D76FC433E3
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 16:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32626C433E0
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 17:14:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 462DB2065F
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 16:29:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E738D20717
+	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 17:14:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dkEtr7Cb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 462DB2065F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YPuDdC5D"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E738D20717
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 00BF1204E3;
-	Fri, 17 Jul 2020 16:29:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B30A32156C;
+	Fri, 17 Jul 2020 17:14:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NQKvOSxvd+nF; Fri, 17 Jul 2020 16:29:50 +0000 (UTC)
+	with ESMTP id MQOoe+gGtHYC; Fri, 17 Jul 2020 17:14:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B47FE20116;
-	Fri, 17 Jul 2020 16:29:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 33C462154B;
+	Fri, 17 Jul 2020 17:14:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A55C0C0865;
-	Fri, 17 Jul 2020 16:29:50 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30DFAC0733
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 16:29:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18E4FC07FF;
+	Fri, 17 Jul 2020 17:14:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0499CC0733
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:14:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 196B886303
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 16:29:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id E10D82154C
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:14:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VBieEe8S4l5g for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jul 2020 16:29:47 +0000 (UTC)
+ with ESMTP id llpJGSgVMigc for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jul 2020 17:14:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [205.139.110.61])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id AC443862B4
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 16:29:47 +0000 (UTC)
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id 495CC2154B
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 17:14:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595003386;
+ s=mimecast20190719; t=1595006064;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=7bDe5Eo8YoDgzpgBHjRncuB5a0kbQWytFHxucrZtSpw=;
- b=dkEtr7CbnAd3PMpVb7Sk3WiVdRz6732q1D2F+T24lS9td3wANLT/mAt4mBqwRB683Nxpno
- lrcitG2Lm+sjc5jH5zli8QVQS3cOBu+8kAq6WsLvK163neNYdvWmPHYtPqIBpoOLfjPMza
- Ma0tmyzD3aOmehwLTq0UmS/2ifeZW1E=
+ bh=h7Vro6oATDfc57wTbAGmgD4ZVMjfXELJBQKUa0OblJs=;
+ b=YPuDdC5DIJrAY+4u/PtQ2OHh9TERNBZtxzKncSwCUjDlCWOcYBq7CgYbTlSk5AJoFK+fWS
+ zbwGHJt6+0sT5z5Kut8liugy8Z+VpnG515RwzNnDRWjrGv/93/KTFAyUieUyd361xfc7ai
+ pKABaqwtvAt6i5VmL/ErfdM/HI0ghlY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-432-D6KHX6QbNNeV_7wKi6OfLA-1; Fri, 17 Jul 2020 12:29:41 -0400
-X-MC-Unique: D6KHX6QbNNeV_7wKi6OfLA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
+ us-mta-63-mBLot0W0O2qV29HKiIlQ-Q-1; Fri, 17 Jul 2020 13:14:19 -0400
+X-MC-Unique: mBLot0W0O2qV29HKiIlQ-Q-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+ [10.5.11.22])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5F9D8015CE;
- Fri, 17 Jul 2020 16:29:39 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DAF2F18A1DE5;
+ Fri, 17 Jul 2020 17:14:17 +0000 (UTC)
 Received: from [10.36.115.54] (ovpn-115-54.ams2.redhat.com [10.36.115.54])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 6FE5F72E48;
- Fri, 17 Jul 2020 16:29:30 +0000 (UTC)
-Subject: Re: [PATCH v5 02/15] iommu: Report domain nesting info
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id C8FF910013C4;
+ Fri, 17 Jul 2020 17:14:08 +0000 (UTC)
+Subject: Re: [PATCH v5 15/15] iommu/vt-d: Support reporting nesting capability
+ info
 To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
  baolu.lu@linux.intel.com, joro@8bytes.org
 References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
- <1594552870-55687-3-git-send-email-yi.l.liu@intel.com>
+ <1594552870-55687-16-git-send-email-yi.l.liu@intel.com>
 From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <99c20ada-b7e8-44f6-e036-ab905d119119@redhat.com>
-Date: Fri, 17 Jul 2020 18:29:28 +0200
+Message-ID: <be27f7ee-3fac-d1c5-0cd9-9581f8827de6@redhat.com>
+Date: Fri, 17 Jul 2020 19:14:07 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <1594552870-55687-3-git-send-email-yi.l.liu@intel.com>
+In-Reply-To: <1594552870-55687-16-git-send-email-yi.l.liu@intel.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
  kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -108,17 +109,10 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi Yi,
 
-On 7/12/20 1:20 PM, Liu Yi L wrote:
-> IOMMUs that support nesting translation needs report the capability info
-s/needs/need to report
-> to userspace, e.g. the format of first level/stage paging structures.
-It gives information about requirements the userspace needs to implement
-plus other features characterizing the physical implementation.
-> 
-> This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller can get
-> nesting info after setting DOMAIN_ATTR_NESTING.
-I guess you meant after selecting VFIO_TYPE1_NESTING_IOMMU?
-> 
+Missing a proper commit message. You can comment on the fact you only
+support the case where all the physical iomms have the same CAP/ECAP MASKS
+
+On 7/12/20 1:21 PM, Liu Yi L wrote:
 > Cc: Kevin Tian <kevin.tian@intel.com>
 > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > Cc: Alex Williamson <alex.williamson@redhat.com>
@@ -129,135 +123,156 @@ I guess you meant after selecting VFIO_TYPE1_NESTING_IOMMU?
 > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
-> v4 -> v5:
-> *) address comments from Eric Auger.
-> 
-> v3 -> v4:
-> *) split the SMMU driver changes to be a separate patch
-> *) move the @addr_width and @pasid_bits from vendor specific
->    part to generic part.
-> *) tweak the description for the @features field of struct
->    iommu_nesting_info.
-> *) add description on the @data[] field of struct iommu_nesting_info
-> 
 > v2 -> v3:
-> *) remvoe cap/ecap_mask in iommu_nesting_info.
-> *) reuse DOMAIN_ATTR_NESTING to get nesting info.
-> *) return an empty iommu_nesting_info for SMMU drivers per Jean'
->    suggestion.
+> *) remove cap/ecap_mask in iommu_nesting_info.
 > ---
->  include/uapi/linux/iommu.h | 77 ++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 77 insertions(+)
+>  drivers/iommu/intel/iommu.c | 81 +++++++++++++++++++++++++++++++++++++++++++--
+>  include/linux/intel-iommu.h | 16 +++++++++
+>  2 files changed, 95 insertions(+), 2 deletions(-)
 > 
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 1afc661..d2a47c4 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -332,4 +332,81 @@ struct iommu_gpasid_bind_data {
->  	} vendor;
->  };
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index a9504cb..9f7ad1a 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5659,12 +5659,16 @@ static inline bool iommu_pasid_support(void)
+>  static inline bool nested_mode_support(void)
+>  {
+>  	struct dmar_drhd_unit *drhd;
+> -	struct intel_iommu *iommu;
+> +	struct intel_iommu *iommu, *prev = NULL;
+>  	bool ret = true;
 >  
-> +/*
-> + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
-> + *			       user space should check it before using
-> + *			       nesting capability.
-> + *
-> + * @size:	size of the whole structure
-> + * @format:	PASID table entry format, the same definition as struct
-> + *		iommu_gpasid_bind_data @format.
-> + * @features:	supported nesting features.
-> + * @flags:	currently reserved for future extension.
-> + * @addr_width:	The output addr width of first level/stage translation
-> + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
-> + *		support.
-> + * @data:	vendor specific cap info. data[] structure type can be deduced
-> + *		from @format field.
-> + *
-> + * +===============+======================================================+
-> + * | feature       |  Notes                                               |
-> + * +===============+======================================================+
-> + * | SYSWIDE_PASID |  PASIDs are managed in system-wide, instead of per   |
-s/in system-wide/system-wide ?
-> + * |               |  device. When a device is assigned to userspace or   |
-> + * |               |  VM, proper uAPI (userspace driver framework uAPI,   |
-> + * |               |  e.g. VFIO) must be used to allocate/free PASIDs for |
-> + * |               |  the assigned device.          
-Isn't it possible to be more explicit, something like:
-                      |
-System-wide PASID management is mandated by the physical IOMMU. All
-PASIDs allocation must be mediated through the TBD API.
-> + * +---------------+------------------------------------------------------+
-> + * | BIND_PGTBL    |  The owner of the first level/stage page table must  |
-> + * |               |  explicitly bind the page table to associated PASID  |
-> + * |               |  (either the one specified in bind request or the    |
-> + * |               |  default PASID of iommu domain), through userspace   |
-> + * |               |  driver framework uAPI (e.g. VFIO_IOMMU_NESTING_OP). |
-As per your answer in https://lkml.org/lkml/2020/7/6/383, I now
-understand ARM would not expose that BIND_PGTBL nesting feature, I still
-think the above wording is a bit confusing. Maybe you may explicitly
-talk about the PASID *entry* that needs to be passed from guest to host.
-On ARM we directly pass the PASID table but when reading the above
-description I fail to determine if this does not fit that description.
-> + * +---------------+------------------------------------------------------+
-> + * | CACHE_INVLD   |  The owner of the first level/stage page table must  |
-> + * |               |  explicitly invalidate the IOMMU cache through uAPI  |
-> + * |               |  provided by userspace driver framework (e.g. VFIO)  |
-> + * |               |  according to vendor-specific requirement when       |
-> + * |               |  changing the page table.                            |
-> + * +---------------+------------------------------------------------------+
-
-instead of using the "uAPI provided by userspace driver framework (e.g.
-VFIO)", can't we use the so-called IOMMU UAPI terminology which now has
-a userspace documentation?
-
-> + *
-> + * @data[] types defined for @format:
-> + * +================================+=====================================+
-> + * | @format                        | @data[]                             |
-> + * +================================+=====================================+
-> + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
-> + * +--------------------------------+-------------------------------------+
-> + *
-> + */
-> +struct iommu_nesting_info {
-> +	__u32	size;
-shouldn't it be @argsz to fit the iommu uapi convention and take benefit
-to put the flags field just below?
-> +	__u32	format;
-> +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
-> +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
-> +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
-> +	__u32	features;
-> +	__u32	flags;
-> +	__u16	addr_width;
-> +	__u16	pasid_bits;
-> +	__u32	padding;
-> +	__u8	data[];
-> +};
+>  	rcu_read_lock();
+>  	for_each_active_iommu(iommu, drhd) {
+> -		if (!sm_supported(iommu) || !ecap_nest(iommu->ecap)) {
+> +		if (!prev)
+> +			prev = iommu;
+> +		if (!sm_supported(iommu) || !ecap_nest(iommu->ecap) ||
+> +		    (VTD_CAP_MASK & (iommu->cap ^ prev->cap)) ||
+> +		    (VTD_ECAP_MASK & (iommu->ecap ^ prev->ecap))) {
+>  			ret = false;
+>  			break;>  		}
+> @@ -6079,6 +6083,78 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
+>  	return ret;
+>  }
+>  
+> +static int intel_iommu_get_nesting_info(struct iommu_domain *domain,
+> +					struct iommu_nesting_info *info)
+> +{
+> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> +	u64 cap = VTD_CAP_MASK, ecap = VTD_ECAP_MASK;
+> +	struct device_domain_info *domain_info;
+> +	struct iommu_nesting_info_vtd vtd;
+> +	unsigned long flags;
+> +	unsigned int size;
 > +
-> +/*
-> + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info
-> + *
-> + * @flags:	VT-d specific flags. Currently reserved for future
-> + *		extension.
-must be set to 0?
-> + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
-> + *		register.
-> + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
-> + *		extended capability register.
-> + */
-> +struct iommu_nesting_info_vtd {
-> +	__u32	flags;
-> +	__u32	padding;
-> +	__u64	cap_reg;
-> +	__u64	ecap_reg;
-> +};
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED ||
+> +	    !(dmar_domain->flags & DOMAIN_FLAG_NESTING_MODE))
+> +		return -ENODEV;
 > +
->  #endif /* _UAPI_IOMMU_H */
+> +	if (!info)
+> +		return -EINVAL;
+> +
+> +	size = sizeof(struct iommu_nesting_info) +
+> +		sizeof(struct iommu_nesting_info_vtd);
+> +	/*
+> +	 * if provided buffer size is smaller than expected, should
+> +	 * return 0 and also the expected buffer size to caller.
+> +	 */
+> +	if (info->size < size) {
+> +		info->size = size;
+> +		return 0;
+> +	}
+> +
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	/*
+> +	 * arbitrary select the first domain_info as all nesting
+> +	 * related capabilities should be consistent across iommu
+> +	 * units.
+> +	 */
+> +	domain_info = list_first_entry(&dmar_domain->devices,
+> +				       struct device_domain_info, link);
+> +	cap &= domain_info->iommu->cap;
+> +	ecap &= domain_info->iommu->ecap;
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +
+> +	info->format = IOMMU_PASID_FORMAT_INTEL_VTD;
+> +	info->features = IOMMU_NESTING_FEAT_SYSWIDE_PASID |
+> +			 IOMMU_NESTING_FEAT_BIND_PGTBL |
+> +			 IOMMU_NESTING_FEAT_CACHE_INVLD;
+> +	info->addr_width = dmar_domain->gaw;
+> +	info->pasid_bits = ilog2(intel_pasid_max_id);
+> +	info->padding = 0;
+> +	vtd.flags = 0;
+> +	vtd.padding = 0;
+> +	vtd.cap_reg = cap;
+> +	vtd.ecap_reg = ecap;
+> +
+> +	memcpy(info->data, &vtd, sizeof(vtd));
+> +	return 0;
+> +}
+> +
+> +static int intel_iommu_domain_get_attr(struct iommu_domain *domain,
+> +				       enum iommu_attr attr, void *data)
+> +{
+> +	switch (attr) {
+> +	case DOMAIN_ATTR_NESTING:
+> +	{
+> +		struct iommu_nesting_info *info =
+> +				(struct iommu_nesting_info *)data;
+> +
+> +		return intel_iommu_get_nesting_info(domain, info);
+> +	}
+> +	default:
+> +		return -ENODEV;
+-ENOENT?
+> +	}
+> +}
+> +
+>  /*
+>   * Check that the device does not live on an external facing PCI port that is
+>   * marked as untrusted. Such devices should not be able to apply quirks and
+> @@ -6101,6 +6177,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.domain_alloc		= intel_iommu_domain_alloc,
+>  	.domain_free		= intel_iommu_domain_free,
+>  	.domain_set_attr	= intel_iommu_domain_set_attr,
+> +	.domain_get_attr	= intel_iommu_domain_get_attr,
+>  	.attach_dev		= intel_iommu_attach_device,
+>  	.detach_dev		= intel_iommu_detach_device,
+>  	.aux_attach_dev		= intel_iommu_aux_attach_device,
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 18f292e..c4ed0d4 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -197,6 +197,22 @@
+>  #define ecap_max_handle_mask(e) ((e >> 20) & 0xf)
+>  #define ecap_sc_support(e)	((e >> 7) & 0x1) /* Snooping Control */
+>  
+> +/* Nesting Support Capability Alignment */
+> +#define VTD_CAP_FL1GP		BIT_ULL(56)
+> +#define VTD_CAP_FL5LP		BIT_ULL(60)
+> +#define VTD_ECAP_PRS		BIT_ULL(29)
+> +#define VTD_ECAP_ERS		BIT_ULL(30)
+> +#define VTD_ECAP_SRS		BIT_ULL(31)
+> +#define VTD_ECAP_EAFS		BIT_ULL(34)
+> +#define VTD_ECAP_PASID		BIT_ULL(40)
+
+> +
+> +/* Only capabilities marked in below MASKs are reported */
+> +#define VTD_CAP_MASK		(VTD_CAP_FL1GP | VTD_CAP_FL5LP)
+> +
+> +#define VTD_ECAP_MASK		(VTD_ECAP_PRS | VTD_ECAP_ERS | \
+> +				 VTD_ECAP_SRS | VTD_ECAP_EAFS | \
+> +				 VTD_ECAP_PASID)
+> +
+>  /* Virtual command interface capability */
+>  #define vccap_pasid(v)		(((v) & DMA_VCS_PAS)) /* PASID allocation */
+>  
+> 
 Thanks
 
 Eric
-> 
+
 
 _______________________________________________
 iommu mailing list
