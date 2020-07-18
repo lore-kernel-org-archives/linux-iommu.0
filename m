@@ -1,179 +1,94 @@
-Return-Path: <SRS0=Ppoz=A4=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=IIdK=A5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 156FCC433E2
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 22:36:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E3C433E3
+	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 13:39:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D01FE2074B
-	for <iommu@archiver.kernel.org>; Fri, 17 Jul 2020 22:36:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E80192073A
+	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 13:39:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="fWxI/9ON"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D01FE2074B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Crmu7c+/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E80192073A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9DD58861CE;
-	Fri, 17 Jul 2020 22:36:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A53B3880C7;
+	Sat, 18 Jul 2020 13:39:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id thT6833qfaUp; Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
+	with ESMTP id 8OdHaFUCD4Ok; Sat, 18 Jul 2020 13:39:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 53E00861A3;
-	Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D723988098;
+	Sat, 18 Jul 2020 13:39:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 438FBC0865;
-	Fri, 17 Jul 2020 22:36:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C47CDC0865;
+	Sat, 18 Jul 2020 13:39:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20C5DC0733
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0FE7DC0733
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 13:39:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 07AF187967
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:38 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id EEA5F8745C
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 13:39:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id srIwBn7LXEp4 for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jul 2020 22:36:37 +0000 (UTC)
+ with ESMTP id 7AKHPexivatt for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Jul 2020 13:39:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 186808790E
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jul 2020 22:36:36 +0000 (UTC)
-Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.9]) by
- nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5f1227f20000>; Sat, 18 Jul 2020 06:36:34 +0800
-Received: from HKMAIL102.nvidia.com ([10.18.16.11])
- by hkpgpgate101.nvidia.com (PGP Universal service);
- Fri, 17 Jul 2020 15:36:34 -0700
-X-PGP-Universal: processed;
- by hkpgpgate101.nvidia.com on Fri, 17 Jul 2020 15:36:34 -0700
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 17 Jul
- 2020 22:36:29 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 17 Jul 2020 22:36:29 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OX9zrvKHyh4lW/0GZ31SPDNDvtzFan1i3T5OdskeUeKBj1yzVegK5KYOzjlJX+MPbb8QnMdFAkPvmsmnkTwE4gVTLvznezOofeHyA5r+55OYUBm7tQOeMkLic3AVdkcNcCBk8oPU5AWmM9lhR+umCKDcPetucG2j8+n7GDRhRKSyt0LIhXSfQsXRt3aZAIRqlbNJGnJO8WvmtYEMllLzas3+hpFSbHfVQ5o8fblTc1stpohrPCrJwg+R1zP2Xa5cjX+ypoM7fJVmf9QZ6bqY0DqCbEjlczZGHRcaZG7+xHn+dp/YFWf4DTpCJL6UW44sxCoYD6y4x6IxxSI0sCGSAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UkrYAjYfVKTm/Fz1tRs8wCjeVh9SOkeqD8yWVv7kcp8=;
- b=fErKPcCzp2tTBUbj/LmwxO6yQnENgE87toag3iZ9/nMGHDIc9PI5zi6TQaHJ5JMjA9U3m0YOIaAKtkB1HzvTSld0DgYVdI4//5uwASmJb02rCvQVcieYIIaqhWgxpJQkz425HYxEojDQCtsVo5EnQL+dU9b1NSLp4ixSZlnCYrzyXNqDbnvXJwtXfScY9PEz+C7FM1UH88hblnlOVXYn5hMoBqJ94vTYyR/L9wO7SbrVIjdrJX+FLkrYJ09p2y/oZ8c2nBwGbcrUBkBKdVpensfZVtkdeH4x/VXKG4rpM3/v4a1pHYvUUBlU89nm2fFAVMe7qrEx79bzCU/+aiLqWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BYAPR12MB2822.namprd12.prod.outlook.com (2603:10b6:a03:9a::17)
- by BYAPR12MB2821.namprd12.prod.outlook.com (2603:10b6:a03:9b::30)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.21; Fri, 17 Jul
- 2020 22:36:27 +0000
-Received: from BYAPR12MB2822.namprd12.prod.outlook.com
- ([fe80::70bd:803f:78b6:ebf2]) by BYAPR12MB2822.namprd12.prod.outlook.com
- ([fe80::70bd:803f:78b6:ebf2%2]) with mapi id 15.20.3174.029; Fri, 17 Jul 2020
- 22:36:27 +0000
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Subject: RE: [PATCH v10 0/5] NVIDIA ARM SMMU Implementation
-Thread-Topic: [PATCH v10 0/5] NVIDIA ARM SMMU Implementation
-Thread-Index: AQHWVOS0Ssba+jgpK0ibL49hlWjwHakFj04AgAYJ/QCAAM/dMA==
-Date: Fri, 17 Jul 2020 22:36:26 +0000
-Message-ID: <BYAPR12MB282220FED958EED2AA6AA860B37C0@BYAPR12MB2822.namprd12.prod.outlook.com>
-References: <20200708050017.31563-1-vdumpa@nvidia.com>
- <20200713135020.GD2739@willie-the-truck>
- <20200717100337.GA8673@willie-the-truck>
-In-Reply-To: <20200717100337.GA8673@willie-the-truck>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2020-07-17T22:36:02.8245596Z;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=a8b4efad-5909-4d32-8ba8-5e4fbc13f4f7;
- MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [71.202.129.3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1f43ccf2-27ac-475f-82cd-08d82aa1d7c8
-x-ms-traffictypediagnostic: BYAPR12MB2821:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB2821AA084A4E1372D78CE5FDB37C0@BYAPR12MB2821.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VLJkIttkMXZGf96T4bUOiYtNSr+kP/Qs5zMNe04Kltc/5ertyWFunuEAjk89x6U67PoBPwLvuUCuqH0QXd8DqMT9fjiSlj925qtnjiXVnAU9d9WOPNag+BXIVmX4/p4QGmiMo3ajttG4bLljDvma7i1ZrUg6nteyRD6kAd8k+z47voE3MMTZSbmppRFc6FDBuY8KIR9KOC2xOmjrM1CvoNCxh/C3C21AKG2m9UgW7SQn5eQCxH8ovsQ05+3t6AuDHaEx0iasWcGvwqQsyRCeVM17C06+uuPA94+XV9o4i6c3V1JNQdZ/IXMm/H/4F0PI6C2lC3jWOVZU8lkciU8yzGPCiQJ5zeoj3iUjS+55fU6ceXM89VGqi87mxBfT1UifDfyNQaq7f8ajAM+JBVZ9CA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BYAPR12MB2822.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(76116006)(33656002)(66946007)(66446008)(64756008)(71200400001)(66556008)(66476007)(5660300002)(86362001)(6506007)(7696005)(4326008)(2906002)(52536014)(8936002)(8676002)(4744005)(83380400001)(54906003)(186003)(26005)(316002)(478600001)(7416002)(55016002)(6916009)(9686003)(966005);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: jJ5uhKVSRmLjUag+gCG/mb0KPdIlinSiFT46whYv2yVsEInnT4cJjWlbDBFT/p9IZAp10S09KzBcrjAsP/NKTkO3zHPO4xuMNPid1crk3PAA0gHDUKPnVgRTls/fyd3MJpkDQ+OmyX+BLmM6az2qDMO0UDX944tN+d2b9s9ltiYXD5Jo5717xJSkbzG4aEhHn4G73HdJrZMqZ/V8MCu8Lc7VuGxtNbANv4jbbMO82Mkijx01uaMLLFHDS4rIqmHlsnNlhmios9a6xCrcO+QOaruzkyVUpXQMobRfN7GhjIV6zG7G0R6fc66yYPJ0lpFcW7HaeZkRFkQdqpVuLVNmqswhnuliOo8XAoNR2v+Y5vD60f0AsIil1c0k6A/q7KendjohP+c1/vhcl0ibMM9NA92Heu+iro0pcB8TCJPrlwFfkjkO9j0FC8oLiy/KLFVapjaqSGBR8kiFhF57Do5ozwEon2MbbJ21p2OfjLgbFSQ=
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EC1EA8742D
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 13:39:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1595079591;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=80URiCGOEAgO/63+/ISh7h+yxZnKPojhEpNhvm3SzK4=;
+ b=Crmu7c+/BfeprVX7nRXchYzwHXBFPGTerB51haqcSFrtgZCwJ3P74D6P13jjGN+XBQxCi3
+ LPdtKdCw5p8/LA7whHlPNx3iMC5bDwuTy722smvBk1GuwgeACka2Pal15L5L6q4T3ksJxI
+ vzSuX7gdC/coPNtaYNr3/qxO8Vhp++o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-226-DNr2txDpNa-2ajYGgKTcPA-1; Sat, 18 Jul 2020 09:39:47 -0400
+X-MC-Unique: DNr2txDpNa-2ajYGgKTcPA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A14491800D42;
+ Sat, 18 Jul 2020 13:39:45 +0000 (UTC)
+Received: from [10.36.115.54] (ovpn-115-54.ams2.redhat.com [10.36.115.54])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id F1CE675565;
+ Sat, 18 Jul 2020 13:39:35 +0000 (UTC)
+Subject: Re: [PATCH v5 14/15] vfio: Document dual stage control
+To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
+ baolu.lu@linux.intel.com, joro@8bytes.org
+References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
+ <1594552870-55687-15-git-send-email-yi.l.liu@intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <a97ee4e4-4592-8dd8-fbb1-6c2c5579d625@redhat.com>
+Date: Sat, 18 Jul 2020 15:39:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2822.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f43ccf2-27ac-475f-82cd-08d82aa1d7c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2020 22:36:27.0389 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UTEiFUDXxYcavpU0OcvZE33pvO1K9tTMZdzIGWhlAQSMw0sXbD+cqb6mTnBV/YGfiiMieC3zhKSXTe3m58vGUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2821
-X-OriginatorOrg: Nvidia.com
+In-Reply-To: <1594552870-55687-15-git-send-email-yi.l.liu@intel.com>
 Content-Language: en-US
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1595025394; bh=UkrYAjYfVKTm/Fz1tRs8wCjeVh9SOkeqD8yWVv7kcp8=;
- h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
- ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
- Thread-Index:Date:Message-ID:References:In-Reply-To:
- Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
- authentication-results:x-originating-ip:x-ms-publictraffictype:
- x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
- x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
- x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
- x-microsoft-antispam:x-microsoft-antispam-message-info:
- x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
- MIME-Version:X-MS-Exchange-CrossTenant-AuthAs:
- X-MS-Exchange-CrossTenant-AuthSource:
- X-MS-Exchange-CrossTenant-Network-Message-Id:
- X-MS-Exchange-CrossTenant-originalarrivaltime:
- X-MS-Exchange-CrossTenant-fromentityheader:
- X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
- X-MS-Exchange-CrossTenant-userprincipalname:
- X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
- Content-Language:Content-Type:Content-Transfer-Encoding;
- b=fWxI/9ONLx4mZ4H1aNPRira/xOuvxRETYb6iW34eOdkfkfehvHAzx6N3eWveNHOOL
- WdPk3t4teVq9PYER6+b10nQRVJEap9p2vm4LAMhKMO5TlxwaKakdX+20mLRxWNltIG
- MYDjFNOjfmxwtu5R/FEEWw6K2+hnJD9/dnhM2xfZjvms3WMz1sjDhKPTuNyftBd0SB
- My3wwjB2njiaaQsYcaXRfbngaU09f0SDjRFuTIz7EXUsumJJgpQtX9B0raIBZX5FIS
- CIbYUTBDY253vEg2eQtE61FKHZRBEGuomPXpJ9D9HYE78AaWGpyc0v+Gh/vVmPKCAc
- xp9cAzbXr4jpg==
-Cc: Sachin Nikam <Snikam@nvidia.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Mikko Perttunen <mperttunen@nvidia.com>,
- Pritesh Raithatha <praithatha@nvidia.com>,
- Bryan Huntsman <bhuntsman@nvidia.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Timo Alho <talho@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "robh+dt@kernel.org" <robh+dt@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- Yu-Huan Hsu <YHsu@nvidia.com>, Thierry
- Reding <treding@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Bitan Biswas <bbiswas@nvidia.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ yi.y.sun@intel.com, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -191,25 +106,136 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->On Mon, Jul 13, 2020 at 02:50:20PM +0100, Will Deacon wrote:
->> On Tue, Jul 07, 2020 at 10:00:12PM -0700, Krishna Reddy wrote:
-> >> Changes in v10:
->> > Perform SMMU base ioremap before calling implementation init.
->> > Check for Global faults across both ARM MMU-500s during global interrupt.
->> > Check for context faults across all contexts of both ARM MMU-500s during context fault interrupt.
-> >> Add new DT binding nvidia,smmu-500 for NVIDIA implementation.
->>
->> Please repost based on my SMMU queue, as this doesn't currently apply.
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=
->> for-joerg/arm-smmu/updates
+Hi Yi,
 
->Any update on this, please? It would be a shame to miss 5.9 now that the patches look alright.
+On 7/12/20 1:21 PM, Liu Yi L wrote:
+> From: Eric Auger <eric.auger@redhat.com>
+> 
+> The VFIO API was enhanced to support nested stage control: a bunch of
+> new iotcls and usage guideline.
+ioctls
+> 
+> Let's document the process to follow to set up nested mode.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> ---
+> v3 -> v4:
+> *) add review-by from Stefan Hajnoczi
+> 
+> v2 -> v3:
+> *) address comments from Stefan Hajnoczi
+> 
+> v1 -> v2:
+> *) new in v2, compared with Eric's original version, pasid table bind
+>    and fault reporting is removed as this series doesn't cover them.
+>    Original version from Eric.
+>    https://lkml.org/lkml/2020/3/20/700
+> ---
+>  Documentation/driver-api/vfio.rst | 67 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 67 insertions(+)
+> 
+> diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
+> index f1a4d3c..0672c45 100644
+> --- a/Documentation/driver-api/vfio.rst
+> +++ b/Documentation/driver-api/vfio.rst
+> @@ -239,6 +239,73 @@ group and can access them as follows::
+>  	/* Gratuitous device reset and go... */
+>  	ioctl(device, VFIO_DEVICE_RESET);
+>  
+> +IOMMU Dual Stage Control
+> +------------------------
+> +
+> +Some IOMMUs support 2 stages/levels of translation. Stage corresponds to
+> +the ARM terminology while level corresponds to Intel's VTD terminology.
+> +In the following text we use either without distinction.
+> +
+> +This is useful when the guest is exposed with a virtual IOMMU and some
+> +devices are assigned to the guest through VFIO. Then the guest OS can use
+> +stage 1 (GIOVA -> GPA or GVA->GPA), while the hypervisor uses stage 2 for
+> +VM isolation (GPA -> HPA).
+> +
+> +Under dual stage translation, the guest gets ownership of the stage 1 page
+> +tables and also owns stage 1 configuration structures. The hypervisor owns
+> +the root configuration structure (for security reason), including stage 2
+> +configuration. This works as long as configuration structures and page table
+> +formats are compatible between the virtual IOMMU and the physical IOMMU.
+> +
+> +Assuming the HW supports it, this nested mode is selected by choosing the
+> +VFIO_TYPE1_NESTING_IOMMU type through:
+> +
+> +    ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
+> +
+> +This forces the hypervisor to use the stage 2, leaving stage 1 available
+> +for guest usage. The guest stage 1 format depends on IOMMU vendor, and
+> +it is the same with the nesting configuration method. User space should
+> +check the format and configuration method after setting nesting type by
+> +using:
+> +
+> +    ioctl(container->fd, VFIO_IOMMU_GET_INFO, &nesting_info);
+> +
+> +Details can be found in Documentation/userspace-api/iommu.rst. For Intel
+> +VT-d, each stage 1 page table is bound to host by:
+> +
+> +    nesting_op->flags = VFIO_IOMMU_NESTING_OP_BIND_PGTBL;
+> +    memcpy(&nesting_op->data, &bind_data, sizeof(bind_data));
+> +    ioctl(container->fd, VFIO_IOMMU_NESTING_OP, nesting_op);
+> +
+> +As mentioned above, guest OS may use stage 1 for GIOVA->GPA or GVA->GPA.
+the guest OS, here and below?
+> +GVA->GPA page tables are available when PASID (Process Address Space ID)
+> +is exposed to guest. e.g. guest with PASID-capable devices assigned. For
+> +such page table binding, the bind_data should include PASID info, which
+> +is allocated by guest itself or by host. This depends on hardware vendor.
+> +e.g. Intel VT-d requires to allocate PASID from host. This requirement is
 
-Thanks for pinging.
-I have been out of the office this week. Just started working on reposting patches.
+> +defined by the Virtual Command Support in VT-d 3.0 spec, guest software
+> +running on VT-d should allocate PASID from host kernel.
+because VTD 3.0 requires the unicity of the PASID, system wide, instead
+of the above repetition.
 
-Will
+ To allocate PASID
+> +from host, user space should check the IOMMU_NESTING_FEAT_SYSWIDE_PASID
+> +bit of the nesting info reported from host kernel. VFIO reports the nesting
+> +info by VFIO_IOMMU_GET_INFO. User space could allocate PASID from host by:
+if SYSWIDE_PASID requirement is exposed, the userspace *must* allocate ...
+> +
+> +    req.flags = VFIO_IOMMU_ALLOC_PASID;
+> +    ioctl(container, VFIO_IOMMU_PASID_REQUEST, &req);
+> +
+> +With first stage/level page table bound to host, it allows to combine the
+> +guest stage 1 translation along with the hypervisor stage 2 translation to
+> +get final address.
+> +
+> +When the guest invalidates stage 1 related caches, invalidations must be
+> +forwarded to the host through
+> +
+> +    nesting_op->flags = VFIO_IOMMU_NESTING_OP_CACHE_INVLD;
+> +    memcpy(&nesting_op->data, &inv_data, sizeof(inv_data));
+> +    ioctl(container->fd, VFIO_IOMMU_NESTING_OP, nesting_op);
+> +
+> +Those invalidations can happen at various granularity levels, page, context,
+> +...
+> +
+>  VFIO User API
+>  -------------------------------------------------------------------------------
+I see you dropped the unrecoverable error reporting part of the original
+contribution. By the way don't you need any error handling for either of
+the use cases on vtd?
+>  
+> 
+Thanks
+
+Eric
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
