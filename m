@@ -7,87 +7,87 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E88C433EB
-	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 19:35:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CEBC433F1
+	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 19:35:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFC422070A
-	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 19:35:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BE4922070A
+	for <iommu@archiver.kernel.org>; Sat, 18 Jul 2020 19:35:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="KiEilxJf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFC422070A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="ohhRbvQ0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE4922070A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AD77987848;
-	Sat, 18 Jul 2020 19:35:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G65bKnuDpzku; Sat, 18 Jul 2020 19:35:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1FD4F87832;
-	Sat, 18 Jul 2020 19:35:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F16FEC0895;
-	Sat, 18 Jul 2020 19:35:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C98BDC0733
- for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:15 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AC2FF20403
- for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 85B4E2043C;
+	Sat, 18 Jul 2020 19:35:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xlfaBgPSr6jy; Sat, 18 Jul 2020 19:35:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id A3E32204B3;
+	Sat, 18 Jul 2020 19:35:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 88AE7C08A9;
+	Sat, 18 Jul 2020 19:35:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D39A0C0733
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:17 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id BF7B788026
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cexuHxXLjb1Y for <iommu@lists.linux-foundation.org>;
- Sat, 18 Jul 2020 19:35:12 +0000 (UTC)
+ with ESMTP id XtFcdMLUcNwT for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Jul 2020 19:35:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
- [216.228.121.143])
- by silver.osuosl.org (Postfix) with ESMTPS id 5B9F72035C
- for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:12 +0000 (UTC)
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5f134e7a0001>; Sat, 18 Jul 2020 12:33:14 -0700
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DB6E088002
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jul 2020 19:35:16 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5f134eb80000>; Sat, 18 Jul 2020 12:34:16 -0700
 Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate102.nvidia.com (PGP Universal service);
- Sat, 18 Jul 2020 12:35:11 -0700
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Sat, 18 Jul 2020 12:35:16 -0700
 X-PGP-Universal: processed;
- by hqpgpgate102.nvidia.com on Sat, 18 Jul 2020 12:35:11 -0700
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ by hqpgpgate101.nvidia.com on Sat, 18 Jul 2020 12:35:16 -0700
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 18 Jul
- 2020 19:35:10 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via
- Frontend Transport; Sat, 18 Jul 2020 19:35:09 +0000
+ 2020 19:35:12 +0000
+Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via
+ Frontend Transport; Sat, 18 Jul 2020 19:35:11 +0000
 Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
  rnnvemgw01.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
- id <B5f134eec0001>; Sat, 18 Jul 2020 12:35:09 -0700
+ id <B5f134eee0000>; Sat, 18 Jul 2020 12:35:11 -0700
 From: Krishna Reddy <vdumpa@nvidia.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
  <robh+dt@kernel.org>, <treding@nvidia.com>, <jonathanh@nvidia.com>
-Subject: [PATCH v11 3/5] iommu/arm-smmu: add NVIDIA implementation for ARM
- MMU-500 usage
-Date: Sat, 18 Jul 2020 12:34:55 -0700
-Message-ID: <20200718193457.30046-4-vdumpa@nvidia.com>
+Subject: [PATCH v11 5/5] iommu/arm-smmu: Add global/context fault
+ implementation hooks
+Date: Sat, 18 Jul 2020 12:34:57 -0700
+Message-ID: <20200718193457.30046-6-vdumpa@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200718193457.30046-1-vdumpa@nvidia.com>
 References: <20200718193457.30046-1-vdumpa@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1595100794; bh=JLEZIbRoRSKBtMxxqi0WmU1XUtEzjkxnTSuCyKvWiFY=;
+ t=1595100856; bh=ONwZoXQE5AMEO16Cm8KQlZocmAK53VddF2Cq/qlwpNU=;
  h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
  In-Reply-To:References:MIME-Version:X-NVConfidentiality:
  Content-Transfer-Encoding:Content-Type;
- b=KiEilxJfYIuKXrCqOOpMLBqRDhSWJISD1m9DrxqwIWBhIiLGsvkdkNjnIAkTuRWTS
- 5ZtxmNlPRr/FgMOdZbSdQll0XhfoZ/QfnkmBA1ADd3Tl1E37TuS9na3R6e6Z2gYJlM
- aQfYFConhMZlvIuqIZDVJghWkKXJy/SD5nrjkaaex0nbmrhatiWUQeQIP0L/ALJyRH
- J3WBeAW0eKyqPiLAjooq7vgQCravRXojsG87jikoKG1oWxbPob7zOVTmqrhtsw2+vr
- CDdRekPU4TFlHBVw2N8Xa7r0U6styaButnDtd5BOHnHOOdN9AGeUcObRWNUtt715XX
- ONeANMSukmf7Q==
+ b=ohhRbvQ0i3/JtheNy6WolRv2G0VqTqZ0h8kSk0nS5jqWYgaqFKAROCmv2S2pSJ5h7
+ KCpqJ6dQa+EY+mU3Lo3EBoBSBP9iZa0+5MACHHP/i2TCg5OBpvtbEwRF/zaMdDL7zy
+ TJ4ozaI+7R3CeqSwoUi6Gpad+AQC5K4B8kp7bYm1UAXKbGjz3YMo3Ri7mEr4XyoAub
+ dVH+x6Upg55cuYIxV5+kC5I8bRsmsTlefC5yCHixUIsJGa4cplQA+s0XFwUBdxV8jg
+ 463jWnDqXK9XsW+7HAI/4Rs0jXvqZtC/SgG2dQIODQDhW0Se9PAQdvYRqvyGW+N0Pv
+ mCZOheXTRdZDg==
 Cc: snikam@nvidia.com, devicetree@vger.kernel.org, mperttunen@nvidia.com,
  bhuntsman@nvidia.com, yhsu@nvidia.com, linux-kernel@vger.kernel.org,
  talho@nvidia.com, iommu@lists.linux-foundation.org,
@@ -111,14 +111,12 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-NVIDIA's Tegra194 SoC has three ARM MMU-500 instances.
-It uses two of the ARM MMU-500s together to interleave IOVA
-accesses across them and must be programmed identically.
-This implementation supports programming the two ARM MMU-500s
-that must be programmed identically.
+Add global/context fault hooks to allow vendor specific implementations
+override default fault interrupt handlers.
 
-The third ARM MMU-500 instance is supported by standard
-arm-smmu.c driver itself.
+Update NVIDIA implementation to override the default global/context fault
+interrupt handlers and handle interrupts across the two ARM MMU-500s that
+are programmed identically.
 
 Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
 Reviewed-by: Nicolin Chen <nicoleotsuka@gmail.com>
@@ -127,266 +125,200 @@ Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Reviewed-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
 ---
- MAINTAINERS                     |   2 +
- drivers/iommu/Makefile          |   2 +-
- drivers/iommu/arm-smmu-impl.c   |   3 +
- drivers/iommu/arm-smmu-nvidia.c | 179 ++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu.c        |   1 +
- drivers/iommu/arm-smmu.h        |   1 +
- 6 files changed, 187 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iommu/arm-smmu-nvidia.c
+ drivers/iommu/arm-smmu-nvidia.c | 99 +++++++++++++++++++++++++++++++++
+ drivers/iommu/arm-smmu.c        | 17 +++++-
+ drivers/iommu/arm-smmu.h        |  3 +
+ 3 files changed, 117 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 496fd4eafb68..ee2c0ba13a0f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16810,8 +16810,10 @@ F:	drivers/i2c/busses/i2c-tegra.c
- 
- TEGRA IOMMU DRIVERS
- M:	Thierry Reding <thierry.reding@gmail.com>
-+R:	Krishna Reddy <vdumpa@nvidia.com>
- L:	linux-tegra@vger.kernel.org
- S:	Supported
-+F:	drivers/iommu/arm-smmu-nvidia.c
- F:	drivers/iommu/tegra*
- 
- TEGRA KBC DRIVER
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 342190196dfb..2b8203db73ec 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -15,7 +15,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/iommu.o amd/init.o amd/quirks.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd/debugfs.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
--arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
-+arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
- obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) += intel/dmar.o
- obj-$(CONFIG_INTEL_IOMMU) += intel/iommu.o intel/pasid.o
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index c87d825f651e..f4ff124a1967 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -213,6 +213,9 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
- 		smmu->impl = &calxeda_impl;
- 
-+	if (of_device_is_compatible(np, "nvidia,tegra194-smmu"))
-+		return nvidia_smmu_impl_init(smmu);
-+
- 	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
- 	    of_device_is_compatible(np, "qcom,sc7180-smmu-500") ||
- 	    of_device_is_compatible(np, "qcom,sm8150-smmu-500") ||
 diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
-new file mode 100644
-index 000000000000..2f55e5793d34
---- /dev/null
+index 2f55e5793d34..31368057e9be 100644
+--- a/drivers/iommu/arm-smmu-nvidia.c
 +++ b/drivers/iommu/arm-smmu-nvidia.c
-@@ -0,0 +1,179 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// Copyright (C) 2019-2020 NVIDIA CORPORATION.  All rights reserved.
-+
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#include "arm-smmu.h"
-+
-+/*
-+ * Tegra194 has three ARM MMU-500 Instances.
-+ * Two of them are used together and must be programmed identically for
-+ * interleaved IOVA accesses across them and translates accesses from
-+ * non-isochronous HW devices.
-+ * Third one is used for translating accesses from isochronous HW devices.
-+ * This implementation supports programming of the two instances that must
-+ * be programmed identically.
-+ * The third instance usage is through standard arm-smmu driver itself and
-+ * is out of scope of this implementation.
-+ */
-+#define NUM_SMMU_INSTANCES 2
-+
-+struct nvidia_smmu {
-+	struct arm_smmu_device	smmu;
-+	void __iomem		*bases[NUM_SMMU_INSTANCES];
-+};
-+
-+static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
-+					     unsigned int inst, int page)
+@@ -127,6 +127,103 @@ static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
+ 	return 0;
+ }
+ 
++static irqreturn_t nvidia_smmu_global_fault_inst(int irq,
++						 struct arm_smmu_device *smmu,
++						 int inst)
 +{
-+	struct nvidia_smmu *nvidia_smmu;
++	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
++	void __iomem *gr0_base = nvidia_smmu_page(smmu, inst, 0);
 +
-+	nvidia_smmu = container_of(smmu, struct nvidia_smmu, smmu);
-+	return nvidia_smmu->bases[inst] + (page << smmu->pgshift);
-+}
++	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
++	if (!gfsr)
++		return IRQ_NONE;
 +
-+static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
-+				int page, int offset)
-+{
-+	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
-+
-+	return readl_relaxed(reg);
-+}
-+
-+static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
-+				  int page, int offset, u32 val)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
-+
-+		writel_relaxed(val, reg);
-+	}
-+}
-+
-+static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
-+				  int page, int offset)
-+{
-+	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
-+
-+	return readq_relaxed(reg);
-+}
-+
-+static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
-+				    int page, int offset, u64 val)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
-+
-+		writeq_relaxed(val, reg);
-+	}
-+}
-+
-+static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
-+				 int sync, int status)
-+{
-+	unsigned int delay;
-+
-+	arm_smmu_writel(smmu, page, sync, 0);
-+
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		unsigned int spin_cnt;
-+
-+		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-+			u32 val = 0;
-+			unsigned int i;
-+
-+			for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
-+				void __iomem *reg;
-+
-+				reg = nvidia_smmu_page(smmu, i, page) + status;
-+				val |= readl_relaxed(reg);
-+			}
-+
-+			if (!(val & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
-+				return;
-+
-+			cpu_relax();
-+		}
-+
-+		udelay(delay);
-+	}
++	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
++	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
++	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
 +
 +	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n");
++			    "Unexpected global fault, this could be serious\n");
++	dev_err_ratelimited(smmu->dev,
++			    "\tGFSR 0x%08x, GFSYNR0 0x%08x, GFSYNR1 0x%08x, GFSYNR2 0x%08x\n",
++			    gfsr, gfsynr0, gfsynr1, gfsynr2);
++
++	writel_relaxed(gfsr, gr0_base + ARM_SMMU_GR0_sGFSR);
++	return IRQ_HANDLED;
 +}
 +
-+static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
++static irqreturn_t nvidia_smmu_global_fault(int irq, void *dev)
 +{
-+	unsigned int i;
++	unsigned int inst;
++	irqreturn_t ret = IRQ_NONE;
++	struct arm_smmu_device *smmu = dev;
 +
-+	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
-+		u32 val;
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
-+				    ARM_SMMU_GR0_sGFSR;
++	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
++		irqreturn_t irq_ret;
 +
-+		/* clear global FSR */
-+		val = readl_relaxed(reg);
-+		writel_relaxed(val, reg);
++		irq_ret = nvidia_smmu_global_fault_inst(irq, smmu, inst);
++		if (irq_ret == IRQ_HANDLED)
++			ret = IRQ_HANDLED;
 +	}
 +
-+	return 0;
++	return ret;
 +}
 +
-+static const struct arm_smmu_impl nvidia_smmu_impl = {
-+	.read_reg = nvidia_smmu_read_reg,
-+	.write_reg = nvidia_smmu_write_reg,
-+	.read_reg64 = nvidia_smmu_read_reg64,
-+	.write_reg64 = nvidia_smmu_write_reg64,
-+	.reset = nvidia_smmu_reset,
-+	.tlb_sync = nvidia_smmu_tlb_sync,
-+};
-+
-+struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
++static irqreturn_t nvidia_smmu_context_fault_bank(int irq,
++						  struct arm_smmu_device *smmu,
++						  int idx, int inst)
 +{
-+	struct resource *res;
-+	struct device *dev = smmu->dev;
-+	struct nvidia_smmu *nvidia_smmu;
-+	struct platform_device *pdev = to_platform_device(dev);
++	u32 fsr, fsynr, cbfrsynra;
++	unsigned long iova;
++	void __iomem *gr1_base = nvidia_smmu_page(smmu, inst, 1);
++	void __iomem *cb_base = nvidia_smmu_page(smmu, inst, smmu->numpage + idx);
 +
-+	nvidia_smmu = devm_kzalloc(dev, sizeof(*nvidia_smmu), GFP_KERNEL);
-+	if (!nvidia_smmu)
-+		return ERR_PTR(-ENOMEM);
++	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
++	if (!(fsr & ARM_SMMU_FSR_FAULT))
++		return IRQ_NONE;
 +
-+	/*
-+	 * Copy the data from struct arm_smmu_device *smmu allocated in
-+	 * arm-smmu.c. The smmu from struct nvidia_smmu replaces the smmu
-+	 * pointer used in arm-smmu.c once this function returns.
-+	 * This is necessary to derive nvidia_smmu from smmu pointer passed
-+	 * through arm_smmu_impl function calls subsequently.
-+	 */
-+	nvidia_smmu->smmu = *smmu;
-+	/* Instance 0 is ioremapped by arm-smmu.c. */
-+	nvidia_smmu->bases[0] = smmu->base;
++	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
++	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
++	cbfrsynra = readl_relaxed(gr1_base + ARM_SMMU_GR1_CBFRSYNRA(idx));
 +
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	if (!res)
-+		return ERR_PTR(-ENODEV);
++	dev_err_ratelimited(smmu->dev,
++			    "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
++			    fsr, iova, fsynr, cbfrsynra, idx);
 +
-+	nvidia_smmu->bases[1] = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(nvidia_smmu->bases[1]))
-+		return ERR_CAST(nvidia_smmu->bases[1]);
-+
-+	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
-+
-+	/*
-+	 * Free the struct arm_smmu_device *smmu allocated in arm-smmu.c.
-+	 * Once this function returns, arm-smmu.c would use arm_smmu_device
-+	 * allocated as part of struct nvidia_smmu.
-+	 */
-+	devm_kfree(dev, smmu);
-+
-+	return &nvidia_smmu->smmu;
++	writel_relaxed(fsr, cb_base + ARM_SMMU_CB_FSR);
++	return IRQ_HANDLED;
 +}
++
++static irqreturn_t nvidia_smmu_context_fault(int irq, void *dev)
++{
++	int idx;
++	unsigned int inst;
++	irqreturn_t ret = IRQ_NONE;
++	struct arm_smmu_device *smmu;
++	struct iommu_domain *domain = dev;
++	struct arm_smmu_domain *smmu_domain;
++
++	smmu_domain = container_of(domain, struct arm_smmu_domain, domain);
++	smmu = smmu_domain->smmu;
++
++	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
++		irqreturn_t irq_ret;
++
++		/*
++		 * Interrupt line is shared between all contexts.
++		 * Check for faults across all contexts.
++		 */
++		for (idx = 0; idx < smmu->num_context_banks; idx++) {
++			irq_ret = nvidia_smmu_context_fault_bank(irq, smmu,
++								 idx, inst);
++			if (irq_ret == IRQ_HANDLED)
++				ret = IRQ_HANDLED;
++		}
++	}
++
++	return ret;
++}
++
+ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.read_reg = nvidia_smmu_read_reg,
+ 	.write_reg = nvidia_smmu_write_reg,
+@@ -134,6 +231,8 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.write_reg64 = nvidia_smmu_write_reg64,
+ 	.reset = nvidia_smmu_reset,
+ 	.tlb_sync = nvidia_smmu_tlb_sync,
++	.global_fault = nvidia_smmu_global_fault,
++	.context_fault = nvidia_smmu_context_fault,
+ };
+ 
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index de520115d3df..35422a17f610 100644
+index 35422a17f610..56b7103e1368 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1946,6 +1946,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "nvidia,smmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
+@@ -670,6 +670,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	enum io_pgtable_fmt fmt;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
++	irqreturn_t (*context_fault)(int irq, void *dev);
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 	if (smmu_domain->smmu)
+@@ -832,7 +833,13 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	 * handler seeing a half-initialised domain state.
+ 	 */
+ 	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+-	ret = devm_request_irq(smmu->dev, irq, arm_smmu_context_fault,
++
++	if (smmu->impl && smmu->impl->context_fault)
++		context_fault = smmu->impl->context_fault;
++	else
++		context_fault = arm_smmu_context_fault;
++
++	ret = devm_request_irq(smmu->dev, irq, context_fault,
+ 			       IRQF_SHARED, "arm-smmu-context-fault", domain);
+ 	if (ret < 0) {
+ 		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+@@ -2108,6 +2115,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	int num_irqs, i, err;
++	irqreturn_t (*global_fault)(int irq, void *dev);
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+ 	if (!smmu) {
+@@ -2194,9 +2202,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		smmu->num_context_irqs = smmu->num_context_banks;
+ 	}
+ 
++	if (smmu->impl && smmu->impl->global_fault)
++		global_fault = smmu->impl->global_fault;
++	else
++		global_fault = arm_smmu_global_fault;
++
+ 	for (i = 0; i < smmu->num_global_irqs; ++i) {
+ 		err = devm_request_irq(smmu->dev, smmu->irqs[i],
+-				       arm_smmu_global_fault,
++				       global_fault,
+ 				       IRQF_SHARED,
+ 				       "arm-smmu global fault",
+ 				       smmu);
 diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index c7d0122a7c6c..fad63efa1a72 100644
+index fad63efa1a72..d890a4a968e8 100644
 --- a/drivers/iommu/arm-smmu.h
 +++ b/drivers/iommu/arm-smmu.h
-@@ -452,6 +452,7 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
- 	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
+@@ -18,6 +18,7 @@
+ #include <linux/io-64-nonatomic-hi-lo.h>
+ #include <linux/io-pgtable.h>
+ #include <linux/iommu.h>
++#include <linux/irqreturn.h>
+ #include <linux/mutex.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+@@ -389,6 +390,8 @@ struct arm_smmu_impl {
+ 	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+ 			 int status);
+ 	int (*def_domain_type)(struct device *dev);
++	irqreturn_t (*global_fault)(int irq, void *dev);
++	irqreturn_t (*context_fault)(int irq, void *dev);
+ };
  
- struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
-+struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
- struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
- 
- int arm_mmu500_reset(struct arm_smmu_device *smmu);
+ static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
 -- 
 2.26.2
 
