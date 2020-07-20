@@ -7,116 +7,109 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3200EC433E1
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 12:55:51 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D60C433DF
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 13:00:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBFE422B4D
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 12:55:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 70D15207FC
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 13:00:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="A3ilxDU+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBFE422B4D
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="PkpoY4R+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70D15207FC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A106E85B18;
-	Mon, 20 Jul 2020 12:55:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 21CD72050E;
+	Mon, 20 Jul 2020 13:00:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XAIGA9gWskis; Mon, 20 Jul 2020 12:55:49 +0000 (UTC)
+	with ESMTP id 7A-7UzU+czRd; Mon, 20 Jul 2020 13:00:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E2A8185A74;
-	Mon, 20 Jul 2020 12:55:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C28792042B;
+	Mon, 20 Jul 2020 13:00:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8B6EC0894;
-	Mon, 20 Jul 2020 12:55:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18CE6C016F
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 12:55:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ACF89C0894;
+	Mon, 20 Jul 2020 13:00:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6CB58C016F
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 13:00:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0090F87E88
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 12:55:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6672185BDF
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 13:00:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SP4NcaFWCV2e for <iommu@lists.linux-foundation.org>;
- Mon, 20 Jul 2020 12:55:47 +0000 (UTC)
+ with ESMTP id s8qyx1O384nL for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Jul 2020 13:00:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D9A6C87E81
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 12:55:46 +0000 (UTC)
-IronPort-SDR: a5vqlm9xd1s3vRK+VND+K1nD/4i2VGIR8ZmYBwDckpDbDrKcFmn0uHlrIE7VCbvu2sLJQ/UTWT
- uHOcEkLes3og==
-X-IronPort-AV: E=McAfee;i="6000,8403,9687"; a="214579811"
-X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; d="scan'208";a="214579811"
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 21D2785BB0
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 13:00:18 +0000 (UTC)
+IronPort-SDR: mcQ7+Il7MEIalY6ss1GBk6X8EQcDW//N4VhUB2TKiIm5E1EhlRToBZvC3cm1wFKuQPmV4ZFrE6
+ VPc4rcjOOALQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9687"; a="234753154"
+X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; d="scan'208";a="234753154"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Jul 2020 05:55:46 -0700
-IronPort-SDR: JTZscmiM3M2/kRoY6nFvzqRMVgx81rXAkbbJnHvnzUxTHp5ub2XpI//lZqUIVsXx/njP3t7bVw
- D4Mj8m6Go6Ww==
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Jul 2020 06:00:17 -0700
+IronPort-SDR: JdONsuqgKYK9ARt2Nm5PMCXYydE8D7eK71cXjB3AvmL0zo7Fhg12DhoWVVKJAAIH7QcHRgJOr9
+ dRUC7R3Sugyw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; d="scan'208";a="283503680"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
- by orsmga003.jf.intel.com with ESMTP; 20 Jul 2020 05:55:45 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 20 Jul 2020 05:55:45 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.75,375,1589266800"; d="scan'208";a="487233624"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+ by fmsmga006.fm.intel.com with ESMTP; 20 Jul 2020 06:00:17 -0700
+Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 20 Jul 2020 05:55:45 -0700
-Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.1713.5; Mon, 20 Jul 2020 06:00:16 -0700
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 20 Jul 2020 05:55:44 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.54) by
- edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server
- (TLS) id 14.3.439.0; Mon, 20 Jul 2020 05:55:44 -0700
+ via Frontend Transport; Mon, 20 Jul 2020 06:00:16 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 20 Jul 2020 06:00:16 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MCckEqySA+ujNi/qIkoYrxVEhqGfGHdETbR2DyGCshPS5UnFsbkM9Py4w+Q8cimGyK+29MFW43JAt9eMmyr1Ty+B8/oZOdNTHHfjsgJ5Ja5zOLaMuDSk6KoYYCQs+ChphXIG7Twmn/brE5q/tIbaOtRkrnu4K49N77KOGvb1RD4V7DsANZ+Baq60U2Yb+WYtmCktzQL/bHwdw76kLjKPr3FPNVFXUNirmfUzKNN1QCRqsnMVt5TUurVouRJYxsYpDUx2QASzQ9qdJNqpOPebFF7cZ3Yqd7qPRCAEqEPEOftxarPo2Y1ZTakGjzrlhHoGYZci6bQciPVnkc7+7QwJrA==
+ b=Yf+18PMfJsbw4dZuSXjVePkEHZVlferIuJitLFSF3OCP+/OCtPw9QRW7v4dnrl04HJADVi8Le5SRitum8BGD4JkOmutHwzRpB3BwyNddDJt9l888o96GzBAggjWKRPlK43Hv4dX2184zEKnt3xq61i23/0kxeO+lsmXIJi6lZCWYG5x0W4xhmE2f8CxOYQE6ZnH52+fBOXASgQiQUqWIfdY/lob5Cy+9q8m/Vu/iBXScM4fPRxX3etaJEYQShiZi7edZWf7FYfGb/54gPCV3ab3epmwj6CHe7HAI78iIZ+PMJk/1CdbLYnujr5o9PPpjVXcMMz6R5US2FgZXi34y3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gchef5zTAnKNtG6eRQWbmEr3MSanqeVCFwDyHt+j1Ms=;
- b=BSoxKC+rO71wmSDUekAPIAcORXPW+cN1iNs9wY2CFHvWB657z57GzQEKHV3wCnw/TVw01JzpgRAlGRT9+2jx8ZN7H41YU8jwGwHXNrbT3plnlP7fNNsM2uVks/Qp8NB0tIHZ53CBBpHL1vXCecjTHsREuH61E3cWoSCelFYF9tHOLbIzz56u8ic5YGugD+9cShwyoK6Y8rt2XWdqWb4KYaSVra/6CuQN+x+BKhxvu6maC7OJn5cgbmIdGj14BfCUoFY82SeuVH75OmSJW5nCKbtqEOszNE5utAbHcCoRTdf1ooPQIcqzXhg/q7bLVHiw3+W5SE+8+WpWzFex5kMwyQ==
+ bh=pl8vfuW0QH9mxKLIpUOPIjA/vdzixjdaQkifaEZrr0Q=;
+ b=nL7Ormy+xRAISx+Roxr2DrNh2KwOhXOqqmJ9o/o+MorkFEYDIEB12XF4gFoiGtEOOIZCEHkFNM9oSA948sI48e94i7zTGOWJBWBs60MSW6x/po42oqG6WJR2RGs5ofelXjk0uTXAX3fPfjHcztkesdOs/hkUjd0AzTnQEJx1pZRcWNbnLsveqSqCp+QlLnr+WR+4BdqEkZE5cE3imXzDT5M7Ssehw/6Fpxc5VoQIxwzzrNLDy7+nOYrF11Y+FTO4a0NIftA9eXffPZcZ5gERw7fa5J+FSlpEu47f82Rt+hYhPLB6rCjVLzI3VbvRw7mTouiuIt33bOb4mdt3Xf1/PA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gchef5zTAnKNtG6eRQWbmEr3MSanqeVCFwDyHt+j1Ms=;
- b=A3ilxDU+mdsYldmWVf23NnL39IDT6d+1x0K9E/Q1Kf0DRcOJtDqjUmx2GmyuZb7m/oXgzyxD5v7yWHE8u73YBvHvX8M6hEU/u5bPZkSspBiBYn8K6mE48imnV54qD4UYAWU6UXNgP3ylvfGaAYY/cPaR3K1cYxTgCg4Ad3hAWLk=
+ bh=pl8vfuW0QH9mxKLIpUOPIjA/vdzixjdaQkifaEZrr0Q=;
+ b=PkpoY4R+Zlepu51AEOBJ0JEiIf1SCNor/ZhYAjEB22QR2VsXUce75nfOdkdQRcyI224N4PRyZBsHOMWX2VODYCUsyTPy1LnQnACx3GOs/3eydoNbxv9NstYTmCkGayurLGloXqOW/gSnasTrKDNDwhqfVIyxkugC5A0+QNoGNiY=
 Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
- DM6PR11MB3994.namprd11.prod.outlook.com (2603:10b6:5:193::19) with
+ DM6PR11MB3291.namprd11.prod.outlook.com (2603:10b6:5:d::10) with
  Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3195.17; Mon, 20 Jul 2020 12:55:42 +0000
+ 15.20.3174.21; Mon, 20 Jul 2020 13:00:14 +0000
 Received: from DM5PR11MB1435.namprd11.prod.outlook.com
  ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
  ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3195.025; Mon, 20 Jul
- 2020 12:55:42 +0000
+ 2020 13:00:14 +0000
 From: "Liu, Yi L" <yi.l.liu@intel.com>
 To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
  <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
  <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
-Subject: RE: [PATCH v5 09/15] iommu/vt-d: Check ownership for PASIDs from
- user-space
-Thread-Topic: [PATCH v5 09/15] iommu/vt-d: Check ownership for PASIDs from
- user-space
-Thread-Index: AQHWWD2mfecmeDXWOkCzHg/KKlvw3qkPHIEAgAEt7vCAACpBgIAAA2nQ
-Date: Mon, 20 Jul 2020 12:55:42 +0000
-Message-ID: <DM5PR11MB1435E4B45DA5D78151A28426C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+Subject: RE: [PATCH v5 13/15] vfio/pci: Expose PCIe PASID capability to guest
+Thread-Topic: [PATCH v5 13/15] vfio/pci: Expose PCIe PASID capability to guest
+Thread-Index: AQHWWD2mzUJ6HDvde0eWOdamhXnigKkQdAEAgAAFwTA=
+Date: Mon, 20 Jul 2020 13:00:14 +0000
+Message-ID: <DM5PR11MB143507550E22674C76F881C0C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
 References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
- <1594552870-55687-10-git-send-email-yi.l.liu@intel.com>
- <b55a09f7-c0ce-f2ff-a725-87a8e042ab80@redhat.com>
- <DM5PR11MB14351CB472AEEAFB864A4DFEC37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
- <e31c2b5e-b3c1-b42d-a280-83ed61f311c0@redhat.com>
-In-Reply-To: <e31c2b5e-b3c1-b42d-a280-83ed61f311c0@redhat.com>
+ <1594552870-55687-14-git-send-email-yi.l.liu@intel.com>
+ <63d4c058-246d-1a11-af66-e97fd5ec9bd3@redhat.com>
+In-Reply-To: <63d4c058-246d-1a11-af66-e97fd5ec9bd3@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -126,33 +119,33 @@ dlp-version: 11.2.0.6
 dlp-product: dlpe-windows
 authentication-results: redhat.com; dkim=none (message not signed)
  header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.102.204.45]
+x-originating-ip: [192.102.204.38]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3f2d3282-817a-466a-fc08-08d82cac3602
-x-ms-traffictypediagnostic: DM6PR11MB3994:
+x-ms-office365-filtering-correlation-id: c8ca0755-aa8b-4b5e-6882-08d82cacd863
+x-ms-traffictypediagnostic: DM6PR11MB3291:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB399450C9216843F5D4B3B379C37B0@DM6PR11MB3994.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <DM6PR11MB3291275FA30F671FE9B7CA08C37B0@DM6PR11MB3291.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DAYZhLD4KZbV0oSb8ANLdcovUVAyziQ7ZQ6SpplUta35cJK4Wn5nnpLQBJ99e43fQZAku6COTBcPkBIMeBt/4P2pmEy/wQeS/Pxt2rjJvPQp/oypoDkmY+qnu1vQocjNxeoZoXCGx+OIm7rCn1/HQ7lL5SoRGHIeJ/0iFMoG2tllngbK4NfQOzprwPT2jNQKCHglyR6waTOcNKlRPkxGQuFe6ZbteWEMxCNhk7FgKyvJr27E0Vdk4gmpqRZ3kPgdkQyMoXbZ6LZ/6twBNJtBbRLue6rae164CpDSfKx/TwlZSzmfXVpad56CM73UwKdb3eSDnPZiQobQRpelOvHPpg==
+x-microsoft-antispam-message-info: HKKCqVwlviiGLSmzV3rN1h/ReiT76kTDrpgDHVu3kQ6vNQGd2YHiQDI66FOHeM6HSmB4Nt9FoYOipftkyF1QdpfeITjAlFi5DhsjAhIZueljH+j4fA+INGtvssRQrxnsCry6qhIdYnx64NuqjmPI3nze1XTe5/EGCrME8lAN9KwwMXyJBNV5CRcPLzvZh4+FApePioWxFOb+5Rp8mYtEUd4OPVbzIesR/C6X5GIS+JV+F4gk5IvE1jh0VcaGcgYYdX7eCJ69uID+QRwu9LoTanoBX1D0k9a/Of6E+I0YKR8LSgPxdB+Kj+KRbzjuIvpKSDdQwqAXx+pz+guDfWAZVq/dJnvU7VWqkigq57p997ckpp4EM1MCB9KdF4+l7IEHnYP9OKAh+g09vOaWgtau6Q==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
  SFTY:;
- SFS:(4636009)(376002)(136003)(396003)(346002)(39860400002)(366004)(26005)(8936002)(478600001)(2906002)(55016002)(66946007)(5660300002)(6506007)(9686003)(66556008)(66446008)(52536014)(76116006)(64756008)(86362001)(66476007)(53546011)(110136005)(186003)(83380400001)(7696005)(316002)(7416002)(54906003)(71200400001)(8676002)(33656002)(4326008);
+ SFS:(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(76116006)(186003)(55016002)(66446008)(66476007)(66946007)(33656002)(86362001)(9686003)(478600001)(26005)(966005)(64756008)(4326008)(66556008)(6506007)(8676002)(83380400001)(71200400001)(316002)(5660300002)(110136005)(53546011)(7416002)(2906002)(8936002)(54906003)(7696005)(52536014);
  DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: I7hKczPQMlUuCzqPYuxqmkTXwSTSzLL/HXi5msN02YI2AB8iLohwDpz0fCRQBNEMtz8yYpuGfL6NTAnHkxNAnyAb9RLxeTnrUeef4WkjujC/cmfinW0Ts/MBNFEvMBpgGBH1ROPq7m0RUyhuDcpbsj2HuVAyPuZjjeEKQCSAFYGnjsEWsaI9XWy1A7SAPWOBA8VmsEXYgxmmndm/BPOXLxqh2YIJidTGRCGGIFGqFlu8Ri0osT1udV0uP1iGT7+/AFRYAJaaRjLuXfbG68cz9buKtl1M8jQi9o8zYfIKmCIx0Pngnq+mPI+e07kl59gLg+rMVlxbk8JbwfHQAtUq4oPwHTyPI9lwTbhTRUFeL9BVGWV7DZb92u7UgJUC5g0vxa4gOfaxa+rUBUT8NkTCfyFd9SQTg4ko7mmMiwFEUM7AnhMcB+jn7pkgs+SrfFGrjgN19bK3YNvULv54zhxGsop2BJ3Pp1nS2L0L8k/4/06mJhTrAL7BD/TzcAjrLib0
+x-ms-exchange-antispam-messagedata: SzWF5Z9wFc00rDUGYoJt2V+tQJ1zPcWAj4/X608guE2atZ7BUD00gyfj5VeHihLrKVlqN9JdwhIXtRirkOx0fcPqWFLzWRZh77bL4N2UnJiAmilo9PI65yP3/WZGdCbgqgnC2ghNOCV3X1i3YWbGxppH3wIBO+9oyOUJvYztoTVL2lOwy89a+hPux63DiTNVvmPYdF0Z9dI4SSYtdMrniVBWNGDaelLMzjR2ACLcjXQeGplUJzuxHTrioNYoCesuBIKh/TACvqngYmXfx0z3ifHDDaESh+6Wb8Zi6m1M9lFRY2CoUQNstzTeMLL5vMiAGyxNx2f90U01Xu5rUD3QLMA6pDGGvk4YtqELqPhH0PzQb9jy0fj5VP1wy6K79cVW4OlKOdoUTXFYxXJ1ecshZgfLrBHNxWrweCXjDqmAy6N2gjvaYVYd8T4jy0rn0zEWlvIY3viAxyBFKGy14LUfohy3YIeY4YuTU58uusgVByrW0jT5nZrJbfl1E29EbMMH
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f2d3282-817a-466a-fc08-08d82cac3602
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 12:55:42.4367 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8ca0755-aa8b-4b5e-6882-08d82cacd863
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 13:00:14.8646 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: COTC1M+M7FiP+wgq2Xj2UloVcnqoJSt0kL9eWu1+K0RnyqOIzeqTAnCzvPpY+1jfvuXUBeLOWyql6Jkk2WLocg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3994
+X-MS-Exchange-CrossTenant-userprincipalname: TQM8XteiVfkYXoP7W6bS65U1x9T/bar0F0I9EWiRT9kgjrRLC9cEwveO28eXybFWIZCIzSsMs8MBjuhReW7BCg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3291
 X-OriginatorOrg: intel.com
 Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
@@ -179,149 +172,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Eric,
+Hi Eric,
 
 > From: Auger Eric <eric.auger@redhat.com>
-> Sent: Monday, July 20, 2020 8:38 PM
+> Sent: Monday, July 20, 2020 8:35 PM
 > 
 > Yi,
 > 
-> On 7/20/20 12:18 PM, Liu, Yi L wrote:
-> > Hi Eric,
+> On 7/12/20 1:21 PM, Liu Yi L wrote:
+> > This patch exposes PCIe PASID capability to guest for assigned devices.
+> > Existing vfio_pci driver hides it from guest by setting the capability
+> > length as 0 in pci_ext_cap_length[].
 > >
-> >> From: Auger Eric <eric.auger@redhat.com>
-> >> Sent: Monday, July 20, 2020 12:06 AM
-> >>
-> >> Hi Yi,
-> >>
-> >> On 7/12/20 1:21 PM, Liu Yi L wrote:
-> >>> When an IOMMU domain with nesting attribute is used for guest SVA, a
-> >>> system-wide PASID is allocated for binding with the device and the domain.
-> >>> For security reason, we need to check the PASID passsed from user-space.
-> >> passed
-> >
-> > got it.
-> >
-> >>> e.g. page table bind/unbind and PASID related cache invalidation.
-> >>>
-> >>> Cc: Kevin Tian <kevin.tian@intel.com>
-> >>> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >>> Cc: Alex Williamson <alex.williamson@redhat.com>
-> >>> Cc: Eric Auger <eric.auger@redhat.com>
-> >>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> >>> Cc: Joerg Roedel <joro@8bytes.org>
-> >>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> >>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> >>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >>> ---
-> >>>  drivers/iommu/intel/iommu.c | 10 ++++++++++
-> >>>  drivers/iommu/intel/svm.c   |  7 +++++--
-> >>>  2 files changed, 15 insertions(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> >>> index 4d54198..a9504cb 100644
-> >>> --- a/drivers/iommu/intel/iommu.c
-> >>> +++ b/drivers/iommu/intel/iommu.c
-> >>> @@ -5436,6 +5436,7 @@ intel_iommu_sva_invalidate(struct iommu_domain
-> >> *domain, struct device *dev,
-> >>>  		int granu = 0;
-> >>>  		u64 pasid = 0;
-> >>>  		u64 addr = 0;
-> >>> +		void *pdata;
-> >>>
-> >>>  		granu = to_vtd_granularity(cache_type, inv_info->granularity);
-> >>>  		if (granu == -EINVAL) {
-> >>> @@ -5456,6 +5457,15 @@ intel_iommu_sva_invalidate(struct iommu_domain
-> >> *domain, struct device *dev,
-> >>>  			 (inv_info->granu.addr_info.flags &
-> >> IOMMU_INV_ADDR_FLAGS_PASID))
-> >>>  			pasid = inv_info->granu.addr_info.pasid;
-> >>>
-> >>> +		pdata = ioasid_find(dmar_domain->ioasid_sid, pasid, NULL);
-> >>> +		if (!pdata) {
-> >>> +			ret = -EINVAL;
-> >>> +			goto out_unlock;
-> >>> +		} else if (IS_ERR(pdata)) {
-> >>> +			ret = PTR_ERR(pdata);
-> >>> +			goto out_unlock;
-> >>> +		}
-> >>> +
-> >>>  		switch (BIT(cache_type)) {
-> >>>  		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> >>>  			/* HW will ignore LSB bits based on address mask */
-> >>> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> >>> index d2c0e1a..212dee0 100644
-> >>> --- a/drivers/iommu/intel/svm.c
-> >>> +++ b/drivers/iommu/intel/svm.c
-> >>> @@ -319,7 +319,7 @@ int intel_svm_bind_gpasid(struct iommu_domain
-> *domain,
-> >> struct device *dev,
-> >>>  	dmar_domain = to_dmar_domain(domain);
-> >>>
-> >>>  	mutex_lock(&pasid_mutex);
-> >>> -	svm = ioasid_find(INVALID_IOASID_SET, data->hpasid, NULL);
-> I meant while using INVALID_IOASID_SET instead of the actual
-> dmar_domain->ioasid_sid. But I think I've now recovered, the asset is
-> simply not used ;-)
+> > And this patch only exposes PASID capability for devices which has PCIe
+> > PASID extended struture in its configuration space. So VFs, will will
+> s/will//
 
-oh, I think should be using dmar_domain->ioasid_sid from the beginning.
-does it look good so far? :-)
+got it.
+
+> > not see PASID capability on VFs as VF doesn't implement PASID extended
+> suggested rewording: VFs will not expose the PASID capability as they do
+> not implement the PASID extended structure in their config space?
+
+make sense. will modify it.
+
+> > structure in its configuration space. For VF, it is a TODO in future.
+> > Related discussion can be found in below link:
+> >
+> > https://lkml.org/lkml/2020/4/7/693
+> 
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > ---
+> > v1 -> v2:
+> > *) added in v2, but it was sent in a separate patchseries before
+> > ---
+> >  drivers/vfio/pci/vfio_pci_config.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> > index d98843f..07ff2e6 100644
+> > --- a/drivers/vfio/pci/vfio_pci_config.c
+> > +++ b/drivers/vfio/pci/vfio_pci_config.c
+> > @@ -95,7 +95,7 @@ static const u16 pci_ext_cap_length[PCI_EXT_CAP_ID_MAX +
+> 1] = {
+> >  	[PCI_EXT_CAP_ID_LTR]	=	PCI_EXT_CAP_LTR_SIZEOF,
+> >  	[PCI_EXT_CAP_ID_SECPCI]	=	0,	/* not yet */
+> >  	[PCI_EXT_CAP_ID_PMUX]	=	0,	/* not yet */
+> > -	[PCI_EXT_CAP_ID_PASID]	=	0,	/* not yet */
+> > +	[PCI_EXT_CAP_ID_PASID]	=	PCI_EXT_CAP_PASID_SIZEOF,
+> >  };
+> >
+> >  /*
+> >
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+thanks.
 
 Regards,
 Yi Liu
 
-> >> I do not get what the call was supposed to do before that patch?
-> >
-> > you mean patch 10/15 by "that patch", right? the ownership check should
-> > be done as to prevent illegal bind request from userspace. before patch
-> > 10/15, it should be added.
-> >
-> >>> +	svm = ioasid_find(dmar_domain->ioasid_sid, data->hpasid, NULL);
-> >>>  	if (IS_ERR(svm)) {
-> >>>  		ret = PTR_ERR(svm);
-> >>>  		goto out;
-> >>> @@ -436,6 +436,7 @@ int intel_svm_unbind_gpasid(struct iommu_domain
-> >> *domain,
-> >>>  			    struct device *dev, ioasid_t pasid)
-> >>>  {
-> >>>  	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
-> >>> +	struct dmar_domain *dmar_domain;
-> >>>  	struct intel_svm_dev *sdev;
-> >>>  	struct intel_svm *svm;
-> >>>  	int ret = -EINVAL;
-> >>> @@ -443,8 +444,10 @@ int intel_svm_unbind_gpasid(struct iommu_domain
-> >> *domain,
-> >>>  	if (WARN_ON(!iommu))
-> >>>  		return -EINVAL;
-> >>>
-> >>> +	dmar_domain = to_dmar_domain(domain);
-> >>> +
-> >>>  	mutex_lock(&pasid_mutex);
-> >>> -	svm = ioasid_find(INVALID_IOASID_SET, pasid, NULL);
-> >>> +	svm = ioasid_find(dmar_domain->ioasid_sid, pasid, NULL);
-> >> just to make sure, about the locking, can't domain->ioasid_sid change
-> >> under the hood?
-> >
-> > I guess not. intel_svm_unbind_gpasid() and iommu_domain_set_attr()
-> > is called by vfio today, and within vfio, there is vfio_iommu->lock.
-> OK
-> 
 > Thanks
 > 
 > Eric
-> >
-> > Regards,
-> > Yi Liu
-> >
-> >>
-> >> Thanks
-> >>
-> >> Eric
-> >>>  	if (!svm) {
-> >>>  		ret = -EINVAL;
-> >>>  		goto out;
-> >>>
-> >
 
 _______________________________________________
 iommu mailing list
