@@ -2,104 +2,157 @@ Return-Path: <SRS0=yPOf=A7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8020C433E4
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 07:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10028C433E0
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 07:20:48 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 831F02065E
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 07:17:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 831F02065E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
+	by mail.kernel.org (Postfix) with ESMTPS id D508E207DF
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 07:20:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="RV1FOv8X"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D508E207DF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 72E1486DB4;
-	Mon, 20 Jul 2020 07:17:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9BFB286BBD;
+	Mon, 20 Jul 2020 07:20:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7J+b39SXJZp5; Mon, 20 Jul 2020 07:17:43 +0000 (UTC)
+	with ESMTP id V3HAS5Ws5F35; Mon, 20 Jul 2020 07:20:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4EABA86D89;
-	Mon, 20 Jul 2020 07:17:43 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CAF1F8666F;
+	Mon, 20 Jul 2020 07:20:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 349F3C089F;
-	Mon, 20 Jul 2020 07:17:43 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A5970C016F
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:17:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB077C089F;
+	Mon, 20 Jul 2020 07:20:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D60B7C016F
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:20:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 94ADA84755
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:17:41 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id B95F22107A
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:20:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XMG-mC5J_KmF for <iommu@lists.linux-foundation.org>;
- Mon, 20 Jul 2020 07:17:40 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E1B8E84691
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:17:39 +0000 (UTC)
-Received: from mail-qt1-f179.google.com ([209.85.160.179]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MbAUg-1kYxnV191k-00bYEW for <iommu@lists.linux-foundation.org>; Mon, 20
- Jul 2020 09:17:37 +0200
-Received: by mail-qt1-f179.google.com with SMTP id j10so12213557qtq.11
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 00:17:36 -0700 (PDT)
-X-Gm-Message-State: AOAM533gtYj5iMl5AuoRB+414QSInBz6aSY1vhnuPlkeqcoBq0pcfIr4
- lhb47jbWTu8ekhkYUPylvZs/ATdAt+ha6qJJZoo=
-X-Google-Smtp-Source: ABdhPJwQ7aG0Kfph32W7oujhBLlHufrj5SBDtqFGsDCgZiI0AOcu8JEKEqCBhxfpFSaC0WpZ33qNauezR2FDL5mRSbE=
-X-Received: by 2002:ac8:2b98:: with SMTP id m24mr22488198qtm.7.1595229455883; 
- Mon, 20 Jul 2020 00:17:35 -0700 (PDT)
+ with ESMTP id B-lkKKczTg8w for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Jul 2020 07:20:42 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3498F2083F
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 07:20:42 +0000 (UTC)
+IronPort-SDR: lq8oAa6tNcU1QQXT5PORWqSMY2SS+c4WmP4/JhdVT98C7u444lXortJGrvc9au8EZw/aZ+daPz
+ fGxdc/Y/6OIg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9687"; a="151209757"
+X-IronPort-AV: E=Sophos;i="5.75,374,1589266800"; d="scan'208";a="151209757"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Jul 2020 00:20:41 -0700
+IronPort-SDR: OhayfH2uMfthA5db7dh0ksWVGis0yVJeFLZ9Y6mKctrqpaPhcR/tvnhz5OHEMLsOGy44Uri4O4
+ 78BL4e7Z/hOw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,374,1589266800"; d="scan'208";a="361940056"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+ by orsmga001.jf.intel.com with ESMTP; 20 Jul 2020 00:20:41 -0700
+Received: from orsmsx151.amr.corp.intel.com (10.22.226.38) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 20 Jul 2020 00:20:40 -0700
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX151.amr.corp.intel.com (10.22.226.38) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 20 Jul 2020 00:20:40 -0700
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.59) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (TLS) id 14.3.439.0; Mon, 20 Jul 2020 00:20:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YOB0X4/3eNok1obl0W91CJ5nATFUjKoPXsJUJCRn2voppLFu//TKijZaXx1oKuGfiODl6cLBHVMFSU3JP9hmWy7mtKYogwQSsC7ZgCqcuuCyF83dqnXKHqNlHL9DAtnVcKZocnIGSELt59VV5vlbPOnfdJzA/8CgQYv3auR7GzAnEeoTTBMrVtzHowyGFfmfVprDtX8GvHapv8Bvz7FzW32ivvxKbS6d+5nWRw8hm12i5C4WRDTdQ/limDvub0V5ojWk1+J7mYeC8uAoxOmIvPLn1fRD0aDhONQYu4RYq6/D9yBIrqyB/k5zbXMU2xCKBxoGjHCXpWCyVGIZBnnb7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1W0daj2ef5suQ7niJxvtakKtD1Z6zjFx5uiVU6kvud4=;
+ b=BwBiXnjgkofhyfNJ0LIGKhG8P75tmt0KlIDcNbwBAxkoM/3FNbjTW/XzlYnCyBrogJNsv4Yz9W0KaMSXGOkT6q8KFiuFkyDgkzQoAfFp+zXohnBusgmXQOcaKCe3Uvj7a+wQKp2vv89Hx9WbCOaBCZ4CEg+jDXtgu+NTo27GdOfNDWhwZRA3k1oUw5jf2to4RqmIGaqG0J9Bk2Epskx5chnlJ+6woEJfDDyU4q9Moh0lm0i3dApM3jwjiUpYudEyLAfkNNttBM/FWkS6P2QBWqH0/0augL4oTGU4ZsrZ03OeiMsEwWcDEgbvOBzpiZDzIyfOrCDhZ1jqDlEKgVLsGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1W0daj2ef5suQ7niJxvtakKtD1Z6zjFx5uiVU6kvud4=;
+ b=RV1FOv8XP8HJFZHUdTv8FrkeCD2nzL1wa/wbeJnZrYdH+rhn2iwKCnev6QJX60s5ZXUPkx6gIq9bAufxvbpSACozM+uoxj7LoTMbliqfu61GqRjTQIyOwpoOfh1HItIE2rbye062haieK6YOK4vpXA/kD036VXFXvhXF/97dseg=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB4722.namprd11.prod.outlook.com (2603:10b6:5:2a7::23) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3195.23; Mon, 20 Jul 2020 07:20:27 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3195.025; Mon, 20 Jul
+ 2020 07:20:27 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
+ <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
+Subject: RE: [PATCH v5 02/15] iommu: Report domain nesting info
+Thread-Topic: [PATCH v5 02/15] iommu: Report domain nesting info
+Thread-Index: AQHWWD2l24VL7ljS90uDgo6kI5uKT6kL/mYAgAQRbLA=
+Date: Mon, 20 Jul 2020 07:20:27 +0000
+Message-ID: <DM5PR11MB1435E32D70ED3BB1BF56F94AC37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
+ <1594552870-55687-3-git-send-email-yi.l.liu@intel.com>
+ <99c20ada-b7e8-44f6-e036-ab905d119119@redhat.com>
+In-Reply-To: <99c20ada-b7e8-44f6-e036-ab905d119119@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.200]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2baf3bec-cf34-40f4-8deb-08d82c7d60b3
+x-ms-traffictypediagnostic: DM6PR11MB4722:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB4722EB05FC9643C3299100F0C37B0@DM6PR11MB4722.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TthiII4+Pps/bGOR5xs12nJGp0COCjn5NNsM4yKD+riJeFMDcIr8b/n9NVeVVnvfcMJE6QpXqNP4rW+PGZLclsO9uUsQ1/vSpjC34v6MmjbiHrXyB3de6cn4+ujoXLzK7jHdP8RKSBuNPX2ARwPPSeHHXmdQj1wy31hFomhqjYKHEpNnuzqfV9nbsgqT0h7j+yCc9PPL7KUrEYtem4EWbmmSpYsaQ6beG4yOETx9UG/Oa0N090KLbZ/XUbnS8DqqFQzCZfdhgDVf+y+ROldk5Quey0WkfdJ+PrVnX4W3ltDOmXahqOXk3ETL/8qFXuAkyHshz38nyGhAtW5NFxgb6OGsNNhINTrw8wj0y/cQ0HhXlqdC43fTQTnwO3jlLTrPznU7R9+EA3g7gxAuLgEC4A==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(39860400002)(376002)(346002)(396003)(136003)(366004)(66946007)(66556008)(76116006)(966005)(64756008)(66476007)(7696005)(55016002)(86362001)(2906002)(9686003)(66446008)(7416002)(8676002)(83380400001)(8936002)(26005)(186003)(33656002)(53546011)(6506007)(52536014)(54906003)(110136005)(71200400001)(5660300002)(4326008)(316002)(478600001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: A6s5e0nZcxnmcrR2TUsu3EEtdUiwz36dsX+/XFVgXRFNMlJg2HAmgTUttm1E88F+fPziMrbphyefNpnVGE7A5fhph69hCwgBgK2zAZj0yVpB+nfiV+Wc7gZU9oOzywGa4f/ebMhYuVQYVca4GKxgXgBxPvl3Z6vg0zN4OWq1NYwIGV3IvKrC2ltDS/M0KKIDYo5ZAWVlA6eGZiC7eM85rM+RDiWYmkH2txFVcw1/9YCIkQ+4YAfLa3A8tew0B/HbEb1R8eG83O9npFoO0nv7vV704hV52rtBugYDgH51xhhowCihbjJb9cCVJCti0ITXzdDdVTNHNfUV1zI+CQ2KqoXCv4wJ0RKV0tkUdvaWgveE3+cPO0GzFoFPddA3rdIqfu3TBnc/FjtQlPmhQ6oes/KllXzfrrLnWjUYhZpSfLcsqHuzFoiJH0iDiiITs18JKH3A8zJZ6kfpDB4SI3cFnN+I0DFj0Uox1jxz49VcNrfOr0tmyv7T4/TN6lNnPmfm
 MIME-Version: 1.0
-References: <CA+G9fYuzqA0N6O-52uH9aHjsfF6HfhuxMby1Y6Yz7jGMAHW0zw@mail.gmail.com>
-In-Reply-To: <CA+G9fYuzqA0N6O-52uH9aHjsfF6HfhuxMby1Y6Yz7jGMAHW0zw@mail.gmail.com>
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Mon, 20 Jul 2020 09:17:20 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1SHQKNNCVj9Gp25BLuXUC2nf7FuVrqfpPYQkvMbhjzFg@mail.gmail.com>
-Message-ID: <CAK8P3a1SHQKNNCVj9Gp25BLuXUC2nf7FuVrqfpPYQkvMbhjzFg@mail.gmail.com>
-Subject: Re: arm64: Internal error: Oops: qcom_iommu_tlb_inv_context
- free_io_pgtable_ops on db410c
-To: Naresh Kamboju <naresh.kamboju@linaro.org>
-X-Provags-ID: V03:K1:xAFm43wY4Q3Ag9SMldpsT1IEPM9xK16lXOOw9Y43c4olHJR2p4x
- p5YjZLJBXXzeMbfw42zQpGtG5daEG86mteGBzK3yy5V+ikZmqECKxjIm+KyhOve1CsmNuEW
- cuBfLwa4Y6f/8q17dUTU07JV3nVJlbuASSBazTkK0b+2OfmwLG85Fb43FUjStwTL17cMOCg
- wwdnr4a4dOoWbKK7CwxjA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:522fsYKEQ3Y=:nC3acGxULtgloEhkUK32pG
- 28UN3rNJNjZV5E2YsL06qsKKKI5x2Yrkag6p65TX5axN8vdYO0YG5E/Bz8wrqh30+luoyKndq
- EGanTTWPoQXvwC4ervLkqHCqpm6ehAAWrbRNCABlgo8B5PRdbyDwAvMCGkPuAlTalQRzC6kWF
- uVeOVdeeoYz8Jp1kZqwuljBH94wVfP1dsthbMPzE77fSYlmIbMJRddcUhTPpdj7CeSG8pLGmw
- xIdwAI78zLZDo6VK1vrkXxAGbzo1nNTxnVJRCH4aXAPulX9RTmJ2SDecIkixlLAjN7c3lJOQC
- rGBlnxrwlU00rhZm/XRrc8U6SipTbs3PhG1LLbZ5+B/8MyHN8LIm4azL3Oyg8v+nsZsf6ELkv
- d+4txq7FB64Jkp105fxQgxM5zsdWjQz+z7xQ2YNqkMzlqKn4bPlBMtmd93lrE9Z3Dc8z73IEn
- DIGwwuauQK/N40MQujygBJpR02BQE8VRXIEtrWk5K5Ravd17LEcu5tvlKlIr62vOu1nZKmGDl
- o8UFN1QmjmjOo4hVd7CEDGX7wOUmsLZ96zH8S7pZWtcxcn3R708OTd9O2/HAyLxnJ8uJE6qaD
- P5dGCbhOM5U77YHYTsiIAQhk2kio+1/sttXkn1DQJNavp8ywhq5Iy7SQKtHLxGMVIGodDQTCN
- iokYzJLAskzy2ayTVCQ0nwau6/CnBTI9CqP7BFUyZ6occ8xO6lq+dDapg9d6lvGZDR4pZTt1E
- ujLkeGUEepaEWeH/nWXlqHuzHDk/IHTLKVc5ITagIUuj67i5XcBKKugppjdPOEY90jDA951dw
- TqyQfLdauqL0RZvVWtax5/a0IVaqde6UIHl7BuCdn/cfkMNmZ+L4+MpT6jAi2PFfraHF+99MQ
- YandSMnjRVAY9s5n8FFkzEGw6/yHRVyNj+Dojz4Iu4SSLrE78FxnynwTj2vGhCmohMmpo7ZlG
- +XEuHE+Xa7jW9VDMYZiJW25GEXXyVLCLCmsN9aIcfhEc9wXCNJ/i7
-Cc: lkft-triage@lists.linaro.org, Eric Anholt <eric@anholt.net>,
- Thierry Reding <thierry.reding@gmail.com>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Vinod Koul <vinod.koul@linaro.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Andy Gross <agross@kernel.org>, freedreno@lists.freedesktop.org,
- Joerg Roedel <jroedel@suse.de>, John Stultz <john.stultz@linaro.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- "moderated list:ARM/Mediatek SoC..." <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, Sean Paul <sean@poorly.run>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- open list <linux-kernel@vger.kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2baf3bec-cf34-40f4-8deb-08d82c7d60b3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2020 07:20:27.6280 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QYw02umRKVyAIDCzHuK7pfZ38svyF3lc3nRlYqbeBY+2Q6ZwTGPO+fpMEQlvq1CrSDz+Nyfn4yxfSgrX3k1tog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4722
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, "Tian, 
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,166 +170,210 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 20, 2020 at 8:36 AM Naresh Kamboju
-<naresh.kamboju@linaro.org> wrote:
->
-> This kernel oops while boot linux mainline kernel on arm64  db410c device.
->
-> metadata:
->   git branch: master
->   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->   git commit: f8456690ba8eb18ea4714e68554e242a04f65cff
->   git describe: v5.8-rc5-48-gf8456690ba8e
->   make_kernelversion: 5.8.0-rc5
->   kernel-config:
-> https://builds.tuxbuild.com/2aLnwV7BLStU0t1R1QPwHQ/kernel.config
+Hi Eric,
 
-Thanks for the report. Adding freedreno folks to Cc, as this may have something
-to do with that driver.
+> From: Auger Eric <eric.auger@redhat.com>
+> Sent: Saturday, July 18, 2020 12:29 AM
+> 
+> Hi Yi,
+> 
+> On 7/12/20 1:20 PM, Liu Yi L wrote:
+> > IOMMUs that support nesting translation needs report the capability info
+> s/needs/need to report
 
->
-> [    5.444121] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000018
-> [    5.456615]   ESR = 0x96000004
-> [    5.464471]   SET = 0, FnV = 0
-> [    5.464487]   EA = 0, S1PTW = 0
-> [    5.466521] Data abort info:
-> [    5.469971]   ISV = 0, ISS = 0x00000004
-> [    5.472768]   CM = 0, WnR = 0
-> [    5.476172] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000bacba000
-> [    5.479349] [0000000000000018] pgd=0000000000000000, p4d=0000000000000000
-> [    5.485820] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [    5.492448] Modules linked in: crct10dif_ce adv7511(+)
-> qcom_spmi_temp_alarm cec msm(+) mdt_loader qcom_camss videobuf2_dma_sg
-> drm_kms_helper v4l2_fwnode videobuf2_memops videobuf2_v4l2 qcom_rng
-> videobuf2_common i2c_qcom_cci display_connector socinfo drm qrtr ns
-> rmtfs_mem fuse
-> [    5.500256] CPU: 0 PID: 286 Comm: systemd-udevd Not tainted 5.8.0-rc5 #1
-> [    5.522484] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
-> [    5.529170] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
-> [    5.535856] pc : qcom_iommu_tlb_inv_context+0x18/0xa8
-> [    5.541148] lr : free_io_pgtable_ops+0x28/0x58
-> [    5.546350] sp : ffff80001219b5f0
-> [    5.550689] x29: ffff80001219b5f0 x28: 0000000000000013
-> [    5.554078] x27: 0000000000000100 x26: ffff000036add3b8
-> [    5.559459] x25: ffff80000915e910 x24: ffff00003a5458c0
-> [    5.564753] x23: 0000000000000003 x22: ffff000036a37058
-> [    5.570049] x21: ffff000036a3a100 x20: ffff000036a3a480
-> [    5.575344] x19: ffff000036a37158 x18: 0000000000000000
-> [    5.580639] x17: 0000000000000000 x16: 0000000000000000
-> [    5.585935] x15: 0000000000000004 x14: 0000000000000368
-> [    5.591229] x13: 0000000000000000 x12: ffff000039c61798
-> [    5.596525] x11: ffff000039c616d0 x10: 0000000040000000
-> [    5.601820] x9 : 0000000000000000 x8 : ffff000039c616f8
-> [    5.607114] x7 : 0000000000000000 x6 : ffff000009f699a0
-> [    5.612410] x5 : ffff80001219b520 x4 : ffff000036a3a000
-> [    5.617705] x3 : ffff000009f69904 x2 : 0000000000000000
-> [    5.623001] x1 : ffff8000107e27e8 x0 : ffff00003a545810
-> [    5.628297] Call trace:
-> [    5.633592]  qcom_iommu_tlb_inv_context+0x18/0xa8
+yep.
 
-This means that dev_iommu_fwspec_get() has returned NULL
-in qcom_iommu_tlb_inv_context(), either because dev->iommu
-is NULL, or because dev->iommu->fwspec is NULL.
+> > to userspace, e.g. the format of first level/stage paging structures.
+> It gives information about requirements the userspace needs to implement
+> plus other features characterizing the physical implementation.
 
-qcom_iommu_tlb_inv_context() does not check for a NULL
-pointer before using the returned object.
+got it. will add it in next version.
 
-The bug is either in the lack of error handling, or the fact
-that it's possible to get into this function for a device
-that has not been fully set up.
+> >
+> > This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller can get
+> > nesting info after setting DOMAIN_ATTR_NESTING.
+> I guess you meant after selecting VFIO_TYPE1_NESTING_IOMMU?
 
-> [    5.635764]  free_io_pgtable_ops+0x28/0x58
-> [    5.640624]  qcom_iommu_domain_free+0x38/0x60
-> [    5.644617]  iommu_group_release+0x4c/0x70
-> [    5.649045]  kobject_put+0x6c/0x120
-> [    5.653035]  kobject_del+0x64/0x90
-> [    5.656421]  kobject_put+0xfc/0x120
-> [    5.659893]  iommu_group_remove_device+0xdc/0xf0
-> [    5.663281]  iommu_release_device+0x44/0x70
-> [    5.668142]  iommu_bus_notifier+0xbc/0xd0
-> [    5.672048]  notifier_call_chain+0x54/0x98
-> [    5.676214]  blocking_notifier_call_chain+0x48/0x70
-> [    5.680209]  device_del+0x26c/0x3a0
-> [    5.684981]  platform_device_del.part.0+0x1c/0x88
-> [    5.688453]  platform_device_unregister+0x24/0x40
-> [    5.693316]  of_platform_device_destroy+0xe4/0xf8
-> [    5.698002]  device_for_each_child+0x5c/0xa8
-> [    5.702689]  of_platform_depopulate+0x3c/0x80
-> [    5.707144]  msm_pdev_probe+0x1c4/0x308 [msm]
+yes, it is. ok, perhaps, it's better to say get nesting info after selecting
+VFIO_TYPE1_NESTING_IOMMU.
 
-It was triggered by a failure in msm_pdev_probe(), which was
-calls of_platform_depopulate() in its error handling code.
-This is a combination of two problems:
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> > v4 -> v5:
+> > *) address comments from Eric Auger.
+> >
+> > v3 -> v4:
+> > *) split the SMMU driver changes to be a separate patch
+> > *) move the @addr_width and @pasid_bits from vendor specific
+> >    part to generic part.
+> > *) tweak the description for the @features field of struct
+> >    iommu_nesting_info.
+> > *) add description on the @data[] field of struct iommu_nesting_info
+> >
+> > v2 -> v3:
+> > *) remvoe cap/ecap_mask in iommu_nesting_info.
+> > *) reuse DOMAIN_ATTR_NESTING to get nesting info.
+> > *) return an empty iommu_nesting_info for SMMU drivers per Jean'
+> >    suggestion.
+> > ---
+> >  include/uapi/linux/iommu.h | 77
+> ++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 77 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> > index 1afc661..d2a47c4 100644
+> > --- a/include/uapi/linux/iommu.h
+> > +++ b/include/uapi/linux/iommu.h
+> > @@ -332,4 +332,81 @@ struct iommu_gpasid_bind_data {
+> >  	} vendor;
+> >  };
+> >
+> > +/*
+> > + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+> > + *			       user space should check it before using
+> > + *			       nesting capability.
+> > + *
+> > + * @size:	size of the whole structure
+> > + * @format:	PASID table entry format, the same definition as struct
+> > + *		iommu_gpasid_bind_data @format.
+> > + * @features:	supported nesting features.
+> > + * @flags:	currently reserved for future extension.
+> > + * @addr_width:	The output addr width of first level/stage translation
+> > + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
+> > + *		support.
+> > + * @data:	vendor specific cap info. data[] structure type can be deduced
+> > + *		from @format field.
+> > + *
+> > + *
+> +===============+===================================================
+> ===+
+> > + * | feature       |  Notes                                               |
+> > + *
+> +===============+===================================================
+> ===+
+> > + * | SYSWIDE_PASID |  PASIDs are managed in system-wide, instead of per   |
+> s/in system-wide/system-wide ?
 
-a) Whatever caused msm_pdev_probe() to fail means that
-the gpu won't be usable, though it should not have caused the
-kernel to crash.
+got it.
 
-b) the error handling itself causing additional problems due
-to failed unwinding.
+> > + * |               |  device. When a device is assigned to userspace or   |
+> > + * |               |  VM, proper uAPI (userspace driver framework uAPI,   |
+> > + * |               |  e.g. VFIO) must be used to allocate/free PASIDs for |
+> > + * |               |  the assigned device.
+> Isn't it possible to be more explicit, something like:
+>                       |
+> System-wide PASID management is mandated by the physical IOMMU. All
+> PASIDs allocation must be mediated through the TBD API.
 
-> [    5.711286]  platform_drv_probe+0x54/0xa8
-> [    5.715624]  really_probe+0xd8/0x320
-> [    5.719617]  driver_probe_device+0x58/0xb8
-> [    5.723263]  device_driver_attach+0x74/0x80
-> [    5.727168]  __driver_attach+0x58/0xe0
-> [    5.731248]  bus_for_each_dev+0x70/0xc0
-> [    5.735067]  driver_attach+0x24/0x30
-> [    5.738801]  bus_add_driver+0x14c/0x1f0
-> [    5.742619]  driver_register+0x64/0x120
-> [    5.746178]  __platform_driver_register+0x48/0x58
-> [    5.750099]  msm_drm_register+0x58/0x70 [msm]
-> [    5.754861]  do_one_initcall+0x54/0x1a0
-> [    5.759200]  do_init_module+0x54/0x200
-> [    5.762846]  load_module+0x1d1c/0x2300
-> [    5.766664]  __do_sys_finit_module+0xd8/0xf0
-> [    5.770398]  __arm64_sys_finit_module+0x20/0x30
-> [    5.774826]  el0_svc_common.constprop.0+0x6c/0x168
-> [    5.779078]  do_el0_svc+0x24/0x90
-> [    5.783939]  el0_sync_handler+0x90/0x198
-> [    5.787323]  el0_sync+0x158/0x180
-> [    5.791323] Code: 910003fd f9417404 b4000484 f9401482 (b9401846)
-> [    5.794532] ---[ end trace 3d6a53241629e560 ]---
->
-> full crash log details.
-> https://qa-reports.linaro.org/lkft/linux-mainline-oe/build/v5.8-rc5-48-gf8456690ba8e/testrun/2945157/suite/linux-log-parser/test/check-kernel-oops-1573988/log
+yep, I can add it.
 
-There are a couple of messages directly preceding the bug output that are
-probably relevant here:
+> > + * +---------------+------------------------------------------------------+
+> > + * | BIND_PGTBL    |  The owner of the first level/stage page table must  |
+> > + * |               |  explicitly bind the page table to associated PASID  |
+> > + * |               |  (either the one specified in bind request or the    |
+> > + * |               |  default PASID of iommu domain), through userspace   |
+> > + * |               |  driver framework uAPI (e.g. VFIO_IOMMU_NESTING_OP). |
+> As per your answer in https://lkml.org/lkml/2020/7/6/383, I now
+> understand ARM would not expose that BIND_PGTBL nesting feature,
 
-[    5.259499] debugfs: Directory '1b0ac00.camss-vdda' with parent
-'smd:rpm:rpm-requests:pm8916-regulators-l2' already present!
-         Starting Resize root filesystem to fit available disk space...
-         Starting Start the WCN core...
-[[0;32m  OK  [0m] Started Network Service.
-[[0;32m  OK  [0m] Started QRTR service.
-[    5.352993] adreno 1c00000.gpu: Adding to iommu group 1
-[    5.357489] msm_mdp 1a01000.mdp: Adding to iommu group 2
-[    5.357757] msm_mdp 1a01000.mdp: No interconnect support may cause
-display underflows!
-[    5.366215] adv7511 3-0039: supply dvdd not found, using dummy regulator
-[    5.378036] msm 1a00000.mdss: supply vdd not found, using dummy regulator
-[    5.378715] msm_mdp 1a01000.mdp: [drm:mdp5_bind [msm]] MDP5 version v1.6
-[    5.380549] adv7511 3-0039: supply pvdd not found, using dummy regulator
-[    5.384606] msm 1a00000.mdss: bound 1a01000.mdp (ops mdp5_ops [msm])
-[    5.394368] adv7511 3-0039: supply a2vdd not found, using dummy regulator
-[    5.397633] msm_dsi 1a98000.dsi: supply gdsc not found, using dummy regulator
-[    5.411897] msm_dsi 1a98000.dsi: supply gdsc not found, using dummy regulator
-[    5.420207] msm_dsi_manager_register: failed to register mipi dsi
-host for DSI 0
-[    5.425717] platform 1a01000.mdp: Removing from iommu group 2
-[[0;1;31mFAILED[0m] Failed to start Entropy Daemon based on the HAVEGE
-algorithm.[    5.444121] Unable to handle kernel NULL pointer
-dereference at virtual address 0000000000000018
+yes, that's my point.
 
-See 'systemctl status haveged.service' for detai[    5.456615]   ESR =
-0x96000004
-ls.
-[    5.464471]   SET = 0, FnV = 0
-[    5.464487]   EA = 0, S1PTW = 0
+> I still
+> think the above wording is a bit confusing. Maybe you may explicitly
+> talk about the PASID *entry* that needs to be passed from guest to host.
+> On ARM we directly pass the PASID table but when reading the above
+> description I fail to determine if this does not fit that description.
 
-        Arnd
+yes, I can do it.
+
+> > + * +---------------+------------------------------------------------------+
+> > + * | CACHE_INVLD   |  The owner of the first level/stage page table must  |
+> > + * |               |  explicitly invalidate the IOMMU cache through uAPI  |
+> > + * |               |  provided by userspace driver framework (e.g. VFIO)  |
+> > + * |               |  according to vendor-specific requirement when       |
+> > + * |               |  changing the page table.                            |
+> > + * +---------------+------------------------------------------------------+
+> 
+> instead of using the "uAPI provided by userspace driver framework (e.g.
+> VFIO)", can't we use the so-called IOMMU UAPI terminology which now has
+> a userspace documentation?
+
+the problem is current IOMMU UAPI definitions is actually embedded in
+other VFIO UAPI. if it can make the description more clear, I can follow
+your suggestion. :-)
+
+> 
+> > + *
+> > + * @data[] types defined for @format:
+> > + *
+> +================================+==================================
+> ===+
+> > + * | @format                        | @data[]                             |
+> > + *
+> +================================+==================================
+> ===+
+> > + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
+> > + * +--------------------------------+-------------------------------------+
+> > + *
+> > + */
+> > +struct iommu_nesting_info {
+> > +	__u32	size;
+> shouldn't it be @argsz to fit the iommu uapi convention and take benefit
+> to put the flags field just below?
+
+make sense.
+
+> > +	__u32	format;
+> > +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
+> > +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
+> > +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
+> > +	__u32	features;
+> > +	__u32	flags;
+> > +	__u16	addr_width;
+> > +	__u16	pasid_bits;
+> > +	__u32	padding;
+> > +	__u8	data[];
+> > +};
+> > +
+> > +/*
+> > + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info
+> > + *
+> > + * @flags:	VT-d specific flags. Currently reserved for future
+> > + *		extension.
+> must be set to 0?
+
+yes. will add it.
+
+Thanks,
+Yi Liu
+
+> > + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
+> > + *		register.
+> > + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
+> > + *		extended capability register.
+> > + */
+> > +struct iommu_nesting_info_vtd {
+> > +	__u32	flags;
+> > +	__u32	padding;
+> > +	__u64	cap_reg;
+> > +	__u64	ecap_reg;
+> > +};
+> > +
+> >  #endif /* _UAPI_IOMMU_H */
+> Thanks
+> 
+> Eric
+> >
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
