@@ -7,88 +7,89 @@ X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507A9C433E1
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 08:26:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4991CC433E8
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 08:33:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 185D721775
-	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 08:26:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0DAE922482
+	for <iommu@archiver.kernel.org>; Mon, 20 Jul 2020 08:33:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MKGBZ4pt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 185D721775
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Hwgt3ILE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0DAE922482
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E772585E83;
-	Mon, 20 Jul 2020 08:26:25 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A61D4204C6;
+	Mon, 20 Jul 2020 08:33:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qTGrxxtcnhqa; Mon, 20 Jul 2020 08:26:24 +0000 (UTC)
+	with ESMTP id 1vpUcD7VC8Yk; Mon, 20 Jul 2020 08:33:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BE7FA85DD8;
-	Mon, 20 Jul 2020 08:26:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B658E204BF;
+	Mon, 20 Jul 2020 08:33:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C001C0894;
-	Mon, 20 Jul 2020 08:26:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94722C0894;
+	Mon, 20 Jul 2020 08:33:41 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5FAA3C016F
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:26:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5190BC016F
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:33:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 526CB85DD8
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:26:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 47B2685C5C
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:33:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qhLEO92ZAkOF for <iommu@lists.linux-foundation.org>;
- Mon, 20 Jul 2020 08:26:21 +0000 (UTC)
+ with ESMTP id w5ZUaMWeOEaB for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Jul 2020 08:33:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [205.139.110.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C39FC85DD1
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:26:20 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CC0BD85758
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 08:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595233579;
+ s=mimecast20190719; t=1595234017;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=Z1ab9smw8kDVMXi6RwrkIoX/oTbdUtpbF9U74JZp3jk=;
- b=MKGBZ4ptS04aYzsohOKdBYwJqJxePjzXqoYhvKLAyW1npx+Q9V+iQH4BGrsjBt+xNyIgVF
- JUakxSz2bP6h9TGysPeLSxcl6DDLljF0S3LgjVZ/JXrJi4Fm4xvSJhONSI/sS81UE4zeW4
- 0DFxt/q5N60wq7OQICbnrSjDkXi01o0=
+ bh=jxZwtU6jCdNzDDA32p8x0Lt0O/6ubHPtsEvyLzyrp7M=;
+ b=Hwgt3ILEcqS0kAhwlxXL4yod/Eiu3/NZY49/JrQl1pYjxKcW9IE3EpnVZZ8g8KngkAa1/Z
+ 1mLeHiCQKW0zvPamyNGBJ31nwgzRyzLlBTSQLstJ0IJKZM99MP+jhq+4RktEtDv96XABra
+ 0HEbo5B66MZ1uuZj0ucNoA+iB/HnsDk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-336-wxRbGnZKNeCX8wS92zuQ7g-1; Mon, 20 Jul 2020 04:26:13 -0400
-X-MC-Unique: wxRbGnZKNeCX8wS92zuQ7g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
+ us-mta-418-dz-TmbyxOae8XgGzqkDTYA-1; Mon, 20 Jul 2020 04:33:28 -0400
+X-MC-Unique: dz-TmbyxOae8XgGzqkDTYA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F216106B242;
- Mon, 20 Jul 2020 08:26:11 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DFC0D1080;
+ Mon, 20 Jul 2020 08:33:26 +0000 (UTC)
 Received: from [10.36.115.54] (ovpn-115-54.ams2.redhat.com [10.36.115.54])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id D21352DE6B;
- Mon, 20 Jul 2020 08:26:01 +0000 (UTC)
-Subject: Re: [PATCH v5 05/15] vfio: Add PASID allocation/free support
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 24B435C240;
+ Mon, 20 Jul 2020 08:33:15 +0000 (UTC)
+Subject: Re: [PATCH v5 04/15] vfio/type1: Report iommu nesting info to
+ userspace
 To: "Liu, Yi L" <yi.l.liu@intel.com>,
  "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
  "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
  "joro@8bytes.org" <joro@8bytes.org>
 References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
- <1594552870-55687-6-git-send-email-yi.l.liu@intel.com>
- <7ce733ec-e27a-0a80-f78c-eeeb41a4ecf0@redhat.com>
- <DM5PR11MB14351019ED0DEE3E27A98D70C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <1594552870-55687-5-git-send-email-yi.l.liu@intel.com>
+ <2eb692fc-a399-8298-4b4b-68adb0357404@redhat.com>
+ <DM5PR11MB1435AF9531C5CF29CD1D1251C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
 From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <7d982308-f39c-ab5f-2318-a36600284402@redhat.com>
-Date: Mon, 20 Jul 2020 10:26:00 +0200
+Message-ID: <34931d94-b63b-e366-3c7f-9fd85c8e982d@redhat.com>
+Date: Mon, 20 Jul 2020 10:33:14 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB14351019ED0DEE3E27A98D70C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+In-Reply-To: <DM5PR11MB1435AF9531C5CF29CD1D1251C37B0@DM5PR11MB1435.namprd11.prod.outlook.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
@@ -109,435 +110,202 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
-
-On 7/20/20 10:03 AM, Liu, Yi L wrote:
-> Hi Eric,
-> 
->> From: Auger Eric <eric.auger@redhat.com>
->> Sent: Sunday, July 19, 2020 11:39 PM
->>
->> Yi,
->>
->> On 7/12/20 1:21 PM, Liu Yi L wrote:
->>> Shared Virtual Addressing (a.k.a Shared Virtual Memory) allows sharing
->>> multiple process virtual address spaces with the device for simplified
->>> programming model. PASID is used to tag an virtual address space in
->>> DMA requests and to identify the related translation structure in
->>> IOMMU. When a PASID-capable device is assigned to a VM, we want the
->>> same capability of using PASID to tag guest process virtual address
->>> spaces to achieve virtual SVA (vSVA).
->>>
->>> PASID management for guest is vendor specific. Some vendors (e.g.
->>> Intel
->>> VT-d) requires system-wide managed PASIDs cross all devices,
->>> regardless
->> across?
-> 
-> yep. will correct it.
-> 
->>> of whether a device is used by host or assigned to guest. Other
->>> vendors (e.g. ARM SMMU) may allow PASIDs managed per-device thus could
->>> be fully delegated to the guest for assigned devices.
->>>
->>> For system-wide managed PASIDs, this patch introduces a vfio module to
->>> handle explicit PASID alloc/free requests from guest. Allocated PASIDs
->>> are associated to a process (or, mm_struct) in IOASID core. A vfio_mm
->>> object is introduced to track mm_struct. Multiple VFIO containers
->>> within a process share the same vfio_mm object.
->>>
->>> A quota mechanism is provided to prevent malicious user from
->>> exhausting available PASIDs. Currently the quota is a global parameter
->>> applied to all VFIO devices. In the future per-device quota might be
->>> supported too.
->>>
->>> Cc: Kevin Tian <kevin.tian@intel.com>
->>> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>> Cc: Eric Auger <eric.auger@redhat.com>
->>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>> Cc: Joerg Roedel <joro@8bytes.org>
->>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->>> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
->>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->>> ---
->>> v4 -> v5:
->>> *) address comments from Eric Auger.
->>> *) address the comments from Alex on the pasid free range support. Added
->>>    per vfio_mm pasid r-b tree.
->>>    https://lore.kernel.org/kvm/20200709082751.320742ab@x1.home/
->>>
->>> v3 -> v4:
->>> *) fix lock leam in vfio_mm_get_from_task()
->>> *) drop pasid_quota field in struct vfio_mm
->>> *) vfio_mm_get_from_task() returns ERR_PTR(-ENOTTY) when
->>> !CONFIG_VFIO_PASID
->>>
->>> v1 -> v2:
->>> *) added in v2, split from the pasid alloc/free support of v1
->>> ---
->>>  drivers/vfio/Kconfig      |   5 +
->>>  drivers/vfio/Makefile     |   1 +
->>>  drivers/vfio/vfio_pasid.c | 235
->> ++++++++++++++++++++++++++++++++++++++++++++++
->>>  include/linux/vfio.h      |  28 ++++++
->>>  4 files changed, 269 insertions(+)
->>>  create mode 100644 drivers/vfio/vfio_pasid.c
->>>
->>> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig index
->>> fd17db9..3d8a108 100644
->>> --- a/drivers/vfio/Kconfig
->>> +++ b/drivers/vfio/Kconfig
->>> @@ -19,6 +19,11 @@ config VFIO_VIRQFD
->>>  	depends on VFIO && EVENTFD
->>>  	default n
->>>
->>> +config VFIO_PASID
->>> +	tristate
->>> +	depends on IOASID && VFIO
->>> +	default n
->>> +
->>>  menuconfig VFIO
->>>  	tristate "VFIO Non-Privileged userspace driver framework"
->>>  	depends on IOMMU_API
->>> diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile index
->>> de67c47..bb836a3 100644
->>> --- a/drivers/vfio/Makefile
->>> +++ b/drivers/vfio/Makefile
->>> @@ -3,6 +3,7 @@ vfio_virqfd-y := virqfd.o
->>>
->>>  obj-$(CONFIG_VFIO) += vfio.o
->>>  obj-$(CONFIG_VFIO_VIRQFD) += vfio_virqfd.o
->>> +obj-$(CONFIG_VFIO_PASID) += vfio_pasid.o
->>>  obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
->>>  obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
->>>  obj-$(CONFIG_VFIO_SPAPR_EEH) += vfio_spapr_eeh.o diff --git
->>> a/drivers/vfio/vfio_pasid.c b/drivers/vfio/vfio_pasid.c new file mode
->>> 100644 index 0000000..66e6054e
->>> --- /dev/null
->>> +++ b/drivers/vfio/vfio_pasid.c
->>> @@ -0,0 +1,235 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * Copyright (C) 2020 Intel Corporation.
->>> + *     Author: Liu Yi L <yi.l.liu@intel.com>
->>> + *
->>> + */
->>> +
->>> +#include <linux/vfio.h>
->>> +#include <linux/eventfd.h>
->>> +#include <linux/file.h>
->>> +#include <linux/module.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/sched/mm.h>
->>> +
->>> +#define DRIVER_VERSION  "0.1"
->>> +#define DRIVER_AUTHOR   "Liu Yi L <yi.l.liu@intel.com>"
->>> +#define DRIVER_DESC     "PASID management for VFIO bus drivers"
->>> +
->>> +#define VFIO_DEFAULT_PASID_QUOTA	1000
->>> +static int pasid_quota = VFIO_DEFAULT_PASID_QUOTA;
->>> +module_param_named(pasid_quota, pasid_quota, uint, 0444);
->>> +MODULE_PARM_DESC(pasid_quota,
->>> +		 " Set the quota for max number of PASIDs that an application is
->>> +allowed to request (default 1000)");
->> s/ Set/Set
-> 
-> got it.
-> 
->>> +
->>> +struct vfio_mm_token {
->>> +	unsigned long long val;
->>> +};
->>> +
->>> +struct vfio_mm {
->>> +	struct kref		kref;
->>> +	int			ioasid_sid;
->>> +	struct mutex		pasid_lock;
->>> +	struct rb_root		pasid_list;
->>> +	struct list_head	next;
->>> +	struct vfio_mm_token	token;
->>> +};
->>> +
->>> +static struct mutex		vfio_mm_lock;
->>> +static struct list_head		vfio_mm_list;
->>> +
->>> +struct vfio_pasid {
->>> +	struct rb_node		node;
->>> +	ioasid_t		pasid;
->>> +};
->>> +
->>> +static void vfio_remove_all_pasids(struct vfio_mm *vmm);
->>> +
->>> +/* called with vfio.vfio_mm_lock held */ static void
->>> +vfio_mm_release(struct kref *kref) {
->>> +	struct vfio_mm *vmm = container_of(kref, struct vfio_mm, kref);
->>> +
->>> +	list_del(&vmm->next);
->>> +	mutex_unlock(&vfio_mm_lock);
->>> +	vfio_remove_all_pasids(vmm);
->>> +	ioasid_free_set(vmm->ioasid_sid, true);
->>> +	kfree(vmm);
->>> +}
->>> +
->>> +void vfio_mm_put(struct vfio_mm *vmm) {
->>> +	kref_put_mutex(&vmm->kref, vfio_mm_release, &vfio_mm_lock); }
->>> +
->>> +static void vfio_mm_get(struct vfio_mm *vmm) {
->>> +	kref_get(&vmm->kref);
->>> +}
->>> +
->>> +struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task) {
->>> +	struct mm_struct *mm = get_task_mm(task);
->>> +	struct vfio_mm *vmm;
->>> +	unsigned long long val = (unsigned long long)mm;
->>> +	int ret;
->>> +
->>> +	mutex_lock(&vfio_mm_lock);
->>> +	/* Search existing vfio_mm with current mm pointer */
->>> +	list_for_each_entry(vmm, &vfio_mm_list, next) {
->>> +		if (vmm->token.val == val) {
->>> +			vfio_mm_get(vmm);
->>> +			goto out;
->>> +		}
->>> +	}
->>> +
->>> +	vmm = kzalloc(sizeof(*vmm), GFP_KERNEL);
->>> +	if (!vmm) {
->>> +		vmm = ERR_PTR(-ENOMEM);
->>> +		goto out;
->>> +	}
->>> +
->>> +	/*
->>> +	 * IOASID core provides a 'IOASID set' concept to track all
->>> +	 * PASIDs associated with a token. Here we use mm_struct as
->>> +	 * the token and create a IOASID set per mm_struct. All the
->>> +	 * containers of the process share the same IOASID set.
->>> +	 */
->>> +	ret = ioasid_alloc_set((struct ioasid_set *)mm, pasid_quota,
->>> +			       &vmm->ioasid_sid);
->>> +	if (ret) {
->>> +		kfree(vmm);
->>> +		vmm = ERR_PTR(ret);
->>> +		goto out;
->>> +	}
->>> +
->>> +	kref_init(&vmm->kref);
->>> +	vmm->token.val = val;
->>> +	mutex_init(&vmm->pasid_lock);
->>> +	vmm->pasid_list = RB_ROOT;
->>> +
->>> +	list_add(&vmm->next, &vfio_mm_list);
->>> +out:
->>> +	mutex_unlock(&vfio_mm_lock);
->>> +	mmput(mm);
->>> +	return vmm;
->>> +}
->>> +
->>> +/*
->>> + * Find PASID within @min and @max
->>> + */
->>> +static struct vfio_pasid *vfio_find_pasid(struct vfio_mm *vmm,
->>> +					  ioasid_t min, ioasid_t max)
->>> +{
->>> +	struct rb_node *node = vmm->pasid_list.rb_node;
->>> +
->>> +	while (node) {
->>> +		struct vfio_pasid *vid = rb_entry(node,
->>> +						struct vfio_pasid, node);
->>> +
->>> +		if (max < vid->pasid)
->>> +			node = node->rb_left;
->>> +		else if (min > vid->pasid)
->>> +			node = node->rb_right;
->>> +		else
->>> +			return vid;
->>> +	}
->>> +
->>> +	return NULL;
->>> +}
->>> +
->>> +static void vfio_link_pasid(struct vfio_mm *vmm, struct vfio_pasid
->>> +*new) {
->>> +	struct rb_node **link = &vmm->pasid_list.rb_node, *parent = NULL;
->>> +	struct vfio_pasid *vid;
->>> +
->>> +	while (*link) {
->>> +		parent = *link;
->>> +		vid = rb_entry(parent, struct vfio_pasid, node);
->>> +
->>> +		if (new->pasid <= vid->pasid)
->>> +			link = &(*link)->rb_left;
->>> +		else
->>> +			link = &(*link)->rb_right;
->>> +	}
->>> +
->>> +	rb_link_node(&new->node, parent, link);
->>> +	rb_insert_color(&new->node, &vmm->pasid_list); }
->>> +
->>> +static void vfio_remove_pasid(struct vfio_mm *vmm, struct vfio_pasid
->>> +*vid) {
->>> +	rb_erase(&vid->node, &vmm->pasid_list); /* unlink pasid */
->> nit: to be consistent with vfio_unlink_dma, introduce vfio_unlink_pasid
-> 
-> aha, I added it but removed it in the middle of cooking.:-)
-> 
->>> +	ioasid_free(vid->pasid);
->>> +	kfree(vid);
->>> +}
->>> +
->>> +static void vfio_remove_all_pasids(struct vfio_mm *vmm) {
->>> +	struct rb_node *node;
->>> +
->>> +	mutex_lock(&vmm->pasid_lock);
->>> +	while ((node = rb_first(&vmm->pasid_list)))
->>> +		vfio_remove_pasid(vmm, rb_entry(node, struct vfio_pasid, node));
->>> +	mutex_unlock(&vmm->pasid_lock);
->>> +}
->>> +
->>> +int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max) {
->>> +	ioasid_t pasid;
->>> +	struct vfio_pasid *vid;
->>> +
->>> +	pasid = ioasid_alloc(vmm->ioasid_sid, min, max, NULL);
->>> +	if (pasid == INVALID_IOASID)
->>> +		return -ENOSPC;
->>> +
->>> +	vid = kzalloc(sizeof(*vid), GFP_KERNEL);
->>> +	if (!vid) {
->>> +		ioasid_free(pasid);
->>> +		return -ENOMEM;
->>> +	}
->>> +
->>> +	vid->pasid = pasid;
->>> +
->>> +	mutex_lock(&vmm->pasid_lock);
->>> +	vfio_link_pasid(vmm, vid);
->>> +	mutex_unlock(&vmm->pasid_lock);
->>> +
->>> +	return pasid;
->>> +}
->> I am not totally convinced by your previous reply on EXPORT_SYMBOL_GP()
->> irrelevance in this patch. But well ;-)
-> 
-> I recalled my memory, I think it's made per a comment from Chris.
-> I guess it may make sense to export symbols together with the exact
-> driver user of it in this patch as well :-) but maybe I misunderstood
-> him. if yes, I may add the symbol export back in this patch.
-> 
-> https://lore.kernel.org/linux-iommu/20200331075331.GA26583@infradead.org/#t
-OK I don't know the best practice here. Anyway there is no caller at
-this stage either. I think you may describe in the commit message the
-vfio_iommu_type1 will be the eventual user of the exported functions in
-this module, what are the exact exported functions here. You may also
-explain the motivation behind creating a separate module.
-
-Thanks
-
-Eric
-> 
->>
->>> +
->>> +void vfio_pasid_free_range(struct vfio_mm *vmm,
->>> +			   ioasid_t min, ioasid_t max)
->>> +{
->>> +	struct vfio_pasid *vid = NULL;
->>> +
->>> +	/*
->>> +	 * IOASID core will notify PASID users (e.g. IOMMU driver) to
->>> +	 * teardown necessary structures depending on the to-be-freed
->>> +	 * PASID.
->>> +	 */
->>> +	mutex_lock(&vmm->pasid_lock);
->>> +	while ((vid = vfio_find_pasid(vmm, min, max)) != NULL)
->>> +		vfio_remove_pasid(vmm, vid);
->>> +	mutex_unlock(&vmm->pasid_lock);
->>> +}
->>> +
->>> +static int __init vfio_pasid_init(void) {
->>> +	mutex_init(&vfio_mm_lock);
->>> +	INIT_LIST_HEAD(&vfio_mm_list);
->>> +	return 0;
->>> +}
->>> +
->>> +static void __exit vfio_pasid_exit(void) {
->>> +	WARN_ON(!list_empty(&vfio_mm_list));
->>> +}
->> In your previous reply, ie. https://lkml.org/lkml/2020/7/7/273
->> you said:
->> "
->> I guess yes. VFIO_PASID is supposed to be referenced by VFIO_IOMMU_TYPE1 and
->> may be other module. once vfio_pasid_exit() is triggered, that means its user
->> (VFIO_IOMMU_TYPE1) has been removed. Should all the vfio_mm instances should
->> have been released. If not, means there is vfio_mm leak, should be a bug of user
->> module."
->>
->> if I am not wrong this dependency is not yet known at this stage of
->> the series? I
->> would rather add this comment either in the commit message or here.
-> 
-> make sense, so far it's not known. I can add a comment here. :-)
-> 
-> Regards,
-> Yi Liu
-> 
->> Thanks
->>
->> Eric
->>
->>> +
->>> +module_init(vfio_pasid_init);
->>> +module_exit(vfio_pasid_exit);
->>> +
->>> +MODULE_VERSION(DRIVER_VERSION);
->>> +MODULE_LICENSE("GPL v2");
->>> +MODULE_AUTHOR(DRIVER_AUTHOR);
->>> +MODULE_DESCRIPTION(DRIVER_DESC);
->>> diff --git a/include/linux/vfio.h b/include/linux/vfio.h index
->>> 38d3c6a..31472a9 100644
->>> --- a/include/linux/vfio.h
->>> +++ b/include/linux/vfio.h
->>> @@ -97,6 +97,34 @@ extern int vfio_register_iommu_driver(const struct
->>> vfio_iommu_driver_ops *ops);  extern void vfio_unregister_iommu_driver(
->>>  				const struct vfio_iommu_driver_ops *ops);
->>>
->>> +struct vfio_mm;
->>> +#if IS_ENABLED(CONFIG_VFIO_PASID)
->>> +extern struct vfio_mm *vfio_mm_get_from_task(struct task_struct
->>> +*task); extern void vfio_mm_put(struct vfio_mm *vmm); extern int
->>> +vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max); extern void
->>> +vfio_pasid_free_range(struct vfio_mm *vmm,
->>> +				  ioasid_t min, ioasid_t max);
->>> +#else
->>> +static inline struct vfio_mm *vfio_mm_get_from_task(struct
->>> +task_struct *task) {
->>> +	return ERR_PTR(-ENOTTY);
->>> +}
->>> +
->>> +static inline void vfio_mm_put(struct vfio_mm *vmm) { }
->>> +
->>> +static inline int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int
->>> +max) {
->>> +	return -ENOTTY;
->>> +}
->>> +
->>> +static inline void vfio_pasid_free_range(struct vfio_mm *vmm,
->>> +					  ioasid_t min, ioasid_t max)
->>> +{
->>> +}
->>> +#endif /* CONFIG_VFIO_PASID */
->>> +
->>>  /*
->>>   * External user API
->>>   */
->>>
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+WWksCgpPbiA3LzIwLzIwIDk6NTEgQU0sIExpdSwgWWkgTCB3cm90ZToKPiBIaSBFcmljLAo+IAo+
+PiBGcm9tOiBBdWdlciBFcmljIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+Cj4+IFNlbnQ6IFNhdHVy
+ZGF5LCBKdWx5IDE4LCAyMDIwIDE6MzQgQU0KPj4KPj4gWWksCj4+Cj4+IE9uIDcvMTIvMjAgMToy
+MCBQTSwgTGl1IFlpIEwgd3JvdGU6Cj4+PiBUaGlzIHBhdGNoIGV4cG9ydHMgaW9tbXUgbmVzdGlu
+ZyBjYXBhYmlsaXR5IGluZm8gdG8gdXNlciBzcGFjZSB0aHJvdWdoCj4+PiBWRklPLiBVc2VyIHNw
+YWNlIGlzIGV4cGVjdGVkIHRvIGNoZWNrIHRoaXMgaW5mbyBmb3Igc3VwcG9ydGVkIHVBUElzIChl
+LmcuCj4+IGl0IGlzIG5vdCBvbmx5IHRvIGNoZWNrIHRoZSBzdXBwb3J0ZWQgdUFQSVMgYnV0IHJh
+dGhlciB0byBrbm93IHdoaWNoCj4+IGNhbGxiYWNrcyBpdCBtdXN0IGNhbGwgdXBvbiB2SU9NTVUg
+ZXZlbnRzIGFuZCB3aGljaCBmZWF0dXJlcyBhcmUKPj4gc3VwcG9ydGVkIGJ5IHRoZSBwaHlzaWNh
+bCBJT01NVS4KPiAKPiB5ZXMsIHdpbGwgcmVmaW5lIHRoZSBkZXNjcmlwdGlvbiBwZXIgeW91ciBj
+b21tZW50Lgo+IAo+Pj4gUEFTSUQgYWxsb2MvZnJlZSwgYmluZCBwYWdlIHRhYmxlLCBhbmQgY2Fj
+aGUgaW52YWxpZGF0aW9uKSBhbmQgdGhlIHZlbmRvcgo+Pj4gc3BlY2lmaWMgZm9ybWF0IGluZm9y
+bWF0aW9uIGZvciBmaXJzdCBsZXZlbC9zdGFnZSBwYWdlIHRhYmxlIHRoYXQgd2lsbCBiZQo+Pj4g
+Ym91bmQgdG8uCj4+Pgo+Pj4gVGhlIG5lc3RpbmcgaW5mbyBpcyBhdmFpbGFibGUgb25seSBhZnRl
+ciB0aGUgbmVzdGluZyBpb21tdSB0eXBlIGlzIHNldAo+Pj4gZm9yIGEgY29udGFpbmVyLgo+PiB0
+byBORVNURUQgdHlwZQo+IAo+IHlvdSBtZWFuICJUaGUgbmVzdGluZyBpbmZvIGlzIGF2YWlsYWJs
+ZSBvbmx5IGFmdGVyIGNvbnRhaW5lciBzZXQgdG8gYmUgTkVTVEVEIHR5cGUuIgo+IAo+IHJpZ2h0
+Pwpjb3JyZWN0Cj4gCj4+ICBDdXJyZW50IGltcGxlbWVudGF0aW9uIGltcG9zZXMgb25lIGxpbWl0
+YXRpb24gLSBvbmUKPj4+IG5lc3RpbmcgY29udGFpbmVyIHNob3VsZCBpbmNsdWRlIGF0IG1vc3Qg
+b25lIGdyb3VwLiBUaGUgcGhpbG9zb3BoeSBvZgo+Pj4gdmZpbyBjb250YWluZXIgaXMgaGF2aW5n
+IGFsbCBncm91cHMvZGV2aWNlcyB3aXRoaW4gdGhlIGNvbnRhaW5lciBzaGFyZQo+Pj4gdGhlIHNh
+bWUgSU9NTVUgY29udGV4dC4gV2hlbiB2U1ZBIGlzIGVuYWJsZWQsIG9uZSBJT01NVSBjb250ZXh0
+IGNvdWxkCj4+PiBpbmNsdWRlIG9uZSAybmQtbGV2ZWwgYWRkcmVzcyBzcGFjZSBhbmQgbXVsdGlw
+bGUgMXN0LWxldmVsIGFkZHJlc3Mgc3BhY2VzLgo+Pj4gV2hpbGUgdGhlIDJuZC1sZXZlbCBhZGRy
+ZXNzIHNwYWNlIGlzIHJlYXNvbmFibHkgc2hhcmFibGUgYnkgbXVsdGlwbGUgZ3JvdXBzCj4+PiAs
+IGJsaW5kbHkgc2hhcmluZyAxc3QtbGV2ZWwgYWRkcmVzcyBzcGFjZXMgYWNyb3NzIGFsbCBncm91
+cHMgd2l0aGluIHRoZQo+Pj4gY29udGFpbmVyIG1pZ2h0IGluc3RlYWQgYnJlYWsgdGhlIGd1ZXN0
+IGV4cGVjdGF0aW9uLiBJbiB0aGUgZnV0dXJlIHN1Yi8KPj4+IHN1cGVyIGNvbnRhaW5lciBjb25j
+ZXB0IG1pZ2h0IGJlIGludHJvZHVjZWQgdG8gYWxsb3cgcGFydGlhbCBhZGRyZXNzIHNwYWNlCj4+
+PiBzaGFyaW5nIHdpdGhpbiBhbiBJT01NVSBjb250ZXh0LiBCdXQgZm9yIG5vdyBsZXQncyBnbyB3
+aXRoIHRoaXMgcmVzdHJpY3Rpb24KPj4+IGJ5IHJlcXVpcmluZyBzaW5nbGV0b24gY29udGFpbmVy
+IGZvciB1c2luZyBuZXN0aW5nIGlvbW11IGZlYXR1cmVzLiBCZWxvdwo+Pj4gbGluayBoYXMgdGhl
+IHJlbGF0ZWQgZGlzY3Vzc2lvbiBhYm91dCB0aGlzIGRlY2lzaW9uLgo+Pgo+PiBNYXliZSBhZGQg
+YSBub3RlIGFib3V0IFNNTVUgcmVsYXRlZCBjaGFuZ2VzIHNwb3R0ZWQgYnkgSmVhbi4KPiAKPiBJ
+IGd1ZXNzIHlvdSBtZWFuIHRoZSBjb21tZW50cyBKZWFuIGdhdmUgaW4gcGF0Y2ggMy8xNSwgcmln
+aHQ/IEknbGwKPiBjb3B5IGhpcyBjb21tZW50cyBhbmQgYWxzbyBnaXZlIHRoZSBiZWxvdyBsaW5r
+IGFzIHdlbGwuCj4gCj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcva3ZtLzIwMjAwNzE3MDkwOTAw
+LkdDNDg1MEBteXJpY2EvCmNvcnJlY3QKClRoYW5rcwoKRXJpYwo+IAo+Pj4KPj4+IGh0dHBzOi8v
+bGttbC5vcmcvbGttbC8yMDIwLzUvMTUvMTAyOAo+Pj4KPj4+IENjOiBLZXZpbiBUaWFuIDxrZXZp
+bi50aWFuQGludGVsLmNvbT4KPj4+IENDOiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXgu
+aW50ZWwuY29tPgo+Pj4gQ2M6IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhh
+dC5jb20+Cj4+PiBDYzogRXJpYyBBdWdlciA8ZXJpYy5hdWdlckByZWRoYXQuY29tPgo+Pj4gQ2M6
+IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciA8amVhbi1waGlsaXBwZUBsaW5hcm8ub3JnPgo+Pj4gQ2M6
+IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgo+Pj4gQ2M6IEx1IEJhb2x1IDxiYW9sdS5s
+dUBsaW51eC5pbnRlbC5jb20+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBMaXUgWWkgTCA8eWkubC5saXVA
+aW50ZWwuY29tPgo+Pj4gLS0tCj4+PiB2NCAtPiB2NToKPj4+ICopIGFkZHJlc3MgY29tbWVudHMg
+ZnJvbSBFcmljIEF1Z2VyLgo+Pj4gKikgcmV0dXJuIHN0cnVjdCBpb21tdV9uZXN0aW5nX2luZm8g
+Zm9yCj4+IFZGSU9fSU9NTVVfVFlQRTFfSU5GT19DQVBfTkVTVElORyBhcwo+Pj4gICAgY2FwIGlz
+IG11Y2ggImNoZWFwIiwgaWYgbmVlZHMgZXh0ZW5zaW9uIGluIGZ1dHVyZSwganVzdCBkZWZpbmUg
+YW5vdGhlciBjYXAuCj4+PiAgICBodHRwczovL2xvcmUua2VybmVsLm9yZy9rdm0vMjAyMDA3MDgx
+MzI5NDcuNWI3ZWU5NTRAeDEuaG9tZS8KPj4+Cj4+PiB2MyAtPiB2NDoKPj4+ICopIGFkZHJlc3Mg
+Y29tbWVudHMgYWdhaW5zdCB2My4KPj4+Cj4+PiB2MSAtPiB2MjoKPj4+ICopIGFkZGVkIGluIHYy
+Cj4+PiAtLS0KPj4+ICBkcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90eXBlMS5jIHwgMTAyCj4+ICsr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0KPj4+ICBpbmNsdWRlL3VhcGkv
+bGludXgvdmZpby5oICAgICAgIHwgIDE5ICsrKysrKysrCj4+PiAgMiBmaWxlcyBjaGFuZ2VkLCAx
+MDkgaW5zZXJ0aW9ucygrKSwgMTIgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMgYi9kcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90
+eXBlMS5jCj4+PiBpbmRleCAzYmQ3MGZmLi5lZDgwMTA0IDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVy
+cy92ZmlvL3ZmaW9faW9tbXVfdHlwZTEuYwo+Pj4gKysrIGIvZHJpdmVycy92ZmlvL3ZmaW9faW9t
+bXVfdHlwZTEuYwo+Pj4gQEAgLTYyLDE4ICs2MiwyMCBAQCBNT0RVTEVfUEFSTV9ERVNDKGRtYV9l
+bnRyeV9saW1pdCwKPj4+ICAJCSAiTWF4aW11bSBudW1iZXIgb2YgdXNlciBETUEgbWFwcGluZ3Mg
+cGVyIGNvbnRhaW5lciAoNjU1MzUpLiIpOwo+Pj4KPj4+ICBzdHJ1Y3QgdmZpb19pb21tdSB7Cj4+
+PiAtCXN0cnVjdCBsaXN0X2hlYWQJZG9tYWluX2xpc3Q7Cj4+PiAtCXN0cnVjdCBsaXN0X2hlYWQJ
+aW92YV9saXN0Owo+Pj4gLQlzdHJ1Y3QgdmZpb19kb21haW4JKmV4dGVybmFsX2RvbWFpbjsgLyog
+ZG9tYWluIGZvciBleHRlcm5hbCB1c2VyICovCj4+PiAtCXN0cnVjdCBtdXRleAkJbG9jazsKPj4+
+IC0Jc3RydWN0IHJiX3Jvb3QJCWRtYV9saXN0Owo+Pj4gLQlzdHJ1Y3QgYmxvY2tpbmdfbm90aWZp
+ZXJfaGVhZCBub3RpZmllcjsKPj4+IC0JdW5zaWduZWQgaW50CQlkbWFfYXZhaWw7Cj4+PiAtCXVp
+bnQ2NF90CQlwZ3NpemVfYml0bWFwOwo+Pj4gLQlib29sCQkJdjI7Cj4+PiAtCWJvb2wJCQluZXN0
+aW5nOwo+Pj4gLQlib29sCQkJZGlydHlfcGFnZV90cmFja2luZzsKPj4+IC0JYm9vbAkJCXBpbm5l
+ZF9wYWdlX2RpcnR5X3Njb3BlOwo+Pj4gKwlzdHJ1Y3QgbGlzdF9oZWFkCQlkb21haW5fbGlzdDsK
+Pj4+ICsJc3RydWN0IGxpc3RfaGVhZAkJaW92YV9saXN0Owo+Pj4gKwkvKiBkb21haW4gZm9yIGV4
+dGVybmFsIHVzZXIgKi8KPj4+ICsJc3RydWN0IHZmaW9fZG9tYWluCQkqZXh0ZXJuYWxfZG9tYWlu
+Owo+Pj4gKwlzdHJ1Y3QgbXV0ZXgJCQlsb2NrOwo+Pj4gKwlzdHJ1Y3QgcmJfcm9vdAkJCWRtYV9s
+aXN0Owo+Pj4gKwlzdHJ1Y3QgYmxvY2tpbmdfbm90aWZpZXJfaGVhZAlub3RpZmllcjsKPj4+ICsJ
+dW5zaWduZWQgaW50CQkJZG1hX2F2YWlsOwo+Pj4gKwl1aW50NjRfdAkJCXBnc2l6ZV9iaXRtYXA7
+Cj4+PiArCWJvb2wJCQkJdjI7Cj4+PiArCWJvb2wJCQkJbmVzdGluZzsKPj4+ICsJYm9vbAkJCQlk
+aXJ0eV9wYWdlX3RyYWNraW5nOwo+Pj4gKwlib29sCQkJCXBpbm5lZF9wYWdlX2RpcnR5X3Njb3Bl
+Owo+Pj4gKwlzdHJ1Y3QgaW9tbXVfbmVzdGluZ19pbmZvCSpuZXN0aW5nX2luZm87Cj4+PiAgfTsK
+Pj4+Cj4+PiAgc3RydWN0IHZmaW9fZG9tYWluIHsKPj4+IEBAIC0xMzAsNiArMTMyLDkgQEAgc3Ry
+dWN0IHZmaW9fcmVnaW9ucyB7Cj4+PiAgI2RlZmluZSBJU19JT01NVV9DQVBfRE9NQUlOX0lOX0NP
+TlRBSU5FUihpb21tdSkJXAo+Pj4gIAkJCQkJKCFsaXN0X2VtcHR5KCZpb21tdS0+ZG9tYWluX2xp
+c3QpKQo+Pj4KPj4+ICsjZGVmaW5lIENPTlRBSU5FUl9IQVNfRE9NQUlOKGlvbW11KQkoKChpb21t
+dSktPmV4dGVybmFsX2RvbWFpbikgfHwgXAo+Pj4gKwkJCQkJICghbGlzdF9lbXB0eSgmKGlvbW11
+KS0+ZG9tYWluX2xpc3QpKSkKPj4+ICsKPj4+ICAjZGVmaW5lIERJUlRZX0JJVE1BUF9CWVRFUyhu
+KQkoQUxJR04obiwgQklUU19QRVJfVFlQRSh1NjQpKSAvCj4+IEJJVFNfUEVSX0JZVEUpCj4+Pgo+
+Pj4gIC8qCj4+PiBAQCAtMTkyOSw2ICsxOTM0LDEzIEBAIHN0YXRpYyB2b2lkIHZmaW9faW9tbXVf
+aW92YV9pbnNlcnRfY29weShzdHJ1Y3QKPj4gdmZpb19pb21tdSAqaW9tbXUsCj4+Pgo+Pj4gIAls
+aXN0X3NwbGljZV90YWlsKGlvdmFfY29weSwgaW92YSk7Cj4+PiAgfQo+Pj4gKwo+Pj4gK3N0YXRp
+YyB2b2lkIHZmaW9faW9tbXVfcmVsZWFzZV9uZXN0aW5nX2luZm8oc3RydWN0IHZmaW9faW9tbXUg
+KmlvbW11KQo+Pj4gK3sKPj4+ICsJa2ZyZWUoaW9tbXUtPm5lc3RpbmdfaW5mbyk7Cj4+PiArCWlv
+bW11LT5uZXN0aW5nX2luZm8gPSBOVUxMOwo+Pj4gK30KPj4+ICsKPj4+ICBzdGF0aWMgaW50IHZm
+aW9faW9tbXVfdHlwZTFfYXR0YWNoX2dyb3VwKHZvaWQgKmlvbW11X2RhdGEsCj4+PiAgCQkJCQkg
+c3RydWN0IGlvbW11X2dyb3VwICppb21tdV9ncm91cCkKPj4+ICB7Cj4+PiBAQCAtMTk1OSw2ICsx
+OTcxLDEyIEBAIHN0YXRpYyBpbnQgdmZpb19pb21tdV90eXBlMV9hdHRhY2hfZ3JvdXAodm9pZAo+
+PiAqaW9tbXVfZGF0YSwKPj4+ICAJCX0KPj4+ICAJfQo+Pj4KPj4+ICsJLyogTmVzdGluZyB0eXBl
+IGNvbnRhaW5lciBjYW4gaW5jbHVkZSBvbmx5IG9uZSBncm91cCAqLwo+Pj4gKwlpZiAoaW9tbXUt
+Pm5lc3RpbmcgJiYgQ09OVEFJTkVSX0hBU19ET01BSU4oaW9tbXUpKSB7Cj4+PiArCQltdXRleF91
+bmxvY2soJmlvbW11LT5sb2NrKTsKPj4+ICsJCXJldHVybiAtRUlOVkFMOwo+Pj4gKwl9Cj4+PiAr
+Cj4+PiAgCWdyb3VwID0ga3phbGxvYyhzaXplb2YoKmdyb3VwKSwgR0ZQX0tFUk5FTCk7Cj4+PiAg
+CWRvbWFpbiA9IGt6YWxsb2Moc2l6ZW9mKCpkb21haW4pLCBHRlBfS0VSTkVMKTsKPj4+ICAJaWYg
+KCFncm91cCB8fCAhZG9tYWluKSB7Cj4+PiBAQCAtMjAyOSw2ICsyMDQ3LDMyIEBAIHN0YXRpYyBp
+bnQgdmZpb19pb21tdV90eXBlMV9hdHRhY2hfZ3JvdXAodm9pZAo+PiAqaW9tbXVfZGF0YSwKPj4+
+ICAJaWYgKHJldCkKPj4+ICAJCWdvdG8gb3V0X2RvbWFpbjsKPj4+Cj4+PiArCS8qIE5lc3Rpbmcg
+Y2FwIGluZm8gaXMgYXZhaWxhYmxlIG9ubHkgYWZ0ZXIgYXR0YWNoaW5nICovCj4+PiArCWlmIChp
+b21tdS0+bmVzdGluZykgewo+Pj4gKwkJc3RydWN0IGlvbW11X25lc3RpbmdfaW5mbyB0bXAgPSB7
+IC5zaXplID0gMCwgfTsKPj4+ICsKPj4+ICsJCS8qIEZpcnN0IGdldCB0aGUgc2l6ZSBvZiB2ZW5k
+b3Igc3BlY2lmaWMgbmVzdGluZyBpbmZvICovCj4+PiArCQlyZXQgPSBpb21tdV9kb21haW5fZ2V0
+X2F0dHIoZG9tYWluLT5kb21haW4sCj4+PiArCQkJCQkgICAgRE9NQUlOX0FUVFJfTkVTVElORywK
+Pj4+ICsJCQkJCSAgICAmdG1wKTsKPj4+ICsJCWlmIChyZXQpCj4+PiArCQkJZ290byBvdXRfZGV0
+YWNoOwo+Pj4gKwo+Pj4gKwkJaW9tbXUtPm5lc3RpbmdfaW5mbyA9IGt6YWxsb2ModG1wLnNpemUs
+IEdGUF9LRVJORUwpOwo+Pj4gKwkJaWYgKCFpb21tdS0+bmVzdGluZ19pbmZvKSB7Cj4+PiArCQkJ
+cmV0ID0gLUVOT01FTTsKPj4+ICsJCQlnb3RvIG91dF9kZXRhY2g7Cj4+PiArCQl9Cj4+PiArCj4+
+PiArCQkvKiBOb3cgZ2V0IHRoZSBuZXN0aW5nIGluZm8gKi8KPj4+ICsJCWlvbW11LT5uZXN0aW5n
+X2luZm8tPnNpemUgPSB0bXAuc2l6ZTsKPj4+ICsJCXJldCA9IGlvbW11X2RvbWFpbl9nZXRfYXR0
+cihkb21haW4tPmRvbWFpbiwKPj4+ICsJCQkJCSAgICBET01BSU5fQVRUUl9ORVNUSU5HLAo+Pj4g
+KwkJCQkJICAgIGlvbW11LT5uZXN0aW5nX2luZm8pOwo+Pj4gKwkJaWYgKHJldCkKPj4+ICsJCQln
+b3RvIG91dF9kZXRhY2g7Cj4gCj4gZ2V0IG5lc3RpbmdfaW5mbyBmYWlsdXJlIHdpbGwgcmVzdWx0
+IGluIGdyb3VwX2F0dGFjaCBmYWlsdXJlLlsxXQo+IAo+Pj4gKwl9Cj4+PiArCj4+PiAgCS8qIEdl
+dCBhcGVydHVyZSBpbmZvICovCj4+PiAgCWlvbW11X2RvbWFpbl9nZXRfYXR0cihkb21haW4tPmRv
+bWFpbiwgRE9NQUlOX0FUVFJfR0VPTUVUUlksCj4+ICZnZW8pOwo+Pj4KPj4+IEBAIC0yMTM4LDYg
+KzIxODIsNyBAQCBzdGF0aWMgaW50IHZmaW9faW9tbXVfdHlwZTFfYXR0YWNoX2dyb3VwKHZvaWQK
+Pj4gKmlvbW11X2RhdGEsCj4+PiAgCXJldHVybiAwOwo+Pj4KPj4+ICBvdXRfZGV0YWNoOgo+Pj4g
+Kwl2ZmlvX2lvbW11X3JlbGVhc2VfbmVzdGluZ19pbmZvKGlvbW11KTsKPj4+ICAJdmZpb19pb21t
+dV9kZXRhY2hfZ3JvdXAoZG9tYWluLCBncm91cCk7Cj4+PiAgb3V0X2RvbWFpbjoKPj4+ICAJaW9t
+bXVfZG9tYWluX2ZyZWUoZG9tYWluLT5kb21haW4pOwo+Pj4gQEAgLTIzMzgsNiArMjM4Myw4IEBA
+IHN0YXRpYyB2b2lkIHZmaW9faW9tbXVfdHlwZTFfZGV0YWNoX2dyb3VwKHZvaWQKPj4gKmlvbW11
+X2RhdGEsCj4+PiAgCQkJCQl2ZmlvX2lvbW11X3VubWFwX3VucGluX2FsbChpb21tdSk7Cj4+PiAg
+CQkJCWVsc2UKPj4+Cj4+IAl2ZmlvX2lvbW11X3VubWFwX3VucGluX3JlYWNjb3VudChpb21tdSk7
+Cj4+PiArCj4+PiArCQkJCXZmaW9faW9tbXVfcmVsZWFzZV9uZXN0aW5nX2luZm8oaW9tbXUpOwo+
+Pj4gIAkJCX0KPj4+ICAJCQlpb21tdV9kb21haW5fZnJlZShkb21haW4tPmRvbWFpbik7Cj4+PiAg
+CQkJbGlzdF9kZWwoJmRvbWFpbi0+bmV4dCk7Cj4+PiBAQCAtMjU0Niw2ICsyNTkzLDMxIEBAIHN0
+YXRpYyBpbnQgdmZpb19pb21tdV9taWdyYXRpb25fYnVpbGRfY2FwcyhzdHJ1Y3QKPj4gdmZpb19p
+b21tdSAqaW9tbXUsCj4+PiAgCXJldHVybiB2ZmlvX2luZm9fYWRkX2NhcGFiaWxpdHkoY2Fwcywg
+JmNhcF9taWcuaGVhZGVyLCBzaXplb2YoY2FwX21pZykpOwo+Pj4gIH0KPj4+Cj4+PiArc3RhdGlj
+IGludCB2ZmlvX2lvbW11X2luZm9fYWRkX25lc3RpbmdfY2FwKHN0cnVjdCB2ZmlvX2lvbW11ICpp
+b21tdSwKPj4+ICsJCQkJCSAgIHN0cnVjdCB2ZmlvX2luZm9fY2FwICpjYXBzKQo+Pj4gK3sKPj4+
+ICsJc3RydWN0IHZmaW9faW5mb19jYXBfaGVhZGVyICpoZWFkZXI7Cj4+PiArCXN0cnVjdCB2Zmlv
+X2lvbW11X3R5cGUxX2luZm9fY2FwX25lc3RpbmcgKm5lc3RpbmdfY2FwOwo+Pj4gKwlzaXplX3Qg
+c2l6ZTsKPj4+ICsKPj4+ICsJc2l6ZSA9IG9mZnNldG9mKHN0cnVjdCB2ZmlvX2lvbW11X3R5cGUx
+X2luZm9fY2FwX25lc3RpbmcsIGluZm8pICsKPj4+ICsJCWlvbW11LT5uZXN0aW5nX2luZm8tPnNp
+emU7Cj4+PiArCj4+PiArCWhlYWRlciA9IHZmaW9faW5mb19jYXBfYWRkKGNhcHMsIHNpemUsCj4+
+PiArCQkJCSAgIFZGSU9fSU9NTVVfVFlQRTFfSU5GT19DQVBfTkVTVElORywgMSk7Cj4+PiArCWlm
+IChJU19FUlIoaGVhZGVyKSkKPj4+ICsJCXJldHVybiBQVFJfRVJSKGhlYWRlcik7Cj4+PiArCj4+
+PiArCW5lc3RpbmdfY2FwID0gY29udGFpbmVyX29mKGhlYWRlciwKPj4+ICsJCQkJICAgc3RydWN0
+IHZmaW9faW9tbXVfdHlwZTFfaW5mb19jYXBfbmVzdGluZywKPj4+ICsJCQkJICAgaGVhZGVyKTsK
+Pj4+ICsKPj4+ICsJbWVtY3B5KCZuZXN0aW5nX2NhcC0+aW5mbywgaW9tbXUtPm5lc3RpbmdfaW5m
+bywKPj4+ICsJICAgICAgIGlvbW11LT5uZXN0aW5nX2luZm8tPnNpemUpOwo+PiB5b3UgbXVzdCBj
+aGVjayB3aGV0aGVyIG5lc3RpbmdfaW5mbyBpcyBub24gTlVMTCBiZWZvcmUgZG9pbmcgdGhhdC4K
+PiAKPiBpdCdzIG5vdyB2YWxpZGF0ZWQgaW4gdGhlIGNhbGxlciBvZiB0aGlzIGZ1bmN0aW9uLiA6
+LSkKYWggb2sgc29ycnkgSSBtaXNzZWQgdGhhdC4KPiAgCj4+IEJlc2lkZXMgSSBhZ3JlZSB3aXRo
+IEplYW4gb24gdGhlIGZhY3QgaXQgbWF5IGJlIGJldHRlciB0byBub3QgcmVwb3J0IHRoZQo+PiBj
+YXBhYmlsaXR5IGlmIG5lc3RlZCBpcyBub3Qgc3VwcG9ydGVkLgo+IAo+IEkgc2VlLiBpbiB0aGlz
+IHBhdGNoLCBqdXN0IGZldyBsaW5lcyBiZWxvdyBbMl0sIHZmaW8gb25seSByZXBvcnRzIG5lc3Rp
+bmcKPiBjYXAgd2hlbiBpb21tdS0+bmVzdGluZ19pbmZvIGlzIG5vbi1udWxsLiBzbyBldmVuIGlm
+IHVzZXJzcGFjZSBzZWxlY3RlZAo+IG5lc3RpbmcgdHlwZSwgaXQgbWF5IGZhaWwgYXQgdGhlIFZG
+SU9fU0VUX0lPTU1VIHBoYXNlIHNpbmNlIGdyb3VwX2F0dGFjaAo+IHdpbGwgYmUgZmFpbGVkIGZv
+ciBORVNURUQgdHlwZSBjb250YWluZXIgaWYgaG9zdCBpb21tdSBkb2VzbuKAmXQgc3VwcG9ydAo+
+IG5lc3RpbmcuIHRoZSBjb2RlIGlzIG1hcmtlZCBhcyBbMV0gaW4gdGhpcyBlbWFpbC4KT0sgdGhh
+dCdzIGFscmVhZHkgdGhlcmUgdGhlbi4KClRoYW5rcwoKRXJpYwo+IAo+Pj4gKwo+Pj4gKwlyZXR1
+cm4gMDsKPj4+ICt9Cj4+PiArCj4+PiAgc3RhdGljIGludCB2ZmlvX2lvbW11X3R5cGUxX2dldF9p
+bmZvKHN0cnVjdCB2ZmlvX2lvbW11ICppb21tdSwKPj4+ICAJCQkJICAgICB1bnNpZ25lZCBsb25n
+IGFyZykKPj4+ICB7Cj4+PiBAQCAtMjU4MSw2ICsyNjUzLDEyIEBAIHN0YXRpYyBpbnQgdmZpb19p
+b21tdV90eXBlMV9nZXRfaW5mbyhzdHJ1Y3QKPj4gdmZpb19pb21tdSAqaW9tbXUsCj4+PiAgCWlm
+ICghcmV0KQo+Pj4gIAkJcmV0ID0gdmZpb19pb21tdV9pb3ZhX2J1aWxkX2NhcHMoaW9tbXUsICZj
+YXBzKTsKPj4+Cj4+PiArCWlmIChpb21tdS0+bmVzdGluZ19pbmZvKSB7Cj4+PiArCQlyZXQgPSB2
+ZmlvX2lvbW11X2luZm9fYWRkX25lc3RpbmdfY2FwKGlvbW11LCAmY2Fwcyk7Cj4+PiArCQlpZiAo
+cmV0KQo+Pj4gKwkJCXJldHVybiByZXQ7Cj4gCj4gaGVyZSBjaGVja3MgbmVzdGluZ19pbmZvIGJl
+Zm9yZSByZXBvcnRpbmcgbmVzdGluZyBjYXAuIFsyXQo+IAo+Pj4gKwl9Cj4+PiArCj4+PiAgCW11
+dGV4X3VubG9jaygmaW9tbXUtPmxvY2spOwo+Pj4KPj4+ICAJaWYgKHJldCkKPj4+IGRpZmYgLS1n
+aXQgYS9pbmNsdWRlL3VhcGkvbGludXgvdmZpby5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L3ZmaW8u
+aAo+Pj4gaW5kZXggOTIwNDcwNS4uNDZhNzhhZiAxMDA2NDQKPj4+IC0tLSBhL2luY2x1ZGUvdWFw
+aS9saW51eC92ZmlvLmgKPj4+ICsrKyBiL2luY2x1ZGUvdWFwaS9saW51eC92ZmlvLmgKPj4+IEBA
+IC0xNCw2ICsxNCw3IEBACj4+Pgo+Pj4gICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPgo+Pj4gICNp
+bmNsdWRlIDxsaW51eC9pb2N0bC5oPgo+Pj4gKyNpbmNsdWRlIDxsaW51eC9pb21tdS5oPgo+Pj4K
+Pj4+ICAjZGVmaW5lIFZGSU9fQVBJX1ZFUlNJT04JMAo+Pj4KPj4+IEBAIC0xMDM5LDYgKzEwNDAs
+MjQgQEAgc3RydWN0IHZmaW9faW9tbXVfdHlwZTFfaW5mb19jYXBfbWlncmF0aW9uIHsKPj4+ICAJ
+X191NjQJbWF4X2RpcnR5X2JpdG1hcF9zaXplOwkJLyogaW4gYnl0ZXMgKi8KPj4+ICB9Owo+Pj4K
+Pj4+ICsvKgo+Pj4gKyAqIFRoZSBuZXN0aW5nIGNhcGFiaWxpdHkgYWxsb3dzIHRvIHJlcG9ydCB0
+aGUgcmVsYXRlZCBjYXBhYmlsaXR5Cj4+PiArICogYW5kIGluZm8gZm9yIG5lc3RpbmcgaW9tbXUg
+dHlwZS4KPj4+ICsgKgo+Pj4gKyAqIFRoZSBzdHJ1Y3R1cmVzIGJlbG93IGRlZmluZSB2ZXJzaW9u
+IDEgb2YgdGhpcyBjYXBhYmlsaXR5Lgo+Pj4gKyAqCj4+PiArICogVXNlciBzcGFjZSBzZWxlY3Rl
+ZCBWRklPX1RZUEUxX05FU1RJTkdfSU9NTVUgdHlwZSBzaG91bGQgY2hlY2sKPj4+ICsgKiB0aGlz
+IGNhcHRvIGdldCBzdXBwb3J0ZWQgZmVhdHVyZXMuCj4+IHMvY2FwdG8vY2FwYWJpbGl0eSB0byBn
+ZXQKPiAKPiBnb3QgaXQuCj4gCj4gUmVnYXJkcywKPiBZaSBMaXUKPiAKPj4+ICsgKgo+Pj4gKyAq
+IEBpbmZvOiB0aGUgbmVzdGluZyBpbmZvIHByb3ZpZGVkIGJ5IElPTU1VIGRyaXZlci4KPj4+ICsg
+Ki8KPj4+ICsjZGVmaW5lIFZGSU9fSU9NTVVfVFlQRTFfSU5GT19DQVBfTkVTVElORyAgMwo+Pj4g
+Kwo+Pj4gK3N0cnVjdCB2ZmlvX2lvbW11X3R5cGUxX2luZm9fY2FwX25lc3Rpbmcgewo+Pj4gKwlz
+dHJ1Y3QJdmZpb19pbmZvX2NhcF9oZWFkZXIgaGVhZGVyOwo+Pj4gKwlzdHJ1Y3QgaW9tbXVfbmVz
+dGluZ19pbmZvIGluZm87Cj4+PiArfTsKPj4+ICsKPj4+ICAjZGVmaW5lIFZGSU9fSU9NTVVfR0VU
+X0lORk8gX0lPKFZGSU9fVFlQRSwgVkZJT19CQVNFICsgMTIpCj4+Pgo+Pj4gIC8qKgo+Pj4KPj4K
+Pj4gVGhhbmtzCj4+Cj4+IEVyaWMKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
