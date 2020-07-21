@@ -6,173 +6,101 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DE8C433E1
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:45:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF44C433DF
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:58:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C4AFC2065D
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:45:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DA5B0207DD
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:58:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=dell.com header.i=@dell.com header.b="AvX1mS1H";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=Dell.onmicrosoft.com header.i=@Dell.onmicrosoft.com header.b="BjzGG/PJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4AFC2065D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=dell.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HaAgyktY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA5B0207DD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9B960882E3;
-	Tue, 21 Jul 2020 23:45:33 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GDQVbO9kExx9; Tue, 21 Jul 2020 23:45:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AC87985F9B;
-	Tue, 21 Jul 2020 23:45:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9DFECC088E;
-	Tue, 21 Jul 2020 23:45:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97CE6C016F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:45:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9228586B13
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:45:31 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9B6FF86B57;
+	Tue, 21 Jul 2020 23:58:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fFMr8BdVSWDy; Tue, 21 Jul 2020 23:58:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 120C8869F7;
+	Tue, 21 Jul 2020 23:58:48 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03544C088E;
+	Tue, 21 Jul 2020 23:58:48 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2EC72C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:58:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 1E722203FE
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:58:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4AclfGwDDUsf for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jul 2020 23:45:29 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-00154904.pphosted.com (mx0a-00154904.pphosted.com
- [148.163.133.20])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7DA8886B10
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:45:29 +0000 (UTC)
-Received: from pps.filterd (m0170389.ppops.net [127.0.0.1])
- by mx0a-00154904.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 06LNfSUF022639; Tue, 21 Jul 2020 19:45:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com;
- h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=smtpout1;
- bh=d1NnGQDbcyoHgZFB3bgsugHJcB6GbPyi41eIJe6p5Ys=;
- b=AvX1mS1HQFsRyzBnfJTCr2p5nUAASpSBZGZNab3xIYWYfmIkUt6JwDauElXu0t7OFDVO
- 7jifhcs8DmMnUnggBZKXk4p0PkVJaeE8Rf/t+EAI7qbjjPnR7rJ2h1Lv8H9nUvrFpbWR
- HvLG6vyE5MoV4xpmgK6a+bwn5InKJYkOCrU3+OaGJVk+6X68JMm0pCy8zxoBYcXaNp/J
- 2f/WW3C2FgwvpwoBfuXl+K4fHdeUyuO6+X+vAcT3X5CtOADwvgWPspmg9dcD6oMTnl+1
- fZ2H93xHXegh6IWOUm6JLbTs2aXGBpKnUBRPP8QITft76yJ+cJznRG3AS8et3BOkASko WA== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com
- [67.231.149.39])
- by mx0a-00154904.pphosted.com with ESMTP id 32bw3k2mm9-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 21 Jul 2020 19:45:21 -0400
-Received: from pps.filterd (m0142693.ppops.net [127.0.0.1])
- by mx0a-00154901.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 06LNivRN028672; Tue, 21 Jul 2020 19:45:20 -0400
-Received: from nam02-sn1-obe.outbound.protection.outlook.com
- (mail-sn1nam02lp2059.outbound.protection.outlook.com [104.47.36.59])
- by mx0a-00154901.pphosted.com with ESMTP id 32e9s8gagk-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 21 Jul 2020 19:45:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NeTt/nmhu4LpduE25uZFlAE9SW6HOBQcoD75W6d1D6pQMx1qIHS8/XEAxpKL25SjmFNn/evMCP/kqG8/4Rbt7/Mi3zplIIfcfr0ZZ4Mvm3gv1As3h8EvshBNS52kNb8vdkarhopIDxoMiKiHe9gzX5TNpavzGfwVPK3DnEns++0MT1y7dMOBVlXfNHi0S6ttkj9wNv8egpCJ3oMzYmZZBczeEFB87UVZ6HDAOeVbwXGpJhmnjQyWDZPPGihPo963CN5UI9ovnWonMZyEFt+gM+FQmw9GdgXDUrmGpNgisI0Mh0N3wsviXfTI3tK0lTWMNEpK8J1KxCjq7BI2MNJSZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d1NnGQDbcyoHgZFB3bgsugHJcB6GbPyi41eIJe6p5Ys=;
- b=LBgYD9a+qzNCETq+uhqaFMTbC7J5H2BZGBEFdCZ5ShdpDQ2yz/GqtI9uGRmY2TSVjUddv/fx6eJbcPJgJgBNgycPjtgBm3ifMEBhtgKfOQw2PZWBoV2AxGtK5IeTRR2KHHha5tOG91B2AmqIW6ux1HNkLKxG7vKSIZ42Rg5pGtdv3rtBbFZXx4bs6+JcO8SPh3Vg/zxOAcuCkRFHtGJqcCwELzxP4I/vf0vGfcYk92FiX8Rash3NGRaLRyJroFNwyF/qTcshmcXy0DVr/NU2bF1OQwK6g1Bs42ht3l/WyhlQTeVfsp4I5z+wOa/KVJ0EWEsT5584/Zu1mKmsh/03qQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dell.com; dmarc=pass action=none header.from=dell.com;
- dkim=pass header.d=dell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Dell.onmicrosoft.com; 
- s=selector1-Dell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d1NnGQDbcyoHgZFB3bgsugHJcB6GbPyi41eIJe6p5Ys=;
- b=BjzGG/PJF+wBQ8D7IZ+c/EUb7715ZEUrcYVnC5+J7IjmVBMMYFG0gIiEYjr6M9E3dyJrpLCXA/MFbLO5wdymLpFurD9JBmQ28MlGHHsFjNqIa1OXFCuGjOkbpjbzjI0RzWufa7TIK1EXu7+5IM5XCgqqUSXlVyUZvNL1lwWLoUs=
-Received: from DM6PR19MB2636.namprd19.prod.outlook.com (2603:10b6:5:15f::15)
- by DM6PR19MB3628.namprd19.prod.outlook.com (2603:10b6:5:1dc::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.23; Tue, 21 Jul
- 2020 23:45:17 +0000
-Received: from DM6PR19MB2636.namprd19.prod.outlook.com
- ([fe80::f1c7:5bf4:a3b:ff40]) by DM6PR19MB2636.namprd19.prod.outlook.com
- ([fe80::f1c7:5bf4:a3b:ff40%6]) with mapi id 15.20.3195.022; Tue, 21 Jul 2020
- 23:45:17 +0000
-From: "Limonciello, Mario" <Mario.Limonciello@dell.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Skip TE disabling on quirky gfx dedicated
- iommu
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Skip TE disabling on quirky gfx
- dedicated iommu
-Thread-Index: AQErn65qGPIxx4/vDRlqxKGcSijyaKpnmsGwgACNHwCAAAmvIA==
-Date: Tue, 21 Jul 2020 23:45:17 +0000
-Message-ID: <DM6PR19MB263622CA8CAA7CDA3973E0DBFA780@DM6PR19MB2636.namprd19.prod.outlook.com>
-References: <20200721001713.24282-1-baolu.lu@linux.intel.com>
- <DM6PR19MB2636D1CC549743E2113C0EAFFA780@DM6PR19MB2636.namprd19.prod.outlook.com>
- <d8548318-ee2e-ca3f-cb0a-e219ce23d471@linux.intel.com>
-In-Reply-To: <d8548318-ee2e-ca3f-cb0a-e219ce23d471@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Enabled=True;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Owner=Mario_Limonciello@Dell.com;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SetDate=2020-07-21T23:45:15.7100149Z;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Name=External Public;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_ActionId=4b8a033c-1b1a-41f2-8df9-fcfe4756eda9;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Extended_MSFT_Method=Manual
-authentication-results: linux.intel.com; dkim=none (message not signed)
- header.d=none;linux.intel.com; dmarc=none action=none header.from=Dell.com;
-x-originating-ip: [76.251.167.31]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ec5b67ac-6034-4030-fd55-08d82dd01f95
-x-ms-traffictypediagnostic: DM6PR19MB3628:
-x-microsoft-antispam-prvs: <DM6PR19MB36289AD87963AA20B5D39514FA780@DM6PR19MB3628.namprd19.prod.outlook.com>
-x-exotenant: 2khUwGVqB6N9v58KS13ncyUmMJd8q4
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: T2TeGQsaVfP6mkBJoVnV1nY2HzcCNEmkpwXfBY6Y7b7ldFZx26AAfhD8G+ZpBxHAXUiAJ4H7L/pmREGe7e/TlDRU6W18V9QuwN139gT7bY1JUPJ6yAK2ANeDiCFxVO41Egi8I7c8AOpnucfVhjmYEJ4HfLIXUgvRHu+NIY0M/F3Mr1g1EIIRGXHxrGFtJv/Z/FAO8CDbIRIM3Qgh2ZYpsPlJXk6vkhN0RN1cuyH2dq2m6fg2jFJ/w/jilc3EdDMZ02IrbJktwNTTI0NKqi+wtIwjFWeOwWrk/l/+T1gjXbgY9I1Ys688PKfHiQICd+O+0SGiE+Px9wjx6RD+6KYZA60x42xjSHzoGGVJrpPdjXv+6ckCE/VRjpG9MimMbM94EDJPehEw21qUcYgs1e+F7A==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR19MB2636.namprd19.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(39850400004)(366004)(136003)(396003)(346002)(376002)(66446008)(64756008)(66946007)(66556008)(66476007)(26005)(316002)(71200400001)(54906003)(786003)(478600001)(110136005)(9686003)(76116006)(86362001)(966005)(52536014)(83380400001)(55016002)(7696005)(6506007)(5660300002)(2906002)(4326008)(8676002)(53546011)(186003)(8936002)(33656002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: T9Rim8TBp6qN+5r4yXtkImhbOdfYip17WEA7NFZetx3Loeop0YJiu/sm0nYw8GTAIQ+0BuIO4PT8KvXXk3yTWT2SBbE55HrCVf+Me09vS3nLLvCP6Ou6eYqNijTtfqwsIBU+WFoEyXdEazRnUew8c0+fAWG3wHVninoADe7wC0tQW5XkcxW6iciZDOqpdFE3SffeK9difLbHfVvcCu3cZogKeL8KahULr3vA38krCD2TW11OAU7WJ9+SVR9NQ2skdKon8Lau3hV6AMVXiK1s57SIXWxP5dEy4isgZaGh+3GTk0zctcDoRXhDzgx/ErF/WByyjsIqmPLp68veIhCY1mGP+Y4g0LW6agy7ZE0riaipdB/eNlxpw7UKhndBJ7NtSnT1BoUsZlo/aSxesfhEDXE8H8okotbJyiPtjtJLkTYtaPTBv7YNGAJbsnlXvUv9fM1zNZDxQl10XuZiqHKSGBNM++GRfUr9gYx8/x7hCdvPWXPLc+YtPyN5p/HBXsWl
-x-ms-exchange-transport-forked: True
+ with ESMTP id w5JRvJlHQdku for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jul 2020 23:58:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com
+ [209.85.216.68])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1BADA203F7
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:58:46 +0000 (UTC)
+Received: by mail-pj1-f68.google.com with SMTP id k71so218905pje.0
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 16:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=GuyDVxBXJ2eH/fhFLNQsFiugfMp6zgAf3tWvMyaED+s=;
+ b=HaAgyktYnJOdjm5FRHn5a2ME+0Fd9HVyv0m5tug3+N2yvslrpy2kUqaZrnPLE5PP5J
+ +W1u5brVAx92kBbDzk+6zrBBUcNNPgkh7Yuhwl07N9CJU25tAyyf427zq3s7OMTudGMH
+ 9xd4r4hn/FAIex3VFg1YQUnS+tpDa1SDcwP/OMueE0jBmmByQTwFY6ovbcf5bg9gidev
+ 6tycNK/hXF7XZ6Ddhqc/Rwdh7puaq/3P2q6jMZKBN4udkoMsKVizjO6WN9H7+6SAv1Hh
+ Xjtolx88vxG70K2suFvarVbFLW2TVF2dHuDRl2yX2whEBF6VUdpLrQ3QucfhyNdamySF
+ qf5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=GuyDVxBXJ2eH/fhFLNQsFiugfMp6zgAf3tWvMyaED+s=;
+ b=otATaBcDt+BuwQ+stgeSsdASu+SjCoNrji4ug11RjX27KQW3GWTr+pmseVyfcvvnMp
+ Fe5UZVq5GqyLSsBqcSoq4/UAp+4k2RFoIqTkbetz4hSJnab242VXDpdKDw31UMjjii/P
+ jSNpLwmp8ycZ8k7VZ0Ju6/kTb3JC/KYMLvX8DuITK8/8WK0xpV7f3C0VLHjIcKyObX0J
+ +y0EPERodcgSA/gHZ6Ltmav9KeWKpjc0XUzBDWsecYqMpiw6VC3Ojt1A4CQNpq61/Miu
+ bf210TyXHrLSSj4ZOkZh3hGMlK4qxc88dSLTrOmD1scxw/Xqp+N/GaWJ/DTAam7NlJnr
+ zZ/Q==
+X-Gm-Message-State: AOAM531qAXHe3JncEO/n5Reh9I68QrQIhv5tmDO+0FmjL1KHE8V4/3ZS
+ 8g4pUJMSw/tCqceD065e7GUpCQ==
+X-Google-Smtp-Source: ABdhPJyNuk7PzxMd8B56wIzfsRBCUaRfXZEp3SIsJsCTjayO+IwYE5wac4ySM2zGZNDAQTp1F3brfA==
+X-Received: by 2002:a17:902:8ecb:: with SMTP id
+ x11mr18820708plo.123.1595375925125; 
+ Tue, 21 Jul 2020 16:58:45 -0700 (PDT)
+Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
+ [104.188.17.28])
+ by smtp.gmail.com with ESMTPSA id a2sm21698033pfg.120.2020.07.21.16.58.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 21 Jul 2020 16:58:44 -0700 (PDT)
+Date: Tue, 21 Jul 2020 16:56:50 -0700
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Konrad Dybcio <konradybcio@gmail.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Implement qcom,skip-init
+Message-ID: <20200721235650.GN388985@builder.lan>
+References: <20200704122809.73794-1-konradybcio@gmail.com>
+ <20200704130922.GB21333@willie-the-truck>
+ <20200705033511.GR388985@builder.lan>
+ <CAMS8qEWO-1mNd12Zs-2WogCrgNF5=6RkF=Z1pTeOZxSuKjx+qg@mail.gmail.com>
+ <20200721154415.GA5758@jcrouse1-lnx.qualcomm.com>
+ <CAMS8qEXNh6n9SpMkPAr8cPneasPvJPELD2TZ4gxUf0byxNePbg@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Dell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR19MB2636.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec5b67ac-6034-4030-fd55-08d82dd01f95
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2020 23:45:17.8136 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 945c199a-83a2-4e80-9f8c-5a91be5752dd
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LFfyZBMQENAArxcKDF3sSmG+Bv6UlJSKfFkJ1shCdCnjFEMY2kWq01Yj4f6ycKMR9wVt3/zLXV0F8GaAcqpEZghiczG1F9UpcRnBn209z5A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR19MB3628
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235, 18.0.687
- definitions=2020-07-21_15:2020-07-21,
- 2020-07-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxscore=0 malwarescore=0
- suspectscore=0 clxscore=1015 priorityscore=1501 impostorscore=0
- mlxlogscore=999 phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007210149
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
- suspectscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 adultscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2007210149
-Cc: Ashok Raj <ashok.raj@intel.com>, Christian Kellner <ckellner@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- Koba Ko <koba.ko@canonical.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <CAMS8qEXNh6n9SpMkPAr8cPneasPvJPELD2TZ4gxUf0byxNePbg@mail.gmail.com>
+Cc: DTML <devicetree@vger.kernel.org>, skrzynka@konradybcio.pl,
+ Will Deacon <will@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -190,66 +118,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Tue 21 Jul 09:20 PDT 2020, Konrad Dybcio wrote:
 
-
-> -----Original Message-----
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, July 21, 2020 6:07 PM
-> To: Limonciello, Mario; Joerg Roedel
-> Cc: baolu.lu@linux.intel.com; Ashok Raj; linux-kernel@vger.kernel.org;
-> stable@vger.kernel.org; Koba Ko; iommu@lists.linux-foundation.org
-> Subject: Re: [PATCH 1/1] iommu/vt-d: Skip TE disabling on quirky gfx dedicated
-> iommu
+> >The current
+> >focus has been on moving more of the SMMU specific bits into the arm-smmu-qcom
+> >implementation [1] and I think that is the right way to go.
 > 
-> 
-> [EXTERNAL EMAIL]
-> 
-> Hi Limonciello,
-> 
-> On 7/21/20 10:44 PM, Limonciello, Mario wrote:
-> >> -----Original Message-----
-> >> From: iommu<iommu-bounces@lists.linux-foundation.org>  On Behalf Of Lu
-> >> Baolu
-> >> Sent: Monday, July 20, 2020 7:17 PM
-> >> To: Joerg Roedel
-> >> Cc: Ashok Raj;linux-kernel@vger.kernel.org;stable@vger.kernel.org; Koba
-> >> Ko;iommu@lists.linux-foundation.org
-> >> Subject: [PATCH 1/1] iommu/vt-d: Skip TE disabling on quirky gfx dedicated
-> >> iommu
-> >>
-> >> The VT-d spec requires (10.4.4 Global Command Register, TE field) that:
-> >>
-> >> Hardware implementations supporting DMA draining must drain any in-flight
-> >> DMA read/write requests queued within the Root-Complex before completing
-> >> the translation enable command and reflecting the status of the command
-> >> through the TES field in the Global Status register.
-> >>
-> >> Unfortunately, some integrated graphic devices fail to do so after some
-> >> kind of power state transition. As the result, the system might stuck in
-> >> iommu_disable_translation(), waiting for the completion of TE transition.
-> >>
-> >> This provides a quirk list for those devices and skips TE disabling if
-> >> the qurik hits.
-> >>
-> >> Fixes:https://bugzilla.kernel.org/show_bug.cgi?id=208363
-> > That one is for TGL.
-> >
-> > I think you also want to add this one for ICL:
-> > Fixes:https://bugzilla.kernel.org/show_bug.cgi?id=206571
-> >
-> 
-> Do you mean someone have tested that this patch also fixes the problem
-> described in 206571?
+> Pardon if I overlooked something obvious, but I can't seem to find a
+> clean way for implementing qcom,skip-init in arm-smmu-qcom, as neither
+> the arm_smmu_test_smr_masks nor the probe function seem to be
+> alterable with arm_smmu_impl. I'm open to your ideas guys.
 > 
 
-Yes, confusingly https://bugzilla.kernel.org/show_bug.cgi?id=208363#c31 actually
-is the XPS 9300 ICL system and issue.
+Is the problem on SDM630 that when you write to SMR/S2CR the device
+reboots? Or that when you start writing out the context bank
+configuration that trips the display and the device reboots?
 
-I also have a private confirmation from another person that it resolves it for
-them on another ICL platform.
-
-Christian, maybe you can add a tested by clause for the ICL testing.
-
+Regards,
+Bjorn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
