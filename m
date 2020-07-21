@@ -7,77 +7,77 @@ X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF72C433E6
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 22:06:31 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8944FC433E1
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:11:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 003B120717
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 22:06:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 003B120717
+	by mail.kernel.org (Postfix) with ESMTPS id 5030D20709
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 23:11:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5030D20709
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A5129203D5;
-	Tue, 21 Jul 2020 22:06:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 23DFA883A1;
+	Tue, 21 Jul 2020 23:11:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2vi+btV6I7xp; Tue, 21 Jul 2020 22:06:28 +0000 (UTC)
+	with ESMTP id vDzXfhJSbDgq; Tue, 21 Jul 2020 23:11:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6A6CA203B0;
-	Tue, 21 Jul 2020 22:06:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E71BC88305;
+	Tue, 21 Jul 2020 23:11:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39862C088E;
-	Tue, 21 Jul 2020 22:06:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D6397C088E;
+	Tue, 21 Jul 2020 23:11:29 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E41D6C016F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 22:06:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A35ECC016F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:11:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CCADD867BD
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 22:06:26 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8BBF286B91
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:11:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YmL-K3wLHqSc for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jul 2020 22:06:25 +0000 (UTC)
+ with ESMTP id XewWnXlXwEXb for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jul 2020 23:11:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9F0BC863AE
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 22:06:25 +0000 (UTC)
-IronPort-SDR: yhmpOT7ymgwsbl1tPoRH/Fy9Lw++OQGjAsGSFCwVKCd2KjzeAd6XrtrUYulr5UWqkzkDbbSyO1
- 4lA8vr309a3A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9689"; a="150215490"
-X-IronPort-AV: E=Sophos;i="5.75,380,1589266800"; d="scan'208";a="150215490"
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6C5FB86A63
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 23:11:27 +0000 (UTC)
+IronPort-SDR: SZ78U6f8ydYdab/HBNmZ0a4R+3cEyEE4AT1jIQPlb7rFBmwxTQWUEjet94dqITFi7xF5ihWuFX
+ Z6km2p0lb2ng==
+X-IronPort-AV: E=McAfee;i="6000,8403,9689"; a="129812120"
+X-IronPort-AV: E=Sophos;i="5.75,380,1589266800"; d="scan'208";a="129812120"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jul 2020 15:06:24 -0700
-IronPort-SDR: W+l0RPbC2hcQwMDpaNJHexW3eLZPDqKwIVNdt81ZSHEqBavU4Q4C6eHIaOUK/nmFLtteBOR9Df
- TtEZ8/hj6KlA==
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jul 2020 16:11:26 -0700
+IronPort-SDR: C7qpFthRpY7j1xN5UN4w9e70yD8qizRyIMSpLkg2/PQ1Z2P+sYuxVyqfjVS0D/Qg4zalvOPhN8
+ ADbrdQw/L+8g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,380,1589266800"; d="scan'208";a="288075074"
+X-IronPort-AV: E=Sophos;i="5.75,380,1589266800"; d="scan'208";a="432176133"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006.jf.intel.com with ESMTP; 21 Jul 2020 15:06:24 -0700
-Date: Tue, 21 Jul 2020 15:13:10 -0700
+ by orsmga004.jf.intel.com with ESMTP; 21 Jul 2020 16:11:26 -0700
+Date: Tue, 21 Jul 2020 16:18:12 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
+To: Alex Williamson <alex.williamson@redhat.com>
 Subject: Re: [PATCH v5 4/5] iommu/uapi: Handle data and argsz filled by users
-Message-ID: <20200721151310.0af6e300@jacob-builder>
-In-Reply-To: <a3814db0-3d99-7752-c9d7-91f032d4eb0f@redhat.com>
+Message-ID: <20200721161812.3ca8cf63@jacob-builder>
+In-Reply-To: <20200717135954.6ddbbac9@x1.home>
 References: <1594925117-64892-1-git-send-email-jacob.jun.pan@linux.intel.com>
  <1594925117-64892-5-git-send-email-jacob.jun.pan@linux.intel.com>
- <a3814db0-3d99-7752-c9d7-91f032d4eb0f@redhat.com>
+ <20200717135954.6ddbbac9@x1.home>
 Organization: OTC
 X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
  Jonathan Corbet <corbet@lwn.net>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+ LKML <linux-kernel@vger.kernel.org>, Christoph
+ Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,37 +95,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 17 Jul 2020 17:58:04 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+On Fri, 17 Jul 2020 13:59:54 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-> Hi Jacob,
-> On 7/16/20 8:45 PM, Jacob Pan wrote:
+> On Thu, 16 Jul 2020 11:45:16 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 > 
-> Could you share a branch? I was not able to apply this on either
-> iommu/next or master?
-> 
-Will push it to github for the next version. This set is based on
-v5.8-rc1 and my fixes for devTLB.
-
 > > IOMMU UAPI data has a user filled argsz field which indicates the
-> > data length comes with the API call.  
-> s/ comes with the API call/ of the structure
->  User data is not trusted, argsz must be
-Sounds good.
-
-> > validated based on the current kernel data size, mandatory data
-> > size, and feature flags.
+> > data length comes with the API call. User data is not trusted,
+> > argsz must be validated based on the current kernel data size,
+> > mandatory data size, and feature flags.
 > > 
-> > User data may also be extended, results in possible argsz
-> > increase.  
-> s/results/resulting
-got it.
-
-> > Backward compatibility is ensured based on size and flags
-> > checking.  
-> flags is missing in iommu_cache_invalidate_info.
-Right, I will rephrase as "flags or the functional equivalent fields"
-
+> > User data may also be extended, results in possible argsz increase.
+> > Backward compatibility is ensured based on size and flags checking.
 > > 
 > > This patch adds sanity checks in the IOMMU layer. In addition to
 > > argsz, reserved/unused fields in padding, flags, and version are
@@ -150,15 +132,9 @@ Right, I will rephrase as "flags or the functional equivalent fields"
 > >  
 > > +/*
 > > + * Check flags and other user privided data for valid
-> > combinations. We also  
-> s/privided/provided
-will fix
-
+> > combinations. We also
 > > + * make sure no reserved fields or unused flags are not set. This
-> > is to ensure  
-> s/not// ?
-right,
-
+> > is to ensure
 > > + * not breaking userspace in the future when these fields or flags
 > > are used.
 > > + */
@@ -166,14 +142,7 @@ right,
 > > iommu_cache_invalidate_info *info) +{
 > > +	u32 mask;
 > > +
-> > +	if (info->version !=
-> > IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)  
-> increased version number?
-Right now we just support version 1. if we increase the version number
-in the future, we need to check the current kernel version is newer
-than the user provided version.
-Does it sounds right to you?
-
+> > +	if (info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
 > > +		return -EINVAL;
 > > +
 > > +	mask = (1 << IOMMU_CACHE_INV_TYPE_NR) - 1;
@@ -206,11 +175,7 @@ Does it sounds right to you?
 > > +		return -EINVAL;
 > > +	}
 > > +
-> > +	if (info->padding[0] || info->padding[1])  
-> padding has become "__u8	padding[6];" in 2/5
-Good point, will fix
-
-> 
+> > +	if (info->padding[0] || info->padding[1])
 > > +		return -EINVAL;
 > > +
 > > +	return 0;
@@ -251,10 +216,7 @@ Good point, will fix
 > > +		return -EINVAL;
 > > +
 > > +	/* PASID and address granu requires additional info beyond
-> > minsz */  
-> s/requires/require
-got it.
-
+> > minsz */
 > > +	if (inv_info.argsz == minsz &&
 > > +		((inv_info.granularity == IOMMU_INV_GRANU_PASID) ||
 > > +			(inv_info.granularity ==
@@ -273,7 +235,14 @@ got it.
 > > minsz,
 > > +				min(inv_info.argsz, maxsz) -
 > > minsz))
-> > +		return -EFAULT;
+> > +		return -EFAULT;  
+> 
+> To further clarify previous comments about maxsz usage:
+> 
+> s/maxsz/sizeof(inv_info)/
+> 
+Yes, will remove maxsz.
+
 > > +
 > > +	/* Now the argsz is validated, check the content */
 > > +	ret = iommu_check_cache_invl_data(&inv_info);
@@ -282,7 +251,13 @@ got it.
 > > +
 > > +	return domain->ops->cache_invalidate(domain, dev,
 > > &inv_info); }
-> >  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+> >  EXPORT_SYMBOL_GPL(iommu_cache_invalidate);  
+> 
+> 
+> Remainder of comments for above provided in 1/5.
+> 
+Got it.
+
 > >  
 > > -int iommu_sva_bind_gpasid(struct iommu_domain *domain,
 > > -			   struct device *dev, struct
@@ -306,10 +281,7 @@ got it.
 > > +		return -EINVAL;
 > > +
 > > +	/* Check reserved padding fields */
-> > +	for (i = 0; i < 12; i++) {  
-> now 8
-yes, will fix.
-
+> > +	for (i = 0; i < 12; i++) {
 > > +		if (data->padding[i])
 > > +			return -EINVAL;
 > > +	}
@@ -325,7 +297,12 @@ yes, will fix.
 > > +	/* Current kernel data size is the max to be copied from
 > > user */
 > > +	maxsz = sizeof(struct iommu_gpasid_bind_data);
-> > +	memset((void *)data, 0, maxsz);
+> > +	memset((void *)data, 0, maxsz);  
+> 
+> Let the caller pass a zero'd structure.
+> 
+Sounds good.
+
 > > +
 > > +	/*
 > > +	 * No new spaces can be added before the variable sized
@@ -352,7 +329,13 @@ yes, will fix.
 > > +	 * Copy the remaining user data _after_ minsz
 > > +	 */
 > > +	if (copy_from_user((void *)data + minsz, udata + minsz,
-> > +				min(data->argsz, maxsz) - minsz))
+> > +				min(data->argsz, maxsz) - minsz))  
+> 
+> 
+> We could replace maxsz entirely with sizeof(*data)
+will do.
+
+> 
 > > +		return -EFAULT;
 > > +
 > > +	return iommu_check_bind_data(data);
@@ -362,12 +345,19 @@ yes, will fix.
 > > device *dev,
 > > +						void __user
 > > *udata)  
-> change of proto not described in the commit msg
-Good point, will add that to the commit msg.
+> 
+> iommu_uapi_sva_bind_gpasid(...
+> 
+will do. make naming consistent for all UAPIs.
 
 > > +{
 > > +
-> > +	struct iommu_gpasid_bind_data data;
+> > +	struct iommu_gpasid_bind_data data;  
+> 
+> 	= { 0 }
+> 
+yes, callee does not need to zero out the data.
+
 > > +	int ret;
 > > +
 > >  	if (unlikely(!domain->ops->sva_bind_gpasid))
@@ -385,12 +375,7 @@ Good point, will add that to the commit msg.
 > >  int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct
 > > device *dev,
 > > -			     ioasid_t pasid)
-> > +			struct iommu_gpasid_bind_data *data)  
-> This change and the introduction of iommu_uapi_sva_unbind_gpasid look
-> unrelated to this patch, at least not described in the commit msg.
-I will move the rename into a separate patch, adding iommu_uapi_
-prefix to all UAPI functions.
-
+> > +			struct iommu_gpasid_bind_data *data)
 > >  {
 > >  	if (unlikely(!domain->ops->sva_unbind_gpasid))
 > >  		return -ENODEV;
@@ -404,7 +389,12 @@ prefix to all UAPI functions.
 > > struct device *dev,
 > > +			void __user *udata)
 > > +{
-> > +	struct iommu_gpasid_bind_data data;
+> > +	struct iommu_gpasid_bind_data data;  
+> 
+> 	= { 0 };
+Ditto
+
+> 
 > > +	int ret;
 > > +
 > > +	if (unlikely(!domain->ops->sva_bind_gpasid))
@@ -427,25 +417,31 @@ prefix to all UAPI functions.
 > > +++ b/include/linux/iommu.h
 > > @@ -432,11 +432,14 @@ extern void iommu_detach_device(struct
 > > iommu_domain *domain, struct device *dev);
-> >  extern int iommu_cache_invalidate(struct iommu_domain *domain,
+> >  extern int iommu_cache_invalidate(struct iommu_domain *domain,  
+> 
+> uapi
+got it.
+
+> 
 > >  				  struct device *dev,
 > > -				  struct
 > > iommu_cache_invalidate_info *inv_info);
 > > +				  void __user *uinfo);
 > > +
-> >  extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> >  extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,  
+> 
+> uapi
+> 
+got it.
+
 > > -		struct device *dev, struct iommu_gpasid_bind_data
 > > *data);
 > > +				struct device *dev, void __user
 > > *udata); +extern int iommu_uapi_sva_unbind_gpasid(struct
 > > iommu_domain *domain,
 > > +				        struct device *dev, void
-> > __user *udata);  
-> not motivated in the commit msg. I think change of proto and addition
-> of iommu_sva_unbind_gpasid would deserve a separate patch.
-Will do.
-
-> >  extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> > __user *udata); extern int iommu_sva_unbind_gpasid(struct
+> > iommu_domain *domain,
 > > -				struct device *dev, ioasid_t
 > > pasid);
 > > +				   struct device *dev, struct
@@ -474,17 +470,22 @@ Will do.
 > > +}
 > > +
 > > +static inline int __iommu_sva_unbind_gpasid(struct iommu_domain
-> > *domain,
+> > *domain,  
+> 
+> 
+> These don't match the previous semantics.  Thanks,
+> 
+My mistake, will fix.
+
+Thanks
+
+> Alex
+> 
 > > +					struct device *dev,
 > > +					struct
 > > iommu_gpasid_bind_data *data) {
 > >  	return -ENODEV;
-> >  }
-> >   
-> 
-> Thanks
-> 
-> Eric
+> >  }  
 > 
 
 [Jacob Pan]
