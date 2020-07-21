@@ -2,98 +2,109 @@ Return-Path: <SRS0=qNYd=BA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4466C433E6
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 15:23:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BBBC433E4
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 15:44:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 786862065F
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 15:23:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 30C0320720
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 15:44:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gw/h84t5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 786862065F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="N3TaMJts"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30C0320720
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2EE5C226AF;
-	Tue, 21 Jul 2020 15:23:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0CEE6886EE;
+	Tue, 21 Jul 2020 15:44:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f6SMp0SUG1K8; Tue, 21 Jul 2020 15:23:05 +0000 (UTC)
+	with ESMTP id 8IAOkJ6mZxnq; Tue, 21 Jul 2020 15:44:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 239BB203B9;
-	Tue, 21 Jul 2020 15:23:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 79C7A886DF;
+	Tue, 21 Jul 2020 15:44:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 19876C088E;
-	Tue, 21 Jul 2020 15:23:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A1DA1C016F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:23:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 59D26C088E;
+	Tue, 21 Jul 2020 15:44:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A7B84C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:44:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9BF71226AF
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:23:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7C46E87E3B
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:44:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JUBicEfAzvJC for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jul 2020 15:23:02 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 4F40E22270
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:23:02 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id a14so6753731wra.5
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 08:23:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=rjr3hOmDcg0k+YJ+y9Vtua3YshVZwwPlHwMwMv1uMsg=;
- b=gw/h84t5RF8NJH72MgGhtMzcUPSl1FhrUrxZuEUVe+HFrO/xYwk3WfJ/vOlKnLJkY7
- b4fTHfPO4xH0esscUx8Wg1xqeaR185DFKcMnj7eLHf7eXnbQ5S2zjcqCCMrNqXrg4uxa
- kT4X1yvYHYvfR945jIKeVPfiklyIwUG5TwbgaapycBoGncCf/OG6X5Co8pPeXJJq1GDF
- BZ29GRpQ0MdNJII58imEhBewYsjc+MACMoruSBon8h3eI0J2FPLJClOB8s422EOKPbUh
- Sd/Fgrj1yMGJIYdZZ88CUM/vABZ0Z6OW3ZCOYDIs6DS/2EoOiteHYS/s0p6lQw6tb3tN
- 9KtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=rjr3hOmDcg0k+YJ+y9Vtua3YshVZwwPlHwMwMv1uMsg=;
- b=Y5HnMr0GAGexH332qiyltA2gdCH2WJPBlV0J6UG6syl/dIoy47AE4eU5l9yo+cuoTi
- XqO+/xv9c1L40Z+g3Zbu6hkRSEeUC9M/LovEno/1IYM8WgP+Yn43J7V36Jk1OgdI1Pf/
- e+8J9gzFHLoSUr9yLD3cqBB1NNPNZo/9UmG5yhI5H6pzVGo1jU8/1dMIWCMFEG78SlrJ
- 9dUvZ+Nk55ClK2+V+PrGB/WfhzEFN5SCD5knzVDLUFpgo21g4M/QtRih11GufJAmEaPS
- Dw42SpVYKi6YevIhHsVDsNc586uAwd26aDQbT/waUlqqUSt1RuTcQ/garcQNXAvDxGqw
- 1xAg==
-X-Gm-Message-State: AOAM532vvskrURCZuDpicXmZmUDvXh4GOnaxmQiHchjexZReSDyFOlvL
- BhoEno8tGJD3jqDKHtvI7pmexcr7On1YNIrYSlqjqg==
-X-Google-Smtp-Source: ABdhPJyZ2CYgqXoWpElRrDtFpve+aiQv8d5QjtVAfAUkHJ/Bn2wBT3fAyyIyfFVyQZSWnsx2/lT6LwQYCsvPyqnIT4M=
-X-Received: by 2002:adf:fc06:: with SMTP id i6mr8845332wrr.79.1595344980632;
- Tue, 21 Jul 2020 08:23:00 -0700 (PDT)
+ with ESMTP id YpqeE7UVLHnP for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jul 2020 15:44:34 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 8966B80790
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 15:44:30 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1595346274; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=rdC4JoLgL+0mT3i14s7ghddjUga20hFANQNIf9sHBoA=;
+ b=N3TaMJts8zy2wthTRejtLd6yJGE0Jda8ziqRVj+1z4PysxvAdqO7T1sUgi46mAxMbsC5nghC
+ 5CV1Wo0NkwqrEzhCEnhp8K+UtTQid/rF9UNO3hSIwttkF195c3/Q2WzX+rZjVp4TFH6RtfRr
+ HVraFQsb3EijmHlP+oT1CACjk60=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5f170d54d50c36e729f2b775 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 21 Jul 2020 15:44:20
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 446F8C43395; Tue, 21 Jul 2020 15:44:20 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 819FDC433C6;
+ Tue, 21 Jul 2020 15:44:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 819FDC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Tue, 21 Jul 2020 09:44:15 -0600
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Konrad Dybcio <konradybcio@gmail.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Implement qcom,skip-init
+Message-ID: <20200721154415.GA5758@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Konrad Dybcio <konradybcio@gmail.com>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Will Deacon <will@kernel.org>, skrzynka@konradybcio.pl,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux-foundation.org, DTML <devicetree@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ John Stultz <john.stultz@linaro.org>
+References: <20200704122809.73794-1-konradybcio@gmail.com>
+ <20200704130922.GB21333@willie-the-truck>
+ <20200705033511.GR388985@builder.lan>
+ <CAMS8qEWO-1mNd12Zs-2WogCrgNF5=6RkF=Z1pTeOZxSuKjx+qg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200708164936.9340-1-nsaenzjulienne@suse.de>
- <CAMi1Hd35tRM=cnmzwX=SDgu-OoXi1Xj+twFkoULaVZBbTpe6sw@mail.gmail.com>
- <550b30a86c0785049d24c945e2c6628d491cee3a.camel@suse.de>
- <CAMi1Hd2V2pJjP=USS4r-Z3vK-aq7_aBy-jcVNk1GvbdEQAuzWg@mail.gmail.com>
- <011994f8a717a00dcd9ed7682a1ddeb421c2c43f.camel@suse.de>
- <CAMi1Hd0=ZsGhTkSy221EP9Vb3GMOcS0UMczX2u5X9qK37_ea1A@mail.gmail.com>
- <01831596e4a2a6c9c066138b23bd30435f8e5569.camel@suse.de>
-In-Reply-To: <01831596e4a2a6c9c066138b23bd30435f8e5569.camel@suse.de>
-From: Amit Pundir <amit.pundir@linaro.org>
-Date: Tue, 21 Jul 2020 20:52:24 +0530
-Message-ID: <CAMi1Hd3C6kh5E49EgytBAQ_2AE_jvnp+eSNsxBYaux+exSvdbg@mail.gmail.com>
-Subject: Re: [PATCH] dma-pool: Do not allocate pool memory from CMA
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc: lkml <linux-kernel@vger.kernel.org>, jeremy.linton@arm.com,
- Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>, linux-rpi-kernel@lists.infradead.org,
- David Rientjes <rientjes@google.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <CAMS8qEWO-1mNd12Zs-2WogCrgNF5=6RkF=Z1pTeOZxSuKjx+qg@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: DTML <devicetree@vger.kernel.org>, skrzynka@konradybcio.pl,
+ Will Deacon <will@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,141 +122,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 21 Jul 2020 at 18:15, Nicolas Saenz Julienne
-<nsaenzjulienne@suse.de> wrote:
->
-> On Tue, 2020-07-21 at 17:45 +0530, Amit Pundir wrote:
-> > On Tue, 21 Jul 2020 at 16:45, Nicolas Saenz Julienne
-> > <nsaenzjulienne@suse.de> wrote:
-> > > On Tue, 2020-07-21 at 14:24 +0530, Amit Pundir wrote:
-> > > > On Tue, 21 Jul 2020 at 14:09, Nicolas Saenz Julienne
-> > > > <nsaenzjulienne@suse.de> wrote:
-> > > > > Hi Amit,
-> > > > > > Hi Nicolas,
-> > > > > >
-> > > > > > I see a boot regression with this commit d9765e41d8e9 "dma-
-> > > > > > pool:
-> > > > > > Do not allocate pool memory from CMA" on my Xiaomi Poco F1
-> > > > > > (Qcom sdm845) phone running v5.8-rc6. I can't boot past the
-> > > > > > bootloader splash screen with this patch.
-> > > > > >
-> > > > > > Phone boots fine if I revert this patch. I carry only one out
-> > > > > > of
-> > > > > > tree
-> > > > > > dts patch https://lkml.org/lkml/2020/6/25/52. And since this
-> > > > > > is a
-> > > > > > stock
-> > > > > > phone, I don't have access to serial/dmesg logs until I boot
-> > > > > > to
-> > > > > > AOSP
-> > > > > > (adb) shell.
-> > > > > >
-> > > > > > Any thoughts as to what might be going wrong here? I'd be
-> > > > > > happy
-> > > > > > to
-> > > > > > help debug things. For what it's worth, I don't see this
-> > > > > > regression
-> > > > > > on
-> > > > > > other two sdm845 devices (db845c and Pixel 3) I tested on.
-> > > > >
-> > > > > Can you provide a boot log (even if without my patch) and the
-> > > > > device-
-> > > > > tree files? It'd help a lot figuring things out.
-> > > >
-> > > > Thank you for the prompt reply Nicolas.
-> > > >
-> > > > Here is the boot log with the reverted patch
-> > > > https://pastebin.ubuntu.com/p/BrhPf83nKF/
-> > > >
-> > > > Here is my phone's dts
-> > > > https://github.com/pundiramit/linux/commit/2a394c199deeaf4c91e0e008e8fba2a72f494d8c
-> > >
-> > > I'm at loss at what could be failing here. Your device should be
-> > > able
-> > > to address the whole 8GB memory space, which AFAIK is the max
-> > > available
-> > > on that smartphone family. But maybe the device-tree is lying, who
-> > > knows...
-> >
-> > If it helps, my phone has 6GB memory space.
-> >
-> > > Can you try booting *without* my patch and this in the kernel
-> > > command
-> > > line: "cma=16M@0x100000000-0x200000000".
-> >
-> > It doesn't boot with this added kernel command line.
->
->
-> For the record, this placed the CMA in the [4GB, 8GB] address space
-> instead of you setup's default: [3GB, 4GB]. All atomic pools fall in
-> that memory area without my patch, which makes me think some of the
-> devices on your board might not like higher addresses.
->
+On Tue, Jul 21, 2020 at 05:04:11PM +0200, Konrad Dybcio wrote:
+> So.. is this a no-no?
+> 
+> I of course would like to omit this entirely, but SMMUs on sdm630 and
+> friends are REALLY picky.. What seems to happen is that when the
+> driver tries to do things the "standard" way, hypervisor decides to
+> hang the platform or force a reboot. Not very usable.
+> 
+> 
+> This thing is needed for the platform to even boot properly and one
+> more [1] is required to make mdss work with video mode panels (the
+> fact that CMD-mode panels work is kinda hilarious to me).
+> 
+> To be honest, there are even more qcom quirks (of which at least
+> qcom,dynamic and qcom-use-3-lvl-tables are used on 630).. [2]
+> 
+> Looking forward to your answers and possibly better solutions.
 
-Thank you Nicolas for the details. Though we don't set the CMA
-alloc-ranges explicitly in upstream sdm845 dts, but I dug around and
-found that CMA alloc-ranges in the downstream kernel are indeed in
-lower address space.
-https://github.com/MiCode/Xiaomi_Kernel_OpenSource/blob/dipper-q-oss/arch/arm64/boot/dts/qcom/sdm845.dtsi#L662
+Nobody is disputing that the qcom SMMUs don't have their share of quirks but it
+seems that the community has mostly settled on the agreement that there are
+better ways to solve this than a handful of device tree properties. The current
+focus has been on moving more of the SMMU specific bits into the arm-smmu-qcom
+implementation [1] and I think that is the right way to go.
 
-/* global autoconfigured region for contiguous allocations */
-linux,cma {
-        compatible = "shared-dma-pool";
-        alloc-ranges = <0 0x00000000 0 0xffffffff>;
-        reusable;
-        alignment = <0 0x400000>;
-        size = <0 0x2000000>;
-        linux,cma-default;
-};
+As for the other quirks we can probably discuss those on a case by case basis.
+I doubt you will find much enthusiasm for qcom,use-3-lvl-tables and I've been
+working on replacing qcom,dynamic with something much better [2].
 
-> What happens if you boot with my troublesome patch with this in your
-> device tree? (insert it at the bottom of sdm845-beryllium.dts)
->
-> &soc {
->         dma-ranges = <0 0 0 0 0x1 0>;
-> };
->
+[1] https://lists.linuxfoundation.org/pipermail/iommu/2020-July/046304.html
+[2] https://lists.linuxfoundation.org/pipermail/iommu/2020-July/046756.html
 
-Device still doesn't boot up to adb shell.
+Jordan
 
-Regards,
-Amit Pundir
+> [1] https://github.com/konradybcio/linux/commit/83ac38af259968f92b6a8b7eab90096c78469f87
+> [2] https://github.com/sonyxperiadev/kernel/blob/aosp/LA.UM.7.1.r1/drivers/iommu/arm-smmu.c#L404-L415
+> 
+> Regards
+> Konrad
 
-> Regards,
-> Nicolas
->
-> > Regards,
-> > Amit Pundir
-> >
-> > > Regards,
-> > > Nicolas
-> > >
-> > > And here is my kernel tree just in case
-> > > > https://github.com/pundiramit/linux/commits/beryllium-mainline
-> > > >
-> > > > Regards,
-> > > > Amit Pundir
-> > > >
-> > > >
-> > > > > Regards,
-> > > > > Nicolas
-> > > > >
-> > > > > > Regards,
-> > > > > > Amit Pundir
-> > > > > >
-> > > > > > > Reported-by: Jeremy Linton <jeremy.linton@arm.com>
-> > > > > > > Signed-off-by: Nicolas Saenz Julienne <
-> > > > > > > nsaenzjulienne@suse.de>
-> > > > > > > ---
-> > > > > > >
-> > > > > > > An more costly alternative would be adding an option to
-> > > > > > > dma_alloc_from_contiguous() so it fails when the allocation
-> > > > > > > doesn't
-> > > > > > > fall
-> > > > > > > in a specific zone.
-> > > > > > >
-> > > > > > >  kernel/dma/pool.c | 11 ++---------
->
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
