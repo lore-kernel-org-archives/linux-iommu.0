@@ -6,91 +6,90 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BADF0C433ED
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 02:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 153E1C433F4
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 02:03:17 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99AE82077D
-	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 02:02:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99AE82077D
+	by mail.kernel.org (Postfix) with ESMTPS id E8674206E9
+	for <iommu@archiver.kernel.org>; Tue, 21 Jul 2020 02:03:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8674206E9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4B436882F8;
-	Tue, 21 Jul 2020 02:02:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C3BEF882FB;
+	Tue, 21 Jul 2020 02:03:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h5xBv4Npn2K8; Tue, 21 Jul 2020 02:02:56 +0000 (UTC)
+	with ESMTP id wldvz4lHjNa3; Tue, 21 Jul 2020 02:03:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C3DA9882BD;
-	Tue, 21 Jul 2020 02:02:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 30E3988196;
+	Tue, 21 Jul 2020 02:03:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC088C089F;
-	Tue, 21 Jul 2020 02:02:56 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F374C016F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:02:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CD9DC089F;
+	Tue, 21 Jul 2020 02:03:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A68F1C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:03:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F281684AAE
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:02:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 9F868882D3
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:03:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t7NqAwQ2vH7e for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jul 2020 02:02:53 +0000 (UTC)
+ with ESMTP id T9qBpKBZMv+m for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jul 2020 02:03:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
- [209.85.166.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 51875864A6
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:02:53 +0000 (UTC)
-Received: by mail-io1-f67.google.com with SMTP id v8so19755094iox.2
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 19:02:53 -0700 (PDT)
+Received: from mail-il1-f193.google.com (mail-il1-f193.google.com
+ [209.85.166.193])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 306FC882BD
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jul 2020 02:03:14 +0000 (UTC)
+Received: by mail-il1-f193.google.com with SMTP id q3so15047904ilt.8
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jul 2020 19:03:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=ler81PLDj8c/ETj2nxI+bIOhjpg0lok1Sis4qfEHFDg=;
- b=h/NKK2H3SyBpzsD25IgdgS6NhRSCqb/H6PmXDWdh8fqvKH9+HiN9wcMyiQLQCgBqvU
- 9CQeFYXD2LNDVnv0/aG6P6M6yrl/IqBKai48Qz4U++qJkNjfGAy8nCxfXVQjcUiK61Q5
- o+Rw+TD4HKvqVDVuOvbkqC4jBChF4oVlupZe3gEYt2x5LvgyKFJr78pFyVnLgv8Hrrij
- 2hlWKxvTQ4xwpaWy452ISNMNqGEDcqZuS3JHAm6UzR7OD2ad4jvYwCXHORwC15Pndzrg
- F/EIMaoNpIJ6tFkuN6iQsHZXiBC29kMkW9cy6qMnEPdAhOgCzO5BhFnw8puCa93JX83B
- IROg==
-X-Gm-Message-State: AOAM531TVCCmcvBZlu5LUICMofNmDUIDQpipDwjeKXy5aX9ABtB3nRuM
- X1vldMYUElr4IFS8bvRcIg==
-X-Google-Smtp-Source: ABdhPJwZCe2h4AviiyvIFBGlgC05v7ot4+I1iDQiZQydaBNoQO+wiOKKAdBuVl53L7vk3LV4pAgx3A==
-X-Received: by 2002:a05:6602:2fd5:: with SMTP id
- v21mr25481598iow.41.1595296972677; 
- Mon, 20 Jul 2020 19:02:52 -0700 (PDT)
+ bh=NI0Hxq+b23u61HCgb6cNvKoXwQP7jMZ4BvjN9EOpDkY=;
+ b=efaXFSO2lokuevscYY71O7o7RShqMeC54hKqNt221qU4Bjxgxa46Xx5q/zIRYuZFLP
+ 6Qw36s9GLkSVrqPFx0+8dPKHhBw/jSPjS38jL3x7uccOGc+uxiXLapdHY6M5EsSIPmEy
+ Tlzni0Pnj1zVgFCwv8MurW0wep8FPLeGwlZ4XvWyq4j2o5T6LCLGFUG9zTJpsFtj/57I
+ afqxFyfEokAx5xIeN1FVbPqU30PiSw8fRa71PTAk58whGpHBTHektGVUfSY/zdaeL/wT
+ QavRjX3WL/56qokE8mWpQsKlsBUkOeMs2caJIhvxh17B4HMAI10HiooE6LnE9wpypelc
+ 8NqA==
+X-Gm-Message-State: AOAM530MrmoUDeniKJhpfScmFxf0xOmm6whQ7CjswnWG3ZrFH4OaNGqh
+ 7ZEadylGmATqf1rKWnEVSA==
+X-Google-Smtp-Source: ABdhPJzmsRID8T/oluWCq8KPBMnZBgnmkwCQskK/tjvFgX/rIZQhMljjjrf1/cVgMwDrcoB6A8xwkg==
+X-Received: by 2002:a92:77d2:: with SMTP id
+ s201mr26324309ilc.256.1595296993570; 
+ Mon, 20 Jul 2020 19:03:13 -0700 (PDT)
 Received: from xps15 ([64.188.179.252])
- by smtp.gmail.com with ESMTPSA id w7sm7795817iov.1.2020.07.20.19.02.50
+ by smtp.gmail.com with ESMTPSA id h5sm9883666ilq.22.2020.07.20.19.03.11
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 20 Jul 2020 19:02:52 -0700 (PDT)
-Received: (nullmailer pid 3375633 invoked by uid 1000);
- Tue, 21 Jul 2020 02:02:50 -0000
-Date: Mon, 20 Jul 2020 20:02:50 -0600
+ Mon, 20 Jul 2020 19:03:12 -0700 (PDT)
+Received: (nullmailer pid 3376169 invoked by uid 1000);
+ Tue, 21 Jul 2020 02:03:09 -0000
+Date: Mon, 20 Jul 2020 20:03:09 -0600
 From: Rob Herring <robh@kernel.org>
 To: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH 6/9] dt-bindings: gpio: renesas,rcar-gpio: Add r8a774e1
- support
-Message-ID: <20200721020250.GA3375580@bogus>
+Subject: Re: [PATCH 8/9] dt-bindings: net: renesas,ravb: Add support for
+ r8a774e1 SoC
+Message-ID: <20200721020309.GA3376098@bogus>
 References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc: devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+In-Reply-To: <1594676120-5862-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, netdev@vger.kernel.org,
  Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <magnus.damm@gmail.com>,
  linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- linux-renesas-soc@vger.kernel.org,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vinod Koul <vkoul@kernel.org>,
- Sergei Shtylyov <sergei.shtylyov@gmail.com>,
- Prabhakar <prabhakar.csengg@gmail.com>, linux-gpio@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>, linux-renesas-soc@vger.kernel.org,
+ linux-gpio@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
+ Sergei Shtylyov <sergei.shtylyov@gmail.com>, iommu@lists.linux-foundation.org,
  dmaengine@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
- "David S. Miller" <davem@davemloft.net>
+ devicetree@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,13 +107,15 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 13 Jul 2020 22:35:17 +0100, Lad Prabhakar wrote:
-> Document Renesas RZ/G2H (R8A774E1) GPIO blocks compatibility within the
-> relevant dt-bindings.
+On Mon, 13 Jul 2020 22:35:19 +0100, Lad Prabhakar wrote:
+> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > 
+> Document RZ/G2H (R8A774E1) SoC bindings.
+> 
+> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > ---
->  Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml | 1 +
+>  Documentation/devicetree/bindings/net/renesas,ravb.txt | 1 +
 >  1 file changed, 1 insertion(+)
 > 
 
