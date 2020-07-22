@@ -2,81 +2,86 @@ Return-Path: <SRS0=03l9=BB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF55C433E3
-	for <iommu@archiver.kernel.org>; Wed, 22 Jul 2020 03:12:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 163B5C433E3
+	for <iommu@archiver.kernel.org>; Wed, 22 Jul 2020 07:16:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9D3C2207CD
-	for <iommu@archiver.kernel.org>; Wed, 22 Jul 2020 03:12:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D3C2207CD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CC415206F5
+	for <iommu@archiver.kernel.org>; Wed, 22 Jul 2020 07:16:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="W/1lPp0N"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC415206F5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 74D92868D5;
-	Wed, 22 Jul 2020 03:12:26 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8B325203B9;
+	Wed, 22 Jul 2020 07:16:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EPULCIluQLKq; Wed, 22 Jul 2020 03:12:25 +0000 (UTC)
+	with ESMTP id lNj+HRPtcj1q; Wed, 22 Jul 2020 07:16:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2060E868B6;
-	Wed, 22 Jul 2020 03:12:25 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3E521203AE;
+	Wed, 22 Jul 2020 07:16:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 052C8C088E;
-	Wed, 22 Jul 2020 03:12:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8186BC016F
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 03:12:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A872C088E;
+	Wed, 22 Jul 2020 07:16:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CED80C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 07:16:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7819388721
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 03:12:23 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B6D9D8789B
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 07:16:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KA8vIjZyRG3b for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jul 2020 03:12:22 +0000 (UTC)
+ with ESMTP id NEBpoGkHBS-E for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jul 2020 07:15:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B08D4886F3
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 03:12:22 +0000 (UTC)
-IronPort-SDR: oOZz/IrrQ09VH5HYNU38ZpM5d++OYL2lLc6INZNeFv+YI+2p5U4kh/h6VUr1Dk9zczSHLys4NQ
- upRKDvTQzGxw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9689"; a="147761278"
-X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; d="scan'208";a="147761278"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jul 2020 20:12:22 -0700
-IronPort-SDR: FnjopQo3224BDDXFX+o84GruhY429us9L97tuuHKyBTwMO8IdOS2jZS2+20vYW2MjMrnk7U2T5
- JR8M/FXhUcTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,381,1589266800"; d="scan'208";a="392545749"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 21 Jul 2020 20:12:21 -0700
-Subject: Re: Subject: Re: [PATCH 1/1] iommu/vt-d: Skip TE disabling on quirky
- gfx dedicated iommu
-To: Jun Miao <jun.miao@windriver.com>
-References: <DM6PR11MB2587034DFBEDFB091CE9AAD58E790@DM6PR11MB2587.namprd11.prod.outlook.com>
- <0f4b6760-bb8f-ebd3-ab9d-4ecba819883c@linux.intel.com>
- <afb6b8d8-20b1-b00e-575e-0a4474f723b7@windriver.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <d7627e6a-9984-3d73-79b5-36011da45bfb@linux.intel.com>
-Date: Wed, 22 Jul 2020 11:07:33 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 549B9877D4
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jul 2020 07:15:58 +0000 (UTC)
+X-UUID: d331a230923941bb81206dcd421e9959-20200722
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=eioeC0FtTQ1I836sh9xci60mvaR1B/7eikG6MlrGfMw=; 
+ b=W/1lPp0NEbJf+lJZGPKIs45XHDlPMt+SpLnLA5Lft7lV/0qolfOC2yAziWropllbzcr4m8Qm+kWWc3dX2mozJOaB2nWdo3gpKz6BDNoPj+BY7rfEeuqW1OSFcOF2or4URpnuHRwbw+NungSZmBONWNJHf90hplUuRz1Qgg0Fbcg=;
+X-UUID: d331a230923941bb81206dcd421e9959-20200722
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <miles.chen@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 160040994; Wed, 22 Jul 2020 15:15:53 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 22 Jul 2020 15:15:49 +0800
+Received: from [172.21.77.33] (172.21.77.33) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 22 Jul 2020 15:15:50 +0800
+Message-ID: <1595402150.10848.1.camel@mtkswgap22>
+Subject: Re: [PATCH v2] iommu/mediatek: check 4GB mode by reading infracfg
+From: Miles Chen <miles.chen@mediatek.com>
+To: David Hildenbrand <david@redhat.com>
+Date: Wed, 22 Jul 2020 15:15:50 +0800
+In-Reply-To: <cc04ce89-9790-b127-19e5-8f2f1b91ad4f@redhat.com>
+References: <20200721021619.25575-1-miles.chen@mediatek.com>
+ <cc04ce89-9790-b127-19e5-8f2f1b91ad4f@redhat.com>
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-In-Reply-To: <afb6b8d8-20b1-b00e-575e-0a4474f723b7@windriver.com>
-Content-Language: en-US
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
+X-TM-SNTS-SMTP: 125A2A6B996131DF2178586BE457C60F26919FB3EC0293BA66AB66B8DF6B504B2000:8
+X-MTK: N
+Cc: Rob Herring <robh@kernel.org>, wsd_upstream@mediatek.com,
+ linux-kernel@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
+ Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ Yingjoe Chen <yingjoe.chen@mediatek.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,53 +94,124 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gNy8yMi8yMCAxMTowMyBBTSwgSnVuIE1pYW8gd3JvdGU6Cj4gT24gNy8yMi8yMCAxMDo0MCBB
-TSwgTHUgQmFvbHUgd3JvdGU6Cj4+IEhpIEp1biwKPj4KPj4gT24gNy8yMi8yMCAxMDoyNiBBTSwg
-TWlhbywgSnVuIHdyb3RlOgo+Pj4+PiBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogRE1BUiBo
-YXJkd2FyZSBpcyBtYWxmdW5jdGlvbmluZwo+Pj4+PiBDUFU6IDAgUElEOiAzNDcgQ29tbTogcnRj
-d2FrZSBOb3QgdGFpbnRlZCA1LjQuMC15b2N0by1zdGFuZGFyZCAjMTI0Cj4+Pj4+IEhhcmR3YXJl
-IG5hbWU6IEludGVsIENvcnBvcmF0aW9uIEljZSBMYWtlIENsaWVudCBQbGF0Zm9ybS9JY2VMYWtl
-IFUgCj4+Pj4+IEREUjQKPj4+Pj4gU09ESU1NIFBEIFJWUCBUTEMsIEJJT1MgSUNMU0ZXUjEuUjAw
-LjMxNjIuQTAwLjE5MDQxNjIwMDAgMDQvMTYvMjAxOQo+Pj4+PiBDYWxsIFRyYWNlOgo+Pj4+PiDC
-oMKgIGR1bXBfc3RhY2srMHg1OS8weDc1Cj4+Pj4+IMKgwqAgcGFuaWMrMHhmZi8weDJkNAo+Pj4+
-PiDCoMKgIGlvbW11X2Rpc2FibGVfdHJhbnNsYXRpb24rMHg4OC8weDkwCj4+Pj4+IMKgwqAgaW9t
-bXVfc3VzcGVuZCsweDEyZi8weDFiMAo+Pj4+PiDCoMKgIHN5c2NvcmVfc3VzcGVuZCsweDZjLzB4
-MjIwCj4+Pj4+IMKgwqAgc3VzcGVuZF9kZXZpY2VzX2FuZF9lbnRlcisweDMxMy8weDg0MAo+Pj4+
-PiDCoMKgIHBtX3N1c3BlbmQrMHgzMGQvMHgzOTAKPj4+Pj4gwqDCoCBzdGF0ZV9zdG9yZSsweDgy
-LzB4ZjAKPj4+Pj4gwqDCoCBrb2JqX2F0dHJfc3RvcmUrMHgxMi8weDIwCj4+Pj4+IMKgwqAgc3lz
-ZnNfa2Zfd3JpdGUrMHgzYy8weDUwCj4+Pj4+IMKgwqAga2VybmZzX2ZvcF93cml0ZSsweDExZC8w
-eDE5MAo+Pj4+PiDCoMKgIF9fdmZzX3dyaXRlKzB4MWIvMHg0MAo+Pj4+PiDCoMKgIHZmc193cml0
-ZSsweGM2LzB4MWQwCj4+Pj4+IMKgwqAga3N5c193cml0ZSsweDVlLzB4ZTAKPj4+Pj4gwqDCoCBf
-X3g2NF9zeXNfd3JpdGUrMHgxYS8weDIwCj4+Pj4+IMKgwqAgZG9fc3lzY2FsbF82NCsweDRkLzB4
-MTUwCj4+Pj4+IMKgwqAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQo+
-Pj4+PiBSSVA6IDAwMzM6MHg3Zjk3YjgwODAxMTMKPj4+Pj4gQ29kZTogOGIgMTUgODEgYmQgMGMg
-MDAgZjcgZDggNjQgODkgMDIgNDggYzcgYzAgZmYgZmYgZmYgZmYgZWIgYjcgCj4+Pj4+IDBmIDFm
-IDAwCj4+Pj4+IDY0IDhiIDA0IDI1IDE4IDAwIDAwIDAwIDg1IGMwIDc1IDE0IGI4IDAxIDAwIDAw
-IDAwIDBmIDA1IDw0OD4gM2QgMDAgCj4+Pj4+IGYwIGZmIGZmCj4+Pj4+IDc3IDU1IGMzIDBmIDFm
-IDQwIDAwIDQ4IDgzIGVjIDI4IDQ4IDg5IDU0IDI0IDE4Cj4+Pj4+IFJTUDogMDAyYjowMDAwN2Zm
-Y2ZhNmY0OGI4IEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6IDAwMDAwMDAwMDAwMDAwMDEKPj4+
-Pj4gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDAwMDAwMDAwMDAwNCBSQ1g6IDAwMDA3
-Zjk3YjgwODAxMTMKPj4+Pj4gUkRYOiAwMDAwMDAwMDAwMDAwMDA0IFJTSTogMDAwMDU1ZTdkYjAz
-YjcwMCBSREk6IDAwMDAwMDAwMDAwMDAwMDQKPj4+Pj4gUkJQOiAwMDAwNTVlN2RiMDNiNzAwIFIw
-ODogMDAwMDU1ZTdkYjAzYjcwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDQKPj4+Pj4gUjEwOiAwMDAw
-MDAwMDAwMDAwMDA0IFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDAwMDAwMDAwMDAwMDQK
-Pj4+Pj4gUjEzOiAwMDAwNTVlN2RiMDM5MzgwIFIxNDogMDAwMDAwMDAwMDAwMDAwNCBSMTU6IDAw
-MDA3Zjk3YjgxNGQ3MDAKPj4+Pj4gS2VybmVsIE9mZnNldDogMHgzOGEwMDAwMCBmcm9tIDB4ZmZm
-ZmZmZmY4MTAwMDAwMCAocmVsb2NhdGlvbiByYW5nZToKPj4+Pj4gMHhmZmZmZmZmZjgwMDAwMDAw
-LTB4ZmZmZmZmZmZiZmZmZmZmZikKPj4+Pj4gLS0tWyBlbmQgS2VybmVsIHBhbmljIC0gbm90IHN5
-bmNpbmc6IERNQVIgaGFyZHdhcmUgaXMgCj4+Pj4+IG1hbGZ1bmN0aW9uaW5nIF0tLS0KPj4+Cj4+
-Cj4+IERvIHlvdSBtZWFuIHRoYXQgc3lzdGVtIGhhbmdzIGluIGlvbW11X2Rpc2FibGVfdHJhbnNs
-YXRpb24oKSB3aXRob3V0IAo+PiB0aGlzIGZpeC4KPj4KPiBZZXMgLEZyb20gdGhlIGNhbGwgdHJh
-Y2UgYW5kIGkgYWxzbyByZWFkIHRoZSBETUFSRF9HQ01EX1JHUyBpcyB3cm9uZyAKPiB3aXRob3V0
-IHRoaXMgcGF0Y2guCgpPa2F5ISBUaGFua3MgYSBsb3QgZm9yIGNvbmZpcm1pbmcgdGhpcy4KCkJl
-c3QgcmVnYXJkcywKYmFvbHUKCj4+PiBbUzMgc3VjY2Vzc2Z1bGx5IHdpdGggdGhlIHBhdGNoXQo+
-Pgo+PiBBbmQsIHRoaXMgZmFpbHVyZSBkaXNhcHBlYXJlZCBhZnRlciB5b3UgYXBwbGllZCB0aGlz
-IGZpeD8KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBiYW9sdQpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
-aWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Tue, 2020-07-21 at 11:10 +0200, David Hildenbrand wrote:
+> On 21.07.20 04:16, Miles Chen wrote:
+> > In previous discussion [1] and [2], we found that it is risky to
+> > use max_pfn or totalram_pages to tell if 4GB mode is enabled.
+> > 
+> > Check 4GB mode by reading infracfg register, remove the usage
+> > of the un-exported symbol max_pfn.
+> > 
+> > This is a step towards building mtk_iommu as a kernel module.
+> > 
+> > Change since v1:
+> > 1. remove the phandle usage, search for infracfg instead [3]
+> > 2. use infracfg instead of infracfg_regmap
+> > 3. move infracfg definitaions to linux/soc/mediatek/infracfg.h
+> > 4. update enable_4GB only when has_4gb_mode
+> 
+> Nit: We tend to place such information below the "---" (adding a second
+> one) such that this information is discarded when the patch is picked up.
+
+Thanks, I'll add a "---" before the "Change since..." in patch v3.
+> 
+> > 
+> > [1] https://urldefense.com/v3/__https://lkml.org/lkml/2020/6/3/733__;!!CTRNKA9wMg0ARbw!wrP2H0azuZkTHSnM_ETki4kT_FMF0Cl7abQX8tIHX0iTr65JkvMCe4jDt84d_YhBrA$ 
+> > [2] https://urldefense.com/v3/__https://lkml.org/lkml/2020/6/4/136__;!!CTRNKA9wMg0ARbw!wrP2H0azuZkTHSnM_ETki4kT_FMF0Cl7abQX8tIHX0iTr65JkvMCe4jDt86IGhmouQ$ 
+> > [3] https://urldefense.com/v3/__https://lkml.org/lkml/2020/7/15/1147__;!!CTRNKA9wMg0ARbw!wrP2H0azuZkTHSnM_ETki4kT_FMF0Cl7abQX8tIHX0iTr65JkvMCe4jDt855z4xdqw$ 
+> > 
+> > Cc: Mike Rapoport <rppt@linux.ibm.com>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Yong Wu <yong.wu@mediatek.com>
+> > Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: Yong Wu <yong.wu@mediatek.com>
+> > Cc: Chao Hao <chao.hao@mediatek.com>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> > Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c             | 26 +++++++++++++++++++++-----
+> >  include/linux/soc/mediatek/infracfg.h |  3 +++
+> >  2 files changed, 24 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 2be96f1cdbd2..16765f532853 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -3,7 +3,6 @@
+> >   * Copyright (c) 2015-2016 MediaTek Inc.
+> >   * Author: Yong Wu <yong.wu@mediatek.com>
+> >   */
+> > -#include <linux/memblock.h>
+> >  #include <linux/bug.h>
+> >  #include <linux/clk.h>
+> >  #include <linux/component.h>
+> > @@ -15,13 +14,16 @@
+> >  #include <linux/iommu.h>
+> >  #include <linux/iopoll.h>
+> >  #include <linux/list.h>
+> > +#include <linux/mfd/syscon.h>
+> >  #include <linux/of_address.h>
+> >  #include <linux/of_iommu.h>
+> >  #include <linux/of_irq.h>
+> >  #include <linux/of_platform.h>
+> >  #include <linux/platform_device.h>
+> > +#include <linux/regmap.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/spinlock.h>
+> > +#include <linux/soc/mediatek/infracfg.h>
+> >  #include <asm/barrier.h>
+> >  #include <soc/mediatek/smi.h>
+> >  
+> > @@ -599,8 +601,10 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >  	struct resource         *res;
+> >  	resource_size_t		ioaddr;
+> >  	struct component_match  *match = NULL;
+> > +	struct regmap		*infracfg;
+> >  	void                    *protect;
+> >  	int                     i, larb_nr, ret;
+> > +	u32			val;
+> >  
+> >  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> >  	if (!data)
+> > @@ -614,10 +618,22 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >  		return -ENOMEM;
+> >  	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+> >  
+> > -	/* Whether the current dram is over 4GB */
+> > -	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
+> > -	if (!data->plat_data->has_4gb_mode)
+> > -		data->enable_4GB = false;
+> > +	data->enable_4GB = false;
+> > +	if (data->plat_data->has_4gb_mode) {
+> > +		infracfg = syscon_regmap_lookup_by_compatible(
+> > +				"mediatek,mt8173-infracfg");
+> > +		if (IS_ERR(infracfg)) {
+> > +			infracfg = syscon_regmap_lookup_by_compatible(
+> > +					"mediatek,mt2712-infracfg");
+> > +			if (IS_ERR(infracfg))
+> > +				return PTR_ERR(infracfg);
+> > +
+> > +		}
+> > +		ret = regmap_read(infracfg, REG_INFRA_MISC, &val);
+> > +		if (ret)
+> > +			return ret;
+> > +		data->enable_4GB = !!(val & F_DDR_4GB_SUPPORT_EN);
+> 
+> (I am absolutely not familiar with syscon_regmap_lookup_by ..., I am
+> missing some context, so sorry for the stupid questions)
+> 
+> Who sets the regmap value and based on what? Who decides that 4GB mode
+> is supported or not? And who decides if 4GB mode is *required* or not?
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
