@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E207C433EC
-	for <iommu@archiver.kernel.org>; Thu, 23 Jul 2020 17:19:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B28B2C433E8
+	for <iommu@archiver.kernel.org>; Thu, 23 Jul 2020 17:19:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1BDB92071A
-	for <iommu@archiver.kernel.org>; Thu, 23 Jul 2020 17:19:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BDB92071A
+	by mail.kernel.org (Postfix) with ESMTPS id 8C17C22BF3
+	for <iommu@archiver.kernel.org>; Thu, 23 Jul 2020 17:19:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C17C22BF3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E0CEA86DC2;
-	Thu, 23 Jul 2020 17:19:04 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 44E1B88586;
+	Thu, 23 Jul 2020 17:19:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bWx0hCTyy0d1; Thu, 23 Jul 2020 17:19:03 +0000 (UTC)
+	with ESMTP id qv0ZPl8pdC22; Thu, 23 Jul 2020 17:18:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 31E7B86DBF;
-	Thu, 23 Jul 2020 17:19:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 47B698857B;
+	Thu, 23 Jul 2020 17:18:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F5B1C016F;
-	Thu, 23 Jul 2020 17:19:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 266C5C004C;
+	Thu, 23 Jul 2020 17:18:59 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED18FC0050
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 85DF8C004C
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C3A9F8886D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:58 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7157588871
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3yVnUv9o4V+x for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jul 2020 17:18:57 +0000 (UTC)
+ with ESMTP id 58g-EJb85Bdt for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jul 2020 17:18:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0FCFE8886F
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:57 +0000 (UTC)
-IronPort-SDR: J0F5yX5zAscIkDLY7Zu/FufjhnrmVyP4y3/KskoiLlbXDyYjOuHsAKtvE3FHDHsvm0HgXbqWHo
- 7/kPCJMxRSAA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="151880965"
-X-IronPort-AV: E=Sophos;i="5.75,387,1589266800"; d="scan'208";a="151880965"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CDA3C8886E
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 17:18:56 +0000 (UTC)
+IronPort-SDR: 6qMgwnmodKpFdGaDDKPFV6Pd18tSl3IB3XhB6eCDM+UK2Q50TjTgsrHka4twKIGXNZP0wmAYaW
+ GJlAyOcXgopw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="151880959"
+X-IronPort-AV: E=Sophos;i="5.75,387,1589266800"; d="scan'208";a="151880959"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  23 Jul 2020 10:18:55 -0700
-IronPort-SDR: q8dpssTiqwAPPJ0U4CziR2PrtQjugPcEdFXlBT8unoNln0pttkGTux8poyOxlXuGx7/PHEGHEO
- pF/JjS5pM7fA==
+IronPort-SDR: ExcwVTzxLEuD/HVlpZ1q0sbjaxqlTodJYNPsAp2vhjmjli8oXw3xdb2pQuJ288T/CU0MlaMi31
+ P/sQ8bRgrSKA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,387,1589266800"; d="scan'208";a="462933860"
+X-IronPort-AV: E=Sophos;i="5.75,387,1589266800"; d="scan'208";a="462933854"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga005.jf.intel.com with ESMTP; 23 Jul 2020 10:18:55 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  Joerg Roedel <joro@8bytes.org>,
  Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v6 6/6] iommu/vt-d: Check UAPI data processed by IOMMU core
-Date: Thu, 23 Jul 2020 10:25:40 -0700
-Message-Id: <1595525140-23899-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v6 4/6] iommu/uapi: Rename uapi functions
+Date: Thu, 23 Jul 2020 10:25:38 -0700
+Message-Id: <1595525140-23899-5-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1595525140-23899-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1595525140-23899-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -92,49 +92,126 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-IOMMU generic layer already does sanity checks UAPI data for version
-match and argsz range under generic information.
-Remove the redundant version check from VT-d driver and check for vendor
-specific data size.
+User APIs such as iommu_sva_unbind_gpasid() may also be used by the
+kernel. Since we introduced user pointer to the UAPI functions,
+in-kernel callers cannot share the same APIs. In-kernel callers are also
+trusted, there is no need to validate the data.
 
+This patch renames all UAPI functions with iommu_uapi_ prefix such that
+is clear to the intended callers.
+
+Suggested-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 3 +--
- drivers/iommu/intel/svm.c   | 7 +++++--
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/iommu/iommu.c | 18 +++++++++---------
+ include/linux/iommu.h | 31 ++++++++++++++++---------------
+ 2 files changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 021f62078f52..7e03cca31a0e 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5391,8 +5391,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 	int ret = 0;
- 	u64 size = 0;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b6858adc4f17..3a913ce94a3d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1950,35 +1950,35 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_attach_device);
  
--	if (!inv_info || !dmar_domain ||
--	    inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-+	if (!inv_info || !dmar_domain)
- 		return -EINVAL;
+-int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+-			   struct iommu_cache_invalidate_info *inv_info)
++int iommu_uapi_cache_invalidate(struct iommu_domain *domain, struct device *dev,
++				struct iommu_cache_invalidate_info *inv_info)
+ {
+ 	if (unlikely(!domain->ops->cache_invalidate))
+ 		return -ENODEV;
  
- 	if (!dev || !dev_is_pci(dev))
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 713b3a218483..55ea11e9c0f5 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -240,8 +240,11 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
- 	if (WARN_ON(!iommu) || !data)
- 		return -EINVAL;
+ 	return domain->ops->cache_invalidate(domain, dev, inv_info);
+ }
+-EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
++EXPORT_SYMBOL_GPL(iommu_uapi_cache_invalidate);
  
--	if (data->version != IOMMU_GPASID_BIND_VERSION_1 ||
--	    data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
-+	if (data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
-+		return -EINVAL;
+-int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+-			   struct device *dev, struct iommu_gpasid_bind_data *data)
++int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
++			       struct device *dev, struct iommu_gpasid_bind_data *data)
+ {
+ 	if (unlikely(!domain->ops->sva_bind_gpasid))
+ 		return -ENODEV;
+ 
+ 	return domain->ops->sva_bind_gpasid(domain, dev, data);
+ }
+-EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
++EXPORT_SYMBOL_GPL(iommu_uapi_sva_bind_gpasid);
+ 
+-int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
+-			     ioasid_t pasid)
++int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
++				 ioasid_t pasid)
+ {
+ 	if (unlikely(!domain->ops->sva_unbind_gpasid))
+ 		return -ENODEV;
+ 
+ 	return domain->ops->sva_unbind_gpasid(dev, pasid);
+ }
+-EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
++EXPORT_SYMBOL_GPL(iommu_uapi_sva_unbind_gpasid);
+ 
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 5f0b7859d2eb..2dcc1a33f6dc 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -430,13 +430,13 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
+-extern int iommu_cache_invalidate(struct iommu_domain *domain,
+-				  struct device *dev,
+-				  struct iommu_cache_invalidate_info *inv_info);
+-extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+-		struct device *dev, struct iommu_gpasid_bind_data *data);
+-extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+-				struct device *dev, ioasid_t pasid);
++extern int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
++				       struct device *dev,
++				       struct iommu_cache_invalidate_info *inv_info);
++extern int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
++				      struct device *dev, struct iommu_gpasid_bind_data *data);
++extern int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
++					struct device *dev, ioasid_t pasid);
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+@@ -1054,21 +1054,22 @@ static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
+ 	return IOMMU_PASID_INVALID;
+ }
+ 
+-static inline int
+-iommu_cache_invalidate(struct iommu_domain *domain,
+-		       struct device *dev,
+-		       struct iommu_cache_invalidate_info *inv_info)
++static inline int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
++					      struct device *dev,
++					      struct iommu_cache_invalidate_info *inv_info)
+ {
+ 	return -ENODEV;
+ }
+-static inline int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+-				struct device *dev, struct iommu_gpasid_bind_data *data)
 +
-+	/* IOMMU core ensures argsz is more than the start of the union */
-+	if (data->argsz < offsetofend(struct iommu_gpasid_bind_data, vendor.vtd))
- 		return -EINVAL;
++static inline int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
++					     struct device *dev,
++					     struct iommu_gpasid_bind_data *data)
+ {
+ 	return -ENODEV;
+ }
  
- 	if (!dev_is_pci(dev))
+-static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+-					   struct device *dev, int pasid)
++static inline int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
++					       struct device *dev, int pasid)
+ {
+ 	return -ENODEV;
+ }
 -- 
 2.7.4
 
