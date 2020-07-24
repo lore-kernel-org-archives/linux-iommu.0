@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F269C433F2
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB67C433F4
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:47 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EB8EE2086A
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB8EE2086A
+	by mail.kernel.org (Postfix) with ESMTPS id F06EF2086A
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F06EF2086A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E25A086DF3;
-	Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DCA3723039;
+	Fri, 24 Jul 2020 01:54:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Wji-_4tLLTDv; Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
+	with ESMTP id i13zGk57dBTO; Fri, 24 Jul 2020 01:54:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B8FA86DE5;
-	Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7682F23026;
+	Fri, 24 Jul 2020 01:54:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39BAFC004E;
-	Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D275C004E;
+	Fri, 24 Jul 2020 01:54:45 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23003C004C
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68A31C004C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1308387E76
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:41 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 64F0C87E76
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mH1CO-Y8Z7+o for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jul 2020 01:54:40 +0000 (UTC)
+ with ESMTP id Av+b+XofVVrQ for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jul 2020 01:54:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5BB7488222
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:40 +0000 (UTC)
-IronPort-SDR: cW+OrerGYpoNId/ezJuqbOo1JnDyYiPTo0Ot7wzaf4cRi/SMa8UDeyCATcRFOTo6wdl/OC2IJl
- bqMmUTZal/vw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="168778786"
-X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="168778786"
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0FE7D87E84
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:42 +0000 (UTC)
+IronPort-SDR: vB/km3ybSzK5w96uPzKeCW89pK4FV6qCQ9m3cKcAJaLf08KjIYBhcGQbUXRbdTxyOybdB4kkHu
+ WNtie+Hq8qaA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="168778791"
+X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="168778791"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jul 2020 18:54:40 -0700
-IronPort-SDR: 4urPSF6nT8ElU7xS45lzGp+PyQRso8trVBriHQBgaGMe2VaFKqBe2Ulmi1x1KVOfPN+PcZvO0r
- XCQaowkeUBGA==
+ 23 Jul 2020 18:54:41 -0700
+IronPort-SDR: YJDnaeQ73tceDni7RG7soIdHxDs944Vhk2L/x5URP27ehBV1dFk1IqrJytFDrIazOjmTGLcfoB
+ AvQx4mS77/Ig==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="488576780"
+X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="488576791"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga006.fm.intel.com with ESMTP; 23 Jul 2020 18:54:38 -0700
+ by fmsmga006.fm.intel.com with ESMTP; 23 Jul 2020 18:54:40 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 09/12] iommu/vt-d: Add a helper to get svm and sdev for pasid
-Date: Fri, 24 Jul 2020 09:49:22 +0800
-Message-Id: <20200724014925.15523-10-baolu.lu@linux.intel.com>
+Subject: [PATCH 10/12] iommu/vt-d: Report page request faults for guest SVA
+Date: Fri, 24 Jul 2020 09:49:23 +0800
+Message-Id: <20200724014925.15523-11-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200724014925.15523-1-baolu.lu@linux.intel.com>
 References: <20200724014925.15523-1-baolu.lu@linux.intel.com>
@@ -87,205 +87,185 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-There are several places in the code that need to get the pointers of
-svm and sdev according to a pasid and device. Add a helper to achieve
-this for code consolidation and readability.
+A pasid might be bound to a page table from a VM guest via the iommu
+ops.sva_bind_gpasid. In this case, when a DMA page fault is detected
+on the physical IOMMU, we need to inject the page fault request into
+the guest. After the guest completes handling the page fault, a page
+response need to be sent back via the iommu ops.page_response().
 
+This adds support to report a page request fault. Any external module
+which is interested in handling this fault should regiester a notifier
+with iommu_register_device_fault_handler().
+
+Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/svm.c | 115 +++++++++++++++++++++-----------------
- 1 file changed, 65 insertions(+), 50 deletions(-)
+ drivers/iommu/intel/svm.c | 103 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 85 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 65d2327dcd0d..c104a50a625c 100644
+index c104a50a625c..140114ab1375 100644
 --- a/drivers/iommu/intel/svm.c
 +++ b/drivers/iommu/intel/svm.c
-@@ -228,13 +228,57 @@ static LIST_HEAD(global_svm_list);
- 	list_for_each_entry((sdev), &(svm)->devs, list)	\
- 		if ((d) != (sdev)->dev) {} else
+@@ -811,8 +811,63 @@ static void intel_svm_drain_prq(struct device *dev, int pasid)
+ 	}
+ }
  
-+static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
-+			     struct intel_svm **rsvm,
-+			     struct intel_svm_dev **rsdev)
++static int prq_to_iommu_prot(struct page_req_dsc *req)
 +{
-+	struct intel_svm_dev *d, *sdev = NULL;
-+	struct intel_svm *svm;
++	int prot = 0;
 +
-+	/* The caller should hold the pasid_mutex lock */
-+	if (WARN_ON(!mutex_is_locked(&pasid_mutex)))
-+		return -EINVAL;
++	if (req->rd_req)
++		prot |= IOMMU_FAULT_PERM_READ;
++	if (req->wr_req)
++		prot |= IOMMU_FAULT_PERM_WRITE;
++	if (req->exe_req)
++		prot |= IOMMU_FAULT_PERM_EXEC;
++	if (req->pm_req)
++		prot |= IOMMU_FAULT_PERM_PRIV;
 +
-+	if (pasid == INVALID_IOASID || pasid >= PASID_MAX)
-+		return -EINVAL;
-+
-+	svm = ioasid_find(NULL, pasid, NULL);
-+	if (IS_ERR(svm))
-+		return PTR_ERR(svm);
-+
-+	if (!svm)
-+		goto out;
-+
-+	/*
-+	 * If we found svm for the PASID, there must be at least one device
-+	 * bond.
-+	 */
-+	if (WARN_ON(list_empty(&svm->devs)))
-+		return -EINVAL;
-+
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(d, &svm->devs, list) {
-+		if (d->dev == dev) {
-+			sdev = d;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+out:
-+	*rsvm = svm;
-+	*rsdev = sdev;
-+
-+	return 0;
++	return prot;
 +}
 +
- int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
- 			  struct iommu_gpasid_bind_data *data)
- {
- 	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
-+	struct intel_svm_dev *sdev = NULL;
- 	struct dmar_domain *dmar_domain;
--	struct intel_svm_dev *sdev;
--	struct intel_svm *svm;
-+	struct intel_svm *svm = NULL;
- 	int ret = 0;
- 
- 	if (WARN_ON(!iommu) || !data)
-@@ -261,35 +305,23 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
- 	dmar_domain = to_dmar_domain(domain);
- 
- 	mutex_lock(&pasid_mutex);
--	svm = ioasid_find(NULL, data->hpasid, NULL);
--	if (IS_ERR(svm)) {
--		ret = PTR_ERR(svm);
-+	ret = pasid_to_svm_sdev(dev, data->hpasid, &svm, &sdev);
-+	if (ret)
- 		goto out;
--	}
--
--	if (svm) {
--		/*
--		 * If we found svm for the PASID, there must be at
--		 * least one device bond, otherwise svm should be freed.
--		 */
--		if (WARN_ON(list_empty(&svm->devs))) {
--			ret = -EINVAL;
--			goto out;
--		}
- 
-+	if (sdev) {
- 		/*
- 		 * Do not allow multiple bindings of the same device-PASID since
- 		 * there is only one SL page tables per PASID. We may revisit
- 		 * once sharing PGD across domains are supported.
- 		 */
--		for_each_svm_dev(sdev, svm, dev) {
--			dev_warn_ratelimited(dev,
--					     "Already bound with PASID %u\n",
--					     svm->pasid);
--			ret = -EBUSY;
--			goto out;
--		}
--	} else {
-+		dev_warn_ratelimited(dev, "Already bound with PASID %u\n",
-+				     svm->pasid);
-+		ret = -EBUSY;
-+		goto out;
++static int
++intel_svm_prq_report(struct device *dev, struct page_req_dsc *desc)
++{
++	struct iommu_fault_event event;
++
++	if (!dev || !dev_is_pci(dev))
++		return -ENODEV;
++
++	/* Fill in event data for device specific processing */
++	memset(&event, 0, sizeof(struct iommu_fault_event));
++	event.fault.type = IOMMU_FAULT_PAGE_REQ;
++	event.fault.prm.addr = desc->addr;
++	event.fault.prm.pasid = desc->pasid;
++	event.fault.prm.grpid = desc->prg_index;
++	event.fault.prm.perm = prq_to_iommu_prot(desc);
++
++	if (desc->lpig)
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
++	if (desc->pasid_present) {
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
++	}
++	if (desc->priv_data_present) {
++		/*
++		 * Set last page in group bit if private data is present,
++		 * page response is required as it does for LPIG.
++		 * iommu_report_device_fault() doesn't understand this vendor
++		 * specific requirement thus we set last_page as a workaround.
++		 */
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
++		memcpy(event.fault.prm.private_data, desc->priv_data,
++		       sizeof(desc->priv_data));
 +	}
 +
-+	if (!svm) {
- 		/* We come here when PASID has never been bond to a device. */
- 		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
- 		if (!svm) {
-@@ -372,25 +404,17 @@ int intel_svm_unbind_gpasid(struct device *dev, int pasid)
- 	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
- 	struct intel_svm_dev *sdev;
- 	struct intel_svm *svm;
--	int ret = -EINVAL;
-+	int ret;
- 
- 	if (WARN_ON(!iommu))
- 		return -EINVAL;
- 
- 	mutex_lock(&pasid_mutex);
--	svm = ioasid_find(NULL, pasid, NULL);
--	if (!svm) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	if (IS_ERR(svm)) {
--		ret = PTR_ERR(svm);
-+	ret = pasid_to_svm_sdev(dev, pasid, &svm, &sdev);
-+	if (ret)
- 		goto out;
--	}
- 
--	for_each_svm_dev(sdev, svm, dev) {
--		ret = 0;
-+	if (sdev) {
- 		if (iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX))
- 			sdev->users--;
- 		if (!sdev->users) {
-@@ -414,7 +438,6 @@ int intel_svm_unbind_gpasid(struct device *dev, int pasid)
- 				kfree(svm);
++	return iommu_report_device_fault(dev, &event);
++}
++
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
++	struct intel_svm_dev *sdev = NULL;
+ 	struct intel_iommu *iommu = d;
+ 	struct intel_svm *svm = NULL;
+ 	int head, tail, handled = 0;
+@@ -824,7 +879,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 	tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+ 	head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+ 	while (head != tail) {
+-		struct intel_svm_dev *sdev;
+ 		struct vm_area_struct *vma;
+ 		struct page_req_dsc *req;
+ 		struct qi_desc resp;
+@@ -860,6 +914,20 @@ static irqreturn_t prq_event_thread(int irq, void *d)
  			}
  		}
--		break;
- 	}
- out:
- 	mutex_unlock(&pasid_mutex);
-@@ -592,7 +615,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
- 	if (sd)
- 		*sd = sdev;
- 	ret = 0;
-- out:
-+out:
- 	return ret;
- }
  
-@@ -608,17 +631,11 @@ static int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
++		if (!sdev || sdev->sid != req->rid) {
++			struct intel_svm_dev *t;
++
++			sdev = NULL;
++			rcu_read_lock();
++			list_for_each_entry_rcu(t, &svm->devs, list) {
++				if (t->sid == req->rid) {
++					sdev = t;
++					break;
++				}
++			}
++			rcu_read_unlock();
++		}
++
+ 		result = QI_RESP_INVALID;
+ 		/* Since we're using init_mm.pgd directly, we should never take
+ 		 * any faults on kernel addresses. */
+@@ -870,6 +938,17 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (!is_canonical_address(address))
+ 			goto bad_req;
  
--	svm = ioasid_find(NULL, pasid, NULL);
--	if (!svm)
--		goto out;
++		/*
++		 * If prq is to be handled outside iommu driver via receiver of
++		 * the fault notifiers, we skip the page response here.
++		 */
++		if (svm->flags & SVM_FLAG_GUEST_MODE) {
++			if (sdev && !intel_svm_prq_report(sdev->dev, req))
++				goto prq_advance;
++			else
++				goto bad_req;
++		}
++
+ 		/* If the mm is already defunct, don't handle faults. */
+ 		if (!mmget_not_zero(svm->mm))
+ 			goto bad_req;
+@@ -888,24 +967,11 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			goto invalid;
+ 
+ 		result = QI_RESP_SUCCESS;
+-	invalid:
++invalid:
+ 		mmap_read_unlock(svm->mm);
+ 		mmput(svm->mm);
+-	bad_req:
+-		/* Accounting for major/minor faults? */
+-		rcu_read_lock();
+-		list_for_each_entry_rcu(sdev, &svm->devs, list) {
+-			if (sdev->sid == req->rid)
+-				break;
+-		}
+-		/* Other devices can go away, but the drivers are not permitted
+-		 * to unbind while any page faults might be in flight. So it's
+-		 * OK to drop the 'lock' here now we have it. */
+-		rcu_read_unlock();
 -
--	if (IS_ERR(svm)) {
--		ret = PTR_ERR(svm);
-+	ret = pasid_to_svm_sdev(dev, pasid, &svm, &sdev);
-+	if (ret)
- 		goto out;
--	}
- 
--	for_each_svm_dev(sdev, svm, dev) {
--		ret = 0;
-+	if (sdev) {
- 		sdev->users--;
- 		if (!sdev->users) {
- 			list_del_rcu(&sdev->list);
-@@ -647,10 +664,8 @@ static int intel_svm_unbind_mm(struct device *dev, int pasid)
- 				kfree(svm);
- 			}
+-		if (WARN_ON(&sdev->list == &svm->devs))
+-			sdev = NULL;
+-
++bad_req:
++		WARN_ON(!sdev);
+ 		if (sdev && sdev->ops && sdev->ops->fault_cb) {
+ 			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+ 				(req->exe_req << 1) | (req->pm_req);
+@@ -916,7 +982,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		   and these can be NULL. Do not use them below this point! */
+ 		sdev = NULL;
+ 		svm = NULL;
+-	no_pasid:
++no_pasid:
+ 		if (req->lpig || req->priv_data_present) {
+ 			/*
+ 			 * Per VT-d spec. v3.0 ch7.7, system software must
+@@ -941,6 +1007,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			resp.qw3 = 0;
+ 			qi_submit_sync(iommu, &resp, 1, 0);
  		}
--		break;
++prq_advance:
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
  	}
-- out:
--
-+out:
- 	return ret;
- }
  
 -- 
 2.17.1
