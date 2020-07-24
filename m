@@ -2,75 +2,75 @@ Return-Path: <SRS0=ASoY=BD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564CFC433E5
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 13:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 145F4C433F2
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 14:51:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08B3B206D8
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 13:41:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08B3B206D8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id C881F2074F
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 14:51:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XXzJ8ly1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C881F2074F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B56608702C;
-	Fri, 24 Jul 2020 13:41:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A267086DAC;
+	Fri, 24 Jul 2020 14:51:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rkZq_sRJ93PQ; Fri, 24 Jul 2020 13:41:23 +0000 (UTC)
+	with ESMTP id RxOXcf2Dj6RY; Fri, 24 Jul 2020 14:51:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E68AC86FF1;
-	Fri, 24 Jul 2020 13:41:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2206D86DC2;
+	Fri, 24 Jul 2020 14:51:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BBB21C004D;
-	Fri, 24 Jul 2020 13:41:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5707DC004C
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 13:41:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB3DBC004E;
+	Fri, 24 Jul 2020 14:51:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82033C004C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 14:51:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3F66620416
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 13:41:21 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7745F88448
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 14:51:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id megwRuIpvbDP for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jul 2020 13:41:19 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 7449E20403
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 13:41:19 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id B8C5168AFE; Fri, 24 Jul 2020 15:41:14 +0200 (CEST)
-Date: Fri, 24 Jul 2020 15:41:14 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Amit Pundir <amit.pundir@linaro.org>
-Subject: Re: [PATCH] dma-pool: Do not allocate pool memory from CMA
-Message-ID: <20200724134114.GA3152@lst.de>
-References: <550b30a86c0785049d24c945e2c6628d491cee3a.camel@suse.de>
- <CAMi1Hd2V2pJjP=USS4r-Z3vK-aq7_aBy-jcVNk1GvbdEQAuzWg@mail.gmail.com>
- <011994f8a717a00dcd9ed7682a1ddeb421c2c43f.camel@suse.de>
- <CAMi1Hd0=ZsGhTkSy221EP9Vb3GMOcS0UMczX2u5X9qK37_ea1A@mail.gmail.com>
- <01831596e4a2a6c9c066138b23bd30435f8e5569.camel@suse.de>
- <CAMi1Hd3C6kh5E49EgytBAQ_2AE_jvnp+eSNsxBYaux+exSvdbg@mail.gmail.com>
- <6db722947546221ed99d3f473f78e1a6de65d7d6.camel@suse.de>
- <CAMi1Hd0Xz6kOJFpA5PEpi6RDDGOcz0RmQ7tTOkuXq4QneOO_vQ@mail.gmail.com>
- <0dc1e922bf87fa73790e7471b3974528dd261486.camel@suse.de>
- <CAMi1Hd3O2HHBsnt=sac7FdcW0-3=4S3g_F9f__2h5gTsudfirA@mail.gmail.com>
+ with ESMTP id JsAmTaklIW1L for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jul 2020 14:51:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A65E888254
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 14:51:41 +0000 (UTC)
+Received: from localhost (mobile-166-175-191-139.mycingular.net
+ [166.175.191.139])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0DEA720714;
+ Fri, 24 Jul 2020 14:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1595602301;
+ bh=XLmYbBwV24gUrETh08x29QFfu+35Dz7G0spWwwMW+ms=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=XXzJ8ly1CBJgnsOXdvg3ig9+8cTGK8sNjtpbRjkWMlBH0AB/x6iWxZwYkrfzDI18f
+ WpVMDDj0oDj4fUvWZ69e7CKKzUkVT/DWdXkL6lRwRgzdDfsCK5bgYxvZA5n5PbfPOf
+ h6ViAD396LrvXZX3oebcBd5FEkVFy41LyFGUbae8=
+Date: Fri, 24 Jul 2020 09:51:39 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ashok Raj <ashok.raj@intel.com>
+Subject: Re: [PATCH v3 1/1] PCI/ATS: Check PRI supported on the PF device
+ when SRIOV is enabled
+Message-ID: <20200724145139.GA1518290@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CAMi1Hd3O2HHBsnt=sac7FdcW0-3=4S3g_F9f__2h5gTsudfirA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: lkml <linux-kernel@vger.kernel.org>, jeremy.linton@arm.com,
- Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>, linux-rpi-kernel@lists.infradead.org,
- David Rientjes <rientjes@google.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+In-Reply-To: <1595543849-19692-1-git-send-email-ashok.raj@intel.com>
+Cc: Lu Baolu <baolu.lu@intel.com>, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <bhelgaas@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,84 +88,90 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Yes, the iommu is an interesting case, and the current code is
-wrong for that.  Can you try the patch below?  It contains a modified
-version of Nicolas' patch to try CMA again for the expansion and a new
-(for now hackish) way to not apply the addressability check for dma-iommu
-allocations.
+On Thu, Jul 23, 2020 at 03:37:29PM -0700, Ashok Raj wrote:
+> PASID and PRI capabilities are only enumerated in PF devices. VF devices
+> do not enumerate these capabilites. IOMMU drivers also need to enumerate
+> them before enabling features in the IOMMU. Extending the same support as
+> PASID feature discovery (pci_pasid_features) for PRI.
+> 
+> Fixes: b16d0cb9e2fc ("iommu/vt-d: Always enable PASID/PRI PCI capabilities before ATS")
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 6bc74a2d51273e..ec5e525d2b9309 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -3,7 +3,9 @@
-  * Copyright (C) 2012 ARM Ltd.
-  * Copyright (C) 2020 Google LLC
-  */
-+#include <linux/cma.h>
- #include <linux/debugfs.h>
-+#include <linux/dma-contiguous.h>
- #include <linux/dma-direct.h>
- #include <linux/dma-noncoherent.h>
- #include <linux/init.h>
-@@ -55,6 +57,31 @@ static void dma_atomic_pool_size_add(gfp_t gfp, size_t size)
- 		pool_size_kernel += size;
- }
- 
-+static bool cma_in_zone(gfp_t gfp)
-+{
-+	phys_addr_t end;
-+	unsigned long size;
-+	struct cma *cma;
-+
-+	cma = dev_get_cma_area(NULL);
-+	if (!cma)
-+		return false;
-+
-+	size = cma_get_size(cma);
-+	if (!size)
-+		return false;
-+	end = cma_get_base(cma) - memblock_start_of_DRAM() + size - 1;
-+
-+	/* CMA can't cross zone boundaries, see cma_activate_area() */
-+	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA) &&
-+	    end <= DMA_BIT_MASK(zone_dma_bits))
-+		return true;
-+	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) &&
-+	    end <= DMA_BIT_MASK(32))
-+		return true;
-+	return true;
-+}
-+
- static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 			      gfp_t gfp)
- {
-@@ -68,7 +95,11 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 
- 	do {
- 		pool_size = 1 << (PAGE_SHIFT + order);
--		page = alloc_pages(gfp, order);
-+		if (cma_in_zone(gfp))
-+ 			page = dma_alloc_from_contiguous(NULL, 1 << order,
-+ 							 order, false);
-+		if (!page)
-+			page = alloc_pages(gfp, order);
- 	} while (!page && order-- > 0);
- 	if (!page)
- 		goto out;
-@@ -251,7 +282,11 @@ void *dma_alloc_from_pool(struct device *dev, size_t size,
- 			continue;
- 
- 		phys = gen_pool_virt_to_phys(pool, val);
--		if (dma_coherent_ok(dev, phys, size))
-+		/*
-+		 * Only apply the addressability check for dma-direct.
-+		 * This is a nasty hack and won't work e.g. for arm.
-+		 */
-+		if (get_dma_ops(dev) || dma_coherent_ok(dev, phys, size))
- 			break;
- 
- 		gen_pool_free(pool, val, size);
+Applied with Baolu's reviewed-by and Joerg's ack to pci/virtualization
+for v5.9, thanks!
+
+> To: Bjorn Helgaas <bhelgaas@google.com>
+> To: Joerg Roedel <joro@8bytes.com>
+> To: Lu Baolu <baolu.lu@intel.com>
+> Cc: stable@vger.kernel.org
+> Cc: linux-pci@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: iommu@lists.linux-foundation.org
+> ---
+> v3: Added Fixes tag
+> v2: Fixed build failure reported from lkp when CONFIG_PRI=n
+> 
+>  drivers/iommu/intel/iommu.c |  2 +-
+>  drivers/pci/ats.c           | 13 +++++++++++++
+>  include/linux/pci-ats.h     |  4 ++++
+>  3 files changed, 18 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index d759e7234e98..276452f5e6a7 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2560,7 +2560,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>  			}
+>  
+>  			if (info->ats_supported && ecap_prs(iommu->ecap) &&
+> -			    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI))
+> +			    pci_pri_supported(pdev))
+>  				info->pri_supported = 1;
+>  		}
+>  	}
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index b761c1f72f67..2e6cf0c700f7 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -325,6 +325,19 @@ int pci_prg_resp_pasid_required(struct pci_dev *pdev)
+>  
+>  	return pdev->pasid_required;
+>  }
+> +
+> +/**
+> + * pci_pri_supported - Check if PRI is supported.
+> + * @pdev: PCI device structure
+> + *
+> + * Returns true if PRI capability is present, false otherwise.
+> + */
+> +bool pci_pri_supported(struct pci_dev *pdev)
+> +{
+> +	/* VFs share the PF PRI configuration */
+> +	return !!(pci_physfn(pdev)->pri_cap);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_pri_supported);
+>  #endif /* CONFIG_PCI_PRI */
+>  
+>  #ifdef CONFIG_PCI_PASID
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index f75c307f346d..df54cd5b15db 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -28,6 +28,10 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+>  void pci_disable_pri(struct pci_dev *pdev);
+>  int pci_reset_pri(struct pci_dev *pdev);
+>  int pci_prg_resp_pasid_required(struct pci_dev *pdev);
+> +bool pci_pri_supported(struct pci_dev *pdev);
+> +#else
+> +static inline bool pci_pri_supported(struct pci_dev *pdev)
+> +{ return false; }
+>  #endif /* CONFIG_PCI_PRI */
+>  
+>  #ifdef CONFIG_PCI_PASID
+> -- 
+> 2.7.4
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
