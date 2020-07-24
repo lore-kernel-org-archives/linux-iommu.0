@@ -2,73 +2,95 @@ Return-Path: <SRS0=ASoY=BD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F08C433F8
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D70C433E4
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 02:13:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 501422086A
-	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 01:54:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 501422086A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id DC1712065E
+	for <iommu@archiver.kernel.org>; Fri, 24 Jul 2020 02:13:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NSWVYNKJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC1712065E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 40B9986DC2;
-	Fri, 24 Jul 2020 01:54:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jcDdeOLnSUBL; Fri, 24 Jul 2020 01:54:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9B13986DAC;
-	Fri, 24 Jul 2020 01:54:47 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8981CC004E;
-	Fri, 24 Jul 2020 01:54:47 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6744FC004E
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 63DD887E95
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B440288204;
+	Fri, 24 Jul 2020 02:13:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EEG1jHvR1kxG; Fri, 24 Jul 2020 02:13:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 015A687722;
+	Fri, 24 Jul 2020 02:13:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E12D9C004D;
+	Fri, 24 Jul 2020 02:13:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4065CC004C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 02:13:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 366B5883A8
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 02:13:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wk5xQeibDPS4 for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jul 2020 01:54:43 +0000 (UTC)
+ with ESMTP id iIvWaPI1TknC for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jul 2020 02:13:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A6FBB87E76
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 01:54:43 +0000 (UTC)
-IronPort-SDR: gvKH9BHmZ6G8xMpz0Vh93NXIHcJPTaXbcXzlQTwIgWeoZYLq2LOtSXEsOMRcWo9kaISQ9xBW3r
- 2HSDjWvtIzuw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9691"; a="168778794"
-X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="168778794"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jul 2020 18:54:43 -0700
-IronPort-SDR: 38lUET/gM8ZenBlLK19gvm0S112Squ01VAztqp8lAbCNvyZYjmvHB/g98p7gv0VAL4TWGnVy/n
- EccMtz5Oomkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,388,1589266800"; d="scan'208";a="488576800"
-Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga006.fm.intel.com with ESMTP; 23 Jul 2020 18:54:42 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 11/12] iommu/vt-d: Add page response ops support
-Date: Fri, 24 Jul 2020 09:49:24 +0800
-Message-Id: <20200724014925.15523-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200724014925.15523-1-baolu.lu@linux.intel.com>
-References: <20200724014925.15523-1-baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org
+Received: from mail-pf1-f194.google.com (mail-pf1-f194.google.com
+ [209.85.210.194])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id ADE33882E0
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jul 2020 02:13:29 +0000 (UTC)
+Received: by mail-pf1-f194.google.com with SMTP id s26so4211005pfm.4
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jul 2020 19:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=0ezvLmjG/q+RN9ebJWxPsibO7j9/WR9vnJdI3K9oadE=;
+ b=NSWVYNKJrWJKr2yxjaxueLtwySQ2EaaRUNUnt+tSStycg2DVdHneqQEmH7QhsXJsqT
+ fA/ihqpy3pL9ODXCnAG9RJaQTe1qvSTMrzlhgyPiXSE6QCIMN9rYUnfox0JcPfdErGZl
+ gbg9y8tzBBBXmMU76dvS3OcSjaaeVBtG0cEGdCmQ/FsjDLx8iGqR58iVaTjpQlNvaown
+ tqxVtcKjGbfUvEM5CFKc7VCWyKWH2dMDv3/j6ZBtXGCIN+0fv25tY6o3h/Qll840rMxS
+ UE2b5jy0eGEji5Iz40up+lGUqJTETq7fJMnAylLNkPkSV6bhcBxUQHjSLjW8x0DpPz6a
+ RYSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=0ezvLmjG/q+RN9ebJWxPsibO7j9/WR9vnJdI3K9oadE=;
+ b=Fje+SnJaFlI/FMKIsIAT3SdvbQCWslDOCpGVdcyV6nvnR0HAh3XV0v31VAPxunq2QG
+ 8ch0/jxThc9EkmfM1GEx7Nk8TlFmF8Rvuq+IEE9AmaO6GWe76zjFskPuRmYq/GFGSo/B
+ xxBskkAmrUwcSoybhMaCLPl/FefKavwl9+oPyuGUd/EgCmXzPNJz76BF44cc2fOgrAua
+ wsMTUd40+YD7pk1Frw77w+CTTZtU1gVCKRWhmPVshI/m5kRO9dl1G7ErUPQh6aKeIKA7
+ YszhpaHA5m4wk8mriHA39Wr+Ipftc4Ea/UEoP+AnlH3qE04Q/jK8tKbUSDWc75AnREou
+ 0+Kw==
+X-Gm-Message-State: AOAM5302WDkBMyGwQxA2CQZVGZ2p2elzXKW0Cq6fUUwd3JoKSbgI7r1m
+ W7ebWl1eDqaLzCkJNCFSY27sOXaDvWnKfA==
+X-Google-Smtp-Source: ABdhPJye+C0NXMFLBsqdFyUgu7PNP9+YDj8e6Eg/1bzhyT0DRd4zxD8aK7Tye8PUtKHxK7R/OSa2aA==
+X-Received: by 2002:a65:4b85:: with SMTP id t5mr6715879pgq.36.1595556809199;
+ Thu, 23 Jul 2020 19:13:29 -0700 (PDT)
+Received: from Asurada-Nvidia (searspoint.nvidia.com. [216.228.112.21])
+ by smtp.gmail.com with ESMTPSA id k26sm4341096pgt.90.2020.07.23.19.13.28
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Thu, 23 Jul 2020 19:13:28 -0700 (PDT)
+Date: Thu, 23 Jul 2020 19:12:53 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2] dma-contiguous: cleanup dma_alloc_contiguous
+Message-ID: <20200724021246.GA10498@Asurada-Nvidia>
+References: <20200723120133.94105-1-hch@lst.de>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20200723120133.94105-1-hch@lst.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,166 +103,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-After page requests are handled, software must respond to the device
-which raised the page request with the result. This is done through
-the iommu ops.page_response if the request was reported to outside of
-vendor iommu driver through iommu_report_device_fault(). This adds the
-VT-d implementation of page_response ops.
+Hi Christoph,
 
-Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/intel/iommu.c |  1 +
- drivers/iommu/intel/svm.c   | 99 +++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  3 ++
- 3 files changed, 103 insertions(+)
+On Thu, Jul 23, 2020 at 02:01:33PM +0200, Christoph Hellwig wrote:
+> Split out a cma_alloc_aligned helper to deal with the "interesting"
+> calling conventions for cma_alloc, which then allows to the main
+> function to be written straight forward.  This also takes advantage
+> of the fact that NULL dev arguments have been gone from the DMA API
+> for a while.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 097a71b3b75d..a939d17d40a1 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -6073,6 +6073,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.sva_bind		= intel_svm_bind,
- 	.sva_unbind		= intel_svm_unbind,
- 	.sva_get_pasid		= intel_svm_get_pasid,
-+	.page_response		= intel_svm_page_response,
- #endif
- };
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 140114ab1375..85ce8daa3177 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -1078,3 +1078,102 @@ int intel_svm_get_pasid(struct iommu_sva *sva)
- 
- 	return pasid;
- }
-+
-+int intel_svm_page_response(struct device *dev,
-+			    struct iommu_fault_event *evt,
-+			    struct iommu_page_response *msg)
-+{
-+	struct iommu_fault_page_request *prm;
-+	struct intel_svm_dev *sdev = NULL;
-+	struct intel_svm *svm = NULL;
-+	struct intel_iommu *iommu;
-+	bool private_present;
-+	bool pasid_present;
-+	bool last_page;
-+	u8 bus, devfn;
-+	int ret = 0;
-+	u16 sid;
-+
-+	if (!dev || !dev_is_pci(dev))
-+		return -ENODEV;
-+
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu)
-+		return -ENODEV;
-+
-+	if (!msg || !evt)
-+		return -EINVAL;
-+
-+	mutex_lock(&pasid_mutex);
-+
-+	prm = &evt->fault.prm;
-+	sid = PCI_DEVID(bus, devfn);
-+	pasid_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-+	private_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
-+	last_page = prm->flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
-+
-+	if (!pasid_present) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (prm->pasid == 0 || prm->pasid >= PASID_MAX) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	ret = pasid_to_svm_sdev(dev, prm->pasid, &svm, &sdev);
-+	if (ret || !sdev) {
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	/*
-+	 * For responses from userspace, need to make sure that the
-+	 * pasid has been bound to its mm.
-+	 */
-+	if (svm->flags & SVM_FLAG_GUEST_MODE) {
-+		struct mm_struct *mm;
-+
-+		mm = get_task_mm(current);
-+		if (!mm) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
-+
-+		if (mm != svm->mm) {
-+			ret = -ENODEV;
-+			mmput(mm);
-+			goto out;
-+		}
-+
-+		mmput(mm);
-+	}
-+
-+	/*
-+	 * Per VT-d spec. v3.0 ch7.7, system software must respond
-+	 * with page group response if private data is present (PDP)
-+	 * or last page in group (LPIG) bit is set. This is an
-+	 * additional VT-d requirement beyond PCI ATS spec.
-+	 */
-+	if (last_page || private_present) {
-+		struct qi_desc desc;
-+
-+		desc.qw0 = QI_PGRP_PASID(prm->pasid) | QI_PGRP_DID(sid) |
-+				QI_PGRP_PASID_P(pasid_present) |
-+				QI_PGRP_PDP(private_present) |
-+				QI_PGRP_RESP_CODE(msg->code) |
-+				QI_PGRP_RESP_TYPE;
-+		desc.qw1 = QI_PGRP_IDX(prm->grpid) | QI_PGRP_LPIG(last_page);
-+		desc.qw2 = 0;
-+		desc.qw3 = 0;
-+		if (private_present)
-+			memcpy(&desc.qw2, prm->private_data,
-+			       sizeof(prm->private_data));
-+
-+		qi_submit_sync(iommu, &desc, 1, 0);
-+	}
-+out:
-+	mutex_unlock(&pasid_mutex);
-+	return ret;
-+}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 7e69aec60592..b1ed2f25f7c0 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -742,6 +742,9 @@ struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm,
- 				 void *drvdata);
- void intel_svm_unbind(struct iommu_sva *handle);
- int intel_svm_get_pasid(struct iommu_sva *handle);
-+int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
-+			    struct iommu_page_response *msg);
-+
- struct svm_dev_ops;
- 
- struct intel_svm_dev {
--- 
-2.17.1
+I am still seeing some potential NULL dev callers:
+drivers/staging/emxx_udc/emxx_udc.c:2596:			ep->virt_buf = dma_alloc_coherent(NULL, PAGE_SIZE,
+drivers/tty/synclink.c:3667:		info->buffer_list = dma_alloc_coherent(NULL, BUFFERLISTSIZE, &info->buffer_list_dma_addr, GFP_KERNEL);
+drivers/tty/synclink.c:3777:			BufferList[i].virt_addr = dma_alloc_coherent(NULL, DMABUFFERSIZE, &BufferList[i].dma_addr, GFP_KERNEL);
 
+Personally I don't feel that it hurts to check the dev pointer
+as we do now, but if you are confident with this version:
+
+Reviewed-by: Nicolin Chen <nicoleotsuka@gmail.com>
+
+Thanks
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
