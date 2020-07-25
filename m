@@ -2,135 +2,162 @@ Return-Path: <SRS0=jpNv=BE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.4 required=3.0 tests=BAYES_00,FORGED_MUA_MOZILLA,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F285C433E3
-	for <iommu@archiver.kernel.org>; Sat, 25 Jul 2020 00:01:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61862C433E0
+	for <iommu@archiver.kernel.org>; Sat, 25 Jul 2020 08:54:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EFAE02070B
-	for <iommu@archiver.kernel.org>; Sat, 25 Jul 2020 00:01:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFAE02070B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=live.ca
+	by mail.kernel.org (Postfix) with ESMTPS id 1CEED206D8
+	for <iommu@archiver.kernel.org>; Sat, 25 Jul 2020 08:54:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="TA+iPYsc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CEED206D8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C53EA86190;
-	Sat, 25 Jul 2020 00:01:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DD1B6204DE;
+	Sat, 25 Jul 2020 08:54:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R5qxjdlMCL7Q; Sat, 25 Jul 2020 00:01:20 +0000 (UTC)
+	with ESMTP id NbEHKfc+dWtc; Sat, 25 Jul 2020 08:54:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BD93D85FFC;
-	Sat, 25 Jul 2020 00:01:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 38F4D204BF;
+	Sat, 25 Jul 2020 08:54:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3BD4C004D;
-	Sat, 25 Jul 2020 00:01:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CA2B1C004C
- for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 00:01:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2AE53C004E;
+	Sat, 25 Jul 2020 08:54:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 56055C004C
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 08:54:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C4C8587FB2
- for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 00:01:19 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 353E3204D9
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 08:54:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7PpQSi+DZulT for <iommu@lists.linux-foundation.org>;
- Sat, 25 Jul 2020 00:01:18 +0000 (UTC)
-X-Greylist: delayed 00:14:41 by SQLgrey-1.7.6
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12olkn2048.outbound.protection.outlook.com [40.92.22.48])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 21C4E87EE9
- for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 00:01:18 +0000 (UTC)
+ with ESMTP id atPAZBKRFK4B for <iommu@lists.linux-foundation.org>;
+ Sat, 25 Jul 2020 08:54:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id 703C6204BF
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Jul 2020 08:54:04 +0000 (UTC)
+IronPort-SDR: utMh8bgpqVvWvecWKOo+mZdttQAGhRua1rLMWPAD6qyPCAgHjy3hJJTHjOruJF2r3kW0q+dyoP
+ kiba09IKr7aA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9692"; a="212362401"
+X-IronPort-AV: E=Sophos;i="5.75,394,1589266800"; d="scan'208";a="212362401"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Jul 2020 01:54:03 -0700
+IronPort-SDR: dxhChe4rCbP52RQBH4T9Fgs7esZoFioTr0EdVLBB7o60QoONHgIVMcuSwFssWLFyIlS5M+O7QU
+ 08hghuxvyU3Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,394,1589266800"; d="scan'208";a="285164033"
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+ by orsmga003.jf.intel.com with ESMTP; 25 Jul 2020 01:54:03 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Sat, 25 Jul 2020 01:54:03 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 25 Jul 2020 01:54:02 -0700
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sat, 25 Jul 2020 01:54:02 -0700
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (104.47.45.52) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (TLS) id 14.3.439.0; Sat, 25 Jul 2020 01:54:02 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ff7aW+XsVFJmJF16OR3OjFsr63sKLpaaG+/C7LeoocBBAssIIsE97WTZLqYnbHp5kSFhfkfZinGeJhGDUTO1VebECz6yjYBYu/y6yLhlEiUlUzOUWuLRY3srSmKodYwrKMkPeSfFEzzzlsYh3MJwHxQ2TsgIBEUyoYpdBkfHcIXFBIbd5+aZ+nThMIEmf2QIiQsi06aaoty+Yqrm/c0CSmjiqHEIfJcorxrHbmotTGwl7jSlinZUcYHjqByfUbgr4AbIulZaFMq/pxaLGT5xK5qnAsiZAlMtvjymxB24mCAkQprBGQIdaH9Jkuq9IBO4lQz5WC5JqyDZalgg9tLEsg==
+ b=RcRYvctijYjiWghvGd3FDYY0TfVk1TnJt4BwoAgJrfhGriHIaWyf+xO5IEHhAhAmvRX/MWvcBdRs3RJZsdA2V689XKjPXGFhQLWoGxoMwP9h9wzjEOU5Vxbpf5WXCvVrC1BHgKrhXgivZeXfqp88JB/wy3GBEmzG1lj2oe6a2WLFaKoXKoZ6G0xr7X9V5GdGAKN0Ll8gz4nv+YPuf0RjXIqVXv8CQr2sC4asLYQU5PeuVap6aLPhQaAD+LHQ7vS/Lb5GTgizrZNj34jQZuMjagdnF6K9nOYjKU/Mz/3LWTt0LdhsQ9+ZB4vcfTHeHYfEmiDAe6zKZSG7z8EGAgz+hw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dBMjidCdgUAOMvfklSoCOj2PF8cdnK6BjIJlGI0FxZw=;
- b=FoP2lIijApBdhFpP3TcYX8IK5EX0NzOxjSfjxkzFBBVtIsdNiHNs1VIN8EwyzFTExTujJA1R0jN8jKFdy62gUNMI37Q/0M8STesUIOGGH/7FJM/f8bBWiLd/UbT7rJ9+z8ubPU5a3c8lUHyKWuHDgXz7KXXsbmFwpdvIk/sXR3p8sT4K1LDRvzIRcJX8LyzPmjxZo3WchBmtzZLgiiTX12ZiVqD6/HAn8bisWkyeWRhqNZ3OOefH7/h978vBdYokhAYiw7WWAO1KsSDZ7JDmT8/3UJRTbA2YG++lnRb8QQX+/HcvEmGoU6wVzLqVzzwLCIcHvMBKQBwgmERDNJCxtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from DM6NAM12FT003.eop-nam12.prod.protection.outlook.com
- (2a01:111:e400:fc64::44) by
- DM6NAM12HT167.eop-nam12.prod.protection.outlook.com (2a01:111:e400:fc64::259)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9; Fri, 24 Jul
- 2020 23:46:36 +0000
-Received: from BN6PR04MB0660.namprd04.prod.outlook.com
- (2a01:111:e400:fc64::50) by DM6NAM12FT003.mail.protection.outlook.com
- (2a01:111:e400:fc64::340) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3195.9 via Frontend
- Transport; Fri, 24 Jul 2020 23:46:36 +0000
-X-IncomingTopHeaderMarker: OriginalChecksum:DDF661DEF79E94E3FEAD4D5DA24A1F95FFDD94F9BB24D37EDCC8567BA16217A6;
- UpperCasedChecksum:CC9EB053518F91407212838D37D0ED55BEC5C365D0D9078E7315E3939710445C;
- SizeAsReceived:9664; Count:49
-Received: from BN6PR04MB0660.namprd04.prod.outlook.com
- ([fe80::b9c3:9bff:541d:f383]) by BN6PR04MB0660.namprd04.prod.outlook.com
- ([fe80::b9c3:9bff:541d:f383%9]) with mapi id 15.20.3216.026; Fri, 24 Jul 2020
- 23:46:36 +0000
-Subject: Re: [PATCH 10/11] media: exynos4-is: Prevent duplicate call to
- media_pipeline_stop
-To: Tomasz Figa <tfiga@chromium.org>
-References: <20200426022650.10355-1-xc-racer2@live.ca>
- <BN6PR04MB0660DB1C884EE9F9C7D94857A3AE0@BN6PR04MB0660.namprd04.prod.outlook.com>
- <20200707184412.GJ2621465@chromium.org>
- <BN6PR04MB0660C1942C3738F9F9D1AAAFA3620@BN6PR04MB0660.namprd04.prod.outlook.com>
- <CAAFQd5ABvEnt7QQHmwwFyCqRLMabE=Vs_e7FrG3fMmrAWgD_bQ@mail.gmail.com>
-From: Jonathan Bakker <xc-racer2@live.ca>
-Message-ID: <BN6PR04MB066075594507854A6619A3E3A3770@BN6PR04MB0660.namprd04.prod.outlook.com>
-Date: Fri, 24 Jul 2020 16:46:31 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <CAAFQd5ABvEnt7QQHmwwFyCqRLMabE=Vs_e7FrG3fMmrAWgD_bQ@mail.gmail.com>
-Content-Language: en-US
-X-ClientProxiedBy: MWHPR12CA0036.namprd12.prod.outlook.com
- (2603:10b6:301:2::22) To BN6PR04MB0660.namprd04.prod.outlook.com
- (2603:10b6:404:d9::21)
-X-Microsoft-Original-Message-ID: <9ea3bcd8-4c90-da73-cfe6-29174f0b606d@live.ca>
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2001:569:fb68:9c00:8067:f823:1e15:7520]
- (2001:569:fb68:9c00:8067:f823:1e15:7520) by
- MWHPR12CA0036.namprd12.prod.outlook.com (2603:10b6:301:2::22) with Microsoft
+ bh=agzwjwHHAPd+rn91EC6oaIcwrlBmgIZ3BVWvN8lpEXs=;
+ b=A+UO822fdMJK6AVXZeOKKNW/byLd4vCPnL+aoqTNW5U1/5QsF5ZFpgTQfebLgS3VFBEYds7DZM4pYLBP73OqELW1Tf+sHIriI9znWVM34NJ51hT0JB+0bjYjdd3N2kV6Ge7o/pwxv5hAw8uds3olxNtRgs5T0k6oVZ3vcRgwEJnbBaVDDboqsZ4fbONHf7EPGhi6ZPF0GHWuLZNiYQ9LQKce9MI+7NdpZVToaq5kqPXRzZXo3zEX0JQn6qK4s64pE4cv3kLE+CgLTOaIwwekHA2yASfqJBNCn8H3caHbqEwnIaAP2f93AnzEbO+7/tiaxHVxdCEKNckssDdpqkL5fA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=agzwjwHHAPd+rn91EC6oaIcwrlBmgIZ3BVWvN8lpEXs=;
+ b=TA+iPYscruwMqhZa6Ns7hZsJdiMskBIZ75mDnckSY5k2Zrh8Xa8LP84tLyvdis0OFMwXS6zucrDjuLok9bKsQopM5tZc1EiEYUFDnIf9Ui5sgZ/3cYfdUxONFHD2/cU41FwIIPelgghvS+KShy0tBFr4Htl2WC05dvZsDvD9b8k=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB2986.namprd11.prod.outlook.com (2603:10b6:5:61::15) with
+ Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.22 via Frontend Transport; Fri, 24 Jul 2020 23:46:33 +0000
-X-Microsoft-Original-Message-ID: <9ea3bcd8-4c90-da73-cfe6-29174f0b606d@live.ca>
-X-TMN: [dG2s/drn9GtH0bKXgn7kMSoyqN7lBPzgDjeKC4xYKpk1botLy1CnpWXUTuVmvjol]
-X-MS-PublicTrafficType: Email
-X-IncomingHeaderCount: 49
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-Correlation-Id: a6d0b4f5-3c6a-47c6-15e1-08d8302bcd07
-X-MS-TrafficTypeDiagnostic: DM6NAM12HT167:
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: POeiZwTO0qMsk0Zn9C+ItU+G8A/7cAYRKauXvZu5GaBPXcQVdoHA1JFaYJs2vhyyWWVkjsqnv1Rd7HX2C911X8AcTUIu454bbLMbOFB8B7p4cC6m/6pr5UVSyIxic69RgQ0bZq7zctgdUuAmnnw0QTao3YQjVdeoUOV0OFxVMqjZNuUfl7a+7wfUE4hLwwt9xFhoW1Nm0ceGwvSSol9SaA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:0; SRV:;
- IPV:NLI; SFV:NSPM; H:BN6PR04MB0660.namprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:; SFS:; DIR:OUT; SFP:1901; 
-X-MS-Exchange-AntiSpam-MessageData: +1i0z2IGxNW5wBqMn7CAUIAB7dr2TCaZYj/3uFj5bkE0HrelekTXHujrzTl9/oge5OlRKKRXgwcJ1eFkuJag5vdttP6QmPUAE/D8i+k51nLteuffCKXfZTctiANTZ1Nuh/NTrnV6fKmqJ98h3zTE31WLE4AtxqPxmtVTaq4spIpgEtGv3xxbnPm4//SNUwB7+oL7CgntQER87+zP149Ngg==
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6d0b4f5-3c6a-47c6-15e1-08d8302bcd07
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2020 23:46:35.9093 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM12FT003.eop-nam12.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6NAM12HT167
-Cc: linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Kyungmin Park <kyungmin.park@samsung.com>, kgene@kernel.org,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
- Linux Media Mailing List <linux-media@vger.kernel.org>
+ 15.20.3216.23; Sat, 25 Jul 2020 08:54:01 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3216.028; Sat, 25 Jul
+ 2020 08:54:01 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
+ <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
+Subject: RE: [PATCH v5 14/15] vfio: Document dual stage control
+Thread-Topic: [PATCH v5 14/15] vfio: Document dual stage control
+Thread-Index: AQHWWD2o7HgeyPCxwU6S5j5AbWTuiKkNYUMAgAqNBHA=
+Date: Sat, 25 Jul 2020 08:54:00 +0000
+Message-ID: <DM5PR11MB143514B963919006B9F79792C3740@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1594552870-55687-1-git-send-email-yi.l.liu@intel.com>
+ <1594552870-55687-15-git-send-email-yi.l.liu@intel.com>
+ <a97ee4e4-4592-8dd8-fbb1-6c2c5579d625@redhat.com>
+In-Reply-To: <a97ee4e4-4592-8dd8-fbb1-6c2c5579d625@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.202]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f294115d-a0d8-4349-fa31-08d8307846a9
+x-ms-traffictypediagnostic: DM6PR11MB2986:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB2986D2E105904A09633E67B4C3740@DM6PR11MB2986.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NCCCwMFs6ymBBj8oJIqhJDfiDaHysvFwztprOHEwR8e6+ls6JgNPZQ39/ZGLXfT7YBZe5qzlENBZgt/zR3+e5Q8+jO3jxANBuky0C0VlqyF8yBsF9QCHTyj3y3SVTrvedZoicq0/qTANe3Q5x9iArOpyJrU+BAg5V/JPks9LipAQCROcMJCWDDKxRPcfvc4jWHEevDntCSodWT4fNZg0/VfjGQSEJFNMXV3Pixg1NW175vtTyY5mmNkIlm0rm2zTBhrow807eru2CxXdjCXz5hkrSxWiPb2xXlMSH84Zewe2RYJJJsEtUpH2LeOCLg9GfNmutlKSzYcD78RNMbXxjWrAxltssKm02IbqGmSo+cFONJItKHsiTsgQ61hHoavzfQ4gifq6rX/T2PN2UdNG8g==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(346002)(39860400002)(366004)(136003)(376002)(396003)(316002)(66446008)(4326008)(9686003)(53546011)(26005)(83380400001)(7696005)(6506007)(966005)(86362001)(55016002)(76116006)(7416002)(66946007)(64756008)(66556008)(66476007)(54906003)(71200400001)(186003)(52536014)(5660300002)(33656002)(8936002)(478600001)(2906002)(8676002)(110136005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: 2WINr6VQ/TQVQqSqFStdFopiF5Po1PdsvbaEqp+SuW4BcpyPOskHwcD7sUgBjv2lfoICM4Z1WOnPDR578dng51Spbj4AsOTbSC101WPa1HGP/IRTDmrl2KxPNtjWxAwEi4v7HJOQ/+of2LZJ6z7bKFO77AzHOjZIKIljuNtXJdvwi6aCjYQdbU99T7ANFzbvcOhBEEDgzGY0kJBxDwerji6Hxur4zSl2maFmc/jNk9o/3pIWnDYgGmoP4dDFku6zP+RdCb1YIXG3jfNt86AU+vWXVj7pQdpRkXPmJM2tQAy6AQOnLVRIIDK9Lbh5wWCrjbcaqSDi4nPU418eK1yV1sYI2eSryB4V1YX6wW+g5n7comYQX9yAA2viXpCnFT5Xk6y6JTKpwRC6SjXPWP4zzcoe2YMU1i4Ctchar5ZnSLwJXhYQbBTuqlrEeywwCs2tSDdNH+G4xa0Zm8mzaGsu3pZQsB1tKmoRHRbWjQ1tKW2dQTxx7cUjCdW3kQGk5t9f
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f294115d-a0d8-4349-fa31-08d8307846a9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2020 08:54:00.7760 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KU4/Zuj8a2o5ecHW1HMCZUKN22lJeRzj5f8wuc/Y9RIZclRDQCxTRiT34RlgcggHwRKKHQ9bLZr6jBrUzwWLgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2986
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, "Tian, 
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -143,155 +170,120 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Tomasz,
-
-On 2020-07-20 6:10 a.m., Tomasz Figa wrote:
-> On Sat, Jul 11, 2020 at 8:17 PM Jonathan Bakker <xc-racer2@live.ca> wrote:
->>
->> Hi Tomasz,
->>
->> On 2020-07-07 11:44 a.m., Tomasz Figa wrote:
->>> Hi Jonathan,
->>>
->>> On Sat, Apr 25, 2020 at 07:26:49PM -0700, Jonathan Bakker wrote:
->>>> media_pipeline_stop can be called from both release and streamoff,
->>>> so make sure they're both protected under the streaming flag and
->>>> not just one of them.
->>>
->>> First of all, thanks for the patch.
->>>
->>> Shouldn't it be that release calls streamoff, so that only streamoff
->>> is supposed to have the call to media_pipeline_stop()?
->>>
->>
->> I can't say that I understand the whole media subsystem enough to know :)
->> Since media_pipeline_start is called in streamon, it makes sense that streamoff
->> should have the media_pipeline_stop call.  However, even after removing the call
->> in fimc_capture_release I'm still getting a backtrace such as
->>
->> [   73.843117] ------------[ cut here ]------------
->> [   73.843251] WARNING: CPU: 0 PID: 1575 at drivers/media/mc/mc-entity.c:554 media_pipeline_stop+0x20/0x2c [mc]
->> [   73.843265] Modules linked in: s5p_fimc v4l2_fwnode exynos4_is_common videobuf2_dma_contig pvrsrvkm_s5pv210_sgx540_120 videobuf2_memops v4l2_mem2mem brcmfmac videobuf2_v4l2 videobuf2_common hci_uart sha256_generic libsha256 btbcm bluetooth cfg80211 brcmutil ecdh_generic ecc ce147 libaes s5ka3dfx videodev atmel_mxt_ts mc pwm_vibra rtc_max8998
->> [   73.843471] CPU: 0 PID: 1575 Comm: v4l2-ctl Not tainted 5.7.0-14534-g2b33418b254e-dirty #669
->> [   73.843487] Hardware name: Samsung S5PC110/S5PV210-based board
->> [   73.843562] [<c010c7c4>] (unwind_backtrace) from [<c010a120>] (show_stack+0x10/0x14)
->> [   73.843613] [<c010a120>] (show_stack) from [<c0117038>] (__warn+0xbc/0xd4)
->> [   73.843661] [<c0117038>] (__warn) from [<c01170b0>] (warn_slowpath_fmt+0x60/0xb8)
->> [   73.843734] [<c01170b0>] (warn_slowpath_fmt) from [<bf00c20c>] (media_pipeline_stop+0x20/0x2c [mc])
->> [   73.843867] [<bf00c20c>] (media_pipeline_stop [mc]) from [<bf145c48>] (fimc_cap_streamoff+0x38/0x48 [s5p_fimc])
->> [   73.844109] [<bf145c48>] (fimc_cap_streamoff [s5p_fimc]) from [<bf03cbf4>] (__video_do_ioctl+0x220/0x448 [videodev])
->> [   73.844308] [<bf03cbf4>] (__video_do_ioctl [videodev]) from [<bf03d600>] (video_usercopy+0x114/0x498 [videodev])
->> [   73.844438] [<bf03d600>] (video_usercopy [videodev]) from [<c0205024>] (ksys_ioctl+0x20c/0xa10)
->> [   73.844484] [<c0205024>] (ksys_ioctl) from [<c0100060>] (ret_fast_syscall+0x0/0x54)
->> [   73.844505] Exception stack(0xe5083fa8 to 0xe5083ff0)
->> [   73.844546] 3fa0:                   0049908d bef8f8c0 00000003 40045613 bef8d5ac 004c1d16
->> [   73.844590] 3fc0: 0049908d bef8f8c0 bef8f8c0 00000036 bef8d5ac 00000000 b6d6b320 bef8faf8
->> [   73.844620] 3fe0: 004e3ed4 bef8c718 004990bb b6f00d0a
->> [   73.844642] ---[ end trace e6a4a8b2f20addd4 ]---
->>
->> The command I'm using for testing is
->>
->> v4l2-ctl --verbose -d 1 --stream-mmap=3 --stream-skip=2 --stream-to=./test.yuv --stream-count=1
->>
->> Since I noticed that the streaming flag was being checked fimc_capture_release
->> but not in fimc_cap_streamoff, I assumed that it was simply a missed check.  Comparing
->> with other drivers, they seem to call media_pipeline_stop in their vb2_ops stop_streaming
->> callback.
-> 
-> vb2 does a lot of state handling internally and makes sure that driver
-> ops are not called when unnecessary, preventing double calls for
-> example. I suppose it could be a better place to stop the pipeline
-> indeed. However, ...
-> 
->>
->> I'm willing to test various options
->>
-> 
-> I think it could make sense to add something like WARN_ON(1) inside
-> media_pipeline_stop() and then check where the first call came from.
-
-Here's the results of that:
-
-[   69.876823] ------------[ cut here ]------------
-[   69.876962] WARNING: CPU: 0 PID: 1566 at drivers/media/mc/mc-entity.c:550 __media_pipeline_stop+0x24/0xfc [mc]
-[   69.876976] Modules linked in: s5p_fimc v4l2_fwnode exynos4_is_common videobuf2_dma_contig videobuf2_memops v4l2_mem2mem brcmfmac videobuf2_v4l2 pvrsrvkm_s5pv210_sgx540_120 videobuf2_common hci_uart sha256_generic btbcm libsha256 bluetooth cfg80211 ce147 brcmutil s5ka3dfx ecdh_generic ecc libaes videodev atmel_mxt_ts mc pwm_vibra rtc_max8998
-[   69.877182] CPU: 0 PID: 1566 Comm: v4l2-ctl Not tainted 5.7.0-14540-gb1220848c797-dirty #681
-[   69.877198] Hardware name: Samsung S5PC110/S5PV210-based board
-[   69.877274] [<c010c7c4>] (unwind_backtrace) from [<c010a120>] (show_stack+0x10/0x14)
-[   69.877326] [<c010a120>] (show_stack) from [<c0117038>] (__warn+0xbc/0xd4)
-[   69.877375] [<c0117038>] (__warn) from [<c01170b0>] (warn_slowpath_fmt+0x60/0xb8)
-[   69.877448] [<c01170b0>] (warn_slowpath_fmt) from [<bf010130>] (__media_pipeline_stop+0x24/0xfc [mc])
-[   69.877540] [<bf010130>] (__media_pipeline_stop [mc]) from [<bf010228>] (media_pipeline_stop+0x20/0x2c [mc])
-[   69.877663] [<bf010228>] (media_pipeline_stop [mc]) from [<bf08fc48>] (fimc_cap_streamoff+0x38/0x48 [s5p_fimc])
-[   69.877904] [<bf08fc48>] (fimc_cap_streamoff [s5p_fimc]) from [<bf040bf4>] (__video_do_ioctl+0x220/0x448 [videodev])
-[   69.878105] [<bf040bf4>] (__video_do_ioctl [videodev]) from [<bf041600>] (video_usercopy+0x114/0x498 [videodev])
-[   69.878234] [<bf041600>] (video_usercopy [videodev]) from [<c0205024>] (ksys_ioctl+0x20c/0xa10)
-[   69.878281] [<c0205024>] (ksys_ioctl) from [<c0100060>] (ret_fast_syscall+0x0/0x54)
-[   69.878301] Exception stack(0xe50c1fa8 to 0xe50c1ff0)
-[   69.878342] 1fa0:                   004ef08d 00539d0c 00000003 40045613 bec1578c 00517d16
-[   69.878386] 1fc0: 004ef08d 00539d0c bec188c0 00000036 bec165ac 00000000 b6def320 bec18af8
-[   69.878415] 1fe0: 00539ed4 bec15730 004ef0bb b6f84d0a
-[   69.878436] ---[ end trace d004ab573a72c329 ]---
-[   69.879704] ------------[ cut here ]------------
-[   69.879794] WARNING: CPU: 0 PID: 1566 at drivers/media/mc/mc-entity.c:550 __media_pipeline_stop+0x24/0xfc [mc]
-[   69.879806] Modules linked in: s5p_fimc v4l2_fwnode exynos4_is_common videobuf2_dma_contig videobuf2_memops v4l2_mem2mem brcmfmac videobuf2_v4l2 pvrsrvkm_s5pv210_sgx540_120 videobuf2_common hci_uart sha256_generic btbcm libsha256 bluetooth cfg80211 ce147 brcmutil s5ka3dfx ecdh_generic ecc libaes videodev atmel_mxt_ts mc pwm_vibra rtc_max8998
-[   69.880002] CPU: 0 PID: 1566 Comm: v4l2-ctl Tainted: G        W         5.7.0-14540-gb1220848c797-dirty #681
-[   69.880016] Hardware name: Samsung S5PC110/S5PV210-based board
-[   69.880071] [<c010c7c4>] (unwind_backtrace) from [<c010a120>] (show_stack+0x10/0x14)
-[   69.880115] [<c010a120>] (show_stack) from [<c0117038>] (__warn+0xbc/0xd4)
-[   69.880161] [<c0117038>] (__warn) from [<c01170b0>] (warn_slowpath_fmt+0x60/0xb8)
-[   69.880231] [<c01170b0>] (warn_slowpath_fmt) from [<bf010130>] (__media_pipeline_stop+0x24/0xfc [mc])
-[   69.880318] [<bf010130>] (__media_pipeline_stop [mc]) from [<bf010228>] (media_pipeline_stop+0x20/0x2c [mc])
-[   69.880419] [<bf010228>] (media_pipeline_stop [mc]) from [<bf08fc48>] (fimc_cap_streamoff+0x38/0x48 [s5p_fimc])
-[   69.880582] [<bf08fc48>] (fimc_cap_streamoff [s5p_fimc]) from [<bf040bf4>] (__video_do_ioctl+0x220/0x448 [videodev])
-[   69.880776] [<bf040bf4>] (__video_do_ioctl [videodev]) from [<bf041600>] (video_usercopy+0x114/0x498 [videodev])
-[   69.880895] [<bf041600>] (video_usercopy [videodev]) from [<c0205024>] (ksys_ioctl+0x20c/0xa10)
-[   69.880939] [<c0205024>] (ksys_ioctl) from [<c0100060>] (ret_fast_syscall+0x0/0x54)
-[   69.880958] Exception stack(0xe50c1fa8 to 0xe50c1ff0)
-[   69.880997] 1fa0:                   004ef08d bec188c0 00000003 40045613 bec165ac 00517d16
-[   69.881040] 1fc0: 004ef08d bec188c0 bec188c0 00000036 bec165ac 00000000 b6def320 bec18af8
-[   69.881070] 1fe0: 00539ed4 bec15718 004ef0bb b6f84d0a
-[   69.881089] ---[ end trace d004ab573a72c32a ]---
-[   69.881102] ------------[ cut here ]------------
-[   69.881163] WARNING: CPU: 0 PID: 1566 at drivers/media/mc/mc-entity.c:556 media_pipeline_stop+0x20/0x2c [mc]
-[   69.881174] Modules linked in: s5p_fimc v4l2_fwnode exynos4_is_common videobuf2_dma_contig videobuf2_memops v4l2_mem2mem brcmfmac videobuf2_v4l2 pvrsrvkm_s5pv210_sgx540_120 videobuf2_common hci_uart sha256_generic btbcm libsha256 bluetooth cfg80211 ce147 brcmutil s5ka3dfx ecdh_generic ecc libaes videodev atmel_mxt_ts mc pwm_vibra rtc_max8998
-[   69.881367] CPU: 0 PID: 1566 Comm: v4l2-ctl Tainted: G        W         5.7.0-14540-gb1220848c797-dirty #681
-[   69.881381] Hardware name: Samsung S5PC110/S5PV210-based board
-[   69.881424] [<c010c7c4>] (unwind_backtrace) from [<c010a120>] (show_stack+0x10/0x14)
-[   69.881465] [<c010a120>] (show_stack) from [<c0117038>] (__warn+0xbc/0xd4)
-[   69.881511] [<c0117038>] (__warn) from [<c01170b0>] (warn_slowpath_fmt+0x60/0xb8)
-[   69.881580] [<c01170b0>] (warn_slowpath_fmt) from [<bf010228>] (media_pipeline_stop+0x20/0x2c [mc])
-[   69.881683] [<bf010228>] (media_pipeline_stop [mc]) from [<bf08fc48>] (fimc_cap_streamoff+0x38/0x48 [s5p_fimc])
-[   69.881834] [<bf08fc48>] (fimc_cap_streamoff [s5p_fimc]) from [<bf040bf4>] (__video_do_ioctl+0x220/0x448 [videodev])
-[   69.882025] [<bf040bf4>] (__video_do_ioctl [videodev]) from [<bf041600>] (video_usercopy+0x114/0x498 [videodev])
-[   69.882246] [<bf041600>] (video_usercopy [videodev]) from [<c0205024>] (ksys_ioctl+0x20c/0xa10)
-[   69.882291] [<c0205024>] (ksys_ioctl) from [<c0100060>] (ret_fast_syscall+0x0/0x54)
-[   69.882309] Exception stack(0xe50c1fa8 to 0xe50c1ff0)
-[   69.882348] 1fa0:                   004ef08d bec188c0 00000003 40045613 bec165ac 00517d16
-[   69.882391] 1fc0: 004ef08d bec188c0 bec188c0 00000036 bec165ac 00000000 b6def320 bec18af8
-[   69.882420] 1fe0: 00539ed4 bec15718 004ef0bb b6f84d0a
-[   69.882439] ---[ end trace d004ab573a72c32b ]---
-
-With the final trace being the original one that I was having.
-
-So it looks to me as if streamoff is being called twice.  Is this a possibility for all drivers
-or is there a different bug that I should be trying to track down?  In any event, my patch does
-prevent the warning (although my reasoning was wrong as I thought it was being stopped on the
-call to release).
-
-Thanks,
-Jonathan
-
-> 
-> Best regards,
-> Tomasz
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgRXJpYywNCg0KPiBGcm9tOiBBdWdlciBFcmljIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+DQo+
+IFNlbnQ6IFNhdHVyZGF5LCBKdWx5IDE4LCAyMDIwIDk6NDAgUE0NCj4gDQo+IEhpIFlpLA0KPiAN
+Cj4gT24gNy8xMi8yMCAxOjIxIFBNLCBMaXUgWWkgTCB3cm90ZToNCj4gPiBGcm9tOiBFcmljIEF1
+Z2VyIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+DQo+ID4NCj4gPiBUaGUgVkZJTyBBUEkgd2FzIGVu
+aGFuY2VkIHRvIHN1cHBvcnQgbmVzdGVkIHN0YWdlIGNvbnRyb2w6IGEgYnVuY2ggb2YNCj4gPiBu
+ZXcgaW90Y2xzIGFuZCB1c2FnZSBndWlkZWxpbmUuDQo+IGlvY3Rscw0KDQpnb3QgaXQuDQoNCj4g
+Pg0KPiA+IExldCdzIGRvY3VtZW50IHRoZSBwcm9jZXNzIHRvIGZvbGxvdyB0byBzZXQgdXAgbmVz
+dGVkIG1vZGUuDQo+ID4NCj4gPiBDYzogS2V2aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+
+DQo+ID4gQ0M6IEphY29iIFBhbiA8amFjb2IuanVuLnBhbkBsaW51eC5pbnRlbC5jb20+DQo+ID4g
+Q2M6IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+DQo+ID4gQ2M6
+IEVyaWMgQXVnZXIgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4NCj4gPiBDYzogSmVhbi1QaGlsaXBw
+ZSBCcnVja2VyIDxqZWFuLXBoaWxpcHBlQGxpbmFyby5vcmc+DQo+ID4gQ2M6IEpvZXJnIFJvZWRl
+bCA8am9yb0A4Ynl0ZXMub3JnPg0KPiA+IENjOiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50
+ZWwuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBTdGVmYW4gSGFqbm9jemkgPHN0ZWZhbmhhQHJlZGhh
+dC5jb20+DQo+ID4gU2lnbmVkLW9mZi1ieTogRXJpYyBBdWdlciA8ZXJpYy5hdWdlckByZWRoYXQu
+Y29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExpdSBZaSBMIDx5aS5sLmxpdUBpbnRlbC5jb20+DQo+
+ID4gLS0tDQo+ID4gdjMgLT4gdjQ6DQo+ID4gKikgYWRkIHJldmlldy1ieSBmcm9tIFN0ZWZhbiBI
+YWpub2N6aQ0KPiA+DQo+ID4gdjIgLT4gdjM6DQo+ID4gKikgYWRkcmVzcyBjb21tZW50cyBmcm9t
+IFN0ZWZhbiBIYWpub2N6aQ0KPiA+DQo+ID4gdjEgLT4gdjI6DQo+ID4gKikgbmV3IGluIHYyLCBj
+b21wYXJlZCB3aXRoIEVyaWMncyBvcmlnaW5hbCB2ZXJzaW9uLCBwYXNpZCB0YWJsZSBiaW5kDQo+
+ID4gICAgYW5kIGZhdWx0IHJlcG9ydGluZyBpcyByZW1vdmVkIGFzIHRoaXMgc2VyaWVzIGRvZXNu
+J3QgY292ZXIgdGhlbS4NCj4gPiAgICBPcmlnaW5hbCB2ZXJzaW9uIGZyb20gRXJpYy4NCj4gPiAg
+ICBodHRwczovL2xrbWwub3JnL2xrbWwvMjAyMC8zLzIwLzcwMA0KPiA+IC0tLQ0KPiA+ICBEb2N1
+bWVudGF0aW9uL2RyaXZlci1hcGkvdmZpby5yc3QgfCA2Nw0KPiArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDY3IGluc2VydGlvbnMo
+KykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvdmZpby5y
+c3QgYi9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvdmZpby5yc3QNCj4gPiBpbmRleCBmMWE0ZDNj
+Li4wNjcyYzQ1IDEwMDY0NA0KPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vZHJpdmVyLWFwaS92Zmlv
+LnJzdA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZHJpdmVyLWFwaS92ZmlvLnJzdA0KPiA+IEBA
+IC0yMzksNiArMjM5LDczIEBAIGdyb3VwIGFuZCBjYW4gYWNjZXNzIHRoZW0gYXMgZm9sbG93czo6
+DQo+ID4gIAkvKiBHcmF0dWl0b3VzIGRldmljZSByZXNldCBhbmQgZ28uLi4gKi8NCj4gPiAgCWlv
+Y3RsKGRldmljZSwgVkZJT19ERVZJQ0VfUkVTRVQpOw0KPiA+DQo+ID4gK0lPTU1VIER1YWwgU3Rh
+Z2UgQ29udHJvbA0KPiA+ICstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiArDQo+ID4gK1Nv
+bWUgSU9NTVVzIHN1cHBvcnQgMiBzdGFnZXMvbGV2ZWxzIG9mIHRyYW5zbGF0aW9uLiBTdGFnZSBj
+b3JyZXNwb25kcyB0bw0KPiA+ICt0aGUgQVJNIHRlcm1pbm9sb2d5IHdoaWxlIGxldmVsIGNvcnJl
+c3BvbmRzIHRvIEludGVsJ3MgVlREIHRlcm1pbm9sb2d5Lg0KPiA+ICtJbiB0aGUgZm9sbG93aW5n
+IHRleHQgd2UgdXNlIGVpdGhlciB3aXRob3V0IGRpc3RpbmN0aW9uLg0KPiA+ICsNCj4gPiArVGhp
+cyBpcyB1c2VmdWwgd2hlbiB0aGUgZ3Vlc3QgaXMgZXhwb3NlZCB3aXRoIGEgdmlydHVhbCBJT01N
+VSBhbmQgc29tZQ0KPiA+ICtkZXZpY2VzIGFyZSBhc3NpZ25lZCB0byB0aGUgZ3Vlc3QgdGhyb3Vn
+aCBWRklPLiBUaGVuIHRoZSBndWVzdCBPUyBjYW4gdXNlDQo+ID4gK3N0YWdlIDEgKEdJT1ZBIC0+
+IEdQQSBvciBHVkEtPkdQQSksIHdoaWxlIHRoZSBoeXBlcnZpc29yIHVzZXMgc3RhZ2UgMiBmb3IN
+Cj4gPiArVk0gaXNvbGF0aW9uIChHUEEgLT4gSFBBKS4NCj4gPiArDQo+ID4gK1VuZGVyIGR1YWwg
+c3RhZ2UgdHJhbnNsYXRpb24sIHRoZSBndWVzdCBnZXRzIG93bmVyc2hpcCBvZiB0aGUgc3RhZ2Ug
+MSBwYWdlDQo+ID4gK3RhYmxlcyBhbmQgYWxzbyBvd25zIHN0YWdlIDEgY29uZmlndXJhdGlvbiBz
+dHJ1Y3R1cmVzLiBUaGUgaHlwZXJ2aXNvciBvd25zDQo+ID4gK3RoZSByb290IGNvbmZpZ3VyYXRp
+b24gc3RydWN0dXJlIChmb3Igc2VjdXJpdHkgcmVhc29uKSwgaW5jbHVkaW5nIHN0YWdlIDINCj4g
+PiArY29uZmlndXJhdGlvbi4gVGhpcyB3b3JrcyBhcyBsb25nIGFzIGNvbmZpZ3VyYXRpb24gc3Ry
+dWN0dXJlcyBhbmQgcGFnZSB0YWJsZQ0KPiA+ICtmb3JtYXRzIGFyZSBjb21wYXRpYmxlIGJldHdl
+ZW4gdGhlIHZpcnR1YWwgSU9NTVUgYW5kIHRoZSBwaHlzaWNhbCBJT01NVS4NCj4gPiArDQo+ID4g
+K0Fzc3VtaW5nIHRoZSBIVyBzdXBwb3J0cyBpdCwgdGhpcyBuZXN0ZWQgbW9kZSBpcyBzZWxlY3Rl
+ZCBieSBjaG9vc2luZyB0aGUNCj4gPiArVkZJT19UWVBFMV9ORVNUSU5HX0lPTU1VIHR5cGUgdGhy
+b3VnaDoNCj4gPiArDQo+ID4gKyAgICBpb2N0bChjb250YWluZXIsIFZGSU9fU0VUX0lPTU1VLCBW
+RklPX1RZUEUxX05FU1RJTkdfSU9NTVUpOw0KPiA+ICsNCj4gPiArVGhpcyBmb3JjZXMgdGhlIGh5
+cGVydmlzb3IgdG8gdXNlIHRoZSBzdGFnZSAyLCBsZWF2aW5nIHN0YWdlIDEgYXZhaWxhYmxlDQo+
+ID4gK2ZvciBndWVzdCB1c2FnZS4gVGhlIGd1ZXN0IHN0YWdlIDEgZm9ybWF0IGRlcGVuZHMgb24g
+SU9NTVUgdmVuZG9yLCBhbmQNCj4gPiAraXQgaXMgdGhlIHNhbWUgd2l0aCB0aGUgbmVzdGluZyBj
+b25maWd1cmF0aW9uIG1ldGhvZC4gVXNlciBzcGFjZSBzaG91bGQNCj4gPiArY2hlY2sgdGhlIGZv
+cm1hdCBhbmQgY29uZmlndXJhdGlvbiBtZXRob2QgYWZ0ZXIgc2V0dGluZyBuZXN0aW5nIHR5cGUg
+YnkNCj4gPiArdXNpbmc6DQo+ID4gKw0KPiA+ICsgICAgaW9jdGwoY29udGFpbmVyLT5mZCwgVkZJ
+T19JT01NVV9HRVRfSU5GTywgJm5lc3RpbmdfaW5mbyk7DQo+ID4gKw0KPiA+ICtEZXRhaWxzIGNh
+biBiZSBmb3VuZCBpbiBEb2N1bWVudGF0aW9uL3VzZXJzcGFjZS1hcGkvaW9tbXUucnN0LiBGb3Ig
+SW50ZWwNCj4gPiArVlQtZCwgZWFjaCBzdGFnZSAxIHBhZ2UgdGFibGUgaXMgYm91bmQgdG8gaG9z
+dCBieToNCj4gPiArDQo+ID4gKyAgICBuZXN0aW5nX29wLT5mbGFncyA9IFZGSU9fSU9NTVVfTkVT
+VElOR19PUF9CSU5EX1BHVEJMOw0KPiA+ICsgICAgbWVtY3B5KCZuZXN0aW5nX29wLT5kYXRhLCAm
+YmluZF9kYXRhLCBzaXplb2YoYmluZF9kYXRhKSk7DQo+ID4gKyAgICBpb2N0bChjb250YWluZXIt
+PmZkLCBWRklPX0lPTU1VX05FU1RJTkdfT1AsIG5lc3Rpbmdfb3ApOw0KPiA+ICsNCj4gPiArQXMg
+bWVudGlvbmVkIGFib3ZlLCBndWVzdCBPUyBtYXkgdXNlIHN0YWdlIDEgZm9yIEdJT1ZBLT5HUEEg
+b3IgR1ZBLT5HUEEuDQo+IHRoZSBndWVzdCBPUywgaGVyZSBhbmQgYmVsb3c/DQoNCmdvdCBpdC4N
+Cg0KPiA+ICtHVkEtPkdQQSBwYWdlIHRhYmxlcyBhcmUgYXZhaWxhYmxlIHdoZW4gUEFTSUQgKFBy
+b2Nlc3MgQWRkcmVzcyBTcGFjZSBJRCkNCj4gPiAraXMgZXhwb3NlZCB0byBndWVzdC4gZS5nLiBn
+dWVzdCB3aXRoIFBBU0lELWNhcGFibGUgZGV2aWNlcyBhc3NpZ25lZC4gRm9yDQo+ID4gK3N1Y2gg
+cGFnZSB0YWJsZSBiaW5kaW5nLCB0aGUgYmluZF9kYXRhIHNob3VsZCBpbmNsdWRlIFBBU0lEIGlu
+Zm8sIHdoaWNoDQo+ID4gK2lzIGFsbG9jYXRlZCBieSBndWVzdCBpdHNlbGYgb3IgYnkgaG9zdC4g
+VGhpcyBkZXBlbmRzIG9uIGhhcmR3YXJlIHZlbmRvci4NCj4gPiArZS5nLiBJbnRlbCBWVC1kIHJl
+cXVpcmVzIHRvIGFsbG9jYXRlIFBBU0lEIGZyb20gaG9zdC4gVGhpcyByZXF1aXJlbWVudCBpcw0K
+PiANCj4gPiArZGVmaW5lZCBieSB0aGUgVmlydHVhbCBDb21tYW5kIFN1cHBvcnQgaW4gVlQtZCAz
+LjAgc3BlYywgZ3Vlc3Qgc29mdHdhcmUNCj4gPiArcnVubmluZyBvbiBWVC1kIHNob3VsZCBhbGxv
+Y2F0ZSBQQVNJRCBmcm9tIGhvc3Qga2VybmVsLg0KPiBiZWNhdXNlIFZURCAzLjAgcmVxdWlyZXMg
+dGhlIHVuaWNpdHkgb2YgdGhlIFBBU0lELCBzeXN0ZW0gd2lkZSwgaW5zdGVhZA0KPiBvZiB0aGUg
+YWJvdmUgcmVwZXRpdGlvbi4NCg0KSSBzZWUuIHBlcmhhcHMgYmV0dGVyIHRvIHNheSBJbnRlbCBw
+bGF0Zm9ybS4gOi0pIHdpbGwgcmVmaW5lIGl0Lg0KDQo+IA0KPiAgVG8gYWxsb2NhdGUgUEFTSUQN
+Cj4gPiArZnJvbSBob3N0LCB1c2VyIHNwYWNlIHNob3VsZCBjaGVjayB0aGUgSU9NTVVfTkVTVElO
+R19GRUFUX1NZU1dJREVfUEFTSUQNCj4gPiArYml0IG9mIHRoZSBuZXN0aW5nIGluZm8gcmVwb3J0
+ZWQgZnJvbSBob3N0IGtlcm5lbC4gVkZJTyByZXBvcnRzIHRoZSBuZXN0aW5nDQo+ID4gK2luZm8g
+YnkgVkZJT19JT01NVV9HRVRfSU5GTy4gVXNlciBzcGFjZSBjb3VsZCBhbGxvY2F0ZSBQQVNJRCBm
+cm9tIGhvc3QgYnk6DQo+IGlmIFNZU1dJREVfUEFTSUQgcmVxdWlyZW1lbnQgaXMgZXhwb3NlZCwg
+dGhlIHVzZXJzcGFjZSAqbXVzdCogYWxsb2NhdGUgLi4uDQoNCmdvdCBpdC4NCg0KPiA+ICsNCj4g
+PiArICAgIHJlcS5mbGFncyA9IFZGSU9fSU9NTVVfQUxMT0NfUEFTSUQ7DQo+ID4gKyAgICBpb2N0
+bChjb250YWluZXIsIFZGSU9fSU9NTVVfUEFTSURfUkVRVUVTVCwgJnJlcSk7DQo+ID4gKw0KPiA+
+ICtXaXRoIGZpcnN0IHN0YWdlL2xldmVsIHBhZ2UgdGFibGUgYm91bmQgdG8gaG9zdCwgaXQgYWxs
+b3dzIHRvIGNvbWJpbmUgdGhlDQo+ID4gK2d1ZXN0IHN0YWdlIDEgdHJhbnNsYXRpb24gYWxvbmcg
+d2l0aCB0aGUgaHlwZXJ2aXNvciBzdGFnZSAyIHRyYW5zbGF0aW9uIHRvDQo+ID4gK2dldCBmaW5h
+bCBhZGRyZXNzLg0KPiA+ICsNCj4gPiArV2hlbiB0aGUgZ3Vlc3QgaW52YWxpZGF0ZXMgc3RhZ2Ug
+MSByZWxhdGVkIGNhY2hlcywgaW52YWxpZGF0aW9ucyBtdXN0IGJlDQo+ID4gK2ZvcndhcmRlZCB0
+byB0aGUgaG9zdCB0aHJvdWdoDQo+ID4gKw0KPiA+ICsgICAgbmVzdGluZ19vcC0+ZmxhZ3MgPSBW
+RklPX0lPTU1VX05FU1RJTkdfT1BfQ0FDSEVfSU5WTEQ7DQo+ID4gKyAgICBtZW1jcHkoJm5lc3Rp
+bmdfb3AtPmRhdGEsICZpbnZfZGF0YSwgc2l6ZW9mKGludl9kYXRhKSk7DQo+ID4gKyAgICBpb2N0
+bChjb250YWluZXItPmZkLCBWRklPX0lPTU1VX05FU1RJTkdfT1AsIG5lc3Rpbmdfb3ApOw0KPiA+
+ICsNCj4gPiArVGhvc2UgaW52YWxpZGF0aW9ucyBjYW4gaGFwcGVuIGF0IHZhcmlvdXMgZ3JhbnVs
+YXJpdHkgbGV2ZWxzLCBwYWdlLCBjb250ZXh0LA0KPiA+ICsuLi4NCj4gPiArDQo+ID4gIFZGSU8g
+VXNlciBBUEkNCj4gPiAgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBJIHNlZSB5b3UgZHJvcHBl
+ZCB0aGUgdW5yZWNvdmVyYWJsZSBlcnJvciByZXBvcnRpbmcgcGFydCBvZiB0aGUgb3JpZ2luYWwN
+Cj4gY29udHJpYnV0aW9uLiBCeSB0aGUgd2F5IGRvbid0IHlvdSBuZWVkIGFueSBlcnJvciBoYW5k
+bGluZyBmb3IgZWl0aGVyIG9mDQo+IHRoZSB1c2UgY2FzZXMgb24gdnRkPw0KDQp5ZXMsIEkgZHJv
+cHBlZCB0aGUgZXJyb3IgcmVwb3J0aW5nIHBhcnQsIHRoZSByZWFzb24gaXMgdGhlIHNlcmllcyBk
+b2VzbuKAmXQNCmluY2x1ZGUgdGhlIGVycm9yIHJlcG9ydGluZyBzdXBwb3J0LiBndWVzcyBhZGRp
+bmcgaXQgd2hlbiB0aGUgZXJyb3INCnJlcG9ydGluZyBpcyBzZW50IG91dC4NCg0KUmVnYXJkcywN
+CllpIExpdQ0KDQo+ID4NCj4gPg0KPiBUaGFua3MNCj4gDQo+IEVyaWMNCg0KX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
