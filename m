@@ -2,103 +2,75 @@ Return-Path: <SRS0=a8KZ=BG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E838BC433E3
-	for <iommu@archiver.kernel.org>; Mon, 27 Jul 2020 17:17:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 400B9C433E1
+	for <iommu@archiver.kernel.org>; Mon, 27 Jul 2020 17:57:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B0B0A20775
-	for <iommu@archiver.kernel.org>; Mon, 27 Jul 2020 17:17:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F24pSJOz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B0B0A20775
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 155472070B
+	for <iommu@archiver.kernel.org>; Mon, 27 Jul 2020 17:57:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 155472070B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 394F5881A0;
-	Mon, 27 Jul 2020 17:17:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C057D204B1;
+	Mon, 27 Jul 2020 17:57:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NfSk29qaESku; Mon, 27 Jul 2020 17:17:04 +0000 (UTC)
+	with ESMTP id 7Q4ACsERMwwY; Mon, 27 Jul 2020 17:57:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E7EC287C14;
-	Mon, 27 Jul 2020 17:17:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B98481FF98;
+	Mon, 27 Jul 2020 17:57:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B5F51C0050;
-	Mon, 27 Jul 2020 17:17:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B52FC0050;
+	Mon, 27 Jul 2020 17:57:03 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF9E9C004D
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:17:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 589D8C004D
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:57:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AA4932210F
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:17:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4B45D20008
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:57:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7za1EoB25aD3 for <iommu@lists.linux-foundation.org>;
- Mon, 27 Jul 2020 17:17:00 +0000 (UTC)
+ with ESMTP id RtGMZfdZfzNE for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Jul 2020 17:57:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com
- [209.85.218.65])
- by silver.osuosl.org (Postfix) with ESMTPS id B205E220E5
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:16:59 +0000 (UTC)
-Received: by mail-ej1-f65.google.com with SMTP id y10so17886591eje.1
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 10:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
- bh=PREIfXCCu3w1zcBtJb3ZfAXkGKdy/WRW+EQjYoFwzm4=;
- b=F24pSJOzxR93pXUjPELGLKNFTxodoWPLieXhqKUPwLg97sRqzlE5ptMk35Oc4I5j4a
- KIZKItREVsjuKFstTDkN5Bq3Yg2q8RxjCFMF1vbNY1jFTCD8s83ZeqdbNKK9tl7KfZqc
- 3anCw9ggQa/ztFKkplOS4fMk8ajdOblfS39laN+5fEFZWjGLHYlSVH+I4668V2pKN4zg
- SZlun5SnBlxktflp9/sZEBIaUVhlBr4RNB9IhVMXDS/f0eJtOaz8EjfDOMs18WHpqBut
- hs+9QOcI3gKHpy9lcqG9Npensg702r4NPeGV1Aqt0l5byDWRc7y7JmHia+3geElXvUoq
- 8gQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to;
- bh=PREIfXCCu3w1zcBtJb3ZfAXkGKdy/WRW+EQjYoFwzm4=;
- b=QzpUDiDR/KnCN3TZk/vvZs2gK6z8DfI7dDe7GFpLczthnh5jfE/wlHuKI6BtLPx1VJ
- AWM6g7oVjCfOY3ut3dRdsL72KpEesozMdwZdIbpF4fIqETZvijXoNX0SalWgsr2Wq/g2
- d/AUfUz5u8C/JokBW5eEy9r7msRjb+z0tjQIqZwj6+NM9R9ZVahhu6FNr1rC7obIEx6O
- 76TxoqFzPLdVDpb7uRAjZ8Gh4jOHd7a+I0Jzv7GuiXO7LffHGM7+cjbKyiEPMa+WzyD3
- tIvDURfrsqwpUJzFRHO8oTNyk88WtPLttCxtWzLKD/gQWf2eaa72buY2ZKwlCGAvmGNa
- +9iA==
-X-Gm-Message-State: AOAM530Rk5BrFc8+a8N778ksBNBZPS5tqULlr6yH7Xu+f82on5zveCRL
- P1N/QLvCqeGY/fuzbsFEhjOikUBZvCQFrbQTU5Y=
-X-Google-Smtp-Source: ABdhPJyxEC0OlYV19Te3075t4r3dMqI3c7X3WZxvviw+ElGVcW4TpojtZCtLSkOF9Djzm34h9tn1ayXMOw1jKl9ILaI=
-X-Received: by 2002:a17:906:f199:: with SMTP id
- gs25mr6047791ejb.161.1595870218000; 
- Mon, 27 Jul 2020 10:16:58 -0700 (PDT)
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by silver.osuosl.org (Postfix) with ESMTPS id D93311FF98
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jul 2020 17:57:00 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id 08CABABE9;
+ Mon, 27 Jul 2020 17:57:09 +0000 (UTC)
+Message-ID: <a9b811a84ac21c13693e6ffefd2914b911542e18.camel@suse.de>
+Subject: Re: [PATCH] dma-pool: Do not allocate pool memory from CMA
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Christoph Hellwig <hch@lst.de>, Amit Pundir <amit.pundir@linaro.org>
+Date: Mon, 27 Jul 2020 19:56:56 +0200
+In-Reply-To: <20200724134114.GA3152@lst.de>
+References: <550b30a86c0785049d24c945e2c6628d491cee3a.camel@suse.de>
+ <CAMi1Hd2V2pJjP=USS4r-Z3vK-aq7_aBy-jcVNk1GvbdEQAuzWg@mail.gmail.com>
+ <011994f8a717a00dcd9ed7682a1ddeb421c2c43f.camel@suse.de>
+ <CAMi1Hd0=ZsGhTkSy221EP9Vb3GMOcS0UMczX2u5X9qK37_ea1A@mail.gmail.com>
+ <01831596e4a2a6c9c066138b23bd30435f8e5569.camel@suse.de>
+ <CAMi1Hd3C6kh5E49EgytBAQ_2AE_jvnp+eSNsxBYaux+exSvdbg@mail.gmail.com>
+ <6db722947546221ed99d3f473f78e1a6de65d7d6.camel@suse.de>
+ <CAMi1Hd0Xz6kOJFpA5PEpi6RDDGOcz0RmQ7tTOkuXq4QneOO_vQ@mail.gmail.com>
+ <0dc1e922bf87fa73790e7471b3974528dd261486.camel@suse.de>
+ <CAMi1Hd3O2HHBsnt=sac7FdcW0-3=4S3g_F9f__2h5gTsudfirA@mail.gmail.com>
+ <20200724134114.GA3152@lst.de>
+User-Agent: Evolution 3.36.4 
 MIME-Version: 1.0
-References: <20200720154047.3611092-1-jcrouse@codeaurora.org>
- <20200720154047.3611092-7-jcrouse@codeaurora.org>
- <CAF6AEGuF_fC4=vBKr24HogE-d3KkXUQivOpVde9iqf+RvRzNtA@mail.gmail.com>
- <20200727150306.GB32521@jcrouse1-lnx.qualcomm.com>
-In-Reply-To: <20200727150306.GB32521@jcrouse1-lnx.qualcomm.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 27 Jul 2020 10:17:36 -0700
-Message-ID: <CAF6AEGtdO=d2r7dvLFNJ02nUDbKBm0J7O-i9=kxjWTr9NK=ecg@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH v10 06/13] iommu/arm-smmu-qcom: Get and set
- the pagetable config for split pagetables
-To: Rob Clark <robdclark@gmail.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, 
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>, 
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- freedreno <freedreno@lists.freedesktop.org>, 
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
- Bjorn Andersson <bjorn.andersson@linaro.org>, 
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Will Deacon <will@kernel.org>, 
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+Cc: lkml <linux-kernel@vger.kernel.org>, jeremy.linton@arm.com,
+ iommu@lists.linux-foundation.org, John Stultz <john.stultz@linaro.org>,
+ linux-rpi-kernel@lists.infradead.org, David Rientjes <rientjes@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,245 +83,118 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7155787206931749180=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 27, 2020 at 8:03 AM Jordan Crouse <jcrouse@codeaurora.org> wrote:
->
-> On Sun, Jul 26, 2020 at 10:03:07AM -0700, Rob Clark wrote:
-> > On Mon, Jul 20, 2020 at 8:41 AM Jordan Crouse <jcrouse@codeaurora.org> wrote:
-> > >
-> > > The Adreno GPU has the capability to manage its own pagetables and switch
-> > > them dynamically from the hardware. To do this the GPU uses TTBR1 for
-> > > "global" GPU memory and creates local pagetables for each context and
-> > > switches them dynamically with the GPU.
-> > >
-> > > Use DOMAIN_ATTR_PGTABLE_CFG to get the current configuration for the
-> > > TTBR1 pagetable from the smmu driver so the leaf driver can create
-> > > compatible pagetables for use with TTBR0.
-> > >
-> > > Because TTBR0 is disabled by default when TTBR1 is enabled the GPU
-> > > driver can pass the configuration of one of the newly created pagetables
-> > > back through DOMAIN_ATTR_PGTABLE_CFG as a trigger to enable translation on
-> > > TTBR0.
-> > >
-> > > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> > > ---
-> > >
-> > >  drivers/iommu/arm-smmu-qcom.c | 47 +++++++++++++++++++++++++++++++++++
-> > >  drivers/iommu/arm-smmu.c      | 32 ++++++++++++++++++------
-> > >  drivers/iommu/arm-smmu.h      | 10 ++++++++
-> > >  3 files changed, 81 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-> > > index b9a5c5369e86..9a0c64ca9cb6 100644
-> > > --- a/drivers/iommu/arm-smmu-qcom.c
-> > > +++ b/drivers/iommu/arm-smmu-qcom.c
-> > > @@ -34,6 +34,52 @@ static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-> > >         return false;
-> > >  }
-> > >
-> > > +/*
-> > > + * Local implementation to configure TTBR0 wil the specified pagetable config.
-> > > + * The GPU driver will call this to enable TTBR0 when per-instance pagetables
-> > > + * are active
-> > > + */
-> > > +static int qcom_adreno_smmu_set_pgtable_cfg(struct arm_smmu_domain *smmu_domain,
-> > > +               struct io_pgtable_cfg *pgtbl_cfg)
-> > > +{
-> > > +       struct io_pgtable *pgtable = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-> > > +       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> > > +       struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-> > > +
-> > > +       /* The domain must have split pagetables already enabled */
-> > > +       if (cb->tcr[0] & ARM_SMMU_TCR_EPD1)
-> > > +               return -EINVAL;
-> > > +
-> > > +       /* If the pagetable config is NULL, disable TTBR0 */
-> > > +       if (!pgtbl_cfg) {
-> > > +               /* Do nothing if it is already disabled */
-> > > +               if ((cb->tcr[0] & ARM_SMMU_TCR_EPD0))
-> > > +                       return -EINVAL;
-> > > +
-> > > +               /* Set TCR to the original configuration */
-> > > +               cb->tcr[0] = arm_smmu_lpae_tcr(&pgtable->cfg);
-> > > +               cb->ttbr[0] = FIELD_PREP(ARM_SMMU_TTBRn_ASID, cb->cfg->asid);
-> > > +       } else {
-> > > +               u32 tcr = cb->tcr[0];
-> > > +
-> > > +               /* FIXME: What sort of validation do we need to do here? */
-> > > +
-> > > +               /* Don't call this again if TTBR0 is already enabled */
-> > > +               if (!(cb->tcr[0] & ARM_SMMU_TCR_EPD0))
-> > > +                       return -EINVAL;
-> > > +
-> > > +               tcr |= arm_smmu_lpae_tcr(pgtbl_cfg);
-> > > +               tcr &= ~(ARM_SMMU_TCR_EPD0 | ARM_SMMU_TCR_EPD1);
-> > > +
-> > > +               cb->tcr[0] = tcr;
-> > > +               cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
-> > > +               cb->ttbr[0] |= FIELD_PREP(ARM_SMMU_TTBRn_ASID, cb->cfg->asid);
-> > > +       }
-> > > +
-> > > +       arm_smmu_write_context_bank(smmu_domain->smmu, cb->cfg->cbndx);
-> > > +       return 0;
-> > > +}
-> > > +
-> > >  static int qcom_adreno_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_domain,
-> > >                 struct device *dev, int start, int count)
-> > >  {
-> > > @@ -131,6 +177,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
-> > >         .def_domain_type = qcom_smmu_def_domain_type,
-> > >         .reset = qcom_smmu500_reset,
-> > >         .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
-> > > +       .set_pgtable_cfg = qcom_adreno_smmu_set_pgtable_cfg,
-> > >  };
-> > >
-> > >  static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
-> > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > > index fff536a44faa..e1036ae54a8d 100644
-> > > --- a/drivers/iommu/arm-smmu.c
-> > > +++ b/drivers/iommu/arm-smmu.c
-> > > @@ -86,13 +86,6 @@ struct arm_smmu_smr {
-> > >         bool                            valid;
-> > >  };
-> > >
-> > > -struct arm_smmu_cb {
-> > > -       u64                             ttbr[2];
-> > > -       u32                             tcr[2];
-> > > -       u32                             mair[2];
-> > > -       struct arm_smmu_cfg             *cfg;
-> > > -};
-> > > -
-> > >  static bool using_legacy_binding, using_generic_binding;
-> > >
-> > >  static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
-> > > @@ -558,7 +551,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-> > >         }
-> > >  }
-> > >
-> > > -static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-> > > +void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-> > >  {
-> > >         u32 reg;
-> > >         bool stage1;
-> > > @@ -1515,6 +1508,18 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> > >                 case DOMAIN_ATTR_NESTING:
-> > >                         *(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
-> > >                         return 0;
-> > > +               case DOMAIN_ATTR_PGTABLE_CFG: {
-> > > +                       struct io_pgtable *pgtable;
-> > > +                       struct io_pgtable_cfg *dest = data;
-> > > +
-> > > +                       if (!smmu_domain->pgtbl_ops)
-> > > +                               return -ENODEV;
-> > > +
-> > > +                       pgtable = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-> > > +
-> > > +                       memcpy(dest, &pgtable->cfg, sizeof(*dest));
-> > > +                       return 0;
-> > > +               }
-> >
-> > hmm, maybe it would make sense to have impl hooks for get/set_attr, so
-> > we could handle DOMAIN_ATTR_PGTABLE_CFG inside the adreno_smmu_impl?
-> >
-> > Having impl specific domain attrs would be useful for what I have in
-> > mind to enable stall/resume support, so we can hook in devcoredump to
-> > iova faults (which would be a huge improvement for debugability, right
-> > now iova faults are somewhat harder to debug than needed).  My rough
-> > idea was to add DOMAIN_ATTR_RESUME, which could be used with
-> > set_attr() to (1) enable STALL and let drm/msm know whether the iommu
-> > supports it, and (2) resume translation from wq context after
-> > devcoredump snapshot is collected.
->
-> Expanding on that, maybe a DOMAIN_ATTR_IMPL with struct { int subtype; void
-> *data } as the payload would let us add things without having to populate the
-> generic enum.  That would force us to export an arm-smmu header but at this
-> point it might be such a bad thing.
 
-That feels a bit like overkill to me, I don't expect there to be that
-many custom things.  But I'll defer to the iommu folks as to which
-they prefer.
+--===============7155787206931749180==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-qFFwwRyYdW0g8uHUD6n0"
 
-BR,
--R
 
-> Jordan
->
->
-> > BR,
-> > -R
-> >
-> > >                 default:
-> > >                         return -ENODEV;
-> > >                 }
-> > > @@ -1555,6 +1560,17 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
-> > >                         else
-> > >                                 smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-> > >                         break;
-> > > +               case DOMAIN_ATTR_PGTABLE_CFG: {
-> > > +                       struct arm_smmu_device *smmu = smmu_domain->smmu;
-> > > +
-> > > +                       ret = -EPERM;
-> > > +
-> > > +                       if (smmu)
-> > > +                               if (smmu->impl && smmu->impl->set_pgtable_cfg)
-> > > +                                       ret = smmu->impl->set_pgtable_cfg(smmu_domain,
-> > > +                                               data);
-> > > +                       }
-> > > +                       break;
-> > >                 default:
-> > >                         ret = -ENODEV;
-> > >                 }
-> > > diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> > > index 9f81c1fffe1e..9325fc28d24a 100644
-> > > --- a/drivers/iommu/arm-smmu.h
-> > > +++ b/drivers/iommu/arm-smmu.h
-> > > @@ -328,6 +328,13 @@ struct arm_smmu_cfg {
-> > >  };
-> > >  #define ARM_SMMU_INVALID_IRPTNDX       0xff
-> > >
-> > > +struct arm_smmu_cb {
-> > > +       u64                             ttbr[2];
-> > > +       u32                             tcr[2];
-> > > +       u32                             mair[2];
-> > > +       struct arm_smmu_cfg             *cfg;
-> > > +};
-> > > +
-> > >  enum arm_smmu_domain_stage {
-> > >         ARM_SMMU_DOMAIN_S1 = 0,
-> > >         ARM_SMMU_DOMAIN_S2,
-> > > @@ -408,6 +415,8 @@ struct arm_smmu_impl {
-> > >         int (*def_domain_type)(struct device *dev);
-> > >         int (*alloc_context_bank)(struct arm_smmu_domain *smmu_domain,
-> > >                         struct device *dev, int start, int max);
-> > > +       int (*set_pgtable_cfg)(struct arm_smmu_domain *smmu_domain,
-> > > +                       struct io_pgtable_cfg *cfg);
-> > >  };
-> > >
-> > >  #define INVALID_SMENDX                 -1
-> > > @@ -493,6 +502,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
-> > >  struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
-> > >  struct arm_smmu_device *qcom_adreno_smmu_impl_init(struct arm_smmu_device *smmu);
-> > >
-> > > +void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx);
-> > >  int arm_mmu500_reset(struct arm_smmu_device *smmu);
-> > >
-> > >  #endif /* _ARM_SMMU_H */
-> > > --
-> > > 2.25.1
-> > >
-> > > _______________________________________________
-> > > Freedreno mailing list
-> > > Freedreno@lists.freedesktop.org
-> > > https://lists.freedesktop.org/mailman/listinfo/freedreno
->
-> --
-> The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> a Linux Foundation Collaborative Project
+--=-qFFwwRyYdW0g8uHUD6n0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Christoph,
+thanks for having a look at this!
+
+On Fri, 2020-07-24 at 15:41 +0200, Christoph Hellwig wrote:
+> Yes, the iommu is an interesting case, and the current code is
+> wrong for that.
+
+Care to expand on this? I do get that checking dma_coherent_ok() on memory
+that'll later on be mapped into an iommu is kind of silly, although I think
+harmless in Amir's specific case, since devices have wide enough dma-ranges=
+. Is
+there more to it?
+
+> Can you try the patch below?  It contains a modified version of Nicolas'
+> patch to try CMA again for the expansion and a new (for now hackish) way =
+to
+> not apply the addressability check for dma-iommu allocations.
+>=20
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index 6bc74a2d51273e..ec5e525d2b9309 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -3,7 +3,9 @@
+>   * Copyright (C) 2012 ARM Ltd.
+>   * Copyright (C) 2020 Google LLC
+>   */
+> +#include <linux/cma.h>
+>  #include <linux/debugfs.h>
+> +#include <linux/dma-contiguous.h>
+>  #include <linux/dma-direct.h>
+>  #include <linux/dma-noncoherent.h>
+>  #include <linux/init.h>
+> @@ -55,6 +57,31 @@ static void dma_atomic_pool_size_add(gfp_t gfp, size_t
+> size)
+>  		pool_size_kernel +=3D size;
+>  }
+> =20
+> +static bool cma_in_zone(gfp_t gfp)
+> +{
+> +	phys_addr_t end;
+> +	unsigned long size;
+> +	struct cma *cma;
+> +
+> +	cma =3D dev_get_cma_area(NULL);
+> +	if (!cma)
+> +		return false;
+> +
+> +	size =3D cma_get_size(cma);
+> +	if (!size)
+> +		return false;
+> +	end =3D cma_get_base(cma) - memblock_start_of_DRAM() + size - 1;
+> +
+> +	/* CMA can't cross zone boundaries, see cma_activate_area() */
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA) &&
+> +	    end <=3D DMA_BIT_MASK(zone_dma_bits))
+> +		return true;
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) &&
+> +	    end <=3D DMA_BIT_MASK(32))
+> +		return true;
+> +	return true;
+
+IIUC this will always return true given a CMA is present. Which reverts to =
+the
+previous behaviour (previous as in breaking some rpi4 setups), isn't it?
+
+Regards,
+Nicolas
+
+
+--=-qFFwwRyYdW0g8uHUD6n0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl8fFWgACgkQlfZmHno8
+x/6obgf+LDzEyQY0PPgnBX0Bop85cj9nPiNdylLhZ6He/5cLrZMAcWtA69qcst1i
+PQdp5ThWKd7Gd0mlmg+B9MdxgehKMf0q517j0pb4pBBxx96D4Hg/QjGSOfGeHLVe
+9oaxYdxDf+xKTIn5v8myvHyQIHPYF8pkcVHp1M5b+q/Q9CUXpWB7wVQWM0vlcCIt
++HgRuyEzktxngXkRZsYCxmtEMEGGUri5klRs7O+M6Vbn+tlRHtYmjCFOEzmlXS9W
++bph7Ekf1b448fF2q5P7Xu5fhE7CYN8k8nr63AcVXVaLR/DsJ5GxjWFGKNye5/21
+91Uk2Go4FCB6IrjoB9vmp5/TowXkOQ==
+=D8U2
+-----END PGP SIGNATURE-----
+
+--=-qFFwwRyYdW0g8uHUD6n0--
+
+
+--===============7155787206931749180==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============7155787206931749180==--
+
