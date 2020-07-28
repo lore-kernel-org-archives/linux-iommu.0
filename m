@@ -2,79 +2,94 @@ Return-Path: <SRS0=UphA=BH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFAEC433E3
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 10:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54BCC433E3
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 10:56:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2418420775
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 10:47:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B03CE20829
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 10:56:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="hyZjJAXw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2418420775
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GaqX56Rb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B03CE20829
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DE54086CC7;
-	Tue, 28 Jul 2020 10:47:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6D1DA848A9;
+	Tue, 28 Jul 2020 10:56:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AqTnma3+zgai; Tue, 28 Jul 2020 10:47:59 +0000 (UTC)
+	with ESMTP id uaVY1C9XrdXS; Tue, 28 Jul 2020 10:56:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3905A86C1A;
-	Tue, 28 Jul 2020 10:47:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6A0B081457;
+	Tue, 28 Jul 2020 10:56:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 259DEC0050;
-	Tue, 28 Jul 2020 10:47:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D91C5C0888
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:47:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5629FC0050;
+	Tue, 28 Jul 2020 10:56:21 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2155BC004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:56:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C412088246
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:47:55 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0D78B85F59
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:56:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q8wcsMZ2L4PY for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 10:47:52 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9346086D41
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:47:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=SrNxb7cfoeHkRxwqIu8gXj3if9OqY1Mn6++aEyw+BN8=; b=hyZjJAXwUIHFMRDwGfygu6ku1N
- 8rZOthaVTNAe6rGOMKfs4fmYqjXOK4o4S0670kU7Q4LrivzVNOhMa7kZ1MjjaddJqFyDxzzmgM2K4
- l3UxMn8Ki2Cv7MfxgcTaED4rnAtjBFyN6xQw4M3kp3PrhxRL84SGGZxehkUIbqkLA/GyuKhBWlh0P
- 2LI0PP43Qb7zf5gdSJgAspVp1mxrees2mFk95w6L87w9ZmdE0DD2cQcDmSPe8snGu//niBf/u8MnK
- nOKJqzDzMiC7mx7eaADrKBZqhLc4fEeldL78ySp7fZSm7S3P+YZZJ5P2WFdpmTolLgGZt2sBtmRec
- 65d9CweQ==;
-Received: from [2001:4bb8:180:6102:7902:553b:654a:8555] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k0N9A-0004ru-Em; Tue, 28 Jul 2020 10:47:48 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Amit Pundir <amit.pundir@linaro.org>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: [PATCH 2/2] dma-pool: Only allocate from CMA when in same memory zone
-Date: Tue, 28 Jul 2020 12:47:42 +0200
-Message-Id: <20200728104742.422960-3-hch@lst.de>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200728104742.422960-1-hch@lst.de>
-References: <20200728104742.422960-1-hch@lst.de>
+ with ESMTP id pLbhpGaZDwEp for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 10:56:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 9B29285DF5
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 10:56:19 +0000 (UTC)
+Received: from kernel.org (unknown [87.71.40.38])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0F93A204EA;
+ Tue, 28 Jul 2020 10:56:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1595933779;
+ bh=rNeOQgk8Ja8EnwwwD3eYzStK24lMrD6z0cTMgy9a9QQ=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=GaqX56Rbj+N1Mz6UyTAyoeiV2UjmyQ1JRRE5tNv2GNU4C8YMxHr+kbNtL4JzJlsAy
+ ScdjYPyI8moETB7oZ34zmIQmli78wpYsgkku4f7CIjv3woY2fEo2HxXSUsaNO4HEay
+ kodVMJnUU7dTJtF+OWGSFGl3TO2fwrpo3QfCz2LQ=
+Date: Tue, 28 Jul 2020 13:56:02 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH 14/15] x86/numa: remove redundant iteration over
+ memblock.reserved
+Message-ID: <20200728105602.GB3655207@kernel.org>
+References: <20200728051153.1590-1-rppt@kernel.org>
+ <20200728051153.1590-15-rppt@kernel.org>
+ <20200728104440.GA222284@gmail.com>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- linux-rpi-kernel@lists.infradead.org, jeremy.linton@arm.com,
- David Rientjes <rientjes@google.com>
+Content-Disposition: inline
+In-Reply-To: <20200728104440.GA222284@gmail.com>
+Cc: linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
+ Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
+ sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
+ Will Deacon <will@kernel.org>, Stafford Horne <shorne@gmail.com>,
+ linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org,
+ Yoshinori Sato <ysato@users.sourceforge.jp>,
+ Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
+ Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>,
+ clang-built-linux@googlegroups.com, Ingo Molnar <mingo@redhat.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
+ openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Michal Simek <monstr@monstr.eu>, linux-mm@kvack.org,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Palmer Dabbelt <palmer@dabbelt.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,81 +107,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+On Tue, Jul 28, 2020 at 12:44:40PM +0200, Ingo Molnar wrote:
+> 
+> * Mike Rapoport <rppt@kernel.org> wrote:
+> 
+> > From: Mike Rapoport <rppt@linux.ibm.com>
+> > 
+> > numa_clear_kernel_node_hotplug() function first traverses numa_meminfo
+> > regions to set node ID in memblock.reserved and than traverses
+> > memblock.reserved to update reserved_nodemask to include node IDs that were
+> > set in the first loop.
+> > 
+> > Remove redundant traversal over memblock.reserved and update
+> > reserved_nodemask while iterating over numa_meminfo.
+> > 
+> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > ---
+> >  arch/x86/mm/numa.c | 26 ++++++++++----------------
+> >  1 file changed, 10 insertions(+), 16 deletions(-)
+> 
+> I suspect you'd like to carry this in the -mm tree?
 
-There is no guarantee to CMA's placement, so allocating a zone specific
-atomic pool from CMA might return memory from a completely different
-memory zone. To get around this double check CMA's placement before
-allocating from it.
-
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-[hch: rebased, added a fallback to the page allocator, allow dipping into
-      lower CMA pools]
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/pool.c | 31 ++++++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 1ddcd48f271fff..83fda10394937b 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -3,7 +3,9 @@
-  * Copyright (C) 2012 ARM Ltd.
-  * Copyright (C) 2020 Google LLC
-  */
-+#include <linux/cma.h>
- #include <linux/debugfs.h>
-+#include <linux/dma-contiguous.h>
- #include <linux/dma-direct.h>
- #include <linux/dma-noncoherent.h>
- #include <linux/init.h>
-@@ -55,6 +57,29 @@ static void dma_atomic_pool_size_add(gfp_t gfp, size_t size)
- 		pool_size_kernel += size;
- }
+Yes.
  
-+static bool cma_in_zone(gfp_t gfp)
-+{
-+	unsigned long size;
-+	phys_addr_t end;
-+	struct cma *cma;
-+
-+	cma = dev_get_cma_area(NULL);
-+	if (!cma)
-+		return false;
-+
-+	size = cma_get_size(cma);
-+	if (!size)
-+		return false;
-+
-+	/* CMA can't cross zone boundaries, see cma_activate_area() */
-+	end = cma_get_base(cma) - memblock_start_of_DRAM() + size - 1;
-+	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-+		return end <= DMA_BIT_MASK(zone_dma_bits);
-+	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-+		return end <= DMA_BIT_MASK(32);
-+	return true;
-+}
-+
- static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 			      gfp_t gfp)
- {
-@@ -68,7 +93,11 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 
- 	do {
- 		pool_size = 1 << (PAGE_SHIFT + order);
--		page = alloc_pages(gfp, order);
-+		if (cma_in_zone(gfp))
-+ 			page = dma_alloc_from_contiguous(NULL, 1 << order,
-+ 							 order, false);
-+		if (!page)
-+			page = alloc_pages(gfp, order);
- 	} while (!page && order-- > 0);
- 	if (!page)
- 		goto out;
+> Acked-by: Ingo Molnar <mingo@kernel.org>
+
+Thanks!
+
+> Thanks,
+> 
+> 	Ingo
+
 -- 
-2.27.0
-
+Sincerely yours,
+Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
