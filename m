@@ -2,109 +2,66 @@ Return-Path: <SRS0=UphA=BH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC6AC433EA
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:24:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C481AC433DF
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 023E420663
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:24:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GtVsFuqy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 023E420663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9B258206D8
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B258206D8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D6EC82269B;
-	Tue, 28 Jul 2020 14:24:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id axfwMjUQ+n58; Tue, 28 Jul 2020 14:24:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8A5D222773;
-	Tue, 28 Jul 2020 14:24:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E948C0050;
-	Tue, 28 Jul 2020 14:24:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12B9CC004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:24:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EEB9885ABF
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:24:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7348F86A61;
+	Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id emi5JZwS2juS; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id CD3F486A5C;
+	Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4B55C0050;
+	Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34B43C004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3102E85230
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9Z2VENbf1px2 for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 14:24:08 +0000 (UTC)
+ with ESMTP id cZSKcKx2eJFF for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 14:56:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [205.139.110.61])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 242AD85785
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:24:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595946246;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=06rCqpwu1j4S1S47vgUTPXYPKKso17TGQwzOaoYSYfs=;
- b=GtVsFuqyRfS1RkT25da+EhuUFf5MK+pGegTD127A0pLyWVLsTtxR3jny/u2SUL9VKue0wR
- zjkYY8l6DX8mAQJRrLoC7J+CTbzHM0/D8/VS0/RR8HLuez7E+VJ6vt9Qjh1l+QjbHxeH2N
- rsZkLJZxu1iQGHes548R3D8PVHuaLK4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-166-XL5fGaBiOsyWEWGpA51xEg-1; Tue, 28 Jul 2020 10:24:02 -0400
-X-MC-Unique: XL5fGaBiOsyWEWGpA51xEg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B54D1B18BC1;
- Tue, 28 Jul 2020 14:23:54 +0000 (UTC)
-Received: from localhost (ovpn-12-117.pek2.redhat.com [10.72.12.117])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 303B41010427;
- Tue, 28 Jul 2020 14:23:51 +0000 (UTC)
-Date: Tue, 28 Jul 2020 22:23:48 +0800
-From: Baoquan He <bhe@redhat.com>
-To: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH 14/15] x86/numa: remove redundant iteration over
- memblock.reserved
-Message-ID: <20200728142348.GE10792@MiWiFi-R3L-srv>
-References: <20200728051153.1590-1-rppt@kernel.org>
- <20200728051153.1590-15-rppt@kernel.org>
- <20200728110254.GA14854@MiWiFi-R3L-srv>
- <20200728141504.GC3655207@kernel.org>
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5D22385209
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:32 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id 6668AABF4;
+ Tue, 28 Jul 2020 14:56:41 +0000 (UTC)
+Message-ID: <0c602a1d887d0fe38857e21aa963d51f5c772661.camel@suse.de>
+Subject: Re: [PATCH 1/2] dma-pool: fix coherent pool allocations for IOMMU
+ mappings
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Christoph Hellwig <hch@lst.de>, Amit Pundir <amit.pundir@linaro.org>
+Date: Tue, 28 Jul 2020 16:56:29 +0200
+In-Reply-To: <20200728104742.422960-2-hch@lst.de>
+References: <20200728104742.422960-1-hch@lst.de>
+ <20200728104742.422960-2-hch@lst.de>
+User-Agent: Evolution 3.36.4 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200728141504.GC3655207@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
- Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
- sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
- Will Deacon <will@kernel.org>, Stafford Horne <shorne@gmail.com>,
- linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org,
- Yoshinori Sato <ysato@users.sourceforge.jp>,
- Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
- Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>,
- clang-built-linux@googlegroups.com, Ingo Molnar <mingo@redhat.com>,
- Catalin Marinas <catalin.marinas@arm.com>,
- uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
- openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Michal Simek <monstr@monstr.eu>, linux-mm@kvack.org,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Palmer Dabbelt <palmer@dabbelt.com>,
- Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-rpi-kernel@lists.infradead.org, jeremy.linton@arm.com,
+ David Rientjes <rientjes@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,71 +74,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8096881029972438877=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 07/28/20 at 05:15pm, Mike Rapoport wrote:
-> On Tue, Jul 28, 2020 at 07:02:54PM +0800, Baoquan He wrote:
-> > On 07/28/20 at 08:11am, Mike Rapoport wrote:
-> > > From: Mike Rapoport <rppt@linux.ibm.com>
-> > > 
-> > > numa_clear_kernel_node_hotplug() function first traverses numa_meminfo
-> > > regions to set node ID in memblock.reserved and than traverses
-> > > memblock.reserved to update reserved_nodemask to include node IDs that were
-> > > set in the first loop.
-> > > 
-> > > Remove redundant traversal over memblock.reserved and update
-> > > reserved_nodemask while iterating over numa_meminfo.
-> > > 
-> > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> > > ---
-> > >  arch/x86/mm/numa.c | 26 ++++++++++----------------
-> > >  1 file changed, 10 insertions(+), 16 deletions(-)
-> > > 
-> > > diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-> > > index 8ee952038c80..4078abd33938 100644
-> > > --- a/arch/x86/mm/numa.c
-> > > +++ b/arch/x86/mm/numa.c
-> > > @@ -498,31 +498,25 @@ static void __init numa_clear_kernel_node_hotplug(void)
-> > >  	 * and use those ranges to set the nid in memblock.reserved.
-> > >  	 * This will split up the memblock regions along node
-> > >  	 * boundaries and will set the node IDs as well.
-> > > +	 *
-> > > +	 * The nid will also be set in reserved_nodemask which is later
-> > > +	 * used to clear MEMBLOCK_HOTPLUG flag.
-> > > +	 *
-> > > +	 * [ Note, when booting with mem=nn[kMG] or in a kdump kernel,
-> > > +	 *   numa_meminfo might not include all memblock.reserved
-> > > +	 *   memory ranges, because quirks such as trim_snb_memory()
-> > > +	 *   reserve specific pages for Sandy Bridge graphics.
-> > > +	 *   These ranges will remain with nid == MAX_NUMNODES. ]
-> > >  	 */
-> > >  	for (i = 0; i < numa_meminfo.nr_blks; i++) {
-> > >  		struct numa_memblk *mb = numa_meminfo.blk + i;
-> > >  		int ret;
-> > >  
-> > >  		ret = memblock_set_node(mb->start, mb->end - mb->start, &memblock.reserved, mb->nid);
-> > > +		node_set(mb->nid, reserved_nodemask);
-> > 
-> > Really? This will set all node id into reserved_nodemask. But in the
-> > current code, it's setting nid into memblock reserved region which
-> > interleaves with numa_memoinfo, then get those nid and set it in
-> > reserved_nodemask. This is so different, with my understanding. Please
-> > correct me if I am wrong.
-> 
-> You are right, I've missed the intersections of numa_meminfo with
-> memblock.reserved.
-> 
-> x86 interaction with membock is so, hmm, interesting...
 
-Yeah, numa_clear_kernel_node_hotplug() intends to find out any memory node
-which has reserved memory, then make it as unmovable. Setting all node
-id into reserved_nodemask will break the use case of hot removing hotpluggable
-boot memory after system bootup.
+--===============8096881029972438877==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-XZEyFAsWzCPSX92xaAsK"
+
+
+--=-XZEyFAsWzCPSX92xaAsK
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, 2020-07-28 at 12:47 +0200, Christoph Hellwig wrote:
+> When allocating coherent pool memory for an IOMMU mapping we don't care
+> about the DMA mask.  Move the guess for the initial GFP mask into the
+> dma_direct_alloc_pages and pass dma_coherent_ok as a function pointer
+> argument so that it doesn't get applied to the IOMMU case.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/iommu/dma-iommu.c   |   4 +-
+>  include/linux/dma-direct.h  |   3 -
+>  include/linux/dma-mapping.h |   5 +-
+>  kernel/dma/direct.c         |  13 ++--
+>  kernel/dma/pool.c           | 114 +++++++++++++++---------------------
+>  5 files changed, 62 insertions(+), 77 deletions(-)
+>=20
+
+[...]
+
+> -static inline struct gen_pool *dma_get_safer_pool(struct gen_pool *bad_p=
+ool)
+> +static struct page *__dma_alloc_from_pool(struct device *dev, size_t siz=
+e,
+> +		struct gen_pool *pool, void **cpu_addr,
+> +		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
+>  {
+> -	if (bad_pool =3D=3D atomic_pool_kernel)
+> -		return atomic_pool_dma32 ? : atomic_pool_dma;
+> +	unsigned long addr;
+> +	phys_addr_t phys;
+> =20
+> -	if (bad_pool =3D=3D atomic_pool_dma32)
+> -		return atomic_pool_dma;
+> +	addr =3D gen_pool_alloc(pool, size);
+> +	if (!addr)
+> +		return NULL;
+> =20
+> -	return NULL;
+> -}
+> +	phys =3D gen_pool_virt_to_phys(pool, addr);
+> +	if (!phys_addr_ok(dev, phys, size)) {
+
+Shoudn't we check if phys_addr_ok() !=3D NULL?
+
+Regards,
+Nicolas
+
+
+
+--=-XZEyFAsWzCPSX92xaAsK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl8gPJ0ACgkQlfZmHno8
+x/7Q9ggApvwRAjjmRTZkltf/ifdl4pTyUps9aTqvCM+p6jnePFCR71d3He8aWyJG
+86epRQTgzJ3tGCwgv+mmu2g99JBGlZdgTs0TZxAk8cWyGDEiEscpr4kze/AMdSRz
+5/ss1UdfDT8vyhCsSyPZebIiSHHe9LUsCSwY2l3htdsxHHzQEOXCt1MzGMji+KfA
+aRUFqcZLx1vaFLagYmN9RD4k6kDA1WkycQPE/QBhhLmz6PDCyJZYVg7yGOKJ81gj
+RCSNWl8b9SVS8HVKRSy/OWVEHu4PmQc0PeaVPD6PR6g9J1qw5fCPsSPlhFdPPx2t
+VTB06sog64vJruFbXR79AysvOP3MCg==
+=O26p
+-----END PGP SIGNATURE-----
+
+--=-XZEyFAsWzCPSX92xaAsK--
+
+
+--===============8096881029972438877==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============8096881029972438877==--
+
