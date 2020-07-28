@@ -7,64 +7,63 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5F6C433EC
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 05:13:35 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4401C433E1
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2F9F22BEA
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 05:13:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B4E6422B49
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BIqPSBvj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2F9F22BEA
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="pe560+Wm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4E6422B49
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D242E20796;
-	Tue, 28 Jul 2020 05:13:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A63D3882C4;
+	Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ztq+oz-Iza5u; Tue, 28 Jul 2020 05:13:34 +0000 (UTC)
+	with ESMTP id tY-MOHwK+-wJ; Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1FAA1226CA;
-	Tue, 28 Jul 2020 05:13:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3AC63882A0;
+	Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4863C0050;
-	Tue, 28 Jul 2020 05:13:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53E1AC004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 27639C0050;
+	Tue, 28 Jul 2020 05:13:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31052C004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 4F8DA20796
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1D1D6882C4
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MTNtIGVgf9gx for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 05:13:32 +0000 (UTC)
+ with ESMTP id 6cLymDn1CbkC for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 05:13:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id D406C2039C
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A5418882A0
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:13:42 +0000 (UTC)
 Received: from aquarius.haifa.ibm.com (nesher1.haifa.il.ibm.com [195.110.40.7])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 626FD21D95;
- Tue, 28 Jul 2020 05:13:23 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 3889F21883;
+ Tue, 28 Jul 2020 05:13:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1595913212;
- bh=HXplIo2+gHV+5Rh8qlUVMl6HMHdXi6PCG7vTxqabI+Q=;
+ s=default; t=1595913222;
+ bh=VR/BXCbAGDXiTc2rrw4BtAkWHkepE699HsOgdQ8rv0s=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=BIqPSBvjTdf4uuqv4MKH2hwzpl2XAGh4bPniDdkdx6FTrspJLz2LKCyaDcKO9wB4N
- IIrpPqlGIFPqWgrRE4nVY4ePSA6qQhEOkMtLDDcy7nB1Uj1EGyg1Fn9e6n9om1ZFOc
- Zpsz0c0dsztYiTDKK1XWk2S+W/uNLAwFNqNHrQrw=
+ b=pe560+Wm3RFnEmULaa53wH76qBJxCszvYnNevCYd1rvmCATos0eyeEG3MuKsU+rh7
+ ZASD4r+m+7eL0vyMwJb5sE+ZH1uE1hodcDEHLpAyf64FfWaU40NfwmcAEsw6YVkzSg
+ CxXRY9P9LZrUbR8Rgo3jRZCAkUWh5kJKutjxM4CU=
 From: Mike Rapoport <rppt@kernel.org>
 To: Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 08/15] mircoblaze: drop unneeded NUMA and sparsemem
- initializations
-Date: Tue, 28 Jul 2020 08:11:46 +0300
-Message-Id: <20200728051153.1590-9-rppt@kernel.org>
+Subject: [PATCH 09/15] memblock: make for_each_memblock_type() iterator private
+Date: Tue, 28 Jul 2020 08:11:47 +0300
+Message-Id: <20200728051153.1590-10-rppt@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200728051153.1590-1-rppt@kernel.org>
 References: <20200728051153.1590-1-rppt@kernel.org>
@@ -108,53 +107,47 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mike Rapoport <rppt@linux.ibm.com>
 
-microblaze does not support neither NUMA not SPARSMEM, so there is no point
-to call memblock_set_node() and sparse_memory_present_with_active_regions()
-functions during microblaze memory initialization.
-
-Remove these calls and the surrounding code.
+for_each_memblock_type() is not used outside mm/memblock.c, move it there
+from include/linux/memblock.h
 
 Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- arch/microblaze/mm/init.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ include/linux/memblock.h | 5 -----
+ mm/memblock.c            | 5 +++++
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
-index 521b59ba716c..49e0c241f9b1 100644
---- a/arch/microblaze/mm/init.c
-+++ b/arch/microblaze/mm/init.c
-@@ -105,9 +105,8 @@ static void __init paging_init(void)
+diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+index 017fae833d4a..220b5f0dad42 100644
+--- a/include/linux/memblock.h
++++ b/include/linux/memblock.h
+@@ -532,11 +532,6 @@ static inline unsigned long memblock_region_reserved_end_pfn(const struct memblo
+ 	     region < (memblock.memblock_type.regions + memblock.memblock_type.cnt);	\
+ 	     region++)
  
- void __init setup_memory(void)
- {
--	struct memblock_region *reg;
+-#define for_each_memblock_type(i, memblock_type, rgn)			\
+-	for (i = 0, rgn = &memblock_type->regions[0];			\
+-	     i < memblock_type->cnt;					\
+-	     i++, rgn = &memblock_type->regions[i])
 -
- #ifndef CONFIG_MMU
-+	struct memblock_region *reg;
- 	u32 kernel_align_start, kernel_align_size;
+ extern void *alloc_large_system_hash(const char *tablename,
+ 				     unsigned long bucketsize,
+ 				     unsigned long numentries,
+diff --git a/mm/memblock.c b/mm/memblock.c
+index 39aceafc57f6..a5b9b3df81fc 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -129,6 +129,11 @@ struct memblock memblock __initdata_memblock = {
+ 	.current_limit		= MEMBLOCK_ALLOC_ANYWHERE,
+ };
  
- 	/* Find main memory where is the kernel */
-@@ -161,20 +160,6 @@ void __init setup_memory(void)
- 	pr_info("%s: max_low_pfn: %#lx\n", __func__, max_low_pfn);
- 	pr_info("%s: max_pfn: %#lx\n", __func__, max_pfn);
- 
--	/* Add active regions with valid PFNs */
--	for_each_memblock(memory, reg) {
--		unsigned long start_pfn, end_pfn;
--
--		start_pfn = memblock_region_memory_base_pfn(reg);
--		end_pfn = memblock_region_memory_end_pfn(reg);
--		memblock_set_node(start_pfn << PAGE_SHIFT,
--				  (end_pfn - start_pfn) << PAGE_SHIFT,
--				  &memblock.memory, 0);
--	}
--
--	/* XXX need to clip this if using highmem? */
--	sparse_memory_present_with_active_regions(0);
--
- 	paging_init();
- }
- 
++#define for_each_memblock_type(i, memblock_type, rgn)			\
++	for (i = 0, rgn = &memblock_type->regions[0];			\
++	     i < memblock_type->cnt;					\
++	     i++, rgn = &memblock_type->regions[i])
++
+ int memblock_debug __initdata_memblock;
+ static bool system_has_some_mirror __initdata_memblock = false;
+ static int memblock_can_resize __initdata_memblock;
 -- 
 2.26.2
 
