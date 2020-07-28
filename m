@@ -2,66 +2,126 @@ Return-Path: <SRS0=UphA=BH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C481AC433DF
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1311AC433EB
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:05:17 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B258206D8
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B258206D8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id D1B93207F5
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:05:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="cZ35l4im"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D1B93207F5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7348F86A61;
-	Tue, 28 Jul 2020 14:56:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B251B86A6C;
+	Tue, 28 Jul 2020 15:05:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id emi5JZwS2juS; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+	with ESMTP id Clif0VBSoWMf; Tue, 28 Jul 2020 15:05:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CD3F486A5C;
-	Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 14C81869E4;
+	Tue, 28 Jul 2020 15:05:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4B55C0050;
-	Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34B43C004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E42E8C0050;
+	Tue, 28 Jul 2020 15:05:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75FCFC004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:05:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3102E85230
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5F7A0885CD
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:05:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cZSKcKx2eJFF for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 14:56:32 +0000 (UTC)
+ with ESMTP id HDkQr69klUWW for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 15:05:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5D22385209
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 14:56:32 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 6668AABF4;
- Tue, 28 Jul 2020 14:56:41 +0000 (UTC)
-Message-ID: <0c602a1d887d0fe38857e21aa963d51f5c772661.camel@suse.de>
-Subject: Re: [PATCH 1/2] dma-pool: fix coherent pool allocations for IOMMU
- mappings
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Christoph Hellwig <hch@lst.de>, Amit Pundir <amit.pundir@linaro.org>
-Date: Tue, 28 Jul 2020 16:56:29 +0200
-In-Reply-To: <20200728104742.422960-2-hch@lst.de>
-References: <20200728104742.422960-1-hch@lst.de>
- <20200728104742.422960-2-hch@lst.de>
-User-Agent: Evolution 3.36.4 
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A851487E5C
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:05:13 +0000 (UTC)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com
+ [209.85.219.177])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 65F1E22CBE
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1595948713;
+ bh=Kd8bN9GSVqE1wEKIElJMHffTgXE/l8rxxPq8mJwpeDc=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=cZ35l4imPETNfoE5SAGb6RI4G+j2qL/PGEF5B3hSK2uhOA9PtCfR+xbsDVzixo1A2
+ U1mWrKtnqnlRfjDgl7t0mtPTxggBuCYWqyzYUs26F3x7aNYdNe8/4jg/uEpfOnQw5/
+ zrPVm7uSz9hQXzOElm8GvRBKIkq0xJ4UsaYV83Oo=
+Received: by mail-yb1-f177.google.com with SMTP id a34so5748523ybj.9
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 08:05:13 -0700 (PDT)
+X-Gm-Message-State: AOAM533c8P6ldZfH5NhJN0RiwT/tlDSPQwVY0HRZXgF9bwntqR0TMZkb
+ kHtKsx4XLPciQ/GEOI4UMe2YGcYeYYLA0vb+XA==
+X-Google-Smtp-Source: ABdhPJzpT0pH6HVQkOv8owk366/uYwD6THy4gI9lAaDuq4nkmUj1h5EG+A9f/h2y+Y7mXLtporGnSUp4PvHzrT0otbo=
+X-Received: by 2002:a9d:4002:: with SMTP id m2mr24910491ote.129.1595948711211; 
+ Tue, 28 Jul 2020 08:05:11 -0700 (PDT)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- linux-rpi-kernel@lists.infradead.org, jeremy.linton@arm.com,
- David Rientjes <rientjes@google.com>
+References: <20200724203407.16972-1-james.quinlan@broadcom.com>
+ <20200724203407.16972-9-james.quinlan@broadcom.com>
+In-Reply-To: <20200724203407.16972-9-james.quinlan@broadcom.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Tue, 28 Jul 2020 09:04:59 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+9QE_uz+81O-Bm3xycSrJptx0xmwpPdP3x65KG00ugDQ@mail.gmail.com>
+Message-ID: <CAL_Jsq+9QE_uz+81O-Bm3xycSrJptx0xmwpPdP3x65KG00ugDQ@mail.gmail.com>
+Subject: Re: [PATCH v9 08/12] device core: Introduce DMA range map,
+ supplanting dma_pfn_offset
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Cc: Rich Felker <dalias@libc.org>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
+ PCI <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Julien Grall <julien.grall@arm.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>,
+ Frank Rowand <frowand.list@gmail.com>,
+ "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Ingo Molnar <mingo@redhat.com>,
+ "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
+ <bcm-kernel-feedback-list@broadcom.com>,
+ Alan Stern <stern@rowland.harvard.edu>, Len Brown <lenb@kernel.org>,
+ Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Arnd Bergmann <arnd@arndb.de>, Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Maxime Ripard <mripard@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>,
+ Borislav Petkov <bp@alien8.de>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ open list <linux-kernel@vger.kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ Stefano Stabellini <sstabellini@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE"
+ <linux-rpi-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,97 +134,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8096881029972438877=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============8096881029972438877==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-XZEyFAsWzCPSX92xaAsK"
-
-
---=-XZEyFAsWzCPSX92xaAsK
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, 2020-07-28 at 12:47 +0200, Christoph Hellwig wrote:
-> When allocating coherent pool memory for an IOMMU mapping we don't care
-> about the DMA mask.  Move the guess for the initial GFP mask into the
-> dma_direct_alloc_pages and pass dma_coherent_ok as a function pointer
-> argument so that it doesn't get applied to the IOMMU case.
->=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On Fri, Jul 24, 2020 at 2:45 PM Jim Quinlan <james.quinlan@broadcom.com> wrote:
+>
+> The new field 'dma_range_map' in struct device is used to facilitate the
+> use of single or multiple offsets between mapping regions of cpu addrs and
+> dma addrs.  It subsumes the role of "dev->dma_pfn_offset" which was only
+> capable of holding a single uniform offset and had no region bounds
+> checking.
+>
+> The function of_dma_get_range() has been modified so that it takes a single
+> argument -- the device node -- and returns a map, NULL, or an error code.
+> The map is an array that holds the information regarding the DMA regions.
+> Each range entry contains the address offset, the cpu_start address, the
+> dma_start address, and the size of the region.
+>
+> of_dma_configure() is the typical manner to set range offsets but there are
+> a number of ad hoc assignments to "dev->dma_pfn_offset" in the kernel
+> driver code.  These cases now invoke the function
+> dma_attach_offset_range(dev, cpu_addr, dma_addr, size).
+>
+> Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
 > ---
->  drivers/iommu/dma-iommu.c   |   4 +-
->  include/linux/dma-direct.h  |   3 -
->  include/linux/dma-mapping.h |   5 +-
->  kernel/dma/direct.c         |  13 ++--
->  kernel/dma/pool.c           | 114 +++++++++++++++---------------------
->  5 files changed, 62 insertions(+), 77 deletions(-)
->=20
 
 [...]
 
-> -static inline struct gen_pool *dma_get_safer_pool(struct gen_pool *bad_p=
-ool)
-> +static struct page *__dma_alloc_from_pool(struct device *dev, size_t siz=
-e,
-> +		struct gen_pool *pool, void **cpu_addr,
-> +		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 8eea3f6e29a4..4b718d199efe 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -918,33 +918,33 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+>  }
+>  EXPORT_SYMBOL(of_io_request_and_map);
+>
+> +#ifdef CONFIG_HAS_DMA
+>  /**
+> - * of_dma_get_range - Get DMA range info
+> + * of_dma_get_range - Get DMA range info and put it into a map array
+>   * @np:                device node to get DMA range info
+> - * @dma_addr:  pointer to store initial DMA address of DMA range
+> - * @paddr:     pointer to store initial CPU address of DMA range
+> - * @size:      pointer to store size of DMA range
+> + * @map:       dma range structure to return
+>   *
+>   * Look in bottom up direction for the first "dma-ranges" property
+> - * and parse it.
+> - *  dma-ranges format:
+> + * and parse it.  Put the information into a DMA offset map array.
+> + *
+> + * dma-ranges format:
+>   *     DMA addr (dma_addr)     : naddr cells
+>   *     CPU addr (phys_addr_t)  : pna cells
+>   *     size                    : nsize cells
+>   *
+> - * It returns -ENODEV if "dma-ranges" property was not found
+> - * for this device in DT.
+> + * It returns -ENODEV if "dma-ranges" property was not found for this
+> + * device in the DT.
+>   */
+> -int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+> +int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
 >  {
-> -	if (bad_pool =3D=3D atomic_pool_kernel)
-> -		return atomic_pool_dma32 ? : atomic_pool_dma;
-> +	unsigned long addr;
-> +	phys_addr_t phys;
-> =20
-> -	if (bad_pool =3D=3D atomic_pool_dma32)
-> -		return atomic_pool_dma;
-> +	addr =3D gen_pool_alloc(pool, size);
-> +	if (!addr)
-> +		return NULL;
-> =20
-> -	return NULL;
-> -}
-> +	phys =3D gen_pool_virt_to_phys(pool, addr);
-> +	if (!phys_addr_ok(dev, phys, size)) {
+>         struct device_node *node = of_node_get(np);
+>         const __be32 *ranges = NULL;
+> -       int len;
+> -       int ret = 0;
+>         bool found_dma_ranges = false;
+>         struct of_range_parser parser;
+>         struct of_range range;
+> -       u64 dma_start = U64_MAX, dma_end = 0, dma_offset = 0;
+> +       struct bus_dma_region *r;
+> +       int len, num_ranges = 0;
+> +       int ret;
+>
+>         while (node) {
+>                 ranges = of_get_property(node, "dma-ranges", &len);
+> @@ -970,44 +970,35 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+>         }
+>
+>         of_dma_range_parser_init(&parser, node);
+> +       for_each_of_range(&parser, &range)
+> +               num_ranges++;
+> +
+> +       of_dma_range_parser_init(&parser, node);
+> +
+> +       ret = -ENOMEM;
+> +       r = kcalloc(num_ranges + 1, sizeof(*r), GFP_KERNEL);
+> +       if (!r)
+> +               goto out;
 
-Shoudn't we check if phys_addr_ok() !=3D NULL?
+AFAICT, you have the error cases covered, but you are leaking memory
+if the device is removed.
 
-Regards,
-Nicolas
+[...]
 
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 9f04c30c4aaf..49242dd6176e 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -519,7 +519,7 @@ static int rproc_handle_vdev(struct rproc *rproc, struct fw_rsc_vdev *rsc,
+>         /* Initialise vdev subdevice */
+>         snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
+>         rvdev->dev.parent = &rproc->dev;
+> -       rvdev->dev.dma_pfn_offset = rproc->dev.parent->dma_pfn_offset;
+> +       rvdev->dev.dma_range_map = rproc->dev.parent->dma_range_map;
 
+But doing this means you can't just free the dma_range_map. You need
+to do a copy here or you'd have to refcount it. Or I suppose you could
+check if it the child has a different dma_range_map ptr than the
+parent.
 
---=-XZEyFAsWzCPSX92xaAsK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl8gPJ0ACgkQlfZmHno8
-x/7Q9ggApvwRAjjmRTZkltf/ifdl4pTyUps9aTqvCM+p6jnePFCR71d3He8aWyJG
-86epRQTgzJ3tGCwgv+mmu2g99JBGlZdgTs0TZxAk8cWyGDEiEscpr4kze/AMdSRz
-5/ss1UdfDT8vyhCsSyPZebIiSHHe9LUsCSwY2l3htdsxHHzQEOXCt1MzGMji+KfA
-aRUFqcZLx1vaFLagYmN9RD4k6kDA1WkycQPE/QBhhLmz6PDCyJZYVg7yGOKJ81gj
-RCSNWl8b9SVS8HVKRSy/OWVEHu4PmQc0PeaVPD6PR6g9J1qw5fCPsSPlhFdPPx2t
-VTB06sog64vJruFbXR79AysvOP3MCg==
-=O26p
------END PGP SIGNATURE-----
-
---=-XZEyFAsWzCPSX92xaAsK--
-
-
---===============8096881029972438877==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8096881029972438877==--
-
