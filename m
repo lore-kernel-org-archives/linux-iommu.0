@@ -2,133 +2,90 @@ Return-Path: <SRS0=UphA=BH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D87BEC433DF
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1933C433F7
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:54:01 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9582920786
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:42:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7A11B2074F
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 15:54:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="dtZtqXKq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9582920786
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QL7hcMHD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A11B2074F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 30DF2878C4;
-	Tue, 28 Jul 2020 15:42:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1AE8588613;
+	Tue, 28 Jul 2020 15:54:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XTw2qSXI452P; Tue, 28 Jul 2020 15:41:59 +0000 (UTC)
+	with ESMTP id oiAlW4kCi3ai; Tue, 28 Jul 2020 15:53:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EF9188789B;
-	Tue, 28 Jul 2020 15:41:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C255C88600;
+	Tue, 28 Jul 2020 15:53:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8200C004F;
-	Tue, 28 Jul 2020 15:41:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7763C004F;
+	Tue, 28 Jul 2020 15:53:59 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DFC91C004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:41:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1568EC004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:53:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CEFBC85AB5
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:41:57 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 04150864EE
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:53:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id n4W85vL73l1h for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 15:41:56 +0000 (UTC)
+ with ESMTP id QonsCtMxPfJ9 for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 15:53:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com
- (mail-am6eur05on2078.outbound.protection.outlook.com [40.107.22.78])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D255E859D1
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:41:55 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=URgk/0jYiV6Lqhcq/IE7jbFSjSTgyGmRU2sDAwAnfH4h+kYOp8zVrQr3wXhZMByMQ6aG/RpQY26Q79ltx/we0APIRmcZDGW1YEVjS35tHhz+1ZhCAwfxBO32A91etlchPGfqQZy1sOg4eAsUCtkBX0Uw+d0K38clB0ytxcnPQXSqabYUYbVmjpUO/qNNbBcOLF6sgVexd1mi7nXbRvDAdqUs7A7OPCxUZE+NfAzyCvH3X/UZxmCUO6K/damcMJ3Zcj9hv6osfSUIZQeZbfq8Chzy4d+zezb52wb2c6+U5nG+aMGeCp+OCjklk0x0S+O6D0fGsvx/xfr7A7p4iBD0wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MyIPmu5IPM8atUTY/NMsL5hIPz0g7RgINbY55yzixV4=;
- b=Swiag+fCN6Uazp1ZSrXI7UdAvX4S0Zh+je4DZaEcgrkOxhOJLbfkwsPdT4J1UBnhFyyfmSGNWFDwxFAUA/uN/E2uqsSjSeDgy+0qS/VonwakuTWLm/DUR4rITeylvXhU6/oP7g3Y5ZBKe/BityFg3sSVp3q8M1laIh56RRkefMZSansO93Kn9MRbNdibLuo3giS1wbMALa+OUJPO4781UgM7gP0tRAPHRKsMk9jXVUqFVZgjF2+310Q/9nPcbk4ZW7wzhtYpuxIPFJqwqNNQ0RfOupN3uV3/ahn7sBEFcxdkTgkIvFT3oCeoeROP1NtZe695xDdpGK3qvjKSwkBMtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MyIPmu5IPM8atUTY/NMsL5hIPz0g7RgINbY55yzixV4=;
- b=dtZtqXKqdFlpJUSDra6A62i+K1fOrrTAQ8iw004lS9PAOMf8RcB2IirA0FbyKoQO4WwTffzIYxjioZR2L0E+nn4QzxjmFnH+H4PSTQQkyJjwN6OStZ3Jl4DcBB3girwnEzJU1JAXkk0eKKTFgVc1l34LzeESzE72qen27NRkApY=
-Authentication-Results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com (2603:10a6:803:3::26)
- by VI1PR04MB3982.eurprd04.prod.outlook.com (2603:10a6:803:49::30)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.26; Tue, 28 Jul
- 2020 15:27:37 +0000
-Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com
- ([fe80::4836:ecb4:a785:320a]) by VI1PR0402MB3405.eurprd04.prod.outlook.com
- ([fe80::4836:ecb4:a785:320a%5]) with mapi id 15.20.3216.033; Tue, 28 Jul 2020
- 15:27:37 +0000
-Subject: Re: [PATCH 5/5] iommu/arm-smmu: Setup identity domain for boot
- mappings
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20200709050145.3520931-1-bjorn.andersson@linaro.org>
- <20200709050145.3520931-6-bjorn.andersson@linaro.org>
- <e68033a8-fc00-e7d9-e95c-1014498ade4f@nxp.com>
- <20200709195727.GY388985@builder.lan>
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Message-ID: <14d085ad-71a3-959c-9eb8-fcaa1aa3ae17@nxp.com>
-Date: Tue, 28 Jul 2020 18:27:34 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20200709195727.GY388985@builder.lan>
-Content-Language: en-US
-X-ClientProxiedBy: AM0PR04CA0124.eurprd04.prod.outlook.com
- (2603:10a6:208:55::29) To VI1PR0402MB3405.eurprd04.prod.outlook.com
- (2603:10a6:803:3::26)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [207.211.31.81])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A60AE864B3
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 15:53:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1595951635;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=8PLx2vFXp+UUlko76Di/cK0g0MOmHuogl8tgCSl6P04=;
+ b=QL7hcMHD8LmDSozZ8HJpPnvof8WS/ZYB+j/KLOkAjvlFtngQKiEE2cpYEUexJ1d+qTtJ6U
+ wti+QgrGYInEOC5aumiSi9KI2yUi+Xb4XL8HkUewBVihdsIv1J0arQyhfVrwxyLX14y4Ue
+ 465qFCxXWtRsMZUjlXxFHKGjI3rSb4A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-93-d6CXecukPoSc_Dl96blFLg-1; Tue, 28 Jul 2020 11:53:51 -0400
+X-MC-Unique: d6CXecukPoSc_Dl96blFLg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1BB0800484;
+ Tue, 28 Jul 2020 15:53:37 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 8D1ED71908;
+ Tue, 28 Jul 2020 15:53:36 +0000 (UTC)
+Date: Tue, 28 Jul 2020 09:53:36 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [PATCH v6 01/15] vfio/type1: Refactor vfio_iommu_type1_ioctl()
+Message-ID: <20200728095336.50cd04af@x1.home>
+In-Reply-To: <1595917664-33276-2-git-send-email-yi.l.liu@intel.com>
+References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
+ <1595917664-33276-2-git-send-email-yi.l.liu@intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.107] (82.78.77.33) by
- AM0PR04CA0124.eurprd04.prod.outlook.com (2603:10a6:208:55::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3216.23 via Frontend Transport; Tue, 28 Jul 2020 15:27:36 +0000
-X-Originating-IP: [82.78.77.33]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0024442f-88c3-4331-f19c-08d8330ac244
-X-MS-TrafficTypeDiagnostic: VI1PR04MB3982:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB3982E72457F05CC7F2038143EC730@VI1PR04MB3982.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:483;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wnijq/zHTtM4dfBkRxkNLRvwr32Kgx9UGu9z/GZZHOtltOpVu1tbbvu/71njWzzv4XUHsu0ngk7EDeAniB/eB2TKJTyIR2538jEkQHvMlTTkY63FeLsOteVkXq5azErW7Oe56L22SWqQfUhAALaFZJ91G+iDNiCg0fKAxkY9ogR2mltwSzljSyaORdDIQ/1ObW4tJ0pgZdR8IliCXT2o1oMGhic/VdVRHHTjBD1jwbigWfxXmE9QVNDA6MPY15SToj+k9ddLwwLJEh+OELGyhdgRVviqPspdvKAyGCesgE66NcyefQEgZMHpRvaHGAx+ariuwbgbiTeVZNUEdcKPX12Eks8fVINbizowvxN6Ssf5Wj+nigfOZQ+ysgl4ay0X
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:VI1PR0402MB3405.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(136003)(39860400002)(366004)(376002)(396003)(346002)(31696002)(16526019)(53546011)(186003)(52116002)(8676002)(8936002)(478600001)(4326008)(31686004)(5660300002)(16576012)(54906003)(86362001)(6916009)(7416002)(83380400001)(316002)(2616005)(66946007)(36756003)(6486002)(66556008)(66476007)(26005)(44832011)(2906002)(956004)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: Dx4+9Nnxnrwm4kTOM+Yl+exsD1asRCRAabRw8eeclVczGwntY8hLJrY8Vu/zHqY3CUJ7tysRu0InpXYC6e+2laxFnnEmSTCavM8Fbh3BJoi8Iim3jNihf/2hZ+7dQdHEQeg4yCY5WYfnWGS6q2t/G/EN3uoMjPVLyCOZyPePvI6h8YsNMSOFvvUgg+1aM6BVzFWMtlWj5LpzrVe5wzLDC31HRs2S6Xhv0rFD9ZR+YjTnwc6z7vT09LSvjW2zBFs5MW3ZiRVsraJIk5qGAk5jHaaFddDDXjV3S4FEHYF4RKpq0DddsJdE16wdEQmRjqhVT1g5v/CUzDQQmuuuTiGquv6IW/f6ZDH5Rky+x8xBHFjzIqcqBQrsj/srmfVZTDMtfX+byzde6X7aHy96VDPgeA0N+oSgEznJaJQ5fXh8pEEk8Z6IpN9FgGWjkCDRrfNEStGq/8/glHne1KZ/wUfNFSjz56D9PXQilVZA7avyzSE=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0024442f-88c3-4331-f19c-08d8330ac244
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3405.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2020 15:27:37.6661 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bDbuV/Oau7W/g1YlmrwYpKbu9i1r5XOLY+xFN69rji50AioRF8zJ7dbVcEFCvu2otu48MVGmLlAB1FfuUGcROg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3982
-Cc: Jonathan Marek <jonathan@marek.ca>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, Diana Madalina Craciun <diana.craciun@nxp.com>,
- iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
- linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, yi.y.sun@intel.com, hao.wu@intel.com,
+ jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -146,200 +103,502 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Mon, 27 Jul 2020 23:27:30 -0700
+Liu Yi L <yi.l.liu@intel.com> wrote:
 
-
-On 7/9/2020 10:57 PM, Bjorn Andersson wrote:
-> On Thu 09 Jul 08:50 PDT 2020, Laurentiu Tudor wrote:
+> This patch refactors the vfio_iommu_type1_ioctl() to use switch instead of
+> if-else, and each command got a helper function.
 > 
->>
->>
->> On 7/9/2020 8:01 AM, Bjorn Andersson wrote:
->>> With many Qualcomm platforms not having functional S2CR BYPASS a
->>> temporary IOMMU domain, without translation, needs to be allocated in
->>> order to allow these memory transactions.
->>>
->>> Unfortunately the boot loader uses the first few context banks, so
->>> rather than overwriting a active bank the last context bank is used and
->>> streams are diverted here during initialization.
->>>
->>> This also performs the readback of SMR registers for the Qualcomm
->>> platform, to trigger the mechanism.
->>>
->>> This is based on prior work by Thierry Reding and Laurentiu Tudor.
->>>
->>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
->>> ---
->>>  drivers/iommu/arm-smmu-qcom.c | 11 +++++
->>>  drivers/iommu/arm-smmu.c      | 80 +++++++++++++++++++++++++++++++++--
->>>  drivers/iommu/arm-smmu.h      |  3 ++
->>>  3 files changed, 90 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
->>> index 86b1917459a4..397df27c1d69 100644
->>> --- a/drivers/iommu/arm-smmu-qcom.c
->>> +++ b/drivers/iommu/arm-smmu-qcom.c
->>> @@ -26,6 +26,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] = {
->>>  static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->>>  {
->>>  	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
->>> +	u32 smr;
->>>  	u32 reg;
->>>  	int i;
->>>  
->>> @@ -56,6 +57,16 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->>>  		}
->>>  	}
->>>  
->>> +	for (i = 0; i < smmu->num_mapping_groups; i++) {
->>> +		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
->>> +
->>> +		if (FIELD_GET(ARM_SMMU_SMR_VALID, smr)) {
->>> +			smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
->>> +			smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
->>> +			smmu->smrs[i].valid = true;
->>> +		}
->>> +	}
->>> +
->>>  	return 0;
->>>  }
->>>  
->>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>> index e2d6c0aaf1ea..a7cb27c1a49e 100644
->>> --- a/drivers/iommu/arm-smmu.c
->>> +++ b/drivers/iommu/arm-smmu.c
->>> @@ -652,7 +652,8 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->>>  }
->>>  
->>>  static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->>> -					struct arm_smmu_device *smmu)
->>> +					struct arm_smmu_device *smmu,
->>> +					bool boot_domain)
->>>  {
->>>  	int irq, start, ret = 0;
->>>  	unsigned long ias, oas;
->>> @@ -770,6 +771,15 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->>>  		ret = -EINVAL;
->>>  		goto out_unlock;
->>>  	}
->>> +
->>> +	/*
->>> +	 * Use the last context bank for identity mappings during boot, to
->>> +	 * avoid overwriting in-use bank configuration while we're setting up
->>> +	 * the new mappings.
->>> +	 */
->>> +	if (boot_domain)
->>> +		start = smmu->num_context_banks - 1;
->>> +
->>>  	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
->>>  				      smmu->num_context_banks);
->>>  	if (ret < 0)
->>> @@ -1149,7 +1159,10 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>>  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->>>  	struct arm_smmu_master_cfg *cfg;
->>>  	struct arm_smmu_device *smmu;
->>> +	bool free_identity_domain = false;
->>> +	int idx;
->>>  	int ret;
->>> +	int i;
->>>  
->>>  	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
->>>  		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
->>> @@ -1174,7 +1187,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>>  		return ret;
->>>  
->>>  	/* Ensure that the domain is finalised */
->>> -	ret = arm_smmu_init_domain_context(domain, smmu);
->>> +	ret = arm_smmu_init_domain_context(domain, smmu, false);
->>>  	if (ret < 0)
->>>  		goto rpm_put;
->>>  
->>> @@ -1190,9 +1203,34 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>>  		goto rpm_put;
->>>  	}
->>>  
->>> +	/* Decrement use counter for any references to the identity domain */
->>> +	mutex_lock(&smmu->stream_map_mutex);
->>> +	if (smmu->identity) {
->>> +		struct arm_smmu_domain *identity = to_smmu_domain(smmu->identity);
->>> +
->>> +		for_each_cfg_sme(cfg, fwspec, i, idx) {
->>> +			dev_err(smmu->dev, "%s() %#x\n", __func__, smmu->smrs[idx].id);
->>
->> Debug leftovers?
->>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Suggested-by: Christoph Hellwig <hch@infradead.org>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> ---
+
+FYI, this commit is already in my next branch and linux-next as of
+today, you can drop it from future series.  Thanks,
+
+Alex
+
+> v4 -> v5:
+> *) address comments from Eric Auger, add r-b from Eric.
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 394 ++++++++++++++++++++++------------------
+>  1 file changed, 213 insertions(+), 181 deletions(-)
 > 
-> Indeed.
-> 
->> Apart from that I plan to give this a go on some NXP chips. Will keep
->> you updated.
->>
-> 
-> Thanks, I'm expecting that all you need is the first patch in the series
-> and some impl specific cfg_probe that sets up (or read back) the
-> relevant SMRs and mark them valid.
-> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 5e556ac..3bd70ff 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -2453,6 +2453,23 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+>  	return ret;
+>  }
+>  
+> +static int vfio_iommu_type1_check_extension(struct vfio_iommu *iommu,
+> +					    unsigned long arg)
+> +{
+> +	switch (arg) {
+> +	case VFIO_TYPE1_IOMMU:
+> +	case VFIO_TYPE1v2_IOMMU:
+> +	case VFIO_TYPE1_NESTING_IOMMU:
+> +		return 1;
+> +	case VFIO_DMA_CC_IOMMU:
+> +		if (!iommu)
+> +			return 0;
+> +		return vfio_domains_have_iommu_cache(iommu);
+> +	default:
+> +		return 0;
+> +	}
+> +}
+> +
+>  static int vfio_iommu_iova_add_cap(struct vfio_info_cap *caps,
+>  		 struct vfio_iommu_type1_info_cap_iova_range *cap_iovas,
+>  		 size_t size)
+> @@ -2529,241 +2546,256 @@ static int vfio_iommu_migration_build_caps(struct vfio_iommu *iommu,
+>  	return vfio_info_add_capability(caps, &cap_mig.header, sizeof(cap_mig));
+>  }
+>  
+> -static long vfio_iommu_type1_ioctl(void *iommu_data,
+> -				   unsigned int cmd, unsigned long arg)
+> +static int vfio_iommu_type1_get_info(struct vfio_iommu *iommu,
+> +				     unsigned long arg)
+>  {
+> -	struct vfio_iommu *iommu = iommu_data;
+> +	struct vfio_iommu_type1_info info;
+>  	unsigned long minsz;
+> +	struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+> +	unsigned long capsz;
+> +	int ret;
+>  
+> -	if (cmd == VFIO_CHECK_EXTENSION) {
+> -		switch (arg) {
+> -		case VFIO_TYPE1_IOMMU:
+> -		case VFIO_TYPE1v2_IOMMU:
+> -		case VFIO_TYPE1_NESTING_IOMMU:
+> -			return 1;
+> -		case VFIO_DMA_CC_IOMMU:
+> -			if (!iommu)
+> -				return 0;
+> -			return vfio_domains_have_iommu_cache(iommu);
+> -		default:
+> -			return 0;
+> -		}
+> -	} else if (cmd == VFIO_IOMMU_GET_INFO) {
+> -		struct vfio_iommu_type1_info info;
+> -		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+> -		unsigned long capsz;
+> -		int ret;
+> -
+> -		minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
+> +	minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
+>  
+> -		/* For backward compatibility, cannot require this */
+> -		capsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+> +	/* For backward compatibility, cannot require this */
+> +	capsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+>  
+> -		if (copy_from_user(&info, (void __user *)arg, minsz))
+> -			return -EFAULT;
+> +	if (copy_from_user(&info, (void __user *)arg, minsz))
+> +		return -EFAULT;
+>  
+> -		if (info.argsz < minsz)
+> -			return -EINVAL;
+> +	if (info.argsz < minsz)
+> +		return -EINVAL;
+>  
+> -		if (info.argsz >= capsz) {
+> -			minsz = capsz;
+> -			info.cap_offset = 0; /* output, no-recopy necessary */
+> -		}
+> +	if (info.argsz >= capsz) {
+> +		minsz = capsz;
+> +		info.cap_offset = 0; /* output, no-recopy necessary */
+> +	}
+>  
+> -		mutex_lock(&iommu->lock);
+> -		info.flags = VFIO_IOMMU_INFO_PGSIZES;
+> +	mutex_lock(&iommu->lock);
+> +	info.flags = VFIO_IOMMU_INFO_PGSIZES;
+>  
+> -		info.iova_pgsizes = iommu->pgsize_bitmap;
+> +	info.iova_pgsizes = iommu->pgsize_bitmap;
+>  
+> -		ret = vfio_iommu_migration_build_caps(iommu, &caps);
+> +	ret = vfio_iommu_migration_build_caps(iommu, &caps);
+>  
+> -		if (!ret)
+> -			ret = vfio_iommu_iova_build_caps(iommu, &caps);
+> +	if (!ret)
+> +		ret = vfio_iommu_iova_build_caps(iommu, &caps);
+>  
+> -		mutex_unlock(&iommu->lock);
+> +	mutex_unlock(&iommu->lock);
+>  
+> -		if (ret)
+> -			return ret;
+> +	if (ret)
+> +		return ret;
+>  
+> -		if (caps.size) {
+> -			info.flags |= VFIO_IOMMU_INFO_CAPS;
+> +	if (caps.size) {
+> +		info.flags |= VFIO_IOMMU_INFO_CAPS;
+>  
+> -			if (info.argsz < sizeof(info) + caps.size) {
+> -				info.argsz = sizeof(info) + caps.size;
+> -			} else {
+> -				vfio_info_cap_shift(&caps, sizeof(info));
+> -				if (copy_to_user((void __user *)arg +
+> -						sizeof(info), caps.buf,
+> -						caps.size)) {
+> -					kfree(caps.buf);
+> -					return -EFAULT;
+> -				}
+> -				info.cap_offset = sizeof(info);
+> +		if (info.argsz < sizeof(info) + caps.size) {
+> +			info.argsz = sizeof(info) + caps.size;
+> +		} else {
+> +			vfio_info_cap_shift(&caps, sizeof(info));
+> +			if (copy_to_user((void __user *)arg +
+> +					sizeof(info), caps.buf,
+> +					caps.size)) {
+> +				kfree(caps.buf);
+> +				return -EFAULT;
+>  			}
+> -
+> -			kfree(caps.buf);
+> +			info.cap_offset = sizeof(info);
+>  		}
+>  
+> -		return copy_to_user((void __user *)arg, &info, minsz) ?
+> -			-EFAULT : 0;
+> +		kfree(caps.buf);
+> +	}
+>  
+> -	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+> -		struct vfio_iommu_type1_dma_map map;
+> -		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+> -				VFIO_DMA_MAP_FLAG_WRITE;
+> +	return copy_to_user((void __user *)arg, &info, minsz) ?
+> +			-EFAULT : 0;
+> +}
+>  
+> -		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> +static int vfio_iommu_type1_map_dma(struct vfio_iommu *iommu,
+> +				    unsigned long arg)
+> +{
+> +	struct vfio_iommu_type1_dma_map map;
+> +	unsigned long minsz;
+> +	uint32_t mask = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
+>  
+> -		if (copy_from_user(&map, (void __user *)arg, minsz))
+> -			return -EFAULT;
+> +	minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+>  
+> -		if (map.argsz < minsz || map.flags & ~mask)
+> -			return -EINVAL;
+> +	if (copy_from_user(&map, (void __user *)arg, minsz))
+> +		return -EFAULT;
+>  
+> -		return vfio_dma_do_map(iommu, &map);
+> +	if (map.argsz < minsz || map.flags & ~mask)
+> +		return -EINVAL;
+>  
+> -	} else if (cmd == VFIO_IOMMU_UNMAP_DMA) {
+> -		struct vfio_iommu_type1_dma_unmap unmap;
+> -		struct vfio_bitmap bitmap = { 0 };
+> -		int ret;
+> +	return vfio_dma_do_map(iommu, &map);
+> +}
+>  
+> -		minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+> +static int vfio_iommu_type1_unmap_dma(struct vfio_iommu *iommu,
+> +				      unsigned long arg)
+> +{
+> +	struct vfio_iommu_type1_dma_unmap unmap;
+> +	struct vfio_bitmap bitmap = { 0 };
+> +	unsigned long minsz;
+> +	int ret;
+>  
+> -		if (copy_from_user(&unmap, (void __user *)arg, minsz))
+> -			return -EFAULT;
+> +	minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+>  
+> -		if (unmap.argsz < minsz ||
+> -		    unmap.flags & ~VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP)
+> -			return -EINVAL;
+> +	if (copy_from_user(&unmap, (void __user *)arg, minsz))
+> +		return -EFAULT;
+>  
+> -		if (unmap.flags & VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) {
+> -			unsigned long pgshift;
+> +	if (unmap.argsz < minsz ||
+> +	    unmap.flags & ~VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP)
+> +		return -EINVAL;
+>  
+> -			if (unmap.argsz < (minsz + sizeof(bitmap)))
+> -				return -EINVAL;
+> +	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) {
+> +		unsigned long pgshift;
+>  
+> -			if (copy_from_user(&bitmap,
+> -					   (void __user *)(arg + minsz),
+> -					   sizeof(bitmap)))
+> -				return -EFAULT;
+> +		if (unmap.argsz < (minsz + sizeof(bitmap)))
+> +			return -EINVAL;
+>  
+> -			if (!access_ok((void __user *)bitmap.data, bitmap.size))
+> -				return -EINVAL;
+> +		if (copy_from_user(&bitmap,
+> +				   (void __user *)(arg + minsz),
+> +				   sizeof(bitmap)))
+> +			return -EFAULT;
+>  
+> -			pgshift = __ffs(bitmap.pgsize);
+> -			ret = verify_bitmap_size(unmap.size >> pgshift,
+> -						 bitmap.size);
+> -			if (ret)
+> -				return ret;
+> -		}
+> +		if (!access_ok((void __user *)bitmap.data, bitmap.size))
+> +			return -EINVAL;
+>  
+> -		ret = vfio_dma_do_unmap(iommu, &unmap, &bitmap);
+> +		pgshift = __ffs(bitmap.pgsize);
+> +		ret = verify_bitmap_size(unmap.size >> pgshift,
+> +					 bitmap.size);
+>  		if (ret)
+>  			return ret;
+> +	}
+> +
+> +	ret = vfio_dma_do_unmap(iommu, &unmap, &bitmap);
+> +	if (ret)
+> +		return ret;
+>  
+> -		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+> +	return copy_to_user((void __user *)arg, &unmap, minsz) ?
+>  			-EFAULT : 0;
+> -	} else if (cmd == VFIO_IOMMU_DIRTY_PAGES) {
+> -		struct vfio_iommu_type1_dirty_bitmap dirty;
+> -		uint32_t mask = VFIO_IOMMU_DIRTY_PAGES_FLAG_START |
+> -				VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP |
+> -				VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP;
+> -		int ret = 0;
+> +}
+>  
+> -		if (!iommu->v2)
+> -			return -EACCES;
+> +static int vfio_iommu_type1_dirty_pages(struct vfio_iommu *iommu,
+> +					unsigned long arg)
+> +{
+> +	struct vfio_iommu_type1_dirty_bitmap dirty;
+> +	uint32_t mask = VFIO_IOMMU_DIRTY_PAGES_FLAG_START |
+> +			VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP |
+> +			VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP;
+> +	unsigned long minsz;
+> +	int ret = 0;
+>  
+> -		minsz = offsetofend(struct vfio_iommu_type1_dirty_bitmap,
+> -				    flags);
+> +	if (!iommu->v2)
+> +		return -EACCES;
+>  
+> -		if (copy_from_user(&dirty, (void __user *)arg, minsz))
+> -			return -EFAULT;
+> +	minsz = offsetofend(struct vfio_iommu_type1_dirty_bitmap, flags);
+>  
+> -		if (dirty.argsz < minsz || dirty.flags & ~mask)
+> -			return -EINVAL;
+> +	if (copy_from_user(&dirty, (void __user *)arg, minsz))
+> +		return -EFAULT;
+>  
+> -		/* only one flag should be set at a time */
+> -		if (__ffs(dirty.flags) != __fls(dirty.flags))
+> -			return -EINVAL;
+> +	if (dirty.argsz < minsz || dirty.flags & ~mask)
+> +		return -EINVAL;
+>  
+> -		if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
+> -			size_t pgsize;
+> +	/* only one flag should be set at a time */
+> +	if (__ffs(dirty.flags) != __fls(dirty.flags))
+> +		return -EINVAL;
+>  
+> -			mutex_lock(&iommu->lock);
+> -			pgsize = 1 << __ffs(iommu->pgsize_bitmap);
+> -			if (!iommu->dirty_page_tracking) {
+> -				ret = vfio_dma_bitmap_alloc_all(iommu, pgsize);
+> -				if (!ret)
+> -					iommu->dirty_page_tracking = true;
+> -			}
+> -			mutex_unlock(&iommu->lock);
+> -			return ret;
+> -		} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP) {
+> -			mutex_lock(&iommu->lock);
+> -			if (iommu->dirty_page_tracking) {
+> -				iommu->dirty_page_tracking = false;
+> -				vfio_dma_bitmap_free_all(iommu);
+> -			}
+> -			mutex_unlock(&iommu->lock);
+> -			return 0;
+> -		} else if (dirty.flags &
+> -				 VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP) {
+> -			struct vfio_iommu_type1_dirty_bitmap_get range;
+> -			unsigned long pgshift;
+> -			size_t data_size = dirty.argsz - minsz;
+> -			size_t iommu_pgsize;
+> -
+> -			if (!data_size || data_size < sizeof(range))
+> -				return -EINVAL;
+> -
+> -			if (copy_from_user(&range, (void __user *)(arg + minsz),
+> -					   sizeof(range)))
+> -				return -EFAULT;
+> +	if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
+> +		size_t pgsize;
+>  
+> -			if (range.iova + range.size < range.iova)
+> -				return -EINVAL;
+> -			if (!access_ok((void __user *)range.bitmap.data,
+> -				       range.bitmap.size))
+> -				return -EINVAL;
+> +		mutex_lock(&iommu->lock);
+> +		pgsize = 1 << __ffs(iommu->pgsize_bitmap);
+> +		if (!iommu->dirty_page_tracking) {
+> +			ret = vfio_dma_bitmap_alloc_all(iommu, pgsize);
+> +			if (!ret)
+> +				iommu->dirty_page_tracking = true;
+> +		}
+> +		mutex_unlock(&iommu->lock);
+> +		return ret;
+> +	} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP) {
+> +		mutex_lock(&iommu->lock);
+> +		if (iommu->dirty_page_tracking) {
+> +			iommu->dirty_page_tracking = false;
+> +			vfio_dma_bitmap_free_all(iommu);
+> +		}
+> +		mutex_unlock(&iommu->lock);
+> +		return 0;
+> +	} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP) {
+> +		struct vfio_iommu_type1_dirty_bitmap_get range;
+> +		unsigned long pgshift;
+> +		size_t data_size = dirty.argsz - minsz;
+> +		size_t iommu_pgsize;
+>  
+> -			pgshift = __ffs(range.bitmap.pgsize);
+> -			ret = verify_bitmap_size(range.size >> pgshift,
+> -						 range.bitmap.size);
+> -			if (ret)
+> -				return ret;
+> +		if (!data_size || data_size < sizeof(range))
+> +			return -EINVAL;
+>  
+> -			mutex_lock(&iommu->lock);
+> +		if (copy_from_user(&range, (void __user *)(arg + minsz),
+> +				   sizeof(range)))
+> +			return -EFAULT;
+>  
+> -			iommu_pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
+> +		if (range.iova + range.size < range.iova)
+> +			return -EINVAL;
+> +		if (!access_ok((void __user *)range.bitmap.data,
+> +			       range.bitmap.size))
+> +			return -EINVAL;
+>  
+> -			/* allow only smallest supported pgsize */
+> -			if (range.bitmap.pgsize != iommu_pgsize) {
+> -				ret = -EINVAL;
+> -				goto out_unlock;
+> -			}
+> -			if (range.iova & (iommu_pgsize - 1)) {
+> -				ret = -EINVAL;
+> -				goto out_unlock;
+> -			}
+> -			if (!range.size || range.size & (iommu_pgsize - 1)) {
+> -				ret = -EINVAL;
+> -				goto out_unlock;
+> -			}
+> +		pgshift = __ffs(range.bitmap.pgsize);
+> +		ret = verify_bitmap_size(range.size >> pgshift,
+> +					 range.bitmap.size);
+> +		if (ret)
+> +			return ret;
+>  
+> -			if (iommu->dirty_page_tracking)
+> -				ret = vfio_iova_dirty_bitmap(range.bitmap.data,
+> -						iommu, range.iova, range.size,
+> -						range.bitmap.pgsize);
+> -			else
+> -				ret = -EINVAL;
+> -out_unlock:
+> -			mutex_unlock(&iommu->lock);
+> +		mutex_lock(&iommu->lock);
+>  
+> -			return ret;
+> +		iommu_pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
+> +
+> +		/* allow only smallest supported pgsize */
+> +		if (range.bitmap.pgsize != iommu_pgsize) {
+> +			ret = -EINVAL;
+> +			goto out_unlock;
+> +		}
+> +		if (range.iova & (iommu_pgsize - 1)) {
+> +			ret = -EINVAL;
+> +			goto out_unlock;
+> +		}
+> +		if (!range.size || range.size & (iommu_pgsize - 1)) {
+> +			ret = -EINVAL;
+> +			goto out_unlock;
+>  		}
+> +
+> +		if (iommu->dirty_page_tracking)
+> +			ret = vfio_iova_dirty_bitmap(range.bitmap.data,
+> +						     iommu, range.iova,
+> +						     range.size,
+> +						     range.bitmap.pgsize);
+> +		else
+> +			ret = -EINVAL;
+> +out_unlock:
+> +		mutex_unlock(&iommu->lock);
+> +
+> +		return ret;
+>  	}
+>  
+> -	return -ENOTTY;
+> +	return -EINVAL;
+> +}
+> +
+> +static long vfio_iommu_type1_ioctl(void *iommu_data,
+> +				   unsigned int cmd, unsigned long arg)
+> +{
+> +	struct vfio_iommu *iommu = iommu_data;
+> +
+> +	switch (cmd) {
+> +	case VFIO_CHECK_EXTENSION:
+> +		return vfio_iommu_type1_check_extension(iommu, arg);
+> +	case VFIO_IOMMU_GET_INFO:
+> +		return vfio_iommu_type1_get_info(iommu, arg);
+> +	case VFIO_IOMMU_MAP_DMA:
+> +		return vfio_iommu_type1_map_dma(iommu, arg);
+> +	case VFIO_IOMMU_UNMAP_DMA:
+> +		return vfio_iommu_type1_unmap_dma(iommu, arg);
+> +	case VFIO_IOMMU_DIRTY_PAGES:
+> +		return vfio_iommu_type1_dirty_pages(iommu, arg);
+> +	default:
+> +		return -ENOTTY;
+> +	}
+>  }
+>  
+>  static int vfio_iommu_type1_register_notifier(void *iommu_data,
 
-I finally managed to give a go to the v2 of this patchset and tested it
-on a NXP LS2088A chip with the diff [1] below, so please feel free to add:
-
-Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-
-Now a question for the SMMU folks: would the approach in the diff below
-be acceptable?
-
-[1]
-
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -102,6 +102,32 @@ static struct arm_smmu_device
-*cavium_smmu_impl_init(struct arm_smmu_device *smm
-        return &cs->smmu;
- }
-
-+static int nxp_cfg_probe(struct arm_smmu_device *smmu)
-+{
-+       int i, cnt = 0;
-+       u32 smr;
-+
-+       for (i = 0; i < smmu->num_mapping_groups; i++) {
-+               smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
-+
-+               if (FIELD_GET(ARM_SMMU_SMR_VALID, smr)) {
-+                       smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
-+                       smmu->smrs[i].mask =
-FIELD_GET(ARM_SMMU_SMR_MASK, smr);
-+                       smmu->smrs[i].valid = true;
-+
-+                       cnt++;
-+               }
-+       }
-+
-+       dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-+                  cnt == 1 ? "" : "s");
-+
-+       return 0;
-+}
-+
-+static const struct arm_smmu_impl nxp_impl = {
-+       .cfg_probe = nxp_cfg_probe,
-+};
-
- #define ARM_MMU500_ACTLR_CPRE          (1 << 1)
-
-@@ -171,6 +197,9 @@ struct arm_smmu_device *arm_smmu_impl_init(struct
-arm_smmu_device *smmu)
-        if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
-                smmu->impl = &calxeda_impl;
-
-+       if (of_property_read_bool(np, "nxp,keep-bypass-mappings"))
-+               smmu->impl = &nxp_impl;
-+
-        if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
-            of_device_is_compatible(np, "qcom,sc7180-smmu-500"))
-                return qcom_smmu_impl_init(smmu);
-
----
-Thanks & Best Regards, Laurentiu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
