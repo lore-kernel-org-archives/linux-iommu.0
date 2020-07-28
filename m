@@ -6,98 +6,85 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63286C433EB
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1826C433E3
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 12:03:38 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31158206F5
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:59:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 994C2206D8
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 12:03:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="dKxVLScN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31158206F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cqZwFPCN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 994C2206D8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7EC4623B88;
-	Tue, 28 Jul 2020 11:59:30 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 50ED123A18;
+	Tue, 28 Jul 2020 12:03:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dv6ohqRyWsi2; Tue, 28 Jul 2020 11:59:28 +0000 (UTC)
+	with ESMTP id Vxpg6CF7xWwg; Tue, 28 Jul 2020 12:03:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3A46022FC6;
-	Tue, 28 Jul 2020 11:59:28 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DA99422FC6;
+	Tue, 28 Jul 2020 12:03:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B32DC004F;
-	Tue, 28 Jul 2020 11:59:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 675C8C004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:59:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C6A15C004F;
+	Tue, 28 Jul 2020 12:03:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61C43C004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 12:03:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 504D88487B
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:59:27 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 53BDD23799
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 12:03:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DzRUu-MDed5N for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 11:59:26 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
- [209.85.166.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A284B8486F
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:59:26 +0000 (UTC)
-Received: by mail-io1-f67.google.com with SMTP id v6so5178935iow.11
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 04:59:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ with ESMTP id o-5lWnVLafzP for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 12:03:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com
+ [209.85.221.47])
+ by silver.osuosl.org (Postfix) with ESMTPS id B859322FC6
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 12:03:34 +0000 (UTC)
+Received: by mail-wr1-f47.google.com with SMTP id 88so18021155wrh.3
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 05:03:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Tl/xK5nksFGek4I0hJhjtnSKtWmsm7mD8uEP3H8tAJc=;
- b=dKxVLScNmH+IxfLYOJHi2FyLa1HeUI2rsPJTmMupKBaQWimNey/qP3/d62lN/wRW/l
- eQ4lrfidDx/qDiuCsBs8jqw6PRXawqwMoVVC3s9ak2gMfUMN+L9SwWpIE/lgtTa/OWao
- ZE7kRtmQ9VEQjfKvpIUMjvlPOFlq1JqJQiEEc=
+ :cc; bh=LfN0TsB7N7AdarfvjvRIf9YQ5p9m006ZFBNxrgGFhZU=;
+ b=cqZwFPCNbS0yWTs8sJSDh1ugQQEGr6/OXB6iCZ4Vlb8FuHMTBIySewe9fDuS5pCcHY
+ 1HqNlzGuFqmXkl3K0JKUOhr+1JP4HqRgPEOCG6OH/tp/K6DW534zZkT4Vhl2iH0H+niw
+ +0uVbL3aoXeJOErSt/LbZDLbxCzgjyh+s0ziSWyDZQIwTMge2DlJOgemiGtuzcoHyJLE
+ H7M4bhDonetUewooFY+BV2dSDYvdFHN3J8GNP0Mh1jS+fpFV8iMzuiQVHBvLUGXGpcv0
+ eCr3CY/zzQfsiPKE7WnVnnE9bhBkYd7qB6b11h2r9s4JUswgheDxZHQ7q4+YBKC8qUKw
+ 1GHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=Tl/xK5nksFGek4I0hJhjtnSKtWmsm7mD8uEP3H8tAJc=;
- b=W0c+UQ9pu4Gupqn0Mh9NRq1NFch2fInUd7NPq1JuN+wycOoNmDXFlEAO2ejnrHg2Wn
- le4EVsNEpYe82nJd5T4B1KO2GQwQ84TgrBZqwXAj9CxixMkNIJiXNTeP1hCxfBgd6vhk
- 8ggCp3we+HXaFe/GEljoU17T3/869tY/d/mW8e7itiF5/SQLrPAy7LB0j+C1hmsVfx08
- Rn1TTH/WE/9iIJ3e6mCOfVktnhhBfBEjEr/3p3xPURDIlq9CWRxMtx+I0kMsUaBJyR/V
- 0Wnu2OvVT3h6n97R/isX5jZRpOodzeB27nVNpDAyhPvClogfl5bh2JcOhGABCqy8r1JZ
- 17wg==
-X-Gm-Message-State: AOAM533NgoWAyfbF9qff07fmS/0U8saa0j1R66x/7BgHdQp594zhZqFh
- foJnwrI/Nu8bMhfvzGGSdrbECWvmLOk=
-X-Google-Smtp-Source: ABdhPJzvcjf1b+C10lk+1gKpQtVpX0lt0mj8qbI1oEVWIjlOT3YAn9EIaZEd3zCucjtme1IPsZjsHA==
-X-Received: by 2002:a02:7815:: with SMTP id p21mr32755822jac.32.1595937565572; 
- Tue, 28 Jul 2020 04:59:25 -0700 (PDT)
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com.
- [209.85.166.50])
- by smtp.gmail.com with ESMTPSA id s85sm5626492ilk.77.2020.07.28.04.59.23
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 28 Jul 2020 04:59:24 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id k23so20374126iom.10
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 04:59:23 -0700 (PDT)
-X-Received: by 2002:a02:6947:: with SMTP id e68mr17279172jac.3.1595937563294; 
- Tue, 28 Jul 2020 04:59:23 -0700 (PDT)
+ bh=LfN0TsB7N7AdarfvjvRIf9YQ5p9m006ZFBNxrgGFhZU=;
+ b=aAo+8EMIPsN/IxFw2IvjZYKIc7TTleMTS+dUL7OQoXIYpoi7Y/3cls8uMLNwSnkwbR
+ PcNvIhiytIgZLOJoHTHK2b5NPJFRBuhTUAK/oxB7syY/PXWivgt+2NHkDamEQHQRLRxT
+ U1jka50RZMxDLwZNSpZEt90ysnC2wz5GGRtgpPuKwwAMi0AGPAXFL/f3WgVATo9I+gmm
+ 1PhJ6Zlru6wIyohDEXgYxbtp9kECa0o+OcPaUmfah4uCaIonweVgA4R4YMI9CHFomjrO
+ mMrxJspgkj/Z++tP6deXRsMze3mFEbwP9ym6QnKP6KAYFJ4yKbNQ2FU3IzcdAQN9ryXG
+ QDjQ==
+X-Gm-Message-State: AOAM532h+YfQme1qmHI6Oz5xL99APKhaHWvE9VJS1kjoq+kLP1i+PB4b
+ GwPBM2JGx+qcXX6JV+oIlkdvGRjF9rwaW3zCVoorVA==
+X-Google-Smtp-Source: ABdhPJze2QvWtkJ6ij2jnuJ2FKwUBr0YC5w6Qp5XEMXd0UwKYAWDXjcARk82aUPZKk4sHLIjSCcPkt0Lt76m5mj44FA=
+X-Received: by 2002:adf:f44b:: with SMTP id f11mr7274018wrp.114.1595937812831; 
+ Tue, 28 Jul 2020 05:03:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200728050140.996974-1-tientzu@chromium.org>
-In-Reply-To: <20200728050140.996974-1-tientzu@chromium.org>
-From: Claire Chang <tientzu@chromium.org>
-Date: Tue, 28 Jul 2020 19:59:12 +0800
-X-Gmail-Original-Message-ID: <CALiNf28XXGpJ=hV-S3dLyq1U18_trr4e4rr6OPr5W5DxHD9XcA@mail.gmail.com>
-Message-ID: <CALiNf28XXGpJ=hV-S3dLyq1U18_trr4e4rr6OPr5W5DxHD9XcA@mail.gmail.com>
-Subject: Re: [RFC v2 0/5] Restricted DMA
-To: Rob Herring <robh+dt@kernel.org>, frowand.list@gmail.com, 
- Christoph Hellwig <hch@lst.de>, m.szyprowski@samsung.com,
+References: <20200728104742.422960-1-hch@lst.de>
+In-Reply-To: <20200728104742.422960-1-hch@lst.de>
+From: Amit Pundir <amit.pundir@linaro.org>
+Date: Tue, 28 Jul 2020 17:32:56 +0530
+Message-ID: <CAMi1Hd3=6ZZykF1yx_CChqx71k6T-wj12TzJiz_uJZbwrEtTXw@mail.gmail.com>
+Subject: Re: dma-pool fixes
+To: Christoph Hellwig <hch@lst.de>
+Cc: jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
+ linux-rpi-kernel@lists.infradead.org, David Rientjes <rientjes@google.com>,
  Robin Murphy <robin.murphy@arm.com>
-Cc: devicetree@vger.kernel.org, heikki.krogerus@linux.intel.com,
- Saravana Kannan <saravanak@google.com>, suzuki.poulose@arm.com,
- Greg KH <gregkh@linuxfoundation.org>, lkml <linux-kernel@vger.kernel.org>,
- bgolaszewski@baylibre.com, iommu@lists.linux-foundation.org,
- Nicolas Boichat <drinkcat@chromium.org>, dan.j.williams@intel.com,
- treding@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,67 +102,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-It seems that I didn't rebase the patchset properly. There are some
-build test errors.
-Sorry about that. Please kindly ignore those rebase issues. I'll fix
-them in the next version.
+Hi Christoph,
 
+On Tue, 28 Jul 2020 at 16:17, Christoph Hellwig <hch@lst.de> wrote:
+>
+> Hi Amit,
+>
+> can you try these two patches?  The first one makes sure we don't apply
+> physical address based checks for IOMMU allocations, and the second one
+> is a slightly tweaked version of the patch from Nicolas to allow dipping
+> into the CMA areas for allocations to expand the atomic pools.
 
-On Tue, Jul 28, 2020 at 1:01 PM Claire Chang <tientzu@chromium.org> wrote:
->
-> This series implements mitigations for lack of DMA access control on
-> systems without an IOMMU, which could result in the DMA accessing the
-> system memory at unexpected times and/or unexpected addresses, possibly
-> leading to data leakage or corruption.
->
-> For example, we plan to use the PCI-e bus for Wi-Fi on one MTK platform and
-> that PCI-e bus is not behind an IOMMU. As PCI-e, by design, gives the
-> device full access to system memory, a vulnerability in the Wi-Fi firmware
-> could easily escalate to a full system exploit (remote wifi exploits: [1a],
-> [1b] that shows a full chain of exploits; [2], [3]).
->
-> To mitigate the security concerns, we introduce restricted DMA. The
-> restricted DMA is implemented by per-device swiotlb and coherent memory
-> pools. The feature on its own provides a basic level of protection against
-> the DMA overwriting buffer contents at unexpected times. However, to
-> protect against general data leakage and system memory corruption, the
-> system needs to provide a way to restrict the DMA to a predefined memory
-> region (this is usually done at firmware level, e.g. in ATF on some ARM
-> platforms).
->
-> [1a] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_4.html
-> [1b] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_11.html
-> [2] https://blade.tencent.com/en/advisories/qualpwn/
-> [3] https://www.bleepingcomputer.com/news/security/vulnerabilities-found-in-highly-popular-firmware-for-wifi-chips/
->
->
-> Claire Chang (5):
->   swiotlb: Add io_tlb_mem struct
->   swiotlb: Add device swiotlb pool
->   swiotlb: Use device swiotlb pool if available
->   dt-bindings: of: Add plumbing for restricted DMA pool
->   of: Add plumbing for restricted DMA pool
->
->  .../reserved-memory/reserved-memory.txt       |  35 ++
->  drivers/iommu/intel/iommu.c                   |   8 +-
->  drivers/of/address.c                          |  39 ++
->  drivers/of/device.c                           |   3 +
->  drivers/of/of_private.h                       |   6 +
->  drivers/xen/swiotlb-xen.c                     |   4 +-
->  include/linux/device.h                        |   4 +
->  include/linux/dma-direct.h                    |   8 +-
->  include/linux/swiotlb.h                       |  49 +-
->  kernel/dma/direct.c                           |   8 +-
->  kernel/dma/swiotlb.c                          | 418 +++++++++++-------
->  11 files changed, 393 insertions(+), 189 deletions(-)
->
-> --
-> v1: https://lore.kernel.org/patchwork/cover/1271660/
-> Changes in v2:
-> - build on top of swiotlb
->
-> 2.28.0.rc0.142.g3c755180ce-goog
->
+Sorry, verified a couple of times but these two patches are not working
+for me. I'm stuck at the bootloader splash screen on my phone.
+
+Regards,
+Amit Pundir
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
