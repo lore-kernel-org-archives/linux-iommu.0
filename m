@@ -2,87 +2,97 @@ Return-Path: <SRS0=UphA=BH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C30F1C433E5
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:03:16 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A2AC433E3
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:31:35 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8DD0E204EA
-	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:03:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2FFBD2065C
+	for <iommu@archiver.kernel.org>; Tue, 28 Jul 2020 11:31:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FpyBFgEY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8DD0E204EA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P7HSEqdJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FFBD2065C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 62077868BD;
-	Tue, 28 Jul 2020 11:03:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E0D57235A6;
+	Tue, 28 Jul 2020 11:31:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3uAlQaR7Fklb; Tue, 28 Jul 2020 11:03:15 +0000 (UTC)
+	with ESMTP id VbLdpBG8jhSn; Tue, 28 Jul 2020 11:31:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DADFB85BD0;
-	Tue, 28 Jul 2020 11:03:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C73B022FC6;
+	Tue, 28 Jul 2020 11:31:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEC42C0050;
-	Tue, 28 Jul 2020 11:03:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 43540C004D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:03:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B29ACC004F;
+	Tue, 28 Jul 2020 11:31:33 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 988BDC004D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:31:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2FF2185BD0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:03:14 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 83BB387E56
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:31:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r9EEJB0JUakj for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jul 2020 11:03:13 +0000 (UTC)
+ with ESMTP id Vz1lyizqkOrT for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jul 2020 11:31:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [205.139.110.61])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 81B0A85B11
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1595934192;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=KbH/+n2HvZybv5SHoykd6djdgy/t/5KkFVDCxrMDM1E=;
- b=FpyBFgEYAdPH3frIXeqvXGy6kgOJxM/9AHjX72Rb2v9RbeEO8q1MyhszM7mOxtuaK9j/8S
- CaJP9U1fZblnyeXmyod7yzielFYMq5N/PDpHezk1wH3itx2ca7I5CQwc0VlsYMHgLDhVQa
- X7DVmRn5CE98eNOsxgPjGZnZZ4Tiq3Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-230-YtpimbUANf-rLILSqHuJcA-1; Tue, 28 Jul 2020 07:03:08 -0400
-X-MC-Unique: YtpimbUANf-rLILSqHuJcA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DA57C800597;
- Tue, 28 Jul 2020 11:03:00 +0000 (UTC)
-Received: from localhost (ovpn-13-103.pek2.redhat.com [10.72.13.103])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 8BD995DA33;
- Tue, 28 Jul 2020 11:02:56 +0000 (UTC)
-Date: Tue, 28 Jul 2020 19:02:54 +0800
-From: Baoquan He <bhe@redhat.com>
+Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com
+ [209.85.218.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id AA1D387E55
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 11:31:31 +0000 (UTC)
+Received: by mail-ej1-f65.google.com with SMTP id g19so6471728ejc.9
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jul 2020 04:31:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=y5PIG9gv3+Q65q73c5WJL/D8ixTHr55LzcpS0la2b94=;
+ b=P7HSEqdJclVd5Bnzob/XF2RdTn0Nmb3HUJySlROmL68osljlcfCEFlV3HJYGTsfk+b
+ VHrJ1f+xMExFZ+YSvv8Rmeh1N5GaQQ3p6pZuSDQBx0nbSt1s4XPLJfYIDrJpBvMTIQ3T
+ tnPlkWxuMjJu8J60O/OlnbAruEsKB2973ivyYANGexg1cYLi5G1vwz7DY7w0Hk/PvarE
+ qINCzPe5al7+9kODm2QQrbeaDo+Ef9vruELr0bSlzbcnvJrfytMgRRiJ5yKDr3S0B9bh
+ pUq4JqHBAw9f6ZNp7JiPY7EX8klIc+e+asMdZK9Yz7BoN21wjEsZd5KQdrrR+TAABie5
+ JrSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=y5PIG9gv3+Q65q73c5WJL/D8ixTHr55LzcpS0la2b94=;
+ b=iKI+jUWwzZwAGmpNzkpovjfkK3eMUnSSCYbUMG/d3e4vGVxAndFjQ1u/aXNuSZEpmW
+ a2FbspKwXR/UoZMbPJHPUFtWJsA0N0UiuM/s4n+dDyGBLS/V8l3JwFZjexubJJO/PLfo
+ PtwUO/hPSM9juEK07CrTYD06BX9fiReVU8pra7lcozi8F6qC+xhiecBS+TC+vmshuG5h
+ t+yYIyXD6J+enyECx8B0IKemMCnmauKxUzflPbWlCdmY394UuYwqWWa7sIO2gQs0m+Ag
+ AlmnEP7MGls7+nx/3CxxT43+LthApqpQzcfg+8m/8rFN94pcctBGHE8LBeUxeOmgdZps
+ j0OA==
+X-Gm-Message-State: AOAM532v189RHMXzVTYZBWT69u9LxVe9mGZu4CMoww5532m92ePLuFhU
+ 3RTdOl8R2RnqwJhXItlB8GQ=
+X-Google-Smtp-Source: ABdhPJyQbAVtd7rvh28AKuUuAlpNq5u8pcARe+eVx7W3hTuAzpqofzarCSjsJ0a8Qe+YPenFOSGRUQ==
+X-Received: by 2002:a17:906:22c1:: with SMTP id
+ q1mr16036266eja.443.1595935889994; 
+ Tue, 28 Jul 2020 04:31:29 -0700 (PDT)
+Received: from gmail.com (54033286.catv.pool.telekom.hu. [84.3.50.134])
+ by smtp.gmail.com with ESMTPSA id qw19sm7634705ejb.46.2020.07.28.04.31.28
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 28 Jul 2020 04:31:29 -0700 (PDT)
+Date: Tue, 28 Jul 2020 13:31:26 +0200
+From: Ingo Molnar <mingo@kernel.org>
 To: Mike Rapoport <rppt@kernel.org>
 Subject: Re: [PATCH 14/15] x86/numa: remove redundant iteration over
  memblock.reserved
-Message-ID: <20200728110254.GA14854@MiWiFi-R3L-srv>
+Message-ID: <20200728113126.GB233444@gmail.com>
 References: <20200728051153.1590-1-rppt@kernel.org>
  <20200728051153.1590-15-rppt@kernel.org>
+ <20200728104440.GA222284@gmail.com>
+ <20200728105602.GB3655207@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200728051153.1590-15-rppt@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20200728105602.GB3655207@kernel.org>
 Cc: linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
@@ -120,83 +130,41 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 07/28/20 at 08:11am, Mike Rapoport wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
+
+* Mike Rapoport <rppt@kernel.org> wrote:
+
+> On Tue, Jul 28, 2020 at 12:44:40PM +0200, Ingo Molnar wrote:
+> > 
+> > * Mike Rapoport <rppt@kernel.org> wrote:
+> > 
+> > > From: Mike Rapoport <rppt@linux.ibm.com>
+> > > 
+> > > numa_clear_kernel_node_hotplug() function first traverses numa_meminfo
+> > > regions to set node ID in memblock.reserved and than traverses
+> > > memblock.reserved to update reserved_nodemask to include node IDs that were
+> > > set in the first loop.
+> > > 
+> > > Remove redundant traversal over memblock.reserved and update
+> > > reserved_nodemask while iterating over numa_meminfo.
+> > > 
+> > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > > ---
+> > >  arch/x86/mm/numa.c | 26 ++++++++++----------------
+> > >  1 file changed, 10 insertions(+), 16 deletions(-)
+> > 
+> > I suspect you'd like to carry this in the -mm tree?
 > 
-> numa_clear_kernel_node_hotplug() function first traverses numa_meminfo
-> regions to set node ID in memblock.reserved and than traverses
-> memblock.reserved to update reserved_nodemask to include node IDs that were
-> set in the first loop.
-> 
-> Remove redundant traversal over memblock.reserved and update
-> reserved_nodemask while iterating over numa_meminfo.
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
->  arch/x86/mm/numa.c | 26 ++++++++++----------------
->  1 file changed, 10 insertions(+), 16 deletions(-)
-> 
-> diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-> index 8ee952038c80..4078abd33938 100644
-> --- a/arch/x86/mm/numa.c
-> +++ b/arch/x86/mm/numa.c
-> @@ -498,31 +498,25 @@ static void __init numa_clear_kernel_node_hotplug(void)
->  	 * and use those ranges to set the nid in memblock.reserved.
->  	 * This will split up the memblock regions along node
->  	 * boundaries and will set the node IDs as well.
-> +	 *
-> +	 * The nid will also be set in reserved_nodemask which is later
-> +	 * used to clear MEMBLOCK_HOTPLUG flag.
-> +	 *
-> +	 * [ Note, when booting with mem=nn[kMG] or in a kdump kernel,
-> +	 *   numa_meminfo might not include all memblock.reserved
-> +	 *   memory ranges, because quirks such as trim_snb_memory()
-> +	 *   reserve specific pages for Sandy Bridge graphics.
-> +	 *   These ranges will remain with nid == MAX_NUMNODES. ]
->  	 */
->  	for (i = 0; i < numa_meminfo.nr_blks; i++) {
->  		struct numa_memblk *mb = numa_meminfo.blk + i;
->  		int ret;
+> Yes.
 >  
->  		ret = memblock_set_node(mb->start, mb->end - mb->start, &memblock.reserved, mb->nid);
-> +		node_set(mb->nid, reserved_nodemask);
-
-Really? This will set all node id into reserved_nodemask. But in the
-current code, it's setting nid into memblock reserved region which
-interleaves with numa_memoinfo, then get those nid and set it in
-reserved_nodemask. This is so different, with my understanding. Please
-correct me if I am wrong.
-
-Thanks
-Baoquan
-
->  		WARN_ON_ONCE(ret);
->  	}
->  
-> -	/*
-> -	 * Now go over all reserved memblock regions, to construct a
-> -	 * node mask of all kernel reserved memory areas.
-> -	 *
-> -	 * [ Note, when booting with mem=nn[kMG] or in a kdump kernel,
-> -	 *   numa_meminfo might not include all memblock.reserved
-> -	 *   memory ranges, because quirks such as trim_snb_memory()
-> -	 *   reserve specific pages for Sandy Bridge graphics. ]
-> -	 */
-> -	for_each_memblock(reserved, mb_region) {
-> -		int nid = memblock_get_region_node(mb_region);
-> -
-> -		if (nid != MAX_NUMNODES)
-> -			node_set(nid, reserved_nodemask);
-> -	}
-> -
->  	/*
->  	 * Finally, clear the MEMBLOCK_HOTPLUG flag for all memory
->  	 * belonging to the reserved node mask.
-> -- 
-> 2.26.2
+> > Acked-by: Ingo Molnar <mingo@kernel.org>
 > 
-> 
+> Thanks!
 
+Assuming it is correct and works. :-)
+
+Thanks,
+
+	Ingo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
