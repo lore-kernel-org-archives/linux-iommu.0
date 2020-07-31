@@ -1,4 +1,4 @@
-Return-Path: <SRS0=+Z17=BJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=v9UM=BK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,88 +7,152 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80532C433DF
-	for <iommu@archiver.kernel.org>; Thu, 30 Jul 2020 21:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB49BC433E0
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 00:26:15 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4177B207F5
-	for <iommu@archiver.kernel.org>; Thu, 30 Jul 2020 21:17:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8F42820663
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 00:26:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fSD5EdSO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4177B207F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="S1LZpTa7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F42820663
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1E92788515;
-	Thu, 30 Jul 2020 21:17:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 580D98763E;
+	Fri, 31 Jul 2020 00:26:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cALkfFx3vbeY; Thu, 30 Jul 2020 21:17:14 +0000 (UTC)
+	with ESMTP id 5fuo0a0smsPK; Fri, 31 Jul 2020 00:26:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 012768850A;
-	Thu, 30 Jul 2020 21:17:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AAD4387447;
+	Fri, 31 Jul 2020 00:26:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E54BCC004F;
-	Thu, 30 Jul 2020 21:17:13 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0470DC004D
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jul 2020 21:17:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FACFC0050;
+	Fri, 31 Jul 2020 00:26:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 750C1C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 00:26:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id ED71988478
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jul 2020 21:17:12 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5DA5D85868
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 00:26:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xMcckxMIvw3q for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jul 2020 21:17:11 +0000 (UTC)
+ with ESMTP id 23HsHGXZCEQF for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jul 2020 00:26:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [205.139.110.61])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C0DE68846A
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jul 2020 21:17:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1596143830;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=bZGuV4rD0Ceq1ep6s52mf/yK6aOPC8Nt7kiDKbGKZCM=;
- b=fSD5EdSO4Nry2NbMtGCBXHpYrFugAVbC9tkpespU/M+T6/H60af3AvbeEfXb5bwupHm6Wo
- JpDKJEyb5PqHjcrbr89Ft3/exIDM4FvC+IcUKDDNtkC4v5YQ7vNaRAbJP7mVrjDsCEqhY8
- mg87dFG8lwmzXvMNYApNlZMzdPiF818=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-180-x-mLPphPMe-v_LHwNhgtoA-1; Thu, 30 Jul 2020 17:17:06 -0400
-X-MC-Unique: x-mLPphPMe-v_LHwNhgtoA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B53B1100A8F2;
- Thu, 30 Jul 2020 21:17:04 +0000 (UTC)
-Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
- by smtp.corp.redhat.com (Postfix) with ESMTP id C301519D7B;
- Thu, 30 Jul 2020 21:17:03 +0000 (UTC)
-Date: Thu, 30 Jul 2020 15:17:03 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 4/4] vfio/type1: Use iommu_aux_at(de)tach_group() APIs
-Message-ID: <20200730151703.5daf8ad4@x1.home>
-In-Reply-To: <af6c95a7-3238-1cbd-8656-014c12498587@linux.intel.com>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4A43B85065
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 00:26:10 +0000 (UTC)
+IronPort-SDR: Rja01uQr112oNX36ofeIol3gvh5CfvYFNsH8Titzwjp1I2/jgXDq0HOPbXwylLUM7VuCzjzw30
+ LGyDaiuaxoQg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9698"; a="216171339"
+X-IronPort-AV: E=Sophos;i="5.75,416,1589266800"; d="scan'208";a="216171339"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Jul 2020 17:26:09 -0700
+IronPort-SDR: +rrzfOuU21xdQgYoO4zzH87MA5bD/Ub2rRq54X7cINi/lOcGKsk8Xv/Ss07HKhQDQXAMp2zIOp
+ 5nZmNhhXvymg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,416,1589266800"; d="scan'208";a="291061474"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+ by orsmga006.jf.intel.com with ESMTP; 30 Jul 2020 17:26:09 -0700
+Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 30 Jul 2020 17:26:08 -0700
+Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 30 Jul 2020 17:26:08 -0700
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com (104.47.44.59) by
+ edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server
+ (TLS) id 14.3.439.0; Thu, 30 Jul 2020 17:26:08 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TEziJD9Xen+qnZgM2ULewexHMoy9Am1owOGzttZjZtbH2ZJ/9PJ0dy0aMZeKtoy80I/pxZ0r7Ew/McOZ+2dWEt0rFd/YjxMrr/BuWSc7XYl18+K9YL/0iZjctzGGZ3P76wDZbEJkGdj6CtXyUKZ+Hk/tv25QjTiTXZ/RxvNTH0J5n6d9Q5yrNBbNx5r5Pb3Jyy/KaWtJHlysDXRJnxzVpjv6b6yhMQiJ2HlUNG5rk2V3M2eho4y4a3hY1tlwszIyGL/BBCm1kw2mi91SpxRragjWMRvGya5ysiBhlHUDL6ieR706V6t567SRL7gAAkmmecPOwyKGCDyFNIQqd4acLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4VRWk4byTnHwy2eZ1o2Zt8gFM9RgXPcn04hcOlgUcHU=;
+ b=UZ+7KRtYkcY3/FCOxoOw1wN9clMS6UE/sTQUZJEeSH2eUcLEMKZ4MsXpFEHKbqIxcSRgDECwcaWR7LHO0+sZd7T7Hfj5FuOk0/ZngEVfGSaIFJI1aGzpfeVtsgYW0GXv5BN8TcT9YonW/1vHL6qkWnokzCZStyW0fXvCxt9pKQlp9lt9BRc8bd/f5+QQOP1BJb8kiCK82unhZ5QriujNVNPE9q2SgnZWCjcxPl1jrnAub0WNT7rLuZDozy+VqGB8zn2N2cBhMya88p1hzd4Kw2FKjKmZt7H+n+tEwHHQFnkZ4pAu7S7mW/Fnh4OzHIQwcZ/1dJEfvcNoEdylviqFFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4VRWk4byTnHwy2eZ1o2Zt8gFM9RgXPcn04hcOlgUcHU=;
+ b=S1LZpTa7UkiSchVFGckxM4Ui931KNfdXi3xwRXXv/WAp3ZhuskF8tkL+3ZdqVjE6X2R14qjVRZ+QFWfLGmC0eNcTJjeWbgN80dN15Zi08twWTcoP95TTe8WFdMBjHBXaUCQOYpJlw3mHsepwFsHVvuPMf+VgJlIqfEm8FyFqAIs=
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
+ by MWHPR11MB1599.namprd11.prod.outlook.com (2603:10b6:301:e::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3216.21; Fri, 31 Jul
+ 2020 00:26:06 +0000
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::9864:e0cb:af36:6feb]) by MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::9864:e0cb:af36:6feb%5]) with mapi id 15.20.3216.034; Fri, 31 Jul 2020
+ 00:26:06 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v3 3/4] iommu: Add iommu_aux_get_domain_for_dev()
+Thread-Topic: [PATCH v3 3/4] iommu: Add iommu_aux_get_domain_for_dev()
+Thread-Index: AQHWWaRTwLJlmIhIiUK0CZQgQ7WVGKkfGWqAgAA12uCAAVpUgIAAQGTw
+Date: Fri, 31 Jul 2020 00:26:06 +0000
+Message-ID: <MWHPR11MB16452F5E657F26B1137B80C98C4E0@MWHPR11MB1645.namprd11.prod.outlook.com>
 References: <20200714055703.5510-1-baolu.lu@linux.intel.com>
- <20200714055703.5510-5-baolu.lu@linux.intel.com>
- <20200729143258.22533170@x1.home>
- <af6c95a7-3238-1cbd-8656-014c12498587@linux.intel.com>
-Organization: Red Hat
+ <20200714055703.5510-4-baolu.lu@linux.intel.com>
+ <20200729142507.182cd18a@x1.home>
+ <MWHPR11MB1645736D9ED91A95D1D4519A8C700@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <20200730141725.5f63b508@x1.home>
+In-Reply-To: <20200730141725.5f63b508@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.210]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a1250e37-90cb-4004-b3e9-08d834e8509f
+x-ms-traffictypediagnostic: MWHPR11MB1599:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB1599D2F67FCA648CC3138A7F8C4E0@MWHPR11MB1599.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HilnXslHMvTRVwCYj8JsVZ4fvg3hPNLo3x2f2P7JLutDqFa6QRxz9BwC+kPJgr1P2qrP5R69ic03gDsX8NyeM5yunN50QiDTffbD1EA9TIdzQf6kGqG6G23NJn1OAyCFTCwihaNuGtgLYoj159D7RTrccoMlrec0gp69IYCIaO8ZmIx8Z7ih1aTM2q8NTMfleo3H0q6Vh0cekkBUUHfrAWOfLE67AaYDQJx2PZ563kzdTxgbOeTRdwDM21HuDCLZJP+9ckQd5WCw0+6Mp/D88n0s/uHln01fS4efkmFHBI2A3+PbE0bRX8rqDTIDSvafelPecftD5I/ELkJ5SzsB4Q==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(6506007)(6916009)(76116006)(5660300002)(4326008)(54906003)(2906002)(64756008)(55016002)(66946007)(52536014)(66476007)(7696005)(66446008)(66556008)(8676002)(316002)(9686003)(71200400001)(8936002)(26005)(478600001)(186003)(86362001)(33656002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: D9OZTaJkdTN4ge7+ejD4g2R60MZlrW1qd83Cu4wEHTAHIq9Kw7zQ96Bip7IVdhL7Ix8J6M82qitRbmyTDpsQPxML8hYr2I3ll3hi7oBN0eY2r4UyfTRPuNArA1c0LKQP0lPxMbtOkpVIuQjs0WN4MhOv1yo/6175pQ9/0EONqYyn1dD98Yr5zp2Yk8F3B5if598/xTn4etpvUX3vPiHujcOSkcOxVJd7jcyza9LeVW2VnSQJWeNw4u32zGiFU4BHGLTWUvBlr1IP+93TQbtCLF4nv16U16HW0m44i233/wsMSjseOo4jEE0fqkeXMUpYyozL2xZZXHE0Sm+V3zOIS7o3VB3AfWr8V71xBEq3S1xPlHQOkaUQh9XFbXRNuDYpK5NHx4VgSehMmE3Qvyi9qbj17BvrHCYrrr+tmkrhLnDPzxTWglwNgL3P09q9b3/4Zt7+idnhq/fsDU7tLVARjGfLlBy03ou2fShjRrWHqxTTXxH6On0cOgNuF4F9MkmO
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1645.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1250e37-90cb-4004-b3e9-08d834e8509f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2020 00:26:06.1606 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WnP98AdjfvhDfFatzazqCzG6Bu2xZo6e32bduGqkilW+1OEDIwYGQr6uKtOfbsqQR6kOcT2lR9tDBxEnEi2YbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1599
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,141 +170,121 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 30 Jul 2020 10:41:32 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
-
-> Hi Alex,
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Friday, July 31, 2020 4:17 AM
 > 
-> On 7/30/20 4:32 AM, Alex Williamson wrote:
-> > On Tue, 14 Jul 2020 13:57:03 +0800
-> > Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> >   
-> >> Replace iommu_aux_at(de)tach_device() with iommu_aux_at(de)tach_group().
-> >> It also saves the IOMMU_DEV_FEAT_AUX-capable physcail device in the
-> >> vfio_group data structure so that it could be reused in other places.
-> >>
-> >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> >> ---
-> >>   drivers/vfio/vfio_iommu_type1.c | 44 ++++++---------------------------
-> >>   1 file changed, 7 insertions(+), 37 deletions(-)
-> >>
-> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >> index 5e556ac9102a..f8812e68de77 100644
-> >> --- a/drivers/vfio/vfio_iommu_type1.c
-> >> +++ b/drivers/vfio/vfio_iommu_type1.c
-> >> @@ -100,6 +100,7 @@ struct vfio_dma {
-> >>   struct vfio_group {
-> >>   	struct iommu_group	*iommu_group;
-> >>   	struct list_head	next;
-> >> +	struct device		*iommu_device;
-> >>   	bool			mdev_group;	/* An mdev group */
-> >>   	bool			pinned_page_dirty_scope;
-> >>   };
-> >> @@ -1627,45 +1628,13 @@ static struct device *vfio_mdev_get_iommu_device(struct device *dev)
-> >>   	return NULL;
-> >>   }
-> >>   
-> >> -static int vfio_mdev_attach_domain(struct device *dev, void *data)
-> >> -{
-> >> -	struct iommu_domain *domain = data;
-> >> -	struct device *iommu_device;
-> >> -
-> >> -	iommu_device = vfio_mdev_get_iommu_device(dev);
-> >> -	if (iommu_device) {
-> >> -		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
-> >> -			return iommu_aux_attach_device(domain, iommu_device);
-> >> -		else
-> >> -			return iommu_attach_device(domain, iommu_device);
-> >> -	}
-> >> -
-> >> -	return -EINVAL;
-> >> -}
-> >> -
-> >> -static int vfio_mdev_detach_domain(struct device *dev, void *data)
-> >> -{
-> >> -	struct iommu_domain *domain = data;
-> >> -	struct device *iommu_device;
-> >> -
-> >> -	iommu_device = vfio_mdev_get_iommu_device(dev);
-> >> -	if (iommu_device) {
-> >> -		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
-> >> -			iommu_aux_detach_device(domain, iommu_device);
-> >> -		else
-> >> -			iommu_detach_device(domain, iommu_device);
-> >> -	}
-> >> -
-> >> -	return 0;
-> >> -}
-> >> -
-> >>   static int vfio_iommu_attach_group(struct vfio_domain *domain,
-> >>   				   struct vfio_group *group)
-> >>   {
-> >>   	if (group->mdev_group)
-> >> -		return iommu_group_for_each_dev(group->iommu_group,
-> >> -						domain->domain,
-> >> -						vfio_mdev_attach_domain);
-> >> +		return iommu_aux_attach_group(domain->domain,
-> >> +					      group->iommu_group,
-> >> +					      group->iommu_device);  
-> > 
-> > No, we previously iterated all devices in the group and used the aux
-> > interface only when we have an iommu_device supporting aux.  If we
-> > simply assume an mdev group only uses an aux domain we break existing
-> > users, ex. SR-IOV VF backed mdevs.  Thanks,  
+> On Wed, 29 Jul 2020 23:49:20 +0000
+> "Tian, Kevin" <kevin.tian@intel.com> wrote:
 > 
-> Oh, yes. Sorry! I didn't consider the physical device backed mdevs
-> cases.
+> > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > Sent: Thursday, July 30, 2020 4:25 AM
+> > >
+> > > On Tue, 14 Jul 2020 13:57:02 +0800
+> > > Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> > >
+> > > > The device driver needs an API to get its aux-domain. A typical usage
+> > > > scenario is:
+> > > >
+> > > >         unsigned long pasid;
+> > > >         struct iommu_domain *domain;
+> > > >         struct device *dev = mdev_dev(mdev);
+> > > >         struct device *iommu_device = vfio_mdev_get_iommu_device(dev);
+> > > >
+> > > >         domain = iommu_aux_get_domain_for_dev(dev);
+> > > >         if (!domain)
+> > > >                 return -ENODEV;
+> > > >
+> > > >         pasid = iommu_aux_get_pasid(domain, iommu_device);
+> > > >         if (pasid <= 0)
+> > > >                 return -EINVAL;
+> > > >
+> > > >          /* Program the device context */
+> > > >          ....
+> > > >
+> > > > This adds an API for such use case.
+> > > >
+> > > > Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+> > > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > > > ---
+> > > >  drivers/iommu/iommu.c | 18 ++++++++++++++++++
+> > > >  include/linux/iommu.h |  7 +++++++
+> > > >  2 files changed, 25 insertions(+)
+> > > >
+> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > > > index cad5a19ebf22..434bf42b6b9b 100644
+> > > > --- a/drivers/iommu/iommu.c
+> > > > +++ b/drivers/iommu/iommu.c
+> > > > @@ -2817,6 +2817,24 @@ void iommu_aux_detach_group(struct
+> > > iommu_domain *domain,
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(iommu_aux_detach_group);
+> > > >
+> > > > +struct iommu_domain *iommu_aux_get_domain_for_dev(struct
+> device
+> > > *dev)
+> > > > +{
+> > > > +	struct iommu_domain *domain = NULL;
+> > > > +	struct iommu_group *group;
+> > > > +
+> > > > +	group = iommu_group_get(dev);
+> > > > +	if (!group)
+> > > > +		return NULL;
+> > > > +
+> > > > +	if (group->aux_domain_attached)
+> > > > +		domain = group->domain;
+> > >
+> > > Why wouldn't the aux domain flag be on the domain itself rather than
+> > > the group?  Then if we wanted sanity checking in patch 1/ we'd only
+> > > need to test the flag on the object we're provided.
+> > >
+> > > If we had such a flag, we could create an iommu_domain_is_aux()
+> > > function and then simply use iommu_get_domain_for_dev() and test that
+> > > it's an aux domain in the example use case.  It seems like that would
+> >
+> > IOMMU layer manages domains per parent device. Here given a
 > 
-> Looked into this part of code, it seems that there's a lock issue here.
-> The group->mutex is held in iommu_group_for_each_dev() and will be
-> acquired again in iommu_attach_device().
+> Is this the IOMMU layer or the VT-d driver?  I don't see any notion of
+> managing domains relative to a parent in the IOMMU layer.  Please point
+> to something more specific if I'm wrong here.
 
-These are two different groups.  We walk the devices in the mdev's
-group with iommu_group_for_each_dev(), holding the mdev's group lock,
-but we call iommu_attach_device() with iommu_device, which results in
-acquiring the lock for the iommu_device's group.
+it's maintained in VT-d driver (include/linux/intel-iommu.h)
 
-> How about making it like:
+struct device_domain_info {
+        struct list_head link;  /* link to domain siblings */
+        struct list_head global; /* link to global list */
+        struct list_head table; /* link to pasid table */
+        struct list_head auxiliary_domains; /* auxiliary domains
+                                             * attached to this device
+                                             */
+	...
+
 > 
-> static int vfio_iommu_attach_group(struct vfio_domain *domain,
->                                     struct vfio_group *group)
-> {
->          if (group->mdev_group) {
->                  struct device *iommu_device = group->iommu_device;
+> > dev (of mdev), we need a way to find its associated domain under its
+> > parent device. And we cannot simply use iommu_get_domain_for_dev
+> > on the parent device of the mdev, as it will give us the primary domain
+> > of parent device.
 > 
->                  if (WARN_ON(!iommu_device))
->                          return -EINVAL;
+> Not the parent device of the mdev, but the mdev_dev(mdev) device.
+> Isn't that what this series is enabling, being able to return the
+> domain from the group that contains the mdev_dev?  We shouldn't need to
+> leave breadcrumbs on the group to know about the domain, the domain
+> itself should be the source of knowledge, or provide a mechanism/ops to
+> learn that knowledge.  Thanks,
 > 
->                  if (iommu_dev_feature_enabled(iommu_device, 
-> IOMMU_DEV_FEAT_AUX))
->                          return iommu_aux_attach_device(domain->domain, 
-> iommu_device);
->                  else
->                          return iommu_attach_device(domain->domain, 
-> iommu_device);
->          } else {
->                  return iommu_attach_group(domain->domain, 
-> group->iommu_group);
->          }
-> }
-> 
-> The caller (vfio_iommu_type1_attach_group) has guaranteed that all mdevs
-> in an iommu group should be derived from a same physical device.
+> Alex
 
-Have we?  iommu_attach_device() will fail if the group is not
-singleton, but that's just encouraging us to use the _attach_group()
-interface where the _attach_device() interface is relegated to special
-cases.  Ideally we'd get out of those special cases and create an
-_attach_group() for aux that doesn't further promote these notions.
+It's the tradeoff between leaving breadcrumb in domain or in group. 
+Today the domain has no knowledge of mdev. It just includes a list
+of physical devices which are attached to the domain (either due to
+the device is assigned in a whole or as the parent device of an assigned
+mdev). Then we have two choices. One is to save the mdev_dev info
+in device_domain_info and maintain a mapping between mdev_dev
+and related aux domain. The other is to record the domain info directly
+in group. Earlier we choose the latter one as it looks simpler. If you
+prefer to the former one, we can think more and have a try.
 
-> Any thoughts?
-
-See my reply to Kevin, I'm thinking we need to provide a callback that
-can enlighten the IOMMU layer to be able to do _attach_group() with
-aux or separate IOMMU backed devices.  Thanks,
-
-Alex
-
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
