@@ -2,108 +2,89 @@ Return-Path: <SRS0=v9UM=BK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC64C433DF
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 19:04:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE16C433DF
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 20:58:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B97382076B
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 19:04:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="v8Zyqg+d"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B97382076B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id B72B822B42
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 20:58:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B72B822B42
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9DB3486B92;
-	Fri, 31 Jul 2020 19:04:35 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7066C20030;
+	Fri, 31 Jul 2020 20:58:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EKNP0qFu04cs; Fri, 31 Jul 2020 19:04:34 +0000 (UTC)
+	with ESMTP id ZOTUTNf1bv15; Fri, 31 Jul 2020 20:58:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 994C986B7A;
-	Fri, 31 Jul 2020 19:04:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D2AD62152E;
+	Fri, 31 Jul 2020 20:58:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 88CC0C004F;
-	Fri, 31 Jul 2020 19:04:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD8A5C004F;
+	Fri, 31 Jul 2020 20:58:10 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B555AC004D
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 19:04:33 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3282C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 20:58:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9D631887EB
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 19:04:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B9FDA88802
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 20:58:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 16WSE0CH+QI3 for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jul 2020 19:04:31 +0000 (UTC)
+ with ESMTP id c0AK4ci+y-wP for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jul 2020 20:58:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
- [209.85.214.194])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 939D1887E8
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 19:04:31 +0000 (UTC)
-Received: by mail-pl1-f194.google.com with SMTP id t10so12528657plz.10
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 12:04:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=date:from:to:cc:subject:in-reply-to:message-id:references
- :user-agent:mime-version;
- bh=SvrDWItWpMJQD19MWKVbok2godg3LX2t3lLGjIRh6r8=;
- b=v8Zyqg+dIshWaliZGw8W5c4/VGIB/I0itzYWvifBZXNnmIlUPX8J6FswIec37vxz9b
- 3ql1gCzcRi4gkD6wgwO2+XqKpzM5YlFeoW0VWrW9K0kc7e3xB/dLOJ0gREBqagIyu2bf
- b39uJJm4X/b39OiaKPlCDtkRj/ZQec9qRrZSqDa8UWkvRAANFrs6bB8r9UAt5LTyONdg
- Vjoiy3sgaHzJ5CmY1nH+vNVjTyxDEyJ35aDFYQn/37WIaZZyHsqXV+XzrWtAvM7JguQj
- Mj7VM5L3cq5UxX360aYinM2Iu3FEP2v4Ky3RE1deIHMv0fnUJC1tdSKYi4DfZMyE4HPs
- eJsg==
+Received: from mail-il1-f195.google.com (mail-il1-f195.google.com
+ [209.85.166.195])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D30D6887EB
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 20:58:07 +0000 (UTC)
+Received: by mail-il1-f195.google.com with SMTP id z3so16226902ilh.3
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 13:58:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
- :references:user-agent:mime-version;
- bh=SvrDWItWpMJQD19MWKVbok2godg3LX2t3lLGjIRh6r8=;
- b=qZBO1PhXpCso+burYSokmhXbAe4GB/5I9ZA7EoS3zMz0c2L6dVkmkAx0dwEqq8ZbE6
- yxbTscg5LxJMX6JuNhMKaa6D0j7SNJuJ6+Myss6sRkYN/KgQQEA7bQlkRqvwpkKzQCmB
- fsGcm5iXBX37hv9lJK4ItjgBRajOl5gLwBKgiZ3+TFuiVuTNnOkajD5aqnFDuAX1QblF
- m+vopyS+sT8XPtMz57efrlrCGhn63kCPVxeoWc/waFvZIvp45/+Av+9JFsF5N2wYXysy
- EV/wMtT12UvhhpwtFrDoBeEdhlqyE5KXVnRe6ss9Pm8y2PtRZj1NOP7iTQLkBvQWDaug
- 4G1w==
-X-Gm-Message-State: AOAM533EGpZB+YT6oqUAW8jLEp9iMDQen6SnmgdO8duhUijlVNOghQTV
- yzaTZASq/IhtrE6rsd/ClyM0jg==
-X-Google-Smtp-Source: ABdhPJzSQSDIv7xllFLfKrdcg/Us7WO7+qxFz5/RYHYj1zhfUKms2m/VAjZQNSXWLKWs4fOnCIVlmw==
-X-Received: by 2002:a17:902:820f:: with SMTP id
- x15mr4791281pln.105.1596222270900; 
- Fri, 31 Jul 2020 12:04:30 -0700 (PDT)
-Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667]
- ([2620:15c:17:3:4a0f:cfff:fe51:6667])
- by smtp.gmail.com with ESMTPSA id y8sm10022499pjj.17.2020.07.31.12.04.29
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=rcyOW7qIuRoMGsE2+TVNMGv+PyvtkKSZN/cGvDKDZM8=;
+ b=VkTVaAXJUrGRdCgVEhwXHs5lHY14/C/QMMTS6XL59s9nd3IfYAVxtZhFr7vEuxu0yR
+ eUNYqW1pSISmwcBc1Y5kBtI5WvAVdaAwoBj+ar3ffIQbw3t0jY7kDsA7g7as5gFeU3CL
+ OQNq2Du+u/LW4nAE3Yv8QrylIoZYFe4UbV5F9FgkC7qZ/vJnv9d6nOcOSitZjUTNuuz0
+ /SVTFdAerdLfgvfg8B7FUYt5M4JfCoeoKbPRzjpas70q4HHaPhO2QCHUuFZZCUct1LfK
+ AsubdOLMbFlh78QqptlYqCOFGlHUd/9DL/RSr7/nzuDl7NL9A3qqRu9pvQrkWZs7hAz1
+ j10A==
+X-Gm-Message-State: AOAM5323tvUZeKAm7j6r1aUAF5a8fp+kpvgGlPhrowX4KpkCEpeF50KY
+ nViVDiHWfQEEvZfI1mGMlA==
+X-Google-Smtp-Source: ABdhPJxmGDIK2n0F7LcntLADTKoB+yOnyNpREExJ0pYlohQMXlRlUSjxE4KX9ssiGMxjIpXnztV4ag==
+X-Received: by 2002:a92:c5c1:: with SMTP id s1mr5514077ilt.144.1596229087153; 
+ Fri, 31 Jul 2020 13:58:07 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+ by smtp.gmail.com with ESMTPSA id v5sm5213848ilg.88.2020.07.31.13.58.05
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 31 Jul 2020 12:04:29 -0700 (PDT)
-Date: Fri, 31 Jul 2020 12:04:28 -0700 (PDT)
-X-X-Sender: rientjes@chino.kir.corp.google.com
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: dma-pool fixes
-In-Reply-To: <20200731130903.GA31110@lst.de>
-Message-ID: <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
-References: <20200728104742.422960-1-hch@lst.de>
- <CAMi1Hd3=6ZZykF1yx_CChqx71k6T-wj12TzJiz_uJZbwrEtTXw@mail.gmail.com>
- <20200728120716.GA2507@lst.de>
- <CAMi1Hd1c3cNMYg+S5Pwuv30QCdcWJw+QxkWmNP34s3nb+_yUuA@mail.gmail.com>
- <20200728124114.GA4865@lst.de>
- <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
- <20200728153055.GA16701@lst.de>
- <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
- <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
- <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
- <20200731130903.GA31110@lst.de>
-User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
+ Fri, 31 Jul 2020 13:58:05 -0700 (PDT)
+Received: (nullmailer pid 774077 invoked by uid 1000);
+ Fri, 31 Jul 2020 20:58:04 -0000
+Date: Fri, 31 Jul 2020 14:58:04 -0600
+From: Rob Herring <robh@kernel.org>
+To: Claire Chang <tientzu@chromium.org>
+Subject: Re: [RFC v2 4/5] dt-bindings: of: Add plumbing for restricted DMA pool
+Message-ID: <20200731205804.GB756942@bogus>
+References: <20200728050140.996974-1-tientzu@chromium.org>
+ <20200728050140.996974-5-tientzu@chromium.org>
 MIME-Version: 1.0
-Cc: Amit Pundir <amit.pundir@linaro.org>, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20200728050140.996974-5-tientzu@chromium.org>
+Cc: devicetree@vger.kernel.org, heikki.krogerus@linux.intel.com,
+ saravanak@google.com, frowand.list@gmail.com, suzuki.poulose@arm.com,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ bgolaszewski@baylibre.com, iommu@lists.linux-foundation.org,
+ drinkcat@chromium.org, dan.j.williams@intel.com, treding@nvidia.com,
+ robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,33 +97,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
-Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 31 Jul 2020, Christoph Hellwig wrote:
-
-> > Hi Nicolas, Christoph,
-> > 
-> > Just out of curiosity, I'm wondering if we can restore the earlier
-> > behaviour and make DMA atomic allocation configured thru platform
-> > specific device tree instead?
-> > 
-> > Or if you can allow a more hackish approach to restore the earlier
-> > logic, using of_machine_is_compatible() just for my device for the
-> > time being. Meanwhile I'm checking with other developers running the
-> > mainline kernel on sdm845 phones like OnePlus 6/6T, if they see this
-> > issue too.
+On Tue, Jul 28, 2020 at 01:01:39PM +0800, Claire Chang wrote:
+> Introduce the new compatible string, device-swiotlb-pool, for restricted
+> DMA. One can specify the address and length of the device swiotlb memory
+> region by device-swiotlb-pool in the device tree.
 > 
-> If we don't find a fix for your platform I'm going to send Linus a
-> last minute revert this weekend, to stick to the no regressions policy.
-> I still hope we can fix the issue for real.
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> ---
+>  .../reserved-memory/reserved-memory.txt       | 35 +++++++++++++++++++
+>  1 file changed, 35 insertions(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> index 4dd20de6977f..78850896e1d0 100644
+> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> @@ -51,6 +51,24 @@ compatible (optional) - standard definition
+>            used as a shared pool of DMA buffers for a set of devices. It can
+>            be used by an operating system to instantiate the necessary pool
+>            management subsystem if necessary.
+> +        - device-swiotlb-pool: This indicates a region of memory meant to be
 
-What would be the scope of this potential revert?
+swiotlb is a Linux thing. The binding should be independent.
+
+> +          used as a pool of device swiotlb buffers for a given device. When
+> +          using this, the no-map and reusable properties must not be set, so the
+> +          operating system can create a virtual mapping that will be used for
+> +          synchronization. Also, there must be a restricted-dma property in the
+> +          device node to specify the indexes of reserved-memory nodes. One can
+> +          specify two reserved-memory nodes in the device tree. One with
+> +          shared-dma-pool to handle the coherent DMA buffer allocation, and
+> +          another one with device-swiotlb-pool for regular DMA to/from system
+> +          memory, which would be subject to bouncing. The main purpose for
+> +          restricted DMA is to mitigate the lack of DMA access control on
+> +          systems without an IOMMU, which could result in the DMA accessing the
+> +          system memory at unexpected times and/or unexpected addresses,
+> +          possibly leading to data leakage or corruption. The feature on its own
+> +          provides a basic level of protection against the DMA overwriting buffer
+> +          contents at unexpected times. However, to protect against general data
+> +          leakage and system memory corruption, the system needs to provide a
+> +          way to restrict the DMA to a predefined memory region.
+
+I'm pretty sure we already support per device carveouts and I don't 
+understand how this is different.
+
+What is the last sentence supposed to imply? You need an IOMMU?
+
+>          - vendor specific string in the form <vendor>,[<device>-]<usage>
+>  no-map (optional) - empty property
+>      - Indicates the operating system must not create a virtual mapping
+> @@ -117,6 +135,16 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+>  			compatible = "acme,multimedia-memory";
+>  			reg = <0x77000000 0x4000000>;
+>  		};
+> +
+> +		wifi_coherent_mem_region: wifi_coherent_mem_region {
+> +			compatible = "shared-dma-pool";
+> +			reg = <0x50000000 0x400000>;
+> +		};
+> +
+> +		wifi_device_swiotlb_region: wifi_device_swiotlb_region {
+> +			compatible = "device-swiotlb-pool";
+> +			reg = <0x50400000 0x4000000>;
+> +		};
+>  	};
+>  
+>  	/* ... */
+> @@ -135,4 +163,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+>  		memory-region = <&multimedia_reserved>;
+>  		/* ... */
+>  	};
+> +
+> +	pcie_wifi: pcie_wifi@0,0 {
+> +		memory-region = <&wifi_coherent_mem_region>,
+> +			 <&wifi_device_swiotlb_region>;
+> +		restricted-dma = <0>, <1>;
+> +		/* ... */
+> +	};
+>  };
+> -- 
+> 2.28.0.rc0.142.g3c755180ce-goog
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
