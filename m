@@ -6,74 +6,74 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D6BC433E0
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 14:16:39 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA57BC433E0
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 14:21:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E9416206DA
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 14:16:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A137B21744
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 14:21:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ihEA6pi8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9416206DA
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GkbZ8/E2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A137B21744
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BC5E4878ED;
-	Fri, 31 Jul 2020 14:16:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7EF2F86AE6;
+	Fri, 31 Jul 2020 14:21:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e-9BNmH5Tx7l; Fri, 31 Jul 2020 14:16:37 +0000 (UTC)
+	with ESMTP id 7iNItsjylz73; Fri, 31 Jul 2020 14:21:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BC0A687820;
-	Fri, 31 Jul 2020 14:16:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7541885FDE;
+	Fri, 31 Jul 2020 14:21:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A18C3C004F;
-	Fri, 31 Jul 2020 14:16:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7947EC004D
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:16:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D6F4C004F;
+	Fri, 31 Jul 2020 14:21:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2EDBC004D
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:21:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 69DA220385
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:16:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A86AF8608D
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:21:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QP2GhvJTDLwi for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jul 2020 14:16:35 +0000 (UTC)
+ with ESMTP id 6V_NceifyAnB for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jul 2020 14:21:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 1CFD120117
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:16:35 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id l2so17592848wrc.7
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 07:16:35 -0700 (PDT)
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AEB8385FDE
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 14:21:26 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id a14so28189956wra.5
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 07:21:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=yZeSVmUJWO+MWTEK7nSF1EitqMoGe6rodxZ7RJcI+38=;
- b=ihEA6pi8X4qDg2i0LfdHJ4L5m0oSXqGoCFq09xzPya7Oda0WfU1pb/yjt8ddfGov0r
- wtjYUkV6HyQFOMAyeVyHdjnlM2K/MtyWaevXTMKJQ0AjrNvw4ndCi/DqqDgPx9SDDwnl
- ufL0vBwYA4w0+e68ddIhsPviQA3vMqO1uuCzjcfAgXL3PASEV6lsR70nDDZ43s735vcv
- NyDtsZR51OH9xlm12Vmof6ie3K0SbtJsyTOWY5PLXy0OjxcZlysZmnrLEKXDFeZ86YW4
- WIKRdmDQVCwKUAFEzdDLZtNrGd1t4k60jmRROMyF/Zf5W2IDGTUvRUPRz7Wn0h9LSEKs
- TFgA==
+ :cc; bh=NKr7BOXTkAnLT6uiZncw/IsWBEsvXxatEpt2z5EmQp4=;
+ b=GkbZ8/E2DS1Cl/y46LT1JZkOQRxSeLMq0zmOvfBNRCeOj1HFsa7XL7Qp2E2if2/4qA
+ iB/4B2845GZPn0bXrKASPnhiNpJE+4fS4Ohskzp+E3ZZ3s9ncuSaehdTYx4oEtm9qlHI
+ ZRI0KKd8a+zoYHabmGZzUXMp6zOs+V9oJuY0SZGxeCpdd9Xu3zOtya6vFq5i95l/DWp0
+ M/6YmMJqLZC5PLTcfqfX7UXoeQVtTjQShbN800JE62fLBp9nQt1XerzLAOp/2pZYxiNO
+ hq/Vx1pXhN++puiSQMThEtTvnWkIj3lAXHFGaul5heQVVQprVjAtdeH3tPjs63zKjsNG
+ cUmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=yZeSVmUJWO+MWTEK7nSF1EitqMoGe6rodxZ7RJcI+38=;
- b=CQg0KGGIupDmlUyWuI4adQ21oE4r2hQMPoPaE/fASFP98V5XweUV4125UC9uMsuZ62
- 8VjT5k1qbQkY+FiHzTsv20bQFRzo8fPoCR9eZwBXTbHXHY4jIou7sxzv5dnx692lw2j/
- 87/m+jzS2O5rSW1nRjQbpVOTobTRbOPgBpMNo0bhJ7wLOhCa8TgfVEW/3F8oD00KrCay
- 1z0n5Sl3L/xs2pzGtlgxztxaDE89YgCCLew9G/USdbQNL4xnKEMBvR/hzzGFNVqR1sBW
- pQW8S1hfPetAjKP/m4pPJBSe2O3z6epWqbOmrcHQthdfF5XJ1Y/ED5L0ndnwaXkFXvTP
- RD4A==
-X-Gm-Message-State: AOAM531C7wXKZFI/HFdIWfW2K8FLhb8k5H3YeQ64/45mg7ekBzyBrbWV
- bNLYdInh8grEwLOGD46ef6jmexRi7hrA52gfzUQlzA==
-X-Google-Smtp-Source: ABdhPJyYgcL6dJDinKeGlFgXiK7RmPm2lkqId8CK1D4GHt83zqGT9U6W7atc+JZzK/9IcMHoRPGBzXw5MMwX+l/yOqY=
-X-Received: by 2002:adf:f44b:: with SMTP id f11mr3876845wrp.114.1596204993520; 
- Fri, 31 Jul 2020 07:16:33 -0700 (PDT)
+ bh=NKr7BOXTkAnLT6uiZncw/IsWBEsvXxatEpt2z5EmQp4=;
+ b=AIstAstqrKcsKBcsovl8TM/YuYKltNJOlI53vfwbfrh84I/O7uJmk7YqjATzAtkhG4
+ btfRUiPqoySGgaMb+57pwj1hZYJRO2QbZ1u4RPalEc90e1TmVAV432unn/ix/MY1N5I+
+ DBSA6mUPQrzuZurveXrXV60IMceIl0uPn5+P7GFVQK6SU95VEouHu4086FtpJgnlTiF6
+ SfFyX7GpWx+uWcTSYDpyp248RuMXyPQbOJu8FPXIOz/ACDiotT3lnOJns/aAdzWMLPEv
+ 99Zh1A0r+H2WAWEiINbWmNolouwuMx10geRFrh3F08g3ZBGudgXINss73/cC9EU+g4KF
+ DJOA==
+X-Gm-Message-State: AOAM530sMQwrmErSvbnIgT0/92pKNwZHOE4nNKn4MJjhE/aOOPOghFSV
+ /2cemGp1zAYyKB12FvbmIFN5DX//b+CffpEmMc2jNg==
+X-Google-Smtp-Source: ABdhPJxld8VMioHZI6b8wT28Y4q/j2MffjJrZ4PA0RDAqFkHqy7b6MHMCBdDse8F+yglXhib29g5dLAEQbFJecK+Ta0=
+X-Received: by 2002:adf:9ec1:: with SMTP id b1mr3708168wrf.171.1596205285159; 
+ Fri, 31 Jul 2020 07:21:25 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200728104742.422960-1-hch@lst.de>
  <CAMi1Hd3=6ZZykF1yx_CChqx71k6T-wj12TzJiz_uJZbwrEtTXw@mail.gmail.com>
@@ -84,17 +84,18 @@ References: <20200728104742.422960-1-hch@lst.de>
  <20200728153055.GA16701@lst.de>
  <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
  <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
- <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
- <20200731130903.GA31110@lst.de>
-In-Reply-To: <20200731130903.GA31110@lst.de>
+ <a0c8eb70cedb05e310c2957a1c0f7968c1e39d53.camel@suse.de>
+ <CAMi1Hd10=vZez7KhJYR688b9j-Sv6AM8EEDW8b8inYDXQk+6wg@mail.gmail.com>
+ <d57334a4097e4615b01fdbcf7b5de0a0dc580b4e.camel@suse.de>
+In-Reply-To: <d57334a4097e4615b01fdbcf7b5de0a0dc580b4e.camel@suse.de>
 From: Amit Pundir <amit.pundir@linaro.org>
-Date: Fri, 31 Jul 2020 19:45:57 +0530
-Message-ID: <CAMi1Hd3Xx-LhtBNB8A3p-s0OJ6V9mmqfTrHUSp4-x30iE3HsdA@mail.gmail.com>
+Date: Fri, 31 Jul 2020 19:50:49 +0530
+Message-ID: <CAMi1Hd3Wc9tLRxgtX30AmGoSP6Go+p=17ezJhXFMxt+4Xn540A@mail.gmail.com>
 Subject: Re: dma-pool fixes
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, jeremy.linton@arm.com,
- Caleb Connolly <caleb@connolly.tech>, linux-rpi-kernel@lists.infradead.org,
- David Rientjes <rientjes@google.com>, Robin Murphy <robin.murphy@arm.com>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
+ linux-rpi-kernel@lists.infradead.org, David Rientjes <rientjes@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,32 +113,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 31 Jul 2020 at 18:39, Christoph Hellwig <hch@lst.de> wrote:
+On Fri, 31 Jul 2020 at 19:45, Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
 >
-> On Fri, Jul 31, 2020 at 01:16:34PM +0530, Amit Pundir wrote:
-> > Hi Nicolas, Christoph,
-> >
-> > Just out of curiosity, I'm wondering if we can restore the earlier
-> > behaviour and make DMA atomic allocation configured thru platform
-> > specific device tree instead?
-> >
-> > Or if you can allow a more hackish approach to restore the earlier
-> > logic, using of_machine_is_compatible() just for my device for the
-> > time being. Meanwhile I'm checking with other developers running the
-> > mainline kernel on sdm845 phones like OnePlus 6/6T, if they see this
-> > issue too.
+> On Fri, 2020-07-31 at 16:47 +0530, Amit Pundir wrote:
+> > On Fri, 31 Jul 2020 at 16:17, Nicolas Saenz Julienne
 >
-> If we don't find a fix for your platform I'm going to send Linus a
-> last minute revert this weekend, to stick to the no regressions policy.
-> I still hope we can fix the issue for real.
+> [...]
+>
+> > > Ok, so lets see who's doing what and with what constraints:
+> >
+> > Here is the relevant dmesg log: https://pastebin.ubuntu.com/p/dh3pPnxS2v/
+>
+> Sadly nothing out of the ordinary, looks reasonable.
+>
+> I have an idea, I've been going over the downstream device tree and it seems
+> the reserved-memory entries, specially the ones marked with 'no-map' don't
+> fully match what we have upstream. On top of that all these reserved areas seem
+> to fall into ZONE_DMA.
+>
+> So, what could be happening is that, while allocating pages for the ZONE_DMA
+> atomic pool, something in the page allocator is either writing/mapping into a
+> reserved area triggering some kind of fault.
+>
+> Amir, could you go over the no-map reserved-memory entries in the downstream
+> device-tree, both in 'beryllium-*.dtsi' (I think those are the relevant ones)
+> and 'sdm845.dtsi'[1], and make sure they match what you are using. If not just
+> edit them in and see if it helps. If you need any help with that I'll be happy
+> to give you a hand.
 
-Thank you. I really appreciate that.
-
-Fwiw I got a confirmation from Caleb (CCed) that he sees the same
-boot regression on One Plus 6/6T family phones as well.
+Thank you for the pointers. I'll try to match my dts' reserved-memory
+entries with the downstream dts. I'll let you know how it goes.
 
 Regards,
 Amit Pundir
+
+>
+> Regards,
+> Nicolas
+>
+> [1] You could also extract the device tree from a device running with the
+>     downstream kernel, whatever is easier for you.
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
