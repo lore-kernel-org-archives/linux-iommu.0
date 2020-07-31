@@ -2,77 +2,75 @@ Return-Path: <SRS0=v9UM=BK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EA2C433E1
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 10:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5BAC433E0
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 10:23:25 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA8FB2245C
-	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 10:09:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA8FB2245C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id B493B20829
+	for <iommu@archiver.kernel.org>; Fri, 31 Jul 2020 10:23:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B493B20829
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E8FC88874E;
-	Fri, 31 Jul 2020 10:09:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A1E8D88763;
+	Fri, 31 Jul 2020 10:23:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KWbQN2eFwYLl; Fri, 31 Jul 2020 10:09:44 +0000 (UTC)
+	with ESMTP id tjalIzAqy--f; Fri, 31 Jul 2020 10:23:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 18685886D9;
-	Fri, 31 Jul 2020 10:09:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AA49B8873F;
+	Fri, 31 Jul 2020 10:23:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7AA0C004F;
-	Fri, 31 Jul 2020 10:09:43 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 996C6C004D
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:09:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 897E5C004F;
+	Fri, 31 Jul 2020 10:23:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6AD63C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:23:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 82037886D9
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:09:42 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 5F7CE203C2
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:23:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yqvPYlA31eAR for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jul 2020 10:09:41 +0000 (UTC)
+ with ESMTP id dWh0hYaME23I for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jul 2020 10:23:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6575C8874E
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:09:41 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 64C4FB63C;
- Fri, 31 Jul 2020 10:09:52 +0000 (UTC)
-Message-ID: <0f3aa4dfe0741a487c9d3d2f3c948195505ca041.camel@suse.de>
-Subject: Re: [PATCH] dma-pool: Do not allocate pool memory from CMA
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Nathan Chancellor <natechancellor@gmail.com>, Christoph Hellwig
- <hch@lst.de>
-Date: Fri, 31 Jul 2020 12:09:37 +0200
-In-Reply-To: <20200731011004.GA729998@ubuntu-n2-xlarge-x86>
-References: <CAMi1Hd3C6kh5E49EgytBAQ_2AE_jvnp+eSNsxBYaux+exSvdbg@mail.gmail.com>
- <6db722947546221ed99d3f473f78e1a6de65d7d6.camel@suse.de>
- <CAMi1Hd0Xz6kOJFpA5PEpi6RDDGOcz0RmQ7tTOkuXq4QneOO_vQ@mail.gmail.com>
- <0dc1e922bf87fa73790e7471b3974528dd261486.camel@suse.de>
- <CAMi1Hd3O2HHBsnt=sac7FdcW0-3=4S3g_F9f__2h5gTsudfirA@mail.gmail.com>
- <20200724134114.GA3152@lst.de>
- <a9b811a84ac21c13693e6ffefd2914b911542e18.camel@suse.de>
- <20200728091335.GA23744@lst.de>
- <e39e8f87ed5b4e9da2f08a0651801954e61f4b4e.camel@suse.de>
- <20200728100918.GA26364@lst.de>
- <20200731011004.GA729998@ubuntu-n2-xlarge-x86>
-User-Agent: Evolution 3.36.3-0ubuntu1 
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9871020346
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jul 2020 10:23:19 +0000 (UTC)
+Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.107])
+ by Forcepoint Email with ESMTP id 36E71CF44840D6C85F94;
+ Fri, 31 Jul 2020 11:23:16 +0100 (IST)
+Received: from [127.0.0.1] (10.47.2.27) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 31 Jul
+ 2020 11:23:15 +0100
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: disable MSI polling if SEV polling
+ is faster
+To: Barry Song <song.bao.hua@hisilicon.com>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <joro@8bytes.org>, <iommu@lists.linux-foundation.org>
+References: <20200731083343.18152-1-song.bao.hua@hisilicon.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <a425bd85-4872-bf1a-d273-c605c68fa9e1@huawei.com>
+Date: Fri, 31 Jul 2020 11:21:14 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Cc: Amit Pundir <amit.pundir@linaro.org>, lkml <linux-kernel@vger.kernel.org>,
- jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>, linux-rpi-kernel@lists.infradead.org,
- David Rientjes <rientjes@google.com>, Robin Murphy <robin.murphy@arm.com>,
- Sumit Semwal <sumit.semwal@linaro.org>
+In-Reply-To: <20200731083343.18152-1-song.bao.hua@hisilicon.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.2.27]
+X-ClientProxiedBy: lhreml738-chm.china.huawei.com (10.201.108.188) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
+ Prime Zeng <prime.zeng@hisilicon.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,95 +83,124 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Nathan,
+On 31/07/2020 09:33, Barry Song wrote:
+> Different implementations may show different performance by using SEV
+> polling or MSI polling.
+> On the implementation of hi1620, tests show disabling MSI polling can
+> bring performance improvement.
+> Using 16 threads to run netperf on hns3 100G NIC with UDP packet size
+> in 32768bytes and set iommu to strict, TX throughput can improve from
+> 25Gbps to 27Gbps by this patch.
+> This patch adds a generic function to support implementation options
+> based on IIDR and disables MSI polling if IIDR matches the specific
+> implementation tested.
+Not sure if we should do checks like this on an implementation basis. 
+I'm sure maintainers will decide.
 
-On Thu, 2020-07-30 at 18:10 -0700, Nathan Chancellor wrote:
-> On Tue, Jul 28, 2020 at 12:09:18PM +0200, Christoph Hellwig wrote:
-> > Ok, I found a slight bug that wasn't intended.  I wanted to make sure
-> > we can always fall back to a lower pool, but got that wrong.  Should be
-> > fixed in the next version.
 > 
-> Hi Christoph and Nicolas,
+> Cc: Prime Zeng <prime.zeng@hisilicon.com>
+> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
+> ---
+>   -v2: rather than disabling msipolling globally, only disable it for
+>   specific implementation based on IIDR
 > 
-> Did a version of that series ever get send out? I am coming into the
-> conversation late but I am running into an issue with the Raspberry Pi 4
-> not booting on linux-next, which appears to be due to this patch now in
-> mainline as commit d9765e41d8e9 ("dma-pool: do not allocate pool memory
-> from CMA") combined with
-> https://lore.kernel.org/lkml/20200725014529.1143208-2-jiaxun.yang@flygoat.com/
-> in -next:
-> 
-> [    1.423163] raspberrypi-firmware soc:firmware: Request 0x00000001 returned status 0x00000000
-> [    1.431883] raspberrypi-firmware soc:firmware: Request 0x00030046 returned status 0x00000000
-> [    1.443888] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.452527] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 0 config (-22 80)
-> [    1.460836] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.469445] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 1 config (-22 81)
-> [    1.477735] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.486350] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 2 config (-22 82)
-> [    1.494639] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.503246] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 3 config (-22 83)
-> [    1.511529] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.520131] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 4 config (-22 84)
-> [    1.528414] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.537017] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 5 config (-22 85)
-> [    1.545299] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.553903] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 6 config (-22 86)
-> [    1.562184] raspberrypi-firmware soc:firmware: Request 0x00030043
-> [    1.570787] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 7 config (-22 87)
-> [    1.579897] raspberrypi-firmware soc:firmware: Request 0x00030030 returned status 0x00000000
-> [    1.589419] raspberrypi-firmware soc:firmware: Request 0x00028001 returned status 0x00000000
-> [    1.599391] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.608018] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 1 config (-22 81)
-> [    1.616313] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.624932] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 1 config (-22 81)
-> [    1.633195] pwrseq_simple: probe of wifi-pwrseq failed with error -22
-> [    1.643904] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.652544] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 2 config (-22 82)
-> [    1.660839] raspberrypi-firmware soc:firmware: Request 0x00030041 returned status 0x00000000
-> [    1.669446] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 2 state (-22 82)
-> [    1.677727] leds-gpio: probe of leds failed with error -22
-> [    1.683735] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.692346] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 6 config (-22 86)
-> [    1.700636] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.709240] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 6 config (-22 86)
-> [    1.717496] reg-fixed-voltage: probe of sd_vcc_reg failed with error -22
-> [    1.725546] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.734176] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 4 config (-22 84)
-> [    1.742465] raspberrypi-firmware soc:firmware: Request 0x00030043 returned status 0x00000000
-> [    1.751072] raspberrypi-exp-gpio soc:firmware:gpio: Failed to get GPIO 4 config (-22 84)
-> [    1.759332] gpio-regulator: probe of sd_io_1v8_reg failed with error -22
-> [    1.768042] raspberrypi-firmware soc:firmware: Request 0x00028001 returned status 0x00000000
-> [    1.780871] ALSA device list:
-> [    1.783960]   No soundcards found.
-> [    1.787633] Waiting for root device PARTUUID=45a8dd8a-02...
-> 
-> I am unsure if it is related to the issue that Amit is having or
-> if that makes sense at all but I can reliably reproduce it.
-> 
-> v5.8-rc1: OK
-> v5.8-rc1 + d9765e41d8e9e: OK
-> v5.8-rc1 + "of_address: Add bus type match for pci ranges parser": OK
-> v5.8-rc1 + both: BROKEN
-> 
-> I wanted to test the series to see if this fixes anything. If you would
-> prefer a different thread for this or further information, please let
-> me know.
+>   drivers/iommu/arm-smmu-v3.c | 31 +++++++++++++++++++++++++++++--
 
-This is a DT issue, dev->bus_dma_limit is not being properly initialized.
-Without d9765e41d8e9e all atomic dma allocations fall into CMA, which is DMA
-friendly in RPi4, but it isn't the case anymore with the patch. We now rely on
-dev->bus_dma_limit being correct to get memory from the right place.
+this file has moved, check linux-next
 
-I already sent a fix to the DT folks.
+>   1 file changed, 29 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index f578677a5c41..ed5a6774eb45 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -88,6 +88,12 @@
+>   #define IDR5_VAX			GENMASK(11, 10)
+>   #define IDR5_VAX_52_BIT			1
+>   
+> +#define ARM_SMMU_IIDR			0x18
+> +#define IIDR_VARIANT			GENMASK(19, 16)
+> +#define IIDR_REVISION			GENMASK(15, 12)
+> +#define IIDR_IMPLEMENTER		GENMASK(11, 0)
+> +#define IMPLEMENTER_HISILICON		0x736
+> +
+>   #define ARM_SMMU_CR0			0x20
+>   #define CR0_ATSCHK			(1 << 4)
+>   #define CR0_CMDQEN			(1 << 3)
+> @@ -652,6 +658,7 @@ struct arm_smmu_device {
+>   
+>   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+>   #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
+> +#define ARM_SMMU_OPT_DISABLE_MSIPOLL    (1 << 2)
+>   	u32				options;
+>   
+>   	struct arm_smmu_cmdq		cmdq;
+> @@ -992,7 +999,8 @@ static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
+>   	 * Beware that Hi16xx adds an extra 32 bits of goodness to its MSI
+>   	 * payload, so the write will zero the entire command on that platform.
+>   	 */
+> -	if (smmu->features & ARM_SMMU_FEAT_MSI &&
+> +	if (!(smmu->options & ARM_SMMU_OPT_DISABLE_MSIPOLL) &&
+> +	    smmu->features & ARM_SMMU_FEAT_MSI &&
 
-Regards,
-Nicolas
+I don't know why you check MSIPOLL disabled and then MSI poll supported. 
+Surely for native non-MSI poll (like hi1616), the ARM_SMMU_FEAT_MSI 
+check first makes sense. This is fastpath, albeit fast to maybe wait..
+
+>   	    smmu->features & ARM_SMMU_FEAT_COHERENCY) {
+>   		ent.sync.msiaddr = q->base_dma + Q_IDX(&q->llq, prod) *
+>   				   q->ent_dwords * 8;
+> @@ -1332,7 +1340,8 @@ static int __arm_smmu_cmdq_poll_until_consumed(struct arm_smmu_device *smmu,
+>   static int arm_smmu_cmdq_poll_until_sync(struct arm_smmu_device *smmu,
+>   					 struct arm_smmu_ll_queue *llq)
+>   {
+> -	if (smmu->features & ARM_SMMU_FEAT_MSI &&
+> +	if (!(smmu->options & ARM_SMMU_OPT_DISABLE_MSIPOLL) &&
+> +	    smmu->features & ARM_SMMU_FEAT_MSI &&
+>   	    smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>   		return __arm_smmu_cmdq_poll_until_msi(smmu, llq);
+>   
+> @@ -3693,6 +3702,21 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   	return 0;
+>   }
+>   
+> +static void acpi_smmu_get_implementation_options(struct arm_smmu_device *smmu)
+> +{
+> +	/*
+> +	 * IIDR provides information about the implementation and implementer of
+> +	 * the SMMU
+> +	 */
+> +	u32 iidr = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
+> +	u32 implementer = FIELD_GET(IIDR_IMPLEMENTER, iidr);
+> +	u32 variant = FIELD_GET(IIDR_VARIANT, iidr);
+> +	u32 revision = FIELD_GET(IIDR_REVISION, iidr);
+
+why not check the product ID also, i.e. the complete register contents?
+
+> +
+> +	if (implementer == IMPLEMENTER_HISILICON && variant == 3 && revision == 0)
+> +		smmu->options |= ARM_SMMU_OPT_DISABLE_MSIPOLL;
+> +}
+> +
+>   static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>   {
+>   	u32 reg;
+> @@ -3892,6 +3916,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>   
+>   	smmu->ias = max(smmu->ias, smmu->oas);
+>   
+> +	/* set implementation-related options according to IIDR */
+> +	acpi_smmu_get_implementation_options(smmu);
+> +
+>   	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
+>   		 smmu->ias, smmu->oas, smmu->features);
+>   	return 0;
+> 
 
 _______________________________________________
 iommu mailing list
