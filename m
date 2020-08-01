@@ -6,95 +6,85 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A37BC433DF
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 11:57:46 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB693C433E3
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 12:56:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C71412064B
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 11:57:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B7EFF2080C
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 12:56:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Osy2kmUP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C71412064B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="n/7VNWjN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7EFF2080C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 54B6488558;
-	Sat,  1 Aug 2020 11:57:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9730286E2B;
+	Sat,  1 Aug 2020 12:56:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RBjZK4iiXagt; Sat,  1 Aug 2020 11:57:44 +0000 (UTC)
+	with ESMTP id i_-rfQgPUHg5; Sat,  1 Aug 2020 12:56:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8AC54884C3;
-	Sat,  1 Aug 2020 11:57:44 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 072C385E9F;
+	Sat,  1 Aug 2020 12:56:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7456DC004F;
-	Sat,  1 Aug 2020 11:57:44 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4EE2C004D
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 11:57:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E01A5C0050;
+	Sat,  1 Aug 2020 12:56:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 880F6C004D
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 12:56:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8C2CC87ECA
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 11:57:43 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6CF3486E2B
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 12:56:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qgmXi7BCR0VH for <iommu@lists.linux-foundation.org>;
- Sat,  1 Aug 2020 11:57:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A4F9987E75
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 11:57:42 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id f1so29596439wro.2
- for <iommu@lists.linux-foundation.org>; Sat, 01 Aug 2020 04:57:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=9xnxWZrttxQf2cUUXQG3y46AMeLBO1WHvAsLPL1N7e8=;
- b=Osy2kmUPSIFe1gOQdnNgwXtPnlx+z+UIan/VP/RJT78Hs2l2uLnMMDRV1mCT371SQ/
- 9CHJvn8BfAnBCrdl9y8maetCoWJjk9ZapQXlj1KIX5MVh6PvhgVXoaB3hcZxe5JbivxG
- ZQoaVTQHby266rPzNZhKcHCq58jAP+PYkruGQbvaIBGzNWB0sulTYB5TTUs4j05Z/jVn
- M2XphPkN6kqDwld5NwVwq5ARoYDIlRraXmzenZhmdcj8bGamZ595SPfUAs1rsJUR74Fh
- 9gn9Azs9cRyzbpRETpKaMUuf3nJYswo6yw+opuBKCgFYADz0V5uA8EhH40E/WtOTyUVp
- xenA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=9xnxWZrttxQf2cUUXQG3y46AMeLBO1WHvAsLPL1N7e8=;
- b=ai46Ubs++I3w6ec8Y78e6KwPMsxErNaycn3f/UvO3mqtiJBgeuq+KwH5dVWX7jE55X
- 77hLJScum0wUVxwX5UFD8xk4tGRnGMgiD8tuJx1/IC1YSzGKAdFbJvrVRP+++B5xvoP2
- DPthCdAC12ZjA2RhKiuS2hbdc/J9JJ9AA6vdF2+0/Vk6J4R7dGdV5yt/9MtpofdvtQP8
- fRGebL+nIsx1Qs1wsFywwS2a6FVSrcO0H9JcDwD2eg4VkZyDc5x/Pw9mYO7cZebyTjxx
- uMrdRPp3XDsbD4sasPGzP4JkSBLBT/pYukW2FljnErNWEcVzK1tcNqKvFHOVj17g813h
- TTfw==
-X-Gm-Message-State: AOAM532CVYOpr243OmTko3M7BbE/1f4dCB+fFBkkRA+dt9dXZqe9dWzk
- sl12MRgGCn74xnuThkNMgQh5Gw8bYdrDVYS6JpNtRg==
-X-Google-Smtp-Source: ABdhPJzKbWe3A2+f6OwxrlEHa7p9KbOmnzHB8etTuwmP/njzKr22VTTUw6uN925rSlRQt0SC6sMsY2nq0WrmvZ4Oe1I=
-X-Received: by 2002:a5d:4c8f:: with SMTP id z15mr7607131wrs.9.1596283060707;
- Sat, 01 Aug 2020 04:57:40 -0700 (PDT)
+ with ESMTP id Bm9hMDmgnana for <iommu@lists.linux-foundation.org>;
+ Sat,  1 Aug 2020 12:56:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 184C585E9F
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 12:56:44 +0000 (UTC)
+Received: from nazgul.tnic (unknown [78.130.214.198])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B8CAE1EC02FA;
+ Sat,  1 Aug 2020 14:56:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+ t=1596286602;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+ bh=NfmlZOrLaBmBGlzbXE5z6x4RKpqqJJmlzC4+91fmYUA=;
+ b=n/7VNWjNwrVYldmM5JNyqQEVZd3Vp3hpjJSMuFhfSkrW8mQhIHtpfasKy9w1BEromsKKyZ
+ /CdJ8nlcvZTCqyn05aBVgUH+WGtmqEhe61zMEoDcH8PmujGuHYORgBg9sVbSuZSh5qLljK
+ uihuEhdcnAWg6tPbjyrRXoOKhqTEw/0=
+Date: Sat, 1 Aug 2020 14:56:57 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: "Saheed O. Bolarinwa" <refactormyself@gmail.com>
+Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
+Message-ID: <20200801125657.GA25391@nazgul.tnic>
+References: <20200801112446.149549-1-refactormyself@gmail.com>
 MIME-Version: 1.0
-References: <CAMi1Hd1c3cNMYg+S5Pwuv30QCdcWJw+QxkWmNP34s3nb+_yUuA@mail.gmail.com>
- <20200728124114.GA4865@lst.de>
- <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
- <20200728153055.GA16701@lst.de>
- <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
- <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
- <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
- <20200731130903.GA31110@lst.de>
- <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
- <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
- <20200801085706.GA2991@lst.de>
-In-Reply-To: <20200801085706.GA2991@lst.de>
-From: Amit Pundir <amit.pundir@linaro.org>
-Date: Sat, 1 Aug 2020 17:27:04 +0530
-Message-ID: <CAMi1Hd2tCfbDUuBP=OKoG8fPVCTpiARmqrkPadEJjJ52fgc_-Q@mail.gmail.com>
-Subject: Re: revert scope for 5.8, was Re: dma-pool fixes
-To: Christoph Hellwig <hch@lst.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- David Rientjes <rientjes@google.com>, Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20200801112446.149549-1-refactormyself@gmail.com>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>, linux-pci@vger.kernel.org,
+ linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
+ linux-i2c@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+ linux-rdma@vger.kernel.org, Richard Weinberger <richard@nod.at>,
+ linux-atm-general@lists.sourceforge.net, helgaas@kernel.org,
+ Jakub Kicinski <kuba@kernel.org>,
+ linux-kernel-mentees@lists.linuxfoundation.org,
+ Wolfgang Grandegger <wg@grandegger.com>, intel-gfx@lists.freedesktop.org,
+ linux-gpio@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+ skhan@linuxfoundation.org, bjorn@helgaas.com,
+ Kalle Valo <kvalo@codeaurora.org>, linux-edac@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, netdev@vger.kernel.org,
+ linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org,
+ dmaengine@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,55 +102,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 1 Aug 2020 at 14:27, Christoph Hellwig <hch@lst.de> wrote:
->
-> On Sat, Aug 01, 2020 at 01:20:07AM -0700, David Rientjes wrote:
-> > To follow-up on this, the introduction of the DMA atomic pools in 5.8
-> > fixes an issue for any AMD SEV enabled guest that has a driver that
-> > requires atomic DMA allocations (for us, nvme) because runtime decryption
-> > of memory allocated through the DMA API may block.  This manifests itself
-> > as "sleeping in invalid context" BUGs for any confidential VM user in
-> > cloud.
-> >
-> > I unfortunately don't have Amit's device to be able to independently debug
-> > this issue and certainly could not have done a better job at working the
-> > bug than Nicolas and Christoph have done so far.  I'm as baffled by the
-> > results as anybody else.
-> >
-> > I fully understand the no regressions policy.  I'd also ask that we
-> > consider that *all* SEV guests are currently broken if they use nvme or
-> > any other driver that does atomic DMA allocations.  It's an extremely
-> > serious issue for cloud.  If there is *anything* that I can do to make
-> > forward progress on this issue for 5.8, including some of the workarounds
-> > above that Amit requested, I'd be very happy to help.  Christoph will make
-> > the right decision for DMA in 5.8, but I simply wanted to state how
-> > critical working SEV guests are to users.
->
-> I'm between a rock and a hard place here.  If we simply want to revert
-> commits as-is to make sure both the Raspberry Pi 4 and thone phone do
-> not regress we'll have to go all the way back and revert the whole SEV
-> pool support.  I could try to manual revert of the multiple pool
-> support, but it is very late for that.
+On Sat, Aug 01, 2020 at 01:24:29PM +0200, Saheed O. Bolarinwa wrote:
+> The return value of pci_read_config_*() may not indicate a device error.
+> However, the value read by these functions is more likely to indicate
+> this kind of error. This presents two overlapping ways of reporting
+> errors and complicates error checking.
 
-Hi, I found the problematic memory region. It was a memory
-chunk reserved/removed in the downstream tree but was
-seemingly reserved upstream for different drivers. I failed to
-calculate the length of the total region reserved downstream
-correctly. And there was still a portion of memory left unmarked,
-which I should have marked as reserved in my testing earlier
-today.
+So why isn't the *value check done in the pci_read_config_* functions
+instead of touching gazillion callers?
 
-Sorry for all the noise and thanks Nicolas, Christoph and David
-for your patience.
+For example, pci_conf{1,2}_read() could check whether the u32 *value it
+just read depending on the access method, whether that value is ~0 and
+return proper PCIBIOS_ error in that case.
 
-Regards,
-Amit Pundir
+The check you're replicating
 
+	if (val32 == (u32)~0)
 
->
-> Or maybe Linus has decided to cut a -rc8 which would give us a little
-> more time.
-> -
+everywhere, instead, is just ugly and tests a naked value ~0 which
+doesn't mean anything...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
