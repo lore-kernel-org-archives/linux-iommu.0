@@ -2,73 +2,93 @@ Return-Path: <SRS0=Zw9n=BL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5351BC433E0
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 08:57:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA86C433DF
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 10:19:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1557C20716
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 08:57:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1557C20716
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 58A8F208A9
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 10:19:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BOX5CM31"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58A8F208A9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C491A20365;
-	Sat,  1 Aug 2020 08:57:16 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 130168715D;
+	Sat,  1 Aug 2020 10:19:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3Uqi-5Ws87dV; Sat,  1 Aug 2020 08:57:15 +0000 (UTC)
+	with ESMTP id XF-XxO9HgPiY; Sat,  1 Aug 2020 10:19:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 882532036B;
-	Sat,  1 Aug 2020 08:57:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 798328714B;
+	Sat,  1 Aug 2020 10:19:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 45CF1C0050;
-	Sat,  1 Aug 2020 08:57:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10FA4C004D
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:57:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 56013C0050;
+	Sat,  1 Aug 2020 10:19:13 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C552BC004D
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 10:19:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E144187841
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:57:12 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BF73B8714D
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 10:19:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 48Y1U40Q7NvV for <iommu@lists.linux-foundation.org>;
- Sat,  1 Aug 2020 08:57:11 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9EC18889BA
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:57:11 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 2175668C4E; Sat,  1 Aug 2020 10:57:07 +0200 (CEST)
-Date: Sat, 1 Aug 2020 10:57:06 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: David Rientjes <rientjes@google.com>,
- Linus Torvalds <torvalds@linux-foundation.org>
-Subject: revert scope for 5.8, was Re: dma-pool fixes
-Message-ID: <20200801085706.GA2991@lst.de>
-References: <CAMi1Hd1c3cNMYg+S5Pwuv30QCdcWJw+QxkWmNP34s3nb+_yUuA@mail.gmail.com>
- <20200728124114.GA4865@lst.de>
- <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
- <20200728153055.GA16701@lst.de>
- <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
- <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
- <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
- <20200731130903.GA31110@lst.de>
- <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
- <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
+ with ESMTP id qeKibWQ-ulLK for <iommu@lists.linux-foundation.org>;
+ Sat,  1 Aug 2020 10:19:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 42CA28714B
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 10:19:11 +0000 (UTC)
+Received: from kernel.org (unknown [87.70.91.42])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 5ED692087C;
+ Sat,  1 Aug 2020 10:18:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1596277150;
+ bh=jQD0i2dEJRPR8dDJK6vZOAFdpUe2Ho5YLvcSFtENhXg=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=BOX5CM31age4ZqR8WpA9Tu6Sib3TWB8q0axiVZJ9476Af21jQMyZgnRXNsbolGSGn
+ pWpwQlO3I1Ym/ZhVqWnuEZ70zJ8p8UgBgfsl0uitfuYMEFBB9GFeRHX0dU8VC7876G
+ 1GC7zC28lCBEAGXT18VZfRnXSGNcrY6WFAZx7Yv0=
+Date: Sat, 1 Aug 2020 13:18:54 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 06/15] powerpc: fadamp: simplify
+ fadump_reserve_crash_area()
+Message-ID: <20200801101854.GD534153@kernel.org>
+References: <20200728051153.1590-1-rppt@kernel.org>
+ <20200728051153.1590-7-rppt@kernel.org>
+ <87d04d5hda.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Amit Pundir <amit.pundir@linaro.org>, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <87d04d5hda.fsf@mpe.ellerman.id.au>
+Cc: linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Hari Bathini <hbathini@in.ibm.com>,
+ linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+ Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org,
+ linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>,
+ Stafford Horne <shorne@gmail.com>, linux-s390@vger.kernel.org,
+ linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>,
+ x86@kernel.org, Russell King <linux@armlinux.org.uk>,
+ Mike Rapoport <rppt@linux.ibm.com>, clang-built-linux@googlegroups.com,
+ Ingo Molnar <mingo@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>,
+ uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
+ openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Michal Simek <monstr@monstr.eu>, linux-mm@kvack.org,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Palmer Dabbelt <palmer@dabbelt.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,37 +106,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Aug 01, 2020 at 01:20:07AM -0700, David Rientjes wrote:
-> To follow-up on this, the introduction of the DMA atomic pools in 5.8 
-> fixes an issue for any AMD SEV enabled guest that has a driver that 
-> requires atomic DMA allocations (for us, nvme) because runtime decryption 
-> of memory allocated through the DMA API may block.  This manifests itself 
-> as "sleeping in invalid context" BUGs for any confidential VM user in 
-> cloud.
+On Thu, Jul 30, 2020 at 10:15:13PM +1000, Michael Ellerman wrote:
+> Mike Rapoport <rppt@kernel.org> writes:
+> > From: Mike Rapoport <rppt@linux.ibm.com>
+> >
+> > fadump_reserve_crash_area() reserves memory from a specified base address
+> > till the end of the RAM.
+> >
+> > Replace iteration through the memblock.memory with a single call to
+> > memblock_reserve() with appropriate  that will take care of proper memory
+>                                      ^
+>                                      parameters?
+> > reservation.
+> >
+> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > ---
+> >  arch/powerpc/kernel/fadump.c | 20 +-------------------
+> >  1 file changed, 1 insertion(+), 19 deletions(-)
 > 
-> I unfortunately don't have Amit's device to be able to independently debug 
-> this issue and certainly could not have done a better job at working the 
-> bug than Nicolas and Christoph have done so far.  I'm as baffled by the 
-> results as anybody else.
+> I think this looks OK to me, but I don't have a setup to test it easily.
+> I've added Hari to Cc who might be able to.
 > 
-> I fully understand the no regressions policy.  I'd also ask that we 
-> consider that *all* SEV guests are currently broken if they use nvme or 
-> any other driver that does atomic DMA allocations.  It's an extremely 
-> serious issue for cloud.  If there is *anything* that I can do to make 
-> forward progress on this issue for 5.8, including some of the workarounds 
-> above that Amit requested, I'd be very happy to help.  Christoph will make 
-> the right decision for DMA in 5.8, but I simply wanted to state how 
-> critical working SEV guests are to users.
+> But I'll give you an ack in the hope that it works :)
 
-I'm between a rock and a hard place here.  If we simply want to revert
-commits as-is to make sure both the Raspberry Pi 4 and thone phone do
-not regress we'll have to go all the way back and revert the whole SEV
-pool support.  I could try to manual revert of the multiple pool
-support, but it is very late for that.
+Actually, I did some digging in the git log and the traversal was added
+there on purpose by the commit b71a693d3db3 ("powerpc/fadump: exclude
+memory holes while reserving memory in second kernel")
+Presuming this is still reqruired I'm going to drop this patch and will
+simply replace for_each_memblock() with for_each_mem_range() in v2.
+ 
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+> 
+> 
+> > diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
+> > index 78ab9a6ee6ac..2446a61e3c25 100644
+> > --- a/arch/powerpc/kernel/fadump.c
+> > +++ b/arch/powerpc/kernel/fadump.c
+> > @@ -1658,25 +1658,7 @@ int __init fadump_reserve_mem(void)
+> >  /* Preserve everything above the base address */
+> >  static void __init fadump_reserve_crash_area(u64 base)
+> >  {
+> > -	struct memblock_region *reg;
+> > -	u64 mstart, msize;
+> > -
+> > -	for_each_memblock(memory, reg) {
+> > -		mstart = reg->base;
+> > -		msize  = reg->size;
+> > -
+> > -		if ((mstart + msize) < base)
+> > -			continue;
+> > -
+> > -		if (mstart < base) {
+> > -			msize -= (base - mstart);
+> > -			mstart = base;
+> > -		}
+> > -
+> > -		pr_info("Reserving %lluMB of memory at %#016llx for preserving crash data",
+> > -			(msize >> 20), mstart);
+> > -		memblock_reserve(mstart, msize);
+> > -	}
+> > +	memblock_reserve(base, memblock_end_of_DRAM() - base);
+> >  }
+> >  
+> >  unsigned long __init arch_reserved_kernel_pages(void)
+> > -- 
+> > 2.26.2
 
-Or maybe Linus has decided to cut a -rc8 which would give us a little
-more time.
--
+-- 
+Sincerely yours,
+Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
