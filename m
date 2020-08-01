@@ -2,66 +2,109 @@ Return-Path: <SRS0=Zw9n=BL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C70C433E0
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 07:49:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B68C433E0
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 08:20:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D4AB8206E9
-	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 07:49:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D4AB8206E9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4E1AD206E9
+	for <iommu@archiver.kernel.org>; Sat,  1 Aug 2020 08:20:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="PZieZ6vj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E1AD206E9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AB15421F76;
-	Sat,  1 Aug 2020 07:49:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1F4B38887D;
+	Sat,  1 Aug 2020 08:20:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 79diCPgFrhTc; Sat,  1 Aug 2020 07:49:40 +0000 (UTC)
+	with ESMTP id 7Rn-drnhEkPP; Sat,  1 Aug 2020 08:20:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7B65A21544;
-	Sat,  1 Aug 2020 07:49:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D370C885C6;
+	Sat,  1 Aug 2020 08:20:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DA56C004F;
-	Sat,  1 Aug 2020 07:49:40 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C55F7C004D
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 07:49:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7DE5C0050;
+	Sat,  1 Aug 2020 08:20:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF876C004D
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:20:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C216088B7B
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 07:49:39 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A7AE486868
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:20:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pHenqK5MZRTr for <iommu@lists.linux-foundation.org>;
- Sat,  1 Aug 2020 07:49:38 +0000 (UTC)
+ with ESMTP id ls--2ZLb2u7Q for <iommu@lists.linux-foundation.org>;
+ Sat,  1 Aug 2020 08:20:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 2FFF688B11
- for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 07:49:38 +0000 (UTC)
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
- by Forcepoint Email with ESMTP id 333A09CFD358CB65929F;
- Sat,  1 Aug 2020 15:49:33 +0800 (CST)
-Received: from SWX921481.china.huawei.com (10.126.203.235) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.487.0; Sat, 1 Aug 2020 15:49:23 +0800
-From: Barry Song <song.bao.hua@hisilicon.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
- <iommu@lists.linux-foundation.org>
-Subject: [PATCH v3] iommu/arm-smmu-v3: permit users to disable MSI polling
-Date: Sat, 1 Aug 2020 19:47:03 +1200
-Message-ID: <20200801074703.17108-1-song.bao.hua@hisilicon.com>
-X-Mailer: git-send-email 2.21.0.windows.1
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
+ [209.85.214.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0F5C286435
+ for <iommu@lists.linux-foundation.org>; Sat,  1 Aug 2020 08:20:10 +0000 (UTC)
+Received: by mail-pl1-f195.google.com with SMTP id g19so5876094plq.0
+ for <iommu@lists.linux-foundation.org>; Sat, 01 Aug 2020 01:20:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=8RENuYfU6VoekqCWfDYvGJ4U5lreKaq14QhTP7HksQE=;
+ b=PZieZ6vj5i7mvkTUvOphvHrjtLq9MgXPp3etqpWLcPuEEAtpaUHkGzE3o4MkR8zo9v
+ 86EHHCtiJd0b92xe3le0ZhCZV4Q4IVkgjIag89VbbWbbjlbV9THRKnK2dLZb9hHacXJv
+ OedkPNVBcaTJENHn4qoFSIv+Pycu6suf7NwOZO1MqcRVmlhG2wNn6kOKxLh+dPm34hRc
+ U+uXalXPoFBXvUd66dOBAcB8cypfuvKpHMTVO/PwIQJFgdjaNW0mELCuYagj0wz3JAwm
+ e3RnAOZdIEWBStMdP2fh46ga7YpcBQWqsv7NyZt+nJ74UIsfmbBgZrunDXqmaQvf47QE
+ 2oDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=8RENuYfU6VoekqCWfDYvGJ4U5lreKaq14QhTP7HksQE=;
+ b=QF1Nzh/G2VQsgpih0nLHpJJokGtx0peMPvry+Ziktd4+tIoHKyKUhfhfPNHxjCTLwX
+ JJXeJKYnkdDBxOLbbvbQ5uj5lvHkV50ExAyy4SscVxLnKMB5XEVE94DMjksKmSqOyn4H
+ JQ7r069fZ2sMmw7hX0xr4V8gFNOyxDU4jOqjCQ5nsXLFokqsS17iLdXlS4GKqOFvMp6T
+ QhGiXZhMdrULUj59L6tqcMfHv/geWBpEyMshFi91aUBeMb10imHPkisJPdh/WPK2a7zm
+ D9/vsNLWrnfNCMDKzTnX2ZF40JHK+xBplNcOENovZF4H4ovHAfu1cwZL6pnV9KsrwLGl
+ fXAQ==
+X-Gm-Message-State: AOAM532Rv16c1DwW3rtfeJkJ0FUvJmfFJbZWki83NxyYidEq7tteDTw1
+ SQh10FEuc49gP6wnidRfl2C2uA==
+X-Google-Smtp-Source: ABdhPJxxA/gbLWmTMh49aUGYstr65LbcwVpIv0Wux02L2Lf+RIFBskcCb5zKFsI3lmRJQlHa5BjCnQ==
+X-Received: by 2002:a17:902:d206:: with SMTP id
+ t6mr6830876ply.131.1596270009418; 
+ Sat, 01 Aug 2020 01:20:09 -0700 (PDT)
+Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667]
+ ([2620:15c:17:3:4a0f:cfff:fe51:6667])
+ by smtp.gmail.com with ESMTPSA id t17sm12685532pgu.30.2020.08.01.01.20.08
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 01 Aug 2020 01:20:08 -0700 (PDT)
+Date: Sat, 1 Aug 2020 01:20:07 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: dma-pool fixes
+In-Reply-To: <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
+References: <20200728104742.422960-1-hch@lst.de>
+ <CAMi1Hd3=6ZZykF1yx_CChqx71k6T-wj12TzJiz_uJZbwrEtTXw@mail.gmail.com>
+ <20200728120716.GA2507@lst.de>
+ <CAMi1Hd1c3cNMYg+S5Pwuv30QCdcWJw+QxkWmNP34s3nb+_yUuA@mail.gmail.com>
+ <20200728124114.GA4865@lst.de>
+ <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
+ <20200728153055.GA16701@lst.de>
+ <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
+ <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
+ <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
+ <20200731130903.GA31110@lst.de>
+ <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
+User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
 MIME-Version: 1.0
-X-Originating-IP: [10.126.203.235]
-X-CFilter-Loop: Reflected
-Cc: prime.zeng@hisilicon.com, linux-arm-kernel@lists.infradead.org
+Cc: Amit Pundir <amit.pundir@linaro.org>, jeremy.linton@arm.com,
+ iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,81 +117,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Polling by MSI isn't necessarily faster than polling by SEV. Tests on
-hi1620 show hns3 100G NIC network throughput can improve from 25G to
-27G if we disable MSI polling while running 16 netperf threads sending
-UDP packets in size 32KB.
-This patch provides a command line option so that users can decide to
-use MSI polling or not based on their tests.
+On Fri, 31 Jul 2020, David Rientjes wrote:
 
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
----
- -v3:
-  * rebase on top of linux-next as arm-smmu-v3.c has moved;
-  * provide a command line option
+> > > Hi Nicolas, Christoph,
+> > > 
+> > > Just out of curiosity, I'm wondering if we can restore the earlier
+> > > behaviour and make DMA atomic allocation configured thru platform
+> > > specific device tree instead?
+> > > 
+> > > Or if you can allow a more hackish approach to restore the earlier
+> > > logic, using of_machine_is_compatible() just for my device for the
+> > > time being. Meanwhile I'm checking with other developers running the
+> > > mainline kernel on sdm845 phones like OnePlus 6/6T, if they see this
+> > > issue too.
+> > 
+> > If we don't find a fix for your platform I'm going to send Linus a
+> > last minute revert this weekend, to stick to the no regressions policy.
+> > I still hope we can fix the issue for real.
+> > 
+> 
+> What would be the scope of this potential revert?
+> 
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+To follow-up on this, the introduction of the DMA atomic pools in 5.8 
+fixes an issue for any AMD SEV enabled guest that has a driver that 
+requires atomic DMA allocations (for us, nvme) because runtime decryption 
+of memory allocated through the DMA API may block.  This manifests itself 
+as "sleeping in invalid context" BUGs for any confidential VM user in 
+cloud.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7196207be7ea..89d3cb391fef 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -418,6 +418,11 @@ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
- 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
- 
-+static bool disable_msipolling;
-+module_param_named(disable_msipolling, disable_msipolling, bool, S_IRUGO);
-+MODULE_PARM_DESC(disable_msipolling,
-+	"Disable MSI-based polling for CMD_SYNC completion.");
-+
- enum pri_resp {
- 	PRI_RESP_DENY = 0,
- 	PRI_RESP_FAIL = 1,
-@@ -980,6 +985,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 	return 0;
- }
- 
-+static bool arm_smmu_use_msipolling(struct arm_smmu_device *smmu)
-+{
-+	return !disable_msipolling &&
-+	       smmu->features & ARM_SMMU_FEAT_COHERENCY &&
-+	       smmu->features & ARM_SMMU_FEAT_MSI;
-+}
-+
- static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
- 					 u32 prod)
- {
-@@ -992,8 +1004,7 @@ static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
- 	 * Beware that Hi16xx adds an extra 32 bits of goodness to its MSI
- 	 * payload, so the write will zero the entire command on that platform.
- 	 */
--	if (smmu->features & ARM_SMMU_FEAT_MSI &&
--	    smmu->features & ARM_SMMU_FEAT_COHERENCY) {
-+	if (arm_smmu_use_msipolling(smmu)) {
- 		ent.sync.msiaddr = q->base_dma + Q_IDX(&q->llq, prod) *
- 				   q->ent_dwords * 8;
- 	}
-@@ -1332,8 +1343,7 @@ static int __arm_smmu_cmdq_poll_until_consumed(struct arm_smmu_device *smmu,
- static int arm_smmu_cmdq_poll_until_sync(struct arm_smmu_device *smmu,
- 					 struct arm_smmu_ll_queue *llq)
- {
--	if (smmu->features & ARM_SMMU_FEAT_MSI &&
--	    smmu->features & ARM_SMMU_FEAT_COHERENCY)
-+	if (arm_smmu_use_msipolling(smmu))
- 		return __arm_smmu_cmdq_poll_until_msi(smmu, llq);
- 
- 	return __arm_smmu_cmdq_poll_until_consumed(smmu, llq);
--- 
-2.27.0
+I unfortunately don't have Amit's device to be able to independently debug 
+this issue and certainly could not have done a better job at working the 
+bug than Nicolas and Christoph have done so far.  I'm as baffled by the 
+results as anybody else.
 
-
+I fully understand the no regressions policy.  I'd also ask that we 
+consider that *all* SEV guests are currently broken if they use nvme or 
+any other driver that does atomic DMA allocations.  It's an extremely 
+serious issue for cloud.  If there is *anything* that I can do to make 
+forward progress on this issue for 5.8, including some of the workarounds 
+above that Amit requested, I'd be very happy to help.  Christoph will make 
+the right decision for DMA in 5.8, but I simply wanted to state how 
+critical working SEV guests are to users.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
