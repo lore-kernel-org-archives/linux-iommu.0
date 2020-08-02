@@ -6,63 +6,63 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3621CC433E5
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:38:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D96FC433E0
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:38:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0B84D22B43
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:38:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 51A36208B3
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:38:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="QgzlknYs"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B84D22B43
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rad8TiDp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51A36208B3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F023087D9C;
-	Sun,  2 Aug 2020 16:38:40 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uOeQLhE7iiy6; Sun,  2 Aug 2020 16:38:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7516387D94;
-	Sun,  2 Aug 2020 16:38:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EE5BC0051;
-	Sun,  2 Aug 2020 16:38:40 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D0AB3C004C
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CC9A884628
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3754E846F4;
+	Sun,  2 Aug 2020 16:38:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mvvNG-hUS6xS; Sun,  2 Aug 2020 16:38:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id ABD5F845D6;
+	Sun,  2 Aug 2020 16:38:52 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3658C0051;
+	Sun,  2 Aug 2020 16:38:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8BF39C004C
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7881387D94
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:50 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eJJ87hsbMw6H for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 16:38:38 +0000 (UTC)
+ with ESMTP id zQHHFCJAD0Lw for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 16:38:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 513B9845D6
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:38 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 5C70E87D8B
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:38:49 +0000 (UTC)
 Received: from aquarius.haifa.ibm.com (nesher1.haifa.il.ibm.com [195.110.40.7])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id D797220759;
- Sun,  2 Aug 2020 16:38:27 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id B572220829;
+ Sun,  2 Aug 2020 16:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1596386318;
- bh=o8aZbB2pKDQsqUqKMBDH2F8svHn12mD34Nb+72y2BZg=;
+ s=default; t=1596386329;
+ bh=owq9p+k/C9/dpSukqR8EwL4hnjKsMj+76UiJMdPJ/fA=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=QgzlknYsb9NiWB8c/Yeh/cISQPrZRFom46AMdT7FrT79j0mzUH6ggsWMbDZWlX4P8
- UyQ3srMeb9iG6KtyQNKoy0bv4eQadT2brjYzvyX1yGh7qES1VdDGGb7RMSiDH9JBdG
- DZDhRIfp4FkpXhluwKfMBKUj7+OCDBbjLlDEZLbY=
+ b=Rad8TiDptD9dxrBr88aLuHRAT2BqJnMfW2NRDjy71NJ6blsuHzH1615u85QXsH4wj
+ E16+uJggojjz9XGF2WAQ9EoCro0yddSG/vgRc632ePGXFN2VBqVIRyZVPfPYidDOrb
+ SMLSTJg8sBnzC+58NQK2lydD29xR2vaGVr/X5nGA=
 From: Mike Rapoport <rppt@kernel.org>
 To: Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v2 13/17] x86/setup: simplify initrd relocation and reservation
-Date: Sun,  2 Aug 2020 19:35:57 +0300
-Message-Id: <20200802163601.8189-14-rppt@kernel.org>
+Subject: [PATCH v2 14/17] x86/setup: simplify reserve_crashkernel()
+Date: Sun,  2 Aug 2020 19:35:58 +0300
+Message-Id: <20200802163601.8189-15-rppt@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200802163601.8189-1-rppt@kernel.org>
 References: <20200802163601.8189-1-rppt@kernel.org>
@@ -108,76 +108,108 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mike Rapoport <rppt@linux.ibm.com>
 
-Currently, initrd image is reserved very early during setup and then it
-might be relocated and re-reserved after the initial physical memory
-mapping is created. The "late" reservation of memblock verifies that mapped
-memory size exceeds the size of initrd, the checks whether the relocation
-required and, if yes, relocates inirtd to a new memory allocated from
-memblock and frees the old location.
-
-The check for memory size is excessive as memblock allocation will anyway
-fail if there is not enough memory. Besides, there is no point to allocate
-memory from memblock using memblock_find_in_range() + memblock_reserve()
-when there exists memblock_phys_alloc_range() with required functionality.
-
-Remove the redundant check and simplify memblock allocation.
+* Replace magic numbers with defines
+* Replace memblock_find_in_range() + memblock_reserve() with
+  memblock_phys_alloc_range()
+* Stop checking for low memory size in reserve_crashkernel_low(). The
+  allocation from limited range will anyway fail if there is no enough
+  memory, so there is no need for extra traversal of memblock.memory
 
 Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- arch/x86/kernel/setup.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ arch/x86/kernel/setup.c | 40 ++++++++++++++--------------------------
+ 1 file changed, 14 insertions(+), 26 deletions(-)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index a3767e74c758..d8de4053c5e8 100644
+index d8de4053c5e8..d7ced6982524 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -262,16 +262,12 @@ static void __init relocate_initrd(void)
- 	u64 area_size     = PAGE_ALIGN(ramdisk_size);
- 
- 	/* We need to move the initrd down into directly mapped mem */
--	relocated_ramdisk = memblock_find_in_range(0, PFN_PHYS(max_pfn_mapped),
--						   area_size, PAGE_SIZE);
--
-+	relocated_ramdisk = memblock_phys_alloc_range(area_size, PAGE_SIZE, 0,
-+						      PFN_PHYS(max_pfn_mapped));
- 	if (!relocated_ramdisk)
- 		panic("Cannot find place for new RAMDISK of size %lld\n",
- 		      ramdisk_size);
- 
--	/* Note: this includes all the mem currently occupied by
--	   the initrd, we rely on that fact to keep the data intact. */
--	memblock_reserve(relocated_ramdisk, area_size);
- 	initrd_start = relocated_ramdisk + PAGE_OFFSET;
- 	initrd_end   = initrd_start + ramdisk_size;
- 	printk(KERN_INFO "Allocated new RAMDISK: [mem %#010llx-%#010llx]\n",
-@@ -298,13 +294,13 @@ static void __init early_reserve_initrd(void)
- 
- 	memblock_reserve(ramdisk_image, ramdisk_end - ramdisk_image);
- }
-+
- static void __init reserve_initrd(void)
+@@ -419,13 +419,13 @@ static int __init reserve_crashkernel_low(void)
  {
- 	/* Assume only end is not page aligned */
- 	u64 ramdisk_image = get_ramdisk_image();
- 	u64 ramdisk_size  = get_ramdisk_size();
- 	u64 ramdisk_end   = PAGE_ALIGN(ramdisk_image + ramdisk_size);
--	u64 mapped_size;
+ #ifdef CONFIG_X86_64
+ 	unsigned long long base, low_base = 0, low_size = 0;
+-	unsigned long total_low_mem;
++	unsigned long low_mem_limit;
+ 	int ret;
  
- 	if (!boot_params.hdr.type_of_loader ||
- 	    !ramdisk_image || !ramdisk_size)
-@@ -312,12 +308,6 @@ static void __init reserve_initrd(void)
+-	total_low_mem = memblock_mem_size(1UL << (32 - PAGE_SHIFT));
++	low_mem_limit = min(memblock_phys_mem_size(), CRASH_ADDR_LOW_MAX);
  
- 	initrd_start = 0;
+ 	/* crashkernel=Y,low */
+-	ret = parse_crashkernel_low(boot_command_line, total_low_mem, &low_size, &base);
++	ret = parse_crashkernel_low(boot_command_line, low_mem_limit, &low_size, &base);
+ 	if (ret) {
+ 		/*
+ 		 * two parts from kernel/dma/swiotlb.c:
+@@ -443,23 +443,17 @@ static int __init reserve_crashkernel_low(void)
+ 			return 0;
+ 	}
  
--	mapped_size = memblock_mem_size(max_pfn_mapped);
--	if (ramdisk_size >= (mapped_size>>1))
--		panic("initrd too large to handle, "
--		       "disabling initrd (%lld needed, %lld available)\n",
--		       ramdisk_size, mapped_size>>1);
+-	low_base = memblock_find_in_range(0, 1ULL << 32, low_size, CRASH_ALIGN);
++	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
+ 	if (!low_base) {
+ 		pr_err("Cannot reserve %ldMB crashkernel low memory, please try smaller size.\n",
+ 		       (unsigned long)(low_size >> 20));
+ 		return -ENOMEM;
+ 	}
+ 
+-	ret = memblock_reserve(low_base, low_size);
+-	if (ret) {
+-		pr_err("%s: Error reserving crashkernel low memblock.\n", __func__);
+-		return ret;
+-	}
 -
- 	printk(KERN_INFO "RAMDISK: [mem %#010llx-%#010llx]\n", ramdisk_image,
- 			ramdisk_end - 1);
+-	pr_info("Reserving %ldMB of low memory at %ldMB for crashkernel (System low RAM: %ldMB)\n",
++	pr_info("Reserving %ldMB of low memory at %ldMB for crashkernel (low RAM limit: %ldMB)\n",
+ 		(unsigned long)(low_size >> 20),
+ 		(unsigned long)(low_base >> 20),
+-		(unsigned long)(total_low_mem >> 20));
++		(unsigned long)(low_mem_limit >> 20));
  
+ 	crashk_low_res.start = low_base;
+ 	crashk_low_res.end   = low_base + low_size - 1;
+@@ -503,13 +497,13 @@ static void __init reserve_crashkernel(void)
+ 		 * unless "crashkernel=size[KMG],high" is specified.
+ 		 */
+ 		if (!high)
+-			crash_base = memblock_find_in_range(CRASH_ALIGN,
+-						CRASH_ADDR_LOW_MAX,
+-						crash_size, CRASH_ALIGN);
++			crash_base = memblock_phys_alloc_range(crash_size,
++						CRASH_ALIGN, CRASH_ALIGN,
++						CRASH_ADDR_LOW_MAX);
+ 		if (!crash_base)
+-			crash_base = memblock_find_in_range(CRASH_ALIGN,
+-						CRASH_ADDR_HIGH_MAX,
+-						crash_size, CRASH_ALIGN);
++			crash_base = memblock_phys_alloc_range(crash_size,
++						CRASH_ALIGN, CRASH_ALIGN,
++						CRASH_ADDR_HIGH_MAX);
+ 		if (!crash_base) {
+ 			pr_info("crashkernel reservation failed - No suitable area found.\n");
+ 			return;
+@@ -517,19 +511,13 @@ static void __init reserve_crashkernel(void)
+ 	} else {
+ 		unsigned long long start;
+ 
+-		start = memblock_find_in_range(crash_base,
+-					       crash_base + crash_size,
+-					       crash_size, 1 << 20);
++		start = memblock_phys_alloc_range(crash_size, SZ_1M, crash_base,
++						  crash_base + crash_size);
+ 		if (start != crash_base) {
+ 			pr_info("crashkernel reservation failed - memory is in use.\n");
+ 			return;
+ 		}
+ 	}
+-	ret = memblock_reserve(crash_base, crash_size);
+-	if (ret) {
+-		pr_err("%s: Error reserving crashkernel memblock.\n", __func__);
+-		return;
+-	}
+ 
+ 	if (crash_base >= (1ULL << 32) && reserve_crashkernel_low()) {
+ 		memblock_free(crash_base, crash_size);
 -- 
 2.26.2
 
