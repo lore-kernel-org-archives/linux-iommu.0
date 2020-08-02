@@ -6,89 +6,91 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC35EC433E0
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C03C433E0
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:03:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C13822086A
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7120C20759
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:03:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uIs7/vU9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C13822086A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NClt20d7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7120C20759
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 823F2203BA;
-	Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id U+pKEP1HeMsh; Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 86B6C2026D;
-	Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 727C9C0050;
-	Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82ED5C004C
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:29 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6F13886456
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 446B486462;
+	Sun,  2 Aug 2020 18:03:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RGnkp5UajGOd; Sun,  2 Aug 2020 18:03:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id D6D6286456;
+	Sun,  2 Aug 2020 18:03:13 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C39F8C0050;
+	Sun,  2 Aug 2020 18:03:13 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9D672C004C
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:03:12 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8BD4985D3A
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:03:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a8Arbo9yLxu2 for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 18:02:28 +0000 (UTC)
+ with ESMTP id iKFDeCxKW92O for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 18:03:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
- [209.85.208.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 84E7F86406
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:28 +0000 (UTC)
-Received: by mail-ed1-f67.google.com with SMTP id o18so11259358eds.10
- for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 11:02:28 -0700 (PDT)
+Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
+ [209.85.218.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3D8BD84D09
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:03:10 +0000 (UTC)
+Received: by mail-ej1-f68.google.com with SMTP id o18so36321297eje.7
+ for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 11:03:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=sender:date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=hIidJgHuEfm+QUxSjJcyWhB4lu2Xjl7LW3yKbJJeIh0=;
- b=uIs7/vU9Kx/pklkEtgD7hBiuHs6a0R+dGlNTjUGRPw721sRkbKusjxGi7PfHcXOJ+P
- EjAE8Vd54opYw74GdBkeR4XNF5IP2MPUk9fmgk6V6Ahfe99oRVQ2eTOjx4V/HNnjxo1p
- 8JTL4om9ZC3cnlFf7IvLus1+6HB/iVpPvgkNBuxCV3vkFTVqsYvmHOwMCmyNnjJul9R4
- NyUbZELRb/+vAfU647duOFbumJn5NHcHvq2jBsmvofhPXlaOdyNnECGIYrfm3l1GH6Kt
- lYQels7sHnZLCY218xDI/G+/wAKH/pz8dPVH6DrvKapbnVTrwoCPcuTqLRUxp8GcwS18
- 4m4w==
+ bh=fQZKbY0rONiHjM83HibQy63AEJaxpKeGQhQtY04gDSU=;
+ b=NClt20d7Ft+K6FkgUCUu4JaE3tIZQCut3LntjJUJhXUsmJc9/hAN8f1uhRfdf1xDS4
+ v+mVxDX9o4kozVR+Ah8Xum0mBupoLJJ8sGRFuq+zGUPap92vHCw3QWRVbrRdpExOLg1f
+ PfYSYoa+08lkV+ejUHsbzm11vb6ZXDx9wG5OH/PIC6kGD+/IwmcMBK0f+S9Q47Ilfp0r
+ CnDK0w5UJZcBtyEbi0uelKFQBUpbqi9svF4nCggxxWbCeGrL/RSClOw7dY42O+RKurT4
+ SeQmDc1qACQRwd/qkF4Bl6+EBF1g484NpzCeNGAZebTMM88+MrzhcW/7+ogo+dclYvqf
+ xJRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
  :references:mime-version:content-disposition:in-reply-to;
- bh=hIidJgHuEfm+QUxSjJcyWhB4lu2Xjl7LW3yKbJJeIh0=;
- b=gIJbiqY7XNtxqG7jD5NMIIU3Zva9T22fiynE2Zqy5fqZ3KQ0nZe0yFuZGVIb2ufEEi
- M40A1gTGh2S7opydQku2g3rfbkh/YUatCPcF2uByLhoULz5yNSkRtC8t9gMpgZYFTZfV
- CHL8LuXFO2AtuX0fm1v5Ig3rSPXmVEiIrMK+XDjNsmQpUQ/5GFJaCIjrJToMKBQf/O9N
- Ryy4ksx68FnPN7ZzBJtH4e6J+H/Orz3O2xdca3dLrp0k8spEeJUOiUUuttX1s4Fuhsrb
- NI+H4zzft2D3oXQa+8KzXMi2uncELtE2rrWdI6QezuguRFC2CCt8E6bUz6ClzRroM/8e
- +LTQ==
-X-Gm-Message-State: AOAM5301jx/NSpfV3DtwAQDDSmmHGVg85ohb5Vu2bagb9mQ4rn6VizoQ
- lJjY+dZX4qCMn8j1q9jBr1c=
-X-Google-Smtp-Source: ABdhPJxqUvJyL87Stg26v1+JoHbkpad0yhpL8P6CjttoB9bwnL2tuiWl2R60zFRBWtP21v7K7J2UFg==
-X-Received: by 2002:aa7:cb15:: with SMTP id s21mr12929126edt.175.1596391346876; 
- Sun, 02 Aug 2020 11:02:26 -0700 (PDT)
+ bh=fQZKbY0rONiHjM83HibQy63AEJaxpKeGQhQtY04gDSU=;
+ b=Vrtw6Laxe49dtf0tmJM+J5v1NAHqZwjNUHSzG4EvqIjZAyqGxJ9oM08vxVm+iaUiBz
+ 3Eyt92x8d4bqGPK76/RAG40ewDsaL1raojwmKSea5WPBxWUzVtyi70YWd8uymWKvtzcQ
+ fNF4nOSd5VhfBBZ24DcTVfN3KsWz59CnRjmK0L64WWsPI9Nb0YFiECIS6JR2dWhO6mex
+ YOP+tcmiXjT7xfnh1/3rZIuSYswxlTkiEjq+/5m/octEzYWj6qJl+bwVpoAP9HyVxJaF
+ xvZFU9lqZHcGmarEpiNAx4cRuI5LGZrS5CfihjGbOJ4rNM3J2lUggxtkwCyt6THq/RlM
+ fS3Q==
+X-Gm-Message-State: AOAM532ENk8+Ws84G6rmVcs6ymhLJo/mWmG1vmIbeLm7OetzGaUwz/ia
+ JzQlS+L42LS3i/WPPJH3b3s=
+X-Google-Smtp-Source: ABdhPJwRVVa9oTHFz53Gep6kufj7aL7kFTxC9FLC9t+X6tOc6fXoy+b82cv+AC/Z1BhRkxvbjIG1Og==
+X-Received: by 2002:a17:907:94ce:: with SMTP id
+ dn14mr12944760ejc.351.1596391388538; 
+ Sun, 02 Aug 2020 11:03:08 -0700 (PDT)
 Received: from gmail.com (54033286.catv.pool.telekom.hu. [84.3.50.134])
- by smtp.gmail.com with ESMTPSA id j21sm14090092edq.20.2020.08.02.11.02.24
+ by smtp.gmail.com with ESMTPSA id x1sm13599477ejc.119.2020.08.02.11.03.06
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 02 Aug 2020 11:02:26 -0700 (PDT)
-Date: Sun, 2 Aug 2020 20:02:23 +0200
+ Sun, 02 Aug 2020 11:03:07 -0700 (PDT)
+Date: Sun, 2 Aug 2020 20:03:04 +0200
 From: Ingo Molnar <mingo@kernel.org>
 To: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v2 14/17] x86/setup: simplify reserve_crashkernel()
-Message-ID: <20200802180223.GB86614@gmail.com>
+Subject: Re: [PATCH v2 17/17] memblock: use separate iterators for memory and
+ reserved regions
+Message-ID: <20200802180304.GC86614@gmail.com>
 References: <20200802163601.8189-1-rppt@kernel.org>
- <20200802163601.8189-15-rppt@kernel.org>
+ <20200802163601.8189-18-rppt@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200802163601.8189-15-rppt@kernel.org>
+In-Reply-To: <20200802163601.8189-18-rppt@kernel.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>,
  Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
  Peter Zijlstra <peterz@infradead.org>,
@@ -133,16 +135,26 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 > From: Mike Rapoport <rppt@linux.ibm.com>
 > 
-> * Replace magic numbers with defines
-> * Replace memblock_find_in_range() + memblock_reserve() with
->   memblock_phys_alloc_range()
-> * Stop checking for low memory size in reserve_crashkernel_low(). The
->   allocation from limited range will anyway fail if there is no enough
->   memory, so there is no need for extra traversal of memblock.memory
+> for_each_memblock() is used to iterate over memblock.memory in
+> a few places that use data from memblock_region rather than the memory
+> ranges.
+> 
+> Introduce separate for_each_mem_region() and for_each_reserved_mem_region()
+> to improve encapsulation of memblock internals from its users.
 > 
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> ---
+>  .clang-format                  |  3 ++-
+>  arch/arm64/kernel/setup.c      |  2 +-
+>  arch/arm64/mm/numa.c           |  2 +-
+>  arch/mips/netlogic/xlp/setup.c |  2 +-
+>  arch/x86/mm/numa.c             |  2 +-
+>  include/linux/memblock.h       | 19 ++++++++++++++++---
+>  mm/memblock.c                  |  4 ++--
+>  mm/page_alloc.c                |  8 ++++----
+>  8 files changed, 28 insertions(+), 14 deletions(-)
 
-Assuming that this got or will get tested with a crash kernel:
+The x86 part:
 
 Acked-by: Ingo Molnar <mingo@kernel.org>
 
