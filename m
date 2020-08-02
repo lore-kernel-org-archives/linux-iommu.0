@@ -3,124 +3,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C346C433E0
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 15:33:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59561C433E0
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:36:21 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E41EC2063A
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 15:33:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 23BE020759
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 16:36:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="h25uld9S"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E41EC2063A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="LIo4s4fR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23BE020759
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B3CCB85DC7;
-	Sun,  2 Aug 2020 15:33:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 04BBF203CC;
+	Sun,  2 Aug 2020 16:36:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qJbZNDuUuo98; Sun,  2 Aug 2020 15:33:20 +0000 (UTC)
+	with ESMTP id EI2x8af341W6; Sun,  2 Aug 2020 16:36:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8983B8574A;
-	Sun,  2 Aug 2020 15:33:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 06D162026D;
+	Sun,  2 Aug 2020 16:36:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AA4EC0050;
-	Sun,  2 Aug 2020 15:33:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CFEF0C0051;
+	Sun,  2 Aug 2020 16:36:17 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1BBA5C004C
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 14:53:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3C5EDC004C
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:36:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0966E87D11
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 14:53:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2496C87D46
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:36:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W2Ckqy0tJpeh for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 14:53:55 +0000 (UTC)
+ with ESMTP id wO9LfiKNKi0i for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 16:36:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2526A87CDD
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 14:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1596380033;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=1kkoTewt7Fx4Q+2DDC1UGcR4JlqqtBcQK2oUP1r3rTc=;
- b=h25uld9SIfoj5VjErXtMPmIqvlXPAtJ9JBM59o8fHH2lQ1S+DyLmOlX51gMTheqs8+RYFB
- 9ufHZJCdVWjJaYwpalTcdDMcE3z82dp85ISkgHWnzjWf4A5Leg2ztBE7DWr4nwgqTn9jU+
- 05CB8xgosBwf/jZez18nhURcbSzonbw=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-423-WzhemXWgN6WgT39dPi2tdA-1; Sun, 02 Aug 2020 10:53:51 -0400
-X-MC-Unique: WzhemXWgN6WgT39dPi2tdA-1
-Received: by mail-qt1-f198.google.com with SMTP id d24so17633563qtg.23
- for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 07:53:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=1kkoTewt7Fx4Q+2DDC1UGcR4JlqqtBcQK2oUP1r3rTc=;
- b=H7XULulmCqNUJWQyyK/BSzInpiNflJtC2l783C6QSh8vBtwdNIH+7kRIVMHeKux246
- KKzfIQfKt9+wmoleLHyFqTlMEhWz/k4cBOX30yomwoBx1J5GrrmN+t33ryDcR9qlbk9Z
- KvUJdFebwmr0w40m/A/M53I50eCm126f3ijfM59oWoUTUqAGwLIHY2XtfaHr1b8jlZg+
- otuq976E0qggUn0dCuc4ml4Lrc+lRSOZ5F++oHJnWRXoVpcU9z2MCAyWqhxj0BvND5OP
- b83/1ut4h4MDySZDveTgNfohhKSmg8gzAiZbuirv4Bx3GtXqujVUdB05ZSjIbHK5DDdR
- +RrQ==
-X-Gm-Message-State: AOAM5322sPSoZeZICg0Vx5uMeTMA+lPGQKRB4B6CJziCS9E1C95B5F5K
- CtJ5SDaO7kMTKaE9M+s7uZsDcLoQ9DIdSODZIvCO6tBQhMCIquCbaHW6th4Th7NOgPYTmzSL5LS
- d1cj+KNLrb41q5ZiRp34d7yIsuANLMw==
-X-Received: by 2002:a0c:f007:: with SMTP id z7mr12711370qvk.53.1596380031292; 
- Sun, 02 Aug 2020 07:53:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzsaj772ZR8xxDSmSbCv1i3DbzhNyKSnnIAtdh3ZvECGhzafck69cLoHqLTgfamrb5jJgzXtg==
-X-Received: by 2002:a0c:f007:: with SMTP id z7mr12711349qvk.53.1596380031093; 
- Sun, 02 Aug 2020 07:53:51 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com.
- [75.142.250.213])
- by smtp.gmail.com with ESMTPSA id t127sm16326265qkc.100.2020.08.02.07.53.46
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 02 Aug 2020 07:53:50 -0700 (PDT)
-Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
-To: Borislav Petkov <bp@alien8.de>,
- "Saheed O. Bolarinwa" <refactormyself@gmail.com>
-References: <20200801112446.149549-1-refactormyself@gmail.com>
- <20200801125657.GA25391@nazgul.tnic>
-From: Tom Rix <trix@redhat.com>
-Message-ID: <6ecce8f3-350a-b5d5-82c9-4609f2298e61@redhat.com>
-Date: Sun, 2 Aug 2020 07:53:46 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 6CA6C87D3D
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 16:36:16 +0000 (UTC)
+Received: from aquarius.haifa.ibm.com (nesher1.haifa.il.ibm.com [195.110.40.7])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id A84AE20738;
+ Sun,  2 Aug 2020 16:36:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1596386176;
+ bh=wmlXgD0X96/wIUhcM0J0CaJw2U1ECwrd3G0AsFvEO4Y=;
+ h=From:To:Cc:Subject:Date:From;
+ b=LIo4s4fRmWHT6ME6g/ZjvzQ7HJRSuVu2NYrDbrd0chKpt6+b3ohxjDTyat5mFYLn4
+ aeP921+3zEtXOmJIAFZ0JgLAmKkmGOMoKwCqYXkOSHVuvR6uN6W8dMclI8JjGsPtcE
+ w3N+AA1SHOYg14yG/yF0pyqesAV5aB4w9VaQvzZA=
+From: Mike Rapoport <rppt@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v2 00/17] memblock: seasonal cleaning^w cleanup
+Date: Sun,  2 Aug 2020 19:35:44 +0300
+Message-Id: <20200802163601.8189-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200801125657.GA25391@nazgul.tnic>
-Content-Language: en-US
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-X-Mailman-Approved-At: Sun, 02 Aug 2020 15:33:20 +0000
-Cc: Vignesh Raghavendra <vigneshr@ti.com>, linux-pci@vger.kernel.org,
- linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
- linux-i2c@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
- linux-rdma@vger.kernel.org, Richard Weinberger <richard@nod.at>,
- linux-atm-general@lists.sourceforge.net, helgaas@kernel.org,
- Jakub Kicinski <kuba@kernel.org>,
- linux-kernel-mentees@lists.linuxfoundation.org,
- Wolfgang Grandegger <wg@grandegger.com>, intel-gfx@lists.freedesktop.org,
- linux-gpio@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
- skhan@linuxfoundation.org, bjorn@helgaas.com,
- Kalle Valo <kvalo@codeaurora.org>, linux-edac@vger.kernel.org,
- linux-hwmon@vger.kernel.org, netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org,
- dmaengine@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+ Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
+ Peter Zijlstra <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
+ Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
+ sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
+ Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ linux-arch@vger.kernel.org, linux-s390@vger.kernel.org,
+ linux-c6x-dev@linux-c6x.org, Michael Ellerman <mpe@ellerman.id.au>,
+ x86@kernel.org, Russell King <linux@armlinux.org.uk>,
+ Mike Rapoport <rppt@linux.ibm.com>, clang-built-linux@googlegroups.com,
+ Ingo Molnar <mingo@redhat.com>, linux-arm-kernel@lists.infradead.org,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
+ openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Stafford Horne <shorne@gmail.com>, Hari Bathini <hbathini@linux.ibm.com>,
+ Michal Simek <monstr@monstr.eu>, Yoshinori Sato <ysato@users.sourceforge.jp>,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Palmer Dabbelt <palmer@dabbelt.com>,
+ linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -138,32 +104,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-On 8/1/20 5:56 AM, Borislav Petkov wrote:
-> On Sat, Aug 01, 2020 at 01:24:29PM +0200, Saheed O. Bolarinwa wrote:
->> The return value of pci_read_config_*() may not indicate a device error.
->> However, the value read by these functions is more likely to indicate
->> this kind of error. This presents two overlapping ways of reporting
->> errors and complicates error checking.
-> So why isn't the *value check done in the pci_read_config_* functions
-> instead of touching gazillion callers?
->
-> For example, pci_conf{1,2}_read() could check whether the u32 *value it
-> just read depending on the access method, whether that value is ~0 and
-> return proper PCIBIOS_ error in that case.
->
-> The check you're replicating
->
-> 	if (val32 == (u32)~0)
->
-> everywhere, instead, is just ugly and tests a naked value ~0 which
-> doesn't mean anything...
->
-I agree, if there is a change, it should be in the pci_read_* functions.
+Hi,
 
-Anything returning void should not fail and likely future users of the proposed change will not do the extra checks.
+These patches simplify several uses of memblock iterators and hide some of
+the memblock implementation details from the rest of the system.
 
-Tom
+The patches are on top of v5.8-rc7 + cherry-pick of "mm/sparse: cleanup the
+code surrounding memory_present()" [1] from mmotm tree.
+
+v2 changes:
+* replace for_each_memblock() with two versions, one for memblock.memory
+  and another one for memblock.reserved
+* fix overzealous cleanup of powerpc fadamp: keep the traversal over the
+  memblocks, but use better suited iterators
+* don't remove traversal over memblock.reserved in x86 numa cleanup but
+  replace for_each_memblock() with new for_each_reserved_mem_region()
+* simplify ramdisk and crash kernel allocations on x86
+* drop more redundant and unused code: __next_reserved_mem_region() and
+  memblock_mem_size()
+* add description of numa initialization fix on arm64 (thanks Jonathan)
+* add Acked and Reviewed tags
+
+[1] http://lkml.kernel.org/r/20200712083130.22919-1-rppt@kernel.org 
+
+Mike Rapoport (17):
+  KVM: PPC: Book3S HV: simplify kvm_cma_reserve()
+  dma-contiguous: simplify cma_early_percent_memory()
+  arm, xtensa: simplify initialization of high memory pages
+  arm64: numa: simplify dummy_numa_init()
+  h8300, nds32, openrisc: simplify detection of memory extents
+  riscv: drop unneeded node initialization
+  mircoblaze: drop unneeded NUMA and sparsemem initializations
+  memblock: make for_each_memblock_type() iterator private
+  memblock: make memblock_debug and related functionality private
+  memblock: reduce number of parameters in for_each_mem_range()
+  arch, mm: replace for_each_memblock() with for_each_mem_pfn_range()
+  arch, drivers: replace for_each_membock() with for_each_mem_range()
+  x86/setup: simplify initrd relocation and reservation
+  x86/setup: simplify reserve_crashkernel()
+  memblock: remove unused memblock_mem_size()
+  memblock: implement for_each_reserved_mem_region() using __next_mem_region()
+  memblock: use separate iterators for memory and reserved regions
+
+ .clang-format                            |  4 +-
+ arch/arm/kernel/setup.c                  | 18 +++--
+ arch/arm/mm/init.c                       | 59 ++++------------
+ arch/arm/mm/mmu.c                        | 39 ++++-------
+ arch/arm/mm/pmsa-v7.c                    | 20 +++---
+ arch/arm/mm/pmsa-v8.c                    | 17 +++--
+ arch/arm/xen/mm.c                        |  7 +-
+ arch/arm64/kernel/machine_kexec_file.c   |  6 +-
+ arch/arm64/kernel/setup.c                |  4 +-
+ arch/arm64/mm/init.c                     | 11 ++-
+ arch/arm64/mm/kasan_init.c               | 10 +--
+ arch/arm64/mm/mmu.c                      | 11 +--
+ arch/arm64/mm/numa.c                     | 15 ++---
+ arch/c6x/kernel/setup.c                  |  9 +--
+ arch/h8300/kernel/setup.c                |  8 +--
+ arch/microblaze/mm/init.c                | 24 ++-----
+ arch/mips/cavium-octeon/dma-octeon.c     | 12 ++--
+ arch/mips/kernel/setup.c                 | 31 +++++----
+ arch/mips/netlogic/xlp/setup.c           |  2 +-
+ arch/nds32/kernel/setup.c                |  8 +--
+ arch/openrisc/kernel/setup.c             |  9 +--
+ arch/openrisc/mm/init.c                  |  8 ++-
+ arch/powerpc/kernel/fadump.c             | 57 ++++++++--------
+ arch/powerpc/kvm/book3s_hv_builtin.c     | 11 +--
+ arch/powerpc/mm/book3s64/hash_utils.c    | 16 ++---
+ arch/powerpc/mm/book3s64/radix_pgtable.c | 11 ++-
+ arch/powerpc/mm/kasan/kasan_init_32.c    |  8 +--
+ arch/powerpc/mm/mem.c                    | 33 +++++----
+ arch/powerpc/mm/numa.c                   |  7 +-
+ arch/powerpc/mm/pgtable_32.c             |  8 +--
+ arch/riscv/mm/init.c                     | 34 +++-------
+ arch/riscv/mm/kasan_init.c               | 10 +--
+ arch/s390/kernel/crash_dump.c            |  8 +--
+ arch/s390/kernel/setup.c                 | 31 +++++----
+ arch/s390/mm/page-states.c               |  6 +-
+ arch/s390/mm/vmem.c                      | 16 +++--
+ arch/sh/mm/init.c                        |  9 +--
+ arch/sparc/mm/init_64.c                  | 12 ++--
+ arch/x86/kernel/setup.c                  | 56 +++++-----------
+ arch/x86/mm/numa.c                       |  2 +-
+ arch/xtensa/mm/init.c                    | 55 +++------------
+ drivers/bus/mvebu-mbus.c                 | 12 ++--
+ drivers/irqchip/irq-gic-v3-its.c         |  2 +-
+ drivers/s390/char/zcore.c                |  9 +--
+ include/linux/memblock.h                 | 65 +++++++++---------
+ kernel/dma/contiguous.c                  | 11 +--
+ mm/memblock.c                            | 85 ++++++++----------------
+ mm/page_alloc.c                          | 11 ++-
+ mm/sparse.c                              | 10 ++-
+ 49 files changed, 366 insertions(+), 561 deletions(-)
+
+-- 
+2.26.2
 
 _______________________________________________
 iommu mailing list
