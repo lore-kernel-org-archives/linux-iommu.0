@@ -6,91 +6,89 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25475C433E1
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC35EC433E0
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E01C720759
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:01:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C13822086A
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uknpQ4DM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E01C720759
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uIs7/vU9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C13822086A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 83345203EC;
-	Sun,  2 Aug 2020 18:01:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 823F2203BA;
+	Sun,  2 Aug 2020 18:02:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fDYH0IfN-7V0; Sun,  2 Aug 2020 18:01:20 +0000 (UTC)
+	with ESMTP id U+pKEP1HeMsh; Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 344F22026D;
-	Sun,  2 Aug 2020 18:01:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 86B6C2026D;
+	Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F398BC0050;
-	Sun,  2 Aug 2020 18:01:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2751DC004C
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:01:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 727C9C0050;
+	Sun,  2 Aug 2020 18:02:30 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82ED5C004C
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 11C4320387
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:01:18 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6F13886456
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CoK8T1JX3YpX for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 18:01:17 +0000 (UTC)
+ with ESMTP id a8Arbo9yLxu2 for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 18:02:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com
- [209.85.218.65])
- by silver.osuosl.org (Postfix) with ESMTPS id CB5E92026D
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:01:16 +0000 (UTC)
-Received: by mail-ej1-f65.google.com with SMTP id o18so36318065eje.7
- for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 11:01:16 -0700 (PDT)
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+ [209.85.208.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 84E7F86406
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 18:02:28 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id o18so11259358eds.10
+ for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 11:02:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=sender:date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=cWqP425OZ00Oz4x2XaCg5sL4Bi3BuFHBZ9fhbstEoPo=;
- b=uknpQ4DMxgwRI+7RXzKKaxSHSsHT4JX+qN+G3Zw62I+z7K+v0oM82e+YsM5L2ibFwZ
- ZtPLnfzJt8IFqkH991n5kK4zcZ2/fsZTMmLNrFK7hPe3auCniFr0qepP8+PKlvq/+X4Y
- 6FOXivLK6+BH8tYzSACnWRFDv80Xb8yKxgJKQm36t4gslbAugHoQp37YMrGD2IIEXvEW
- lHLgWw9HHo88+yhhI1SsXvM9DHpmveOnmArUrLkNHDmUxgOR5yVJEiJKHqYfS7BI8LbU
- 2xANFxjuEWzWjHDwLiCM886yebnNr5jnEbr0RMGk15mMx04KzIUKhAfWZe7dw+zaroY/
- roWA==
+ bh=hIidJgHuEfm+QUxSjJcyWhB4lu2Xjl7LW3yKbJJeIh0=;
+ b=uIs7/vU9Kx/pklkEtgD7hBiuHs6a0R+dGlNTjUGRPw721sRkbKusjxGi7PfHcXOJ+P
+ EjAE8Vd54opYw74GdBkeR4XNF5IP2MPUk9fmgk6V6Ahfe99oRVQ2eTOjx4V/HNnjxo1p
+ 8JTL4om9ZC3cnlFf7IvLus1+6HB/iVpPvgkNBuxCV3vkFTVqsYvmHOwMCmyNnjJul9R4
+ NyUbZELRb/+vAfU647duOFbumJn5NHcHvq2jBsmvofhPXlaOdyNnECGIYrfm3l1GH6Kt
+ lYQels7sHnZLCY218xDI/G+/wAKH/pz8dPVH6DrvKapbnVTrwoCPcuTqLRUxp8GcwS18
+ 4m4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
  :references:mime-version:content-disposition:in-reply-to;
- bh=cWqP425OZ00Oz4x2XaCg5sL4Bi3BuFHBZ9fhbstEoPo=;
- b=Zr/zOV2FgaKvDYRGZ96IAgRinOskcAS2T+u50wqka/guxU8r24Rb+jJGVLMFY/9YlH
- l01sKO/OU4Vz4vnVEtIOhKLgTST7/3ZqtNKi0mRz31R2+wskIu3YCs3eGxEAhPLuIOwL
- a4AxHDpv8xitxJxodpHGVXgJzcfN1ZMk+p/DCohwOXr5IBMIsqbhwYLlDQLfctJEM7Kb
- 8MNib6tmY0cpnDCa73pKY5OIQhBc9ookI4yWLxJQL0ZDAWN141u4SJmaBWRXpJFu1RGc
- cWohJLuyguKCxuqTTkH/ZmsIHykwlTqLz6u/78I++qC7QdW5RNrarAbw3RgzRtS9Ro6q
- YC7g==
-X-Gm-Message-State: AOAM5339FsPCbqaEbFoWhvvKZ/BVaN6QRs8REfRUowD7ToYUtL2ys5BH
- +dIFNlbMOvinjKDbXwX5PPU=
-X-Google-Smtp-Source: ABdhPJzKJVSrfGoQ7+sK5UMaqi5wNpNE5CXoSPOw/FVAw4VikTzayUXH2AGSuVR6AmkbWWniCTFE/A==
-X-Received: by 2002:a17:906:c187:: with SMTP id
- g7mr13929214ejz.108.1596391275076; 
- Sun, 02 Aug 2020 11:01:15 -0700 (PDT)
+ bh=hIidJgHuEfm+QUxSjJcyWhB4lu2Xjl7LW3yKbJJeIh0=;
+ b=gIJbiqY7XNtxqG7jD5NMIIU3Zva9T22fiynE2Zqy5fqZ3KQ0nZe0yFuZGVIb2ufEEi
+ M40A1gTGh2S7opydQku2g3rfbkh/YUatCPcF2uByLhoULz5yNSkRtC8t9gMpgZYFTZfV
+ CHL8LuXFO2AtuX0fm1v5Ig3rSPXmVEiIrMK+XDjNsmQpUQ/5GFJaCIjrJToMKBQf/O9N
+ Ryy4ksx68FnPN7ZzBJtH4e6J+H/Orz3O2xdca3dLrp0k8spEeJUOiUUuttX1s4Fuhsrb
+ NI+H4zzft2D3oXQa+8KzXMi2uncELtE2rrWdI6QezuguRFC2CCt8E6bUz6ClzRroM/8e
+ +LTQ==
+X-Gm-Message-State: AOAM5301jx/NSpfV3DtwAQDDSmmHGVg85ohb5Vu2bagb9mQ4rn6VizoQ
+ lJjY+dZX4qCMn8j1q9jBr1c=
+X-Google-Smtp-Source: ABdhPJxqUvJyL87Stg26v1+JoHbkpad0yhpL8P6CjttoB9bwnL2tuiWl2R60zFRBWtP21v7K7J2UFg==
+X-Received: by 2002:aa7:cb15:: with SMTP id s21mr12929126edt.175.1596391346876; 
+ Sun, 02 Aug 2020 11:02:26 -0700 (PDT)
 Received: from gmail.com (54033286.catv.pool.telekom.hu. [84.3.50.134])
- by smtp.gmail.com with ESMTPSA id t19sm14191760edw.63.2020.08.02.11.01.12
+ by smtp.gmail.com with ESMTPSA id j21sm14090092edq.20.2020.08.02.11.02.24
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 02 Aug 2020 11:01:13 -0700 (PDT)
-Date: Sun, 2 Aug 2020 20:01:10 +0200
+ Sun, 02 Aug 2020 11:02:26 -0700 (PDT)
+Date: Sun, 2 Aug 2020 20:02:23 +0200
 From: Ingo Molnar <mingo@kernel.org>
 To: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v2 13/17] x86/setup: simplify initrd relocation and
- reservation
-Message-ID: <20200802180110.GA86614@gmail.com>
+Subject: Re: [PATCH v2 14/17] x86/setup: simplify reserve_crashkernel()
+Message-ID: <20200802180223.GB86614@gmail.com>
 References: <20200802163601.8189-1-rppt@kernel.org>
- <20200802163601.8189-14-rppt@kernel.org>
+ <20200802163601.8189-15-rppt@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200802163601.8189-14-rppt@kernel.org>
+In-Reply-To: <20200802163601.8189-15-rppt@kernel.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>,
  Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
  Peter Zijlstra <peterz@infradead.org>,
@@ -135,25 +133,18 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 > From: Mike Rapoport <rppt@linux.ibm.com>
 > 
-> Currently, initrd image is reserved very early during setup and then it
-> might be relocated and re-reserved after the initial physical memory
-> mapping is created. The "late" reservation of memblock verifies that mapped
-> memory size exceeds the size of initrd, the checks whether the relocation
-> required and, if yes, relocates inirtd to a new memory allocated from
-> memblock and frees the old location.
-> 
-> The check for memory size is excessive as memblock allocation will anyway
-> fail if there is not enough memory. Besides, there is no point to allocate
-> memory from memblock using memblock_find_in_range() + memblock_reserve()
-> when there exists memblock_phys_alloc_range() with required functionality.
-> 
-> Remove the redundant check and simplify memblock allocation.
+> * Replace magic numbers with defines
+> * Replace memblock_find_in_range() + memblock_reserve() with
+>   memblock_phys_alloc_range()
+> * Stop checking for low memory size in reserve_crashkernel_low(). The
+>   allocation from limited range will anyway fail if there is no enough
+>   memory, so there is no need for extra traversal of memblock.memory
 > 
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Assuming there's no hidden dependency here breaking something:
+Assuming that this got or will get tested with a crash kernel:
 
-  Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Ingo Molnar <mingo@kernel.org>
 
 Thanks,
 
