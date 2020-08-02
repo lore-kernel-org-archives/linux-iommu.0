@@ -3,70 +3,73 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1F7C433DF
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 19:14:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDB9C433E3
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 20:18:48 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A85120759
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 19:14:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6DA152076B
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 20:18:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="i/jHSvTU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A85120759
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="IpVr02DQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DA152076B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4D59B85D68;
-	Sun,  2 Aug 2020 19:14:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4090D87C91;
+	Sun,  2 Aug 2020 20:18:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9cXdxNnCKnJH; Sun,  2 Aug 2020 19:14:12 +0000 (UTC)
+	with ESMTP id Q4X4loiUGD5h; Sun,  2 Aug 2020 20:18:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DE21085D54;
-	Sun,  2 Aug 2020 19:14:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5343387B7D;
+	Sun,  2 Aug 2020 20:18:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3DAFC0050;
-	Sun,  2 Aug 2020 19:14:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35251C0051;
+	Sun,  2 Aug 2020 20:18:46 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1CB2FC004C
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 19:14:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 048F8C004C
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 20:18:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0272420414
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 19:14:11 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D697420387
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 20:18:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N08MNvVbIpIY for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 19:14:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A5C2D20432
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 19:14:08 +0000 (UTC)
-Received: from localhost (mobile-166-175-186-42.mycingular.net
- [166.175.186.42])
+ with ESMTP id ajL2+Ta4MxoO for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 20:18:43 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4EE3D20131
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 20:18:43 +0000 (UTC)
+Received: from nazgul.tnic (unknown [78.130.214.198])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E9B0F206E9;
- Sun,  2 Aug 2020 19:14:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1596395648;
- bh=8BmtM5Wz6njp3alR4dE4/v12QyDF8IHMxGR5An5fCEM=;
- h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=i/jHSvTUizuVlNBRmQdxRNPe6coho/ATL8nGKi/xOmyBYjKmz9+xWg85IsgGxSgIS
- dL1yfc+oHKYsaeZL0AE3OSX+Y10i5fuMEzdWvutU18j1LA95jrbDgF15+X0v94hhxC
- 1mNVxGQqYc9cBpDxqrC9KNkOyCMbtt1kU/iMoM8s=
-Date: Sun, 2 Aug 2020 14:14:06 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
+ by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4D2291EC02A8;
+ Sun,  2 Aug 2020 22:18:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+ t=1596399520;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+ bh=z0K+vlWV9j7wfXLQcUnvdJhwiVrF38RAZueHzdmaci0=;
+ b=IpVr02DQwE3yYwTGqHzkePquczoIuB3CSh4JRazV28rb0yxVyTjgJHeFSYXLscJQCgocj+
+ YjGRmfK2vuZ4xdnOu8V6Bj4srNoX1QpTQVYAD0HdeQama4rhKTHzaxEhs3BC4FYYx+fxXN
+ dZeZiogCz7IvNzoJKsyyZMEOy76rM2w=
+Date: Sun, 2 Aug 2020 22:18:06 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: Bjorn Helgaas <helgaas@kernel.org>
 Subject: Re: [RFC PATCH 00/17] Drop uses of pci_read_config_*() return value
-Message-ID: <20200802191406.GA248232@bjorn-Precision-5520>
+Message-ID: <20200802201806.GA24437@nazgul.tnic>
+References: <20200802184648.GA23190@nazgul.tnic>
+ <20200802191406.GA248232@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200802184648.GA23190@nazgul.tnic>
+In-Reply-To: <20200802191406.GA248232@bjorn-Precision-5520>
 Cc: Vignesh Raghavendra <vigneshr@ti.com>, linux-pci@vger.kernel.org,
  linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org,
  linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
@@ -101,26 +104,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Aug 02, 2020 at 08:46:48PM +0200, Borislav Petkov wrote:
-> On Sun, Aug 02, 2020 at 07:28:00PM +0200, Saheed Bolarinwa wrote:
-> > Because the value ~0 has a meaning to some drivers and only
+On Sun, Aug 02, 2020 at 02:14:06PM -0500, Bjorn Helgaas wrote:
+> Wait, I'm not convinced yet.  I know that if a PCI read fails, you
+> normally get ~0 data because the host bridge fabricates it to complete
+> the CPU load.
 > 
-> No, ~0 means that the PCI read failed. For *every* PCI device I know.
+> But what guarantees that a PCI config register cannot contain ~0?
 
-Wait, I'm not convinced yet.  I know that if a PCI read fails, you
-normally get ~0 data because the host bridge fabricates it to complete
-the CPU load.
+Well, I don't think you can differentiate that case, right?
 
-But what guarantees that a PCI config register cannot contain ~0?
-If there's something about that in the spec I'd love to know where it
-is because it would simplify a lot of things.
+I guess this is where the driver knowledge comes into play: if the read
+returns ~0, the pci_read_config* should probably return in that case
+something like:
 
-I don't think we should merge any of these patches as-is.  If we *do*
-want to go this direction, we at least need some kind of macro or
-function that tests for ~0 so we have a clue about what's happening
-and can grep for it.
+	PCIBIOS_READ_MAYBE_FAILED
 
-Bjorn
+to denote it is all 1s and then the caller should be able to determine,
+based on any of domain:bus:slot.func and whatever else the driver knows
+about its hardware, whether the 1s are a valid value or an error.
+Hopefully.
+
+Or something better of which I cannot think of right now...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
