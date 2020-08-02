@@ -2,111 +2,102 @@ Return-Path: <SRS0=vGvh=BM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDE3C433DF
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 00:30:58 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBF8C433E0
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 04:36:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9120220725
-	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 00:30:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DD4062072A
+	for <iommu@archiver.kernel.org>; Sun,  2 Aug 2020 04:36:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="wKoGwjku"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9120220725
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="M24/oMXw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD4062072A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5266187E91;
-	Sun,  2 Aug 2020 00:30:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AE13486130;
+	Sun,  2 Aug 2020 04:36:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FSqdYNyWocjS; Sun,  2 Aug 2020 00:30:57 +0000 (UTC)
+	with ESMTP id Bv7RldTA4Xty; Sun,  2 Aug 2020 04:36:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7AD3D87E60;
-	Sun,  2 Aug 2020 00:30:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AAF9785FEB;
+	Sun,  2 Aug 2020 04:36:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5ACB4C0050;
-	Sun,  2 Aug 2020 00:30:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B2A76C004D
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 00:30:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 920DAC0050;
+	Sun,  2 Aug 2020 04:36:27 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 416FBC004D
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 04:36:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 96C54881F0
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 00:30:56 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 30A21860F0
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 04:36:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IC4ApL+PnnFy for <iommu@lists.linux-foundation.org>;
- Sun,  2 Aug 2020 00:30:55 +0000 (UTC)
+ with ESMTP id JwGg5gKxReit for <iommu@lists.linux-foundation.org>;
+ Sun,  2 Aug 2020 04:36:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f65.google.com (mail-lf1-f65.google.com
- [209.85.167.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0C090881D7
- for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 00:30:55 +0000 (UTC)
-Received: by mail-lf1-f65.google.com with SMTP id x24so1390224lfe.11
- for <iommu@lists.linux-foundation.org>; Sat, 01 Aug 2020 17:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+ [209.85.128.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 22F8385FEB
+ for <iommu@lists.linux-foundation.org>; Sun,  2 Aug 2020 04:36:25 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id q76so11335483wme.4
+ for <iommu@lists.linux-foundation.org>; Sat, 01 Aug 2020 21:36:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=ec1r1tZZhLtfRlggg/zu2nnszPLvqXC5YM2YU2HZuDY=;
- b=wKoGwjkuSquBXSKd6RQTvt7/zMJOD7H7+imD5zHmg2L+H3t4gEloPd3kF9yxhTiKah
- lcGEhT4ciyCYaQXp6iTsxq1Y+wXANY1zKai63JAImoVEPGHaKdD/nOWoCUblOXZrRR8Y
- RB479LKYTs136EmsDMlL4+Ck42tQrqHTmc9F63RooE6wGfKPBVgSdYvjBlBynHtowKXl
- u60iHZeaLoli3mfMFJCkjHRH9QFu/ioE5Rmjywxz2jrHFJep3npflS7SGfHTYjZq32dw
- rOikI4QTI/T38HN7+KdelWoEX+t9oBhkkv955OoeO3pxBWpN0whSIxl978qh5lUUqY9g
- p3bg==
+ :cc; bh=6vNmnflYEbg7mvYXMmclsr6IkCV02+IyNI5VnpskLy0=;
+ b=M24/oMXwL+i8voPB/nhMMkq8wC7F3ckMxw60EFMwGurZkyCb+C1P2p/A98M2DiyQWk
+ 4jXOf9kenEAnq8Xdmjear0QrUUsn4fNCX5u/wn8CUuBRdVg8rmngpRos9iy2RWuqB+aY
+ jFCjtGCWgYdoo4QMWUKNmzwGALZJ1qJJE/y69IIQoGqithqjiLv305lEiEN2njSdYgZa
+ 0RRfJ/APvvW4N2TLedc3Sft2INBe6/C3WjIgrxM/rZW31x/2KWTN5s9woZEUYy4+TNYT
+ qKLtV3J2Mus3s+e2lV9Pr+pzSlfwGpNeqUeWAQFHK2DjHJcbQHk5fpNHRKa0f3Dm2hsW
+ 9i+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=ec1r1tZZhLtfRlggg/zu2nnszPLvqXC5YM2YU2HZuDY=;
- b=rOhFaWlpXD5rBUA6Wcl2dGLmjVYyHADeeCakXSwUa0t65zLnXGOpd8KWJh8AyxlfuO
- yeLtMnZaNx5hgfguDJuWkEWfOnwOF2zlMztRBXVJ90ODDRLZx6sSpAFblej3QACwLO5C
- k9E6sKznlZgEaGHOueRtVBgz7dbuCSw1UB/itiJKOE6ddASDlev3ZA35H7vB1K1jI+0y
- FqrLBQvdm1D16PRVKdL0l9NOQq1Gdn0es40o93f7Uk5z72So1alcUiWrF528xAjDp+ol
- YwKgnYAXvYuP1Kj5dayW0sDgvwxF0BYtxs6mGddcv2XOyjwedlaRkuScRq4l+2tlcy7/
- L8FA==
-X-Gm-Message-State: AOAM530qejWzx+ihkg0RdLRKAnfQstvUJf/m9U6gtwjK0PaA5kG4mJuG
- 0+xAx0WaGC7sFFcY91r/kr/I522H2tmyLN+exc9u0w==
-X-Google-Smtp-Source: ABdhPJzPXTK3nzbTrtPHobAj0f/c0JCHdGHR3VQ22y/pyzxyJ8CpjPrgjT8x7nBt5Sb8DqcWMe+ntDTKifLmxyIc7Rk=
-X-Received: by 2002:a19:8705:: with SMTP id j5mr5098223lfd.122.1596328252690; 
- Sat, 01 Aug 2020 17:30:52 -0700 (PDT)
+ bh=6vNmnflYEbg7mvYXMmclsr6IkCV02+IyNI5VnpskLy0=;
+ b=hRcV6l0SuomvqTOW2mP0aCSU3dYzs1kIs9pqGb9llzLWeev9B0NdHp6Joi4pMnF8/d
+ pQiJna/GZNTi0icETc3EXA5JnVORMplzoIE3LweViPcJlgr3O+O6l4bgrMqSkZ/kE49b
+ zQG/VLl+hEvfHVtia0oytsM2IuQsnaLd3SKBCGXeoHsCF40VWI4RD9IYSe5L/R+7LWk7
+ 3C1ZxvAONlECWE3NhFugUk59EkrxzAchPxKmODF9ohbiAYnpVJsst087ISNwng2ajCN0
+ oeeujMckVg339aIQ4fLDn8o6HKkY/s/hUD2rf12VYyF4CYIf2JjsA+cijhVO1fdfF+Vu
+ QE6g==
+X-Gm-Message-State: AOAM533Im1ikZ+rqLp5XQy46yO/MVjqcsaxIC9PSkHbVSHR7NZgXfHLx
+ 5kUSfHQ7GU32hZrYfLlsTvZLx/yP5H+9/c/X40xECg==
+X-Google-Smtp-Source: ABdhPJzKT2xb0QRayGaUb2+mgux4I6UL6ohXUuX4iFlXzn31jA9YDJ+gqU1xKCMRWBCdzNISXp9sWmoJPZ5YrB6B0BA=
+X-Received: by 2002:a05:600c:2209:: with SMTP id
+ z9mr10035470wml.70.1596342983482; 
+ Sat, 01 Aug 2020 21:36:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200714201540.3139140-1-rajatja@google.com>
- <CAA93t1rzHbTVCrXhz3YBExJS1FOHBe=GCnns9=q1Ry9zdWb4VA@mail.gmail.com>
-In-Reply-To: <CAA93t1rzHbTVCrXhz3YBExJS1FOHBe=GCnns9=q1Ry9zdWb4VA@mail.gmail.com>
-Date: Sat, 1 Aug 2020 17:30:15 -0700
-Message-ID: <CACK8Z6EbWikLjDr3xjRqzDNeyk-6Qwe67sOp3hczWd3xSQL3vQ@mail.gmail.com>
-Subject: Re: [PATCH v5] PCI/ACS: Enable PCI_ACS_TB and disable only when
- needed for ATS
-To: Rajat Jain <rajatxjain@gmail.com>
-Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
- "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- Saravana Kannan <saravanak@google.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Prashant Malani <pmalani@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Oliver O'Halloran <oohall@gmail.com>,
- Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
- Alex Levin <levinale@google.com>
+References: <CAMi1Hd1c3cNMYg+S5Pwuv30QCdcWJw+QxkWmNP34s3nb+_yUuA@mail.gmail.com>
+ <20200728124114.GA4865@lst.de>
+ <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
+ <20200728153055.GA16701@lst.de>
+ <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
+ <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
+ <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
+ <20200731130903.GA31110@lst.de>
+ <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
+ <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
+ <20200801085706.GA2991@lst.de>
+ <CAMi1Hd2tCfbDUuBP=OKoG8fPVCTpiARmqrkPadEJjJ52fgc_-Q@mail.gmail.com>
+ <CAHk-=wjY8LBgu5SyXnwf0W8AkwQGO38j=KHXoyAZ0XUw+TFQ7g@mail.gmail.com>
+In-Reply-To: <CAHk-=wjY8LBgu5SyXnwf0W8AkwQGO38j=KHXoyAZ0XUw+TFQ7g@mail.gmail.com>
+From: Amit Pundir <amit.pundir@linaro.org>
+Date: Sun, 2 Aug 2020 10:05:47 +0530
+Message-ID: <CAMi1Hd2f89Rx_0nVJZmGYJiZNo0DRkcHr2SQhEwRGWK4Vn3K9A@mail.gmail.com>
+Subject: Re: revert scope for 5.8, was Re: dma-pool fixes
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: jeremy.linton@arm.com, iommu <iommu@lists.linux-foundation.org>,
+ linux-rpi-kernel@lists.infradead.org, David Rientjes <rientjes@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,222 +110,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Rajat Jain <rajatja@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Bjorn,
+On Sat, 1 Aug 2020 at 23:58, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Sat, Aug 1, 2020 at 4:57 AM Amit Pundir <amit.pundir@linaro.org> wrote:
+> >
+> > Hi, I found the problematic memory region. It was a memory
+> > chunk reserved/removed in the downstream tree but was
+> > seemingly reserved upstream for different drivers.
+>
+> Is this happening with a clean tree, or are there external drivers
+> involved that trigger the problem?
+>
+> Because if it's a clean tree, I guess I need to do an rc8 anyway, just
+> to get whatever workaround you then added to devicetree and/or some
+> driver to make it work again.
+>
+
+No, this is not on a clean tree. The phone's device-tree is not
+upstreamed yet. That is the only change I carry. I have updated
+the device-tree for this fix and sent out a newer version for review.
+https://lkml.org/lkml/2020/8/1/184
+
+Regards,
+Amit Pundir
 
 
-On Tue, Jul 14, 2020 at 1:24 PM Rajat Jain <rajatxjain@gmail.com> wrote:
+> Or is there a quick fix that I can get today or early tomorrow? We had
+> some confusion this week due to a nasty include header mess, but
+> despite that there hasn't been anything else that has come up (so
+> far), so..
 >
-> On Tue, Jul 14, 2020 at 1:15 PM Rajat Jain <rajatja@google.com> wrote:
-> >
-> > The ACS "Translation Blocking" bit blocks the translated addresses from
-> > the devices. We don't expect such traffic from devices unless ATS is
-> > enabled on them. A device sending such traffic without ATS enabled,
-> > indicates malicious intent, and thus should be blocked.
-> >
-> > Enable PCI_ACS_TB by default for all devices, and it stays enabled until
-> > atleast one of the devices downstream wants to enable ATS. It gets
-> > disabled to enable ATS on a device downstream it, and then gets enabled
-> > back on once all the downstream devices don't need ATS.
-> >
-> > Signed-off-by: Rajat Jain <rajatja@google.com>
-
-Just checking to see if you got a chance to look at this V5 patch.
-
-Thanks & Best Regards,
-
-Rajat
-
-> > ---
-> > Note that I'm ignoring the devices that require quirks to enable or
-> > disable ACS, instead of using the standard way for ACS configuration.
-> > The reason is that it would require adding yet another quirk table or
-> > quirk function pointer, that I don't know how to implement for those
-> > devices, and will neither have the devices to test that code.
-> >
-> > v5: Enable TB and disable ATS for all devices on boot. Disable TB later
-> >     only if needed to enable ATS on downstream devices.
-> > v4: Add braces to avoid warning from kernel robot
-> >     print warning for only external-facing devices.
-> > v3: print warning if ACS_TB not supported on external-facing/untrusted ports.
-> >     Minor code comments fixes.
-> > v2: Commit log change
-> >
-> >  drivers/pci/ats.c   |  5 ++++
-> >  drivers/pci/pci.c   | 57 +++++++++++++++++++++++++++++++++++++++++++++
-> >  drivers/pci/pci.h   |  2 ++
-> >  drivers/pci/probe.c |  2 +-
-> >  include/linux/pci.h |  2 ++
-> >  5 files changed, 67 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > index b761c1f72f67..e2ea9083f30f 100644
-> > --- a/drivers/pci/ats.c
-> > +++ b/drivers/pci/ats.c
-> > @@ -28,6 +28,9 @@ void pci_ats_init(struct pci_dev *dev)
-> >                 return;
-> >
-> >         dev->ats_cap = pos;
-> > +
-> > +       dev->ats_enabled = 1; /* To avoid WARN_ON from pci_disable_ats() */
-> > +       pci_disable_ats(dev);
-> >  }
-> >
-> >  /**
-> > @@ -82,6 +85,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
-> >         }
-> >         pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> >
-> > +       pci_disable_acs_trans_blocking(dev);
-> >         dev->ats_enabled = 1;
-> >         return 0;
-> >  }
-> > @@ -102,6 +106,7 @@ void pci_disable_ats(struct pci_dev *dev)
-> >         ctrl &= ~PCI_ATS_CTRL_ENABLE;
-> >         pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> >
-> > +       pci_enable_acs_trans_blocking(dev);
-> >         dev->ats_enabled = 0;
-> >  }
-> >  EXPORT_SYMBOL_GPL(pci_disable_ats);
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index 73a862782214..614e3c1e8c56 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -876,6 +876,9 @@ static void pci_std_enable_acs(struct pci_dev *dev)
-> >         /* Upstream Forwarding */
-> >         ctrl |= (cap & PCI_ACS_UF);
-> >
-> > +       /* Translation Blocking */
-> > +       ctrl |= (cap & PCI_ACS_TB);
-> > +
-> >         pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> >  }
-> >
-> > @@ -904,6 +907,60 @@ static void pci_enable_acs(struct pci_dev *dev)
-> >         pci_disable_acs_redir(dev);
-> >  }
-> >
-> > +void pci_disable_acs_trans_blocking(struct pci_dev *pdev)
-> > +{
-> > +       u16 cap, ctrl, pos;
-> > +       struct pci_dev *dev;
-> > +
-> > +       if (!pci_acs_enable)
-> > +               return;
-> > +
-> > +       for (dev = pdev; dev; dev = pci_upstream_bridge(pdev)) {
-> > +
-> > +               pos = dev->acs_cap;
-> > +               if (!pos)
-> > +                       continue;
-> > +
-> > +               /*
-> > +                * Disable translation blocking when first downstream
-> > +                * device that needs it (for ATS) wants to enable ATS
-> > +                */
-> > +               if (++dev->ats_dependencies == 1) {
->
-> I am a little worried about a potential race condition here. I know
-> that 2 PCI devices cannot be enumerating at the same time. Do we know
-> if multiple pci_enable_ats() and pci_disable_ats() function calls can
-> be simultaneously executing (even for different devices)? If so, we
-> may need an atomic_t variable for ats_dependencies.
->
-> Thanks,
->
-> Rajat
->
->
-> > +                       pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
-> > +                       pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-> > +                       ctrl &= ~(cap & PCI_ACS_TB);
-> > +                       pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> > +               }
-> > +       }
-> > +}
-> > +
-> > +void pci_enable_acs_trans_blocking(struct pci_dev *pdev)
-> > +{
-> > +       u16 cap, ctrl, pos;
-> > +       struct pci_dev *dev;
-> > +
-> > +       if (!pci_acs_enable)
-> > +               return;
-> > +
-> > +       for (dev = pdev; dev; dev = pci_upstream_bridge(pdev)) {
-> > +
-> > +               pos = dev->acs_cap;
-> > +               if (!pos)
-> > +                       continue;
-> > +
-> > +               /*
-> > +                * Enable translation blocking when last downstream device
-> > +                * that depends on it (for ATS), doesn't need ATS anymore
-> > +                */
-> > +               if (--dev->ats_dependencies == 0) {
-> > +                       pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
-> > +                       pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-> > +                       ctrl |= (cap & PCI_ACS_TB);
-> > +                       pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> > +               }
-> > +       }
-> > +}
-> > +
-> >  /**
-> >   * pci_restore_bars - restore a device's BAR values (e.g. after wake-up)
-> >   * @dev: PCI device to have its BARs restored
-> > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> > index 12fb79fbe29d..f5d8ecb6ba96 100644
-> > --- a/drivers/pci/pci.h
-> > +++ b/drivers/pci/pci.h
-> > @@ -552,6 +552,8 @@ static inline int pci_dev_specific_disable_acs_redir(struct pci_dev *dev)
-> >         return -ENOTTY;
-> >  }
-> >  #endif
-> > +void pci_disable_acs_trans_blocking(struct pci_dev *dev);
-> > +void pci_enable_acs_trans_blocking(struct pci_dev *dev);
-> >
-> >  /* PCI error reporting and recovery */
-> >  pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
-> > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> > index 8c40c00413e7..e2ff3a94e621 100644
-> > --- a/drivers/pci/probe.c
-> > +++ b/drivers/pci/probe.c
-> > @@ -2387,10 +2387,10 @@ static void pci_init_capabilities(struct pci_dev *dev)
-> >         pci_vpd_init(dev);              /* Vital Product Data */
-> >         pci_configure_ari(dev);         /* Alternative Routing-ID Forwarding */
-> >         pci_iov_init(dev);              /* Single Root I/O Virtualization */
-> > +       pci_acs_init(dev);              /* Access Control Services */
-> >         pci_ats_init(dev);              /* Address Translation Services */
-> >         pci_pri_init(dev);              /* Page Request Interface */
-> >         pci_pasid_init(dev);            /* Process Address Space ID */
-> > -       pci_acs_init(dev);              /* Access Control Services */
-> >         pci_ptm_init(dev);              /* Precision Time Measurement */
-> >         pci_aer_init(dev);              /* Advanced Error Reporting */
-> >         pci_dpc_init(dev);              /* Downstream Port Containment */
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index 7a40cd5caed0..31da4355f0fd 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -480,6 +480,8 @@ struct pci_dev {
-> >         u16             ats_cap;        /* ATS Capability offset */
-> >         u8              ats_stu;        /* ATS Smallest Translation Unit */
-> >  #endif
-> > +       /* Total number of downstream devices below a bridge that need ATS */
-> > +       u8              ats_dependencies;
-> >  #ifdef CONFIG_PCI_PRI
-> >         u16             pri_cap;        /* PRI Capability offset */
-> >         u32             pri_reqs_alloc; /* Number of PRI requests allocated */
-> > --
-> > 2.27.0.389.gc38d7665816-goog
-> >
+>                        Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
