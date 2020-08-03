@@ -2,137 +2,110 @@ Return-Path: <SRS0=54Vi=BN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC52FC433DF
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 17:34:19 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0620C433DF
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BF92520792
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 17:34:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF92520792
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7087722B40
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="FctVSqVy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7087722B40
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 909FF854A7;
-	Mon,  3 Aug 2020 17:34:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A7DE186382;
+	Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OoNqfZ_lqok9; Mon,  3 Aug 2020 17:34:19 +0000 (UTC)
+	with ESMTP id 38etB0MhoR3N; Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B252853D3;
-	Mon,  3 Aug 2020 17:34:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 244D686233;
+	Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 30061C0051;
-	Mon,  3 Aug 2020 17:34:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23280C004C
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 17:34:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 054C3C0050;
+	Mon,  3 Aug 2020 18:30:53 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 69B94C004C
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 18:30:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0B17A8789C
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 17:34:17 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 231FA204CB
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 18:30:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yjr2Dy016EJW for <iommu@lists.linux-foundation.org>;
- Mon,  3 Aug 2020 17:34:16 +0000 (UTC)
+ with ESMTP id UUMkFtZdCeYb for <iommu@lists.linux-foundation.org>;
+ Mon,  3 Aug 2020 18:30:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6C97F8789B
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 17:34:16 +0000 (UTC)
-IronPort-SDR: Pn/jWYxLUO5XWjsMFfrcLzY7OF/ayCZkXuC2NmSK45W+ZLJagoWKehduJVSTDPsOVGUrPjw4SU
- /CGaH3T6sySw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9702"; a="132220659"
-X-IronPort-AV: E=Sophos;i="5.75,430,1589266800"; d="scan'208";a="132220659"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Aug 2020 10:34:15 -0700
-IronPort-SDR: ziMvSzBOGauukD7LcvhWaE/PCYjetu+ox086xTHzOu8n7YHO7t4uc5+J2kYgPtrXosWptYXuNq
- FjQ5ohxBh+eQ==
-X-IronPort-AV: E=Sophos;i="5.75,430,1589266800"; d="scan'208";a="466609798"
-Received: from arossfer-mobl.amr.corp.intel.com (HELO [10.255.230.80])
- ([10.255.230.80])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Aug 2020 10:34:14 -0700
-Subject: Re: [PATCH v6 12/12] x86/traps: Fix up invalid PASID
-To: Andy Lutomirski <luto@kernel.org>
-References: <1594684087-61184-1-git-send-email-fenghua.yu@intel.com>
- <1594684087-61184-13-git-send-email-fenghua.yu@intel.com>
- <CALCETrXnO4oh+WyxtSM-j_pP4QgkSg24=y76OBEHxXxAfJtPhA@mail.gmail.com>
- <f6d34d59-e6eb-ee9f-d247-8fb2f0e37549@intel.com>
- <CALCETrXLFwzCzoE8ZjciBO_WSK8StyTfO1yXVm4v2qFQZpfasg@mail.gmail.com>
- <12fbdc01-e444-8d10-5790-e3495fc8a837@intel.com>
- <CALCETrWR1hL=eXAkn=OG1vtAPvC9n1jGqyNuyXpYw8QwPENo1A@mail.gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <92a14516-1f63-5b5f-7f30-8870fe343c8e@intel.com>
-Date: Mon, 3 Aug 2020 10:34:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+ [209.85.214.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id E9AC42047B
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 18:30:49 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id q17so21260858pls.9
+ for <iommu@lists.linux-foundation.org>; Mon, 03 Aug 2020 11:30:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=JwRRg79Yf9uvematvciZtAtNIlwaUYjaYnclD9uw6H4=;
+ b=FctVSqVyXofv5zMutLQ7zuQIvasuCC7A9icLXoYneOOXCjHX3zzJQEE4nNeOovplIa
+ gY/nnHyLj3jq9KHqyW66FZFHXJmRT8PojCDw8we6Z03MSmXjSWutPpgcEnBikuCd1ham
+ ONO2Moe94Z3yB6jpuhL6ylgyjJp0OplWvbkz3cYDc5JqN+KxmfhVRfkWxR7c9nLyeEYj
+ MOgAHuU8b+yLNpwOCs0zph1t+5mTJvhfugjJVRhM1wyF+1AH0Hf9UR8EhJIx1M2p2wM9
+ yqACjQYYOfpT8VGhwkqjDgfF8RcVknlYzDWiR5MDyCb8Ugz9RZ0nrWc5lXGWsBYyE0A6
+ 7Gtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=JwRRg79Yf9uvematvciZtAtNIlwaUYjaYnclD9uw6H4=;
+ b=INBZ/szigdULX9mACpv7C9nMLT9WNgP2ch/B5+ubltZN4AcHB/FKLV6AnWlgNC7IOu
+ N0KoAgHuPXpobU9inzYHjugbix0Fe5k+8v8sUq/qIAxWu8He0QzreWjubrOajLYP7haA
+ ze0NkPdows2Us2A/cybUsw+QnOOI1ErekNkLDwufxQPmK/Hs7ipf3UBMhLSDRutdu8py
+ hcbtXWpCUdLYclBZ4x1an8dL/f4LYXp9iyw+SxpayEcnoQk5AJm4ikFqHtVpSw/RR++M
+ oAU/YNDAq7lzY6fnSEGyPPk2tSdoY2MobPLZmnXtV+ncRSOLBidoVqIJG985xdAXslKJ
+ 0isA==
+X-Gm-Message-State: AOAM532u4MS5mozObEKCx93trzZhdLXhHP5+uEk9ATLQn6NqLVDX0Zjv
+ ZOQCVpUO5AEZ1iRgk+YG+X52sA==
+X-Google-Smtp-Source: ABdhPJyqaqNiXglF2QS7oRLi/bJBq42L+GWqFa3PM1bL+aVK+h3vWol8OmcMqCbeQ4k7SHZsV0Ts6Q==
+X-Received: by 2002:a17:90a:e551:: with SMTP id
+ ei17mr597529pjb.224.1596479449160; 
+ Mon, 03 Aug 2020 11:30:49 -0700 (PDT)
+Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667]
+ ([2620:15c:17:3:4a0f:cfff:fe51:6667])
+ by smtp.gmail.com with ESMTPSA id e8sm19778735pfd.34.2020.08.03.11.30.48
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 03 Aug 2020 11:30:48 -0700 (PDT)
+Date: Mon, 3 Aug 2020 11:30:47 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: revert scope for 5.8, was Re: dma-pool fixes
+In-Reply-To: <20200803064438.GA19014@lst.de>
+Message-ID: <alpine.DEB.2.23.453.2008031128160.683224@chino.kir.corp.google.com>
+References: <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
+ <20200731130903.GA31110@lst.de>
+ <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
+ <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
+ <20200801085706.GA2991@lst.de>
+ <CAMi1Hd2tCfbDUuBP=OKoG8fPVCTpiARmqrkPadEJjJ52fgc_-Q@mail.gmail.com>
+ <20200801173952.GA15542@lst.de>
+ <CAMi1Hd3wU3pH4dfxcxqKfWmLWxPXD--4hkYC+VQywwQn1mokMg@mail.gmail.com>
+ <CAMi1Hd2MLYx_NkXug+Ow7qFn+tzkMFQy_u0iF_-J6amnXZhckA@mail.gmail.com>
+ <alpine.DEB.2.23.453.2008022109280.483838@chino.kir.corp.google.com>
+ <20200803064438.GA19014@lst.de>
+User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
 MIME-Version: 1.0
-In-Reply-To: <CALCETrWR1hL=eXAkn=OG1vtAPvC9n1jGqyNuyXpYw8QwPENo1A@mail.gmail.com>
-Content-Language: en-US
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, H Peter Anvin <hpa@zytor.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, amd-gfx <amd-gfx@lists.freedesktop.org>,
- Christoph Hellwig <hch@infradead.org>, Ingo Molnar <mingo@redhat.com>,
- Fenghua Yu <fenghua.yu@intel.com>, Borislav Petkov <bp@alien8.de>,
- Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>,
- Felix Kuehling <Felix.Kuehling@amd.com>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- iommu <iommu@lists.linux-foundation.org>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: Amit Pundir <amit.pundir@linaro.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
+ iommu <iommu@lists.linux-foundation.org>, jeremy.linton@arm.com,
+ Caleb Connolly <caleb@connolly.tech>, linux-rpi-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -145,34 +118,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gOC8zLzIwIDEwOjE2IEFNLCBBbmR5IEx1dG9taXJza2kgd3JvdGU6Cj4gLSBUSUxFOiBnZW51
-aW5lbHkgcGVyLXRocmVhZCwgYnV0IGl0J3MgZXhwZW5zaXZlIHNvIGl0J3MKPiBsYXp5LWxvYWRh
-YmxlLiAgQnV0IHRoZSBsYXp5LWxvYWQgbWVjaGFuaXNtIHJldXNlcyAjTk0sIGFuZCBpdCdzIG5v
-dAo+IGZ1bGx5IGRpc2FtYmlndWF0ZWQgZnJvbSB0aGUgb3RoZXIgdXNlIG9mICNOTS4gIFNvIGl0
-IHNvcnQgb2Ygd29ya3MsCj4gYnV0IGl0J3MgZ3Jvc3MuCgpGb3IgdGhvc2UgcGxheWluZyBhbG9u
-ZyBhdCBob21lLCB0aGVyZSdzIGEgbmV3IHdoaXRlcGFwZXIgb3V0IGZyb20gSW50ZWwKYWJvdXQg
-c29tZSBuZXcgQ1BVIGZlYXR1cmVzIHdoaWNoIGFyZSBnb2luZyB0byBiZSBmdW46Cgo+IGh0dHBz
-Oi8vc29mdHdhcmUuaW50ZWwuY29tL2NvbnRlbnQvZGFtL2RldmVsb3AvcHVibGljL3VzL2VuL2Rv
-Y3VtZW50cy9hcmNoaXRlY3R1cmUtaW5zdHJ1Y3Rpb24tc2V0LWV4dGVuc2lvbnMtcHJvZ3JhbW1p
-bmctcmVmZXJlbmNlLnBkZgoKV2hpY2ggcGFydCB3ZXJlIHlvdSB3b3JyaWVkIGFib3V0PyAgSSB0
-aG91Z2h0IGl0IHdhcyBmdWxseSBkaXNhbWJ1Z3VhdGVkCmZyb20gdGhpczoKCj4gV2hlbiBYRkQg
-Y2F1c2VzIGFuIGluc3RydWN0aW9uIHRvIGdlbmVyYXRlICNOTSwgdGhlIHByb2Nlc3NvciBsb2Fk
-cwo+IHRoZSBJQTMyX1hGRF9FUlIgTVNSIHRvIGlkZW50aWZ5IHRoZSBkaXNhYmxlZCBzdGF0ZSBj
-b21wb25lbnQocykuCj4gU3BlY2lmaWNhbGx5LCB0aGUgTVNSIGlzIGxvYWRlZCB3aXRoIHRoZSBs
-b2dpY2FsIEFORCBvZiB0aGUgSUEzMl9YRkQKPiBNU1IgYW5kIHRoZSBiaXRtYXAgY29ycmVzcG9u
-ZGluZyB0byB0aGUgc3RhdGUgY29tcG9uZW50cyByZXF1aXJlZCBieQo+IHRoZSBmYXVsdGluZyBp
-bnN0cnVjdGlvbi4KPiAKPiBEZXZpY2Utbm90LWF2YWlsYWJsZSBleGNlcHRpb25zIHRoYXQgYXJl
-IG5vdCBkdWUgdG8gWEZEIOKAlCB0aG9zZSAKPiByZXN1bHRpbmcgZnJvbSBzZXR0aW5nIENSMC5U
-UyB0byAxIOKAlCBkbyBub3QgbW9kaWZ5IHRoZSBJQTMyX1hGRF9FUlIKPiBNU1IuCgpTbyBpZiB5
-b3UgYWx3YXlzIG1ha2Ugc3VyZSB0byAqY2xlYXIqIElBMzJfWEZEX0VSUiBhZnRlciBoYW5kaW5n
-IGFuZCBYRkQKZXhjZXB0aW9uLCBhbnkgI05NJ3Mgd2l0aCBhIGNsZWFyIElBMzJfWEZEX0VSUiBh
-cmUgZnJvbSAibGVnYWN5IgpDUjAuVFM9MS4gIEFueSBiaXRzIHNldCBpbiBJQTMyX1hGRF9FUlIg
-bWVhbiBhIG5ldy1zdHlsZSBYRkQgZXhjZXB0aW9uLgoKQW0gSSBtaXNzaW5nIHNvbWV0aGluZz8K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
-bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Mon, 3 Aug 2020, Christoph Hellwig wrote:
+
+> On Sun, Aug 02, 2020 at 09:14:41PM -0700, David Rientjes wrote:
+> > Christoph: since we have atomic DMA coherent pools in 5.8 now, recall our 
+> > previous discussions, including Greg KH, regarding backports to stable 
+> > trees (we are interested in 5.4 and 5.6) of this support for the purposes 
+> > of confidential VM users who wish to run their own SEV-enabled guests in 
+> > cloud.
+> > 
+> > Would you have any objections to backports being offered for this support 
+> > now?  We can prepare them immediately.  Or, if you would prefer we hold 
+> > off for a while, please let me know and we can delay it until you are more 
+> > comfortable.  (For confidential VM users, the ability to run your own 
+> > unmodified stable kernel is a much different security story than a guest 
+> > modified by the cloud provider.)
+> 
+> Before we start backporting I think we need the two fixes from
+> the "dma pool fixes" series.  Can you start reviewing them?  I also
+> think we should probably wait at least until -rc2 for any fallout
+> before starting the backport.
+> 
+
+Thanks Christoph, this makes perfect sense.  I see Nicolas has refreshed 
+the two patches:
+
+dma-pool: fix coherent pool allocations for IOMMU mappings
+dma-pool: Only allocate from CMA when in same memory zone
+
+and posted them again today on LKML for review.  I'll review those and 
+we'll send a full series of backports for stable consideration for 5.4 LTS 
+and 5.6 around 5.9-rc2 timeframe.
+
+Thanks!
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
