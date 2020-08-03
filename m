@@ -2,79 +2,111 @@ Return-Path: <SRS0=54Vi=BN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B353C433DF
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 02:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 127C6C433DF
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 04:14:46 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E0EF206F6
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 02:36:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E0EF206F6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CA5492075B
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 04:14:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="uaKDHMyW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA5492075B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6CD3A8791E;
-	Mon,  3 Aug 2020 02:36:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 00C2E87BC8;
+	Mon,  3 Aug 2020 04:14:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H3fkhQVNxpc5; Mon,  3 Aug 2020 02:36:58 +0000 (UTC)
+	with ESMTP id Q+yHkXWHLr0M; Mon,  3 Aug 2020 04:14:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 336A187916;
-	Mon,  3 Aug 2020 02:36:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3359187BB1;
+	Mon,  3 Aug 2020 04:14:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17C92C0051;
-	Mon,  3 Aug 2020 02:36:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 24A8CC0051;
+	Mon,  3 Aug 2020 04:14:45 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 785E5C004C
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 02:36:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 32A19C004C
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 04:14:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 49CA8204BC
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 02:36:57 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 14662203BA
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 04:14:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ILi-oos2F+qR for <iommu@lists.linux-foundation.org>;
- Mon,  3 Aug 2020 02:36:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by silver.osuosl.org (Postfix) with ESMTPS id 0F5D420485
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 02:36:53 +0000 (UTC)
-IronPort-SDR: DjAMpot2KK6+QlE1sXDsNaII2pom/PRvQIP3thi9hFHcHpmVkjq8FcA+gMkAnDBcmD772TtJ0y
- g+VzIYNmF8Qw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9701"; a="213569891"
-X-IronPort-AV: E=Sophos;i="5.75,428,1589266800"; d="scan'208";a="213569891"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Aug 2020 19:36:52 -0700
-IronPort-SDR: uOqaVIgPuJ7GTavJvsDcRWE3gMjpx9evCH1ra+EntitP5578Ut7ZKTIEE4vbpDPJ0h/EBX/UVt
- HESTqG9CLzlw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,428,1589266800"; d="scan'208";a="395912397"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 02 Aug 2020 19:36:49 -0700
-Subject: Re: [PATCH] iommu/vt-d:Add support for ACPI device in RMRR
-To: FelixCuioc <FelixCui-oc@zhaoxin.com>, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- David Woodhouse <dwmw2@infradead.org>
-References: <20200802100735.2722-1-FelixCui-oc@zhaoxin.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <73d4a1e4-f6b7-efb0-e225-2e462c838657@linux.intel.com>
-Date: Mon, 3 Aug 2020 10:31:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ with ESMTP id 16+dGGscQDUj for <iommu@lists.linux-foundation.org>;
+ Mon,  3 Aug 2020 04:14:43 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com
+ [209.85.216.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id E76F42035D
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 04:14:42 +0000 (UTC)
+Received: by mail-pj1-f65.google.com with SMTP id ha11so10670114pjb.1
+ for <iommu@lists.linux-foundation.org>; Sun, 02 Aug 2020 21:14:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=awtrX0rFxmtE7rnp7ijkNRLGiarYo62mFqhE0DOdZ5I=;
+ b=uaKDHMyWiMX0s9KBh7EWWkTpxnEJyQezYei5n+WjF28WfxK1cO4tBwsFl99Jf7f39b
+ Xo3sQB+PADniybIppU2e2NUHO9LUWfjZTOcQIDSmohzuTy8bPxsgHrUw90K6UpJ4fq9j
+ aHIGQ7CarpN0ExykuNzC8TP7AkM/HFDIc3Y1JbksY6vxaxpG1UB1Xz7YYu6LAps2a0zk
+ c3jXzpjxzf8/AlYJG2olLsSm+LuoN4aYA4oBghS+vHNR4Dze/1yEJJ7JZ78/fGPzq0Iz
+ umnYoX9JfXCZ9faMluAooOPjtAGmE5uOx+sqrQt9znmlH9tZDcaHgnwvg5gVfDKRo7SI
+ oW4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=awtrX0rFxmtE7rnp7ijkNRLGiarYo62mFqhE0DOdZ5I=;
+ b=lyV0dnTkVckAlniyTp8ipDolqaKxN2AF5I3S6N4BpByBXqaASRcECY2R1oG+fw59J9
+ tq+epuSw/BNhOUYmC1Q4EjSelgzbCL14SYjxBeAsfO+rANYWgd5gi0KqnrM7QOfbu8sw
+ 4ZnSQdLsgjKxIqfVDvKOChihA8/p/iF9dsx63+VD2T1PHlnnMx41yrykAFbygEclgTJu
+ Ch/yHIZnP6o6dBwEjh7P59HYMHDqJEhxuWUoIl6qS011GdFypVDf0wd6ECUKzahza4gV
+ dxF+rPwocyBd/ljFGn+gabL+z0vFzHAoFp9ItwKKNKiEgORh3tUq5ofXb/sQUUc2RNi/
+ 2/5A==
+X-Gm-Message-State: AOAM5312bmT8iBpG3N9D7YaxRWeJJnTciP30W50Mn8QlL8OqBF5HZcrv
+ AbMXMkEROvwvHVDaNwXlIfLZbw==
+X-Google-Smtp-Source: ABdhPJxsGJSBQ2juzjj+x9QJZh+nnXfq5NVkVZleKhTDtENeCoZsqPPvLeMcTJsUyLzlsc4tNEl13g==
+X-Received: by 2002:a17:90a:e508:: with SMTP id
+ t8mr15439924pjy.32.1596428082344; 
+ Sun, 02 Aug 2020 21:14:42 -0700 (PDT)
+Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667]
+ ([2620:15c:17:3:4a0f:cfff:fe51:6667])
+ by smtp.gmail.com with ESMTPSA id z19sm18754426pfa.9.2020.08.02.21.14.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 02 Aug 2020 21:14:41 -0700 (PDT)
+Date: Sun, 2 Aug 2020 21:14:41 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Amit Pundir <amit.pundir@linaro.org>
+Subject: Re: revert scope for 5.8, was Re: dma-pool fixes
+In-Reply-To: <CAMi1Hd2MLYx_NkXug+Ow7qFn+tzkMFQy_u0iF_-J6amnXZhckA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.23.453.2008022109280.483838@chino.kir.corp.google.com>
+References: <CAMi1Hd0wpcLVJ41h6gs4H0WEDVpNEs7N=wx+KQ_yRKeSv0kQ9g@mail.gmail.com>
+ <20200728153055.GA16701@lst.de>
+ <18a3b93cc5ba3e0e39ae1b14759ce31121d54045.camel@suse.de>
+ <CAMi1Hd3QNtZVEFUgDprT==wcVHKv6TsvpT3RurVJTDb1op2LnA@mail.gmail.com>
+ <CAMi1Hd09EbzOgTU5P4EDS8BQ6J2jFntvyR49BePyAqJ15DBB0Q@mail.gmail.com>
+ <20200731130903.GA31110@lst.de>
+ <alpine.DEB.2.23.453.2007311204010.3836388@chino.kir.corp.google.com>
+ <alpine.DEB.2.23.453.2008010105560.4078406@chino.kir.corp.google.com>
+ <20200801085706.GA2991@lst.de>
+ <CAMi1Hd2tCfbDUuBP=OKoG8fPVCTpiARmqrkPadEJjJ52fgc_-Q@mail.gmail.com>
+ <20200801173952.GA15542@lst.de>
+ <CAMi1Hd3wU3pH4dfxcxqKfWmLWxPXD--4hkYC+VQywwQn1mokMg@mail.gmail.com>
+ <CAMi1Hd2MLYx_NkXug+Ow7qFn+tzkMFQy_u0iF_-J6amnXZhckA@mail.gmail.com>
+User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
 MIME-Version: 1.0
-In-Reply-To: <20200802100735.2722-1-FelixCui-oc@zhaoxin.com>
-Content-Language: en-US
-Cc: CobeChen@zhaoxin.com, RaymondPang@zhaoxin.com
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+ iommu <iommu@lists.linux-foundation.org>, jeremy.linton@arm.com,
+ Caleb Connolly <caleb@connolly.tech>, linux-rpi-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,333 +119,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Sun, 2 Aug 2020, Amit Pundir wrote:
 
-On 8/2/20 6:07 PM, FelixCuioc wrote:
-> Some ACPI devices require access to the specified reserved memory
-> region.BIOS report the specified reserved memory region through
-> RMRR structures.Add analysis of ACPI device in RMRR and establish
-> identity mapping for ACPI device.
-
-Can you please add more words about the problem you want to solve? Do
-you mean some RMRRs are not enumerated correctly? Or, enumerated, but
-not identity mapped?
-
-Nit: add version and change log once you refreshed your patch.
-
+> > > > Hi, I found the problematic memory region. It was a memory
+> > > > chunk reserved/removed in the downstream tree but was
+> > > > seemingly reserved upstream for different drivers. I failed to
+> > > > calculate the length of the total region reserved downstream
+> > > > correctly. And there was still a portion of memory left unmarked,
+> > > > which I should have marked as reserved in my testing earlier
+> > > > today.
+> > > >
+> > > > Sorry for all the noise and thanks Nicolas, Christoph and David
+> > > > for your patience.
+> > >
+> > > So you'll need to patch the upstream DTS to fix this up?  Do you also
+> > > need my two fixes?  What about the Oneplus phones?  Can you send a
+> > > mail with a summary of the status?
+> >
+> > Poco's DTS is not upstreamed yet. I have updated it for this fix
+> > and sent out a newer version for review.
+> > https://lkml.org/lkml/2020/8/1/184
+> >
+> > I didn't need to try your two add-on fixes. I'll give them a spin
+> > later today.
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-
-No need to add this. The problem you want to solve through this patch is
-not reported by lkp.
-
-Best regards,
-baolu
-
-> Signed-off-by: FelixCuioc <FelixCui-oc@zhaoxin.com>
-> ---
->   drivers/iommu/intel/dmar.c  | 74 ++++++++++++++++++++-----------------
->   drivers/iommu/intel/iommu.c | 46 ++++++++++++++++++++++-
->   drivers/iommu/iommu.c       |  6 +++
->   include/linux/dmar.h        | 12 +++++-
->   include/linux/iommu.h       |  3 ++
->   5 files changed, 105 insertions(+), 36 deletions(-)
+> Hi Christoph,
 > 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 93e6345f3414..024ca38dba12 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -215,7 +215,7 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
->   }
->   
->   /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
-> -int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
-> +int dmar_pci_insert_dev_scope(struct dmar_pci_notify_info *info,
->   			  void *start, void*end, u16 segment,
->   			  struct dmar_dev_scope *devices,
->   			  int devices_cnt)
-> @@ -304,7 +304,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
->   
->   		drhd = container_of(dmaru->hdr,
->   				    struct acpi_dmar_hardware_unit, header);
-> -		ret = dmar_insert_dev_scope(info, (void *)(drhd + 1),
-> +		ret = dmar_pci_insert_dev_scope(info, (void *)(drhd + 1),
->   				((void *)drhd) + drhd->header.length,
->   				dmaru->segment,
->   				dmaru->devices, dmaru->devices_cnt);
-> @@ -696,48 +696,56 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
->   
->   	return dmaru;
->   }
-> -
-> -static void __init dmar_acpi_insert_dev_scope(u8 device_number,
-> -					      struct acpi_device *adev)
-> +int dmar_acpi_insert_dev_scope(u8 device_number,
-> +				struct acpi_device *adev,
-> +				void *start, void *end,
-> +				struct dmar_dev_scope *devices,
-> +				int devices_cnt)
->   {
-> -	struct dmar_drhd_unit *dmaru;
-> -	struct acpi_dmar_hardware_unit *drhd;
->   	struct acpi_dmar_device_scope *scope;
->   	struct device *tmp;
->   	int i;
->   	struct acpi_dmar_pci_path *path;
->   
-> +	for (; start < end; start += scope->length) {
-> +		scope = start;
-> +		if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
-> +			continue;
-> +		if (scope->enumeration_id != device_number)
-> +			continue;
-> +		path = (void *)(scope + 1);
-> +		for_each_dev_scope(devices, devices_cnt, i, tmp)
-> +			if (tmp == NULL) {
-> +				devices[i].bus = scope->bus;
-> +				devices[i].devfn = PCI_DEVFN(path->device, path->function);
-> +				rcu_assign_pointer(devices[i].dev,
-> +						   get_device(&adev->dev));
-> +				return 1;
-> +			}
-> +		WARN_ON(i >= devices_cnt);
-> +	}
-> +	return 0;
-> +}
-> +static int dmar_acpi_bus_add_dev(u8 device_number, struct acpi_device *adev)
-> +{
-> +	struct dmar_drhd_unit *dmaru;
-> +	struct acpi_dmar_hardware_unit *drhd;
-> +	int ret = 0;
-> +
->   	for_each_drhd_unit(dmaru) {
->   		drhd = container_of(dmaru->hdr,
->   				    struct acpi_dmar_hardware_unit,
->   				    header);
-> +		ret = dmar_acpi_insert_dev_scope(device_number, adev, (void *)(drhd+1),
-> +						((void *)drhd)+drhd->header.length,
-> +						dmaru->devices, dmaru->devices_cnt);
-> +		if (ret)
-> +			break;
-> +	}
-> +	ret = dmar_rmrr_add_acpi_dev(device_number, adev);
->   
-> -		for (scope = (void *)(drhd + 1);
-> -		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
-> -		     scope = ((void *)scope) + scope->length) {
-> -			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
-> -				continue;
-> -			if (scope->enumeration_id != device_number)
-> -				continue;
-> +	return ret;
->   
-> -			path = (void *)(scope + 1);
-> -			pr_info("ACPI device \"%s\" under DMAR at %llx as %02x:%02x.%d\n",
-> -				dev_name(&adev->dev), dmaru->reg_base_addr,
-> -				scope->bus, path->device, path->function);
-> -			for_each_dev_scope(dmaru->devices, dmaru->devices_cnt, i, tmp)
-> -				if (tmp == NULL) {
-> -					dmaru->devices[i].bus = scope->bus;
-> -					dmaru->devices[i].devfn = PCI_DEVFN(path->device,
-> -									    path->function);
-> -					rcu_assign_pointer(dmaru->devices[i].dev,
-> -							   get_device(&adev->dev));
-> -					return;
-> -				}
-> -			BUG_ON(i >= dmaru->devices_cnt);
-> -		}
-> -	}
-> -	pr_warn("No IOMMU scope found for ANDD enumeration ID %d (%s)\n",
-> -		device_number, dev_name(&adev->dev));
->   }
->   
->   static int __init dmar_acpi_dev_scope_init(void)
-> @@ -766,7 +774,7 @@ static int __init dmar_acpi_dev_scope_init(void)
->   				       andd->device_name);
->   				continue;
->   			}
-> -			dmar_acpi_insert_dev_scope(andd->device_number, adev);
-> +			dmar_acpi_bus_add_dev(andd->device_number, adev);
->   		}
->   	}
->   	return 0;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index ca557d351518..be1793415326 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4507,6 +4507,24 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
->   
->   	return ret;
->   }
-> +int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev)
-> +{
-> +	int ret;
-> +	struct dmar_rmrr_unit *rmrru;
-> +	struct acpi_dmar_reserved_memory *rmrr;
-> +
-> +	list_for_each_entry(rmrru, &dmar_rmrr_units, list) {
-> +		rmrr = container_of(rmrru->hdr,
-> +				struct acpi_dmar_reserved_memory,
-> +				header);
-> +		ret = dmar_acpi_insert_dev_scope(device_number, adev, (void *)(rmrr + 1),
-> +						((void *)rmrr) + rmrr->header.length,
-> +						rmrru->devices, rmrru->devices_cnt);
-> +		if (ret)
-> +			break;
-> +	}
-> +	return 0;
-> +}
->   
->   int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
->   {
-> @@ -4523,7 +4541,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
->   		rmrr = container_of(rmrru->hdr,
->   				    struct acpi_dmar_reserved_memory, header);
->   		if (info->event == BUS_NOTIFY_ADD_DEVICE) {
-> -			ret = dmar_insert_dev_scope(info, (void *)(rmrr + 1),
-> +			ret = dmar_pci_insert_dev_scope(info, (void *)(rmrr + 1),
->   				((void *)rmrr) + rmrr->header.length,
->   				rmrr->segment, rmrru->devices,
->   				rmrru->devices_cnt);
-> @@ -4541,7 +4559,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
->   
->   		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
->   		if (info->event == BUS_NOTIFY_ADD_DEVICE) {
-> -			ret = dmar_insert_dev_scope(info, (void *)(atsr + 1),
-> +			ret = dmar_pci_insert_dev_scope(info, (void *)(atsr + 1),
->   					(void *)atsr + atsr->header.length,
->   					atsr->segment, atsru->devices,
->   					atsru->devices_cnt);
-> @@ -4779,6 +4797,26 @@ static int __init platform_optin_force_iommu(void)
->   
->   	return 1;
->   }
-> +static int acpi_device_create_direct_mappings(struct device *pn_dev, struct device *acpi_device)
-> +{
-> +	int ret;
-> +	struct iommu_group *group;
-> +
-> +	if (pn_dev == NULL) {
-> +		acpi_device->bus->iommu_ops = &intel_iommu_ops;
-> +		ret = iommu_probe_device(acpi_device);
-> +		if (ret) {
-> +			pr_err("acpi_device probe fail! ret:%d\n", ret);
-> +			return ret;
-> +		}
-> +		return 0;
-> +	}
-> +	acpi_device->bus->iommu_ops = &intel_iommu_ops;
-> +	group = iommu_group_get(pn_dev);
-> +	__acpi_device_create_direct_mappings(group, acpi_device);
-> +
-> +	return 0;
-> +}
->   
->   static int __init probe_acpi_namespace_devices(void)
->   {
-> @@ -4794,6 +4832,7 @@ static int __init probe_acpi_namespace_devices(void)
->   			struct acpi_device_physical_node *pn;
->   			struct iommu_group *group;
->   			struct acpi_device *adev;
-> +			struct device *pn_dev = NULL;
->   
->   			if (dev->bus != &acpi_bus_type)
->   				continue;
-> @@ -4804,6 +4843,7 @@ static int __init probe_acpi_namespace_devices(void)
->   					    &adev->physical_node_list, node) {
->   				group = iommu_group_get(pn->dev);
->   				if (group) {
-> +					pn_dev = pn->dev;
->   					iommu_group_put(group);
->   					continue;
->   				}
-> @@ -4812,7 +4852,9 @@ static int __init probe_acpi_namespace_devices(void)
->   				ret = iommu_probe_device(pn->dev);
->   				if (ret)
->   					break;
-> +				pn_dev = pn->dev;
->   			}
-> +			ret = acpi_device_create_direct_mappings(pn_dev, dev);
->   			mutex_unlock(&adev->physical_node_lock);
->   
->   			if (ret)
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 609bd25bf154..4f714a2d5ef7 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -779,6 +779,12 @@ static bool iommu_is_attach_deferred(struct iommu_domain *domain,
->   	return false;
->   }
->   
-> +void  __acpi_device_create_direct_mappings(struct iommu_group *group, struct device *acpi_device)
-> +{
-> +	iommu_create_device_direct_mappings(group, acpi_device);
-> +}
-> +EXPORT_SYMBOL_GPL(__acpi_device_create_direct_mappings);
-> +
->   /**
->    * iommu_group_add_device - add a device to an iommu group
->    * @group: the group into which to add the device (reference should be held)
-> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-> index 65565820328a..881ac61a4336 100644
-> --- a/include/linux/dmar.h
-> +++ b/include/linux/dmar.h
-> @@ -113,10 +113,14 @@ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
->   				struct dmar_dev_scope **devices, u16 segment);
->   extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
->   extern void dmar_free_dev_scope(struct dmar_dev_scope **devices, int *cnt);
-> -extern int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
-> +extern int dmar_pci_insert_dev_scope(struct dmar_pci_notify_info *info,
->   				 void *start, void*end, u16 segment,
->   				 struct dmar_dev_scope *devices,
->   				 int devices_cnt);
-> +extern int dmar_acpi_insert_dev_scope(u8 device_number,
-> +				struct acpi_device *adev, void *start, void *end,
-> +				struct dmar_dev_scope *devices, int devices_cnt);
-> +
->   extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
->   				 u16 segment, struct dmar_dev_scope *devices,
->   				 int count);
-> @@ -140,6 +144,7 @@ extern int dmar_parse_one_atsr(struct acpi_dmar_header *header, void *arg);
->   extern int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg);
->   extern int dmar_release_one_atsr(struct acpi_dmar_header *hdr, void *arg);
->   extern int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert);
-> +extern int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev);
->   extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
->   #else /* !CONFIG_INTEL_IOMMU: */
->   static inline int intel_iommu_init(void) { return -ENODEV; }
-> @@ -150,6 +155,11 @@ static inline void intel_iommu_shutdown(void) { }
->   #define	dmar_check_one_atsr		dmar_res_noop
->   #define	dmar_release_one_atsr		dmar_res_noop
->   
-> +static inline int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev)
-> +{
-> +	return 0;
-> +}
-> +
->   static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
->   {
->   	return 0;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index fee209efb756..9be134775886 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -514,6 +514,9 @@ extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
->   extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
->   			      unsigned long iova, int flags);
->   
-> +extern void __acpi_device_create_direct_mappings(struct iommu_group *group,
-> +						struct device *acpi_device);
-> +
->   static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
->   {
->   	if (domain->ops->flush_iotlb_all)
+> I see no obvious regressions with your twin dma-pool fixes on my
+> PocoF1 phone.
 > 
+> Caleb also confirmed that a similar reserved-memory region fix in his
+> One Plus 6 device-tree worked for him too.
+> 
+
+Thanks very much for the update, Amit.
+
+Christoph: since we have atomic DMA coherent pools in 5.8 now, recall our 
+previous discussions, including Greg KH, regarding backports to stable 
+trees (we are interested in 5.4 and 5.6) of this support for the purposes 
+of confidential VM users who wish to run their own SEV-enabled guests in 
+cloud.
+
+Would you have any objections to backports being offered for this support 
+now?  We can prepare them immediately.  Or, if you would prefer we hold 
+off for a while, please let me know and we can delay it until you are more 
+comfortable.  (For confidential VM users, the ability to run your own 
+unmodified stable kernel is a much different security story than a guest 
+modified by the cloud provider.)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
