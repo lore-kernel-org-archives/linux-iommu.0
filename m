@@ -2,94 +2,133 @@ Return-Path: <SRS0=54Vi=BN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B312C433E0
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 10:01:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 417B6C433E0
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 12:49:51 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F262420678
-	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 10:01:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0356720678
+	for <iommu@archiver.kernel.org>; Mon,  3 Aug 2020 12:49:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="lUSPcQ8c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F262420678
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="WxR8Ckv7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0356720678
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 664CB87522;
-	Mon,  3 Aug 2020 10:01:56 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zea8F7bzp0+b; Mon,  3 Aug 2020 10:01:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C12AC86EC0;
-	Mon,  3 Aug 2020 10:01:55 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ACAD5C0051;
-	Mon,  3 Aug 2020 10:01:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F9F4C004C
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 10:01:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7B73220468
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 10:01:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 74798204F0;
+	Mon,  3 Aug 2020 12:49:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JDoTjF+dQN0b; Mon,  3 Aug 2020 12:49:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 755C220432;
+	Mon,  3 Aug 2020 12:49:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F8C4C0050;
+	Mon,  3 Aug 2020 12:49:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 72ADCC004C
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 12:49:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6D9BD85BF2
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 12:49:45 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3EsedOFKh1zl for <iommu@lists.linux-foundation.org>;
- Mon,  3 Aug 2020 10:01:51 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by silver.osuosl.org (Postfix) with ESMTPS id 69DD4203A5
- for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 10:01:46 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1596448911; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=0DuhPig/BdjwtnY2fgM6R8kgAL7yGAywFUS6sxjdcPY=;
- b=lUSPcQ8cO8yWAv2FjlYIjjMbILEKiE7zfKPtb2cKjEk11BT408z+ywoMgal2W1KEnkiAOuom
- iZy4JftL87VJB6n06u1fTL9vYxFFQYJsQ82TQhQB24JetMC2J9t3oxaPRiRv8DGVwF2eLoz9
- elJDrRK4seZ/LRwpsB0Zxyrxnds=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n14.prod.us-east-1.postgun.com with SMTP id
- 5f27e05690893260dd70cf39 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 03 Aug 2020 10:00:54
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 2FDA0C433CB; Mon,  3 Aug 2020 10:00:53 +0000 (UTC)
-Received: from [192.168.0.105] (unknown [103.248.210.206])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: vjitta)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id B2DB4C433C6;
- Mon,  3 Aug 2020 10:00:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B2DB4C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=vjitta@codeaurora.org
-Subject: Re: [PATCH 2/2] iommu/iova: Free global iova rcache on iova alloc
- failure
-To: joro@8bytes.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <1593785835-27250-1-git-send-email-vjitta@codeaurora.org>
- <1593785835-27250-2-git-send-email-vjitta@codeaurora.org>
-From: Vijayanand Jitta <vjitta@codeaurora.org>
-Message-ID: <29f44540-44f8-570d-886f-2090596a3b8e@codeaurora.org>
-Date: Mon, 3 Aug 2020 15:30:48 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+ with ESMTP id VAkFmXK9Hver for <iommu@lists.linux-foundation.org>;
+ Mon,  3 Aug 2020 12:49:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1B30D85C52
+ for <iommu@lists.linux-foundation.org>; Mon,  3 Aug 2020 12:49:44 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id f7so34125212wrw.1
+ for <iommu@lists.linux-foundation.org>; Mon, 03 Aug 2020 05:49:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=QKxUE+IKc+CK6EjCxCtoVE9UcF8T06WWbBk1xPjWCfI=;
+ b=WxR8Ckv7PNATR8wTQvtma/bt+eBiXA2gwq5116AOGhNJUjDUydXyNQX5MiN8YUDh5E
+ sbGs1vSeMHyyugbd/nnFZQJiv5e8Uh841QVKzBwSH1jujBoeF13SwXbt58ZxvSY/FGs5
+ 32wLeyqMA9spOmJ+A3uTgBEL25bHKk9Ru9/uc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=QKxUE+IKc+CK6EjCxCtoVE9UcF8T06WWbBk1xPjWCfI=;
+ b=DjnFGA4sinsAU2+VKanN4emfdVk6PteGPKnADkew2B2f0pgUHJOyTY9nTo9G97F2hX
+ 6n0V5xYP6vFsdyQjfgEHDe6ruKM5YvNMw0w1S7wAUJYa8qlOve3w+6FIISGelN9n/w0h
+ OftJ5/ATv+YGP5vqWGzZ3EtqEkK1Rd2fHsCbfyh+Ggfukzl8RquI4zJkzIV43ZtmTp26
+ uoI+7VfdbqQFze+YGR7oWGvbwWiF7EvsCekpuP0Ady01AjEUZ85CuNR5vYt8Sk21H0Mv
+ M2/yjdU/WBIoQUEiu6/iFgoe/Rc+9JScWHuiinghpgz7IlG7Rw0FeAeBewoqc3NKoDSy
+ f16w==
+X-Gm-Message-State: AOAM533tcsV8k34lJctz/nLVdoSGr4VHYPH0M/GjG+2e2M5U/ats/3rg
+ pGxS9LtI47uuGj8l0b3W9n8I+pes1yZH0Kvac4ddFw==
+X-Google-Smtp-Source: ABdhPJw2sfvdWakANswiw+kFKuUbfyHSkhusPzzyDFMYa/ISYVGsjNBt5TwbOzk7crmIMvJlieMaBdbsJjkeU4EkzIM=
+X-Received: by 2002:adf:ebc5:: with SMTP id v5mr14987088wrn.100.1596458982058; 
+ Mon, 03 Aug 2020 05:49:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1593785835-27250-2-git-send-email-vjitta@codeaurora.org>
-Content-Language: en-GB
-Cc: vinmenon@codeaurora.org, kernel-team@android.com
+References: <20200724203407.16972-1-james.quinlan@broadcom.com>
+ <20200724203407.16972-9-james.quinlan@broadcom.com>
+ <649c37347138ecf4d0bca9825fba989151757d02.camel@suse.de>
+In-Reply-To: <649c37347138ecf4d0bca9825fba989151757d02.camel@suse.de>
+Date: Mon, 3 Aug 2020 08:49:30 -0400
+Message-ID: <CA+-6iNxT+xrDCAzPNfs2dXH7d5MTL8Bb+_MBbrvjHddsZHKKGQ@mail.gmail.com>
+Subject: Re: [PATCH v9 08/12] device core: Introduce DMA range map,
+ supplanting dma_pfn_offset
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: Rich Felker <dalias@libc.org>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
+ "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
+ <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Julien Grall <julien.grall@arm.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>,
+ Frank Rowand <frowand.list@gmail.com>,
+ "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Ingo Molnar <mingo@redhat.com>,
+ "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
+ <bcm-kernel-feedback-list@broadcom.com>,
+ Alan Stern <stern@rowland.harvard.edu>, Len Brown <lenb@kernel.org>,
+ Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Arnd Bergmann <arnd@arndb.de>, Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Maxime Ripard <mripard@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Borislav Petkov <bp@alien8.de>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Florian Fainelli <f.fainelli@gmail.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ open list <linux-kernel@vger.kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ Stefano Stabellini <sstabellini@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE"
+ <linux-rpi-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,101 +141,165 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Sat, Aug 1, 2020 at 1:17 PM Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
+>
+> Hi Jim, here's some comments after testing your series against RPi4.
+>
+> On Fri, 2020-07-24 at 16:33 -0400, Jim Quinlan wrote:
+> > The new field 'dma_range_map' in struct device is used to facilitate the
+> > use of single or multiple offsets between mapping regions of cpu addrs and
+> > dma addrs.  It subsumes the role of "dev->dma_pfn_offset" which was only
+> > capable of holding a single uniform offset and had no region bounds
+> > checking.
+> >
+> > The function of_dma_get_range() has been modified so that it takes a single
+> > argument -- the device node -- and returns a map, NULL, or an error code.
+> > The map is an array that holds the information regarding the DMA regions.
+> > Each range entry contains the address offset, the cpu_start address, the
+> > dma_start address, and the size of the region.
+> >
+> > of_dma_configure() is the typical manner to set range offsets but there are
+> > a number of ad hoc assignments to "dev->dma_pfn_offset" in the kernel
+> > driver code.  These cases now invoke the function
+> > dma_attach_offset_range(dev, cpu_addr, dma_addr, size).
+> >
+> > Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
+> > ---
+>
+> [...]
+>
+> > diff --git a/drivers/of/address.c b/drivers/of/address.c
+> > index 8eea3f6e29a4..4b718d199efe 100644
+> > --- a/drivers/of/address.c
+> > +++ b/drivers/of/address.c
+> > @@ -918,33 +918,33 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+> >  }
+> >  EXPORT_SYMBOL(of_io_request_and_map);
+> >
+> > +#ifdef CONFIG_HAS_DMA
+> >  /**
+> > - * of_dma_get_range - Get DMA range info
+> > + * of_dma_get_range - Get DMA range info and put it into a map array
+> >   * @np:              device node to get DMA range info
+> > - * @dma_addr:        pointer to store initial DMA address of DMA range
+> > - * @paddr:   pointer to store initial CPU address of DMA range
+> > - * @size:    pointer to store size of DMA range
+> > + * @map:     dma range structure to return
+> >   *
+> >   * Look in bottom up direction for the first "dma-ranges" property
+> > - * and parse it.
+> > - *  dma-ranges format:
+> > + * and parse it.  Put the information into a DMA offset map array.
+> > + *
+> > + * dma-ranges format:
+> >   *   DMA addr (dma_addr)     : naddr cells
+> >   *   CPU addr (phys_addr_t)  : pna cells
+> >   *   size                    : nsize cells
+> >   *
+> > - * It returns -ENODEV if "dma-ranges" property was not found
+> > - * for this device in DT.
+> > + * It returns -ENODEV if "dma-ranges" property was not found for this
+> > + * device in the DT.
+> >   */
+> > -int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+> > +int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
+> >  {
+> >       struct device_node *node = of_node_get(np);
+> >       const __be32 *ranges = NULL;
+> > -     int len;
+> > -     int ret = 0;
+> >       bool found_dma_ranges = false;
+> >       struct of_range_parser parser;
+> >       struct of_range range;
+> > -     u64 dma_start = U64_MAX, dma_end = 0, dma_offset = 0;
+> > +     struct bus_dma_region *r;
+> > +     int len, num_ranges = 0;
+> > +     int ret;
+> >
+> >       while (node) {
+> >               ranges = of_get_property(node, "dma-ranges", &len);
+> > @@ -970,44 +970,35 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+> >       }
+> >
+> >       of_dma_range_parser_init(&parser, node);
+> > +     for_each_of_range(&parser, &range)
+> > +             num_ranges++;
+> > +
+> > +     of_dma_range_parser_init(&parser, node);
+> > +
+> > +     ret = -ENOMEM;
+> > +     r = kcalloc(num_ranges + 1, sizeof(*r), GFP_KERNEL);
+> > +     if (!r)
+> > +             goto out;
+> >
+> > +     /*
+> > +      * Record all info in the generic DMA ranges array for struct device.
+> > +      */
+> > +     *map = r;
+> >       for_each_of_range(&parser, &range) {
+> >               pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+> >                        range.bus_addr, range.cpu_addr, range.size);
+> > -
+> > -             if (dma_offset && range.cpu_addr - range.bus_addr != dma_offset) {
+> > -                     pr_warn("Can't handle multiple dma-ranges with different offsets on node(%pOF)\n", node);
+> > -                     /* Don't error out as we'd break some existing DTs */
+> > -                     continue;
+> > -             }
+> > -             dma_offset = range.cpu_addr - range.bus_addr;
+> > -
+> > -             /* Take lower and upper limits */
+> > -             if (range.bus_addr < dma_start)
+> > -                     dma_start = range.bus_addr;
+> > -             if (range.bus_addr + range.size > dma_end)
+> > -                     dma_end = range.bus_addr + range.size;
+> > -     }
+> > -
+> > -     if (dma_start >= dma_end) {
+> > -             ret = -EINVAL;
+> > -             pr_debug("Invalid DMA ranges configuration on node(%pOF)\n",
+> > -                      node);
+> > -             goto out;
+> > +             r->cpu_start = range.cpu_addr;
+> > +             r->dma_start = range.bus_addr;
+> > +             r->size = range.size;
+> > +             r->offset = (u64)range.cpu_addr - (u64)range.bus_addr;
+> > +             r++;
+> >       }
+> >
+> > -     *dma_addr = dma_start;
+> > -     *size = dma_end - dma_start;
+> > -     *paddr = dma_start + dma_offset;
+> > -
+> > -     pr_debug("final: dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+> > -              *dma_addr, *paddr, *size);
+> > -
+>
+> I think you're missing here:
+>
+>         ret = 0;
+Yes.  It somehow passed my tests because it still sets dev->dma_range_map.
 
+Thanks again,
+Jiom
 
-On 7/3/2020 7:47 PM, vjitta@codeaurora.org wrote:
-> From: Vijayanand Jitta <vjitta@codeaurora.org>
-> 
-> When ever an iova alloc request fails we free the iova
-> ranges present in the percpu iova rcaches and then retry
-> but the global iova rcache is not freed as a result we could
-> still see iova alloc failure even after retry as global
-> rcache is holding the iova's which can cause fragmentation.
-> So, free the global iova rcache as well and then go for the
-> retry.
-> 
-> Change-Id: Ib8236dc88ba5516b73d4fbf6bf8e68bbf09bbad2
-> Signed-off-by: Vijayanand Jitta <vjitta@codeaurora.org>
-> ---
->  drivers/iommu/iova.c | 23 +++++++++++++++++++++++
->  include/linux/iova.h |  6 ++++++
->  2 files changed, 29 insertions(+)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 4e77116..5836c87 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -442,6 +442,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
->  		flush_rcache = false;
->  		for_each_online_cpu(cpu)
->  			free_cpu_cached_iovas(cpu, iovad);
-> +		free_global_cached_iovas(iovad);
->  		goto retry;
->  	}
->  
-> @@ -1055,5 +1056,27 @@ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
->  	}
->  }
->  
-> +/*
-> + * free all the IOVA ranges of global cache
-> + */
-> +void free_global_cached_iovas(struct iova_domain *iovad)
-> +{
-> +	struct iova_rcache *rcache;
-> +	unsigned long flags;
-> +	int i, j;
-> +
-> +	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +		rcache = &iovad->rcaches[i];
-> +		spin_lock_irqsave(&rcache->lock, flags);
-> +		for (j = 0; j < rcache->depot_size; ++j) {
-> +			iova_magazine_free_pfns(rcache->depot[j], iovad);
-> +			iova_magazine_free(rcache->depot[j]);
-> +			rcache->depot[j] = NULL;
-> +		}
-> +		rcache->depot_size = 0;
-> +		spin_unlock_irqrestore(&rcache->lock, flags);
-> +	}
-> +}
-> +
->  MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index a0637ab..a905726 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -163,6 +163,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
->  struct iova *split_and_remove_iova(struct iova_domain *iovad,
->  	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
->  void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
-> +void free_global_cached_iovas(struct iova_domain *iovad);
->  #else
->  static inline int iova_cache_get(void)
->  {
-> @@ -270,6 +271,11 @@ static inline void free_cpu_cached_iovas(unsigned int cpu,
->  					 struct iova_domain *iovad)
->  {
->  }
-> +
-> +static inline void free_global_cached_iovas(struct iova_domain *iovad)
-> +{
-> +}
-> +
->  #endif
->  
->  #endif
-> 
-
-ping?
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a
-member of Code Aurora Forum, hosted by The Linux Foundation
+>
+> >  out:
+> >       of_node_put(node);
+> > -
+> >       return ret;
+> >  }
+>
+> Regards,
+> Nicolas
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
