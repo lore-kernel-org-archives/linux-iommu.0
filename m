@@ -1,116 +1,76 @@
-Return-Path: <SRS0=Y3fO=BO=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=9QAy=BP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16382C433DF
-	for <iommu@archiver.kernel.org>; Tue,  4 Aug 2020 14:33:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB7CC433DF
+	for <iommu@archiver.kernel.org>; Wed,  5 Aug 2020 01:05:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CEA572177B
-	for <iommu@archiver.kernel.org>; Tue,  4 Aug 2020 14:33:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B8C4A20792
+	for <iommu@archiver.kernel.org>; Wed,  5 Aug 2020 01:05:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=axtens.net header.i=@axtens.net header.b="jumdjySC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEA572177B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=axtens.net
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="0xo/kexh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8C4A20792
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A1E11861B2;
-	Tue,  4 Aug 2020 14:33:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5043B85E25;
+	Wed,  5 Aug 2020 01:05:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wgo0Hu7p3E7J; Tue,  4 Aug 2020 14:33:13 +0000 (UTC)
+	with ESMTP id iSjkCK4IY5RL; Wed,  5 Aug 2020 01:05:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E7A198622A;
-	Tue,  4 Aug 2020 14:33:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D5D1585E24;
+	Wed,  5 Aug 2020 01:05:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E03A1C0051;
-	Tue,  4 Aug 2020 14:33:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22BA9C004C
- for <iommu@lists.linux-foundation.org>; Tue,  4 Aug 2020 14:25:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C6DF1C0050;
+	Wed,  5 Aug 2020 01:05:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D9B6C004C
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Aug 2020 01:05:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1ABDB2052C
- for <iommu@lists.linux-foundation.org>; Tue,  4 Aug 2020 14:25:23 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EA7F688031
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Aug 2020 01:05:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t2ObWsXrpLmE for <iommu@lists.linux-foundation.org>;
- Tue,  4 Aug 2020 14:25:22 +0000 (UTC)
-X-Greylist: delayed 00:24:13 by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 736C12012D
- for <iommu@lists.linux-foundation.org>; Tue,  4 Aug 2020 14:25:22 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id h12so10858622pgf.7
- for <iommu@lists.linux-foundation.org>; Tue, 04 Aug 2020 07:25:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axtens.net; s=google;
- h=from:to:cc:subject:in-reply-to:references:date:message-id
- :mime-version; bh=nig2/fJdYyt3b0Q5A/SU+0msFseeyybXCaAI4dDRdTg=;
- b=jumdjySCSXZVJzizm9OUzoU9OXCS+Cfq57D4M9+nOmcjFx/ImlUYxx8bn1JnW+143W
- B6tMiLN9WKIVbxAyKxyw81HdIULr1/GZN+VKaYR0TvHVg/4jcAFDj42GWXCA2Swm1Yfw
- 5v27iYJTlRgBYWmLp+/HqtnWpSjejedeiZ1fo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
- :message-id:mime-version;
- bh=nig2/fJdYyt3b0Q5A/SU+0msFseeyybXCaAI4dDRdTg=;
- b=HXE5M/Me3Smve0BSshFXZkryt4/pzsUzw3WVRanyoqKFDYWI6HzqKIDcaCEGjqXImW
- 34h62aRVVI2lfV/5k8lfH9M3aIVVU5JyU6aOPHbtcCEMWX4m1Zme9Dtq83opD1ulj6GN
- wLtcWmZe5qz78vprPJB7e2/u35emTtihuOLzoryFpH376rA1j32BxIE7lY+GfhXaednV
- YZfacsKcZoMARqvrAxjoM2R1wHQY1fVC9PUCUDnpkIt4qWVSGnwGxkmWpDwLeuJgR66q
- 6uLmOBkoLMH+1ddZrpBayfBifQFxDybEAmaj94q6t/6TwSCiWIVmshhVr7EUNmi+XFGS
- dwYg==
-X-Gm-Message-State: AOAM533VxvVlo6MG5glRq0BMntt4/2D0b6BXFmQaKMm+FKuUvvlShie2
- PkadJTuvcl7FXsqlmxqmB/3yfIhlkQM=
-X-Google-Smtp-Source: ABdhPJzULAmNSkaX32weXl1O34te5NSuX9EJVhPlxbPjsXptEZqiJedi5i9MSO/avpj2cLsHaUiFtw==
-X-Received: by 2002:a63:3587:: with SMTP id
- c129mr20025647pga.322.1596549199803; 
- Tue, 04 Aug 2020 06:53:19 -0700 (PDT)
-Received: from localhost
- (2001-44b8-1113-6700-0414-2e33-60ed-75ec.static.ipv6.internode.on.net.
- [2001:44b8:1113:6700:414:2e33:60ed:75ec])
- by smtp.gmail.com with ESMTPSA id g8sm9981404pfo.132.2020.08.04.06.53.18
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 04 Aug 2020 06:53:19 -0700 (PDT)
-From: Daniel Axtens <dja@axtens.net>
-To: Mike Rapoport <rppt@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2 01/17] KVM: PPC: Book3S HV: simplify kvm_cma_reserve()
-In-Reply-To: <20200802163601.8189-2-rppt@kernel.org>
-References: <20200802163601.8189-1-rppt@kernel.org>
- <20200802163601.8189-2-rppt@kernel.org>
-Date: Tue, 04 Aug 2020 23:53:15 +1000
-Message-ID: <87tuxio6us.fsf@dja-thinkpad.axtens.net>
-MIME-Version: 1.0
-X-Mailman-Approved-At: Tue, 04 Aug 2020 14:33:12 +0000
-Cc: Thomas Gleixner <tglx@linutronix.de>,
- Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
- Peter Zijlstra <peterz@infradead.org>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
- Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
- sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- linux-arch@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-c6x-dev@linux-c6x.org, Michael Ellerman <mpe@ellerman.id.au>,
- x86@kernel.org, Russell King <linux@armlinux.org.uk>,
- Mike Rapoport <rppt@linux.ibm.com>, clang-built-linux@googlegroups.com,
- Ingo Molnar <mingo@redhat.com>, linux-arm-kernel@lists.infradead.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
- openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
- Stafford Horne <shorne@gmail.com>, Hari Bathini <hbathini@linux.ibm.com>,
- Michal Simek <monstr@monstr.eu>, Yoshinori Sato <ysato@users.sourceforge.jp>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Palmer Dabbelt <palmer@dabbelt.com>,
- linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>
+ with ESMTP id 11VOt10mM9v8 for <iommu@lists.linux-foundation.org>;
+ Wed,  5 Aug 2020 01:05:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 814DA88020
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Aug 2020 01:05:08 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping updates for 5.9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1596589508;
+ bh=V8SyMJUhTk121eZYzAmhMw82jobWxaHTOhXR1PgnYnE=;
+ h=From:In-Reply-To:References:Date:To:Cc:From;
+ b=0xo/kexh69Mx1o1AXt7z9fqmSfKd++oqctX1Lzm/2CvXBpnVEyQR2c5H17/+FQvuR
+ GqskXQ6MnPlLaebzPqSFOofnXsD8ENW7BDhkrF4zrga4SS6kU+x7cXIQG53PSXNY5z
+ hOcqfPLzrd183MhG1/VHEQjKTOHs1kWlcLZgqJ3o=
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20200803141547.GA752173@infradead.org>
+References: <20200803141547.GA752173@infradead.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20200803141547.GA752173@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
+ tags/dma-mapping-5.9
+X-PR-Tracked-Commit-Id: 274b3f7bf34415eed106e479e4815e897ce5d763
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2ed90dbbf7be3b7cd2790fc6fa946c478ab496b8
+Message-Id: <159658950828.28431.11011770511224592315.pr-tracker-bot@kernel.org>
+Date: Wed, 05 Aug 2020 01:05:08 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: iommu@lists.linux-foundation.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,74 +83,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Mike,
+The pull request you sent on Mon, 3 Aug 2020 16:15:47 +0200:
 
->
-> The memory size calculation in kvm_cma_reserve() traverses memblock.memory
-> rather than simply call memblock_phys_mem_size(). The comment in that
-> function suggests that at some point there should have been call to
-> memblock_analyze() before memblock_phys_mem_size() could be used.
-> As of now, there is no memblock_analyze() at all and
-> memblock_phys_mem_size() can be used as soon as cold-plug memory is
-> registerd with memblock.
->
-> Replace loop over memblock.memory with a call to memblock_phys_mem_size().
->
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
->  arch/powerpc/kvm/book3s_hv_builtin.c | 11 ++---------
->  1 file changed, 2 insertions(+), 9 deletions(-)
->
-> diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
-> index 7cd3cf3d366b..56ab0d28de2a 100644
-> --- a/arch/powerpc/kvm/book3s_hv_builtin.c
-> +++ b/arch/powerpc/kvm/book3s_hv_builtin.c
-> @@ -95,22 +95,15 @@ EXPORT_SYMBOL_GPL(kvm_free_hpt_cma);
->  void __init kvm_cma_reserve(void)
->  {
->  	unsigned long align_size;
-> -	struct memblock_region *reg;
-> -	phys_addr_t selected_size = 0;
-> +	phys_addr_t selected_size;
->  
->  	/*
->  	 * We need CMA reservation only when we are in HV mode
->  	 */
->  	if (!cpu_has_feature(CPU_FTR_HVMODE))
->  		return;
-> -	/*
-> -	 * We cannot use memblock_phys_mem_size() here, because
-> -	 * memblock_analyze() has not been called yet.
-> -	 */
-> -	for_each_memblock(memory, reg)
-> -		selected_size += memblock_region_memory_end_pfn(reg) -
-> -				 memblock_region_memory_base_pfn(reg);
->  
-> +	selected_size = PHYS_PFN(memblock_phys_mem_size());
->  	selected_size = (selected_size * kvm_cma_resv_ratio / 100) << PAGE_SHIFT;
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.9
 
-I think this is correct, but PHYS_PFN does x >> PAGE_SHIFT and then the
-next line does x << PAGE_SHIFT, so I think we could combine those two
-lines as:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2ed90dbbf7be3b7cd2790fc6fa946c478ab496b8
 
-selected_size = PAGE_ALIGN(memblock_phys_mem_size() * kvm_cma_resv_ratio / 100);
+Thank you!
 
-(I think that might technically change it from aligning down to aligning
-up but I don't think 1 page matters here.)
-
-Kind regards,
-Daniel
-
-
->  	if (selected_size) {
->  		pr_debug("%s: reserving %ld MiB for global area\n", __func__,
-> -- 
-> 2.26.2
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
