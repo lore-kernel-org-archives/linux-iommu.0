@@ -2,93 +2,78 @@ Return-Path: <SRS0=NM95=BQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,FROM_LOCAL_HEX,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DC4C433DF
-	for <iommu@archiver.kernel.org>; Thu,  6 Aug 2020 12:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7155C433E0
+	for <iommu@archiver.kernel.org>; Thu,  6 Aug 2020 13:15:03 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E8FC22D03
-	for <iommu@archiver.kernel.org>; Thu,  6 Aug 2020 12:01:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E8FC22D03
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=zhaoxin.com
+	by mail.kernel.org (Postfix) with ESMTPS id D521E23128
+	for <iommu@archiver.kernel.org>; Thu,  6 Aug 2020 13:15:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D521E23128
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8BAE488493;
-	Thu,  6 Aug 2020 06:51:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 641558846E;
+	Thu,  6 Aug 2020 13:15:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fOOFzAjh2EUR; Thu,  6 Aug 2020 06:51:24 +0000 (UTC)
+	with ESMTP id j3gpoXqU66hI; Thu,  6 Aug 2020 13:14:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E07A487E7D;
-	Thu,  6 Aug 2020 06:51:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CD4428846B;
+	Thu,  6 Aug 2020 13:14:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D056BC0051;
-	Thu,  6 Aug 2020 06:51:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 11175C004C
- for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 06:51:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C9E3C0050;
+	Thu,  6 Aug 2020 13:14:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19AB7C004C
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 10:46:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 0D15086A98
- for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 06:51:23 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 015EB2039D
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 10:46:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 18pQ5G1k3f39 for <iommu@lists.linux-foundation.org>;
- Thu,  6 Aug 2020 06:51:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ZXSHCAS2.zhaoxin.com (unknown [203.148.12.82])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 351DE869AC
- for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 06:51:18 +0000 (UTC)
-Received: from zxbjmbx2.zhaoxin.com (10.29.252.164) by ZXSHCAS2.zhaoxin.com
- (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Thu, 6 Aug 2020
- 14:51:04 +0800
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by zxbjmbx2.zhaoxin.com
- (10.29.252.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Thu, 6 Aug 2020
- 14:51:03 +0800
-Received: from zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416]) by
- zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416%16]) with mapi id
- 15.01.1979.003; Thu, 6 Aug 2020 14:51:03 +0800
-From: FelixCui-oc <FelixCui-oc@zhaoxin.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "David
- Woodhouse" <dwmw2@infradead.org>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IOetlA==?=
- =?utf-8?B?5aSNOiBbUEFUQ0hdIGlvbW11L3Z0LWQ6QWRkIHN1cHBvcnQgZm9yIEFDUEkg?=
- =?utf-8?Q?device_in_RMRR?=
-Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IFtQQVRD?=
- =?utf-8?B?SF0gaW9tbXUvdnQtZDpBZGQgc3VwcG9ydCBmb3IgQUNQSSBkZXZpY2UgaW4g?=
- =?utf-8?Q?RMRR?=
-Thread-Index: AQHWaLTDQmhhOccXwUmx3ozYFRtFBKklJPeAgACMEUD//7NFgIAAiuzg//+YlYCAAIpwQIAADhiQgACAoQCAAJyo4IABEuiAgADMGDCAAMCAgIAAj7pA
-Date: Thu, 6 Aug 2020 06:51:03 +0000
-Message-ID: <06a05e49a2564909a2049eb8be401670@zhaoxin.com>
-References: <20200802100735.2722-1-FelixCui-oc@zhaoxin.com>
- <73d4a1e4-f6b7-efb0-e225-2e462c838657@linux.intel.com>
- <f6759b9bb2594026b58f9a89e3ce9dc6@zhaoxin.com>
- <9f64d9b6-16e8-73ce-2186-9d8ba49c39f4@linux.intel.com>
- <44ff8f73fa1f49a183a1d8d6d9c2213c@zhaoxin.com>
- <314679b4-7653-041b-9310-73baf8117766@linux.intel.com>
- <1aea042a1b524ef88e491ca2a6d95fb7@zhaoxin.com>
- <36da53a6-00e2-1be1-91b5-d90906a6199f@linux.intel.com>
- <a5fda3f364da4e739736e7d7bc618972@zhaoxin.com>
- <a2658f9c-23fa-bb72-edba-ad61e52085cd@linux.intel.com>
- <9ba29114fcad43d58159fcc7a4d89501@zhaoxin.com>
- <1477b1dd-ac48-b49d-77f9-107bb4555b91@linux.intel.com>
-In-Reply-To: <1477b1dd-ac48-b49d-77f9-107bb4555b91@linux.intel.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.29.8.19]
+ with ESMTP id 8vHtg+EHh6I1 for <iommu@lists.linux-foundation.org>;
+ Thu,  6 Aug 2020 10:46:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197])
+ by silver.osuosl.org (Postfix) with ESMTPS id 04B641FE32
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Aug 2020 10:46:23 +0000 (UTC)
+Received: by mail-il1-f197.google.com with SMTP id c84so12146989ila.18
+ for <iommu@lists.linux-foundation.org>; Thu, 06 Aug 2020 03:46:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+ bh=Xf+oi/xhH3Z8Onoel7rwP1/y3FbNGfPBV1TIGKlxAAQ=;
+ b=VpzxI8GNBZdHUA6g3TEJ0JmpY4yhB1hAy22RAe4cwPnHOACr5294lrUhl7oBmWMtwI
+ 1Lzsfs0UU4NLsxCylj8Y98DpWVTFmJ+arQq8tb7BuLQpS8pARDQSOCwki01Fg+nToBjn
+ 1ZOBn7+8exHcfDkjXjKwqu5PdeEIrRkoB/l7OCBjo6RWbQswvq6pVV3lc+YQ7Ew5Wtrh
+ K84l6yABd4rH5ggCbiM9Xd4UPI+glpPz+DLiF4aiBwpifyG30yOQ5dCu7ie5NzorquVh
+ xuKLLJAeyDYY7/e76VDWbhgKCrIr/nbMZO6Yk+E4g1ElMzUJilVbBLL4nRFtCUfQI8ak
+ PWMA==
+X-Gm-Message-State: AOAM533vMXJakZrMXwazYtY48rENDk4SB+4P84aFVYL3fg5izy021vzv
+ ZKQQ5fOMww9g8x1+0VTilFY/76HABSvCqOSuhS6EnTtF5C8j
+X-Google-Smtp-Source: ABdhPJxGOdr/tdOh8dZ1djI7bPUhKLp8L58bkpXtToegryosLVXZrRW+4Gcyac1KwfUFl8Poo8hlKZyvlKN0xwpaXr8jmdvKUys8
 MIME-Version: 1.0
-Cc: CobeChen-oc <CobeChen-oc@zhaoxin.com>
+X-Received: by 2002:a92:cf10:: with SMTP id c16mr8151131ilo.88.1596710783293; 
+ Thu, 06 Aug 2020 03:46:23 -0700 (PDT)
+Date: Thu, 06 Aug 2020 03:46:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000c1f0005ac333382@google.com>
+Subject: upstream boot error: general protection fault in swiotlb_map
+From: syzbot <syzbot+3f86afd0b1e4bf1cb64c@syzkaller.appspotmail.com>
+To: hch@lst.de, iommu@lists.linux-foundation.org, konrad.wilk@oracle.com, 
+ linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+ syzkaller-bugs@googlegroups.com
+X-Mailman-Approved-At: Thu, 06 Aug 2020 13:14:48 +0000
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,69 +86,154 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgIGJhb2x1LA0KCQk+U3VyZS4gQmVmb3JlIHRoYXQsIGxldCBtZSBzeW5jIG15IHVuZGVyc3Rh
-bmRpbmcgd2l0aCB5b3UuIFlvdSBoYXZlIGFuIGFjcGkgbmFtZXNwYWNlIGRldmljZSBpbiBBTkRE
-IHRhYmxlLCBpdCBhbHNvIHNob3dzIHVwIGluIHRoZSBkZXZpY2Ugc2NvcGUgb2YgYSBSTVJSLiAN
-CgkJPkN1cnJlbnQgY29kZSBkb2Vzbid0IGVudW1lcmF0ZSB0aGF0IGRldmljZSBmb3IgdGhlIFJN
-UlIsIGhlbmNlIGlvbW11X2NyZWF0ZV9kZXZpY2VfZGlyZWN0X21hcHBpbmdzKCkgZG9lc24ndCB3
-b3JrIGZvciB0aGlzIGRldmljZS4NCg0KCQk+QXQgdGhlIHNhbWUgdGltZSwgcHJvYmVfYWNwaV9u
-YW1lc3BhY2VfZGV2aWNlcygpIGRvZXNuJ3Qgd29yayBmb3IgdGhpcyBkZXZpY2UsIGhlbmNlIHlv
-dSB3YW50IHRvIGFkZCBhIGhvbWUtbWFkZQ0KCQk+YWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9t
-YXBwaW5ncygpIGhlbHBlci4NCg0KCQlZb3VyIHVuZGVyc3RhbmRpbmcgaXMgcmlnaHQuIA0KCQlC
-dXQgdGhlcmUgaXMgYSBwcm9ibGVtIHRoYXQgZXZlbiBpZiB0aGUgbmFtZXNwYWNlIGRldmljZSBp
-biBybXJyIGlzIGVudW1lcmF0ZWQgaW4gdGhlIGNvZGUsIHByb2JlX2FjcGlfbmFtZXNwYWNlX2Rl
-dmljZXMoKSBhbHNvIGRvZXNuJ3Qgd29yayBmb3IgdGhpcyBkZXZpY2UuDQoJCVRoaXMgaXMgYmVj
-YXVzZSB0aGUgZGV2IHBhcmFtZXRlciBvZiB0aGUgaW9tbXVfY3JlYXRlX2RldmljZV9kaXJlY3Rf
-bWFwcGluZ3MoKSBpcyBub3QgdGhlIG5hbWVzcGFjZSBkZXZpY2UgaW4gUk1SUi4NCgkJVGhlIGFj
-dHVhbCBwYXJhbWV0ZXIgcGFzc2VkIGluIGlzIHRoZSBuYW1lc3BhY2UgZGV2aWNlJ3MgcGh5c2lj
-YWwgbm9kZSBkZXZpY2UuDQoJCUluIGlvbW11X2NyZWF0ZV9kZXZpY2VfZGlyZWN0X21hcHBpbmdz
-KCksIHRoZSBwaHlzaWNhbCBub2RlIGRldmljZSBwYXNzZWQgaW4gY2Fubm90IG1hdGNoIHRoZSBu
-YW1lc3BhY2UgZGV2aWNlIGluIHJtcnItPmRldmljZVtdLHJpZ2h0Pw0KCQlXZSBuZWVkIGFjcGlf
-ZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MoKSBoZWxwZXIgPyANCg0KCQlJbiBhZGRpdGlv
-biwgYWRldi0+cGh5c2ljYWxfbm9kZV9saXN0IGlzIHJlbGF0ZWQgdG8gdGhlIF9fSElEIG9mIG5h
-bWVzcGFjZSBkZXZpY2UgcmVwb3J0ZWQgYnkgdGhlIGJpb3MuDQoJCUZvciBleGFtcGxlLCBpZiB0
-aGUgX19ISUQgcmVwb3J0ZWQgYnkgdGhlIGJpb3MgYmVsb25ncyB0byBhY3BpX3BucF9kZXZpY2Vf
-aWRzW10sIGFkZXYtPnBoeXNpY2FsX25vZGVfbGlzdCBoYXMgbm8gZGV2aWNlcy4NCgkJU28gaW4g
-YWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncygpLCBJIGFkZGVkIHRoZSBjYXNlIHRo
-YXQgYWRldi0+cGh5c2ljYWxfbm9kZV9saXN0IGlzIGVtcHR5Lg0KDQoNCkJlc3QgcmVnYXJkcw0K
-RmVsaXggY3VpDQoNCg0KIA0KDQotLS0tLemCruS7tuWOn+S7ti0tLS0tDQrlj5Hku7bkuro6IEx1
-IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IA0K5Y+R6YCB5pe26Ze0OiAyMDIw5bm0
-OOaciDbml6UgMTA6MzYNCuaUtuS7tuS6ujogRmVsaXhDdWktb2MgPEZlbGl4Q3VpLW9jQHpoYW94
-aW4uY29tPjsgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+OyBpb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgRGF2aWQgV29v
-ZGhvdXNlIDxkd213MkBpbmZyYWRlYWQub3JnPg0K5oqE6YCBOiBiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb207IFJheW1vbmRQYW5nLW9jIDxSYXltb25kUGFuZy1vY0B6aGFveGluLmNvbT47IENvYmVD
-aGVuLW9jIDxDb2JlQ2hlbi1vY0B6aGFveGluLmNvbT4NCuS4u+mimDogUmU6IOetlOWkjTog562U
-5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiBbUEFUQ0hdIGlvbW11L3Z0LWQ6QWRkIHN1cHBv
-cnQgZm9yIEFDUEkgZGV2aWNlIGluIFJNUlINCg0KSGkgRmVsaXgsDQoNCk9uIDgvNS8yMCAzOjM3
-IFBNLCBGZWxpeEN1aS1vYyB3cm90ZToNCj4gSGkgYmFvbHUsDQo+IAkJTGV0IG1lIHRhbGsgYWJv
-dXQgd2h5IGFjcGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MoKSBpcyBuZWVkZWQgYW5k
-IHBsZWFzZSB0ZWxsIG1lIGlmIHRoZXJlIGlzIGFuIGVycm9yLg0KDQpTdXJlLiBCZWZvcmUgdGhh
-dCwgbGV0IG1lIHN5bmMgbXkgdW5kZXJzdGFuZGluZyB3aXRoIHlvdS4gWW91IGhhdmUgYW4gYWNw
-aSBuYW1lc3BhY2UgZGV2aWNlIGluIEFOREQgdGFibGUsIGl0IGFsc28gc2hvd3MgdXAgaW4gdGhl
-IGRldmljZSBzY29wZSBvZiBhIFJNUlIuIEN1cnJlbnQgY29kZSBkb2Vzbid0IGVudW1lcmF0ZSB0
-aGF0IGRldmljZSBmb3IgdGhlIFJNUlIsIGhlbmNlIGlvbW11X2NyZWF0ZV9kZXZpY2VfZGlyZWN0
-X21hcHBpbmdzKCkgZG9lc24ndCB3b3JrIGZvciB0aGlzIGRldmljZS4NCg0KQXQgdGhlIHNhbWUg
-dGltZSwgcHJvYmVfYWNwaV9uYW1lc3BhY2VfZGV2aWNlcygpIGRvZXNuJ3Qgd29yayBmb3IgdGhp
-cyBkZXZpY2UsIGhlbmNlIHlvdSB3YW50IHRvIGFkZCBhIGhvbWUtbWFkZQ0KYWNwaV9kZXZpY2Vf
-Y3JlYXRlX2RpcmVjdF9tYXBwaW5ncygpIGhlbHBlci4NCg0KRGlkIEkgZ2V0IGl0IHJpZ2h0Pw0K
-DQo+IAkJSW4gdGhlIHByb2JlX2FjcGlfbmFtZXNwYWNlX2RldmljZXMoKSBmdW5jdGlvbiwgb25s
-eSB0aGUgZGV2aWNlIGluIHRoZSBhZGRldi0+cGh5c2ljYWxfbm9kZV9saXN0IGlzIHByb2JlZCwN
-Cj4gCQlidXQgd2UgbmVlZCB0byBlc3RhYmxpc2ggaWRlbnRpdHkgbWFwcGluZyBmb3IgdGhlIG5h
-bWVzcGFjZSBkZXZpY2UgaW4gUk1SUi4gVGhlc2UgYXJlIHR3byBkaWZmZXJlbnQgZGV2aWNlcy4N
-Cg0KVGhlIG5hbWVzcGFjZSBkZXZpY2UgaGFzIGJlZW4gcHJvYmVkIGFuZCBwdXQgaW4gb25lIGRy
-aGQncyBkZXZpY2UgbGlzdC4NCkhlbmNlLCBpdCBzaG91bGQgYmUgcHJvY2Vzc2VkIGJ5IHByb2Jl
-X2FjcGlfbmFtZXNwYWNlX2RldmljZXMoKS4gU28gdGhlIHF1ZXN0aW9uIGlzIHdoeSB0aGVyZSBh
-cmUgbm8gZGV2aWNlcyBpbiBhZGRldi0+cGh5c2ljYWxfbm9kZV9saXN0Pw0KDQo+IAkJVGhlcmVm
-b3JlLCB0aGUgbmFtZXNwYWNlIGRldmljZSBpbiBSTVJSIGlzIG5vdCBtYXBwZWQgaW4gcHJvYmVf
-YWNwaV9uYW1lc3BhY2VfZGV2aWNlcygpLg0KPiAJCWFjcGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3Rf
-bWFwcGluZ3MoKSBpcyB0byBjcmVhdGUgZGlyZWN0IG1hcHBpbmdzIGZvciBuYW1lc3BhY2UgZGV2
-aWNlcyBpbiBSTVJSLg0KDQpCZXN0IHJlZ2FyZHMsDQpiYW9sdQ0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    47ec5303 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16fe1dea900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7c06047f622c5724
+dashboard link: https://syzkaller.appspot.com/bug?extid=3f86afd0b1e4bf1cb64c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3f86afd0b1e4bf1cb64c@syzkaller.appspotmail.com
+
+ceph: loaded (mds proto 32)
+NET: Registered protocol family 38
+async_tx: api initialized (async)
+Key type asymmetric registered
+Asymmetric key parser 'x509' registered
+Asymmetric key parser 'pkcs8' registered
+Key type pkcs7_test registered
+Asymmetric key parser 'tpm_parser' registered
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+io scheduler mq-deadline registered
+io scheduler kyber registered
+io scheduler bfq registered
+hgafb: HGA card not detected.
+hgafb: probe of hgafb.0 failed with error -22
+usbcore: registered new interface driver udlfb
+uvesafb: failed to execute /sbin/v86d
+uvesafb: make sure that the v86d helper is installed and executable
+uvesafb: Getting VBE info block failed (eax=0x4f00, err=-2)
+uvesafb: vbe_init() failed with -22
+uvesafb: probe of uvesafb.0 failed with error -22
+vga16fb: mapped to 0x000000008aac772d
+Console: switching to colour frame buffer device 80x30
+fb0: VGA16 VGA frame buffer device
+input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+ACPI: Power Button [PWRF]
+ioatdma: Intel(R) QuickData Technology Driver 5.00
+PCI Interrupt Link [GSIF] enabled at IRQ 21
+PCI Interrupt Link [GSIG] enabled at IRQ 22
+PCI Interrupt Link [GSIH] enabled at IRQ 23
+N_HDLC line discipline registered with maxframe=4096
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+Cyclades driver 2.6
+Initializing Nozomi driver 2.1d
+RocketPort device driver module, version 2.09, 12-June-2003
+No rocketport ports found; unloading driver
+Non-volatile memory driver v1.3
+Linux agpgart interface v0.103
+[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+usbcore: registered new interface driver udl
+[drm] pci: virtio-vga detected at 0000:00:01.0
+fb0: switching to virtiodrmfb from VGA16 VGA
+Console: switching to colour VGA+ 80x25
+virtio-pci 0000:00:01.0: vgaarb: deactivate vga console
+Console: switching to colour dummy device 80x25
+[drm] features: -virgl +edid
+[drm] number of scanouts: 1
+[drm] number of cap sets: 0
+[drm] Initialized virtio_gpu 0.1.0 0 for virtio0 on minor 2
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+RIP: 0010:swiotlb_map+0x5ac/0x700 kernel/dma/swiotlb.c:683
+Code: 28 04 00 00 48 c1 ea 03 80 3c 02 00 0f 85 4d 01 00 00 4c 8b a5 18 04 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 0f 85 1e 01 00 00 48 8d 7d 50 4d 8b 24 24 48 b8 00 00
+RSP: 0000:ffffc9000034f3e0 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8162cc1d
+RDX: 0000000000000000 RSI: ffffffff8162cc98 RDI: ffff88802971a470
+RBP: ffff88802971a048 R08: 0000000000000001 R09: ffffffff8c5dba77
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000007ac00000 R14: dffffc0000000000 R15: 0000000000001000
+FS:  0000000000000000(0000) GS:ffff88802ce00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000ffffffff CR3: 0000000009a8d000 CR4: 0000000000350ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ dma_direct_map_page include/linux/dma-direct.h:170 [inline]
+ dma_direct_map_sg+0x3bb/0x670 kernel/dma/direct.c:368
+ dma_map_sg_attrs+0xd0/0x160 kernel/dma/mapping.c:183
+ drm_gem_shmem_get_pages_sgt drivers/gpu/drm/drm_gem_shmem_helper.c:700 [inline]
+ drm_gem_shmem_get_pages_sgt+0x1fc/0x310 drivers/gpu/drm/drm_gem_shmem_helper.c:679
+ virtio_gpu_object_shmem_init drivers/gpu/drm/virtio/virtgpu_object.c:153 [inline]
+ virtio_gpu_object_create+0x2fd/0xa70 drivers/gpu/drm/virtio/virtgpu_object.c:232
+ virtio_gpu_gem_create drivers/gpu/drm/virtio/virtgpu_gem.c:45 [inline]
+ virtio_gpu_mode_dumb_create+0x298/0x530 drivers/gpu/drm/virtio/virtgpu_gem.c:85
+ drm_mode_create_dumb+0x27c/0x300 drivers/gpu/drm/drm_dumb_buffers.c:94
+ drm_client_buffer_create drivers/gpu/drm/drm_client.c:267 [inline]
+ drm_client_framebuffer_create+0x1b7/0x770 drivers/gpu/drm/drm_client.c:412
+ drm_fb_helper_generic_probe+0x1e5/0x810 drivers/gpu/drm/drm_fb_helper.c:2086
+ drm_fb_helper_single_fb_probe drivers/gpu/drm/drm_fb_helper.c:1635 [inline]
+ __drm_fb_helper_initial_config_and_unlock+0xbc6/0x12d0 drivers/gpu/drm/drm_fb_helper.c:1793
+ drm_fb_helper_initial_config drivers/gpu/drm/drm_fb_helper.c:1888 [inline]
+ drm_fb_helper_initial_config drivers/gpu/drm/drm_fb_helper.c:1880 [inline]
+ drm_fbdev_client_hotplug+0x2d4/0x580 drivers/gpu/drm/drm_fb_helper.c:2180
+ drm_fbdev_generic_setup+0x1c8/0x450 drivers/gpu/drm/drm_fb_helper.c:2262
+ virtio_gpu_probe+0x28f/0x2e0 drivers/gpu/drm/virtio/virtgpu_drv.c:127
+ virtio_dev_probe+0x445/0x6f0 drivers/virtio/virtio.c:248
+ really_probe+0x282/0x9f0 drivers/base/dd.c:553
+ driver_probe_device+0xfe/0x1d0 drivers/base/dd.c:738
+ device_driver_attach+0x228/0x290 drivers/base/dd.c:1013
+ __driver_attach drivers/base/dd.c:1090 [inline]
+ __driver_attach+0xda/0x240 drivers/base/dd.c:1044
+ bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:305
+ bus_add_driver+0x348/0x5a0 drivers/base/bus.c:622
+ driver_register+0x220/0x3a0 drivers/base/driver.c:171
+ do_one_initcall+0x10a/0x7b0 init/main.c:1201
+ do_initcall_level init/main.c:1274 [inline]
+ do_initcalls init/main.c:1290 [inline]
+ do_basic_setup init/main.c:1310 [inline]
+ kernel_init_freeable+0x589/0x638 init/main.c:1505
+ kernel_init+0xd/0x1c0 init/main.c:1399
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Modules linked in:
+---[ end trace 11a290451cfd19ed ]---
+RIP: 0010:swiotlb_map+0x5ac/0x700 kernel/dma/swiotlb.c:683
+Code: 28 04 00 00 48 c1 ea 03 80 3c 02 00 0f 85 4d 01 00 00 4c 8b a5 18 04 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 0f 85 1e 01 00 00 48 8d 7d 50 4d 8b 24 24 48 b8 00 00
+RSP: 0000:ffffc9000034f3e0 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8162cc1d
+RDX: 0000000000000000 RSI: ffffffff8162cc98 RDI: ffff88802971a470
+RBP: ffff88802971a048 R08: 0000000000000001 R09: ffffffff8c5dba77
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 000000007ac00000 R14: dffffc0000000000 R15: 0000000000001000
+FS:  0000000000000000(0000) GS:ffff88802ce00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000ffffffff CR3: 0000000009a8d000 CR4: 0000000000350ef0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
