@@ -2,85 +2,98 @@ Return-Path: <SRS0=0w8+=BR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E634C433E3
-	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 16:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956ADC433DF
+	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 19:59:59 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D74121744
-	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 16:08:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D74121744
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 61CC72086A
+	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 19:59:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PG4AtesE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61CC72086A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1F8F888900;
-	Fri,  7 Aug 2020 16:08:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 320C488A3D;
+	Fri,  7 Aug 2020 19:59:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sVfYqE00+OYR; Fri,  7 Aug 2020 16:08:56 +0000 (UTC)
+	with ESMTP id g1s5d3y5xbwa; Fri,  7 Aug 2020 19:59:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 95B1A88831;
-	Fri,  7 Aug 2020 16:08:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CF53088ADA;
+	Fri,  7 Aug 2020 19:59:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 84EA2C0050;
-	Fri,  7 Aug 2020 16:08:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDB43C013C;
+	Fri,  7 Aug 2020 19:59:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7987EC004C
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 16:08:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF282C0051
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 19:59:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 664C288B9C
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 16:08:54 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A8FD088CE6
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 19:59:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wgUlZPq+h9oD for <iommu@lists.linux-foundation.org>;
- Fri,  7 Aug 2020 16:08:52 +0000 (UTC)
+ with ESMTP id FAKFkxngrLV4 for <iommu@lists.linux-foundation.org>;
+ Fri,  7 Aug 2020 19:59:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9AE7B88B98
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 16:08:52 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: dafna) with ESMTPSA id B0F42299512
-Subject: Re: [PATCH v8 05/14] media: rkisp1: add Rockchip ISP1 subdev driver
-To: Tomasz Figa <tfiga@chromium.org>
-References: <20190730184256.30338-1-helen.koike@collabora.com>
- <20190730184256.30338-6-helen.koike@collabora.com>
- <20190816001323.GF5011@pendragon.ideasonboard.com>
- <30b6367d-9088-d755-d041-904ff2a48130@collabora.com>
- <20200722152459.GC1828171@chromium.org>
- <32a95f66-0328-dfe7-c05c-657aba0d1b25@collabora.com>
- <05fb7b03-22b5-c981-2602-bbe877943d58@collabora.com>
- <CAAFQd5AWEOr62OrBfRb2HW53omjYfpvN_BAO+eQdRkR9Cixx9w@mail.gmail.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <7c138a50-f167-c99e-3418-1927b36809fc@collabora.com>
-Date: Fri, 7 Aug 2020 18:08:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2849F88B31
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 19:59:55 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id k20so2916247wmi.5
+ for <iommu@lists.linux-foundation.org>; Fri, 07 Aug 2020 12:59:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=syZktjcepY0vNc63q2VaOQLWA1fKYYMREF207iDmj8M=;
+ b=PG4AtesEbVmdpNxayBlppShCjBdDC2bnYjhPF+wa3V0YTXmVsV+LXB1rZq6D56XHXd
+ Ljtxvsyn7xdzl9zcM0kLHY7xV0mqM0unWx8Z9WfzYXMJOMnltLUAVnNkdr7DIoVp38cL
+ VR6W/n6O8gZ/Zm8jaWup2PqlZZwEI6sGvuAnv7Q3pCVK69HpN00G3wf6wIMAyeFWhyBr
+ ReVfh8HxCzZHBlIdr+0+FXgM7rzoqOsOWI5ur4pRwvbvEKGr9HbV+0HrugInX/IkMtRf
+ nqvlfrJxJMfL+FhqlNs7Y9/UQKKu60CzDU0SVmKjUbK3xmzte/uHbD565BI7QSPTcXSU
+ J3pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=syZktjcepY0vNc63q2VaOQLWA1fKYYMREF207iDmj8M=;
+ b=ryME8cl2Pj7cicNWrfYhWZ0Sot4YyruWk1/QvsifZU4rrgTlrvt+OtxvGFrKWBbf43
+ hEVsuBUW0h/7pFU19ZZ066I8Zm51K6oCcj5lsI3JIs816yhPmyaCgyJgtT6eAYfChBGg
+ fjCPapiPyo9yce3/00cddAnC46oy6nCjrYGKqogazckcQlWHW1B1sQJRzIeqrt3BUOyj
+ B7seDY/AXsJA8PiMvjnLZxM9ZxUm6pUFq082FUTWRHu6JwHO/XYqDkugHmHdkr0sTYUl
+ GNufV5ma4ASDIUESef2hsWRtdQFe06XowubCedHv7isGri2ciGE/bdBdM1dYN6DlMykm
+ 7HoQ==
+X-Gm-Message-State: AOAM530QMLoSXeS/1SeTIueRwDRzThp7ZdE1EWpX1Sg7q/dXZUUKosy1
+ QAVZi1QXI0URGPDeWVswTz8s+6U+vW73FNRu/s4=
+X-Google-Smtp-Source: ABdhPJx4Qzp5/KvwYGLxwbL5y+B7itSkoeGkgu40KGhxhqPxnPpNPyE08am+leRP+rX0L+h8iNqO9z4Jw4+caqkiteY=
+X-Received: by 2002:a1c:2dcb:: with SMTP id t194mr13696946wmt.94.1596830393486; 
+ Fri, 07 Aug 2020 12:59:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAAFQd5AWEOr62OrBfRb2HW53omjYfpvN_BAO+eQdRkR9Cixx9w@mail.gmail.com>
-Content-Language: en-US
-Cc: Eddie Cai <eddie.cai.linux@gmail.com>,
- =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>, kernel@collabora.com,
- =?UTF-8?B?6ZKf5Lul5bSH?= <zyc@rock-chips.com>,
- "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
- Hans Verkuil <hans.verkuil@cisco.com>,
- Allon Huang <allon.huang@rock-chips.com>,
- Shunqian Zheng <zhengsq@rock-chips.com>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- linux-devicetree <devicetree@vger.kernel.org>, Jacob Chen <cc@rock-chips.com>,
- Jeffy <jeffy.chen@rock-chips.com>, Helen Koike <helen.koike@collabora.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Ezequiel Garcia <ezequiel@collabora.com>, linux-arm-kernel@lists.infradead.org,
- Chen Jacob <jacob2.chen@rock-chips.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+References: <20200803193547.305660-1-jcrouse@codeaurora.org>
+ <20200803193547.305660-10-jcrouse@codeaurora.org>
+In-Reply-To: <20200803193547.305660-10-jcrouse@codeaurora.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Fri, 7 Aug 2020 13:00:37 -0700
+Message-ID: <CAF6AEGvum9zLj41Ds+8+Q7qaMctwtcsEpC5aHGHZjb=piZO-QA@mail.gmail.com>
+Subject: Re: [Freedreno] [PATCH v11 09/12] drm/msm: Add support to create a
+ local pagetable
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Cc: Sean Paul <sean@poorly.run>, Will Deacon <will@kernel.org>,
+ David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Daniel Vetter <daniel@ffwll.ch>, freedreno <freedreno@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,338 +106,323 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi
+On Mon, Aug 3, 2020 at 12:36 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
+>
+> Add support to create a io-pgtable for use by targets that support
+> per-instance pagetables. In order to support per-instance pagetables the
+> GPU SMMU device needs to have the qcom,adreno-smmu compatible string and
+> split pagetables enabled.
+>
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> ---
+>
+>  drivers/gpu/drm/msm/msm_gpummu.c |   2 +-
+>  drivers/gpu/drm/msm/msm_iommu.c  | 191 ++++++++++++++++++++++++++++++-
+>  drivers/gpu/drm/msm/msm_mmu.h    |  16 ++-
+>  3 files changed, 206 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/msm_gpummu.c b/drivers/gpu/drm/msm/msm_gpummu.c
+> index 310a31b05faa..aab121f4beb7 100644
+> --- a/drivers/gpu/drm/msm/msm_gpummu.c
+> +++ b/drivers/gpu/drm/msm/msm_gpummu.c
+> @@ -102,7 +102,7 @@ struct msm_mmu *msm_gpummu_new(struct device *dev, struct msm_gpu *gpu)
+>         }
+>
+>         gpummu->gpu = gpu;
+> -       msm_mmu_init(&gpummu->base, dev, &funcs);
+> +       msm_mmu_init(&gpummu->base, dev, &funcs, MSM_MMU_GPUMMU);
+>
+>         return &gpummu->base;
+>  }
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index 1b6635504069..bc6a4bbc904a 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -4,15 +4,202 @@
+>   * Author: Rob Clark <robdclark@gmail.com>
+>   */
+>
+> +#include <linux/io-pgtable.h>
+>  #include "msm_drv.h"
+>  #include "msm_mmu.h"
+>
+>  struct msm_iommu {
+>         struct msm_mmu base;
+>         struct iommu_domain *domain;
+> +       atomic_t pagetables;
+>  };
+> +
+>  #define to_msm_iommu(x) container_of(x, struct msm_iommu, base)
+>
+> +struct msm_iommu_pagetable {
+> +       struct msm_mmu base;
+> +       struct msm_mmu *parent;
+> +       struct io_pgtable_ops *pgtbl_ops;
+> +       phys_addr_t ttbr;
+> +       u32 asid;
+> +};
+> +static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
+> +{
+> +       return container_of(mmu, struct msm_iommu_pagetable, base);
+> +}
+> +
+> +static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+> +               size_t size)
+> +{
+> +       struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+> +       struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+> +       size_t unmapped = 0;
+> +
+> +       /* Unmap the block one page at a time */
+> +       while (size) {
+> +               unmapped += ops->unmap(ops, iova, 4096, NULL);
+> +               iova += 4096;
+> +               size -= 4096;
+> +       }
+> +
+> +       iommu_flush_tlb_all(to_msm_iommu(pagetable->parent)->domain);
+> +
+> +       return (unmapped == size) ? 0 : -EINVAL;
+> +}
+> +
+> +static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+> +               struct sg_table *sgt, size_t len, int prot)
+> +{
+> +       struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+> +       struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
+> +       struct scatterlist *sg;
+> +       size_t mapped = 0;
+> +       u64 addr = iova;
+> +       unsigned int i;
+> +
+> +       for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+> +               size_t size = sg->length;
+> +               phys_addr_t phys = sg_phys(sg);
+> +
+> +               /* Map the block one page at a time */
+> +               while (size) {
+> +                       if (ops->map(ops, addr, phys, 4096, prot, GFP_KERNEL)) {
+> +                               msm_iommu_pagetable_unmap(mmu, iova, mapped);
+> +                               return -EINVAL;
+> +                       }
+> +
+> +                       phys += 4096;
+> +                       addr += 4096;
+> +                       size -= 4096;
+> +                       mapped += 4096;
+> +               }
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static void msm_iommu_pagetable_destroy(struct msm_mmu *mmu)
+> +{
+> +       struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
+> +       struct msm_iommu *iommu = to_msm_iommu(pagetable->parent);
+> +
+> +       /*
+> +        * If this is the last attached pagetable for the parent,
+> +        * disable TTBR0 in the arm-smmu driver
+> +        */
+> +       if (atomic_dec_return(&iommu->pagetables) == 0)
+> +               iommu_domain_set_attr(iommu->domain,
+> +                       DOMAIN_ATTR_PGTABLE_CFG, NULL);
+> +
+> +       free_io_pgtable_ops(pagetable->pgtbl_ops);
+> +       kfree(pagetable);
+> +}
+> +
+> +int msm_iommu_pagetable_params(struct msm_mmu *mmu,
+> +               phys_addr_t *ttbr, int *asid)
+> +{
+> +       struct msm_iommu_pagetable *pagetable;
+> +
+> +       if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
+> +               return -EINVAL;
+> +
+> +       pagetable = to_pagetable(mmu);
+> +
+> +       if (ttbr)
+> +               *ttbr = pagetable->ttbr;
+> +
+> +       if (asid)
+> +               *asid = pagetable->asid;
+> +
+> +       return 0;
+> +}
+> +
+> +static const struct msm_mmu_funcs pagetable_funcs = {
+> +               .map = msm_iommu_pagetable_map,
+> +               .unmap = msm_iommu_pagetable_unmap,
+> +               .destroy = msm_iommu_pagetable_destroy,
+> +};
+> +
+> +static void msm_iommu_tlb_flush_all(void *cookie)
+> +{
+> +}
+> +
+> +static void msm_iommu_tlb_flush_walk(unsigned long iova, size_t size,
+> +               size_t granule, void *cookie)
+> +{
+> +}
+> +
+> +static void msm_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
+> +               unsigned long iova, size_t granule, void *cookie)
+> +{
+> +}
+> +
+> +static const struct iommu_flush_ops null_tlb_ops = {
+> +       .tlb_flush_all = msm_iommu_tlb_flush_all,
+> +       .tlb_flush_walk = msm_iommu_tlb_flush_walk,
+> +       .tlb_flush_leaf = msm_iommu_tlb_flush_walk,
+> +       .tlb_add_page = msm_iommu_tlb_add_page,
+> +};
+> +
+> +struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
+> +{
+> +       struct msm_iommu *iommu = to_msm_iommu(parent);
+> +       static int next_asid = 16;
+> +       struct msm_iommu_pagetable *pagetable;
+> +       struct io_pgtable_cfg cfg;
+> +       int ret;
+> +
+> +       /* Get the pagetable configuration from the domain */
+> +       ret = iommu_domain_get_attr(iommu->domain,
+> +               DOMAIN_ATTR_PGTABLE_CFG, &cfg);
+> +       if (ret)
+> +               return ERR_PTR(ret);
+> +
+> +       pagetable = kzalloc(sizeof(*pagetable), GFP_KERNEL);
+> +       if (!pagetable)
+> +               return ERR_PTR(-ENOMEM);
+> +
+> +       msm_mmu_init(&pagetable->base, parent->dev, &pagetable_funcs,
+> +               MSM_MMU_IOMMU_PAGETABLE);
+> +
+> +       /* The incoming cfg will have the TTBR1 quirk enabled */
+> +       cfg.quirks &= ~IO_PGTABLE_QUIRK_ARM_TTBR1;
+> +       cfg.tlb = &null_tlb_ops;
+> +
+> +       pagetable->pgtbl_ops = alloc_io_pgtable_ops(ARM_64_LPAE_S1,
+> +               &cfg, iommu->domain);
+> +
+> +       if (!pagetable->pgtbl_ops) {
+> +               kfree(pagetable);
+> +               return ERR_PTR(-ENOMEM);
+> +       }
+> +
+> +       /*
+> +        * If this is the first pagetable that we've allocated, send it back to
+> +        * the arm-smmu driver as a trigger to set up TTBR0
+> +        */
+> +       if (atomic_inc_return(&iommu->pagetables) == 1) {
+> +               ret = iommu_domain_set_attr(iommu->domain,
+> +                       DOMAIN_ATTR_PGTABLE_CFG, &cfg);
+> +               if (ret) {
+> +                       free_io_pgtable_ops(pagetable->pgtbl_ops);
+> +                       kfree(pagetable);
+> +                       return ERR_PTR(ret);
+> +               }
+> +       }
+> +
+> +       /* Needed later for TLB flush */
+> +       pagetable->parent = parent;
+> +       pagetable->ttbr = cfg.arm_lpae_s1_cfg.ttbr;
+> +
+> +       pagetable->asid = next_asid;
+> +       next_asid = (next_asid + 1)  % 255;
 
-Am 06.08.20 um 14:22 schrieb Tomasz Figa:
-> On Thu, Aug 6, 2020 at 11:21 AM Dafna Hirschfeld
-> <dafna.hirschfeld@collabora.com> wrote:
->>
->>
->>
->> Am 05.08.20 um 23:10 schrieb Dafna Hirschfeld:
->>> Hi
->>>
->>> On 22.07.20 17:24, Tomasz Figa wrote:
->>>> Hi Dafna,
->>>>
->>>> On Sat, Jul 11, 2020 at 01:04:31PM +0200, Dafna Hirschfeld wrote:
->>>>> Hi Laurent,
->>>>>
->>>>> On 16.08.19 02:13, Laurent Pinchart wrote:
->>>>>> Hello Helen,
->>>>>>
->>>>>> Thank you for the patch.
->>>>>>
->>>>>> On Tue, Jul 30, 2019 at 03:42:47PM -0300, Helen Koike wrote:
->>>> [snip]
->>>>>>> +static void rkisp1_isp_queue_event_sof(struct rkisp1_isp_subdev *isp)
->>>>>>> +{
->>>>>>> +    struct v4l2_event event = {
->>>>>>> +        .type = V4L2_EVENT_FRAME_SYNC,
->>>>>>> +        .u.frame_sync.frame_sequence =
->>>>>>> +            atomic_inc_return(&isp->frm_sync_seq) - 1,
->>>>>>
->>>>>> I would move the increment to the caller, hiding it in this function is
->>>>>> error-prone (and if you look at the caller I'm pointing out one possible
->>>>>> error :-)).
->>>>>>
->>>>>> In general usage of frm_sync_seq through the driver seems to be very
->>>>>> race-prone. It's read in various IRQ handling functions, all coming from
->>>>>> the same IRQ, so that part is fine (and wouldn't require an atomic
->>>>>> variable), but when read from the buffer queue handlers I really get a
->>>>>> red light flashing in my head. I'll try to investigate more when
->>>>>> reviewing the next patches.
->>>>>
->>>>> I see that the only place were 'frame_sequence' is read outside of the irq
->>>>> handlers is in the capture in 'rkisp1_vb2_buf_queue':
->>>>>
->>>>>      /*
->>>>>            * If there's no next buffer assigned, queue this buffer directly
->>>>>            * as the next buffer, and update the memory interface.
->>>>>            */
->>>>>           if (cap->is_streaming && !cap->buf.next &&
->>>>>               atomic_read(&cap->rkisp1->isp.frame_sequence) == -1) {
->>>>>                   cap->buf.next = ispbuf;
->>>>>                   rkisp1_set_next_buf(cap);
->>>>>           } else {
->>>>>                   list_add_tail(&ispbuf->queue, &cap->buf.queue);
->>>>>           }
->>>>> This "if" condition seems very specific, a case where we already stream but v-start was not yet received.
->>>>> I think it is possible to remove the test 'atomic_read(&cap->rkisp1->isp.frame_sequence) == -1'
->>>>> from the above condition so that the next buffer is updated in case it is null not just before the first
->>>>> v-start signal.
->>>>>
->>>>
->>>> We don't have this special case in the Chrome OS code.
->>>>
->>>> I suppose it would make it possible to resume the capture 1 frame
->>>> earlier after a queue underrun, as otherwise the new buffer would be
->>>> only programmed after the next frame start interrupt and used for the
->>>> next-next frame.  However, it's racy, because programming of the buffer
->>>> addresses is not atomic and could end up with the hardware using few
->>>> plane addresses from the new buffer and few from the dummy buffer.
->>>>
->>>> Given that and also the fact that a queue underrun is a very special
->>>> case, where the system was already having problems catching up, I'd just
->>>> remove this special case.
->>>>
->>>> [snip]
->>>>>>> +void rkisp1_isp_isr(unsigned int isp_mis, struct rkisp1_device *dev)
->>>>>>> +{
->>>>>>> +    void __iomem *base = dev->base_addr;
->>>>>>> +    unsigned int isp_mis_tmp = 0;
->>>>>>
->>>>>> _tmp are never good names :-S
->>>>>>
->>>>>>> +    unsigned int isp_err = 0;
->>>>>>
->>>>>> Neither of these variable need to be initialised to 0.
->>>>>>
->>>>>>> +
->>>>>>> +    /* start edge of v_sync */
->>>>>>> +    if (isp_mis & CIF_ISP_V_START) {
->>>>>>> +        rkisp1_isp_queue_event_sof(&dev->isp_sdev);
->>>>>>
->>>>>> This will increment the frame sequence number. What if the interrupt is
->>>>>> slightly delayed and the next frame starts before we get a change to
->>>>>> copy the sequence number to the buffers (before they will complete
->>>>>> below) ?
->>>>>
->>>>> Do you mean that we get two sequental v-start signals and then the next
->>>>> frame-end signal in MI_MIS belongs to the first v-start signal of the two?
->>>>> How can this be solved? I wonder if any v-start signal has a later signal
->>>>> that correspond to the same frame so that we can follow it?
->>>>>
->>>>> Maybe we should have one counter that is incremented on v-start signal,
->>>>> and another counter that is incremented uppon some other signal?
->>>>>
->>>>
->>>> We're talking about a hard IRQ. I can't imagine the interrupt handler
->>>> being delayed for a time close to a full frame interval (~16ms for 60
->>>> fps) to trigger such scenario.
->>>>
->>>>>>
->>>>>>> +
->>>>>>> +        writel(CIF_ISP_V_START, base + CIF_ISP_ICR);
->>>>>>
->>>>>> Do you need to clear all interrupt bits individually, can't you write
->>>>>> isp_mis to CIF_ISP_ICR at the beginning of the function to clear them
->>>>>> all in one go ?
->>>>>>
->>>>>>> +        isp_mis_tmp = readl(base + CIF_ISP_MIS);
->>>>>>> +        if (isp_mis_tmp & CIF_ISP_V_START)
->>>>>>> +            v4l2_err(&dev->v4l2_dev, "isp icr v_statr err: 0x%x\n",
->>>>>>> +                 isp_mis_tmp);
->>>>>>
->>>>>> This require some explanation. It looks like a naive way to protect
->>>>>> against something, but I think it could trigger under normal
->>>>>> circumstances if IRQ handling is delayed, and wouldn't do much anyway.
->>>>>> Same for the similar constructs below.
->>>>>>
->>>>>>> +    }
->>>>>>> +
->>>>>>> +    if ((isp_mis & CIF_ISP_PIC_SIZE_ERROR)) {
->>>>>>> +        /* Clear pic_size_error */
->>>>>>> +        writel(CIF_ISP_PIC_SIZE_ERROR, base + CIF_ISP_ICR);
->>>>>>> +        isp_err = readl(base + CIF_ISP_ERR);
->>>>>>> +        v4l2_err(&dev->v4l2_dev,
->>>>>>> +             "CIF_ISP_PIC_SIZE_ERROR (0x%08x)", isp_err);
->>>>>>
->>>>>> What does this mean ?
->>>>>>
->>>>>>> +        writel(isp_err, base + CIF_ISP_ERR_CLR);
->>>>>>> +    } else if ((isp_mis & CIF_ISP_DATA_LOSS)) {
->>>>>>
->>>>>> Are CIF_ISP_PIC_SIZE_ERROR and CIF_ISP_DATA_LOSS mutually exclusive ?
->>>>>>
->>>>>>> +        /* Clear data_loss */
->>>>>>> +        writel(CIF_ISP_DATA_LOSS, base + CIF_ISP_ICR);
->>>>>>> +        v4l2_err(&dev->v4l2_dev, "CIF_ISP_DATA_LOSS\n");
->>>>>>> +        writel(CIF_ISP_DATA_LOSS, base + CIF_ISP_ICR);
->>>>>>> +    }
->>>>>>> +
->>>>>>> +    /* sampled input frame is complete */
->>>>>>> +    if (isp_mis & CIF_ISP_FRAME_IN) {
->>>>>>> +        writel(CIF_ISP_FRAME_IN, base + CIF_ISP_ICR);
->>>>>>> +        isp_mis_tmp = readl(base + CIF_ISP_MIS);
->>>>>>> +        if (isp_mis_tmp & CIF_ISP_FRAME_IN)
->>>>>>> +            v4l2_err(&dev->v4l2_dev, "isp icr frame_in err: 0x%x\n",
->>>>>>> +                 isp_mis_tmp);
->>>>>>> +    }
->>>>>>> +
->>>>>>> +    /* frame was completely put out */
->>>>>>
->>>>>> "put out" ? :-) What's the difference between ISP_FRAME_IN and ISP_FRAME
->>>>>> ? The two comments could do with a bit of brush up, and I think the
->>>>>> ISP_FRAME_IN interrupt could be disabled as it doesn't perform any
->>>>>> action.
->>>>>
->>>>> Those two oneline comments are just copy-paste from the datasheet.
->>>>>
->>>>> ""
->>>>> 5 MIS_FRAME_IN sampled input frame is complete
->>>>> 1 MIS_FRAME frame was completely put out
->>>>> ""
->>>>>
->>>>> Unfrotunately, the datasheet does not add any further explanation about those signals.
->>>>>
->>>>>
->>>>
->>>> My loose recollection is that the former is signaled when then frame
->>>> is fully input to the ISP and the latter when the ISP completes
->>>> outputting the frame to the next block in the pipeline, but someone
->>>> would need to verify this, for example by printing timestamps for all
->>>> the various interrupts.
->>>>
->>>>>>
->>>>>>> +    if (isp_mis & CIF_ISP_FRAME) {
->>>>>>> +        u32 isp_ris = 0;
->>>>>>
->>>>>> No need to initialise this to 0.
->>>>>>
->>>>>>> +        /* Clear Frame In (ISP) */
->>>>>>> +        writel(CIF_ISP_FRAME, base + CIF_ISP_ICR);
->>>>>>> +        isp_mis_tmp = readl(base + CIF_ISP_MIS);
->>>>>>> +        if (isp_mis_tmp & CIF_ISP_FRAME)
->>>>>>> +            v4l2_err(&dev->v4l2_dev,
->>>>>>> +                 "isp icr frame end err: 0x%x\n", isp_mis_tmp);
->>>>>>> +
->>>>>>> +        isp_ris = readl(base + CIF_ISP_RIS);
->>>>>>> +        if (isp_ris & (CIF_ISP_AWB_DONE | CIF_ISP_AFM_FIN |
->>>>>>> +                   CIF_ISP_EXP_END | CIF_ISP_HIST_MEASURE_RDY))
->>>>>>> +            rkisp1_stats_isr(&dev->stats_vdev, isp_ris);
->>>>>>
->>>>>> Is there a guarantee that the statistics will be fully written out
->>>>>> before the video frame itself ? And doesn't this test if any of the
->>>>>> statistics is complete, not all of them ? I think the logic is wrong, it
->>>>>
->>>>> The datasheet does not add any explanation of what is expected to come first.
->>>>> Should we wait until all statistics measurements are done? In the struct
->>>>> sent to userspace there is a bitmaks for which of the statistics are read.
->>>>> I think that if only part of the statistics are ready, we can already send the once
->>>>> that are ready to userspace.
->>>>>
->>>>
->>>> If we look further into the code, rkisp1_stats_isr() checks the
->>>> interrupt status mask passed to it and reads out only the parameters
->>>> with indicated completion. The statistics metadata buffer format
->>>> includes a bit mask which tells the userspace which measurements are
->>>> available.
->>>>
->>>> However, I think I've spotted a bug there. At the beginning of
->>>> rkisp1_stats_isr(), all the 4 interrupt status bits are cleared,
->>>> regardless of the mask used later to decide which readouts need to be
->>>> done. This could mean that with an unfortunate timing, some measurements
->>>> would be lost. So at least the code should be fixed to only clear the
->>>> interrupts bits really handled.
->>>
->>> I'll fix that
->>
->> I actually don't think this is a bug. The statistics interrupts are not
->> enabled and are read from the raw interrupts register. This means
->> that if we missed a statistics for the current frame and we don't reset it
->> then we will read it only when the next frame comes out, so it will be
->> wrongly set as statistics for the next frame although it is actually for the
->> current frame.
-> 
-> Yes, I noticed that the driver attempts to reduce the number of
-> interrupts by assuming that the ISP statistics can be read after the
-> MIS_FRAME interrupt. However, in this case, I don't think we can ever
-> miss statistics for a frame (unless the system is broken and has
-> unacceptable interrupt latencies) nor the unfortunate timing I
-> suggested before could ever take place.
+nit: extra space before '%'
 
-So we actually don't even need the `meas_type` bitmask that tells which
-statistics are in in the struct. Should I send a patch removing it?
-Maybe just to be on the safe side I can add a WARNING in case not all
-statistics are ready or or at least a debugfs variable.
+> +       if (next_asid < 16)
+> +               next_asid = 16;
 
-Thanks,
-Dafna
+nit: next_asid = min(16, next_asid)
 
-> 
-> Best regards,
-> Tomasz
-> 
->>
->> Thanks,
->> Dafna
->>
->>>
->>>>
->>>> As for whether to send separate buffers for each measurement, I guess
->>>> it's not a bad thing to let the userspace access the ones available
->>>> earlier. Now I only don't recall why we decided to put all the
->>>> measurements into one metadata structure, rather than splitting the 4
->>>> into their own structures and buffer queues...
->>>
->>> Is it possible to have several queues to the same video node?
->>>
->>>>
->>>>>> seems it should be moved out of the CIF_ISP_FRAME test, to a test of its
->>>>>> own. It's hard to tell for sure without extra information though (for
->>>>>> instance why are the stats-related bits read from CIF_ISP_RIS, when
->>>>>> they seem to be documented as valid in CIF_ISP_ISR), but this should be
->>>>>> validated, and most probably fixed. Care should be taken to keep
->>>>>> synchronisation of sequence number between the different queues.
->>>>>
->>>>> I see that the capture buffers are done before incrementing the frame_sequence with
->>>>> the following explanation:
->>>>>
->>>>>      /*
->>>>>            * Call rkisp1_capture_isr() first to handle the frame that
->>>>>            * potentially completed using the current frame_sequence number before
->>>>>            * it is potentially incremented by rkisp1_isp_isr() in the vertical
->>>>>            * sync.
->>>>>            */
->>>>>
->>>>> I think reading the stats/params should also be done before calling rkisp1_capture_isr
->>>>> for the same reason. (so to match the correct frame_sequence)
->>>>
->>>> My recollection of the sequence of interrupts in this hardware is like
->>>> this:
->>>>
->>>> CIF_ISP_V_START (frame 0)
->>>>     CIF_ISP_FRAME_IN (frame 0)
->>>>       CIF_ISP_FRAME (frame 0)
->>>>         CIF_ISP_AWB_DONE
->>>>         CIF_ISP_AFM_FIN
->>>>         CIF_ISP_EXP_END
->>>>         CIF_ISP_HIST_MEASURE_RDY
->>>>         CIF_MI_FRAME*
->>>>         CIF_ISP_V_START (frame 1)
->>>>           CIF_ISP_FRAME_IN (frame 1)
->>>>             CIF_ISP_FRAME (frame 1)
->>>>               ...
->>>>
->>>> where the interrupts at the same indentation level can happen
->>>> independently of each other. Again, someone would have to verify this.
->>>
->>> I wrote this patch to print the interrupts and the time difference between interrupts:
->>> https://gitlab.collabora.com/dafna/linux/-/commit/9b9c5ddc2f06a6b87d2c1b210219f69de83296c5
->>>
->>> I got this output: http://ix.io/2tl8,
->>> there is a repeating pattern where only v-start interrupt is sent, indicated by the prints "isp mis 0x00000040" then about 23 milisec later are the other interrupts
->>> (FRAME_IN, FRAME, MI_FRAME* ) and about 10 milisec the v-start interrupt again.
->>>
->>> I am still not sure why the mi_frame interrupt should be handled first. If it happen for example that all the interrupts arrive at once, how can
->>> we know that the MI_FRAME interrupt relates to the previous v-start interrupt and not the current one?
->>> I think that for that we need a code that keep track of the previous interrupt.
->>>
->>> Thanks,
->>> Dafna
->>>
->>>
->>>>
->>>> Best regards,
->>>> Tomasz
->>>>
-> 
+?
+
+BR,
+-R
+
+> +
+> +       return &pagetable->base;
+> +}
+> +
+>  static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
+>                 unsigned long iova, int flags, void *arg)
+>  {
+> @@ -85,9 +272,11 @@ struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain)
+>                 return ERR_PTR(-ENOMEM);
+>
+>         iommu->domain = domain;
+> -       msm_mmu_init(&iommu->base, dev, &funcs);
+> +       msm_mmu_init(&iommu->base, dev, &funcs, MSM_MMU_IOMMU);
+>         iommu_set_fault_handler(domain, msm_fault_handler, iommu);
+>
+> +       atomic_set(&iommu->pagetables, 0);
+> +
+>         ret = iommu_attach_device(iommu->domain, dev);
+>         if (ret) {
+>                 kfree(iommu);
+> diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
+> index 3a534ee59bf6..61ade89d9e48 100644
+> --- a/drivers/gpu/drm/msm/msm_mmu.h
+> +++ b/drivers/gpu/drm/msm/msm_mmu.h
+> @@ -17,18 +17,26 @@ struct msm_mmu_funcs {
+>         void (*destroy)(struct msm_mmu *mmu);
+>  };
+>
+> +enum msm_mmu_type {
+> +       MSM_MMU_GPUMMU,
+> +       MSM_MMU_IOMMU,
+> +       MSM_MMU_IOMMU_PAGETABLE,
+> +};
+> +
+>  struct msm_mmu {
+>         const struct msm_mmu_funcs *funcs;
+>         struct device *dev;
+>         int (*handler)(void *arg, unsigned long iova, int flags);
+>         void *arg;
+> +       enum msm_mmu_type type;
+>  };
+>
+>  static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
+> -               const struct msm_mmu_funcs *funcs)
+> +               const struct msm_mmu_funcs *funcs, enum msm_mmu_type type)
+>  {
+>         mmu->dev = dev;
+>         mmu->funcs = funcs;
+> +       mmu->type = type;
+>  }
+>
+>  struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain);
+> @@ -41,7 +49,13 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
+>         mmu->handler = handler;
+>  }
+>
+> +struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
+> +
+>  void msm_gpummu_params(struct msm_mmu *mmu, dma_addr_t *pt_base,
+>                 dma_addr_t *tran_error);
+>
+> +
+> +int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
+> +               int *asid);
+> +
+>  #endif /* __MSM_MMU_H__ */
+> --
+> 2.25.1
+>
+> _______________________________________________
+> Freedreno mailing list
+> Freedreno@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/freedreno
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
