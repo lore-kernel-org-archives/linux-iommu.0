@@ -1,99 +1,68 @@
-Return-Path: <SRS0=0w8+=BR=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=s95e=BS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0932C433E3
-	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 20:03:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8D4C433E0
+	for <iommu@archiver.kernel.org>; Sat,  8 Aug 2020 06:34:06 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F0342074D
-	for <iommu@archiver.kernel.org>; Fri,  7 Aug 2020 20:03:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cKuC0uos"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F0342074D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 47AE620855
+	for <iommu@archiver.kernel.org>; Sat,  8 Aug 2020 06:34:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 47AE620855
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5E4EB88B0F;
-	Fri,  7 Aug 2020 20:03:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EE7F1875F3;
+	Sat,  8 Aug 2020 06:34:04 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 00vAFPRYiNuV; Sat,  8 Aug 2020 06:34:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DC2B2873DD;
+	Sat,  8 Aug 2020 06:34:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7BFBC07FF;
+	Sat,  8 Aug 2020 06:34:03 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87A87C013C
+ for <iommu@lists.linux-foundation.org>; Sat,  8 Aug 2020 06:34:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6916088CC4
+ for <iommu@lists.linux-foundation.org>; Sat,  8 Aug 2020 06:34:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S1Z+pRgiatU5; Fri,  7 Aug 2020 20:03:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 95B8E88B0E;
-	Fri,  7 Aug 2020 20:03:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B684C013C;
-	Fri,  7 Aug 2020 20:03:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4534DC0051
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 20:03:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2E6A588DF2
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 20:03:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eRTU+nFROKvg for <iommu@lists.linux-foundation.org>;
- Fri,  7 Aug 2020 20:03:12 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B216F88DC8
- for <iommu@lists.linux-foundation.org>; Fri,  7 Aug 2020 20:03:11 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id f7so2736440wrw.1
- for <iommu@lists.linux-foundation.org>; Fri, 07 Aug 2020 13:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=OSLWRy9ysyT4eibP6iMlQrzS7AS0P8deCWCZeNvVCDw=;
- b=cKuC0uosBz+Tin+kAwwFiT57a/t33eF5zdr86svo0PRBao/R9rftfkIlicbGB/6CfQ
- S4nfOQXRm7QbcyeEjObL4IOJvkpgekEuY1wHQomjGZu9fhQfYqghrxYjTyfu+hh5rIWB
- s1XhiMeNyq9zTiHXWTbTKy/1YRjfnuTn7h3Z4fGWrvt3Q+0rFf9e5BSO2QL5hV2vbp5p
- +blXEG1jfKgMoEI17LfReVX/qA8nv53xZ+ZkXxnvmeIRyGFemZ/gSUhc/xihJma7Kbfg
- SrkH3q01dBRUJ7xQrEaXjgbNWMoGkX61z2jDW5CvPhNAY2axJmS/ZiA5aoh4XYO4h2EJ
- j+fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=OSLWRy9ysyT4eibP6iMlQrzS7AS0P8deCWCZeNvVCDw=;
- b=oXjyr1U3ov/VAFsTftwPqVxWUb3BvJekNEqVHDedAsxjHmRGOvjHmDkYIA3sHQ+1b7
- VdLau1tRSFD8pu81JqxNTg7EeO66t8wp5Iz4H0Xf9dU4+qyxsQeGTiqzFhhYMdOTuFgx
- pNGhiUSnUtk1H+3OdJRnGp/bNCjaKx+KXrJv+AXN1OSw9DXF5b9m35wm4ikbXGXCD3d0
- qWCTb0JuraW5PKgAGl0fEtQcHsiqdLYohFp9pFmNbJBQdmlBKve/h3psJPL3oUYwaDT3
- 1i2AKqTPBb6Ebytz1YxzkrKUT/UEqFVU5xEfchChZMr4nqe+D9vMTTU0bOYByHpqwyGp
- RznA==
-X-Gm-Message-State: AOAM533ch1IFKtFZPk4gEfjFyTCmKw/0kAVzzCuHtrHoStE3Wba85hpR
- 5yEjtuwuwyPe2rzp3LPMJZ/vAnqRKEluubb0hJE=
-X-Google-Smtp-Source: ABdhPJxMIcDcXDI1jEIi/2CWQ0HC/RAkG26jBGU/hI2e7LmI9IXbWAVf1mVql7wNxwQh+Fcvv0OGDkHMT6/AryEFd7Q=
-X-Received: by 2002:adf:ec04:: with SMTP id x4mr12769567wrn.28.1596830590085; 
- Fri, 07 Aug 2020 13:03:10 -0700 (PDT)
+ with ESMTP id g9qrEwcPeRxp for <iommu@lists.linux-foundation.org>;
+ Sat,  8 Aug 2020 06:34:00 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9BD1688A47
+ for <iommu@lists.linux-foundation.org>; Sat,  8 Aug 2020 06:34:00 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 3C5AB68C7B; Sat,  8 Aug 2020 08:33:55 +0200 (CEST)
+Date: Sat, 8 Aug 2020 08:33:54 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH v3 2/2] dma-pool: Only allocate from CMA when in same
+ memory zone
+Message-ID: <20200808063354.GA17329@lst.de>
+References: <20200806184756.32075-1-nsaenzjulienne@suse.de>
+ <20200806184756.32075-3-nsaenzjulienne@suse.de> <20200807052116.GA584@lst.de>
+ <aae9250e660339142e9390427a603c4cf4e282af.camel@suse.de>
 MIME-Version: 1.0
-References: <20200803193547.305660-1-jcrouse@codeaurora.org>
- <20200803193547.305660-11-jcrouse@codeaurora.org>
-In-Reply-To: <20200803193547.305660-11-jcrouse@codeaurora.org>
-From: Rob Clark <robdclark@gmail.com>
-Date: Fri, 7 Aug 2020 13:03:54 -0700
-Message-ID: <CAF6AEGv53rt=33TjQ5mim3hhQvsQugv+u61r68=FTctdmoXw0w@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH v11 10/12] drm/msm: Add support for private
- address space instances
-To: Jordan Crouse <jcrouse@codeaurora.org>
-Cc: Sean Paul <sean@poorly.run>, Will Deacon <will@kernel.org>,
- David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Daniel Vetter <daniel@ffwll.ch>, freedreno <freedreno@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <aae9250e660339142e9390427a603c4cf4e282af.camel@suse.de>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: amit.pundir@linaro.org, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
+ rientjes@google.com, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,189 +80,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 3, 2020 at 12:36 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
->
-> Add support for allocating private address space instances. Targets that
-> support per-context pagetables should implement their own function to
-> allocate private address spaces.
->
-> The default will return a pointer to the global address space.
->
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> ---
->
->  drivers/gpu/drm/msm/msm_drv.c     | 13 +++++++------
->  drivers/gpu/drm/msm/msm_drv.h     |  5 +++++
->  drivers/gpu/drm/msm/msm_gem_vma.c |  9 +++++++++
->  drivers/gpu/drm/msm/msm_gpu.c     | 17 +++++++++++++++++
->  drivers/gpu/drm/msm/msm_gpu.h     |  5 +++++
->  5 files changed, 43 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-> index 108b663c3ef2..f072306f1260 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.c
-> +++ b/drivers/gpu/drm/msm/msm_drv.c
-> @@ -597,7 +597,7 @@ static int context_init(struct drm_device *dev, struct drm_file *file)
->         kref_init(&ctx->ref);
->         msm_submitqueue_init(dev, ctx);
->
-> -       ctx->aspace = priv->gpu ? priv->gpu->aspace : NULL;
-> +       ctx->aspace = msm_gpu_create_private_address_space(priv->gpu);
->         file->driver_priv = ctx;
->
->         return 0;
-> @@ -780,18 +780,19 @@ static int msm_ioctl_gem_cpu_fini(struct drm_device *dev, void *data,
->  }
->
->  static int msm_ioctl_gem_info_iova(struct drm_device *dev,
-> -               struct drm_gem_object *obj, uint64_t *iova)
-> +               struct drm_file *file, struct drm_gem_object *obj,
-> +               uint64_t *iova)
->  {
-> -       struct msm_drm_private *priv = dev->dev_private;
-> +       struct msm_file_private *ctx = file->driver_priv;
->
-> -       if (!priv->gpu)
-> +       if (!ctx->aspace)
->                 return -EINVAL;
->
->         /*
->          * Don't pin the memory here - just get an address so that userspace can
->          * be productive
->          */
-> -       return msm_gem_get_iova(obj, priv->gpu->aspace, iova);
-> +       return msm_gem_get_iova(obj, ctx->aspace, iova);
->  }
->
->  static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
-> @@ -830,7 +831,7 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
->                 args->value = msm_gem_mmap_offset(obj);
->                 break;
->         case MSM_INFO_GET_IOVA:
-> -               ret = msm_ioctl_gem_info_iova(dev, obj, &args->value);
-> +               ret = msm_ioctl_gem_info_iova(dev, file, obj, &args->value);
->                 break;
->         case MSM_INFO_SET_NAME:
->                 /* length check should leave room for terminating null: */
-> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-> index f69c6d62584d..51a5c9083e13 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.h
-> +++ b/drivers/gpu/drm/msm/msm_drv.h
-> @@ -249,6 +249,10 @@ int msm_gem_map_vma(struct msm_gem_address_space *aspace,
->  void msm_gem_close_vma(struct msm_gem_address_space *aspace,
->                 struct msm_gem_vma *vma);
->
-> +
-> +struct msm_gem_address_space *
-> +msm_gem_address_space_get(struct msm_gem_address_space *aspace);
-> +
->  void msm_gem_address_space_put(struct msm_gem_address_space *aspace);
->
->  struct msm_gem_address_space *
-> @@ -434,6 +438,7 @@ static inline void msm_file_private_destroy(struct kref *kref)
->         struct msm_file_private *ctx = container_of(kref,
->                 struct msm_file_private, ref);
->
-> +       msm_gem_address_space_put(ctx->aspace);
->         kfree(ctx);
->  }
->
-> diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
-> index 5f6a11211b64..29cc1305cf37 100644
-> --- a/drivers/gpu/drm/msm/msm_gem_vma.c
-> +++ b/drivers/gpu/drm/msm/msm_gem_vma.c
-> @@ -27,6 +27,15 @@ void msm_gem_address_space_put(struct msm_gem_address_space *aspace)
->                 kref_put(&aspace->kref, msm_gem_address_space_destroy);
->  }
->
-> +struct msm_gem_address_space *
-> +msm_gem_address_space_get(struct msm_gem_address_space *aspace)
-> +{
-> +       if (!IS_ERR_OR_NULL(aspace))
-> +               kref_get(&aspace->kref);
-> +
-> +       return aspace;
-> +}
-> +
->  /* Actually unmap memory for the vma */
->  void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
->                 struct msm_gem_vma *vma)
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index a1f3da6550e5..aabbd7908ee5 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -823,6 +823,23 @@ static int get_clocks(struct platform_device *pdev, struct msm_gpu *gpu)
->         return 0;
->  }
->
-> +/* Return a new address space for a msm_drm_private instance */
-> +struct msm_gem_address_space *
-> +msm_gpu_create_private_address_space(struct msm_gpu *gpu)
-> +{
-> +       if (!gpu)
-> +               return NULL;
-> +
-> +       /*
-> +        * If the target doesn't support private address spaces then return
-> +        * the global one
-> +        */
-> +       if (!gpu->funcs->create_private_address_space)
-> +               return msm_gem_address_space_get(gpu->aspace);
-> +
-> +       return gpu->funcs->create_private_address_space(gpu);
+On Fri, Aug 07, 2020 at 10:50:19AM +0200, Nicolas Saenz Julienne wrote:
+> On Fri, 2020-08-07 at 07:21 +0200, Christoph Hellwig wrote:
+> > On Thu, Aug 06, 2020 at 08:47:55PM +0200, Nicolas Saenz Julienne wrote:
+> > > There is no guarantee to CMA's placement, so allocating a zone specific
+> > > atomic pool from CMA might return memory from a completely different
+> > > memory zone. To get around this double check CMA's placement before
+> > > allocating from it.
+> > 
+> > As the builtbot pointed out, memblock_start_of_DRAM can't be used from
+> > non-__init code.  But lookig at it I think throwing that in
+> > is bogus anyway, as cma_get_base returns a proper physical address
+> > already.
+> 
+> It does indeed, but I'm comparing CMA's base with bitmasks that don't take into
+> account where the memory starts. Say memory starts at 0x80000000, and CMA falls
+> into ZONE_DMA [0x80000000 0xC0000000], if you want to compare it with
+> DMA_BIT_MASK(zone_dma_bits) you're forced to unify the memory bases.
+> 
+> That said, I now realize that this doesn't work for ZONE_DMA32 which has a hard
+> limit on 32bit addresses reglardless of the memory base.
+> 
+> That said I still need to call memblock_start_of_DRAM() any suggestions WRT
+> that? I could save the value in dma_atomic_pool_init(), which is __init code.
 
-so if you flip the logic around here, you can get rid of the
-msm_gem_address_space_get() in per-gen backend and consolidate the
-error handling here, ie.
-
-  struct msm_gem_address_space *aspace = NULL;
-
-  if (gpu->funcs->create_private_address_space)
-     aspace = gpu->funcs->create_private_address_space(...);
-
-  if (IS_ERR_OR_NULL(aspace))
-    aspace = msm_gem_address_space_get(...);
-
-(and that also simplifies a bit the patch I have on top to show comm in debugfs)
-
-BR,
--R
-
-> +}
-> +
->  int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
->                 struct msm_gpu *gpu, const struct msm_gpu_funcs *funcs,
->                 const char *name, struct msm_gpu_config *config)
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> index d496d488222c..d298657b4730 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.h
-> +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> @@ -64,6 +64,8 @@ struct msm_gpu_funcs {
->         void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp);
->         struct msm_gem_address_space *(*create_address_space)
->                 (struct msm_gpu *gpu, struct platform_device *pdev);
-> +       struct msm_gem_address_space *(*create_private_address_space)
-> +               (struct msm_gpu *gpu);
->  };
->
->  struct msm_gpu {
-> @@ -286,6 +288,9 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
->                 struct msm_gpu *gpu, const struct msm_gpu_funcs *funcs,
->                 const char *name, struct msm_gpu_config *config);
->
-> +struct msm_gem_address_space *
-> +msm_gpu_create_private_address_space(struct msm_gpu *gpu);
-> +
->  void msm_gpu_cleanup(struct msm_gpu *gpu);
->
->  struct msm_gpu *adreno_load_gpu(struct drm_device *dev);
-> --
-> 2.25.1
->
-> _______________________________________________
-> Freedreno mailing list
-> Freedreno@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/freedreno
+The pool must be about a 32-bit physical address.  The offsets can be
+different for every device..
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
