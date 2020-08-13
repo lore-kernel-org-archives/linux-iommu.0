@@ -2,78 +2,104 @@ Return-Path: <SRS0=vHAQ=BX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE818C433DF
-	for <iommu@archiver.kernel.org>; Thu, 13 Aug 2020 15:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E21C2C433E1
+	for <iommu@archiver.kernel.org>; Thu, 13 Aug 2020 16:16:39 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7112320791
-	for <iommu@archiver.kernel.org>; Thu, 13 Aug 2020 15:50:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ADB5120658
+	for <iommu@archiver.kernel.org>; Thu, 13 Aug 2020 16:16:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AJOZfHRN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7112320791
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Me8R6C+b"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADB5120658
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 10E2D88649;
-	Thu, 13 Aug 2020 15:50:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 76ACD8870A;
+	Thu, 13 Aug 2020 16:16:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f-ftOSAkQluy; Thu, 13 Aug 2020 15:50:26 +0000 (UTC)
+	with ESMTP id KKzMq0hmbRxO; Thu, 13 Aug 2020 16:16:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 39CD3885DE;
-	Thu, 13 Aug 2020 15:50:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D4C1A88700;
+	Thu, 13 Aug 2020 16:16:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 207D4C013C;
-	Thu, 13 Aug 2020 15:50:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A359DC07FF;
+	Thu, 13 Aug 2020 16:16:38 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7D284C004D
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 15:50:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D6625C004D
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 16:16:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 683C68878A
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 15:50:24 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C4D4786CAC
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 16:16:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Bic+VaksK5VW for <iommu@lists.linux-foundation.org>;
- Thu, 13 Aug 2020 15:50:23 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0819988782
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 15:50:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
- Content-ID:Content-Description:References;
- bh=hcRGhxjeGGcGlL0jZtmM6ynKLp4oPbSQ7Fim3MB2HL4=; b=AJOZfHRNcKSNOPpzUH+9Y0lsem
- WVTwk3Q43JKKwOubbajp7NsJQfbX7H+m6a5MIkEGah3ohP5pAnx1ZiTWLtxBw7ucngZkZcVYC2DaG
- Kc/TuCS7s1srPKV/MiGXCYS+Bz1SgHa8cqayJsXbOIbDd7HoOnNPKAetH4m2NIsMy0AoTUV+fxTfN
- Dc7QB834JroqBZYOdhP5n0Mazpd88hcT5ITKnAn0ePWtGMabxZKh666skge4xMlX4yUhVHZq9Kf8R
- SYGhJx4aiDNoNPEwlST4Xlw1Ff+2BaeT25kCCRn8yzw0e6CkG61pps9ACFx7Mc10GEHLhW04+b3w2
- PVtT3gyA==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat
- Linux)) id 1k6FUX-0000kK-BX; Thu, 13 Aug 2020 15:50:09 +0000
-Date: Thu, 13 Aug 2020 16:50:09 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: John Garry <john.garry@huawei.com>
-Subject: Re: nvme crash - Re: linux-next: Tree for Aug 13
-Message-ID: <20200813155009.GA2303@infradead.org>
+ with ESMTP id dnJX58OLJ6Pk for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Aug 2020 16:16:37 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
+ [209.85.128.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DCF1786C82
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 16:16:36 +0000 (UTC)
+Received: by mail-wm1-f67.google.com with SMTP id c80so5182889wme.0
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 09:16:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=ZDZxK557QyydjLfRKCH3a63KYLOab4MosSYsDN0lTPI=;
+ b=Me8R6C+bT+HcxPAfKWKJXWW0PdK3ui8PTkMX4mfTZia+OsdLQzy26AOH4SPA6csTne
+ AH/QScFCt8eRHHy2kzT0sDROOyf/+cesMWqQDzb45MRYMkUxfYD4JU2UFEkPDBweUBWh
+ sJ/MW/U31mPfbg6SC3XGecibDGmFei+W06ypvarH3yHd2NYMKqVlsHuPeDVYWw0HcyNq
+ lxgL9T9/VTNfOTsOVzyWrBvLE9UymEpSfbSKTeDB9N9XjyKafFen4Me03sf8odU6w2LK
+ 7VGQQiyLYvEn+HgMVau1xJUNdI/Qgc3hT9zkTgbZpBYzqv70RrLfp518z+Su3/QtbSWd
+ MMVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=ZDZxK557QyydjLfRKCH3a63KYLOab4MosSYsDN0lTPI=;
+ b=Shpd/PW+9CcOY0X/tslw+4AHvRFnuPsD8cUygwICZxu8G9WmA3PcErtc2mhtjTGh0E
+ Vlz0PeXp3lMLiGDasoJzwzddHCmtyts5NuIj2FSgVm1/dIIqxLbIAlpY60sNoA9vFXu0
+ Vf2BLKpxjFIRHnWSqdLI/dMjSJ+O2yp/KZgFZW5w3cTdS/NQZhB7FOJysvAIg7RjWQyP
+ V7knapLPoWYgmVIYlG11hwDZdx5E9aePEmDcvlwy8TOevN/1Ltnj4PT27Xuz+hYDNSIl
+ OjzIBd5Rp0ZS1u2I9N6BZcXMDD/bDHZbBByzGe+Ko11EVh8/Dt/x+CtcvzsvNlwYlY4q
+ msgw==
+X-Gm-Message-State: AOAM533+aQ2U4fSd86hwUW1k4CCm8tk+9zO+qwqa/6WUfk/fp702uNqp
+ pcuv3LPbYJ3wK3Te2La5CDuSyYEcPKstaXRhOs4=
+X-Google-Smtp-Source: ABdhPJx9BIL8YvczFKCJBH4UENkHUjiA1/2Ml3mI2JxBFhQVn2uDFhMYCBAVLjNaZCNs0zfCkO4LE+S5uR3RemIOvk0=
+X-Received: by 2002:a7b:c257:: with SMTP id b23mr4890016wmj.164.1597335395036; 
+ Thu, 13 Aug 2020 09:16:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <454c65b1-872a-a48c-662d-690044662772@huawei.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
+ <20200810222657.1841322-8-jcrouse@codeaurora.org>
+In-Reply-To: <20200810222657.1841322-8-jcrouse@codeaurora.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Thu, 13 Aug 2020 09:17:21 -0700
+Message-ID: <CAF6AEGsA-jWLvSjZYz=ZkM7cxC5Wv6rDcoVv-9K5QpEZT=Cv7A@mail.gmail.com>
+Subject: Re: [Freedreno] [PATCH v12 07/13] drm/msm: Add a context pointer to
+ the submitqueue
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Cc: David Airlie <airlied@linux.ie>,
+ dri-devel <dri-devel@lists.freedesktop.org>, Eric Anholt <eric@anholt.net>,
+ AngeloGioacchino Del Regno <kholk11@gmail.com>,
+ Sam Ravnborg <sam@ravnborg.org>, Emil Velikov <emil.velikov@collabora.com>,
+ Jonathan Marek <jonathan@marek.ca>, Will Deacon <will@kernel.org>,
+ Ben Dooks <ben.dooks@codethink.co.uk>,
+ Wambui Karuga <wambui.karugax@gmail.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Sharat Masetty <smasetty@codeaurora.org>, Brian Masney <masneyb@onstation.org>,
+ Sean Paul <sean@poorly.run>, Robin Murphy <robin.murphy@arm.com>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- linux-nvme <linux-nvme@lists.infradead.org>, iommu@lists.linux-foundation.org,
- Linux Next Mailing List <linux-next@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Daniel Vetter <daniel@ffwll.ch>, Shawn Guo <shawn.guo@linaro.org>,
+ freedreno <freedreno@lists.freedesktop.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,141 +117,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Aug 13, 2020 at 12:00:19PM +0100, John Garry wrote:
-> On 13/08/2020 07:58, Stephen Rothwell wrote:
-> > Hi all,
-> 
-> Hi guys,
-> 
-> I have experienced this this crash below on linux-next for the last few days
-> on my arm64 system. Linus' master branch today also has it.
+On Mon, Aug 10, 2020 at 3:27 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
+>
+> Each submitqueue is attached to a context. Add a pointer to the
+> context to the submitqueue at create time and refcount it so
+> that it stays around through the life of the queue.
+>
+> GPU submissions can access the active context via the submitqueue
+> instead of requiring it to be passed around from function to
+> function.
+>
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> ---
+>
+>  drivers/gpu/drm/msm/adreno/a5xx_gpu.c   | 12 +++++-------
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c   |  5 ++---
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c |  5 ++---
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.h |  3 +--
+>  drivers/gpu/drm/msm/msm_drv.c           |  3 ++-
+>  drivers/gpu/drm/msm/msm_drv.h           |  8 ++++++++
+>  drivers/gpu/drm/msm/msm_gem.h           |  1 +
+>  drivers/gpu/drm/msm/msm_gem_submit.c    |  8 ++++----
+>  drivers/gpu/drm/msm/msm_gpu.c           |  9 ++++-----
+>  drivers/gpu/drm/msm/msm_gpu.h           |  7 +++----
+>  drivers/gpu/drm/msm/msm_submitqueue.c   |  8 +++++++-
+>  11 files changed, 39 insertions(+), 30 deletions(-)
+>
 
-Adding Robin and the iommu list as this seems to be in the dma-iommu
-code.
+[snip]
 
-> root@ubuntu:/home/john# insmod nvme.ko
-> [148.254564] nvme 0000:81:00.0: Adding to iommu group 21
-> [148.260973] nvme nvme0: pci function 0000:81:00.0
-> root@ubuntu:/home/john# [148.272996] Unable to handle kernel NULL pointer
-> dereference at virtual address 0000000000000010
-> [148.281784] Mem abort info:
-> [148.284584] ESR = 0x96000004
-> [148.287641] EC = 0x25: DABT (current EL), IL = 32 bits
-> [148.292950] SET = 0, FnV = 0
-> [148.295998] EA = 0, S1PTW = 0
-> [148.299126] Data abort info:
-> [148.302003] ISV = 0, ISS = 0x00000004
-> [148.305832] CM = 0, WnR = 0
-> [148.308794] user pgtable: 4k pages, 48-bit VAs, pgdp=00000a27bf3c9000
-> [148.315229] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
-> [148.322016] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [148.327577] Modules linked in: nvme nvme_core
-> [148.331927] CPU: 56 PID: 256 Comm: kworker/u195:0 Not tainted
-> 5.8.0-next-20200812 #27
-> [148.339744] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 -
-> V1.16.01 03/15/2019
-> [148.348260] Workqueue: nvme-reset-wq nvme_reset_work [nvme]
-> [148.353822] pstate: 80c00009 (Nzcv daif +PAN +UAO BTYPE=--)
-> [148.359390] pc : __sg_alloc_table_from_pages+0xec/0x238
-> [148.364604] lr : __sg_alloc_table_from_pages+0xc8/0x238
-> [148.369815] sp : ffff800013ccbad0
-> [148.373116] x29: ffff800013ccbad0 x28: ffff0a27b3d380a8
-> [148.378417] x27: 0000000000000000 x26: 0000000000002dc2
-> [148.383718] x25: 0000000000000dc0 x24: 0000000000000000
-> [148.389019] x23: 0000000000000000 x22: ffff800013ccbbe8
-> [148.394320] x21: 0000000000000010 x20: 0000000000000000
-> [148.399621] x19: 00000000fffff000 x18: ffffffffffffffff
-> [148.404922] x17: 00000000000000c0 x16: fffffe289eaf6380
-> [148.410223] x15: ffff800011b59948 x14: ffff002bc8fe98f8
-> [148.415523] x13: ff00000000000000 x12: ffff8000114ca000
-> [148.420824] x11: 0000000000000000 x10: ffffffffffffffff
-> [148.426124] x9 : ffffffffffffffc0 x8 : ffff0a27b5f9b6a0
-> [148.431425] x7 : 0000000000000000 x6 : 0000000000000001
-> [148.436726] x5 : ffff0a27b5f9b680 x4 : 0000000000000000
-> [148.442027] x3 : ffff0a27b5f9b680 x2 : 0000000000000000
-> [148.447328] x1 : 0000000000000001 x0 : 0000000000000000
-> [148.452629] Call trace:
-> [148.455065]__sg_alloc_table_from_pages+0xec/0x238
-> [148.459931]sg_alloc_table_from_pages+0x18/0x28
-> [148.464541]iommu_dma_alloc+0x474/0x678
-> [148.468455]dma_alloc_attrs+0xd8/0xf0
-> [148.472193]nvme_alloc_queue+0x114/0x160 [nvme]
-> [148.476798]nvme_reset_work+0xb34/0x14b4 [nvme]
-> [148.481407]process_one_work+0x1e8/0x360
-> [148.485405]worker_thread+0x44/0x478
-> [148.489055]kthread+0x150/0x158
-> [148.492273]ret_from_fork+0x10/0x34
-> [148.495838] Code: f94002c3 6b01017f 540007c2 11000486 (f8645aa5)
-> [148.501921] ---[ end trace 89bb2b72d59bf925 ]---
-> 
-> Anything to worry about? I guess not since we're in the merge window, but
-> mentioning just in case ...
-> 
-> Thanks,
-> john
-> 
-> > 
-> > News: The merge window has opened, so please do not add any v5.10
-> > related material to your linux-next included branches until after the
-> > merge window closes again.
-> > 
-> > Changes since 20200812:
-> > 
-> > My fixes tree contains:
-> > 
-> >    73c7adb54169 ("device_cgroup: Fix RCU list debugging warning")
-> > 
-> > Linus' tree produces a WARNING in my qemu testing (see
-> > https://lore.kernel.org/lkml/20200813164654.061dbbd3@canb.auug.org.au/).
-> > 
-> > Non-merge commits (relative to Linus' tree): 946
-> >   1083 files changed, 28405 insertions(+), 9953 deletions(-)
-> > 
-> > ----------------------------------------------------------------------------
-> > 
-> > I have created today's linux-next tree at
-> > git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-> > (patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
-> > are tracking the linux-next tree using git, you should not use "git pull"
-> > to do so as that will try to merge the new linux-next release with the
-> > old one.  You should use "git fetch" and checkout or reset to the new
-> > master.
-> > 
-> > You can see which trees have been included by looking in the Next/Trees
-> > file in the source.  There are also quilt-import.log and merge.log
-> > files in the Next directory.  Between each merge, the tree was built
-> > with a ppc64_defconfig for powerpc, an allmodconfig for x86_64, a
-> > multi_v7_defconfig for arm and a native build of tools/perf. After
-> > the final fixups (if any), I do an x86_64 modules_install followed by
-> > builds for x86_64 allnoconfig, powerpc allnoconfig (32 and 64 bit),
-> > ppc44x_defconfig, allyesconfig and pseries_le_defconfig and i386, sparc
-> > and sparc64 defconfig and htmldocs. And finally, a simple boot test
-> > of the powerpc pseries_le_defconfig kernel in qemu (with and without
-> > kvm enabled).
-> > 
-> > Below is a summary of the state of the merge.
-> > 
-> > I am currently merging 327 trees (counting Linus' and 85 trees of bug
-> > fix patches pending for the current merge release).
-> > 
-> > Stats about the size of the tree over time can be seen at
-> > http://neuling.org/linux-next-size.html .
-> > 
-> > Status of my local build tests will be at
-> > http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
-> > advice about cross compilers/configs that work, we are always open to add
-> > more builds.
-> > 
-> > Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
-> > Gortmaker for triage and bug fixes.
-> > 
-> 
-> 
-> _______________________________________________
-> Linux-nvme mailing list
-> Linux-nvme@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-nvme
----end quoted text---
+> diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+> index 972490b14ba5..9c573c4269cb 100644
+> --- a/drivers/gpu/drm/msm/msm_gem.h
+> +++ b/drivers/gpu/drm/msm/msm_gem.h
+> @@ -142,6 +142,7 @@ struct msm_gem_submit {
+>         bool valid;         /* true if no cmdstream patching needed */
+>         bool in_rb;         /* "sudo" mode, copy cmds into RB */
+>         struct msm_ringbuffer *ring;
+> +       struct msm_file_private *ctx;
+
+So, it looks like this is (currently) unused, and everything is
+instead using submit->queue->ctx
+
+That said, changing this so the submit also holds a ref to the ctx
+seems to fix the intermittent splat I can trigger by repeatedly
+hanging the gpu.  Which (from the pile of additional tracepoints I've
+added on top of this series) seems to be related to re-playing submits
+after the userspace process has crashed and/or closed the device.
+
+It seems like the reference the submit holds to the queue should keep
+the ctx (and therefore address space) alive, but I need to dig through
+that a bit more.
+
+BR,
+-R
+
+>         unsigned int nr_cmds;
+>         unsigned int nr_bos;
+>         u32 ident;         /* A "identifier" for the submit for logging */
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
