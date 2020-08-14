@@ -2,69 +2,64 @@ Return-Path: <SRS0=h1an=BY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4790C433DF
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:03:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86197C433DF
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:26:38 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F5372074D
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:03:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F5372074D
+	by mail.kernel.org (Postfix) with ESMTPS id 4926F206DA
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:26:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4926F206DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3C64B204CB;
-	Fri, 14 Aug 2020 10:03:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zaD2RFFNLzSk; Fri, 14 Aug 2020 10:03:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E65152278C;
-	Fri, 14 Aug 2020 10:03:15 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF16FC07FF;
-	Fri, 14 Aug 2020 10:03:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 373CDC004D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:03:14 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 25B4C87361
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:03:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 06AD887398;
+	Fri, 14 Aug 2020 10:26:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YyUlrqm0bf4e; Fri, 14 Aug 2020 10:26:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8678C8738B;
+	Fri, 14 Aug 2020 10:26:36 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73AE0C013C;
+	Fri, 14 Aug 2020 10:26:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B141C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:35 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4D9F888A69
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:35 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FR2rY2hdHxnG for <iommu@lists.linux-foundation.org>;
- Fri, 14 Aug 2020 10:03:13 +0000 (UTC)
+ with ESMTP id tYmuBohgwlO2 for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Aug 2020 10:26:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 410D186D7D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:03:13 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 6605188A5E
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:34 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 0E37FAD1B;
- Fri, 14 Aug 2020 10:03:34 +0000 (UTC)
-Message-ID: <ae794be3426776d5977fdb12e42807c0d82ce203.camel@suse.de>
-Subject: Re: [PATCH v3 2/2] dma-pool: Only allocate from CMA when in same
- memory zone
+ by mx2.suse.de (Postfix) with ESMTP id BE8F5ACB5;
+ Fri, 14 Aug 2020 10:26:55 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Christoph Hellwig <hch@lst.de>
-Date: Fri, 14 Aug 2020 12:03:09 +0200
-In-Reply-To: <20200814060642.GA1338@lst.de>
-References: <20200806184756.32075-1-nsaenzjulienne@suse.de>
- <20200806184756.32075-3-nsaenzjulienne@suse.de>
- <20200807052116.GA584@lst.de>
- <aae9250e660339142e9390427a603c4cf4e282af.camel@suse.de>
- <20200808063354.GA17329@lst.de> <20200814060642.GA1338@lst.de>
-User-Agent: Evolution 3.36.4-0ubuntu1 
+To: amit.pundir@linaro.org,
+	hch@lst.de,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] dma-pool fixes
+Date: Fri, 14 Aug 2020 12:26:22 +0200
+Message-Id: <20200814102625.25599-1-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Cc: amit.pundir@linaro.org, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- rientjes@google.com, Robin Murphy <robin.murphy@arm.com>
+Cc: jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
+ linux-rpi-kernel@lists.infradead.org, rientjes@google.com,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,51 +77,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2020-08-14 at 08:06 +0200, Christoph Hellwig wrote:
-> On Sat, Aug 08, 2020 at 08:33:54AM +0200, Christoph Hellwig wrote:
-> > On Fri, Aug 07, 2020 at 10:50:19AM +0200, Nicolas Saenz Julienne wrote:
-> > > On Fri, 2020-08-07 at 07:21 +0200, Christoph Hellwig wrote:
-> > > > On Thu, Aug 06, 2020 at 08:47:55PM +0200, Nicolas Saenz Julienne wrote:
-> > > > > There is no guarantee to CMA's placement, so allocating a zone specific
-> > > > > atomic pool from CMA might return memory from a completely different
-> > > > > memory zone. To get around this double check CMA's placement before
-> > > > > allocating from it.
-> > > > 
-> > > > As the builtbot pointed out, memblock_start_of_DRAM can't be used from
-> > > > non-__init code.  But lookig at it I think throwing that in
-> > > > is bogus anyway, as cma_get_base returns a proper physical address
-> > > > already.
-> > > 
-> > > It does indeed, but I'm comparing CMA's base with bitmasks that don't take into
-> > > account where the memory starts. Say memory starts at 0x80000000, and CMA falls
-> > > into ZONE_DMA [0x80000000 0xC0000000], if you want to compare it with
-> > > DMA_BIT_MASK(zone_dma_bits) you're forced to unify the memory bases.
-> > > 
-> > > That said, I now realize that this doesn't work for ZONE_DMA32 which has a hard
-> > > limit on 32bit addresses reglardless of the memory base.
-> > > 
-> > > That said I still need to call memblock_start_of_DRAM() any suggestions WRT
-> > > that? I could save the value in dma_atomic_pool_init(), which is __init code.
-> > 
-> > The pool must be about a 32-bit physical address.  The offsets can be
-> > different for every device..
+Now that we have an explanation to Amir's issue, we can re-spin this
+series.
 
-I now see what you mean.
+---
+Changes since v3:
+ - Do not use memblock_start_of_DRAM()
 
-I was trying to blindly fit CMA with arm64's DMA zone setup, which, as it turns
-out, doesn't really honor its purpose. arm64 introduced ZONE_DMA to provide a
-30-bit address space, but we're creating it regardless of whether it exists or
-not. This creates a mismatch between zone_dma_bits and ZONE_DMA's real
-placement. I'll try to look at fixing that in arm64.
+Changes since v2:
+ - Go back to v1's behavior for patch #2
 
-> Do you plan to resend this one without the memblock_start_of_DRAM
-> thingy?
+Changes since v1:
+ - Make cma_in_zone() more strict, GFP_KERNEL doesn't default to true
+   now
 
-Yes, sorry for the wait, I've been on vacation and short on time, I'll send it
-during the day.
+ - Check if phys_addr_ok() exists prior calling it
 
-Regards,
-Nicolas
+Christoph Hellwig (1):
+  dma-pool: fix coherent pool allocations for IOMMU mappings
+
+Nicolas Saenz Julienne (1):
+  dma-pool: Only allocate from CMA when in same memory zone
+
+ drivers/iommu/dma-iommu.c   |   4 +-
+ include/linux/dma-direct.h  |   3 -
+ include/linux/dma-mapping.h |   5 +-
+ kernel/dma/direct.c         |  13 +++-
+ kernel/dma/pool.c           | 145 +++++++++++++++++++-----------------
+ 5 files changed, 92 insertions(+), 78 deletions(-)
+
+-- 
+2.28.0
 
 _______________________________________________
 iommu mailing list
