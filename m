@@ -2,68 +2,76 @@ Return-Path: <SRS0=h1an=BY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0136FC433E1
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:26:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9563C433E1
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 12:02:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D184A206DA
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 10:26:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D184A206DA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 73A8020774
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 12:02:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73A8020774
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A97F288438;
-	Fri, 14 Aug 2020 10:26:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 51B6587407;
+	Fri, 14 Aug 2020 12:02:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TS64EwP29-+q; Fri, 14 Aug 2020 10:26:39 +0000 (UTC)
+	with ESMTP id 631UwPyIVnON; Fri, 14 Aug 2020 12:02:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E34DD883B8;
-	Fri, 14 Aug 2020 10:26:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E80C887403;
+	Fri, 14 Aug 2020 12:02:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0BE6C013C;
-	Fri, 14 Aug 2020 10:26:39 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C286C004D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AFD11C013C;
+	Fri, 14 Aug 2020 12:02:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40EE7C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 12:02:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5814125CBB
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2974D88ADE
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 12:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id duGx5Ge2cXAC for <iommu@lists.linux-foundation.org>;
- Fri, 14 Aug 2020 10:26:36 +0000 (UTC)
+ with ESMTP id HnbqZAUD7zR5 for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Aug 2020 12:02:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by silver.osuosl.org (Postfix) with ESMTPS id 2983825B01
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 10:26:36 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 9EA78AD41;
- Fri, 14 Aug 2020 10:26:57 +0000 (UTC)
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: amit.pundir@linaro.org, hch@lst.de, linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v4 2/2] dma-pool: fix coherent pool allocations for IOMMU
- mappings
-Date: Fri, 14 Aug 2020 12:26:24 +0200
-Message-Id: <20200814102625.25599-3-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200814102625.25599-1-nsaenzjulienne@suse.de>
-References: <20200814102625.25599-1-nsaenzjulienne@suse.de>
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 646B988318
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 12:02:49 +0000 (UTC)
+Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.108])
+ by Forcepoint Email with ESMTP id BDC3B1AA99F23CE61D1D;
+ Fri, 14 Aug 2020 13:02:46 +0100 (IST)
+Received: from [127.0.0.1] (10.47.4.107) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 14 Aug
+ 2020 13:02:46 +0100
+Subject: Re: nvme crash - Re: linux-next: Tree for Aug 13
+To: Christoph Hellwig <hch@infradead.org>
+References: <20200813155009.GA2303@infradead.org>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <81e42d30-ede3-d7b0-ad7b-8192bcf27a4c@huawei.com>
+Date: Fri, 14 Aug 2020 13:00:30 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- jeremy.linton@arm.com, rientjes@google.com
+In-Reply-To: <20200813155009.GA2303@infradead.org>
+Content-Language: en-US
+X-Originating-IP: [10.47.4.107]
+X-ClientProxiedBy: lhreml726-chm.china.huawei.com (10.201.108.77) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, chaitanya.kulkarni@wdc.com,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ linux-nvme <linux-nvme@lists.infradead.org>, iommu@lists.linux-foundation.org,
+ Linux Next Mailing List <linux-next@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,263 +84,170 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Christoph Hellwig <hch@lst.de>
 
-When allocating coherent pool memory for an IOMMU mapping we don't care
-about the DMA mask.  Move the guess for the initial GFP mask into the
-dma_direct_alloc_pages and pass dma_coherent_ok as a function pointer
-argument so that it doesn't get applied to the IOMMU case.
+>> I have experienced this this crash below on linux-next for the last few days
+>> on my arm64 system. Linus' master branch today also has it.
+> Adding Robin and the iommu list as this seems to be in the dma-iommu
+> code.
+> 
+>> root@ubuntu:/home/john# insmod nvme.ko
+>> [148.254564] nvme 0000:81:00.0: Adding to iommu group 21
+>> [148.260973] nvme nvme0: pci function 0000:81:00.0
+>> root@ubuntu:/home/john# [148.272996] Unable to handle kernel NULL pointer
+>> dereference at virtual address 0000000000000010
+>> [148.281784] Mem abort info:
+>> [148.284584] ESR = 0x96000004
+>> [148.287641] EC = 0x25: DABT (current EL), IL = 32 bits
+>> [148.292950] SET = 0, FnV = 0
+>> [148.295998] EA = 0, S1PTW = 0
+>> [148.299126] Data abort info:
+>> [148.302003] ISV = 0, ISS = 0x00000004
+>> [148.305832] CM = 0, WnR = 0
+>> [148.308794] user pgtable: 4k pages, 48-bit VAs, pgdp=00000a27bf3c9000
+>> [148.315229] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+>> [148.322016] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+>> [148.327577] Modules linked in: nvme nvme_core
+>> [148.331927] CPU: 56 PID: 256 Comm: kworker/u195:0 Not tainted
+>> 5.8.0-next-20200812 #27
+>> [148.339744] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 -
+>> V1.16.01 03/15/2019
+>> [148.348260] Workqueue: nvme-reset-wq nvme_reset_work [nvme]
+>> [148.353822] pstate: 80c00009 (Nzcv daif +PAN +UAO BTYPE=--)
+>> [148.359390] pc : __sg_alloc_table_from_pages+0xec/0x238
+>> [148.364604] lr : __sg_alloc_table_from_pages+0xc8/0x238
+>> [148.369815] sp : ffff800013ccbad0
+>> [148.373116] x29: ffff800013ccbad0 x28: ffff0a27b3d380a8
+>> [148.378417] x27: 0000000000000000 x26: 0000000000002dc2
+>> [148.383718] x25: 0000000000000dc0 x24: 0000000000000000
+>> [148.389019] x23: 0000000000000000 x22: ffff800013ccbbe8
+>> [148.394320] x21: 0000000000000010 x20: 0000000000000000
+>> [148.399621] x19: 00000000fffff000 x18: ffffffffffffffff
+>> [148.404922] x17: 00000000000000c0 x16: fffffe289eaf6380
+>> [148.410223] x15: ffff800011b59948 x14: ffff002bc8fe98f8
+>> [148.415523] x13: ff00000000000000 x12: ffff8000114ca000
+>> [148.420824] x11: 0000000000000000 x10: ffffffffffffffff
+>> [148.426124] x9 : ffffffffffffffc0 x8 : ffff0a27b5f9b6a0
+>> [148.431425] x7 : 0000000000000000 x6 : 0000000000000001
+>> [148.436726] x5 : ffff0a27b5f9b680 x4 : 0000000000000000
+>> [148.442027] x3 : ffff0a27b5f9b680 x2 : 0000000000000000
+>> [148.447328] x1 : 0000000000000001 x0 : 0000000000000000
+>> [148.452629] Call trace:
+>> [148.455065]__sg_alloc_table_from_pages+0xec/0x238
+>> [148.459931]sg_alloc_table_from_pages+0x18/0x28
+>> [148.464541]iommu_dma_alloc+0x474/0x678
+>> [148.468455]dma_alloc_attrs+0xd8/0xf0
+>> [148.472193]nvme_alloc_queue+0x114/0x160 [nvme]
+>> [148.476798]nvme_reset_work+0xb34/0x14b4 [nvme]
+>> [148.481407]process_one_work+0x1e8/0x360
+>> [148.485405]worker_thread+0x44/0x478
+>> [148.489055]kthread+0x150/0x158
+>> [148.492273]ret_from_fork+0x10/0x34
+>> [148.495838] Code: f94002c3 6b01017f 540007c2 11000486 (f8645aa5)
+>> [148.501921] ---[ end trace 89bb2b72d59bf925 ]---
+>>
+>> Anything to worry about? I guess not since we're in the merge window, but
+>> mentioning just in case ...
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+I bisected, and this patch looks to fix it (note the comments below the 
+'---'):
+
+ From 263891a760edc24b901085bf6e5fe2480808f86d Mon Sep 17 00:00:00 2001
+From: John Garry <john.garry@huawei.com>
+Date: Fri, 14 Aug 2020 12:45:18 +0100
+Subject: [PATCH] nvme-pci: Use u32 for nvme_dev.q_depth
+
+Recently nvme_dev.q_depth was changed from int to u16 type.
+
+This falls over for the queue depth calculation in nvme_pci_enable(),
+where NVME_CAP_MQES(dev->ctrl.cap) + 1 may overflow, as NVME_CAP_MQES()
+gives a 16b number also. That happens for me, and this is the result:
+
+root@ubuntu:/home/john# [148.272996] Unable to handle kernel NULL pointer
+dereference at virtual address 0000000000000010
+[148.281784] Mem abort info:
+[148.284584] ESR = 0x96000004
+[148.287641] EC = 0x25: DABT (current EL), IL = 32 bits
+[148.292950] SET = 0, FnV = 0
+[148.295998] EA = 0, S1PTW = 0
+[148.299126] Data abort info:
+[148.302003] ISV = 0, ISS = 0x00000004
+[148.305832] CM = 0, WnR = 0
+[148.308794] user pgtable: 4k pages, 48-bit VAs, pgdp=00000a27bf3c9000
+[148.315229] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+[148.322016] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[148.327577] Modules linked in: nvme nvme_core
+[148.331927] CPU: 56 PID: 256 Comm: kworker/u195:0 Not tainted
+5.8.0-next-20200812 #27
+[148.339744] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 -
+V1.16.01 03/15/2019
+[148.348260] Workqueue: nvme-reset-wq nvme_reset_work [nvme]
+[148.353822] pstate: 80c00009 (Nzcv daif +PAN +UAO BTYPE=--)
+[148.359390] pc : __sg_alloc_table_from_pages+0xec/0x238
+[148.364604] lr : __sg_alloc_table_from_pages+0xc8/0x238
+[148.369815] sp : ffff800013ccbad0
+[148.373116] x29: ffff800013ccbad0 x28: ffff0a27b3d380a8
+[148.378417] x27: 0000000000000000 x26: 0000000000002dc2
+[148.383718] x25: 0000000000000dc0 x24: 0000000000000000
+[148.389019] x23: 0000000000000000 x22: ffff800013ccbbe8
+[148.394320] x21: 0000000000000010 x20: 0000000000000000
+[148.399621] x19: 00000000fffff000 x18: ffffffffffffffff
+[148.404922] x17: 00000000000000c0 x16: fffffe289eaf6380
+[148.410223] x15: ffff800011b59948 x14: ffff002bc8fe98f8
+[148.415523] x13: ff00000000000000 x12: ffff8000114ca000
+[148.420824] x11: 0000000000000000 x10: ffffffffffffffff
+[148.426124] x9 : ffffffffffffffc0 x8 : ffff0a27b5f9b6a0
+[148.431425] x7 : 0000000000000000 x6 : 0000000000000001
+[148.436726] x5 : ffff0a27b5f9b680 x4 : 0000000000000000
+[148.442027] x3 : ffff0a27b5f9b680 x2 : 0000000000000000
+[148.447328] x1 : 0000000000000001 x0 : 0000000000000000
+[148.452629] Call trace:
+[148.455065]__sg_alloc_table_from_pages+0xec/0x238
+[148.459931]sg_alloc_table_from_pages+0x18/0x28
+[148.464541]iommu_dma_alloc+0x474/0x678
+[148.468455]dma_alloc_attrs+0xd8/0xf0
+[148.472193]nvme_alloc_queue+0x114/0x160 [nvme]
+[148.476798]nvme_reset_work+0xb34/0x14b4 [nvme]
+[148.481407]process_one_work+0x1e8/0x360
+[148.485405]worker_thread+0x44/0x478
+[148.489055]kthread+0x150/0x158
+[148.492273]ret_from_fork+0x10/0x34
+[148.495838] Code: f94002c3 6b01017f 540007c2 11000486 (f8645aa5)
+[148.501921] ---[ end trace 89bb2b72d59bf925 ]---
+
+Fix by making a u32.
+
+Fixes: 61f3b8963097 ("nvme-pci: use unsigned for io queue depth")
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
+unsigned int may be better, and io_queue_depth() needs fixing also
 
-Changes since v1:
-  - Check if phys_addr_ok() exists prior calling it
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index ba725ae47305..72c1402abfc3 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -120,7 +120,7 @@ struct nvme_dev {
+  	unsigned max_qid;
+  	unsigned io_queues[HCTX_MAX_TYPES];
+  	unsigned int num_vecs;
+-	u16 q_depth;
++	u32 q_depth;
+  	int io_sqes;
+  	u32 db_stride;
+  	void __iomem *bar;
+@@ -2320,7 +2320,7 @@ static int nvme_pci_enable(struct nvme_dev *dev)
 
- drivers/iommu/dma-iommu.c   |   4 +-
- include/linux/dma-direct.h  |   3 -
- include/linux/dma-mapping.h |   5 +-
- kernel/dma/direct.c         |  13 ++--
- kernel/dma/pool.c           | 114 +++++++++++++++---------------------
- 5 files changed, 62 insertions(+), 77 deletions(-)
+  	dev->ctrl.cap = lo_hi_readq(dev->bar + NVME_REG_CAP);
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 4959f5df21bd..5141d49a046b 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1035,8 +1035,8 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
- 	    !gfpflags_allow_blocking(gfp) && !coherent)
--		cpu_addr = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &page,
--					       gfp);
-+		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
-+					       gfp, NULL);
- 	else
- 		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
- 	if (!cpu_addr)
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 5a3ce2a24794..6e87225600ae 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -73,9 +73,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
- }
- 
- u64 dma_direct_get_required_mask(struct device *dev);
--gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
--				  u64 *phys_mask);
--bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size);
- void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs);
- void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 016b96b384bd..52635e91143b 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -522,8 +522,9 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
- 			pgprot_t prot, const void *caller);
- void dma_common_free_remap(void *cpu_addr, size_t size);
- 
--void *dma_alloc_from_pool(struct device *dev, size_t size,
--			  struct page **ret_page, gfp_t flags);
-+struct page *dma_alloc_from_pool(struct device *dev, size_t size,
-+		void **cpu_addr, gfp_t flags,
-+		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t));
- bool dma_free_from_pool(struct device *dev, void *start, size_t size);
- 
- int
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index bb0041e99659..db6ef07aec3b 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -43,7 +43,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
- 
--gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
-+static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
- 				  u64 *phys_limit)
- {
- 	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
-@@ -68,7 +68,7 @@ gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
- 	return 0;
- }
- 
--bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
-+static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- {
- 	return phys_to_dma_direct(dev, phys) + size - 1 <=
- 			min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit);
-@@ -161,8 +161,13 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	size = PAGE_ALIGN(size);
- 
- 	if (dma_should_alloc_from_pool(dev, gfp, attrs)) {
--		ret = dma_alloc_from_pool(dev, size, &page, gfp);
--		if (!ret)
-+		u64 phys_mask;
-+
-+		gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
-+				&phys_mask);
-+		page = dma_alloc_from_pool(dev, size, &ret, gfp,
-+				dma_coherent_ok);
-+		if (!page)
- 			return NULL;
- 		goto done;
- 	}
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 57f4a0f32a92..b0aaba4197ae 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -225,93 +225,75 @@ static int __init dma_atomic_pool_init(void)
- }
- postcore_initcall(dma_atomic_pool_init);
- 
--static inline struct gen_pool *dma_guess_pool_from_device(struct device *dev)
-+static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
- {
--	u64 phys_mask;
--	gfp_t gfp;
--
--	gfp = dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
--					  &phys_mask);
--	if (IS_ENABLED(CONFIG_ZONE_DMA) && gfp == GFP_DMA)
-+	if (prev == NULL) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-+			return atomic_pool_dma32;
-+		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-+			return atomic_pool_dma;
-+		return atomic_pool_kernel;
-+	}
-+	if (prev == atomic_pool_kernel)
-+		return atomic_pool_dma32 ? atomic_pool_dma32 : atomic_pool_dma;
-+	if (prev == atomic_pool_dma32)
- 		return atomic_pool_dma;
--	if (IS_ENABLED(CONFIG_ZONE_DMA32) && gfp == GFP_DMA32)
--		return atomic_pool_dma32;
--	return atomic_pool_kernel;
-+	return NULL;
- }
- 
--static inline struct gen_pool *dma_get_safer_pool(struct gen_pool *bad_pool)
-+static struct page *__dma_alloc_from_pool(struct device *dev, size_t size,
-+		struct gen_pool *pool, void **cpu_addr,
-+		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
- {
--	if (bad_pool == atomic_pool_kernel)
--		return atomic_pool_dma32 ? : atomic_pool_dma;
-+	unsigned long addr;
-+	phys_addr_t phys;
- 
--	if (bad_pool == atomic_pool_dma32)
--		return atomic_pool_dma;
-+	addr = gen_pool_alloc(pool, size);
-+	if (!addr)
-+		return NULL;
- 
--	return NULL;
--}
-+	phys = gen_pool_virt_to_phys(pool, addr);
-+	if (phys_addr_ok && !phys_addr_ok(dev, phys, size)) {
-+		gen_pool_free(pool, addr, size);
-+		return NULL;
-+	}
- 
--static inline struct gen_pool *dma_guess_pool(struct device *dev,
--					      struct gen_pool *bad_pool)
--{
--	if (bad_pool)
--		return dma_get_safer_pool(bad_pool);
-+	if (gen_pool_avail(pool) < atomic_pool_size)
-+		schedule_work(&atomic_pool_work);
- 
--	return dma_guess_pool_from_device(dev);
-+	*cpu_addr = (void *)addr;
-+	memset(*cpu_addr, 0, size);
-+	return pfn_to_page(__phys_to_pfn(phys));
- }
- 
--void *dma_alloc_from_pool(struct device *dev, size_t size,
--			  struct page **ret_page, gfp_t flags)
-+struct page *dma_alloc_from_pool(struct device *dev, size_t size,
-+		void **cpu_addr, gfp_t gfp,
-+		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t))
- {
- 	struct gen_pool *pool = NULL;
--	unsigned long val = 0;
--	void *ptr = NULL;
--	phys_addr_t phys;
--
--	while (1) {
--		pool = dma_guess_pool(dev, pool);
--		if (!pool) {
--			WARN(1, "Failed to get suitable pool for %s\n",
--			     dev_name(dev));
--			break;
--		}
--
--		val = gen_pool_alloc(pool, size);
--		if (!val)
--			continue;
--
--		phys = gen_pool_virt_to_phys(pool, val);
--		if (dma_coherent_ok(dev, phys, size))
--			break;
--
--		gen_pool_free(pool, val, size);
--		val = 0;
--	}
--
--
--	if (val) {
--		*ret_page = pfn_to_page(__phys_to_pfn(phys));
--		ptr = (void *)val;
--		memset(ptr, 0, size);
-+	struct page *page;
- 
--		if (gen_pool_avail(pool) < atomic_pool_size)
--			schedule_work(&atomic_pool_work);
-+	while ((pool = dma_guess_pool(pool, gfp))) {
-+		page = __dma_alloc_from_pool(dev, size, pool, cpu_addr,
-+					     phys_addr_ok);
-+		if (page)
-+			return page;
- 	}
- 
--	return ptr;
-+	WARN(1, "Failed to get suitable pool for %s\n", dev_name(dev));
-+	return NULL;
- }
- 
- bool dma_free_from_pool(struct device *dev, void *start, size_t size)
- {
- 	struct gen_pool *pool = NULL;
- 
--	while (1) {
--		pool = dma_guess_pool(dev, pool);
--		if (!pool)
--			return false;
--
--		if (gen_pool_has_addr(pool, (unsigned long)start, size)) {
--			gen_pool_free(pool, (unsigned long)start, size);
--			return true;
--		}
-+	while ((pool = dma_guess_pool(pool, 0))) {
-+		if (!gen_pool_has_addr(pool, (unsigned long)start, size))
-+			continue;
-+		gen_pool_free(pool, (unsigned long)start, size);
-+		return true;
- 	}
-+
-+	return false;
- }
--- 
-2.28.0
-
+-	dev->q_depth = min_t(u16, NVME_CAP_MQES(dev->ctrl.cap) + 1,
++	dev->q_depth = min_t(u32, NVME_CAP_MQES(dev->ctrl.cap) + 1,
+  				io_queue_depth);
+  	dev->ctrl.sqsize = dev->q_depth - 1; /* 0's based queue depth */
+  	dev->db_stride = 1 << NVME_CAP_STRIDE(dev->ctrl.cap);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
