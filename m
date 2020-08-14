@@ -2,102 +2,67 @@ Return-Path: <SRS0=h1an=BY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70861C433DF
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B3AC433E1
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 05:42:52 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4485B20715
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a7oYXh+g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4485B20715
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 360BC20791
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 05:42:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 360BC20791
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3A57B86FD7;
-	Fri, 14 Aug 2020 02:42:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F167C8879A;
+	Fri, 14 Aug 2020 05:42:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RQoAQOF3ZgAT; Fri, 14 Aug 2020 02:42:24 +0000 (UTC)
+	with ESMTP id nyQLRPtYJT6Y; Fri, 14 Aug 2020 05:42:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9F9798705B;
-	Fri, 14 Aug 2020 02:42:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C77518876B;
+	Fri, 14 Aug 2020 05:42:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8CA72C07FF;
-	Fri, 14 Aug 2020 02:42:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5BB01C004D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A9635C07FF;
+	Fri, 14 Aug 2020 05:42:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1FABC004D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 05:42:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 443D024C4F
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:23 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C7DB28879A
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 05:42:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6kVB732wwP1W for <iommu@lists.linux-foundation.org>;
- Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 3E08D22721
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id t6so3831202pgq.1
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 19:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=FvoB/QZ4hH7jO2LobIZsox+NVJPMDXlJlM4677kKgLg=;
- b=a7oYXh+gB7wzD2sGKJdQwETvOjphf21jMJWEBa6suIVbpaEmBDQPjp8pQqE7PaKOvf
- yVv+eNa2TIZqokgxHGqUuFDYk2+EOjPTAEOTjoHQzpf4I+DqkhxMjyED1pT6Y3K+hPi/
- U+ga1p/HKlYS3iQZdjjIzklEjl2+MUz0W1gxp6251RuWuAPC9lYvwgBRseRaQ9Y7pmi9
- q2veITkGjxSkyEFgIfspGGrn8RUuuAgMLN44lBJu0bAK+5qJfrSbpNX/JUlDwY7o0osI
- R/uhVO8OvVHkuDNEy7cqvP1uRvPAVe7nU4jE4aNNL08sjKpUnxzIkRDUr1MuotEKS9iP
- Vk1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=FvoB/QZ4hH7jO2LobIZsox+NVJPMDXlJlM4677kKgLg=;
- b=ic83OL3tG24EBhZUB1nfkb1B2D8Vuz7IHEfRpEJrhh+C5a3fM9OwlYtaPLpuU/l85Z
- +eaiwFFfc1WHNtiNfcyYYwn0o0cvsdis49JkJ3lz6oJlt8o93xCJ6s2Is9dN3QBLYiUK
- XbMaLy7rfYvvxrTPudnGjjc3dB0cqDuH0K/UC4O2CGG+z03PuLR0zSx0v9l5gZ0iYvLc
- V4e4ltHcAWwHP/7Vdsc87C92fZNm1ew2Z1N0Guoe52PD4NaaFmQEWU5rAQb7YKLjI2/2
- VGNRB8zlzCuuVS2wBvh3v5JIDSTo3rF4gg+O8BBfIJevtVKTXI2cCa0EQxx2cDoy13GZ
- GHrw==
-X-Gm-Message-State: AOAM533f+St9Z5JxWU9b13Nm7/1G/uQEuZmRN/AppPu9ByPZWRqv3wTB
- keskvlRXxhPo3ILmTBGIo1o=
-X-Google-Smtp-Source: ABdhPJz7zs3EYsHz6zTyJWmSmcnJ89HgA+GRCOgZyF5+aS2jdsaHqSElpXE/ljsfNzpiCQZ7QzGXZg==
-X-Received: by 2002:aa7:96b0:: with SMTP id g16mr283185pfk.19.1597372940752;
- Thu, 13 Aug 2020 19:42:20 -0700 (PDT)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
- by smtp.gmail.com with ESMTPSA id 7sm7203244pff.78.2020.08.13.19.42.19
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 13 Aug 2020 19:42:19 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-arm-msm@vger.kernel.org
-Subject: [PATCH 19/19] drm/msm: show process names in gem_describe
-Date: Thu, 13 Aug 2020 19:41:14 -0700
-Message-Id: <20200814024114.1177553-20-robdclark@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200810222657.1841322-1-jcrouse@codeaurora.org>
-References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
+ with ESMTP id rQJ7dRiUKpzS for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Aug 2020 05:42:48 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5DB578876B
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 05:42:48 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 58BF068C7B; Fri, 14 Aug 2020 07:42:42 +0200 (CEST)
+Date: Fri, 14 Aug 2020 07:42:41 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] dma-debug: fix debug_dma_assert_idle(), use
+ rcu_read_lock()
+Message-ID: <20200814054241.GA719@lst.de>
+References: <alpine.LSU.2.11.2008122005240.11996@eggly.anvils>
+ <CAHk-=whYLHtbeF6BFmoiik9PTjP2+pnpWxXLE9f0ccnT0LAd5A@mail.gmail.com>
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>,
- open list <linux-kernel@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- David Airlie <airlied@linux.ie>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Sean Paul <sean@poorly.run>,
- Sibi Sankar <sibis@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>,
- Stephen Boyd <swboyd@chromium.org>, freedreno@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whYLHtbeF6BFmoiik9PTjP2+pnpWxXLE9f0ccnT0LAd5A@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Hugh Dickins <hughd@google.com>, iommu <iommu@lists.linux-foundation.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux-MM <linux-mm@kvack.org>, Eric Dumazet <edumazet@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>,
+ Dan Williams <dan.j.williams@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,145 +80,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Rob Clark <robdclark@chromium.org>
+On Thu, Aug 13, 2020 at 12:02:41PM -0700, Linus Torvalds wrote:
+> Yeah, that's ridiculously expensive, and serializes things for no good reason.
+> 
+> Your patch looks obviously correct to me (Christoph?),
 
-In $debugfs/gem we already show any vma(s) associated with an object.
-Also show process names if the vma's address space is a per-process
-address space.
+It also looks correct to me.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/msm_drv.c     |  2 +-
- drivers/gpu/drm/msm/msm_gem.c     | 25 +++++++++++++++++++++----
- drivers/gpu/drm/msm/msm_gem.h     |  5 +++++
- drivers/gpu/drm/msm/msm_gem_vma.c |  1 +
- drivers/gpu/drm/msm/msm_gpu.c     |  8 +++++---
- drivers/gpu/drm/msm/msm_gpu.h     |  2 +-
- 6 files changed, 34 insertions(+), 9 deletions(-)
+> but it also
+> makes me go "why are we doing this in the first place"?
+> 
+> Because it looks to me like
+>  (a) the debug check is wrong
+>  (b) this is left-over from early debugging
+> 
+> In particular, I don't see why we couldn't do a COW on a page that is
+> under writeback at the same time. We're not changing the page that is
+> doing DMA.
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index 8e70d220bba8..8d5c4f98c332 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -597,7 +597,7 @@ static int context_init(struct drm_device *dev, struct drm_file *file)
- 	kref_init(&ctx->ref);
- 	msm_submitqueue_init(dev, ctx);
- 
--	ctx->aspace = msm_gpu_create_private_address_space(priv->gpu);
-+	ctx->aspace = msm_gpu_create_private_address_space(priv->gpu, current);
- 	file->driver_priv = ctx;
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index 3cb7aeb93fd3..76a6c5271e57 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -842,11 +842,28 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m)
- 
- 		seq_puts(m, "      vmas:");
- 
--		list_for_each_entry(vma, &msm_obj->vmas, list)
--			seq_printf(m, " [%s: %08llx,%s,inuse=%d]",
--				vma->aspace != NULL ? vma->aspace->name : NULL,
--				vma->iova, vma->mapped ? "mapped" : "unmapped",
-+		list_for_each_entry(vma, &msm_obj->vmas, list) {
-+			const char *name, *comm;
-+			if (vma->aspace) {
-+				struct msm_gem_address_space *aspace = vma->aspace;
-+				struct task_struct *task =
-+					get_pid_task(aspace->pid, PIDTYPE_PID);
-+				if (task) {
-+					comm = kstrdup(task->comm, GFP_KERNEL);
-+				} else {
-+					comm = NULL;
-+				}
-+				name = aspace->name;
-+			} else {
-+				name = comm = NULL;
-+			}
-+			seq_printf(m, " [%s%s%s: aspace=%p, %08llx,%s,inuse=%d]",
-+				name, comm ? ":" : "", comm ? comm : "",
-+				vma->aspace, vma->iova,
-+				vma->mapped ? "mapped" : "unmapped",
- 				vma->inuse);
-+			kfree(comm);
-+		}
- 
- 		seq_puts(m, "\n");
- 	}
-diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
-index 9c573c4269cb..7b1c7a5f8eef 100644
---- a/drivers/gpu/drm/msm/msm_gem.h
-+++ b/drivers/gpu/drm/msm/msm_gem.h
-@@ -24,6 +24,11 @@ struct msm_gem_address_space {
- 	spinlock_t lock; /* Protects drm_mm node allocation/removal */
- 	struct msm_mmu *mmu;
- 	struct kref kref;
-+
-+	/* For address spaces associated with a specific process, this
-+	 * will be non-NULL:
-+	 */
-+	struct pid *pid;
- };
- 
- struct msm_gem_vma {
-diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
-index 29cc1305cf37..80a8a266d68f 100644
---- a/drivers/gpu/drm/msm/msm_gem_vma.c
-+++ b/drivers/gpu/drm/msm/msm_gem_vma.c
-@@ -17,6 +17,7 @@ msm_gem_address_space_destroy(struct kref *kref)
- 	drm_mm_takedown(&aspace->mm);
- 	if (aspace->mmu)
- 		aspace->mmu->funcs->destroy(aspace->mmu);
-+	put_pid(aspace->pid);
- 	kfree(aspace);
- }
- 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 951850804d77..ac8961187a73 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -825,10 +825,9 @@ static int get_clocks(struct platform_device *pdev, struct msm_gpu *gpu)
- 
- /* Return a new address space for a msm_drm_private instance */
- struct msm_gem_address_space *
--msm_gpu_create_private_address_space(struct msm_gpu *gpu)
-+msm_gpu_create_private_address_space(struct msm_gpu *gpu, struct task_struct *task)
- {
- 	struct msm_gem_address_space *aspace = NULL;
--
- 	if (!gpu)
- 		return NULL;
- 
-@@ -836,8 +835,11 @@ msm_gpu_create_private_address_space(struct msm_gpu *gpu)
- 	 * If the target doesn't support private address spaces then return
- 	 * the global one
- 	 */
--	if (gpu->funcs->create_private_address_space)
-+	if (gpu->funcs->create_private_address_space) {
- 		aspace = gpu->funcs->create_private_address_space(gpu);
-+		if (!IS_ERR(aspace))
-+			aspace->pid = get_pid(task_pid(task));
-+	}
- 
- 	if (IS_ERR_OR_NULL(aspace))
- 		aspace = msm_gem_address_space_get(gpu->aspace);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 4052a18e18c2..59f26bd0fe42 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -298,7 +298,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 		const char *name, struct msm_gpu_config *config);
- 
- struct msm_gem_address_space *
--msm_gpu_create_private_address_space(struct msm_gpu *gpu);
-+msm_gpu_create_private_address_space(struct msm_gpu *gpu, struct task_struct *task);
- 
- void msm_gpu_cleanup(struct msm_gpu *gpu);
- 
--- 
-2.26.2
+Yes.  We don't need to check for a DMA to the device, but a DMA from
+the device while under DMA obviously is bogus.  But then again you'd
+need to try really hard to do that.
 
+> In fact, the whole "COW with DMA" makes me feel like the real bug may
+> have been due that whole "ambiguous COW" thing, which was fixed in
+> 17839856fd58 ("gup: document and work around "COW can break either
+> way" issue")
+> 
+> That debug thing goes back almost 7 years, and I don't think it has
+> caught anything in those seven years, but I could be wrong.
+> 
+> The commit that adds it does talk about a bug, but that code was
+> removed entirely eventually. And google shows no hits for
+> debug_dma_assert_idle() since - until your email.
+> 
+> So my gut feel is that we should remove the check entirely, although
+> your patch does seem like a big improvement.
+> 
+> Christoph?
+
+The whole thing predates my involvement with the code, but I defintively
+think the patch from Hugh is a major improvement.  But I would also
+have no problem with just removing it entirely.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
