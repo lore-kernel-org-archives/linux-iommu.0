@@ -6,100 +6,99 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C3DC433DF
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4311DC433DF
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 79FC32087C
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1794B20768
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WSjYyuU3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79FC32087C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mGYvZ8LB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1794B20768
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4202E24C4F;
-	Fri, 14 Aug 2020 02:42:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DF7A888A3D;
+	Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e0decrPpYD+x; Fri, 14 Aug 2020 02:42:11 +0000 (UTC)
+	with ESMTP id y7BJ0XhIatMA; Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 47C6024B99;
-	Fri, 14 Aug 2020 02:42:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 74BF688A3B;
+	Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 343F4C07FF;
-	Fri, 14 Aug 2020 02:42:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33E6FC004D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 618ABC07FF;
+	Fri, 14 Aug 2020 02:42:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8581C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 302818709E
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:10 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D61F988A3D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Emstvrp9x-8O for <iommu@lists.linux-foundation.org>;
- Fri, 14 Aug 2020 02:42:09 +0000 (UTC)
+ with ESMTP id WEDL9Tf9CCkB for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Aug 2020 02:42:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id ACE5186FD7
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:09 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id ha11so3703077pjb.1
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 19:42:09 -0700 (PDT)
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+ [209.85.210.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B1BD988A3B
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:42:18 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id x25so3844331pff.4
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 19:42:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=/RMbEO1wS6ve28JkP/1VJiMbFcTiFM9NBrI4zgQscQM=;
- b=WSjYyuU3IicqTzGKZ+qyMjOajK0Y+CUj5/an3UNid9VEFQQQ/GpitZqkA4Xu71HuQ8
- uyDetJmFxIA+LZ4XKMdbTacXBdQ0BS3SOFEr+zfj8Vs4H+aqeVXRsK6JQK/JbDEBN6KL
- KRMXnTA5bzHXH18nGWyEk4Oe0sZ/kKopVL4uPgbxwS47tJ5mL4kSYON0DOcpPgu4ncj3
- JPOGnNh3/vssv6qpnjwMjU1C0PCegmTgZmDWFyDlNeNIQ2ThNiwnKSOI0nCAg2qqb6AX
- sLmkxHWNJBh1RrM51cityB+EYPnBq7MWoZfATphAbQy5D3+kK4PBubVAY2hgGHqvs2Xq
- TPhQ==
+ bh=ORHfJz2e9TNUi11ClButtEprelkWs9RC+Iw7WuZZvQo=;
+ b=mGYvZ8LB7tkBgR4ispTOOXDtmoDnJ0ENjIx7BCQ9VRkSut3GQfaIUYgdXpfYnGGuKg
+ rZsPpm9wb26hYcXQcKc3aB74wVftPvCPcXGjyQqF7nWAXECSCmfltDB3BmeWGN2kkoXs
+ osk+LRRkJPFsF9fxu+/EQaO4YaAY3IdnGgDhsDOf+f/ribXjeTndrgcxVJ+hQw2GGr4s
+ ztbQqQ4tTlhOaV5EnPjL+S7x1AlsREgqkm4JjC+Z+NIk3/omRK3fVbdB1JyrWUgvd5gD
+ v4n8h7JJxLJx2P8gvPi9gRw815etQEUjldg81O6PxszqQdmHHdHmD/LPuIKlK+3Y4RTT
+ Optg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=/RMbEO1wS6ve28JkP/1VJiMbFcTiFM9NBrI4zgQscQM=;
- b=UykledHSe5U+pjriIp3KRZ8tCev3QaL/UJ1m8L/VAG8mZJkhit1fLcOKbi8wXP3LjA
- 1Bmw8zPWSwm86wsYZLdu6rotFhPrVS4ohxDmW1NIcHWQHBUa50F84mih4wNSyNUpEjNj
- 5r45r6vcoVPCuckWnuqJ1M+fs6YwAgjZ7pQpHt9BXqG9x6+h/ocPzL8J4+YoMg0pBtpz
- Cqs+eb/xj3aIR74ftbQtnS/5eLMZodNVypQ3HvTDzuOvBaoJzKTbHsv0v80rE+1OcBCj
- iI8erAgnn1l0XQcWatXLiTOwqb7o2gXfpauNbfAK9hXXlg1fafTEDNK5JyVIuqkFvdvP
- cFgA==
-X-Gm-Message-State: AOAM530LDM8d3MWseJHFdk/MJ0VDQfI7EJsW87MYFxUJCSpAnJGCRjp9
- 4FNLcc9/SQ4irUN6L3c6PWQ=
-X-Google-Smtp-Source: ABdhPJx2Hm4qJq+ws1Wzuo6A7am1wv6hPi7gD/YHP4Z3vqtJe3/ztGrQUEPhXJiyo9idH9IbGNEomw==
-X-Received: by 2002:a17:902:b701:: with SMTP id d1mr562133pls.92.1597372929283; 
- Thu, 13 Aug 2020 19:42:09 -0700 (PDT)
+ bh=ORHfJz2e9TNUi11ClButtEprelkWs9RC+Iw7WuZZvQo=;
+ b=XJlfmyPCCzJAkNubkgyTtPD5m90fKk30Vynj+QN7dkpmmwyurzRqjbGnVVFKtiZi26
+ AKnhpeMaGa3ZzJFCEcWrpJBnHpdYf+LP7qCg+jYeEAwYFtTTKXGl3e+p6/AWEjV6Yfwj
+ 1XxAkSqqa6/vB9JioSm33wIAYALtRjuEtKE1MoOJ4S5EbtyYL6jWfmcN7nNYyWDSfKib
+ OcD9FZk+/fCQIFU19099N2blVOpfT/bVbvyca8vqW7qUW9PMfpgSrT5aXS53bIzQOYgE
+ TeyvAUvsnF72NhXuZPKXxJ85ibA6LoqplmJ0j6RkLo7lfiDcdGPvkSXEiQ8qfd3iUGPL
+ zwAw==
+X-Gm-Message-State: AOAM533a9BeY9KWwoTqn1lwL7ktUiwdADkR6dbgOygx7MKgVXXLlU0xY
+ dsTxtWlUPfTsvuB7Gs4/QBA=
+X-Google-Smtp-Source: ABdhPJyR5WpqeE+88Qzfp41p5EbTBVgk+DjiD7KpYYcxsk9uoQzqZoh5cgFIQ2d/oEWKX5VXLHan3w==
+X-Received: by 2002:a65:6106:: with SMTP id z6mr390099pgu.310.1597372938297;
+ Thu, 13 Aug 2020 19:42:18 -0700 (PDT)
 Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
- by smtp.gmail.com with ESMTPSA id x136sm7189060pfc.28.2020.08.13.19.42.07
+ by smtp.gmail.com with ESMTPSA id b63sm7201394pfg.43.2020.08.13.19.42.16
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 13 Aug 2020 19:42:08 -0700 (PDT)
+ Thu, 13 Aug 2020 19:42:16 -0700 (PDT)
 From: Rob Clark <robdclark@gmail.com>
 To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
  linux-arm-msm@vger.kernel.org
-Subject: [PATCH 17/19] arm: dts: qcom: sm845: Set the compatible string for
- the GPU SMMU
-Date: Thu, 13 Aug 2020 19:41:12 -0700
-Message-Id: <20200814024114.1177553-18-robdclark@gmail.com>
+Subject: [PATCH 18/19] iommu/arm-smmu: add a way for implementations to
+ influence SCTLR
+Date: Thu, 13 Aug 2020 19:41:13 -0700
+Message-Id: <20200814024114.1177553-19-robdclark@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200810222657.1841322-1-jcrouse@codeaurora.org>
 References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
- Sibi Sankar <sibis@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>,
- Stephen Boyd <swboyd@chromium.org>, freedreno@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Rob Clark <robdclark@chromium.org>, Thierry Reding <treding@nvidia.com>,
+ open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jon Hunter <jonathanh@nvidia.com>, Stephen Boyd <swboyd@chromium.org>,
+ freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,30 +116,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jordan Crouse <jcrouse@codeaurora.org>
+From: Rob Clark <robdclark@chromium.org>
 
-Set the qcom,adreno-smmu compatible string for the GPU SMMU to enable
-split pagetables and per-instance pagetables for drm/msm.
+For the Adreno GPU's SMMU, we want SCTLR.HUPCF set to ensure that
+pending translations are not terminated on iova fault.  Otherwise
+a terminated CP read could hang the GPU by returning invalid
+command-stream data.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.c      | 3 +++
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      | 3 +++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index 2884577dcb77..6a9adaa401a9 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -4058,7 +4058,7 @@ opp-257000000 {
- 		};
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 5640d9960610..2aa6249050ff 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -127,6 +127,12 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	    (smmu_domain->cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64))
+ 		pgtbl_cfg->quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
  
- 		adreno_smmu: iommu@5040000 {
--			compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
-+			compatible = "qcom,adreno-smmu", "qcom,smmu-v2";
- 			reg = <0 0x5040000 0 0x10000>;
- 			#iommu-cells = <1>;
- 			#global-interrupts = <2>;
++	/*
++	 * On the GPU device we want to process subsequent transactions after a
++	 * fault to keep the GPU from hanging
++	 */
++	smmu_domain->cfg.sctlr_set |= ARM_SMMU_SCTLR_HUPCF;
++
+ 	/*
+ 	 * Initialize private interface with GPU:
+ 	 */
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index e63a480d7f71..bbec5793faf8 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -617,6 +617,9 @@ void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		reg |= ARM_SMMU_SCTLR_E;
+ 
++	reg |= cfg->sctlr_set;
++	reg &= ~cfg->sctlr_clr;
++
+ 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
+ }
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index cd75a33967bb..2df3a70a8a41 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -144,6 +144,7 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_SCTLR		0x0
+ #define ARM_SMMU_SCTLR_S1_ASIDPNE	BIT(12)
+ #define ARM_SMMU_SCTLR_CFCFG		BIT(7)
++#define ARM_SMMU_SCTLR_HUPCF		BIT(8)
+ #define ARM_SMMU_SCTLR_CFIE		BIT(6)
+ #define ARM_SMMU_SCTLR_CFRE		BIT(5)
+ #define ARM_SMMU_SCTLR_E		BIT(4)
+@@ -341,6 +342,8 @@ struct arm_smmu_cfg {
+ 		u16			asid;
+ 		u16			vmid;
+ 	};
++	u32				sctlr_set;    /* extra bits to set in SCTLR */
++	u32				sctlr_clr;    /* bits to mask in SCTLR */
+ 	enum arm_smmu_cbar_type		cbar;
+ 	enum arm_smmu_context_fmt	fmt;
+ };
 -- 
 2.26.2
 
