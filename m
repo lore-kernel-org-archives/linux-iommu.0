@@ -6,97 +6,98 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213EBC433E8
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B637C433E1
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:41:02 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E8D2F20715
-	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:40:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6FBF120716
+	for <iommu@archiver.kernel.org>; Fri, 14 Aug 2020 02:41:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C+xR5/sv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8D2F20715
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b1Nn+BeM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FBF120716
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C021988890;
-	Fri, 14 Aug 2020 02:40:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3C48788889;
+	Fri, 14 Aug 2020 02:41:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VRnKbEOK27eK; Fri, 14 Aug 2020 02:40:48 +0000 (UTC)
+	with ESMTP id 4NchePTZuBf3; Fri, 14 Aug 2020 02:41:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3B57A8888C;
-	Fri, 14 Aug 2020 02:40:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 84EDA8888D;
+	Fri, 14 Aug 2020 02:41:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 34F4CC07FF;
-	Fri, 14 Aug 2020 02:40:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C3415C004D
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:40:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CAD9C07FF;
+	Fri, 14 Aug 2020 02:41:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 95666C004D
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:41:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id BCCFF86FFD
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:40:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8F13A88A32
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:41:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hDWi5GvM3xod for <iommu@lists.linux-foundation.org>;
- Fri, 14 Aug 2020 02:40:46 +0000 (UTC)
+ with ESMTP id ou06UTS5sXsk for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Aug 2020 02:40:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
  [209.85.216.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 17FDE86FD7
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:40:46 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id l60so3717258pjb.3
- for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 19:40:46 -0700 (PDT)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id BEBDD88A2F
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 02:40:57 +0000 (UTC)
+Received: by mail-pj1-f67.google.com with SMTP id c10so5032019pjn.1
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Aug 2020 19:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=1FUoAbvyEKIH5lQKuzluOyz2/ynwOKVUIX8AS+w28WA=;
- b=C+xR5/svYbw49MY4CeW82SJXbGnX+JNhURW4NRg8W+6hzAFLpOU/my1FRJ5O0gHGWf
- VAlVdoW2esbR7vWEeQUWFH0Jq7GcD+xFsBOUjeG2U9x2SHmPNLxwcvV97RwA1l4fh+i2
- +M/34tH1Wr6XkBaaDg/Jg9eqhDsR+jDTIVk5lXr0M35SPbUSBzfRDX4MI+XsXjmJW5q3
- 2sEOICZBbL04zS1AtXchQpXCRnUiNeCTzSTTANAy4nkzofNJgX+QaKLbSAkfsbvzqzyZ
- VjlfYKMGh7pJgaTph9vg4QVkl+kXKsVtraG0hRt1hw5/JDgmMZiwZUh0UUrRcksHgXH1
- Jdiw==
+ bh=Vh+B4OHEn3CAh3E4JWZmp8fkzNNMb5LEBb6Hamyy8Tc=;
+ b=b1Nn+BeMMREhr/xsqOUt71SjYE8YipMwszKzo5jG3bFHT41NMAEGv87PqJbvzBoTzy
+ 6b/cLlgDD5/5PW4ST6p5hm24g1aSt/zJL6vWBbZ4VvsIGASZVOdL8XN84BQeoBqDbNeM
+ BQrGnxlONVmRT69y8o2Z/umv8giNT7tSsxCwohfWaw0fKUb2EDbisY42eWD5fIfZTqQn
+ gMNc4fUN1Elxy0nAISiKJJ9d/MoVTUzcDB1ANoP4tY/wsoX0Kl9CJOfc+UE97ihyapnT
+ e5MvFj0a94BRJPyfPhU3upK2h65RSJ6aYJKa645c6g9k7d9qcwJ8/s6kwE9YCAiqVaLL
+ h93w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=1FUoAbvyEKIH5lQKuzluOyz2/ynwOKVUIX8AS+w28WA=;
- b=FXoFWpwNqW4+8XtO+vx37Q3SR5RY5kre8pPWMAkf+W7/7zvqaSVcf0W8TQ3z7q+HTo
- 8Lr+TtVJG3kxfSh9t33GhMjKCvHgdvljvamQknvPKb5CjLdZFipsa7J2lX3uSVqWkdE+
- t+gfD348FkO15rKqsC8usiLCFBBOhOUw43U7cXrjb1owV4AxMDWcB8V0TfNJkN6cyOGc
- u63gRidNIpnmID+gYwOInsfrhBH7aKLGUoklsLrc19q13Qk+K2P1e79A/P8x7TI5AfiF
- cxTYcidxhzGd464YwtiLfWKzCz9oIH9txV7dlf4BtHMY1iJyKuTvKRNv7asJ64PVowHy
- lquQ==
-X-Gm-Message-State: AOAM530eJCAU4rHXRuZG1qx2XVqJ/QuZsrZixLrpLfyz0qnMu29JuCtM
- euy++QacjWO2OBRLppyTjkU=
-X-Google-Smtp-Source: ABdhPJyTjSmkPtRA6/sXaKkEFWxaxBkZ4HL8mupIi9HzpilQYOPzsg6o2GqsZMiPbcCB0VR+sfOnTg==
-X-Received: by 2002:a17:90a:6fc5:: with SMTP id
- e63mr497592pjk.200.1597372845667; 
- Thu, 13 Aug 2020 19:40:45 -0700 (PDT)
+ bh=Vh+B4OHEn3CAh3E4JWZmp8fkzNNMb5LEBb6Hamyy8Tc=;
+ b=DvhLXoQawCdtBa7sC9IFf9H8fSHTQl0Du+frRmwubpN5qU4D4uavlRrzQhAXxbmJRB
+ fDTcRaQ1H2ApSnbvldtgJ84/gfCsMfVHtsh+05mBzxxr++leBWKXgmLh6yumwYM+0Wd9
+ uvwVxnIVzzJjbIhRO89qd30gDDnQogITqV3v3VnIp03H2s3eZtNQ6GxT1loCFQOpWCsZ
+ ysQUcNVnMCoPvohcMyW1O/V/5zBR7B0w+ILGYCXkE2ZP7HChNYl4cTVTpUo8LhHLJEg0
+ azThVsc3USk88jYj1FO0jMfvQ/VWcxwg4kFDaXV/j8d590VIGDiNdMSWnRnMj30aaDgj
+ GX5w==
+X-Gm-Message-State: AOAM531OHegBknk3l740HDLccsksBm4F2z84eMRkeyV8aegoog49flUx
+ nXweHG1VzAJfqxWTFTRgZmBsoluvGBU=
+X-Google-Smtp-Source: ABdhPJyhhKdUyI/chNSsrpl7lcoB1vpSmNbVdbKkkayGFGLTS9vBb0ca0GN0/ePIemLJruAF+TIhWA==
+X-Received: by 2002:a17:902:a404:: with SMTP id p4mr577375plq.35.1597372857314; 
+ Thu, 13 Aug 2020 19:40:57 -0700 (PDT)
 Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
- by smtp.gmail.com with ESMTPSA id a19sm7294660pfn.10.2020.08.13.19.40.43
+ by smtp.gmail.com with ESMTPSA id n18sm6397759pgd.91.2020.08.13.19.40.55
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 13 Aug 2020 19:40:44 -0700 (PDT)
+ Thu, 13 Aug 2020 19:40:55 -0700 (PDT)
 From: Rob Clark <robdclark@gmail.com>
 To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
  linux-arm-msm@vger.kernel.org
-Subject: [PATCH 01/19] drm/msm: remove dangling submitqueue references
-Date: Thu, 13 Aug 2020 19:40:56 -0700
-Message-Id: <20200814024114.1177553-2-robdclark@gmail.com>
+Subject: [PATCH 02/19] iommu/arm-smmu: Pass io-pgtable config to
+ implementation specific function
+Date: Thu, 13 Aug 2020 19:40:57 -0700
+Message-Id: <20200814024114.1177553-3-robdclark@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200810222657.1841322-1-jcrouse@codeaurora.org>
 References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
 MIME-Version: 1.0
 Cc: Rob Clark <robdclark@chromium.org>,
- open list <linux-kernel@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- David Airlie <airlied@linux.ie>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Sean Paul <sean@poorly.run>,
- Sibi Sankar <sibis@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>,
+ open list <linux-kernel@vger.kernel.org>, Jonathan Marek <jonathan@marek.ca>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Stephen Boyd <swboyd@chromium.org>, freedreno@lists.freedesktop.org,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -116,33 +117,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Rob Clark <robdclark@chromium.org>
+From: Jordan Crouse <jcrouse@codeaurora.org>
 
-Currently it doesn't matter, since we free the ctx immediately.  But
-when we start refcnt'ing the ctx, we don't want old dangling list
-entries to hang around.
+Construct the io-pgtable config before calling the implementation specific
+init_context function and pass it so the implementation specific function
+can get a chance to change it before the io-pgtable is created.
 
+Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- drivers/gpu/drm/msm/msm_submitqueue.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c |  3 ++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c      | 11 ++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  3 ++-
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_submitqueue.c b/drivers/gpu/drm/msm/msm_submitqueue.c
-index a1d94be7883a..90c9d84e6155 100644
---- a/drivers/gpu/drm/msm/msm_submitqueue.c
-+++ b/drivers/gpu/drm/msm/msm_submitqueue.c
-@@ -49,8 +49,10 @@ void msm_submitqueue_close(struct msm_file_private *ctx)
- 	 * No lock needed in close and there won't
- 	 * be any more user ioctls coming our way
- 	 */
--	list_for_each_entry_safe(entry, tmp, &ctx->submitqueues, node)
-+	list_for_each_entry_safe(entry, tmp, &ctx->submitqueues, node) {
-+		list_del(&entry->node);
- 		msm_submitqueue_put(entry);
-+	}
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index f4ff124a1967..a9861dcd0884 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -68,7 +68,8 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+ 	return 0;
  }
  
- int msm_submitqueue_create(struct drm_device *drm, struct msm_file_private *ctx,
+-static int cavium_init_context(struct arm_smmu_domain *smmu_domain)
++static int cavium_init_context(struct arm_smmu_domain *smmu_domain,
++		struct io_pgtable_cfg *pgtbl_cfg)
+ {
+ 	struct cavium_smmu *cs = container_of(smmu_domain->smmu,
+ 					      struct cavium_smmu, smmu);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 09c42af9f31e..37d8d49299b4 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -795,11 +795,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		cfg->asid = cfg->cbndx;
+ 
+ 	smmu_domain->smmu = smmu;
+-	if (smmu->impl && smmu->impl->init_context) {
+-		ret = smmu->impl->init_context(smmu_domain);
+-		if (ret)
+-			goto out_unlock;
+-	}
+ 
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+ 		.pgsize_bitmap	= smmu->pgsize_bitmap,
+@@ -810,6 +805,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		.iommu_dev	= smmu->dev,
+ 	};
+ 
++	if (smmu->impl && smmu->impl->init_context) {
++		ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg);
++		if (ret)
++			goto out_clear_smmu;
++	}
++
+ 	if (smmu_domain->non_strict)
+ 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index d890a4a968e8..83294516ac08 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -386,7 +386,8 @@ struct arm_smmu_impl {
+ 			    u64 val);
+ 	int (*cfg_probe)(struct arm_smmu_device *smmu);
+ 	int (*reset)(struct arm_smmu_device *smmu);
+-	int (*init_context)(struct arm_smmu_domain *smmu_domain);
++	int (*init_context)(struct arm_smmu_domain *smmu_domain,
++			struct io_pgtable_cfg *cfg);
+ 	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+ 			 int status);
+ 	int (*def_domain_type)(struct device *dev);
 -- 
 2.26.2
 
