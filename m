@@ -2,106 +2,93 @@ Return-Path: <SRS0=+HXC=BZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E19C433E1
-	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 00:59:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 913A4C433DF
+	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AEB7522E03
-	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 00:59:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4E95821744
+	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="GViAih0/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEB7522E03
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l+20G6uG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E95821744
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8772686FD5;
-	Sat, 15 Aug 2020 00:59:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 04529885CF;
+	Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A1SS_yBkHhSS; Sat, 15 Aug 2020 00:59:27 +0000 (UTC)
+	with ESMTP id R6rwfFD0PvIE; Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CF80A85641;
-	Sat, 15 Aug 2020 00:59:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 65C84885BB;
+	Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF588C013C;
-	Sat, 15 Aug 2020 00:59:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 590BBC07FF;
+	Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A233C004D
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 00:59:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9F1B0C004D
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1F09988793
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 00:59:26 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 95082886B0
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6qB0vX3eQmZK for <iommu@lists.linux-foundation.org>;
- Sat, 15 Aug 2020 00:59:25 +0000 (UTC)
+ with ESMTP id zQnkM8PYeLLJ for <iommu@lists.linux-foundation.org>;
+ Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
- [209.85.208.196])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1A3ED886CD
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 00:59:25 +0000 (UTC)
-Received: by mail-lj1-f196.google.com with SMTP id m22so11729263ljj.5
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 17:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linux-foundation.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=x5V/+PBSBblwToTAxIaWCU/QUA1O6ispz0B5966qT9o=;
- b=GViAih0/p9oLbkxsH0zRUETk2BWc6utJvJ2zieuBFpItMZ5Q/d+XoOIJE3UmtmDW9d
- PfB7oAxIVJBUbDF/z38G7nHCI1AuDI/Wa5eZncLuwEofl1Tgh5gbUZms7q6RUinORQm5
- atVm6Nom3LD276TzkMMR7WITDnfy6UtyUb83E=
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 1B02F886A9
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id 128so5571220pgd.5
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 23:48:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id;
+ bh=1UEjNo8FBjY3zOHNcMSpQLZ9ulspEjH4BS4O+4ISF0c=;
+ b=l+20G6uGynVVHrnnRdzNF3Fh3VpleLP+EkvjlzL6Ihoj8BrtDflhsxuQap/puPx9vx
+ Y5DS9R5phbsGF046MkBSx2YiepDjw9cXOF41ylVI1jUOP9Gg6wtjkxmap+dGxLtSTXoW
+ bmEG6PPHN43EPUmbdBQpw5+Ohgy0M2mJW1cuVjfS3MXYBWgczFmUGHkSiB9txA2jSAzB
+ jfA8oIuwNkIvDNCKP8Etl56gvVk3ERPw4fNbiKCLdnwYGJ/x6Iq00/oKsT7H3LXD9ZHi
+ xiHU5Dl3yqFQS6B+FTPHDWbGVcW8sNv6mt12xCXJzgC/oqKVvF1ImcBV5jj22cgf39hg
+ 7+LQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=x5V/+PBSBblwToTAxIaWCU/QUA1O6ispz0B5966qT9o=;
- b=lWHY1QCR7S+2IxFXok/OQXZ0z6dSoLfyj3OXjx2Hq8H8d+JRw73XrJhrftJQTESFD6
- N41Q09HoD4aDxN8FykVOqSmBrUo1wUW61jiYR0WBGwnYutHIO7SyQ9G/AN10/7qqTyN0
- Q3AeyFiuM5PiAFY032V+fB4KWzSMka4cFbBSn325M7GArmir70H3JFB3g+qQzJbPGR5W
- hs9SpstrlZbwe8hzknjrGag8H2E7Vg7+5af/QbgUOsrxeZ1HQ184p96f85w1qP9VbCqN
- LDfdT6dZFqoUJ67S+2g58k0jqE5pkBL7lvfHptzilEkj0fONbFhj5G7XEyyc+O38b63M
- QvnA==
-X-Gm-Message-State: AOAM531OA1vbdToJjryrd3cA9aM2tzGxMLx+gQGAaO5wDP2i3jeYechP
- vvZ4LnkhNip32AVRVp9iM1eq0otKnNOOzKgf
-X-Google-Smtp-Source: ABdhPJzkwMQ2kb690u5x91hyYa4slGxLa6HhfA1j55YkClVwj8I8jA3I7iWWfQclpAmonpOoE7QbiA==
-X-Received: by 2002:a2e:5018:: with SMTP id e24mr2634168ljb.261.1597453162359; 
- Fri, 14 Aug 2020 17:59:22 -0700 (PDT)
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com.
- [209.85.167.49])
- by smtp.gmail.com with ESMTPSA id t27sm2051093ljd.101.2020.08.14.17.59.21
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 14 Aug 2020 17:59:21 -0700 (PDT)
-Received: by mail-lf1-f49.google.com with SMTP id m15so5690845lfp.7
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 17:59:21 -0700 (PDT)
-X-Received: by 2002:a05:6512:3b7:: with SMTP id
- v23mr2382329lfp.10.1597453160630; 
- Fri, 14 Aug 2020 17:59:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.LSU.2.11.2008122005240.11996@eggly.anvils>
- <CAHk-=whYLHtbeF6BFmoiik9PTjP2+pnpWxXLE9f0ccnT0LAd5A@mail.gmail.com>
- <20200814054241.GA719@lst.de>
- <CAHk-=wifNX6U28sjPay+1ZJ5BmxRG8Bac7W1sP_Ft1yTqLj+GA@mail.gmail.com>
- <alpine.LSU.2.11.2008141642260.18762@eggly.anvils>
-In-Reply-To: <alpine.LSU.2.11.2008141642260.18762@eggly.anvils>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 14 Aug 2020 17:59:04 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whw3QcceKCdYS2ktCPQ96m8Ysyek+w4ny0ygvy7z-_2rw@mail.gmail.com>
-Message-ID: <CAHk-=whw3QcceKCdYS2ktCPQ96m8Ysyek+w4ny0ygvy7z-_2rw@mail.gmail.com>
-Subject: Re: [PATCH] dma-debug: fix debug_dma_assert_idle(),
- use rcu_read_lock()
-To: Hugh Dickins <hughd@google.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Eric Dumazet <edumazet@google.com>, Christoph Hellwig <hch@lst.de>,
- Linux-MM <linux-mm@kvack.org>, iommu <iommu@lists.linux-foundation.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Dan Williams <dan.j.williams@intel.com>
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=1UEjNo8FBjY3zOHNcMSpQLZ9ulspEjH4BS4O+4ISF0c=;
+ b=PTmXoezzA1gjCzfoPamp+fw5Wi9tfY2ykPioLCWR4GLRoWp5C0CEVNEYGS/byMHWAx
+ CExXd5IKsPp1Vl1O1q1167/PsJ7KKYLS+J6CVaHNwy4d2PilYzwbODkT2S5od/ZQXnGt
+ kMfSbMbjfQstTFtnWj62Ej/Pl/UPvcZketDxn/7kiAd6pd2ekQaHvjfv2K24dEbdzUAN
+ OClYx/E1nU30HoapLyN6m3GqE9cMtCT3EklTaYR8fznNGNiDH2Ju1O5zfI4i5nS/uOI/
+ tnDF6srnRJ413nEyt7KfGH/Yy7qzdXO2/FpLsWkzvwrNmJZ3puBZkSf+1ltgACS617bJ
+ aJMA==
+X-Gm-Message-State: AOAM530l3qG5sA8ayGw6IgzX24m8PGPm/5psb54Jl3XGApbqT+tNF1Pv
+ msrCmf3OVMNmvS/P4VJSJao=
+X-Google-Smtp-Source: ABdhPJyDokbcNBNU6ZlOnvAx0b5d1g3l+PGfHIBTohbm9Oy6CbFfNDh9Ubt5zFfMlMd6VZd9Nc8BVw==
+X-Received: by 2002:a63:5515:: with SMTP id j21mr3870740pgb.31.1597474097506; 
+ Fri, 14 Aug 2020 23:48:17 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (searspoint.nvidia.com.
+ [216.228.112.21])
+ by smtp.gmail.com with ESMTPSA id f63sm10162940pjk.53.2020.08.14.23.48.16
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 14 Aug 2020 23:48:17 -0700 (PDT)
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: hch@lst.de,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Subject: [PATCH v3] dma-mapping: set default segment_boundary_mask to ULONG_MAX
+Date: Fri, 14 Aug 2020 23:47:26 -0700
+Message-Id: <20200815064726.20459-1-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,91 +101,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Aug 14, 2020 at 5:26 PM Hugh Dickins <hughd@google.com> wrote:
->
-> We used to rely on page count there, and on trylock_page() only; but
-> there was at least one user whose app went wrong when occasionally we
-> COWed the page, just because something else momentarily took a reference
-> to it, or locked it.  Around 2006, bug report from 2004: I did look up
-> the history a week ago, but was interrupted before taking notes.
+The default segment_boundary_mask was set to DMA_BIT_MAKS(32)
+a decade ago by referencing SCSI/block subsystem, as a 32-bit
+mask was good enough for most of the devices.
 
-I actually think you may be talking about the exact problem that that
-debug patch from Dan was originally created for:
+Now more and more drivers set dma_masks above DMA_BIT_MAKS(32)
+while only a handful of them call dma_set_seg_boundary(). This
+means that most drivers have a 4GB segmention boundary because
+DMA API returns a 32-bit default value, though they might not
+really have such a limit.
 
-  0abdd7a81b7e dma-debug: introduce debug_dma_assert_idle()
-  77873803363c net_dma: mark broken
+The default segment_boundary_mask should mean "no limit" since
+the device doesn't explicitly set the mask. But a 32-bit mask
+certainly limits those devices capable of 32+ bits addressing.
 
-and your memory sounds exactly like that net_dma case (and the timing
-matches roughly too - the NET_DMA code was merged in 2006, but I think
-people had been playing trial games with it before that).
+So this patch sets default segment_boundary_mask to ULONG_MAX.
 
-IOW, net_dma was horribly broken, and just couldn't deal with COW
-because it did things wrong.
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
 
-The thing is, doing extra COW's really shouldn't matter in _any_
-half-way correct situation. There's a few cases:
+Changelog:
+v2->v3
+ * Resent -- no change
+   v2 was sent 4 months ago https://lkml.org/lkml/2020/4/6/881
+   but it has not got replied yet
+v1->v2
+ * Followed Robin's comments to revise the commit message by
+   dropping one paragraph of not-entirely-true justification
+   (no git-diff level change, so please ack if you tested v1)
 
- - user space writing to it, so we COW.
+ include/linux/dma-mapping.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   This is the "simple" case that is obvious and we've always done the
-same thing. User space will get the new copy, and there's no possible
-situation when that can be wrong.
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 016b96b384bd..27df499aa041 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -628,7 +628,7 @@ static inline unsigned long dma_get_seg_boundary(struct device *dev)
+ {
+ 	if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
+ 		return dev->dma_parms->segment_boundary_mask;
+-	return DMA_BIT_MASK(32);
++	return ULONG_MAX;
+ }
+ 
+ static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
+-- 
+2.17.1
 
- - get_user_pages() for reading.
-
-   This is the one we actually used to get wrong, and when another
-user *didn't* cow, the data that was read might not match what the
-original get_uiser_pages() case expected.
-
-    But in this case, the bug only happened when we didn't cow
-aggressively enough.
-
- - get_user_pages() for writing
-
-   This is another 'simple" case, because it does the COW at
-get_user_pages() time and gets it's own copy (which is also installed
-in the thread that does the GUP, of course, so a subsequent fork an
-danother write can obviously cause *further* COW action).
-
-But in no case should an extra COW matter. Except if somebody uses
-get_user_pages() to write to the page, and the COW "hides" that write
-by giving a new copy to whoever expected to see it, but that's exactly
-the case that Dan's patch was supposed to notice.
-
-And since it never triggered outside of that invalid net_dma case, I
-don't think any other case really ever existed.
-
-Yes, I can well imagine that some people loved the concept of that TCP
-receive copy offload, but it really was broken, and was removed
-entirely by Dan in commit 7bced397510a ("net_dma: simple removal") a
-year after being marked broken (the author date makes it look like
-it's just a couple of weeks after being marked broken, but the commit
-date for that removal is September 2014).
-
-So I don't think that the trylock and checking page counts is a
-correctness issue.
-
-It had better not be, because anybody that writes to a shared-cow page
- without breaking COW is simply broken.
-
-No, I really think that the real worry about doing more aggressive
-copying is that it doesn't steal back the KSM page or the swap cache
-page, so it will leave those pages around, and while they should then
-be really easy for the VM to reclaim, I really worry that we have a
-couple of decades of VM reclaim tuning with that swap cache reuse
-behavior (KSM, not so much).
-
-And while it works fine on my machine, I currently have 40GB or RAM
-free, because honestly, the stuff I do doesn't need all that much
-memory, and I ridiculously overspecced my new machine RAM'wise. So
-nothing I will do would show any problems.
-
-                Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
