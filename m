@@ -2,93 +2,94 @@ Return-Path: <SRS0=+HXC=BZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 913A4C433DF
-	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2E2C433DF
+	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 16:31:03 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E95821744
-	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2124D23102
+	for <iommu@archiver.kernel.org>; Sat, 15 Aug 2020 16:31:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l+20G6uG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E95821744
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DbSSD962"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2124D23102
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 04529885CF;
-	Sat, 15 Aug 2020 06:48:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CB06388498;
+	Sat, 15 Aug 2020 16:31:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R6rwfFD0PvIE; Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
+	with ESMTP id J8mzyevNK7of; Sat, 15 Aug 2020 16:31:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 65C84885BB;
-	Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E889188496;
+	Sat, 15 Aug 2020 16:31:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 590BBC07FF;
-	Sat, 15 Aug 2020 06:48:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F1B0C004D
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA507C07FF;
+	Sat, 15 Aug 2020 16:31:01 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 36537C004D
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 16:31:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 95082886B0
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2ADCC85D61
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 16:31:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zQnkM8PYeLLJ for <iommu@lists.linux-foundation.org>;
- Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
+ with ESMTP id gdevEfyIW1vD for <iommu@lists.linux-foundation.org>;
+ Sat, 15 Aug 2020 16:30:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
- [209.85.215.193])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1B02F886A9
- for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 06:48:18 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id 128so5571220pgd.5
- for <iommu@lists.linux-foundation.org>; Fri, 14 Aug 2020 23:48:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id;
- bh=1UEjNo8FBjY3zOHNcMSpQLZ9ulspEjH4BS4O+4ISF0c=;
- b=l+20G6uGynVVHrnnRdzNF3Fh3VpleLP+EkvjlzL6Ihoj8BrtDflhsxuQap/puPx9vx
- Y5DS9R5phbsGF046MkBSx2YiepDjw9cXOF41ylVI1jUOP9Gg6wtjkxmap+dGxLtSTXoW
- bmEG6PPHN43EPUmbdBQpw5+Ohgy0M2mJW1cuVjfS3MXYBWgczFmUGHkSiB9txA2jSAzB
- jfA8oIuwNkIvDNCKP8Etl56gvVk3ERPw4fNbiKCLdnwYGJ/x6Iq00/oKsT7H3LXD9ZHi
- xiHU5Dl3yqFQS6B+FTPHDWbGVcW8sNv6mt12xCXJzgC/oqKVvF1ImcBV5jj22cgf39hg
- 7+LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=1UEjNo8FBjY3zOHNcMSpQLZ9ulspEjH4BS4O+4ISF0c=;
- b=PTmXoezzA1gjCzfoPamp+fw5Wi9tfY2ykPioLCWR4GLRoWp5C0CEVNEYGS/byMHWAx
- CExXd5IKsPp1Vl1O1q1167/PsJ7KKYLS+J6CVaHNwy4d2PilYzwbODkT2S5od/ZQXnGt
- kMfSbMbjfQstTFtnWj62Ej/Pl/UPvcZketDxn/7kiAd6pd2ekQaHvjfv2K24dEbdzUAN
- OClYx/E1nU30HoapLyN6m3GqE9cMtCT3EklTaYR8fznNGNiDH2Ju1O5zfI4i5nS/uOI/
- tnDF6srnRJ413nEyt7KfGH/Yy7qzdXO2/FpLsWkzvwrNmJZ3puBZkSf+1ltgACS617bJ
- aJMA==
-X-Gm-Message-State: AOAM530l3qG5sA8ayGw6IgzX24m8PGPm/5psb54Jl3XGApbqT+tNF1Pv
- msrCmf3OVMNmvS/P4VJSJao=
-X-Google-Smtp-Source: ABdhPJyDokbcNBNU6ZlOnvAx0b5d1g3l+PGfHIBTohbm9Oy6CbFfNDh9Ubt5zFfMlMd6VZd9Nc8BVw==
-X-Received: by 2002:a63:5515:: with SMTP id j21mr3870740pgb.31.1597474097506; 
- Fri, 14 Aug 2020 23:48:17 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (searspoint.nvidia.com.
- [216.228.112.21])
- by smtp.gmail.com with ESMTPSA id f63sm10162940pjk.53.2020.08.14.23.48.16
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 14 Aug 2020 23:48:17 -0700 (PDT)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: hch@lst.de,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com
-Subject: [PATCH v3] dma-mapping: set default segment_boundary_mask to ULONG_MAX
-Date: Fri, 14 Aug 2020 23:47:26 -0700
-Message-Id: <20200815064726.20459-1-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 306F7859C1
+ for <iommu@lists.linux-foundation.org>; Sat, 15 Aug 2020 16:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1597509057;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=r0QF9s7ohj4aNl8eau7he4E9tQctsoC4pp/nsapCJL4=;
+ b=DbSSD962e/rJT4rfdrUvPri24hL1x1MoEXzr1nyT/Fmt5mBnDUY3dbOl4W7DtNXUgFf9Fo
+ xUFAtcogiZopIQkrZHOfuNyvVpQ2uzSQizJ1mKjnDtbK6OkJzbQfv9eqBpzhkZxiTJQbFz
+ rjtCu00JdFW4yYC9KDm4r/J56M0xNAw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-3-XMeVB9CSPX2lvLUrfoyLuA-1; Sat, 15 Aug 2020 12:30:55 -0400
+X-MC-Unique: XMeVB9CSPX2lvLUrfoyLuA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 38FBE1015DC2;
+ Sat, 15 Aug 2020 16:30:38 +0000 (UTC)
+Received: from [10.36.113.93] (ovpn-113-93.ams2.redhat.com [10.36.113.93])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id C147E7A426;
+ Sat, 15 Aug 2020 16:30:28 +0000 (UTC)
+Subject: Re: [PATCH v6 09/15] iommu/vt-d: Check ownership for PASIDs from
+ user-space
+To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
+ baolu.lu@linux.intel.com, joro@8bytes.org
+References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
+ <1595917664-33276-10-git-send-email-yi.l.liu@intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <0db97d4a-7c74-9fac-0763-0ed56dcc5eaa@redhat.com>
+Date: Sat, 15 Aug 2020 18:30:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <1595917664-33276-10-git-send-email-yi.l.liu@intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ yi.y.sun@intel.com, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,59 +102,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The default segment_boundary_mask was set to DMA_BIT_MAKS(32)
-a decade ago by referencing SCSI/block subsystem, as a 32-bit
-mask was good enough for most of the devices.
+Hi Yi,
 
-Now more and more drivers set dma_masks above DMA_BIT_MAKS(32)
-while only a handful of them call dma_set_seg_boundary(). This
-means that most drivers have a 4GB segmention boundary because
-DMA API returns a 32-bit default value, though they might not
-really have such a limit.
+On 7/28/20 8:27 AM, Liu Yi L wrote:
+> When an IOMMU domain with nesting attribute is used for guest SVA, a
+> system-wide PASID is allocated for binding with the device and the domain.
+> For security reason, we need to check the PASID passed from user-space.
+> e.g. page table bind/unbind and PASID related cache invalidation.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 10 ++++++++++
+>  drivers/iommu/intel/svm.c   |  7 +++++--
+>  2 files changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index b2fe54e..88f4647 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5436,6 +5436,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
+>  		int granu = 0;
+>  		u64 pasid = 0;
+>  		u64 addr = 0;
+> +		void *pdata;
+>  
+>  		granu = to_vtd_granularity(cache_type, inv_info->granularity);
+>  		if (granu == -EINVAL) {
+> @@ -5456,6 +5457,15 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
+>  			 (inv_info->granu.addr_info.flags & IOMMU_INV_ADDR_FLAGS_PASID))
+>  			pasid = inv_info->granu.addr_info.pasid;
+>  
+> +		pdata = ioasid_find(dmar_domain->ioasid_sid, pasid, NULL);
+> +		if (!pdata) {
+> +			ret = -EINVAL;
+> +			goto out_unlock;
+> +		} else if (IS_ERR(pdata)) {
+> +			ret = PTR_ERR(pdata);
+> +			goto out_unlock;
+> +		}
+> +
+>  		switch (BIT(cache_type)) {
+>  		case IOMMU_CACHE_INV_TYPE_IOTLB:
+>  			/* HW will ignore LSB bits based on address mask */
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index c85b8d5..b9b29ad 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -323,7 +323,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>  	dmar_domain = to_dmar_domain(domain);
+>  
+>  	mutex_lock(&pasid_mutex);
+> -	svm = ioasid_find(INVALID_IOASID_SET, data->hpasid, NULL);
+> +	svm = ioasid_find(dmar_domain->ioasid_sid, data->hpasid, NULL);
+A question about the locking strategy. We don't take the
+device_domain_lock here. Could you clarify whether it is safe?
 
-The default segment_boundary_mask should mean "no limit" since
-the device doesn't explicitly set the mask. But a 32-bit mask
-certainly limits those devices capable of 32+ bits addressing.
 
-So this patch sets default segment_boundary_mask to ULONG_MAX.
+>  	if (IS_ERR(svm)) {
+>  		ret = PTR_ERR(svm);
+>  		goto out;
+> @@ -440,6 +440,7 @@ int intel_svm_unbind_gpasid(struct iommu_domain *domain,
+>  			    struct device *dev, u32 pasid)
+>  {
+>  	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+> +	struct dmar_domain *dmar_domain;
+>  	struct intel_svm_dev *sdev;
+>  	struct intel_svm *svm;
+>  	int ret = -EINVAL;
+> @@ -447,8 +448,10 @@ int intel_svm_unbind_gpasid(struct iommu_domain *domain,
+>  	if (WARN_ON(!iommu))
+>  		return -EINVAL;
+>  
+> +	dmar_domain = to_dmar_domain(domain);
+> +
+>  	mutex_lock(&pasid_mutex);
+> -	svm = ioasid_find(INVALID_IOASID_SET, pasid, NULL);
+> +	svm = ioasid_find(dmar_domain->ioasid_sid, pasid, NULL);
+same here.
+>  	if (!svm) {
+>  		ret = -EINVAL;
+>  		goto out;
+> 
+Thanks
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
-
-Changelog:
-v2->v3
- * Resent -- no change
-   v2 was sent 4 months ago https://lkml.org/lkml/2020/4/6/881
-   but it has not got replied yet
-v1->v2
- * Followed Robin's comments to revise the commit message by
-   dropping one paragraph of not-entirely-true justification
-   (no git-diff level change, so please ack if you tested v1)
-
- include/linux/dma-mapping.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 016b96b384bd..27df499aa041 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -628,7 +628,7 @@ static inline unsigned long dma_get_seg_boundary(struct device *dev)
- {
- 	if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
- 		return dev->dma_parms->segment_boundary_mask;
--	return DMA_BIT_MASK(32);
-+	return ULONG_MAX;
- }
- 
- static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
--- 
-2.17.1
+Eric
 
 _______________________________________________
 iommu mailing list
