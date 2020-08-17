@@ -7,114 +7,116 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1674C433DF
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 06:30:28 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A8FC433DF
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 06:31:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A00AF20657
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 06:30:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 690C720716
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 06:31:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="D4YxXBNj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A00AF20657
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="EwMXGgKN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 690C720716
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5EAC488055;
-	Mon, 17 Aug 2020 06:30:28 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1FD982035E;
+	Mon, 17 Aug 2020 06:31:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hNSqEqKG7ppp; Mon, 17 Aug 2020 06:30:27 +0000 (UTC)
+	with ESMTP id pL-T+7ANHXc7; Mon, 17 Aug 2020 06:31:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3124788047;
-	Mon, 17 Aug 2020 06:30:27 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 55AD52034C;
+	Mon, 17 Aug 2020 06:31:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14357C088B;
-	Mon, 17 Aug 2020 06:30:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0713DC0051
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F7A4C088B;
+	Mon, 17 Aug 2020 06:31:01 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E3912C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DEC4A88055
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:25 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DE6A4865C1
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F3xH6XvFymbs for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 06:30:24 +0000 (UTC)
+ with ESMTP id 4s-EI6SVU9c4 for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 06:30:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D8FA888047
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:23 +0000 (UTC)
-IronPort-SDR: cR/hQohx9OfyPV7WUHVXwCQFEL3lTNd6g2EklgNImVpYg0zy5KhEYNSpiYuz/12KTh3A/abY7L
- mNSp1szDHysA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9715"; a="134704438"
-X-IronPort-AV: E=Sophos;i="5.76,322,1592895600"; d="scan'208";a="134704438"
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0863986594
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 06:30:58 +0000 (UTC)
+IronPort-SDR: 7lVIvmMrVAmFpZrsmcaU9bHjVc5QGh4hpDUoeQvxb9Qxnatrcvpu4VN+7ftrp9kkvN7FgQkTcH
+ /fEglIxjI5Bw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9715"; a="216166488"
+X-IronPort-AV: E=Sophos;i="5.76,322,1592895600"; d="scan'208";a="216166488"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Aug 2020 23:30:22 -0700
-IronPort-SDR: CB3JJBB4eB78X0RhFDKtTjKtvEjrdVenCuPk1zyd8ATIHmqDyO/Jn6O44rAuD0fc4NNd1yxORs
- W8yqreBjNMmQ==
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 16 Aug 2020 23:30:58 -0700
+IronPort-SDR: 9sjl7DlZBUVxhluMHW76zwsi3g8unUv+RrUGcTu3e+2UUvCe2GEgMrQQ356/bgUJVXljCjbXjC
+ 1Ulmi8PeqDnQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,322,1592895600"; d="scan'208";a="336188063"
+X-IronPort-AV: E=Sophos;i="5.76,322,1592895600"; d="scan'208";a="336188149"
 Received: from fmsmsx601-2.cps.intel.com (HELO fmsmsx601.amr.corp.intel.com)
  ([10.18.84.211])
- by orsmga007.jf.intel.com with ESMTP; 16 Aug 2020 23:30:22 -0700
+ by orsmga007.jf.intel.com with ESMTP; 16 Aug 2020 23:30:58 -0700
 Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
  fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 16 Aug 2020 23:30:22 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ 15.1.1713.5; Sun, 16 Aug 2020 23:30:57 -0700
+Received: from fmsmsx156.amr.corp.intel.com (10.18.116.74) by
  fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Sun, 16 Aug 2020 23:30:22 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sun, 16 Aug 2020 23:30:57 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx156.amr.corp.intel.com (10.18.116.74) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Sun, 16 Aug 2020 23:30:57 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
  by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Sun, 16 Aug 2020 23:30:21 -0700
+ 15.1.1713.5; Sun, 16 Aug 2020 23:30:57 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DXexKWYDI45emDOAaW+D8GglXnV/pfC1Lydnag3O2ztgW4KbTKfUpMfz+oKZqf5RAAZAYjcNNzSAQIgHcGeLOfuvFoeHdBYJt8UlENqGYVkaiNiv5uk1VsjwJLpCPrCAb1KfpPIgLm0ybrULTsyJpg6BEhlcQNYC3sH4pKw2BvQXy+N9QM3Fqks/hn/HUCtTqU9it0TRy+oL6W0bkaG8SiBdpbAgVgZe4oE+FAj+Ha6tDzAV9IE43pTS7SIAXyh+VStmUEallbXzrEJMcgUeJHys1fb+xcMUvoEbyb7Z4sBrOezzY9anjeSeF6V6yHyGhcUvKGD6m4ORJBwbL6mj5g==
+ b=gmHFxDlqna3cYMyqy3k1IdYjCfBnWN2hWejirG3/5g1ZEusR6D/V8qFMTRknNM3aIBw+wPNh8Qa1K6swZpqxXDw75UiBJA+WuW1p8l3QZyZADrNH8YrML1++g1PqxoTHjcoYcbCg9GOioFMBXSjqLoqeT4vB7X2WGNHa0B/QBlEov1lTJzkvxzbS7ZaBkxpvmUnCFyc9s7dyEprDo/55/Fx2PsAKbsV1ZrTW7hbRqrPfIa+oeu+2tl6QBMKFTakfDgRQzJGbWdPHpSE+wzTG3IV3sRdSj0oLzahBUE+XuPWUfrFU8RVum0FjnSDeeSqUMQB+t2YABMsYZ9g2SJTCSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CuDeQ4AREPbmYvKEI5icP+TuatF5iuJ9geKCUbttbrk=;
- b=f4ZkJBZKEJFxZXwxTjlA0JwGwNJ6927jRwb/G+1jadUl10QVbLKNqkxkocHenoZAA25ThrWacTgfB5SrEcqjQ5lBbGpSVM1QCMdChRcBFU918YEtuTNM4X9tas8OS/LDa5iXNl9iVySN7Y61fnb4vU+rp6zQkQsvVGN6VhleX2I1MB5tAYQsmII7ZqDIMLqaG8FcGz7SqdeDKkAKG9BQac3ejy4enyWWyTryzrW5GKZSaGYTdBX+h3RJZqDnbuLDma4arb1AVP7Rt7GHuda0YuvUVVVFnWAUeyXBW561Tzx+u/ul68tn64YW+6HSPYKCcTYgf8PshKgn7WDdJhjDCg==
+ bh=ovIARKH7ArULcoswuEAyiCeLregs4RoiRzn425UzWnc=;
+ b=G6l1zICFtVl1EPsm50QAIAOdK8yKu0phVAPGgnSD3/LB1fa6LX39cORyds9qC57KkO0U61ABYic/EErgKbtZ8FSYdBf7A8+HuVfDvamI4UfDpkcwznDpaK+HwW069i4GcWI0QrU2du1lf6bXpqKZ8sO8Fau7sr7RuvP4eX8Rxn60RAjkVgnnRpyJltUYUIZLyzg3zbyHEiIKGFb0uFLW9kEqqNp8Yf2WdQfVamY2XRGa9o/IcGWz1x3tkBiEw1F+hUY8XYhccnLDmBEWI7wxRUebwPngUWuToP1ns1GiY2jFD/L2Zy7xXWeTiQEgXJlc+H8gIUZuEhtckTaxjmKM3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CuDeQ4AREPbmYvKEI5icP+TuatF5iuJ9geKCUbttbrk=;
- b=D4YxXBNjhh6Nbuw9exV+MDIYhc/Ul/tHmKxoiiS7WsIaqkENo0RvAfl1pZzpjhScb8Y0tdltDTEMe+LgzMzqg7zy5bsUWi6vFcj0mmbpqqNiTEtx2XfaqGSew/F3Mjct2cPobTYQnAe+oeibT7k+L1M2+IUZJeVdhkmxak9j8m8=
+ bh=ovIARKH7ArULcoswuEAyiCeLregs4RoiRzn425UzWnc=;
+ b=EwMXGgKNzjx/iaFX9nIk9/xMUek1kSTbWoQMRUHkAALE+ANlWx+MXVYMBarPYybUsrJQmA+uCCykmJ70NCQChYFS6bLqKcfa9gAWeUTdBRngBTVkNrFFmD99j3e0/BdKJdBwm+W+Sjqlbc3maNLRUfu7btBNENqFNR06k0pzXRM=
 Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
  DM6PR11MB4441.namprd11.prod.outlook.com (2603:10b6:5:200::11) with
  Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3283.15; Mon, 17 Aug 2020 06:30:20 +0000
+ 15.20.3283.15; Mon, 17 Aug 2020 06:30:56 +0000
 Received: from DM5PR11MB1435.namprd11.prod.outlook.com
  ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
  ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3283.027; Mon, 17 Aug
- 2020 06:30:20 +0000
+ 2020 06:30:56 +0000
 From: "Liu, Yi L" <yi.l.liu@intel.com>
 To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
  <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>
-Subject: RE: [PATCH v6 10/15] vfio/type1: Support binding guest page tables to
- PASID
-Thread-Topic: [PATCH v6 10/15] vfio/type1: Support binding guest page tables
- to PASID
-Thread-Index: AQHWZKdLPXEeLFoo+Emu87CHPiN7Kqk6t6eAgAE39SA=
-Date: Mon, 17 Aug 2020 06:30:20 +0000
-Message-ID: <DM5PR11MB14359783713BD31E00C553BDC35F0@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
+Subject: RE: [PATCH v6 11/15] vfio/type1: Allow invalidating first-level/stage
+ IOMMU cache
+Thread-Topic: [PATCH v6 11/15] vfio/type1: Allow invalidating
+ first-level/stage IOMMU cache
+Thread-Index: AQHWZKdIe1LgYQpv3k6k7A0drA9ljak6uVmAgAE0uTA=
+Date: Mon, 17 Aug 2020 06:30:55 +0000
+Message-ID: <DM5PR11MB14352249DD871385C7811782C35F0@DM5PR11MB1435.namprd11.prod.outlook.com>
 References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
- <1595917664-33276-11-git-send-email-yi.l.liu@intel.com>
- <d54e0327-70cb-d58e-e521-e647f0cc024b@redhat.com>
-In-Reply-To: <d54e0327-70cb-d58e-e521-e647f0cc024b@redhat.com>
+ <1595917664-33276-12-git-send-email-yi.l.liu@intel.com>
+ <f0c7cfc1-ee6b-c98e-77bd-1af3dbaf2a6f@redhat.com>
+In-Reply-To: <f0c7cfc1-ee6b-c98e-77bd-1af3dbaf2a6f@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -126,35 +128,35 @@ authentication-results: redhat.com; dkim=none (message not signed)
  header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
 x-originating-ip: [117.169.230.130]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1ab25b7d-ead0-4c55-693f-08d8427703c3
+x-ms-office365-filtering-correlation-id: 843acc68-68e0-4c40-84bd-08d8427718fc
 x-ms-traffictypediagnostic: DM6PR11MB4441:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB4441A88D3956B87915E7C47CC35F0@DM6PR11MB4441.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:446;
+x-microsoft-antispam-prvs: <DM6PR11MB4441D1FA74D4419C1704191BC35F0@DM6PR11MB4441.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: htf9gvlzc07LkoZSgpzyv3NEswoJlyyh3W+20PiHvMEJCu//L5GcgfHJxoTYhbsgBmh9ogXuhC9anC4YmQj5kRFqs6RuUMCoGtlTFIoIMs8/Bt8424aXycL9yG5G35kXRu/eBA1ZIlzoqNdLcIUWf4xGP3ni1tBP+yi72YGytbXta6j1hQWI8UcDWMBRs6L+B4ovlR1Qsd0oW1tpzbrP4jTTJp+p2IrhOGewPZa/zKPEyfGJN7tDNtir6GYBqaEAbcrgkWEhQYo2Ys1YniYRNpHhUj8LNJuV7yPeaKYxkKBAStuVf05/oMG8lF8fOdFzKy6BeOjhnszadOrwrz+pPolfaj5tx9QbmWD6xROCmQmV2LLn9s5LsB+xKSuU8lESXVFwqgHBehn/L7dDpUlPoQ==
+x-microsoft-antispam-message-info: ML86/xSMPEhwFUcsvVCoaxX9WWKe+usVMsEC9AdNopuS3UUtWnWlHm3m7yxyHAMCAORuPcTRtkR+DQFTpBCVtZwUJ48AOOrkm2r0HhQbNUCU416ba3PyKZAk9Oi3u4QL0F82E16lIjd1srgeY7LiOxxooVZJPP19f9zi4wBU8+zYxxmwkdDMVSM4Hge/jAWcmTV4Krtk1ofQOJ7pMseaqgBtFG2jPfNN3kqv0j4zAXGMEtr+KV1mP2JnHDZRzfQLlVCzTcSyM32XaKIhcxhgVfoNyvNsjm2Hwy8p3S8s5CO65FZsVG/DPgXXb1A/bvVs5fSZV9MBeDAo9UB56xduBA==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(30864003)(4326008)(2906002)(33656002)(83380400001)(66946007)(66446008)(8676002)(64756008)(66556008)(66476007)(76116006)(86362001)(8936002)(110136005)(478600001)(54906003)(5660300002)(7416002)(71200400001)(53546011)(55016002)(7696005)(966005)(6506007)(26005)(52536014)(9686003)(186003)(316002);
+ SFS:(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(4326008)(2906002)(33656002)(83380400001)(66946007)(66446008)(8676002)(64756008)(66556008)(66476007)(76116006)(86362001)(8936002)(110136005)(478600001)(54906003)(5660300002)(7416002)(71200400001)(53546011)(55016002)(7696005)(6506007)(26005)(52536014)(9686003)(186003)(316002);
  DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: 0lDAVmvCTiCh88PkYfkLk9Lr0h5PVVcUdjsfHJeHMCYubMH9LFjcX49kmp9o6OWM/F8Oz64KtghPcembS/54pqLHpDWxS6gvHp2THFJ1WUC8XAFg+d184lfhnNYU0Mp1rMjUBgDJAtoAqoYi6GkZ+fI3XzSsOZd7qJJUkIKOyoWGr9OInUI5TXVMUuXaT8b7O668/dfuehqVC0HDAx7plqBR7uJQ4UltdPuqMh+S4Lmf2gO7OvNKNoFgoV+2QLkT/RQasthqc4IEIt8fvtd/9CItlmXRiwVOM/+83n2N3UEnI3Mo4V2REqTN6pKkDEd5khAaLKRgds08NpW70/eSYcpYPNSPlezJHaSo1Q4Qyqo24wBgXUTZ/RiHy7tpECQOGCnILQLBywN2OODO6THmG0hEB9vYzSw65MC8oXJQ38EbVj+5PvENpHnkiBqRiGb6QGhCcT2GACHUNW6h8CmTimlIwOTSWawKjzWbPayT1+3TwSS5egEXpIWo+EOqY0mqFf5KTRy+BhF655pw8Bli7pKZHFMpc5bARt7Cs05Hui845oT7ENIABQYOn/kQdGx0OyzewQVbFZ0U0Wl759GNMicDbg6anEqwhun2I0rphqEPuGoioeu1IXhdxnSFW9ws9KnjBSqeXJfsl7z3DTrwOg==
+x-ms-exchange-antispam-messagedata: 8HUaknad7GIy5Sjfjj5gDpnv/TZqBmuoZSuOexFGKlDX/HWxm+PMgvOzXcJ9Tg92BVoTOi5N6YvUczCVELKNNT6KHnAOQfGxc8eDNryAs5Yexh6QhR7hmn4xoa2kbNVekoiQGrdXDA2gJ9Nwf8TZM3/3H+n1AkfhtWFN9k0dW65WuxnvK1kDvzmGbyoJNQDalC/+HrhiQRjB1gclklU5IeHohWQaTegMyiuCR77NF00VmqM3btGtpHWB1SdE6YhuK3HgO0dTozld1Eo+wBLlc98UbJvfyJgo5EjQFvSOSfuQLRinet4WUxSQj8BrPEjDWYonZqvo/xSo3J9rtcNRYv6sh8eFj2Z9QQcwg0S+7ZlQtvorkD5LWpr6O7hKh1ZEK7r6gYFoDvfYdfJTw3T9qdYahVyO4xv5tYlxAzsttLYnY/1Yn94MzzMU2ZgyVYv3qWzFBkKTIZj/XH7rjiniL3UekRubCUTPq7g8MQJAC2aJ03R4s5xzQI1BVtF/mFDiYKGK2v7djVSfKRGlmAlEUzcYhzppm3lUOPH81+Iwbxj1o6vqnsZkQGZAicYeGnGs8aySPxewLxRPU3yIHVXj4Efb6Nx6mp7piVVljKq8vRyrgIC8ZOnm5xFnJaYOx5xx8LTQllXV26Ov/8hZRijk8Q==
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ab25b7d-ead0-4c55-693f-08d8427703c3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2020 06:30:20.2785 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 843acc68-68e0-4c40-84bd-08d8427718fc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2020 06:30:55.9509 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: T82598TymB/CpInYRJHeFlWZJOb9uMK1ct9MOpiQ+Q3H9+nwaWBN+AKU8uwzD6Ggz/1XbV5Nlp15huxk/x9HkA==
+X-MS-Exchange-CrossTenant-userprincipalname: qeq+TgVSevLdUYo1PxT+LZ/+z2yl3KTSKx9QqkwrPzL9ZW2q/puuNOTIzvsLn5X2RGE9SI/flrCLKUmAE15fIQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4441
 X-OriginatorOrg: intel.com
 Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Tian,
+ "stefanha@gmail.com" <stefanha@gmail.com>, "Tian, 
  Jun J" <jun.j.tian@intel.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
@@ -179,16 +181,15 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 Hi Eric,
 
 > From: Auger Eric <eric.auger@redhat.com>
-> Sent: Sunday, August 16, 2020 7:29 PM
+> Sent: Sunday, August 16, 2020 7:35 PM
 > 
 > Hi Yi,
 > 
 > On 7/28/20 8:27 AM, Liu Yi L wrote:
-> > Nesting translation allows two-levels/stages page tables, with 1st level
-> > for guest translations (e.g. GVA->GPA), 2nd level for host translations
-> > (e.g. GPA->HPA). This patch adds interface for binding guest page tables
-> > to a PASID. This PASID must have been allocated by the userspace before
-> > the binding request.
+> > This patch provides an interface allowing the userspace to invalidate
+> > IOMMU cache for first-level page table. It is required when the first
+> > level IOMMU page table is not managed by the host kernel in the nested
+> > translation setup.
 > >
 > > Cc: Kevin Tian <kevin.tian@intel.com>
 > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -197,222 +198,59 @@ Hi Eric,
 > > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > > Cc: Joerg Roedel <joro@8bytes.org>
 > > Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.com>
 > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Eric Auger <eric.auger@redhat.com>
 > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > > ---
-> > v5 -> v6:
-> > *) dropped vfio_find_nesting_group() and add vfio_get_nesting_domain_capsule().
-> >    per comment from Eric.
-> > *) use iommu_uapi_sva_bind/unbind_gpasid() and iommu_sva_unbind_gpasid() in
-> >    linux/iommu.h for userspace operation and in-kernel operation.
-> >
-> > v3 -> v4:
-> > *) address comments from Alex on v3
-> >
-> > v2 -> v3:
-> > *) use __iommu_sva_unbind_gpasid() for unbind call issued by VFIO
-> >    https://lore.kernel.org/linux-iommu/1592931837-58223-6-git-send-email-
-> jacob.jun.pan@linux.intel.com/
-> >
 > > v1 -> v2:
-> > *) rename subject from "vfio/type1: Bind guest page tables to host"
-> > *) remove VFIO_IOMMU_BIND, introduce VFIO_IOMMU_NESTING_OP to support
-> bind/
-> >    unbind guet page table
-> > *) replaced vfio_iommu_for_each_dev() with a group level loop since this
-> >    series enforces one group per container w/ nesting type as start.
-> > *) rename vfio_bind/unbind_gpasid_fn() to vfio_dev_bind/unbind_gpasid_fn()
-> > *) vfio_dev_unbind_gpasid() always successful
-> > *) use vfio_mm->pasid_lock to avoid race between PASID free and page table
-> >    bind/unbind
+> > *) rename from "vfio/type1: Flush stage-1 IOMMU cache for nesting type"
+> > *) rename vfio_cache_inv_fn() to vfio_dev_cache_invalidate_fn()
+> > *) vfio_dev_cache_inv_fn() always successful
+> > *) remove VFIO_IOMMU_CACHE_INVALIDATE, and reuse
+> VFIO_IOMMU_NESTING_OP
 > > ---
-> >  drivers/vfio/vfio_iommu_type1.c | 161
-> ++++++++++++++++++++++++++++++++++++++++
-> >  drivers/vfio/vfio_pasid.c       |  26 +++++++
-> >  include/linux/vfio.h            |  20 +++++
-> >  include/uapi/linux/vfio.h       |  31 ++++++++
-> >  4 files changed, 238 insertions(+)
+> >  drivers/vfio/vfio_iommu_type1.c | 42
+> +++++++++++++++++++++++++++++++++++++++++
+> >  include/uapi/linux/vfio.h       |  3 +++
+> >  2 files changed, 45 insertions(+)
 > >
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> > index ea89c7c..245436e 100644
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c index 245436e..bf95a0f 100644
 > > --- a/drivers/vfio/vfio_iommu_type1.c
 > > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -149,6 +149,36 @@ struct vfio_regions {
-> >  #define DIRTY_BITMAP_PAGES_MAX	 ((u64)INT_MAX)
-> >  #define DIRTY_BITMAP_SIZE_MAX
-> DIRTY_BITMAP_BYTES(DIRTY_BITMAP_PAGES_MAX)
-> >
-> > +struct domain_capsule {
-> > +	struct vfio_group *group;
-> > +	struct iommu_domain *domain;
-> > +	void *data;
-> You may add a bool indicating whether the data is a user pointer or the
-> direct IOMMU UAPI struct.
-
-yes, it is helpful.
-
-> > +};
-> > +
-> > +/* iommu->lock must be held */
-> > +static int vfio_get_nesting_domain_capsule(struct vfio_iommu *iommu,
-> > +					   struct domain_capsule *dc)
-> I would rename the function into vfio_prepare_nesting_domain_capsule
-
-got it. :-)
-
-> > +{
-> > +	struct vfio_domain *domain = NULL;
-> > +	struct vfio_group *group = NULL;
-> > +
-> > +	if (!iommu->nesting_info)
-> > +		return -EINVAL;
-> > +
-> > +	/*
-> > +	 * Only support singleton container with nesting type.
-> > +	 * If nesting_info is non-NULL, the conatiner should
-> s/should/is here and below
-> s/conatiner/container
-
-got it. thanks.
-
-> > +	 * be non-empty. Also domain should be non-empty.
-> > +	 */
-> > +	domain = list_first_entry(&iommu->domain_list,
-> > +				  struct vfio_domain, next);
-> > +	group = list_first_entry(&domain->group_list,
-> > +				 struct vfio_group, next);
-> > +	dc->group = group;
-> > +	dc->domain = domain->domain;
-> dc->user = true;?
-
-yep.
-
-> > +	return 0;
-> > +}
-> > +
-> >  static int put_pfn(unsigned long pfn, int prot);
-> >
-> >  static struct vfio_group *vfio_iommu_find_iommu_group(struct vfio_iommu
-> *iommu,
-> > @@ -2349,6 +2379,48 @@ static int vfio_iommu_resv_refresh(struct vfio_iommu
-> *iommu,
-> >  	return ret;
-> >  }
-> >
-> > +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
-> > +{
-> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > +	unsigned long arg = *(unsigned long *)dc->data;
-> > +
-> > +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev, (void __user *)arg);
-> > +}
-> > +
-> > +static int vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
-> > +{
-> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > +	unsigned long arg = *(unsigned long *)dc->data;
-> > +
-> > +	iommu_uapi_sva_unbind_gpasid(dc->domain, dev, (void __user *)arg);
-> > +	return 0;
-> > +}
-> > +
-> > +static int __vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
-> can be removed if dc->user flag gets added
-
-yes.
-
-> > +{
-> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > +	struct iommu_gpasid_bind_data *unbind_data =
-> > +				(struct iommu_gpasid_bind_data *)dc->data;
-> > +
-> > +	iommu_sva_unbind_gpasid(dc->domain, dev, unbind_data);
-> > +	return 0;
-> > +}
-> > +
-> > +static void vfio_group_unbind_gpasid_fn(ioasid_t pasid, void *data)
-> > +{
-> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > +	struct iommu_gpasid_bind_data unbind_data;
-> > +
-> > +	unbind_data.argsz = offsetof(struct iommu_gpasid_bind_data, vendor);
-> I do not remember to have seen this documented anywhere, ie. on unbind,
-> the vendor data are not used.
-
-right. perhaps needs to doc it in Jacob's patch. @Pan, Jacob jun
-
-> > +	unbind_data.flags = 0;
-> > +	unbind_data.hpasid = pasid;
-> > +
-> > +	dc->data = &unbind_data;
-> > +
-> > +	iommu_group_for_each_dev(dc->group->iommu_group,
-> > +				 dc, __vfio_dev_unbind_gpasid_fn);
-> > +}
-> > +
-> >  static void vfio_iommu_type1_detach_group(void *iommu_data,
-> >  					  struct iommu_group *iommu_group)
-> >  {
-> > @@ -2392,6 +2464,21 @@ static void vfio_iommu_type1_detach_group(void
-> *iommu_data,
-> >  		if (!group)
-> >  			continue;
-> >
-> > +		if (iommu->nesting_info && iommu->vmm &&
-> if vmm is set, doesn't it mean nesting_info is set?
-
-yes, will remove the check against iommu->nesting_info.
-
-> > +		    (iommu->nesting_info->features &
-> > +					IOMMU_NESTING_FEAT_BIND_PGTBL)) {
-> > +			struct domain_capsule dc = { .group = group,
-> > +						     .domain = domain->domain,
-> > +						     .data = NULL };
-> > +
-> > +			/*
-> > +			 * Unbind page tables bound with system wide PASIDs
-> > +			 * which are allocated to userspace.
-> > +			 */
-> > +			vfio_mm_for_each_pasid(iommu->vmm, &dc,
-> > +					       vfio_group_unbind_gpasid_fn);
-> > +		}
-> > +
-> >  		vfio_iommu_detach_group(domain, group);
-> >  		update_dirty_scope = !group->pinned_page_dirty_scope;
-> >  		list_del(&group->next);
-> > @@ -2926,6 +3013,78 @@ static int vfio_iommu_type1_pasid_request(struct
+> > @@ -3056,6 +3056,45 @@ static long vfio_iommu_handle_pgtbl_op(struct
 > vfio_iommu *iommu,
 > >  	return ret;
 > >  }
 > >
-> > +static long vfio_iommu_handle_pgtbl_op(struct vfio_iommu *iommu,
-> > +				       bool is_bind, unsigned long arg)
+> > +static int vfio_dev_cache_invalidate_fn(struct device *dev, void
+> > +*data) {
+> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> > +	unsigned long arg = *(unsigned long *)dc->data;
+> > +
+> > +	iommu_uapi_cache_invalidate(dc->domain, dev, (void __user *)arg);
+> > +	return 0;
+> > +}
+> > +
+> > +static long vfio_iommu_invalidate_cache(struct vfio_iommu *iommu,
+> > +					unsigned long arg)
 > > +{
 > > +	struct domain_capsule dc = { .data = &arg };
 > > +	struct iommu_nesting_info *info;
 > > +	int ret;
 > > +
 > > +	mutex_lock(&iommu->lock);
-> > +
+> > +	/*
+> > +	 * Cache invalidation is required for any nesting IOMMU,
+> So why do we expose the IOMMU_NESTING_FEAT_CACHE_INVLD capability? :-)
+
+it's a stale comment. should be removed. :-)
+
+> > +	 * so no need to check system-wide PASID support.
+> > +	 */
 > > +	info = iommu->nesting_info;
-> > +	if (!info || !(info->features & IOMMU_NESTING_FEAT_BIND_PGTBL)) {
+> > +	if (!info || !(info->features & IOMMU_NESTING_FEAT_CACHE_INVLD)) {
 > > +		ret = -EOPNOTSUPP;
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	if (!iommu->vmm) {
-> Is it documented anywhere, besides in this commit message that
-> IOMMU_NESTING_FEAT_BIND_PGTBL requires
-> IOMMU_NESTING_FEAT_SYSWIDE_PASID
-> (in uapi doc)?
-
-nice catch. it is not documented anywhere. VFIO_IOMMU_NESTING_OP_BIND_PGTBL
-should work for the bind with pasid or without pasid. perhaps, I can add a
-flag in vfio to differentiate the two bind cases. is it workable per your
-opinion?
-
-> > +		ret = -EINVAL;
 > > +		goto out_unlock;
 > > +	}
 > > +
@@ -420,224 +258,62 @@ opinion?
 > > +	if (ret)
 > > +		goto out_unlock;
 > > +
-> > +	/* Avoid race with other containers within the same process */
-> > +	vfio_mm_pasid_lock(iommu->vmm);
+> > +	iommu_group_for_each_dev(dc.group->iommu_group, &dc,
+> > +				 vfio_dev_cache_invalidate_fn);
 > > +
-> > +	ret = 0;
-> non needed
-
-oh yes.
-
-> > +	if (is_bind)
-> > +		ret = iommu_group_for_each_dev(dc.group->iommu_group, &dc,
-> > +					       vfio_dev_bind_gpasid_fn);
-> > +	if (ret || !is_bind) {
-> > +		iommu_group_for_each_dev(dc.group->iommu_group,
-> > +					 &dc, vfio_dev_unbind_gpasid_fn);
-> > +		ret = 0;
-> ret is not correct in case bind previously failed. You should return the
-> original ret in that case.
-
-right. will remove ret = 0.
-
-> > +	}
-> > +
-> > +	vfio_mm_pasid_unlock(iommu->vmm);
 > > +out_unlock:
 > > +	mutex_unlock(&iommu->lock);
 > > +	return ret;
 > > +}
 > > +
-> > +static long vfio_iommu_type1_nesting_op(struct vfio_iommu *iommu,
-> > +					unsigned long arg)
-> > +{
-> > +	struct vfio_iommu_type1_nesting_op hdr;
-> > +	unsigned int minsz;
-> > +	int ret;
-> > +
-> > +	minsz = offsetofend(struct vfio_iommu_type1_nesting_op, flags);
-> > +
-> > +	if (copy_from_user(&hdr, (void __user *)arg, minsz))
-> > +		return -EFAULT;
-> > +
-> > +	if (hdr.argsz < minsz || hdr.flags & ~VFIO_NESTING_OP_MASK)
-> Checking against VFIO_NESTING_OP_MASK is not enough precise enough (I
-> mean OP_MASK should only encompasses the actual supported ops). If a a
-> userspace tries to use a new OP in the future and if this runs on this
-> kernel version, you will fait to recognize the lack of support.
-
-yes, this should be fixed. this code only ensures the high 16 bits are
-valid, but failed to check the lower 16 bits. the op counts from 0 to
-2^16-1. so I may add a MAX_OP macro to serve the purpose of failing
-unsupported op usage.
-
-> > +		return -EINVAL;
-> > +
-> > +	switch (hdr.flags & VFIO_NESTING_OP_MASK) {
-> > +	case VFIO_IOMMU_NESTING_OP_BIND_PGTBL:
-> > +		ret = vfio_iommu_handle_pgtbl_op(iommu, true, arg + minsz);
-> > +		break;
-> > +	case VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL:
-> > +		ret = vfio_iommu_handle_pgtbl_op(iommu, false, arg + minsz);
-> > +		break;
-> > +	default:
-> > +		ret = -EINVAL;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  				   unsigned int cmd, unsigned long arg)
+> >  static long vfio_iommu_type1_nesting_op(struct vfio_iommu *iommu,
+> >  					unsigned long arg)
 > >  {
-> > @@ -2944,6 +3103,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  		return vfio_iommu_type1_dirty_pages(iommu, arg);
-> >  	case VFIO_IOMMU_PASID_REQUEST:
-> >  		return vfio_iommu_type1_pasid_request(iommu, arg);
-> > +	case VFIO_IOMMU_NESTING_OP:
-> > +		return vfio_iommu_type1_nesting_op(iommu, arg);
+> > @@ -3078,6 +3117,9 @@ static long vfio_iommu_type1_nesting_op(struct
+> vfio_iommu *iommu,
+> >  	case VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL:
+> >  		ret = vfio_iommu_handle_pgtbl_op(iommu, false, arg + minsz);
+> >  		break;
+> > +	case VFIO_IOMMU_NESTING_OP_CACHE_INVLD:
+> > +		ret = vfio_iommu_invalidate_cache(iommu, arg + minsz);
+> > +		break;
 > >  	default:
-> >  		return -ENOTTY;
+> >  		ret = -EINVAL;
 > >  	}
-> > diff --git a/drivers/vfio/vfio_pasid.c b/drivers/vfio/vfio_pasid.c
-> > index 8d0317f..e531d4a 100644
-> > --- a/drivers/vfio/vfio_pasid.c
-> > +++ b/drivers/vfio/vfio_pasid.c
-> > @@ -221,6 +221,8 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
-> >  	 * IOASID core will notify PASID users (e.g. IOMMU driver) to
-> >  	 * teardown necessary structures depending on the to-be-freed
-> >  	 * PASID.
-> > +	 * Hold pasid_lock also avoids race with PASID usages like bind/
-> > +	 * unbind page tables to requested PASID.
-> >  	 */
-> >  	mutex_lock(&vmm->pasid_lock);
-> >  	while ((vid = vfio_find_pasid(vmm, min, max)) != NULL)
-> > @@ -229,6 +231,30 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
-> >  }
-> >  EXPORT_SYMBOL_GPL(vfio_pasid_free_range);
-> >
-> > +int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
-> > +			   void (*fn)(ioasid_t id, void *data))
-> > +{
-> > +	int ret;
-> > +
-> > +	mutex_lock(&vmm->pasid_lock);
-> > +	ret = ioasid_set_for_each_ioasid(vmm->ioasid_sid, fn, data);
-> > +	mutex_unlock(&vmm->pasid_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_for_each_pasid);
-> > +
-> > +void vfio_mm_pasid_lock(struct vfio_mm *vmm)
-> > +{
-> > +	mutex_lock(&vmm->pasid_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_lock);
-> > +
-> > +void vfio_mm_pasid_unlock(struct vfio_mm *vmm)
-> > +{
-> > +	mutex_unlock(&vmm->pasid_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_unlock);
-> > +
-> >  static int __init vfio_pasid_init(void)
-> >  {
-> >  	mutex_init(&vfio_mm_lock);
-> > diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> > index a355d01..e835c23 100644
-> > --- a/include/linux/vfio.h
-> > +++ b/include/linux/vfio.h
-> > @@ -105,6 +105,11 @@ extern int vfio_mm_ioasid_sid(struct vfio_mm *vmm);
-> >  extern int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max);
-> >  extern void vfio_pasid_free_range(struct vfio_mm *vmm,
-> >  				  ioasid_t min, ioasid_t max);
-> > +extern int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
-> > +				  void (*fn)(ioasid_t id, void *data));
-> > +extern void vfio_mm_pasid_lock(struct vfio_mm *vmm);
-> > +extern void vfio_mm_pasid_unlock(struct vfio_mm *vmm);
-> > +
-> >  #else
-> >  static inline struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task)
-> >  {
-> > @@ -129,6 +134,21 @@ static inline void vfio_pasid_free_range(struct vfio_mm
-> *vmm,
-> >  					  ioasid_t min, ioasid_t max)
-> >  {
-> >  }
-> > +
-> > +static inline int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
-> > +					 void (*fn)(ioasid_t id, void *data))
-> > +{
-> > +	return -ENOTTY;
-> > +}
-> > +
-> > +static inline void vfio_mm_pasid_lock(struct vfio_mm *vmm)
-> > +{
-> > +}
-> > +
-> > +static inline void vfio_mm_pasid_unlock(struct vfio_mm *vmm)
-> > +{
-> > +}
-> > +
-> >  #endif /* CONFIG_VFIO_PASID */
-> >
-> >  /*
 > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 6d79557..9501cfb 100644
+> > index 9501cfb..48e2fb5 100644
 > > --- a/include/uapi/linux/vfio.h
 > > +++ b/include/uapi/linux/vfio.h
-> > @@ -1209,6 +1209,37 @@ struct vfio_iommu_type1_pasid_request {
-> >
-> >  #define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 18)
-> >
-> > +/**
-> > + * VFIO_IOMMU_NESTING_OP - _IOW(VFIO_TYPE, VFIO_BASE + 19,
-> > + *				struct vfio_iommu_type1_nesting_op)
+> > @@ -1225,6 +1225,8 @@ struct vfio_iommu_type1_pasid_request {
+> >   * +-----------------+-----------------------------------------------+
+> >   * | UNBIND_PGTBL    |      struct iommu_gpasid_bind_data            |
+> >   *
+> > +-----------------+-----------------------------------------------+
+> > + * | CACHE_INVLD     |      struct iommu_cache_invalidate_info       |
 > > + *
-> > + * This interface allows userspace to utilize the nesting IOMMU
-> > + * capabilities as reported in VFIO_IOMMU_TYPE1_INFO_CAP_NESTING
-> > + * cap through VFIO_IOMMU_GET_INFO.
-> PASID alloc/free are handled through another IOCTL so you should be more
-> precise I think.
+> > + +-----------------+-----------------------------------------------+
+> >   *
+> >   * returns: 0 on success, -errno on failure.
+> >   */
+> > @@ -1237,6 +1239,7 @@ struct vfio_iommu_type1_nesting_op {
+> >
+> >  #define VFIO_IOMMU_NESTING_OP_BIND_PGTBL	(0)
+> >  #define VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL	(1)
+> > +#define VFIO_IOMMU_NESTING_OP_CACHE_INVLD	(2)
+> According to my previous comment, you may refine VFIO_NESTING_OP_MASK too
 
-yep. will add it.
+yes, I've noticed it. also replied in patch 10/15.
 
 Regards,
 Yi Liu
 
-> > + *
-> > + * @data[] types defined for each op:
-> > + *
-> +=================+===============================================+
-> > + * | NESTING OP      |      @data[]                                  |
-> > + *
-> +=================+===============================================+
-> > + * | BIND_PGTBL      |      struct iommu_gpasid_bind_data            |
-> > + * +-----------------+-----------------------------------------------+
-> > + * | UNBIND_PGTBL    |      struct iommu_gpasid_bind_data            |
-> > + * +-----------------+-----------------------------------------------+
-> > + *
-> > + * returns: 0 on success, -errno on failure.
-> > + */
-> > +struct vfio_iommu_type1_nesting_op {
-> > +	__u32	argsz;
-> > +	__u32	flags;
-> > +#define VFIO_NESTING_OP_MASK	(0xffff) /* lower 16-bits for op */
-> > +	__u8	data[];
-> > +};
-> > +
-> > +#define VFIO_IOMMU_NESTING_OP_BIND_PGTBL	(0)
-> > +#define VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL	(1)
-> > +
-> > +#define VFIO_IOMMU_NESTING_OP		_IO(VFIO_TYPE, VFIO_BASE + 19)
-> > +
-> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
-> >
-> >  /*
-> >
 > Thanks
 > 
 > Eric
+> >
+> >  #define VFIO_IOMMU_NESTING_OP		_IO(VFIO_TYPE, VFIO_BASE + 19)
+> >
+> >
 
 _______________________________________________
 iommu mailing list
