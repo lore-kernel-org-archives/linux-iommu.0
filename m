@@ -7,108 +7,109 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E06EC433E3
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8ABC433DF
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:47:36 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A959B20738
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:47:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E50CE2072E
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:47:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="tQ0FE9hL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A959B20738
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="CsZeA/Tr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E50CE2072E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 83C3C84C13;
-	Mon, 17 Aug 2020 21:47:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3FFDA84C13;
+	Mon, 17 Aug 2020 21:47:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NV1PTwF83xRW; Mon, 17 Aug 2020 21:47:03 +0000 (UTC)
+	with ESMTP id 1ASXUdfEvz0i; Mon, 17 Aug 2020 21:47:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E245984A7E;
-	Mon, 17 Aug 2020 21:47:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3924184B80;
+	Mon, 17 Aug 2020 21:47:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AD68BC088B;
-	Mon, 17 Aug 2020 21:47:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D3780C0051
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 256ACC088B;
+	Mon, 17 Aug 2020 21:47:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9CADAC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C1EDC84B80
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:02 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8248286977
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WF4q_9pcgCqP for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 21:47:00 +0000 (UTC)
-X-Greylist: delayed 00:21:54 by SQLgrey-1.7.6
-Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
- [209.85.167.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0BA8284A7E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:00 +0000 (UTC)
-Received: by mail-oi1-f194.google.com with SMTP id b22so16121499oic.8
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 14:47:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=tcd-ie.20150623.gappssmtp.com; s=20150623;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=a6SU4e7qioZa1MSGn21iWR1ma/iTKUTYpUuysCGcy14=;
- b=tQ0FE9hLvaMYPBTVoFLMvapqE3NmtNzvVLom8ama2749kqs+FHz9nxs7AHIJO7mDBv
- K8Q+pQ4G/b4TMv1DEEAJUykFiG2bIYGrU3nC3oR7j6f2NPSzKfCcVFaY4kOAcXUttSVT
- FcQd5pxyrvBzc1oQk+/2JMAu6G+p7dtknI9bruysURWXuQybraU9AWYk41P2rQ/Ugs1V
- KCxO0AsJuqMRVrwiHYTBB1bwM8dzGrwTw+I2FuHbRzUP2Mdhb2OLUMXYWcNu2LS9HUSM
- o/iArU0Mr099iYvhHaRGgPLkM2XevIGWNnpUQKOQ1d+f4UwWeBsVd7zpHvgp1Gst8iud
- sCxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=a6SU4e7qioZa1MSGn21iWR1ma/iTKUTYpUuysCGcy14=;
- b=pWxP6tC/4u5n5Hs7eanKAooYTd+cr8u9zfhzEuygYzxKxuSaufnTEh9M0YrWpzkXFV
- gMlmK5I02JNSAtdK1tg1k9ULCpriJVnF2NC+kAjJakHMgL6MisAwdV4YxUlNmCaewbvd
- etPQHIGdqbaRPEslSQmgoPg1yNJ+NUYWQIM+bRH8bjCM8PsKXWtjC30r1QdtvqUZwMFg
- q2w5I8I06nJZ0ViaP+Tl5xcDHpQAwIGl4v4VOcCY4Ro29ruivaw6QdMfL1Ko2Yap+By5
- +kH7Z21Pq5wf+vgRraOSCK+I46iS0tPPyFzZG7N2z50XGUulyYG0lBDzhg8GU+S3Ic5T
- b4Fw==
-X-Gm-Message-State: AOAM533Y8CfS73hiGgtNFveAb2sbCgIPvD6BVSInph3NOGJOTAd25A51
- w7uUgbQkvQr3k690mymQ41bFp3poVB+vlN1eOaA=
-X-Google-Smtp-Source: ABdhPJxLpxYOD9HqJyjPsE+aMSLqEST9f99mfp5IwRRr6pkeOH6GEyp42pRMo63jP9uxCJQN7toCzQ==
-X-Received: by 2002:a17:90b:128e:: with SMTP id
- fw14mr14318007pjb.66.1597699202157; 
- Mon, 17 Aug 2020 14:20:02 -0700 (PDT)
-Received: from localhost.localdomain (S0106ac17c8c0ce82.vc.shawcable.net.
- [24.87.214.6])
- by smtp.googlemail.com with ESMTPSA id q10sm20733468pfs.75.2020.08.17.14.20.01
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Aug 2020 14:20:01 -0700 (PDT)
-From: Tom Murphy <murphyt7@tcd.ie>
+ with ESMTP id PmB718ieMlgu for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 21:47:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+ [148.163.156.1])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A7927868E7
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:47:31 +0000 (UTC)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 07HLX06C022116; Mon, 17 Aug 2020 17:47:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=dMt+pC/R1fCDXZgpWnO++JFNA2C1KN+mULCs5PQzh2o=;
+ b=CsZeA/Tr1mW35bglI9xuOl157VF7mdV1+osOKHTGbi2PVzLaok/rmJX25wh73MQzU/Be
+ CTbezTME2DltrhbS0upxOcee3IBJuqQenCUbrqUyxIxFBbQ+TwXJvc3TlGTh9RtWKEbV
+ CzD5gJF5i76GMxoVxFw9uUgXRkBVYuCe+cDJT510tT60IT6fSMFmMhwZUzcndmzu7wFa
+ VQz8Fly6Wjp7ZKK603rUeHNITXr7LwqX8jXAujnHOQTBWtlcEehexb1uAlxCjL/JZyny
+ fZMgLmSOfFj3CuqH7SptB+j8hz33ZcLWiw15+A3Y/R6n7RYvbiryDRvjjdEjqUY5Nus9 WA== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com
+ [169.62.189.11])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 32yxagwur1-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Mon, 17 Aug 2020 17:47:23 -0400
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+ by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07HLjMR3013750;
+ Mon, 17 Aug 2020 21:47:22 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com
+ [9.57.198.25]) by ppma03dal.us.ibm.com with ESMTP id 32xgqnwahn-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Mon, 17 Aug 2020 21:47:22 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com
+ [9.57.199.109])
+ by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 07HLlLrl29229450
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 17 Aug 2020 21:47:21 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id CCFC0112062;
+ Mon, 17 Aug 2020 21:47:21 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 26887112061;
+ Mon, 17 Aug 2020 21:47:18 +0000 (GMT)
+Received: from morokweng.localdomain.com (unknown [9.211.138.167])
+ by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+ Mon, 17 Aug 2020 21:47:17 +0000 (GMT)
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 2/2] Handle init_iova_flush_queue failure in dma-iommu path
-Date: Mon, 17 Aug 2020 22:19:50 +0100
-Message-Id: <20200817211951.14794-2-murphyt7@tcd.ie>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200817211951.14794-1-murphyt7@tcd.ie>
-References: <20200817211951.14794-1-murphyt7@tcd.ie>
+Subject: [PATCH v2] powerpc/pseries/svm: Allocate SWIOTLB buffer anywhere in
+ memory
+Date: Mon, 17 Aug 2020 18:46:58 -0300
+Message-Id: <20200817214658.103093-1-bauerman@linux.ibm.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Cc: Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- linux-tegra@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- linux-rockchip@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>,
- Andy Gross <agross@kernel.org>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>, linux-s390@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- virtualization@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Tom Murphy <murphyt7@tcd.ie>, Kukjin Kim <kgene@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235, 18.0.687
+ definitions=2020-08-17_15:2020-08-17,
+ 2020-08-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 adultscore=0
+ suspectscore=3 bulkscore=0 mlxlogscore=999 lowpriorityscore=0
+ impostorscore=0 phishscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008170146
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linuxppc-dev@lists.ozlabs.org, Ram Pai <linuxram@us.ibm.com>,
+ linux-kernel@vger.kernel.org, Satheesh Rajendran <sathnaga@linux.vnet.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,36 +127,153 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-init_iova_flush_queue can fail if we run out of memory. Fall back to no
-flush queue if it fails.
+POWER secure guests (i.e., guests which use the Protection Execution
+Facility) need to use SWIOTLB to be able to do I/O with the hypervisor, but
+they don't need the SWIOTLB memory to be in low addresses since the
+hypervisor doesn't have any addressing limitation.
 
-Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
+This solves a SWIOTLB initialization problem we are seeing in secure guests
+with 128 GB of RAM: they are configured with 4 GB of crashkernel reserved
+memory, which leaves no space for SWIOTLB in low addresses.
+
+To do this, we use mostly the same code as swiotlb_init(), but allocate the
+buffer using memblock_alloc() instead of memblock_alloc_low().
+
+We also need to add swiotlb_set_no_iotlb_memory() in order to set the
+no_iotlb_memory flag if initialization fails.
+
+Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 ---
- drivers/iommu/dma-iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/svm.h       |  4 ++++
+ arch/powerpc/mm/mem.c                |  6 +++++-
+ arch/powerpc/platforms/pseries/svm.c | 27 +++++++++++++++++++++++++++
+ include/linux/swiotlb.h              |  1 +
+ kernel/dma/swiotlb.c                 |  5 +++++
+ 5 files changed, 42 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7433f74d921a..5445e2be08b5 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -356,9 +356,11 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 
- 	if (!cookie->fq_domain && !iommu_domain_get_attr(domain,
- 			DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) && attr) {
--		cookie->fq_domain = domain;
--		init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
--				iommu_dma_entry_dtor);
-+		if (init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
-+				iommu_dma_entry_dtor))
-+			pr_warn("iova flush queue initialization failed\n");
-+		else
-+			cookie->fq_domain = domain;
- 	}
- 
- 	if (!dev)
--- 
-2.20.1
+Changes from v1:
+- Open-code swiotlb_init() in arch-specific code, as suggested by
+  Christoph.
 
+diff --git a/arch/powerpc/include/asm/svm.h b/arch/powerpc/include/asm/svm.h
+index 85580b30aba4..7546402d796a 100644
+--- a/arch/powerpc/include/asm/svm.h
++++ b/arch/powerpc/include/asm/svm.h
+@@ -15,6 +15,8 @@ static inline bool is_secure_guest(void)
+ 	return mfmsr() & MSR_S;
+ }
+ 
++void __init svm_swiotlb_init(void);
++
+ void dtl_cache_ctor(void *addr);
+ #define get_dtl_cache_ctor()	(is_secure_guest() ? dtl_cache_ctor : NULL)
+ 
+@@ -25,6 +27,8 @@ static inline bool is_secure_guest(void)
+ 	return false;
+ }
+ 
++static inline void svm_swiotlb_init(void) {}
++
+ #define get_dtl_cache_ctor() NULL
+ 
+ #endif /* CONFIG_PPC_SVM */
+diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+index c2c11eb8dcfc..0f21bcb16405 100644
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -50,6 +50,7 @@
+ #include <asm/swiotlb.h>
+ #include <asm/rtas.h>
+ #include <asm/kasan.h>
++#include <asm/svm.h>
+ 
+ #include <mm/mmu_decl.h>
+ 
+@@ -290,7 +291,10 @@ void __init mem_init(void)
+ 	 * back to to-down.
+ 	 */
+ 	memblock_set_bottom_up(true);
+-	swiotlb_init(0);
++	if (is_secure_guest())
++		svm_swiotlb_init();
++	else
++		swiotlb_init(0);
+ #endif
+ 
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+diff --git a/arch/powerpc/platforms/pseries/svm.c b/arch/powerpc/platforms/pseries/svm.c
+index 40c0637203d5..d592e663a8d6 100644
+--- a/arch/powerpc/platforms/pseries/svm.c
++++ b/arch/powerpc/platforms/pseries/svm.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/mm.h>
++#include <linux/memblock.h>
+ #include <asm/machdep.h>
+ #include <asm/svm.h>
+ #include <asm/swiotlb.h>
+@@ -34,6 +35,32 @@ static int __init init_svm(void)
+ }
+ machine_early_initcall(pseries, init_svm);
+ 
++/*
++ * Initialize SWIOTLB. Essentially the same as swiotlb_init(), except that it
++ * can allocate the buffer anywhere in memory. Since the hypervisor doesn't have
++ * any addressing limitation, we don't need to allocate it in low addresses.
++ */
++void __init svm_swiotlb_init(void)
++{
++	unsigned char *vstart;
++	unsigned long bytes, io_tlb_nslabs;
++
++	io_tlb_nslabs = (swiotlb_size_or_default() >> IO_TLB_SHIFT);
++	io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
++
++	bytes = io_tlb_nslabs << IO_TLB_SHIFT;
++
++	vstart = memblock_alloc(PAGE_ALIGN(bytes), PAGE_SIZE);
++	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, false))
++		return;
++
++	if (io_tlb_start)
++		memblock_free_early(io_tlb_start,
++				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
++	pr_warn("Cannot allocate SWIOTLB buffer");
++	swiotlb_set_no_iotlb_memory(true);
++}
++
+ int set_memory_encrypted(unsigned long addr, int numpages)
+ {
+ 	if (!PAGE_ALIGNED(addr))
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 046bb94bd4d6..991e9f13e663 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -35,6 +35,7 @@ extern unsigned long swiotlb_nr_tbl(void);
+ unsigned long swiotlb_size_or_default(void);
+ extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
+ extern void __init swiotlb_update_mem_attributes(void);
++void __init swiotlb_set_no_iotlb_memory(bool value);
+ 
+ /*
+  * Enumeration for sync targets
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index c19379fabd20..ed2b8818ff67 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -132,6 +132,11 @@ early_param("swiotlb", setup_io_tlb_npages);
+ 
+ static bool no_iotlb_memory;
+ 
++void __init swiotlb_set_no_iotlb_memory(bool value)
++{
++	no_iotlb_memory = value;
++}
++
+ unsigned long swiotlb_nr_tbl(void)
+ {
+ 	return unlikely(no_iotlb_memory) ? 0 : io_tlb_nslabs;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
