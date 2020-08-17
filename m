@@ -2,82 +2,113 @@ Return-Path: <SRS0=aSVE=B3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA011C433DF
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 22:00:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8050BC433E3
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 22:02:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B939020674
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 22:00:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B939020674
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 51F4620674
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 22:02:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UgIskbh9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51F4620674
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A138C86B5C;
-	Mon, 17 Aug 2020 22:00:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D514620503;
+	Mon, 17 Aug 2020 22:02:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UH4eHiQXGy1b; Mon, 17 Aug 2020 22:00:36 +0000 (UTC)
+	with ESMTP id IkklH5r24iBr; Mon, 17 Aug 2020 22:01:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7AED986B50;
-	Mon, 17 Aug 2020 22:00:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1C03E204C6;
+	Mon, 17 Aug 2020 22:01:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 71464C088B;
-	Mon, 17 Aug 2020 22:00:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BDC92C0051
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:00:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E88B2C088B;
+	Mon, 17 Aug 2020 22:01:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0E102C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:01:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B92A086B55
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:00:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EF7C5878AF
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:01:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Sj0Q8Q0yIHOM for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 22:00:34 +0000 (UTC)
+ with ESMTP id awDDJ1NtuPid for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 22:01:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 751B186B50
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:00:34 +0000 (UTC)
-IronPort-SDR: vQWsIoHHdkQUj+OdAWYugbXsRslbogp6S3tqQe9u0MKyT30EsyFcoJEgnI/oxlRcOwGM/U5eKS
- t5A6nRGLbPMA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9716"; a="142423393"
-X-IronPort-AV: E=Sophos;i="5.76,324,1592895600"; d="scan'208";a="142423393"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Aug 2020 15:00:32 -0700
-IronPort-SDR: ZjwV9A1iZaGpe1LREmuuS8Wtrn/H7J531Bh+8pifrr0xvZg0vESMDdA0xwgLHHycDAUdL9ltqa
- nJv+Xg4OSLgg==
-X-IronPort-AV: E=Sophos;i="5.76,324,1592895600"; d="scan'208";a="292565549"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Aug 2020 15:00:32 -0700
-Date: Mon, 17 Aug 2020 15:07:31 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v7 1/7] docs: IOMMU user API
-Message-ID: <20200817150731.4909d896@jacob-builder>
-In-Reply-To: <398b7773-bf59-70ca-07ad-ac0ebcc8ae30@redhat.com>
-References: <1596068467-49322-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1596068467-49322-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <398b7773-bf59-70ca-07ad-ac0ebcc8ae30@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
+ [209.85.214.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7FB35878A8
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 22:01:56 +0000 (UTC)
+Received: by mail-pl1-f196.google.com with SMTP id g7so7094040plq.1
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 15:01:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=trlk/3uXQdYpfCiR6zf1NBJMUfnwN4OseEJTaKFkirk=;
+ b=UgIskbh92JnnX2yxoa9Qd2Snaa/33Eocjr1ug5PGgM8C/G0SbtYI7xZQApMuh9Q34L
+ 32FfU+ig7V85PrVLFlgOru5ICwsL6nl4nyHRFqElEJM5edA+AoRR8nMT8PzNMDQOytYh
+ P0tfH+cBsgBcsqXOH+u8tnbBKRUsGZCjGEr/MZxMhKYtgf+lVI9Jh0gjKTqSaHoG/WqV
+ 5wnJlx6upNKNrTS8D5MkbThxMOcqJR2inYDfOvJJ23OEzVf0f7yo1phyxQF54EQ2Dlrl
+ 0/ilMbwN5QU7lbmOayWOFXR9GevWII/8fqsDceTa9alQ8L88nSLO5q3vSG82CLPFZlrD
+ EOqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=trlk/3uXQdYpfCiR6zf1NBJMUfnwN4OseEJTaKFkirk=;
+ b=KF+Icjzm3MTi80SeOlEIv+U2buzRbsC3hsB7FiKO66WyGKqnMlSh8KDPqMdAHIwuAm
+ w5Wk929yhCXrC8bk8xfjsiMQVB0AKFGmSCz8UTbozWGsRFlJmLRPYnymhuqlBs/wW7fL
+ DtwwRmAUx+JbdwP1/U8SPk68n+R76Vc8wN/CU7UdROSXqB/II+aH8aPM0CYyEdtLV6E+
+ r9kL5YyitONYzqnS6wM9qkFEteDxIb4ReOtSBouDGayAx2tin2zSUA5SZJqe7BKqjU8n
+ PudLLp7rZGQbNAyup0z4G7CV4kOZ2PFm1K8onIzRR1+OZftsvCzpFGVnztJ+bztSKZRw
+ /Evg==
+X-Gm-Message-State: AOAM531WaekO4jJe0KSCOHXiIfeh1p/vZJ0mxoY1DMVRP2C06axn30+n
+ bxpY9Y1akg+kwuree6NFzNU=
+X-Google-Smtp-Source: ABdhPJxuc4xae1ZADXa97WPg87JZfSDrlOOC/ynLcCZZtE5xQDqUW8tKk8cp6xGc7CLtA+Awk99pQg==
+X-Received: by 2002:a17:902:b788:: with SMTP id
+ e8mr13005586pls.117.1597701715879; 
+ Mon, 17 Aug 2020 15:01:55 -0700 (PDT)
+Received: from localhost (c-73-25-156-94.hsd1.or.comcast.net. [73.25.156.94])
+ by smtp.gmail.com with ESMTPSA id
+ f27sm20817812pfk.217.2020.08.17.15.01.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 17 Aug 2020 15:01:54 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linux-arm-msm@vger.kernel.org
+Subject: [PATCH 00/20] iommu/arm-smmu + drm/msm: per-process GPU pgtables
+Date: Mon, 17 Aug 2020 15:01:25 -0700
+Message-Id: <20200817220238.603465-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+Cc: Wambui Karuga <wambui.karugax@gmail.com>, Takashi Iwai <tiwai@suse.de>,
+ Hanna Hawa <hannah@marvell.com>, Akhil P Oommen <akhilpo@codeaurora.org>,
+ Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ AngeloGioacchino Del Regno <kholk11@gmail.com>, Will Deacon <will@kernel.org>,
+ Emil Velikov <emil.velikov@collabora.com>, Rob Clark <robdclark@chromium.org>,
+ Jonathan Marek <jonathan@marek.ca>, Sam Ravnborg <sam@ravnborg.org>,
+ Jon Hunter <jonathanh@nvidia.com>, Ben Dooks <ben.dooks@codethink.co.uk>,
+ Sibi Sankar <sibis@codeaurora.org>, Thierry Reding <treding@nvidia.com>,
+ Brian Masney <masneyb@onstation.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Sharat Masetty <smasetty@codeaurora.org>,
+ Pritesh Raithatha <praithatha@nvidia.com>, Stephen Boyd <swboyd@chromium.org>,
+ John Stultz <john.stultz@linaro.org>, freedreno@lists.freedesktop.org,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ open list <linux-kernel@vger.kernel.org>, Shawn Guo <shawn.guo@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,295 +126,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 12 Aug 2020 18:38:50 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+From: Rob Clark <robdclark@chromium.org>
 
-> Hi Jacob,
-> 
-> On 7/30/20 2:21 AM, Jacob Pan wrote:
-> > IOMMU UAPI is newly introduced to support communications between
-> > guest virtual IOMMU and host IOMMU. There has been lots of
-> > discussions on how it should work with VFIO UAPI and userspace in
-> > general.
-> > 
-> > This document is intended to clarify the UAPI design and usage. The
-> > mechanics of how future extensions should be achieved are also
-> > covered in this documentation.
-> > 
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  Documentation/userspace-api/iommu.rst | 212
-> > ++++++++++++++++++++++++++++++++++
-> > MAINTAINERS                           |   1 + 2 files changed, 213
-> > insertions(+) create mode 100644
-> > Documentation/userspace-api/iommu.rst
-> > 
-> > diff --git a/Documentation/userspace-api/iommu.rst
-> > b/Documentation/userspace-api/iommu.rst new file mode 100644
-> > index 000000000000..b2f5b3256d85
-> > --- /dev/null
-> > +++ b/Documentation/userspace-api/iommu.rst
-> > @@ -0,0 +1,212 @@
-> > +.. SPDX-License-Identifier: GPL-2.0
-> > +.. iommu:
-> > +
-> > +=====================================
-> > +IOMMU Userspace API
-> > +=====================================
-> > +
-> > +IOMMU UAPI is used for virtualization cases where communications
-> > are +needed between physical and virtual IOMMU drivers. For
-> > baremetal +usage, the IOMMU is a system device which does not need
-> > to communicate +with user space directly.
-> > +
-> > +The primary use cases are guest Shared Virtual Address (SVA) and
-> > +guest IO virtual address (IOVA), wherin the vIOMMU implementation
-> > +relies on the physical IOMMU and for this reason requires
-> > interactions +with the host driver.
-> > +
-> > +.. contents:: :local:
-> > +
-> > +Functionalities
-> > +===============
-> > +Communications of user and kernel involve both directions. The
-> > +supported user-kernel APIs are as follows:
-> > +
-> > +1. Alloc/Free PASID
-> > +2. Bind/unbind guest PASID (e.g. Intel VT-d)  
-> nit: s/unbind/Unbind to match above Free
-Sounds good, same below.
+This series adds an Adreno SMMU implementation to arm-smmu to allow GPU hardware
+pagetable switching.
 
-> > +3. Bind/unbind guest PASID table (e.g. ARM SMMU)
-> > +4. Invalidate IOMMU caches requested by guests  
-> s/requested by guests/upon guest requests
-Will do.
+The Adreno GPU has built in capabilities to switch the TTBR0 pagetable during
+runtime to allow each individual instance or application to have its own
+pagetable.  In order to take advantage of the HW capabilities there are certain
+requirements needed of the SMMU hardware.
 
-> > +5. Report errors to the guest and serve page requests
-> > +
-> > +Requirements
-> > +============
-> > +The IOMMU UAPIs are generic and extensible to meet the following
-> > +requirements:
-> > +
-> > +1. Emulated and para-virtualised vIOMMUs
-> > +2. Multiple vendors (Intel VT-d, ARM SMMU, etc.)
-> > +3. Extensions to the UAPI shall not break existing user space
-> > +
-> > +Interfaces
-> > +==========
-> > +Although the data structures defined in IOMMU UAPI are
-> > self-contained, +there is no user API functions introduced.
-> > Instead, IOMMU UAPI is +designed to work with existing user driver
-> > frameworks such as VFIO. +
-> > +Extension Rules & Precautions
-> > +-----------------------------
-> > +When IOMMU UAPI gets extended, the data structures can *only* be
-> > +modified in two ways:
-> > +
-> > +1. Adding new fields by re-purposing the padding[] field. No size
-> > change. +2. Adding new union members at the end. May increase the
-> > structure sizes. +
-> > +No new fields can be added *after* the variable sized union in
-> > that it +will break backward compatibility when offset moves. A new
-> > flag must +be introduced whenever a change affects the structure
-> > using either +method. The IOMMU driver processes the data based on
-> > flags which +ensures backward compatibility.
-> > +
-> > +Version field is only reserved for the unlikely event of UAPI
-> > upgrade +at its entirety.
-> > +
-> > +It's *always* the caller's responsibility to indicate the size of
-> > the +structure passed by setting argsz appropriately.
-> > +Though at the same time, argsz is user provided data which is not
-> > +trusted. The argsz field allows the user app to indicate how much
-> > data +it is providing, it's still the kernel's responsibility to
-> > validate +whether it's correct and sufficient for the requested
-> > operation. +
-> > +Compatibility Checking
-> > +----------------------
-> > +When IOMMU UAPI extension results in some structure size increase,
-> > +IOMMU UAPI code shall handle the following cases:
-> > +
-> > +1. User and kernel has exact size match
-> > +2. An older user with older kernel header (smaller UAPI size)
-> > running on a
-> > +   newer kernel (larger UAPI size)
-> > +3. A newer user with newer kernel header (larger UAPI size) running
-> > +   on an older kernel.
-> > +4. A malicious/misbehaving user pass illegal/invalid size but
-> > within
-> > +   range. The data may contain garbage.
-> > +
-> > +Feature Checking
-> > +----------------
-> > +While launching a guest with vIOMMU, it is important to ensure
-> > that host +can support the UAPI data structures to be used for
-> > vIOMMU-pIOMMU +communications. Without upfront compatibility
-> > checking, the future errors +can lead to catastrophic failures for
-> > the users.  
-> I would rather say: it is strongly advised to check the compatibility
-> upfront, as some subsequent errors happening during vIOMMU operation,
-> such as cache invalidation failures cannot be nicely escaladated to
-> the guest due to IOMMU specifications.
-> 
-Sounds more fluid, will do. I also wanted to emphasis on the potential
-catastrophic results.
+This series adds support for an Adreno specific arm-smmu implementation. The new
+implementation 1) ensures that the GPU domain is always assigned context bank 0,
+2) enables split pagetable support (TTBR1) so that the instance specific
+pagetable can be swapped while the global memory remains in place and 3) shares
+the current pagetable configuration with the GPU driver to allow it to create
+its own io-pgtable instances.
 
-> > +
-> > +User applications such as QEMU are expected to import kernel UAPI
-> > +headers. Backward compatibility is supported per feature flags.
-> > +For example, an older QEMU (with older kernel header) can run on
-> > newer +kernel. Newer QEMU (with new kernel header) may refuse to
-> > initialize +on an older kernel if new feature flags are not
-> > supported by older +kernel. Simply recompiling existing code with
-> > newer kernel header should +not be an issue in that only existing
-> > flags are used. +
-> > +IOMMU vendor driver should report the below features to IOMMU UAPI
-> > +consumers (e.g. via VFIO).
-> > +
-> > +1. IOMMU_NESTING_FEAT_SYSWIDE_PASID
-> > +2. IOMMU_NESTING_FEAT_BIND_PGTBL
-> > +3. IOMMU_NESTING_FEAT_BIND_PASID_TABLE
-> > +4. IOMMU_NESTING_FEAT_CACHE_INVLD
-> > +5. IOMMU_NESTING_FEAT_PAGE_REQUEST
-> > +
-> > +Take VFIO as example, upon request from VFIO user space (e.g.
-> > QEMU), +VFIO kernel code shall query IOMMU vendor driver for the
-> > support of +the above features. Query result can then be reported
-> > back to the +user-space caller. Details can be found in
-> > +Documentation/driver-api/vfio.rst.
-> > +
-> > +
-> > +Data Passing Example with VFIO
-> > +------------------------------
-> > +As the ubiquitous userspace driver framework, VFIO is already IOMMU
-> > +aware and shares many key concepts such as device model, group, and
-> > +protection domain. Other user driver frameworks can also be
-> > extended +to support IOMMU UAPI but it is outside the scope of this
-> > document. +
-> > +In this tight-knit VFIO-IOMMU interface, the ultimate consumer of
-> > the +IOMMU UAPI data is the host IOMMU driver. VFIO facilitates
-> > user-kernel +transport, capability checking, security, and life
-> > cycle management of +process address space ID (PASID).
-> > +
-> > +Unlike normal user data passed via VFIO UAPI IOTCL, IOMMU driver
-> > is the +ultimate consumer of its UAPI data.  
-> I would remove the above sentence as it sounds like a repetition of
-> the above paragraph 1st sentence. You may simply say that VFIO mostly
-> conveys the data structs downto the IOMMU driver.
-> 
-Right, it is redundant.
+The series then adds the drm/msm code to enable these features. For targets that
+support it allocate new pagetables using the io-pgtable configuration shared by
+the arm-smmu driver and swap them in during runtime.
 
->  At VFIO layer, the IOMMU UAPI data
-> > +is wrapped in a VFIO UAPI data. It follows the
-> > +pattern below::
-> > +
-> > +   struct {
-> > +	__u32 argsz;
-> > +	__u32 flags;
-> > +	__u8  data[];
-> > +   };
-> > +
-> > +Here data[] contains the IOMMU UAPI data structures. VFIO has the
-> > +freedom to bundle the data as well as parse data size based on its
-> > own flags. +
-> > +In order to determine the size and feature set of the user data,
-> > argsz +and flags (or the equivalent) are also embedded in the IOMMU
-> > UAPI data +structures.
-> > +
-> > +A "__u32 argsz" field is *always* at the beginning of each
-> > structure. +
-> > +For example:
-> > +::
-> > +
-> > +   struct iommu_cache_invalidate_info {
-> > +	__u32	argsz;
-> > +	#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
-> > +	__u32	version;
-> > +	/* IOMMU paging structure cache */
-> > +	#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /*
-> > IOMMU IOTLB */
-> > +	#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /*
-> > Device IOTLB */
-> > +	#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /*
-> > PASID cache */
-> > +	#define IOMMU_CACHE_INV_TYPE_NR		(3)
-> > +	__u8	cache;
-> > +	__u8	granularity;
-> > +	__u8	padding[6];
-> > +	union {
-> > +		struct iommu_inv_pasid_info pasid_info;
-> > +		struct iommu_inv_addr_info addr_info;
-> > +	} granu;
-> > +   };
-> > +
-> > +VFIO is responsible for checking its own argsz and flags. It then
-> > +invokes appropriate IOMMU UAPI functions. The user pointers are
-> > passed +to the IOMMU layer for further processing. The
-> > responsibilities are +divided as follows:
-> > +
-> > +- Generic IOMMU layer checks argsz range based on UAPI data in the
-> > +  current kernel version
-> > +
-> > +- Generic IOMMU layer checks content of the UAPI data for non-zero
-> > +  reserved bits in flags, padding fields, and unsupported version.
-> > +  This is to ensure not breaking userspace in the future when these
-> > +  fields or flags are used.
-> > +
-> > +- Vendor IOMMU driver checks argsz based on vendor flags, UAPI data
-> > +  is consumed based on flags. Vendor driver has access to
-> > +  unadulterated argsz value in case of vendor specific future
-> > +  extensions. Currently, it does not perform the copy_from_user()
-> > +  itself. A __user pointer can be provided in some future scenarios
-> > +  where there's vendor data outside of the structure definition.
-> > +
-> > +IOMMU code treats UAPI data into two categories:
-> > +
-> > +- structure contains vendor data
-> > +  (Example: iommu_uapi_cache_invalidate())
-> > +
-> > +- structure contains only generic data
-> > +  (Example: iommu_uapi_sva_bind_gpasid())
-> > +
-> > +
-> > +
-> > +Sharing UAPI with in-kernel users
-> > +---------------------------------
-> > +For UAPIs that are shared with in-kernel users, a wrapper function
-> > is +provided to distinguish the callers. For example,
-> > +
-> > +Userspace caller ::
-> > +
-> > +  int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
-> > +                                   struct device *dev,
-> > +                                   void __user *udata)
-> > +
-> > +In-kernel caller ::
-> > +
-> > +  int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> > +                                   struct device *dev,
-> > +                                   struct iommu_gpasid_bind_data
-> > *data) diff --git a/MAINTAINERS b/MAINTAINERS
-> > index d53db30d1365..11f907b11f12 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -9010,6 +9010,7 @@ L:	iommu@lists.linux-foundation.org
-> >  S:	Maintained
-> >  T:	git
-> > git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
-> > F:	Documentation/devicetree/bindings/iommu/ +F:
-> > Documentation/userspace-api/iommu.rst F:	drivers/iommu/
-> >  F:	include/linux/iommu.h
-> >  F:	include/linux/iova.h
-> >   
-> Besides the above suggestions,
-> 
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> 
-> Eric
-> 
-Thank you so much, will integrate into version 8.
+This version of the series merges the previous patchset(s) [1] and [2]
+with the following improvements:
+
+v14: (Respin by Rob)
+  - Minor update to 16/20 (only force ASID to zero in one place)
+  - Addition of sc7180 dtsi patch.
+v13: (Respin by Rob)
+  - Switch to a private interface between adreno-smmu and GPU driver,
+    dropping the custom domain attr (Will Deacon)
+  - Rework the SCTLR.HUPCF patch to add new fields in smmu_domain->cfg
+    rather than adding new impl hook (Will Deacon)
+  - Drop for_each_cfg_sme() in favor of plain for() loop (Will Deacon)
+  - Fix context refcnt'ing issue which was causing problems with GPU
+    crash recover stress testing.
+  - Spiff up $debugfs/gem to show process information associated with
+    VMAs
+v12:
+  - Nitpick cleanups in gpu/drm/msm/msm_iommu.c (Rob Clark)
+  - Reorg in gpu/drm/msm/msm_gpu.c (Rob Clark)
+  - Use the default asid for the context bank so that iommu_tlb_flush_all works
+  - Flush the UCHE after a page switch
+  - Add the SCTLR.HUPCF patch at the end of the series
+v11:
+  - Add implementation specific get_attr/set_attr functions (per Rob Clark)
+  - Fix context bank allocation (per Bjorn Andersson)
+v10:
+  - arm-smmu: add implementation hook to allocate context banks
+  - arm-smmu: Match the GPU domain by stream ID instead of compatible string
+  - arm-smmu: Make DOMAIN_ATTR_PGTABLE_CFG bi-directional. The leaf driver
+    queries the configuration to create a pagetable and then sends the newly
+    created configuration back to the smmu-driver to enable TTBR0
+  - drm/msm: Add context reference counting for submissions
+  - drm/msm: Use dummy functions to skip TLB operations on per-instance
+    pagetables
+
+[1] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045653.html
+[2] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045659.html
+
+
+Jordan Crouse (12):
+  iommu/arm-smmu: Pass io-pgtable config to implementation specific
+    function
+  iommu/arm-smmu: Add support for split pagetables
+  iommu/arm-smmu: Prepare for the adreno-smmu implementation
+  iommu/arm-smmu-qcom: Add implementation for the adreno GPU SMMU
+  dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
+  drm/msm: Add a context pointer to the submitqueue
+  drm/msm: Drop context arg to gpu->submit()
+  drm/msm: Set the global virtual address range from the IOMMU domain
+  drm/msm: Add support to create a local pagetable
+  drm/msm: Add support for private address space instances
+  drm/msm/a6xx: Add support for per-instance pagetables
+  arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
+
+Rob Clark (8):
+  drm/msm: remove dangling submitqueue references
+  iommu: add private interface for adreno-smmu
+  drm/msm/gpu: add dev_to_gpu() helper
+  drm/msm: set adreno_smmu as gpu's drvdata
+  iommu/arm-smmu: constify some helpers
+  arm: dts: qcom: sc7180: Set the compatible string for the GPU SMMU
+  iommu/arm-smmu: add a way for implementations to influence SCTLR
+  drm/msm: show process names in gem_describe
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   4 +
+ arch/arm64/boot/dts/qcom/sc7180.dtsi          |   2 +-
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |   2 +-
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |  12 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |  68 +++++-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.h         |   1 +
+ drivers/gpu/drm/msm/adreno/adreno_device.c    |  12 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c       |  18 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   3 +-
+ drivers/gpu/drm/msm/msm_drv.c                 |  16 +-
+ drivers/gpu/drm/msm/msm_drv.h                 |  25 +++
+ drivers/gpu/drm/msm/msm_gem.c                 |  25 ++-
+ drivers/gpu/drm/msm/msm_gem.h                 |   6 +
+ drivers/gpu/drm/msm/msm_gem_submit.c          |   8 +-
+ drivers/gpu/drm/msm/msm_gem_vma.c             |  10 +
+ drivers/gpu/drm/msm/msm_gpu.c                 |  41 +++-
+ drivers/gpu/drm/msm/msm_gpu.h                 |  21 +-
+ drivers/gpu/drm/msm/msm_gpummu.c              |   2 +-
+ drivers/gpu/drm/msm/msm_iommu.c               | 206 +++++++++++++++++-
+ drivers/gpu/drm/msm/msm_mmu.h                 |  16 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.h          |   1 +
+ drivers/gpu/drm/msm/msm_submitqueue.c         |   7 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   6 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 155 ++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         | 102 ++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |  87 +++++++-
+ include/linux/adreno-smmu-priv.h              |  36 +++
+ 27 files changed, 759 insertions(+), 133 deletions(-)
+ create mode 100644 include/linux/adreno-smmu-priv.h
+
+-- 
+2.26.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
