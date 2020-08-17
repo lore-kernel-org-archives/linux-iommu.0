@@ -4,118 +4,112 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6E8C433E1
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 16:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8446EC433E1
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 17:14:17 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BBA5206FA
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 16:56:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4F0082067C
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 17:14:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oce91hOq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BBA5206FA
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oHCZwrwF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F0082067C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D0713203F8;
-	Mon, 17 Aug 2020 16:55:59 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DCCF820475;
+	Mon, 17 Aug 2020 17:14:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1y-XQwrxUrMz; Mon, 17 Aug 2020 16:55:57 +0000 (UTC)
+	with ESMTP id 5RB+FKrw7Od0; Mon, 17 Aug 2020 17:14:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6CFBC2012D;
-	Mon, 17 Aug 2020 16:55:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8924F20108;
+	Mon, 17 Aug 2020 17:14:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D77BC07FF;
-	Mon, 17 Aug 2020 16:55:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 71F7CC088E;
+	Mon, 17 Aug 2020 17:14:14 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58701C0051
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 16:55:55 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CBF92C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:14:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 4EF762012D
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 16:55:55 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id AB34120474
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:14:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T22wiwOwKqB4 for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 16:55:54 +0000 (UTC)
+ with ESMTP id MHZPDX1Ia2WY for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 17:14:12 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
  [104.130.122.29])
- by silver.osuosl.org (Postfix) with ESMTPS id D36DB203F8
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 16:55:51 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 12E8220108
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:14:10 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1597683354; h=In-Reply-To: Content-Type: MIME-Version:
+ s=smtp; t=1597684452; h=In-Reply-To: Content-Type: MIME-Version:
  References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=opili1/+0dW4EUDDFvf9qZg/sEOsjBH8GyzqwpumoDE=;
- b=oce91hOq7daBE6RtAdKpac3XOxIGK9tBudhQFO4uENGR7VZAqjKW0z94XnQ0v2XHTIWzlXSb
- 4jGivt/w/ZgaYqR9SjpgKBO1uQTMHVTpBLAj5f1hjrePMsGG8NqnY5b8vxnFGDMr/otLeKRi
- EYDJWovAzAJ05oLT9rXMFmO6+Dk=
+ bh=SwKYrRggeH5jHtgd4TNoplzKAYDNI0Gdz3xVzc6qu6k=;
+ b=oHCZwrwFQXnAe5X7QjudYnrKnJkDHQtTWz3MZhSc9zJBOgc4/MipNVcLiQbZQWQVe2otMirh
+ nB/5kCEpdNazVxAbnh0CyvGXBaPkIVQNCE/KMqkcq9VGruAmugNhuN9xOgFsjzHhvmIQra4o
+ mbJwOjQf4DtWRodKli0e9LLJsqU=
 X-Mailgun-Sending-Ip: 104.130.122.29
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5f3ab685ba4c2cd367ccab3b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 17 Aug 2020 16:55:33
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 5f3abae0d96d28d61e3a1716 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 17 Aug 2020 17:14:08
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 4A6DFC433CA; Mon, 17 Aug 2020 16:55:31 +0000 (UTC)
+ id 30974C43387; Mon, 17 Aug 2020 17:14:07 +0000 (UTC)
 Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
  [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 1BA23C433CB;
- Mon, 17 Aug 2020 16:55:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1BA23C433CB
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 8A427C433CB;
+ Mon, 17 Aug 2020 17:14:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8A427C433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Mon, 17 Aug 2020 10:55:25 -0600
+Date: Mon, 17 Aug 2020 11:14:01 -0600
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH 07/19] drm/msm: set adreno_smmu as gpu's drvdata
-Message-ID: <20200817165524.GJ3221@jcrouse1-lnx.qualcomm.com>
+Subject: Re: [Freedreno] [PATCH 19/19] drm/msm: show process names in
+ gem_describe
+Message-ID: <20200817171401.GB7438@jcrouse1-lnx.qualcomm.com>
 Mail-Followup-To: Rob Clark <robdclark@gmail.com>,
  dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-arm-msm@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
  Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Will Deacon <will@kernel.org>, freedreno@lists.freedesktop.org,
+ open list <linux-kernel@vger.kernel.org>,
+ Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>,
  Bjorn Andersson <bjorn.andersson@linaro.org>,
- Sibi Sankar <sibis@codeaurora.org>,
+ Sean Paul <sean@poorly.run>, Sibi Sankar <sibis@codeaurora.org>,
  Vivek Gautam <vivek.gautam@codeaurora.org>,
- Stephen Boyd <swboyd@chromium.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel@lists.infradead.org,
- Rob Clark <robdclark@chromium.org>, Sean Paul <sean@poorly.run>,
- David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
- Jonathan Marek <jonathan@marek.ca>,
- Shawn Guo <shawn.guo@linaro.org>,
- Sharat Masetty <smasetty@codeaurora.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>,
- open list <linux-kernel@vger.kernel.org>
+ Stephen Boyd <swboyd@chromium.org>, freedreno@lists.freedesktop.org,
+ linux-arm-kernel@lists.infradead.org
 References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
- <20200814024114.1177553-8-robdclark@gmail.com>
+ <20200814024114.1177553-20-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200814024114.1177553-8-robdclark@gmail.com>
+In-Reply-To: <20200814024114.1177553-20-robdclark@gmail.com>
 User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
- Vivek Gautam <vivek.gautam@codeaurora.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>, Will Deacon <will@kernel.org>,
- Rob Clark <robdclark@chromium.org>, Jonathan Marek <jonathan@marek.ca>,
- Sibi Sankar <sibis@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- Sharat Masetty <smasetty@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
- Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
- freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- Shawn Guo <shawn.guo@linaro.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: Rob Clark <robdclark@chromium.org>, freedreno@lists.freedesktop.org,
+ Vivek Gautam <vivek.gautam@codeaurora.org>, David Airlie <airlied@linux.ie>,
+ linux-arm-msm@vger.kernel.org, open list <linux-kernel@vger.kernel.org>,
+ dri-devel@lists.freedesktop.org, Sean Paul <sean@poorly.run>,
+ iommu@lists.linux-foundation.org, Sibi Sankar <sibis@codeaurora.org>,
+ Daniel Vetter <daniel@ffwll.ch>, Stephen Boyd <swboyd@chromium.org>,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -133,82 +127,152 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Aug 13, 2020 at 07:41:02PM -0700, Rob Clark wrote:
+On Thu, Aug 13, 2020 at 07:41:14PM -0700, Rob Clark wrote:
 > From: Rob Clark <robdclark@chromium.org>
 > 
-> This will be populated by adreno-smmu, to provide a way for coordinating
-> enabling/disabling TTBR0 translation.
-> 
+> In $debugfs/gem we already show any vma(s) associated with an object.
+> Also show process names if the vma's address space is a per-process
+> address space.
 
 Reviewed-by: Jordan Crouse <jcrouse@codeaurora.org>
 
 > Signed-off-by: Rob Clark <robdclark@chromium.org>
 > ---
->  drivers/gpu/drm/msm/adreno/adreno_device.c | 2 --
->  drivers/gpu/drm/msm/msm_gpu.c              | 2 +-
->  drivers/gpu/drm/msm/msm_gpu.h              | 6 +++++-
->  3 files changed, 6 insertions(+), 4 deletions(-)
+>  drivers/gpu/drm/msm/msm_drv.c     |  2 +-
+>  drivers/gpu/drm/msm/msm_gem.c     | 25 +++++++++++++++++++++----
+>  drivers/gpu/drm/msm/msm_gem.h     |  5 +++++
+>  drivers/gpu/drm/msm/msm_gem_vma.c |  1 +
+>  drivers/gpu/drm/msm/msm_gpu.c     |  8 +++++---
+>  drivers/gpu/drm/msm/msm_gpu.h     |  2 +-
+>  6 files changed, 34 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> index 26664e1b30c0..58e03b20e1c7 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> @@ -417,8 +417,6 @@ static int adreno_bind(struct device *dev, struct device *master, void *data)
->  		return PTR_ERR(gpu);
->  	}
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index 8e70d220bba8..8d5c4f98c332 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -597,7 +597,7 @@ static int context_init(struct drm_device *dev, struct drm_file *file)
+>  	kref_init(&ctx->ref);
+>  	msm_submitqueue_init(dev, ctx);
 >  
-> -	dev_set_drvdata(dev, gpu);
-> -
+> -	ctx->aspace = msm_gpu_create_private_address_space(priv->gpu);
+> +	ctx->aspace = msm_gpu_create_private_address_space(priv->gpu, current);
+>  	file->driver_priv = ctx;
+>  
 >  	return 0;
+> diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+> index 3cb7aeb93fd3..76a6c5271e57 100644
+> --- a/drivers/gpu/drm/msm/msm_gem.c
+> +++ b/drivers/gpu/drm/msm/msm_gem.c
+> @@ -842,11 +842,28 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m)
+>  
+>  		seq_puts(m, "      vmas:");
+>  
+> -		list_for_each_entry(vma, &msm_obj->vmas, list)
+> -			seq_printf(m, " [%s: %08llx,%s,inuse=%d]",
+> -				vma->aspace != NULL ? vma->aspace->name : NULL,
+> -				vma->iova, vma->mapped ? "mapped" : "unmapped",
+> +		list_for_each_entry(vma, &msm_obj->vmas, list) {
+> +			const char *name, *comm;
+> +			if (vma->aspace) {
+> +				struct msm_gem_address_space *aspace = vma->aspace;
+> +				struct task_struct *task =
+> +					get_pid_task(aspace->pid, PIDTYPE_PID);
+> +				if (task) {
+> +					comm = kstrdup(task->comm, GFP_KERNEL);
+> +				} else {
+> +					comm = NULL;
+> +				}
+> +				name = aspace->name;
+> +			} else {
+> +				name = comm = NULL;
+> +			}
+> +			seq_printf(m, " [%s%s%s: aspace=%p, %08llx,%s,inuse=%d]",
+> +				name, comm ? ":" : "", comm ? comm : "",
+> +				vma->aspace, vma->iova,
+> +				vma->mapped ? "mapped" : "unmapped",
+>  				vma->inuse);
+> +			kfree(comm);
+> +		}
+>  
+>  		seq_puts(m, "\n");
+>  	}
+> diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+> index 9c573c4269cb..7b1c7a5f8eef 100644
+> --- a/drivers/gpu/drm/msm/msm_gem.h
+> +++ b/drivers/gpu/drm/msm/msm_gem.h
+> @@ -24,6 +24,11 @@ struct msm_gem_address_space {
+>  	spinlock_t lock; /* Protects drm_mm node allocation/removal */
+>  	struct msm_mmu *mmu;
+>  	struct kref kref;
+> +
+> +	/* For address spaces associated with a specific process, this
+> +	 * will be non-NULL:
+> +	 */
+> +	struct pid *pid;
+>  };
+>  
+>  struct msm_gem_vma {
+> diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
+> index 29cc1305cf37..80a8a266d68f 100644
+> --- a/drivers/gpu/drm/msm/msm_gem_vma.c
+> +++ b/drivers/gpu/drm/msm/msm_gem_vma.c
+> @@ -17,6 +17,7 @@ msm_gem_address_space_destroy(struct kref *kref)
+>  	drm_mm_takedown(&aspace->mm);
+>  	if (aspace->mmu)
+>  		aspace->mmu->funcs->destroy(aspace->mmu);
+> +	put_pid(aspace->pid);
+>  	kfree(aspace);
 >  }
 >  
 > diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index 6aa9e04e52e7..806eb0957280 100644
+> index 951850804d77..ac8961187a73 100644
 > --- a/drivers/gpu/drm/msm/msm_gpu.c
 > +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -892,7 +892,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
->  		gpu->gpu_cx = NULL;
+> @@ -825,10 +825,9 @@ static int get_clocks(struct platform_device *pdev, struct msm_gpu *gpu)
 >  
->  	gpu->pdev = pdev;
-> -	platform_set_drvdata(pdev, gpu);
-> +	platform_set_drvdata(pdev, &gpu->adreno_smmu);
+>  /* Return a new address space for a msm_drm_private instance */
+>  struct msm_gem_address_space *
+> -msm_gpu_create_private_address_space(struct msm_gpu *gpu)
+> +msm_gpu_create_private_address_space(struct msm_gpu *gpu, struct task_struct *task)
+>  {
+>  	struct msm_gem_address_space *aspace = NULL;
+> -
+>  	if (!gpu)
+>  		return NULL;
 >  
->  	msm_devfreq_init(gpu);
+> @@ -836,8 +835,11 @@ msm_gpu_create_private_address_space(struct msm_gpu *gpu)
+>  	 * If the target doesn't support private address spaces then return
+>  	 * the global one
+>  	 */
+> -	if (gpu->funcs->create_private_address_space)
+> +	if (gpu->funcs->create_private_address_space) {
+>  		aspace = gpu->funcs->create_private_address_space(gpu);
+> +		if (!IS_ERR(aspace))
+> +			aspace->pid = get_pid(task_pid(task));
+> +	}
 >  
+>  	if (IS_ERR_OR_NULL(aspace))
+>  		aspace = msm_gem_address_space_get(gpu->aspace);
 > diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> index 8bda7beaed4b..f91b141add75 100644
+> index 4052a18e18c2..59f26bd0fe42 100644
 > --- a/drivers/gpu/drm/msm/msm_gpu.h
 > +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> @@ -7,6 +7,7 @@
->  #ifndef __MSM_GPU_H__
->  #define __MSM_GPU_H__
+> @@ -298,7 +298,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+>  		const char *name, struct msm_gpu_config *config);
 >  
-> +#include <linux/adreno-smmu-priv.h>
->  #include <linux/clk.h>
->  #include <linux/interconnect.h>
->  #include <linux/pm_opp.h>
-> @@ -73,6 +74,8 @@ struct msm_gpu {
->  	struct platform_device *pdev;
->  	const struct msm_gpu_funcs *funcs;
+>  struct msm_gem_address_space *
+> -msm_gpu_create_private_address_space(struct msm_gpu *gpu);
+> +msm_gpu_create_private_address_space(struct msm_gpu *gpu, struct task_struct *task);
 >  
-> +	struct adreno_smmu_priv adreno_smmu;
-> +
->  	/* performance counters (hw & sw): */
->  	spinlock_t perf_lock;
->  	bool perfcntr_active;
-> @@ -143,7 +146,8 @@ struct msm_gpu {
+>  void msm_gpu_cleanup(struct msm_gpu *gpu);
 >  
->  static inline struct msm_gpu *dev_to_gpu(struct device *dev)
->  {
-> -	return dev_get_drvdata(dev);
-> +	struct adreno_smmu_priv *adreno_smmu = dev_get_drvdata(dev);
-> +	return container_of(adreno_smmu, struct msm_gpu, adreno_smmu);
->  }
->  
->  /* It turns out that all targets use the same ringbuffer size */
 > -- 
 > 2.26.2
 > 
+> _______________________________________________
+> Freedreno mailing list
+> Freedreno@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/freedreno
 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
