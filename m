@@ -2,113 +2,82 @@ Return-Path: <SRS0=aSVE=B3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A2FC433E1
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 07:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71957C433DF
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 08:21:30 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA7C820772
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 07:59:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3E96420658
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 08:21:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PS1luolk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA7C820772
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FAo9+ki0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E96420658
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C6FF286BCF;
-	Mon, 17 Aug 2020 07:59:33 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 068CF87E32;
+	Mon, 17 Aug 2020 08:21:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dHQ8ZKNzCTel; Mon, 17 Aug 2020 07:59:32 +0000 (UTC)
+	with ESMTP id C2YanLNurSnG; Mon, 17 Aug 2020 08:21:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9DA1A86A70;
-	Mon, 17 Aug 2020 07:59:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 537C98786B;
+	Mon, 17 Aug 2020 08:21:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79F1AC07FF;
-	Mon, 17 Aug 2020 07:59:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3470FC0051
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 07:41:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 367D1C088B;
+	Mon, 17 Aug 2020 08:21:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3832EC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 08:21:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 23E0B87E90
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 07:41:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id DDF35204B2
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 08:21:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id josCSmDe7VIV for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 07:41:03 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D2323872E9
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 07:41:02 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id a14so13932223wra.5
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 00:41:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=rHQ4xMykMaYzmKYcciJ0rrSU9YLiVKU1u6aMO/QeTf0=;
- b=PS1luolkWZY5Oh7auOQXOzCmGCVxSgnSBuYpEfGYfc/ekRTAdeYT+gbHPh0WBHHHFa
- LLD97UZg2YImVHN4zGiBX6HYTiHU5iDcOic3rY7gfgGuPbJeIAD4GQwsm49eN8n4mDls
- 4jePHz7xOSWuCCm8XOvFoLD1ngAH1UnPJWdcs+9Q4nrpZWqPM803E2zp/v34JFhQCM74
- aRBtRSjsnAx0YA7ybXrubnOgtCOH+e4y2b7BIeIugM0LxxZofa0CvpU9Dy7knZc8LKG2
- vwhDYBbPSIf/Zh7JD2FnbhTnKlPi4lNz6FpFJqc6uE97Cqxk0kZBTW0g0sMyY90Ekzk5
- P5Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=rHQ4xMykMaYzmKYcciJ0rrSU9YLiVKU1u6aMO/QeTf0=;
- b=jKaCZ0+EJJMcJM1GvQcxzJspbfKuDEuthrnhXcI5PWARA9OoAf3h2+irpZOtYFp7eQ
- UzVXMFTAeHz/v+tRPk8CouXrFpoEWneS3uJ9/l9DlTRpGeCqKUZX8+jJgDCJzppLf7zJ
- 8mtI2SgWQ9X1J8r1+HHtoTY/CP4DSdrnTPg11KJCsG5N8VbQRPNPcidI4VyxrdDDKg9T
- +JgLHs0RYbdJAclkkE3i7Go3NzpxAFmlcZFSA5wpZvmYLMeq9sOxOXiRt2PtMvg3SM6N
- CWtpS76WCADFF0wGo6WKH+qdm2EA7PZFvQuAx1a311lyG3FoltbHvePGp41B/Xa//Da2
- xH8w==
-X-Gm-Message-State: AOAM532WY0gBJw40saMwWVvJ1bWK8Hlm8RBYFj7eyFCHKgx8sQLQhaih
- mND7H023V88/tzdbAJKI1V8=
-X-Google-Smtp-Source: ABdhPJxD/SpWdp8O4H7ZsEqCH+NXbt9XIUSFps04TRqRz2irwylI4CUzkbGS1jK6P61XNnNkddSfJQ==
-X-Received: by 2002:adf:97dd:: with SMTP id t29mr13235478wrb.97.1597650061210; 
- Mon, 17 Aug 2020 00:41:01 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id g16sm26910678wrs.88.2020.08.17.00.40.59
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 17 Aug 2020 00:41:00 -0700 (PDT)
-Subject: Re: [PATCH v6 14/15] vfio: Document dual stage control
-To: "Liu, Yi L" <yi.l.liu@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>
-References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
- <1595917664-33276-15-git-send-email-yi.l.liu@intel.com>
- <aa1297cb-2bde-0cea-70a4-fc8f56d745e6@redhat.com>
- <DM5PR11MB143519ABA63F46D7864E9EA2C35F0@DM5PR11MB1435.namprd11.prod.outlook.com>
-From: Eric Auger <eric.auger.pro@gmail.com>
-Message-ID: <77c8b564-d8b8-4169-3556-5e0d91d3ea9b@gmail.com>
-Date: Mon, 17 Aug 2020 09:40:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ with ESMTP id h4idoif74J00 for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 08:21:24 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id D61DB20410
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 08:21:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=Te7ybJvVG4iKO2ohYmX5Pvjiv68xvlZXMI+4wj+EaTc=; b=FAo9+ki050pf10fKywl/9gNJTQ
+ x3y7tfPplgYWFFVugPLMoL5EzDHxr4EIGIzwq0+sVb9xkIoFbW/Dy8i19EWmeSauFXVEqJZ0iig4X
+ 7j5bYgCeagxq+CZZXNne2N0BZ1rJvU13gLxL1QoQtSeh5E/Bi6LenRtmHeNLlaaM/FonoTQli8aAt
+ A4AcTxuiJ9FF533W0MJS5nb/d8gaIUDbMkHvtr24MIgkR07xPqnjT4vDfjPs2Hcg5C/dtsSPOi8s0
+ Pl35tiScHmFYsOi9YYzLz08XY9rW0gthZ0/uCbyUa9PWCsdkLsRbo29PpH3z5Jfl9cX9JBdLVxj1I
+ 6BkVrfeg==;
+Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat
+ Linux)) id 1k7aOB-0004Z2-0d; Mon, 17 Aug 2020 08:21:07 +0000
+Date: Mon, 17 Aug 2020 09:21:06 +0100
+From: Christoph Hellwig <hch@infradead.org>
+To: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: Re: [PATCH 00/16] IOMMU driver for Kirin 960/970
+Message-ID: <20200817082106.GA16296@infradead.org>
+References: <cover.1597650455.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB143519ABA63F46D7864E9EA2C35F0@DM5PR11MB1435.namprd11.prod.outlook.com>
-Content-Language: en-US
-X-Mailman-Approved-At: Mon, 17 Aug 2020 07:59:31 +0000
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <cover.1597650455.git.mchehab+huawei@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
+ Joerg Roedel <jroedel@suse.de>, Manivannan Sadhasivam <mani@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxarm@huawei.com,
+ Wei Xu <xuwei5@hisilicon.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Chenfeng <puck.chen@hisilicon.com>,
+ mauro.chehab@huawei.com, Suzhuangluan <suzhuangluan@hisilicon.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,194 +95,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
+On Mon, Aug 17, 2020 at 09:49:59AM +0200, Mauro Carvalho Chehab wrote:
+> Add a driver for the Kirin 960/970 iommu.
+> 
+> As on the past series, this starts from the original 4.9 driver from
+> the 96boards tree:
+> 
+> 	https://github.com/96boards-hikey/linux/tree/hikey970-v4.9
+> 
+> The remaining patches add SPDX headers and make it build and run with
+> the upstream Kernel.
 
-On 8/17/20 9:00 AM, Liu, Yi L wrote:
-> Hi Eric,
-> 
->> From: Auger Eric <eric.auger@redhat.com>
->> Sent: Sunday, August 16, 2020 7:52 PM
->>
->> Hi Yi,
->>
->> On 7/28/20 8:27 AM, Liu Yi L wrote:
->>> From: Eric Auger <eric.auger@redhat.com>
->>>
->>> The VFIO API was enhanced to support nested stage control: a bunch of> new
->> ioctls and usage guideline.
->>>
->>> Let's document the process to follow to set up nested mode.
->>>
->>> Cc: Kevin Tian <kevin.tian@intel.com>
->>> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>> Cc: Alex Williamson <alex.williamson@redhat.com>
->>> Cc: Eric Auger <eric.auger@redhat.com>
->>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>> Cc: Joerg Roedel <joro@8bytes.org>
->>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->>> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
->>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->>> ---
->>> v5 -> v6:
->>> *) tweak per Eric's comments.
->>>
->>> v3 -> v4:
->>> *) add review-by from Stefan Hajnoczi
->>>
->>> v2 -> v3:
->>> *) address comments from Stefan Hajnoczi
->>>
->>> v1 -> v2:
->>> *) new in v2, compared with Eric's original version, pasid table bind
->>>    and fault reporting is removed as this series doesn't cover them.
->>>    Original version from Eric.
->>>    https://lkml.org/lkml/2020/3/20/700
->>> ---
->>>  Documentation/driver-api/vfio.rst | 75
->> +++++++++++++++++++++++++++++++++++++++
->>>  1 file changed, 75 insertions(+)
->>>
->>> diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
->>> index f1a4d3c..c0d43f0 100644
->>> --- a/Documentation/driver-api/vfio.rst
->>> +++ b/Documentation/driver-api/vfio.rst
->>> @@ -239,6 +239,81 @@ group and can access them as follows::
->>>  	/* Gratuitous device reset and go... */
->>>  	ioctl(device, VFIO_DEVICE_RESET);
->>>
->>> +IOMMU Dual Stage Control
->>> +------------------------
->>> +
->>> +Some IOMMUs support 2 stages/levels of translation. Stage corresponds
->>> +to the ARM terminology while level corresponds to Intel's terminology.
->>> +In the following text we use either without distinction.
->>> +
->>> +This is useful when the guest is exposed with a virtual IOMMU and some
->>> +devices are assigned to the guest through VFIO. Then the guest OS can
->>> +use stage-1 (GIOVA -> GPA or GVA->GPA), while the hypervisor uses stage
->>> +2 for VM isolation (GPA -> HPA).
->>> +
->>> +Under dual stage translation, the guest gets ownership of the stage-1 page
->>> +tables and also owns stage-1 configuration structures. The hypervisor owns
->>> +the root configuration structure (for security reason), including stage-2
->>> +configuration.
->> This is only true for vtd. On ARM the stage2 cfg is the Context
->> Descriptor table (aka PASID table). root cfg only store the GPA of the
->> CD table.
-> 
-> I've a check with you on the meaning of "configuration structures".
-> For Vt-d, does it mean the root table/context table/pasid table? if
-> I'm correct, then how about below description?
-Yes I agree
-> 
-> "Under dual stage translation, the guest gets ownership of the stage-1
-> configuration structures or page tables.
-Actually on ARM the guest both owns the S1 configuration (CD table) and
-S1 page tables ;-)
+Please don't add iommu drivers to staging, and just work with the
+maintainers to properly clean it up.
 
-on Intel I understand the guest only owns the S1 page tables.
-
-If confirmed, you may use such kind of explicit statement.
-
-Thanks
-
-Eric
-
- This depends on vendor. The
-> hypervisor owns the root configuration structure (for security reason),
-> including stage-2 configuration."
-> 
->>  This works as long as configuration structures and page table
->>> +formats are compatible between the virtual IOMMU and the physical IOMMU.
->>> +
->>> +Assuming the HW supports it, this nested mode is selected by choosing the
->>> +VFIO_TYPE1_NESTING_IOMMU type through:
->>> +
->>> +    ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
->>> +
->>> +This forces the hypervisor to use the stage-2, leaving stage-1 available
->>> +for guest usage. The stage-1 format and binding method are vendor specific
->> . There are reported in the nesting capability ...
-> 
-> got it.
-> 
-> "The stage-1 format and binding method are reported in nesting capability."
-> 
->>> +and reported in nesting cap (VFIO_IOMMU_TYPE1_INFO_CAP_NESTING) through
->>> +VFIO_IOMMU_GET_INFO:
->>> +
->>> +    ioctl(container->fd, VFIO_IOMMU_GET_INFO, &nesting_info);
->>> +
->>> +The nesting cap info is available only after NESTING_IOMMU is selected.
->>> +If underlying IOMMU doesn't support nesting, VFIO_SET_IOMMU fails and
->> If the underlying
-> 
-> got it.
-> 
->>> +userspace should try other IOMMU types. Details of the nesting cap info
->>> +can be found in Documentation/userspace-api/iommu.rst.
->>> +
->>> +The stage-1 page table can be bound to the IOMMU in two methods: directly>
->> +or indirectly. Direct binding requires userspace to notify VFIO of every
->> Not sure we shall use this direct/indirect terminology. I don't think
->> this is part of either ARM or Intel SPEC.
->>
->> Suggestion: On Intel, the stage1 page table info are mediated by the
->> userspace for each PASID. On ARM, the userspace directly passes the GPA
->> of the whole PASID table. Currently only Intel's binding is supported.
-> 
-> got it. this is what we want to say by ditect/indirect terminology.
-> 
-> Regards,
-> Yi Liu
-> 
->>> +guest stage-1 page table binding, while indirect binding allows userspace
->>> +to bind once with an intermediate structure (e.g. PASID table) which
->>> +indirectly links to guest stage-1 page tables. The actual binding method
->>> +depends on IOMMU vendor. Currently only the direct binding capability (
->>> +IOMMU_NESTING_FEAT_BIND_PGTBL) is supported:
->>> +
->>> +    nesting_op->flags = VFIO_IOMMU_NESTING_OP_BIND_PGTBL;
->>> +    memcpy(&nesting_op->data, &bind_data, sizeof(bind_data));
->>> +    ioctl(container->fd, VFIO_IOMMU_NESTING_OP, nesting_op);
->>> +
->>> +When multiple stage-1 page tables are supported on a device, each page
->>> +table is associated with a PASID (Process Address Space ID) to differentiate
->>> +with each other. In such case, userspace should include PASID in the
->>> +bind_data when issuing direct binding request.
->>> +
->>> +PASID could be managed per-device or system-wide which, again, depends on
->>> +IOMMU vendor and is reported in nesting cap info. When system-wide policy
->>> +is reported (IOMMU_NESTING_FEAT_SYSWIDE_PASID), e.g. as by Intel platforms,
->>> +userspace *must* allocate PASID from VFIO before attempting binding of
->>> +stage-1 page table:
->>> +
->>> +    req.flags = VFIO_IOMMU_ALLOC_PASID;
->>> +    ioctl(container, VFIO_IOMMU_PASID_REQUEST, &req);
->>> +
->>> +Once the stage-1 page table is bound to the IOMMU, the guest is allowed to
->>> +fully manage its mapping at its disposal. The IOMMU walks nested stage-1
->>> +and stage-2 page tables when serving DMA requests from assigned device, and
->>> +may cache the stage-1 mapping in the IOTLB. When required (IOMMU_NESTING_
->>> +FEAT_CACHE_INVLD), userspace *must* forward guest stage-1 invalidation to
->>> +the host, so the IOTLB is invalidated:
->>> +
->>> +    nesting_op->flags = VFIO_IOMMU_NESTING_OP_CACHE_INVLD;
->>> +    memcpy(&nesting_op->data, &cache_inv_data, sizeof(cache_inv_data));
->>> +    ioctl(container->fd, VFIO_IOMMU_NESTING_OP, nesting_op);
->>> +
->>> +Forwarded invalidations can happen at various granularity levels (page
->>> +level, context level, etc.)
->>> +
->>>  VFIO User API
->>>  -------------------------------------------------------------------------------
->>>
->>>
->> Thanks
->>
->> Eric
-> 
+I also don't think adding a totally out of date not compiling version
+is a good idea.  Please do a proper rollup, and if required (probably
+not in this case), split it into useful chunks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
