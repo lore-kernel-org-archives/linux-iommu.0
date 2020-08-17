@@ -4,98 +4,110 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B04C433DF
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 17:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCED2C433DF
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:28:21 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D28F20657
-	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 17:19:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 96B5220674
+	for <iommu@archiver.kernel.org>; Mon, 17 Aug 2020 21:28:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uyIRteLM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D28F20657
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="seHBtxOq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96B5220674
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3753720503;
-	Mon, 17 Aug 2020 17:19:02 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 55891204C6;
+	Mon, 17 Aug 2020 21:28:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jGNIRRfGCUEX; Mon, 17 Aug 2020 17:18:49 +0000 (UTC)
+	with ESMTP id 9JIbvDAfAGq1; Mon, 17 Aug 2020 21:28:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6D62D20104;
-	Mon, 17 Aug 2020 17:18:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2DE442040F;
+	Mon, 17 Aug 2020 21:28:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A026C088E;
-	Mon, 17 Aug 2020 17:18:49 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B733C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:18:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03DFBC088B;
+	Mon, 17 Aug 2020 21:28:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6BF57C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:28:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 27BD48698E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:18:47 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 665C985570
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:28:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6tkra3HtbaBn for <iommu@lists.linux-foundation.org>;
- Mon, 17 Aug 2020 17:18:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 219F9869BF
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 17:18:45 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id o18so18644576eje.7
- for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 10:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=3aWOpCZA/Y+YQtAVagpaBA4fiMS5nd1SZGxvlnabr5U=;
- b=uyIRteLMq0Wrqq71EnbDuPuH50m5MibwIwVKId5tn73lXo1zgQA6RXKAfOAkHz/j0v
- qQfZgYci1ylDYQQ6BR3jbas4YIn2FSjoO3blTI3touLapIksEq17f2rDKblWi4XxhwnI
- vS5NzTbfrZOH748ujjuRWo/BGBEl0TRtWskCK/3blzcpd5wHmAzerg3criTz2YxbcXeb
- EdSGrnyZodZucSqmXSwFkET9X/pgGUK0APXIs13NAZiswsVZZzzTLQVcWfQVSHmL28rW
- Ge/t0qj+Qe16/WbHyDlzBCkkAJfZ/+CeiCUz+DZwycZdgD9vvionS3dDuNRVehmmVR68
- ptew==
+ with ESMTP id FziEpGu4-aVk for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Aug 2020 21:28:11 +0000 (UTC)
+X-Greylist: delayed 00:20:00 by SQLgrey-1.7.6
+Received: from mail-vs1-f68.google.com (mail-vs1-f68.google.com
+ [209.85.217.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1263285566
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 21:28:11 +0000 (UTC)
+Received: by mail-vs1-f68.google.com with SMTP id a1so9042217vsp.4
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Aug 2020 14:28:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=tcd-ie.20150623.gappssmtp.com; s=20150623;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=lzbssZSqWsDNjNzFL+N6OlLzKZWUkpB6XZ73g9026HE=;
+ b=seHBtxOq0Hta3K2MkirUnvlZcptzkwbCxZ63S5NIzjY267CJ+pbWwr6wWdNxaPuTAd
+ snfmmSEMSsEbs6rYWICwJ4gsFjWvaAoly/Szwaq2OrQIN6Df9FJSXNRlGoA9Nseesym0
+ kzB/5xQJG3xLBRyGaAdkjrCDr64yQdhzgAOIimrSa8CLqIcjL2tRSCPa5YsM40jQrIB1
+ PbC65LOyRllKXCL/f2DSNxf6SVPcFNawf5ptdZtUu429Wlcajhgl2dbkPoPoYb7c912t
+ ivV2GS7rfc4739T4DEG1CB4kOsUtVX+thpcQX8SQ0CmOBq3iUkQuCupjJu7iOADLRfr+
+ 2Qjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=3aWOpCZA/Y+YQtAVagpaBA4fiMS5nd1SZGxvlnabr5U=;
- b=m0wiQMEKxjWx2gToQRpznoZwJGAOhlEfPeX1DkijZOSScArdWXi0id4oRI62NXajg4
- z3EX8tIrUCVRV9g9beWf4vvfa3JIgcYeIB9lIQY7+AgOOONHvk2umPzP8lLyTrpAsRaR
- L4eIpj/PPMGX4zCeuyEa7f1z+L9Mis+GD6lFXnLnyvgPaMSxmqWjJnIoaZVTL96BBJos
- 08gypT+/aKEd0KK/OldvGsBPd8efD7JxsSA0YtpJrNsMxxvU08YrfyHtrNnRK1oW4epY
- SAH8OW7ZJMmSJUtoWSdVMUdeLX9LdBpdGrfcg3RXZeh37Smr48HpY02s+lyf1XX4IPjI
- PJtw==
-X-Gm-Message-State: AOAM533KDtU6QV83NS5gJpONrtyEhRbQkXWi4khv8Fa/rR4WHk3CezGt
- W4q2PODy6X9yMq10KfbCkGqOjnR2uZSk/mpi
-X-Google-Smtp-Source: ABdhPJwq8yudrMb+Gat31EQu6+nRCgs3dpMMdBJdTBkVTiTF3hu+bXLOJvsORD7OrV8S1wItkGz/Gw==
-X-Received: by 2002:a17:906:c2c8:: with SMTP id
- ch8mr15507619ejb.161.1597684722697; 
- Mon, 17 Aug 2020 10:18:42 -0700 (PDT)
-Received: from localhost.localdomain
- ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id lc18sm14672502ejb.29.2020.08.17.10.18.41
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=lzbssZSqWsDNjNzFL+N6OlLzKZWUkpB6XZ73g9026HE=;
+ b=nvu9N8K35F5K4VSlN/Ts4lfDNJD00ziNjx9/3DRLX4cejk91jc6uevcIouNRXMzpZi
+ 3N+5HUa45o8MNgdUxppFcRkCfBYRp75SrXn3uWe2jtu6qPuWF1nxVZsY8ruiCZO/w2/k
+ 66S/xTDf3FPHa15yPO5TvfWJ231IJjE32PlUP/0GjmK5+uZSgnkiImRbtY0xfDEyYt+r
+ nJqVF32BibnVClZmVlAGqfotQHcAavrvsX+8NbE6Wjcn/JztGIQgSNObkt2NpTDHwXfl
+ eik6GXuRbPPo3S8A1IUzUdS3SDkzk6gxQQCAHW+3wpwNOM45knSZe3R6eYFYSle5IaIR
+ fzvg==
+X-Gm-Message-State: AOAM530OF2QuRulYjLu47ziANMi9NI9Ht8GYl/zgkUT0cooAY9WHGe+u
+ DqYJ2GE3tN2+SmWwQ7K37mxsU7AWXGVmY6N4O64=
+X-Google-Smtp-Source: ABdhPJy45z2aeZf1aCXcrEaUNgkOwdCtNG7KGYJi9PRq9pB353rv5iukS0xromsVTg0AyiekM1EDAA==
+X-Received: by 2002:a62:8881:: with SMTP id
+ l123mr12296930pfd.186.1597699198052; 
+ Mon, 17 Aug 2020 14:19:58 -0700 (PDT)
+Received: from localhost.localdomain (S0106ac17c8c0ce82.vc.shawcable.net.
+ [24.87.214.6])
+ by smtp.googlemail.com with ESMTPSA id q10sm20733468pfs.75.2020.08.17.14.19.56
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Aug 2020 10:18:42 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
- linux-mm@kvack.org
-Subject: [PATCH RESEND v9 12/13] iommu/arm-smmu-v3: Implement
- iommu_sva_bind/unbind()
-Date: Mon, 17 Aug 2020 19:15:58 +0200
-Message-Id: <20200817171558.325917-13-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200817171558.325917-1-jean-philippe@linaro.org>
-References: <20200817171558.325917-1-jean-philippe@linaro.org>
+ Mon, 17 Aug 2020 14:19:57 -0700 (PDT)
+From: Tom Murphy <murphyt7@tcd.ie>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 1/2] Add new flush_iotlb_range and handle freelists when using
+ iommu_unmap_fast
+Date: Mon, 17 Aug 2020 22:19:49 +0100
+Message-Id: <20200817211951.14794-1-murphyt7@tcd.ie>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Cc: fenghua.yu@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- catalin.marinas@arm.com, robin.murphy@arm.com, zhengxiang9@huawei.com,
- zhangfei.gao@linaro.org, will@kernel.org
+Cc: Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ linux-tegra@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ linux-rockchip@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>,
+ Andy Gross <agross@kernel.org>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>, linux-s390@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ virtualization@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Tom Murphy <murphyt7@tcd.ie>, Kukjin Kim <kgene@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,480 +125,670 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The sva_bind() function allows devices to access process address spaces
-using a PASID (aka SSID).
+Add a flush_iotlb_range to allow flushing of an iova range instead of a
+full flush in the dma-iommu path.
 
-(1) bind() allocates or gets an existing MMU notifier tied to the
-    (domain, mm) pair. Each mm gets one PASID.
+Allow the iommu_unmap_fast to return newly freed page table pages and
+pass the freelist to queue_iova in the dma-iommu ops path.
 
-(2) Any change to the address space calls invalidate_range() which sends
-    ATC invalidations (in a subsequent patch).
+This patch is useful for iommu drivers (in this case the intel iommu
+driver) which need to wait for the ioTLB to be flushed before newly
+free/unmapped page table pages can be freed. This way we can still batch
+ioTLB free operations and handle the freelists.
 
-(3) When the process address space dies, the release() notifier disables
-    the CD to allow reclaiming the page tables. Since release() has to
-    be light we do not instruct device drivers to stop DMA here, we just
-    ignore incoming page faults from this point onwards.
-
-    To avoid any event 0x0a print (C_BAD_CD) we disable translation
-    without clearing CD.V. PCIe Translation Requests and Page Requests
-    are silently denied. Don't clear the R bit because the S bit can't
-    be cleared when STALL_MODEL==0b10 (forced), and clearing R without
-    clearing S is useless. Faulting transactions will stall and will be
-    aborted by the IOPF handler.
-
-(4) After stopping DMA, the device driver releases the bond by calling
-    unbind(). We release the MMU notifier, free the PASID and the bond.
-
-Three structures keep track of bonds:
-* arm_smmu_bond: one per {device, mm} pair, the handle returned to the
-  device driver for a bind() request.
-* arm_smmu_mmu_notifier: one per {domain, mm} pair, deals with ATS/TLB
-  invalidations and clearing the context descriptor on mm exit.
-* arm_smmu_ctx_desc: one per mm, holds the pinned ASID and pgd.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
 ---
- drivers/iommu/Kconfig                         |   2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  28 +++
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 230 +++++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  32 ++-
- 4 files changed, 282 insertions(+), 10 deletions(-)
+ drivers/iommu/amd/iommu.c       | 14 ++++++++-
+ drivers/iommu/arm-smmu-v3.c     |  3 +-
+ drivers/iommu/arm-smmu.c        |  3 +-
+ drivers/iommu/dma-iommu.c       | 45 ++++++++++++++++++++-------
+ drivers/iommu/exynos-iommu.c    |  3 +-
+ drivers/iommu/intel/iommu.c     | 54 +++++++++++++++++++++------------
+ drivers/iommu/iommu.c           | 25 +++++++++++----
+ drivers/iommu/ipmmu-vmsa.c      |  3 +-
+ drivers/iommu/msm_iommu.c       |  3 +-
+ drivers/iommu/mtk_iommu.c       |  3 +-
+ drivers/iommu/omap-iommu.c      |  3 +-
+ drivers/iommu/qcom_iommu.c      |  3 +-
+ drivers/iommu/rockchip-iommu.c  |  3 +-
+ drivers/iommu/s390-iommu.c      |  3 +-
+ drivers/iommu/sun50i-iommu.c    |  3 +-
+ drivers/iommu/tegra-gart.c      |  3 +-
+ drivers/iommu/tegra-smmu.c      |  3 +-
+ drivers/iommu/virtio-iommu.c    |  3 +-
+ drivers/vfio/vfio_iommu_type1.c |  2 +-
+ include/linux/iommu.h           | 21 +++++++++++--
+ 20 files changed, 148 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index b1d592cd9984..a8eb8b7f35f7 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -316,6 +316,8 @@ config ARM_SMMU_V3
- config ARM_SMMU_V3_SVA
- 	bool "Shared Virtual Addressing support for the ARM SMMUv3"
- 	depends on ARM_SMMU_V3
-+	select IOMMU_SVA_LIB
-+	select MMU_NOTIFIER
- 	help
- 	  Support for sharing process address spaces with devices using the
- 	  SMMUv3.
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index ba34914813ff..6365c81a4614 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -677,10 +677,18 @@ struct arm_smmu_domain {
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 2f22326ee4df..25fbacab23c3 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2513,7 +2513,8 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
  
- 	struct list_head		devices;
- 	spinlock_t			devices_lock;
+ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 			      size_t page_size,
+-			      struct iommu_iotlb_gather *gather)
++			      struct iommu_iotlb_gather *gather,
++			      struct page **freelist)
+ {
+ 	struct protection_domain *domain = to_pdomain(dom);
+ 	struct domain_pgtable pgtable;
+@@ -2636,6 +2637,16 @@ static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
+ 	spin_unlock_irqrestore(&dom->lock, flags);
+ }
+ 
++static void amd_iommu_flush_iotlb_range(struct iommu_domain *domain,
++					unsigned long iova, size_t size,
++					struct page *freelist)
++{
++	struct protection_domain *dom = to_pdomain(domain);
 +
-+	struct list_head		mmu_notifiers;
++	domain_flush_pages(dom, iova, size);
++	domain_flush_complete(dom);
++}
++
+ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
+ 				 struct iommu_iotlb_gather *gather)
+ {
+@@ -2675,6 +2686,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
++	.flush_iotlb_range = amd_iommu_flush_iotlb_range,
+ 	.iotlb_sync = amd_iommu_iotlb_sync,
+ 	.def_domain_type = amd_iommu_def_domain_type,
+ };
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index f578677a5c41..8d328dc25326 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2854,7 +2854,8 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			     size_t size, struct iommu_iotlb_gather *gather)
++			     size_t size, struct iommu_iotlb_gather *gather,
++			     struct page **freelist)
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 243bc4cb2705..0cd0dfc89875 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1234,7 +1234,8 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			     size_t size, struct iommu_iotlb_gather *gather)
++			     size_t size, struct iommu_iotlb_gather *gather,
++			     struct page **freelist)
+ {
+ 	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 4959f5df21bd..7433f74d921a 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -50,6 +50,19 @@ struct iommu_dma_cookie {
+ 	struct iommu_domain		*fq_domain;
  };
  
-+static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
++
++static void iommu_dma_entry_dtor(unsigned long data)
 +{
-+	return container_of(dom, struct arm_smmu_domain, domain);
++	struct page *freelist = (struct page *)data;
++
++	while (freelist != NULL) {
++		unsigned long p = (unsigned long)page_address(freelist);
++
++		freelist = freelist->freelist;
++		free_page(p);
++	}
 +}
 +
- extern struct xarray arm_smmu_asid_xa;
- extern struct mutex arm_smmu_asid_lock;
-+extern struct arm_smmu_ctx_desc quiet_cd;
- 
- int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 			    struct arm_smmu_ctx_desc *cd);
-@@ -693,6 +701,11 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
- bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
- int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
-+struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
-+				    void *drvdata);
-+void arm_smmu_sva_unbind(struct iommu_sva *handle);
-+int arm_smmu_sva_get_pasid(struct iommu_sva *handle);
-+void arm_smmu_sva_notifier_synchronize(void);
- #else /* CONFIG_ARM_SMMU_V3_SVA */
- static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
  {
-@@ -718,5 +731,20 @@ static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
- {
- 	return -ENODEV;
- }
-+
-+static inline struct iommu_sva *
-+arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+static inline void arm_smmu_sva_unbind(struct iommu_sva *handle) {}
-+
-+static inline int arm_smmu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	return IOMMU_PASID_INVALID;
-+}
-+
-+static inline void arm_smmu_sva_notifier_synchronize(void) {}
- #endif /* CONFIG_ARM_SMMU_V3_SVA */
- #endif /* _ARM_SMMU_V3_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 28027620cf2e..fb9bfda2d192 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -5,11 +5,35 @@
- 
- #include <linux/mm.h>
- #include <linux/mmu_context.h>
-+#include <linux/mmu_notifier.h>
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
-+#include "../../iommu-sva-lib.h"
- #include "../../io-pgtable-arm.h"
- 
-+struct arm_smmu_mmu_notifier {
-+	struct mmu_notifier		mn;
-+	struct arm_smmu_ctx_desc	*cd;
-+	bool				cleared;
-+	refcount_t			refs;
-+	struct list_head		list;
-+	struct arm_smmu_domain		*domain;
-+};
-+
-+#define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn)
-+
-+struct arm_smmu_bond {
-+	struct iommu_sva		sva;
-+	struct mm_struct		*mm;
-+	struct arm_smmu_mmu_notifier	*smmu_mn;
-+	struct list_head		list;
-+	refcount_t			refs;
-+};
-+
-+#define sva_to_bond(handle) \
-+	container_of(handle, struct arm_smmu_bond, sva)
-+
- static DEFINE_MUTEX(sva_lock);
- 
- /*
-@@ -65,7 +89,6 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
- 	return NULL;
- }
- 
--__maybe_unused
- static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
- {
- 	u16 asid;
-@@ -146,7 +169,6 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
- 	return err < 0 ? ERR_PTR(err) : ret;
- }
- 
--__maybe_unused
- static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
- {
- 	if (arm_smmu_free_asid(cd)) {
-@@ -156,6 +178,201 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+ 	if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
+@@ -344,7 +357,8 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	if (!cookie->fq_domain && !iommu_domain_get_attr(domain,
+ 			DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) && attr) {
+ 		cookie->fq_domain = domain;
+-		init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all, NULL);
++		init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
++				iommu_dma_entry_dtor);
  	}
+ 
+ 	if (!dev)
+@@ -438,7 +452,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
  }
  
-+static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
-+{
-+	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
-+	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
-+
-+	mutex_lock(&sva_lock);
-+	if (smmu_mn->cleared) {
-+		mutex_unlock(&sva_lock);
-+		return;
-+	}
-+
-+	/*
-+	 * DMA may still be running. Keep the cd valid to avoid C_BAD_CD events,
-+	 * but disable translation.
-+	 */
-+	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
-+
-+	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-+
-+	smmu_mn->cleared = true;
-+	mutex_unlock(&sva_lock);
-+}
-+
-+static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
-+{
-+	kfree(mn_to_smmu(mn));
-+}
-+
-+static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
-+	.release		= arm_smmu_mm_release,
-+	.free_notifier		= arm_smmu_mmu_notifier_free,
-+};
-+
-+/* Allocate or get existing MMU notifier for this {domain, mm} pair */
-+static struct arm_smmu_mmu_notifier *
-+arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
-+			  struct mm_struct *mm)
-+{
-+	int ret;
-+	struct arm_smmu_ctx_desc *cd;
-+	struct arm_smmu_mmu_notifier *smmu_mn;
-+
-+	list_for_each_entry(smmu_mn, &smmu_domain->mmu_notifiers, list) {
-+		if (smmu_mn->mn.mm == mm) {
-+			refcount_inc(&smmu_mn->refs);
-+			return smmu_mn;
-+		}
-+	}
-+
-+	cd = arm_smmu_alloc_shared_cd(mm);
-+	if (IS_ERR(cd))
-+		return ERR_CAST(cd);
-+
-+	smmu_mn = kzalloc(sizeof(*smmu_mn), GFP_KERNEL);
-+	if (!smmu_mn) {
-+		ret = -ENOMEM;
-+		goto err_free_cd;
-+	}
-+
-+	refcount_set(&smmu_mn->refs, 1);
-+	smmu_mn->cd = cd;
-+	smmu_mn->domain = smmu_domain;
-+	smmu_mn->mn.ops = &arm_smmu_mmu_notifier_ops;
-+
-+	ret = mmu_notifier_register(&smmu_mn->mn, mm);
-+	if (ret) {
-+		kfree(smmu_mn);
-+		goto err_free_cd;
-+	}
-+
-+	ret = arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, cd);
-+	if (ret)
-+		goto err_put_notifier;
-+
-+	list_add(&smmu_mn->list, &smmu_domain->mmu_notifiers);
-+	return smmu_mn;
-+
-+err_put_notifier:
-+	/* Frees smmu_mn */
-+	mmu_notifier_put(&smmu_mn->mn);
-+err_free_cd:
-+	arm_smmu_free_shared_cd(cd);
-+	return ERR_PTR(ret);
-+}
-+
-+static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
-+{
-+	struct mm_struct *mm = smmu_mn->mn.mm;
-+	struct arm_smmu_ctx_desc *cd = smmu_mn->cd;
-+	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
-+
-+	if (!refcount_dec_and_test(&smmu_mn->refs))
-+		return;
-+
-+	list_del(&smmu_mn->list);
-+	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, NULL);
-+
-+	/*
-+	 * If we went through clear(), we've already invalidated, and no
-+	 * new TLB entry can have been formed.
-+	 */
-+	if (!smmu_mn->cleared)
-+		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-+
-+	/* Frees smmu_mn */
-+	mmu_notifier_put(&smmu_mn->mn);
-+	arm_smmu_free_shared_cd(cd);
-+}
-+
-+static struct iommu_sva *
-+__arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
-+{
-+	int ret;
-+	struct arm_smmu_bond *bond;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (!master || !master->sva_enabled)
-+		return ERR_PTR(-ENODEV);
-+
-+	/* If bind() was already called for this {dev, mm} pair, reuse it. */
-+	list_for_each_entry(bond, &master->bonds, list) {
-+		if (bond->mm == mm) {
-+			refcount_inc(&bond->refs);
-+			return &bond->sva;
-+		}
-+	}
-+
-+	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
-+	if (!bond)
-+		return ERR_PTR(-ENOMEM);
-+
-+	/* Allocate a PASID for this mm if necessary */
-+	ret = iommu_sva_alloc_pasid(mm, 1, (1U << master->ssid_bits) - 1);
-+	if (ret)
-+		goto err_free_bond;
-+
-+	bond->mm = mm;
-+	bond->sva.dev = dev;
-+	refcount_set(&bond->refs, 1);
-+
-+	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
-+	if (IS_ERR(bond->smmu_mn)) {
-+		ret = PTR_ERR(bond->smmu_mn);
-+		goto err_free_pasid;
-+	}
-+
-+	list_add(&bond->list, &master->bonds);
-+	return &bond->sva;
-+
-+err_free_pasid:
-+	iommu_sva_free_pasid(mm);
-+err_free_bond:
-+	kfree(bond);
-+	return ERR_PTR(ret);
-+}
-+
-+struct iommu_sva *
-+arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-+{
-+	struct iommu_sva *handle;
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-+		return ERR_PTR(-EINVAL);
-+
-+	mutex_lock(&sva_lock);
-+	handle = __arm_smmu_sva_bind(dev, mm);
-+	mutex_unlock(&sva_lock);
-+	return handle;
-+}
-+
-+void arm_smmu_sva_unbind(struct iommu_sva *handle)
-+{
-+	struct arm_smmu_bond *bond = sva_to_bond(handle);
-+
-+	mutex_lock(&sva_lock);
-+	if (refcount_dec_and_test(&bond->refs)) {
-+		list_del(&bond->list);
-+		arm_smmu_mmu_notifier_put(bond->smmu_mn);
-+		iommu_sva_free_pasid(bond->mm);
-+		kfree(bond);
-+	}
-+	mutex_unlock(&sva_lock);
-+}
-+
-+int arm_smmu_sva_get_pasid(struct iommu_sva *handle)
-+{
-+	struct arm_smmu_bond *bond = sva_to_bond(handle);
-+
-+	return bond->mm->pasid;
-+}
-+
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+-		dma_addr_t iova, size_t size)
++		dma_addr_t iova, size_t size, struct page *freelist)
  {
- 	unsigned long reg, fld;
-@@ -245,3 +462,12 @@ int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
+ 	struct iova_domain *iovad = &cookie->iovad;
  
+@@ -447,7 +461,8 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 		cookie->msi_iova -= size;
+ 	else if (cookie->fq_domain)	/* non-strict mode */
+ 		queue_iova(iovad, iova_pfn(iovad, iova),
+-				size >> iova_shift(iovad), 0);
++				size >> iova_shift(iovad),
++				(unsigned long) freelist);
+ 	else
+ 		free_iova_fast(iovad, iova_pfn(iovad, iova),
+ 				size >> iova_shift(iovad));
+@@ -461,18 +476,26 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
+ 	struct iova_domain *iovad = &cookie->iovad;
+ 	size_t iova_off = iova_offset(iovad, dma_addr);
+ 	struct iommu_iotlb_gather iotlb_gather;
++	struct page *freelist = NULL;
+ 	size_t unmapped;
+ 
+ 	dma_addr -= iova_off;
+ 	size = iova_align(iovad, size + iova_off);
+ 	iommu_iotlb_gather_init(&iotlb_gather);
+ 
+-	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather);
++	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather,
++			&freelist);
+ 	WARN_ON(unmapped != size);
+ 
+-	if (!cookie->fq_domain)
+-		iommu_tlb_sync(domain, &iotlb_gather);
+-	iommu_dma_free_iova(cookie, dma_addr, size);
++	if (!cookie->fq_domain) {
++		if (domain->ops->flush_iotlb_range)
++			domain->ops->flush_iotlb_range(domain, dma_addr, size,
++					freelist);
++		else
++			iommu_tlb_sync(domain, &iotlb_gather);
++	}
++
++	iommu_dma_free_iova(cookie, dma_addr, size, freelist);
+ }
+ 
+ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+@@ -494,7 +517,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ 		return DMA_MAPPING_ERROR;
+ 
+ 	if (iommu_map_atomic(domain, iova, phys - iova_off, size, prot)) {
+-		iommu_dma_free_iova(cookie, iova, size);
++		iommu_dma_free_iova(cookie, iova, size, NULL);
+ 		return DMA_MAPPING_ERROR;
+ 	}
+ 	return iova + iova_off;
+@@ -649,7 +672,7 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ out_free_sg:
+ 	sg_free_table(&sgt);
+ out_free_iova:
+-	iommu_dma_free_iova(cookie, iova, size);
++	iommu_dma_free_iova(cookie, iova, size, NULL);
+ out_free_pages:
+ 	__iommu_dma_free_pages(pages, count);
+ 	return NULL;
+@@ -900,7 +923,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	return __finalise_sg(dev, sg, nents, iova);
+ 
+ out_free_iova:
+-	iommu_dma_free_iova(cookie, iova, iova_len);
++	iommu_dma_free_iova(cookie, iova, iova_len, NULL);
+ out_restore_sg:
+ 	__invalidate_sg(sg, nents);
+ 	return 0;
+@@ -1194,7 +1217,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	return msi_page;
+ 
+ out_free_iova:
+-	iommu_dma_free_iova(cookie, iova, size);
++	iommu_dma_free_iova(cookie, iova, size, NULL);
+ out_free_page:
+ 	kfree(msi_page);
+ 	return NULL;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 60c8a56e4a3f..5d98985e60a2 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1129,7 +1129,8 @@ static void exynos_iommu_tlb_invalidate_entry(struct exynos_iommu_domain *domain
+ 
+ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
+ 				 unsigned long l_iova, size_t size,
+-				 struct iommu_iotlb_gather *gather)
++				 struct iommu_iotlb_gather *gather,
++				 struct page **freelist)
+ {
+ 	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
+ 	sysmmu_iova_t iova = (sysmmu_iova_t)l_iova;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 237a470e1e9c..878178fe48f8 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1160,17 +1160,17 @@ static struct page *dma_pte_clear_level(struct dmar_domain *domain, int level,
+    pages can only be freed after the IOTLB flush has been done. */
+ static struct page *domain_unmap(struct dmar_domain *domain,
+ 				 unsigned long start_pfn,
+-				 unsigned long last_pfn)
++				 unsigned long last_pfn,
++				 struct page *freelist)
+ {
+-	struct page *freelist;
+-
+ 	BUG_ON(!domain_pfn_supported(domain, start_pfn));
+ 	BUG_ON(!domain_pfn_supported(domain, last_pfn));
+ 	BUG_ON(start_pfn > last_pfn);
+ 
+ 	/* we don't need lock here; nobody else touches the iova range */
+ 	freelist = dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
+-				       domain->pgd, 0, start_pfn, last_pfn, NULL);
++				       domain->pgd, 0, start_pfn, last_pfn,
++				       freelist);
+ 
+ 	/* free pgd */
+ 	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
+@@ -1924,7 +1924,8 @@ static void domain_exit(struct dmar_domain *domain)
+ 	if (domain->pgd) {
+ 		struct page *freelist;
+ 
+-		freelist = domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw));
++		freelist = domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw),
++				NULL);
+ 		dma_free_pagelist(freelist);
+ 	}
+ 
+@@ -3480,7 +3481,7 @@ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+ 	if (dev_is_pci(dev))
+ 		pdev = to_pci_dev(dev);
+ 
+-	freelist = domain_unmap(domain, start_pfn, last_pfn);
++	freelist = domain_unmap(domain, start_pfn, last_pfn, NULL);
+ 	if (intel_iommu_strict || (pdev && pdev->untrusted) ||
+ 			!has_iova_flush_queue(&domain->iovad)) {
+ 		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
+@@ -4575,7 +4576,8 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
+ 			struct page *freelist;
+ 
+ 			freelist = domain_unmap(si_domain,
+-						start_vpfn, last_vpfn);
++						start_vpfn, last_vpfn,
++						NULL);
+ 
+ 			rcu_read_lock();
+ 			for_each_active_iommu(iommu, drhd)
+@@ -5540,13 +5542,12 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 
+ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 				unsigned long iova, size_t size,
+-				struct iommu_iotlb_gather *gather)
++				struct iommu_iotlb_gather *gather,
++				struct page **freelist)
+ {
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+-	struct page *freelist = NULL;
+ 	unsigned long start_pfn, last_pfn;
+-	unsigned int npages;
+-	int iommu_id, level = 0;
++	int level = 0;
+ 
+ 	/* Cope with horrid API which requires us to unmap more than the
+ 	   size argument if it happens to be a large-page mapping. */
+@@ -5558,22 +5559,36 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	start_pfn = iova >> VTD_PAGE_SHIFT;
+ 	last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
+ 
+-	freelist = domain_unmap(dmar_domain, start_pfn, last_pfn);
++	*freelist = domain_unmap(dmar_domain, start_pfn, last_pfn, *freelist);
++
++	if (dmar_domain->max_addr == iova + size)
++		dmar_domain->max_addr = iova;
+ 
+-	npages = last_pfn - start_pfn + 1;
++	return size;
++}
++
++static void intel_iommu_flush_iotlb_range(struct iommu_domain *domain, unsigned
++		long iova, size_t size,
++		struct page *freelist)
++{
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	unsigned long start_pfn, last_pfn;
++	unsigned long iova_pfn = IOVA_PFN(iova);
++	unsigned long nrpages;
++	int iommu_id;
++
++	nrpages = aligned_nrpages(iova, size);
++	start_pfn = mm_to_dma_pfn(iova_pfn);
++	last_pfn = start_pfn + nrpages - 1;
+ 
+ 	for_each_domain_iommu(iommu_id, dmar_domain)
+ 		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
+-				      start_pfn, npages, !freelist, 0);
++				      start_pfn, nrpages, !freelist, 0);
+ 
+ 	dma_free_pagelist(freelist);
+-
+-	if (dmar_domain->max_addr == iova + size)
+-		dmar_domain->max_addr = iova;
+-
+-	return size;
+ }
+ 
++
+ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					    dma_addr_t iova)
+ {
+@@ -6058,6 +6073,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.aux_get_pasid		= intel_iommu_aux_get_pasid,
+ 	.map			= intel_iommu_map,
+ 	.unmap			= intel_iommu_unmap,
++	.flush_iotlb_range	= intel_iommu_flush_iotlb_range,
+ 	.iova_to_phys		= intel_iommu_iova_to_phys,
+ 	.probe_device		= intel_iommu_probe_device,
+ 	.probe_finalize		= intel_iommu_probe_finalize,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b6858adc4f17..9065127d7e9c 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2245,11 +2245,13 @@ EXPORT_SYMBOL_GPL(iommu_map_atomic);
+ 
+ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 			    unsigned long iova, size_t size,
+-			    struct iommu_iotlb_gather *iotlb_gather)
++			    struct iommu_iotlb_gather *iotlb_gather,
++			    struct page **freelist)
+ {
+ 	const struct iommu_ops *ops = domain->ops;
+ 	size_t unmapped_page, unmapped = 0;
+ 	unsigned long orig_iova = iova;
++	struct page *freelist_head = NULL;
+ 	unsigned int min_pagesz;
+ 
+ 	if (unlikely(ops->unmap == NULL ||
+@@ -2282,7 +2284,8 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 	while (unmapped < size) {
+ 		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
+ 
+-		unmapped_page = ops->unmap(domain, iova, pgsize, iotlb_gather);
++		unmapped_page = ops->unmap(domain, iova, pgsize, iotlb_gather,
++				&freelist_head);
+ 		if (!unmapped_page)
+ 			break;
+ 
+@@ -2293,6 +2296,9 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 		unmapped += unmapped_page;
+ 	}
+ 
++	if (freelist)
++		*freelist = freelist_head;
++
+ 	trace_unmap(orig_iova, size, unmapped);
+ 	return unmapped;
+ }
+@@ -2300,12 +2306,18 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ size_t iommu_unmap(struct iommu_domain *domain,
+ 		   unsigned long iova, size_t size)
+ {
++	const struct iommu_ops *ops = domain->ops;
+ 	struct iommu_iotlb_gather iotlb_gather;
++	struct page *freelist;
+ 	size_t ret;
+ 
+ 	iommu_iotlb_gather_init(&iotlb_gather);
+-	ret = __iommu_unmap(domain, iova, size, &iotlb_gather);
+-	iommu_tlb_sync(domain, &iotlb_gather);
++	ret = __iommu_unmap(domain, iova, size, &iotlb_gather, &freelist);
++
++	if (ops->flush_iotlb_range)
++		ops->flush_iotlb_range(domain, iova, ret, freelist);
++	else
++		iommu_tlb_sync(domain, &iotlb_gather);
+ 
+ 	return ret;
+ }
+@@ -2313,9 +2325,10 @@ EXPORT_SYMBOL_GPL(iommu_unmap);
+ 
+ size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			unsigned long iova, size_t size,
+-			struct iommu_iotlb_gather *iotlb_gather)
++			struct iommu_iotlb_gather *iotlb_gather,
++			struct page **freelist)
+ {
+-	return __iommu_unmap(domain, iova, size, iotlb_gather);
++	return __iommu_unmap(domain, iova, size, iotlb_gather, freelist);
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+ 
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 6de86e73dfc3..08c39e95e387 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -690,7 +690,8 @@ static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
+ }
+ 
+ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+-			  size_t size, struct iommu_iotlb_gather *gather)
++			  size_t size, struct iommu_iotlb_gather *gather,
++			  struct page **freelist)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3d8a63555c25..8a987067771c 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -498,7 +498,8 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			      size_t len, struct iommu_iotlb_gather *gather)
++			      size_t len, struct iommu_iotlb_gather *gather,
++			      struct page **freelist)
+ {
+ 	struct msm_priv *priv = to_msm_priv(domain);
+ 	unsigned long flags;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2be96f1cdbd2..b97d35a7d817 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -402,7 +402,8 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 
+ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+ 			      unsigned long iova, size_t size,
+-			      struct iommu_iotlb_gather *gather)
++			      struct iommu_iotlb_gather *gather,
++			      struct page **freelist)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index c8282cc212cb..17d3cfcb8cd3 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1367,7 +1367,8 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
+ }
+ 
+ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
+-			       size_t size, struct iommu_iotlb_gather *gather)
++			       size_t size, struct iommu_iotlb_gather *gather,
++			       struct page **freelist)
+ {
+ 	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
+ 	struct device *dev = omap_domain->dev;
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index d176df569af8..9c66261ce59e 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -444,7 +444,8 @@ static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t size, struct iommu_iotlb_gather *gather)
++			       size_t size, struct iommu_iotlb_gather *gather,
++			       struct page **freelist)
+ {
+ 	size_t ret;
+ 	unsigned long flags;
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index d25c2486ca07..d508c037081a 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -795,7 +795,8 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+ }
+ 
+ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+-			     size_t size, struct iommu_iotlb_gather *gather)
++			     size_t size, struct iommu_iotlb_gather *gather,
++			     struct page **freelist)
+ {
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 8895dbb705eb..8c96659acbe2 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -305,7 +305,8 @@ static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
+ 
+ static size_t s390_iommu_unmap(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+-			       struct iommu_iotlb_gather *gather)
++			       struct iommu_iotlb_gather *gather,
++			       struct page **freelist)
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	int flags = ZPCI_PTE_INVALID;
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index 3b1bf2fb94f5..fb0558b82dfa 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -552,7 +552,8 @@ static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t sun50i_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-				 size_t size, struct iommu_iotlb_gather *gather)
++				 size_t size, struct iommu_iotlb_gather *gather,
++				 struct page **freelist)
+ {
+ 	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+ 	phys_addr_t pt_phys;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 5fbdff6ff41a..22168376c429 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -207,7 +207,8 @@ static inline int __gart_iommu_unmap(struct gart_device *gart,
+ }
+ 
+ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t bytes, struct iommu_iotlb_gather *gather)
++			       size_t bytes, struct iommu_iotlb_gather *gather,
++			       struct page **freelist)
+ {
+ 	struct gart_device *gart = gart_handle;
+ 	int err;
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 7426b7666e2b..1ac2ac851cfe 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -686,7 +686,8 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			       size_t size, struct iommu_iotlb_gather *gather)
++			       size_t size, struct iommu_iotlb_gather *gather,
++			       struct page **freelist)
+ {
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+ 	dma_addr_t pte_dma;
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index f6f07489a9aa..ea4d527b5e64 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -762,7 +762,8 @@ static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+ }
+ 
+ static size_t viommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			   size_t size, struct iommu_iotlb_gather *gather)
++			   size_t size, struct iommu_iotlb_gather *gather,
++			   struct page **freelist)
+ {
+ 	int ret = 0;
+ 	size_t unmapped;
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 5e556ac9102a..570ebf878fea 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -812,7 +812,7 @@ static size_t unmap_unpin_fast(struct vfio_domain *domain,
+ 
+ 	if (entry) {
+ 		unmapped = iommu_unmap_fast(domain->domain, *iova, len,
+-					    iotlb_gather);
++					    iotlb_gather, NULL);
+ 
+ 		if (!unmapped) {
+ 			kfree(entry);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 5f0b7859d2eb..77e773d03f22 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -198,6 +198,7 @@ struct iommu_iotlb_gather {
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
+  * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
++ * @flush_iotlb_range: Flush given iova range of hardware TLBs for this domain
+  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
+  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
+  *            queue
+@@ -248,8 +249,12 @@ struct iommu_ops {
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+-		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
++		     size_t size, struct iommu_iotlb_gather *iotlb_gather,
++		     struct page **freelist);
+ 	void (*flush_iotlb_all)(struct iommu_domain *domain);
++	void (*flush_iotlb_range)(struct iommu_domain *domain,
++				  unsigned long iova, size_t size,
++				  struct page *freelist);
+ 	void (*iotlb_sync_map)(struct iommu_domain *domain);
+ 	void (*iotlb_sync)(struct iommu_domain *domain,
+ 			   struct iommu_iotlb_gather *iotlb_gather);
+@@ -447,7 +452,8 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			  size_t size);
+ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+-			       struct iommu_iotlb_gather *iotlb_gather);
++			       struct iommu_iotlb_gather *iotlb_gather,
++			       struct page **freelist);
+ extern size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 			   struct scatterlist *sg,unsigned int nents, int prot);
+ extern size_t iommu_map_sg_atomic(struct iommu_domain *domain,
+@@ -542,6 +548,14 @@ static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
+ 		domain->ops->flush_iotlb_all(domain);
+ }
+ 
++static inline void flush_iotlb_range(struct iommu_domain *domain,
++				     unsigned long iova, size_t size,
++				     struct page *freelist)
++{
++	if (domain->ops->flush_iotlb_range)
++		domain->ops->flush_iotlb_range(domain, iova, size, freelist);
++}
++
+ static inline void iommu_tlb_sync(struct iommu_domain *domain,
+ 				  struct iommu_iotlb_gather *iotlb_gather)
+ {
+@@ -728,7 +742,8 @@ static inline size_t iommu_unmap(struct iommu_domain *domain,
+ 
+ static inline size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 				      unsigned long iova, int gfp_order,
+-				      struct iommu_iotlb_gather *iotlb_gather)
++				      struct iommu_iotlb_gather *iotlb_gather,
++				      struct page **freelist)
+ {
  	return 0;
  }
-+
-+void arm_smmu_sva_notifier_synchronize(void)
-+{
-+	/*
-+	 * Some MMU notifiers may still be waiting to be freed, using
-+	 * arm_smmu_mmu_notifier_free(). Wait for them.
-+	 */
-+	mmu_notifier_synchronize();
-+}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 5ed5bb42298f..ae93cdd09eff 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -71,6 +71,12 @@ struct arm_smmu_option_prop {
- DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
- DEFINE_MUTEX(arm_smmu_asid_lock);
- 
-+/*
-+ * Special value used by SVA when a process dies, to quiesce a CD without
-+ * disabling it.
-+ */
-+struct arm_smmu_ctx_desc quiet_cd = { 0 };
-+
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
- 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-@@ -86,11 +92,6 @@ static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
- 	return smmu->base + offset;
- }
- 
--static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
--{
--	return container_of(dom, struct arm_smmu_domain, domain);
--}
--
- static void parse_driver_options(struct arm_smmu_device *smmu)
- {
- 	int i = 0;
-@@ -974,7 +975,9 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 	 * (2) Install a secondary CD, for SID+SSID traffic.
- 	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
- 	 *     CD, then invalidate the old entry and mappings.
--	 * (4) Remove a secondary CD.
-+	 * (4) Quiesce the context without clearing the valid bit. Disable
-+	 *     translation, and ignore any translation fault.
-+	 * (5) Remove a secondary CD.
- 	 */
- 	u64 val;
- 	bool cd_live;
-@@ -991,8 +994,10 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 	val = le64_to_cpu(cdptr[0]);
- 	cd_live = !!(val & CTXDESC_CD_0_V);
- 
--	if (!cd) { /* (4) */
-+	if (!cd) { /* (5) */
- 		val = 0;
-+	} else if (cd == &quiet_cd) { /* (4) */
-+		val |= CTXDESC_CD_0_TCR_EPD0;
- 	} else if (cd_live) { /* (3) */
- 		val &= ~CTXDESC_CD_0_ASID;
- 		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
-@@ -1785,6 +1790,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	mutex_init(&smmu_domain->init_mutex);
- 	INIT_LIST_HEAD(&smmu_domain->devices);
- 	spin_lock_init(&smmu_domain->devices_lock);
-+	INIT_LIST_HEAD(&smmu_domain->mmu_notifiers);
- 
- 	return &smmu_domain->domain;
- }
-@@ -2576,6 +2582,9 @@ static struct iommu_ops arm_smmu_ops = {
- 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
- 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
- 	.dev_disable_feat	= arm_smmu_dev_disable_feature,
-+	.sva_bind		= arm_smmu_sva_bind,
-+	.sva_unbind		= arm_smmu_sva_unbind,
-+	.sva_get_pasid		= arm_smmu_sva_get_pasid,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
- 
-@@ -3595,6 +3604,12 @@ static const struct of_device_id arm_smmu_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
-+static void arm_smmu_driver_unregister(struct platform_driver *drv)
-+{
-+	arm_smmu_sva_notifier_synchronize();
-+	platform_driver_unregister(drv);
-+}
-+
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
- 		.name			= "arm-smmu-v3",
-@@ -3605,7 +3620,8 @@ static struct platform_driver arm_smmu_driver = {
- 	.remove	= arm_smmu_device_remove,
- 	.shutdown = arm_smmu_device_shutdown,
- };
--module_platform_driver(arm_smmu_driver);
-+module_driver(arm_smmu_driver, platform_driver_register,
-+	      arm_smmu_driver_unregister);
- 
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
- MODULE_AUTHOR("Will Deacon <will@kernel.org>");
 -- 
-2.28.0
+2.20.1
 
 _______________________________________________
 iommu mailing list
