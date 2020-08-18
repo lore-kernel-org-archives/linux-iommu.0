@@ -2,100 +2,139 @@ Return-Path: <SRS0=kAxJ=B4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C842CC433E1
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 06:59:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B43C433DF
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 07:51:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9ED2620639
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 06:59:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 467A82067C
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 07:51:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LYkatUZM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9ED2620639
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="gVTsDwN3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 467A82067C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 754A284F12;
-	Tue, 18 Aug 2020 06:59:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RCQ453P2XzSN; Tue, 18 Aug 2020 06:59:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5B6AC84EB9;
-	Tue, 18 Aug 2020 06:59:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 469E4C07FF;
-	Tue, 18 Aug 2020 06:59:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23EFEC0051
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 06:59:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B8F712036B
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 06:59:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0F75B20380;
+	Tue, 18 Aug 2020 07:51:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6QT1ufSmznK5; Tue, 18 Aug 2020 07:50:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id DFC3020365;
+	Tue, 18 Aug 2020 07:50:58 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C90D3C07FF;
+	Tue, 18 Aug 2020 07:50:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33BF5C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 07:50:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 21BB087524
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 07:50:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OpHYcKcwlZrd for <iommu@lists.linux-foundation.org>;
- Tue, 18 Aug 2020 06:59:30 +0000 (UTC)
+ with ESMTP id 0cPvZnv3b4Ke for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Aug 2020 07:50:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [205.139.110.61])
- by silver.osuosl.org (Postfix) with ESMTPS id 6F7052035B
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 06:59:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1597733969;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=37NUzz3HuNt0ce6fYnqdes27+H+ml1fnL0oRSkA6o/I=;
- b=LYkatUZMK9pl/18u6DAYkPKdWNhiw40SYY4wyscFcnGer6RZ88y5g/IJEbYef5/zCOJQmA
- mwTZUlTKVzJMbwS2Px0RRTgdtW8WNarqEx1joeumqTTcJyEIrAYZP+aqZtTU4AMAd8gZT0
- ExDR2yGQKSkzcliW+vEymtr/GbozAVg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-252-vAFKfDnoO7W9sBeXNpLEBA-1; Tue, 18 Aug 2020 02:59:25 -0400
-X-MC-Unique: vAFKfDnoO7W9sBeXNpLEBA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78744425D3;
- Tue, 18 Aug 2020 06:59:23 +0000 (UTC)
-Received: from [10.36.113.93] (ovpn-113-93.ams2.redhat.com [10.36.113.93])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id F1855702F9;
- Tue, 18 Aug 2020 06:59:12 +0000 (UTC)
-Subject: Re: [PATCH v6 02/15] iommu: Report domain nesting info
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
- <1595917664-33276-3-git-send-email-yi.l.liu@intel.com>
- <5c911565-c76a-c361-845e-56a91744d504@redhat.com>
- <DM5PR11MB1435CC4503506228790CCB39C3400@DM5PR11MB1435.namprd11.prod.outlook.com>
- <342e8d77-1c1d-e637-0227-720ba67df8ba@redhat.com>
- <20200817212152.2820eedd@jacob-builder>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <5b0fe5bb-26b3-a909-1bd9-4b5bcf62133b@redhat.com>
-Date: Tue, 18 Aug 2020 08:59:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200817212152.2820eedd@jacob-builder>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
- Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id ECAD88737E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 07:50:55 +0000 (UTC)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+ by mailout1.samsung.com (KnoxPortal) with ESMTP id
+ 20200818075053epoutp01835a46308a803e2112890278d5d0fe25~sTWKGKlWi1563515635epoutp01u
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 07:50:53 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com
+ 20200818075053epoutp01835a46308a803e2112890278d5d0fe25~sTWKGKlWi1563515635epoutp01u
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1597737053;
+ bh=reRIwhiJO75p0FtjqI282A2lfxt7RtX0AcKI2mqvwtA=;
+ h=From:To:Cc:Subject:Date:References:From;
+ b=gVTsDwN3X7E+ytqhiLbOrf0uFe6cbYQV9QufI+xBlhm5hl69Em6Jtlw4wcvfUxpz5
+ 4uInry1xK/PEJvgtCaWI/pu8fEMJGqEtQ/XSOKp8pCBun1yC37rE0bp2Qs7vrOjxIj
+ nJ/ytD00fcbq3SWt1TufAZIbVRgUB8ucD/PN7FnI=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+ epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200818075052epcas2p231cfcb5286cafe1e59d86c15b16058ca~sTWJj_Usr3073630736epcas2p2K;
+ Tue, 18 Aug 2020 07:50:52 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.181]) by
+ epsnrtp3.localdomain (Postfix) with ESMTP id 4BW34W4f6ZzMqYkk; Tue, 18 Aug
+ 2020 07:50:51 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+ epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+ C5.9D.27013.B588B3F5; Tue, 18 Aug 2020 16:50:51 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+ epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200818075050epcas2p15c780650f5f6b4a54ce731c273d24c98~sTWHnDs5M3062830628epcas2p1r;
+ Tue, 18 Aug 2020 07:50:50 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+ epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200818075050epsmtrp1eec76f890344da64cc22ef3f4c6ac8c4~sTWHkZGom2959829598epsmtrp1L;
+ Tue, 18 Aug 2020 07:50:50 +0000 (GMT)
+X-AuditID: b6c32a48-2acd6a8000006985-9d-5f3b885b7e0d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+ epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+ 87.09.08303.A588B3F5; Tue, 18 Aug 2020 16:50:50 +0900 (KST)
+Received: from KEI.dsn.sec.samsung.com (unknown [12.36.155.227]) by
+ epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200818075050epsmtip1032ad1a46b74017b4fce00a5453f0c6c~sTWHVcUUm2207622076epsmtip1H;
+ Tue, 18 Aug 2020 07:50:50 +0000 (GMT)
+From: Cho KyongHo <pullip.cho@samsung.com>
+To: joro@8bytes.org, catalin.marinas@arm.com, will@kernel.org
+Subject: [PATCH 1/2] dma-mapping: introduce relaxed version of dma sync
+Date: Tue, 18 Aug 2020 16:43:10 +0900
+Message-Id: <1597736591-20457-1-git-send-email-pullip.cho@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNKsWRmVeSWpSXmKPExsWy7bCmmW50h3W8wf/VLBbvl/UwWvztvMBq
+ sWC/tcXmOcUWnbM3sFtsenyN1eLyrjlsFmuP3GW3+Nd7kNHi4IcnrBYtd0wduD2eHJzH5LFm
+ 3hpGj02rOtk8Ni+p95h8YzmjR9+WVYwenzfJBbBH5dhkpCampBYppOYl56dk5qXbKnkHxzvH
+ m5oZGOoaWlqYKynkJeam2iq5+AToumXmAB2opFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFV
+ Si1IySkwNCzQK07MLS7NS9dLzs+1MjQwMDIFqkzIyZi24BFzwTyfiuNTTrM3MG526GLk5JAQ
+ MJF4evAWaxcjF4eQwA5Gic6dN9khnE+MEm9ezmeEcD4zSiz9socZpuXd+7UsEIldjBITb16H
+ avnKKLF9dycrSBWbgJbE6rnHGUFsEQFbiZ/fJzKDFDELfGOU2PXjLhNIQljAXeLBx3VgRSwC
+ qhL7z7xjAbF5BdwkLmx+xASxTk7i5rlOsGYJgVvsEo1bnrBBJFwk+k//Y4SwhSVeHd/CDmFL
+ Sbzsb2OHaJjOKPFu/iGohs2MEt92C0LYxhKznrUDNXMAnaQpsX6XPogpIaAsceQW2A3MAnwS
+ HYf/skOEeSU62oQgGlUkdk69xgKzqW/vDRaIEg+JvxPBSoQEYiUuHX3LOIFRdhbC+AWMjKsY
+ xVILinPTU4uNCkyQY2kTIzjVaXnsYJz99oPeIUYmDsZDjBIczEoivEknzOOFeFMSK6tSi/Lj
+ i0pzUosPMZoCg2sis5Rocj4w2eaVxBuaGpmZGViaWpiaGVkoifO+s7oQJySQnliSmp2aWpBa
+ BNPHxMEp1cDUMHkdj1bdzIMvxFLNN0V4XxQ5yDy3h+NzwJUy3hwrrcbz7V/SZguo7bn26MBH
+ rqCzNe+zJ09n/Mc7vWv2xeoPHu2ZczaeuaRk//GUSWuqkVumcrjfJzGRE6+KN/fErLsouP4d
+ b9A5901TA28f3HDifMviqddt5l+L6p3CemlBSvFs06knivT6jj+fela3k1Hp3DvOkhvGW/xf
+ tIsZpuvwvgtK7ip42zMjoMjYqeiDepKIkfXDm5YrWSKm7julVmiovqKK4eHMpYwZyzc+3bh8
+ ivaKacfvGa4/ue7qjd0LAu54rdb25bzMvuRxVw6vZJj6ZY+Vq2d+3n7HY8Kz44++3OP9Ksf5
+ 57vNW6lswReFXEosxRmJhlrMRcWJAPj7+Hv+AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJLMWRmVeSWpSXmKPExsWy7bCSnG5Uh3W8QcNUJYv3y3oYLf52XmC1
+ WLDf2mLznGKLztkb2C02Pb7GanF51xw2i7VH7rJb/Os9yGhx8MMTVouWO6YO3B5PDs5j8lgz
+ bw2jx6ZVnWwem5fUe0y+sZzRo2/LKkaPz5vkAtijuGxSUnMyy1KL9O0SuDKmLXjEXDDPp+L4
+ lNPsDYybHboYOTkkBEwk3r1fy9LFyMUhJLCDUWJW5zFWiISUxLzutUwQtrDE/ZYjrBBFnxkl
+ eva8ACtiE9CSWD33OGMXIweHiICjRMN7E5AaZoF/jBJHr3Qzg9QIC7hLPPi4jhHEZhFQldh/
+ 5h0LiM0r4CZxYfMjqAVyEjfPdTJPYORZwMiwilEytaA4Nz232LDAKC+1XK84Mbe4NC9dLzk/
+ dxMjOPS0tHYw7ln1Qe8QIxMH4yFGCQ5mJRHepBPm8UK8KYmVValF+fFFpTmpxYcYpTlYlMR5
+ v85aGCckkJ5YkpqdmlqQWgSTZeLglGpgWvpsn6DN45c/Yi5JKAXdPrm/kfHhnehfr7cHX+Ez
+ mRry0WNSlAdr5PrqxRZrkvkiGNdbcB3YlF2c82zqmpAbJ3axz9ky5z63W9yVVWfaNTf9tN71
+ Pur+erNJIpWbnocyzXzGfVIrZepl122f9503nvnl6E37E1+/LFikf6tOsjT60wenU0Kei2b7
+ 3+ua5MAWdPq6sKizwYEfU0wmiFztOWZ26Y649Y4yB17+oHkekneq5h4s1Nn8P7etiq10Vmih
+ q83b7w5FDY9nmVYuFn/tc7PsS6qV3+ozD+p+R+sV9KVt9+D2r16w16VTqHpjeUavw5G11+9O
+ e3vcLvXrutJ3se3vZDmUbLafvFt97d+6Gz+UWIozEg21mIuKEwFE4oStrAIAAA==
+X-CMS-MailID: 20200818075050epcas2p15c780650f5f6b4a54ce731c273d24c98
+X-Msg-Generator: CA
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20200818075050epcas2p15c780650f5f6b4a54ce731c273d24c98
+References: <CGME20200818075050epcas2p15c780650f5f6b4a54ce731c273d24c98@epcas2p1.samsung.com>
+Cc: janghyuck.kim@samsung.com, linux-kernel@vger.kernel.org,
+ hyesoo.yu@samsung.com, iommu@lists.linux-foundation.org,
+ Cho KyongHo <pullip.cho@samsung.com>, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,280 +147,292 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+Cache maintenance operations in the most of CPU architectures needs
+memory barrier after the cache maintenance for the DMAs to view the
+region of the memory correctly. The problem is that memory barrier is
+very expensive and dma_[un]map_sg() and dma_sync_sg_for_{device|cpu}()
+involves the memory barrier per every single cache sg entry. In some
+CPU micro-architecture, a single memory barrier consumes more time than
+cache clean on 4KiB. It becomes more serious if the number of CPU cores
+are larger.
+This patch introduces arch_sync_dma_for_device_relaxed() and
+arch_sync_dma_for_cpu_relaxed() which do not involve memory barrier.
+So the users called those functions require explicitly calling
+arch_sync_barrier_for_device() and arch_sync_barrier_for_cpu(),
+respectively to confirm the view of memory is consistent between the
+CPUs and DMAs.
 
-On 8/18/20 6:21 AM, Jacob Pan wrote:
-> On Sun, 16 Aug 2020 14:40:57 +0200
-> Auger Eric <eric.auger@redhat.com> wrote:
-> 
->> Hi Yi,
->>
->> On 8/14/20 9:15 AM, Liu, Yi L wrote:
->>> Hi Eric,
->>>   
->>>> From: Auger Eric <eric.auger@redhat.com>
->>>> Sent: Thursday, August 13, 2020 8:53 PM
->>>>
->>>> Yi,
->>>> On 7/28/20 8:27 AM, Liu Yi L wrote:  
->>>>> IOMMUs that support nesting translation needs report the
->>>>> capability info  
->>>> s/needs/need to  
->>>>> to userspace. It gives information about requirements the
->>>>> userspace needs to implement plus other features characterizing
->>>>> the physical implementation.
->>>>>
->>>>> This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller
->>>>> can get nesting info after setting DOMAIN_ATTR_NESTING. For VFIO,
->>>>> it is after selecting VFIO_TYPE1_NESTING_IOMMU.  
->>>> This is not what this patch does ;-) It introduces a new IOMMU UAPI
->>>> struct that gives information about the nesting capabilities and
->>>> features. This struct is supposed to be returned by
->>>> iommu_domain_get_attr() with DOMAIN_ATTR_NESTING attribute
->>>> parameter, one a domain whose type has been set to
->>>> DOMAIN_ATTR_NESTING.  
->>>
->>> got it. let me apply your suggestion. thanks. :-)
->>>   
->>>>>
->>>>> Cc: Kevin Tian <kevin.tian@intel.com>
->>>>> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>> Cc: Alex Williamson <alex.williamson@redhat.com>
->>>>> Cc: Eric Auger <eric.auger@redhat.com>
->>>>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>>>> Cc: Joerg Roedel <joro@8bytes.org>
->>>>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->>>>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->>>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>> ---
->>>>> v5 -> v6:
->>>>> *) rephrase the feature notes per comments from Eric Auger.
->>>>> *) rename @size of struct iommu_nesting_info to @argsz.
->>>>>
->>>>> v4 -> v5:
->>>>> *) address comments from Eric Auger.
->>>>>
->>>>> v3 -> v4:
->>>>> *) split the SMMU driver changes to be a separate patch
->>>>> *) move the @addr_width and @pasid_bits from vendor specific
->>>>>    part to generic part.
->>>>> *) tweak the description for the @features field of struct
->>>>>    iommu_nesting_info.
->>>>> *) add description on the @data[] field of struct
->>>>> iommu_nesting_info
->>>>>
->>>>> v2 -> v3:
->>>>> *) remvoe cap/ecap_mask in iommu_nesting_info.
->>>>> *) reuse DOMAIN_ATTR_NESTING to get nesting info.
->>>>> *) return an empty iommu_nesting_info for SMMU drivers per Jean'
->>>>>    suggestion.
->>>>> ---
->>>>>  include/uapi/linux/iommu.h | 74  
->>>> ++++++++++++++++++++++++++++++++++++++++++++++  
->>>>>  1 file changed, 74 insertions(+)
->>>>>
->>>>> diff --git a/include/uapi/linux/iommu.h
->>>>> b/include/uapi/linux/iommu.h index 7c8e075..5e4745a 100644
->>>>> --- a/include/uapi/linux/iommu.h
->>>>> +++ b/include/uapi/linux/iommu.h
->>>>> @@ -332,4 +332,78 @@ struct iommu_gpasid_bind_data {
->>>>>  	} vendor;
->>>>>  };
->>>>>
->>>>> +/*
->>>>> + * struct iommu_nesting_info - Information for nesting-capable
->>>>> IOMMU.
->>>>> + *			       userspace should check it
->>>>> before using
->>>>> + *			       nesting capability.
->>>>> + *
->>>>> + * @argsz:	size of the whole structure.
->>>>> + * @flags:	currently reserved for future extension. must
->>>>> set to 0.
->>>>> + * @format:	PASID table entry format, the same definition
->>>>> as struct
->>>>> + *		iommu_gpasid_bind_data @format.
->>>>> + * @features:	supported nesting features.
->>>>> + * @addr_width:	The output addr width of first
->>>>> level/stage translation
->>>>> + * @pasid_bits:	Maximum supported PASID bits, 0
->>>>> represents no PASID
->>>>> + *		support.
->>>>> + * @data:	vendor specific cap info. data[] structure type
->>>>> can be deduced
->>>>> + *		from @format field.
->>>>> + *
->>>>> + *  
->>>> +===============+===================================================
->>>> ===+  
->>>>> + * | feature       |
->>>>> Notes                                               |
->>>>> + *  
->>>> +===============+===================================================
->>>> ===+  
->>>>> + * | SYSWIDE_PASID |  IOMMU vendor driver sets it to mandate
->>>>> userspace    |
->>>>> + * |               |  to allocate PASID from kernel. All PASID
->>>>> allocation |
->>>>> + * |               |  free must be mediated through the TBD
->>>>> API.          |  
->>>> s/TBD/IOMMU  
->>>
->>> got it.
->>>   
->>>>> + *
->>>>> +---------------+------------------------------------------------------+
->>>>> + * | BIND_PGTBL    |  IOMMU vendor driver sets it to mandate
->>>>> userspace    |
->>>>> + * |               |  bind the first level/stage page table to
->>>>> associated |  
->>>> s/bind/to bind  
->>>
->>> got it.
->>>   
->>>>> + * |               |  PASID (either the one specified in bind
->>>>> request or  |
->>>>> + * |               |  the default PASID of iommu domain),
->>>>> through IOMMU   |
->>>>> + * |               |
->>>>> UAPI.                                               |
->>>>> + *
->>>>> +---------------+------------------------------------------------------+
->>>>> + * | CACHE_INVLD   |  IOMMU vendor driver sets it to mandate
->>>>> userspace    |  
->>>>  
->>>>> + * |               |  explicitly invalidate the IOMMU cache
->>>>> through IOMMU |  
->>>> to explicitly  
->>>
->>> I see.
->>>   
->>>>> + * |               |  U
->>>>> API according to vendor-specific requirement when  |
->>>>> + * |               |  changing the 1st level/stage page
->>>>> table.            |
->>>>> + *
->>>>> +---------------+------------------------------------------------------+
->>>>> + *
->>>>> + * @data[] types defined for @format:
->>>>> + *  
->>>> +================================+==================================
->>>> ===+  
->>>>> + * | @format                        |
->>>>> @data[]                             |
->>>>> + *  
->>>> +================================+==================================
->>>> ===+  
->>>>> + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct
->>>>> iommu_nesting_info_vtd       |
->>>>> + *
->>>>> +--------------------------------+-------------------------------------+
->>>>> + *
->>>>> + */
->>>>> +struct iommu_nesting_info {
->>>>> +	__u32	argsz;
->>>>> +	__u32	flags;
->>>>> +	__u32	format;
->>>>> +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
->>>>> +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
->>>>> +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
->>>>> +	__u32	features;
->>>>> +	__u16	addr_width;
->>>>> +	__u16	pasid_bits;
->>>>> +	__u32	padding;
->>>>> +	__u8	data[];
->>>>> +};  
->>>> As opposed to other IOMMU UAPI structs there is no union member at
->>>> the end.  
->>>
->>> nice catch. do you think it would be better to adding a union and
->>> put the struct iommu_nesting_info_vtd in it?  
->> Yes I think so. At least it would be consistent with the rest of the
->> API and with the guidelines.
->>>   
->>>> Also this struct is not documented in [PATCH v7 1/7] docs: IOMMU
->>>> user API. Shouldn't we align.
->>>> You may also consider to move this patch in Jacob's series for
->>>> consistency, thoughts?  
->>>
->>> this was talked one time between Jacob and me. It was put in this
->>> series as the major user of nesting_info is in this series. e.g.
->>> vfio checks the SYSWIDE_PASID. but I'm open to merge it with Jacob's
->>> series if it would make the merge easier.  
->> Yep I think it would make sense to move in Jacob's series to have a
->> general understanding of the uapi
->>
-> I a little reluctant to include this in my UAPI set, the reason is that
-> there are two dimensions IOMMU UAPI are extended:
-> 1. Define the protocols in interaction with VFIO, sanity checking, and
-> backward compatibility.
-> 2. Adding more UAPI data structures that are parallel to the existing
-> ones.
-> 
-> My patchset is to address #1, this patch is for #2. My thinking is that
-> once we have reached consensus on #1, new UAPI structures such as this
-> patch can just follow the suit.
-> 
-> If that is OK with you, I would like to keep them separate to avoid
-> diverging conversations.
+Signed-off-by: Cho KyongHo <pullip.cho@samsung.com>
+---
+ drivers/iommu/dma-iommu.c       |  6 +++--
+ include/linux/dma-direct.h      | 29 +++++++++++++++++-----
+ include/linux/dma-noncoherent.h | 54 +++++++++++++++++++++++++++++++++++++++++
+ kernel/dma/Kconfig              |  8 ++++++
+ kernel/dma/direct.c             | 25 +++++++++++++++----
+ 5 files changed, 109 insertions(+), 13 deletions(-)
 
-OK no problem for me, as long as the new APIs follow the rules &
-guidelines introduced in your series.
-
-Thanks
-
-Eric
-> 
-> Thanks,
-> 
-> Jacob
-> 
->> Thanks
->>
->> Eric
->>>
->>> Thanks,
->>> Yi Liu
->>>   
->>>>> +
->>>>> +/*
->>>>> + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting
->>>>> info.
->>>>> + *
->>>>> + * @flags:	VT-d specific flags. Currently reserved for
->>>>> future
->>>>> + *		extension. must be set to 0.
->>>>> + * @cap_reg:	Describe basic capabilities as defined in
->>>>> VT-d capability
->>>>> + *		register.
->>>>> + * @ecap_reg:	Describe the extended capabilities as
->>>>> defined in VT-d
->>>>> + *		extended capability register.
->>>>> + */
->>>>> +struct iommu_nesting_info_vtd {
->>>>> +	__u32	flags;
->>>>> +	__u32	padding;
->>>>> +	__u64	cap_reg;
->>>>> +	__u64	ecap_reg;
->>>>> +};
->>>>> +
->>>>>  #endif /* _UAPI_IOMMU_H */
->>>>>  
->>>>
->>>> Thanks
->>>>
->>>> Eric
->>>>  
->>>   
->>
-> 
-> [Jacob Pan]
-> 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 5141d49..4f9c9cb 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -705,7 +705,8 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+ 		return;
+ 
+ 	for_each_sg(sgl, sg, nelems, i)
+-		arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
++		arch_sync_dma_for_cpu_relaxed(sg_phys(sg), sg->length, dir);
++	arch_sync_barrier_for_cpu(dir);
+ }
+ 
+ static void iommu_dma_sync_sg_for_device(struct device *dev,
+@@ -719,7 +720,8 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+ 		return;
+ 
+ 	for_each_sg(sgl, sg, nelems, i)
+-		arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
++		arch_sync_dma_for_device_relaxed(sg_phys(sg), sg->length, dir);
++	arch_sync_barrier_for_device(dir);
+ }
+ 
+ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 6e87225..f5b1fee 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -152,7 +152,7 @@ static inline void dma_direct_sync_single_for_cpu(struct device *dev,
+ 		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
+ }
+ 
+-static inline dma_addr_t dma_direct_map_page(struct device *dev,
++static inline dma_addr_t __dma_direct_map_page(struct device *dev,
+ 		struct page *page, unsigned long offset, size_t size,
+ 		enum dma_data_direction dir, unsigned long attrs)
+ {
+@@ -172,20 +172,37 @@ static inline dma_addr_t dma_direct_map_page(struct device *dev,
+ 		return DMA_MAPPING_ERROR;
+ 	}
+ 
+-	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		arch_sync_dma_for_device(phys, size, dir);
+ 	return dma_addr;
+ }
+ 
+-static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
++static inline dma_addr_t dma_direct_map_page(struct device *dev,
++		struct page *page, unsigned long offset, size_t size,
++		enum dma_data_direction dir, unsigned long attrs)
++{
++	dma_addr_t dma_addr = __dma_direct_map_page(dev, page, offset, size, dir, attrs);
++
++	if (dma_addr != DMA_MAPPING_ERROR && !dev_is_dma_coherent(dev) &&
++	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		arch_sync_dma_for_device(page_to_phys(page) + offset, size, dir);
++
++	return dma_addr;
++}
++
++static inline void __dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	phys_addr_t phys = dma_to_phys(dev, addr);
+ 
++	if (unlikely(is_swiotlb_buffer(phys)))
++		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
++}
++
++static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
++		size_t size, enum dma_data_direction dir, unsigned long attrs)
++{
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+ 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+ 
+-	if (unlikely(is_swiotlb_buffer(phys)))
+-		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
++	__dma_direct_unmap_page(dev, addr, size, dir, attrs);
+ }
+ #endif /* _LINUX_DMA_DIRECT_H */
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index ca09a4e..0a31e6c 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -73,23 +73,77 @@ static inline void arch_dma_cache_sync(struct device *dev, void *vaddr,
+ #endif /* CONFIG_DMA_NONCOHERENT_CACHE_SYNC */
+ 
+ #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE
++#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE_RELAXED
++void arch_sync_dma_for_device_relaxed(phys_addr_t paddr, size_t size,
++		enum dma_data_direction dir);
++
++static inline void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
++		enum dma_data_direction dir)
++{
++	arch_sync_dma_for_device_relaxed(paddr, size, dir);
++	arch_sync_barrier_for_device(dir);
++}
++#else
++#define arch_sync_dma_for_device_relaxed arch_sync_dma_for_device
++
+ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+ 		enum dma_data_direction dir);
++
++static inline void arch_sync_barrier_for_device(enum dma_data_direction dir)
++{
++}
++#endif /* ARCH_HAS_SYNC_DMA_FOR_DEVICE_RELAXED */
+ #else
++static inline void arch_sync_dma_for_device_relaxed(phys_addr_t paddr,
++		size_t size, enum dma_data_direction dir)
++{
++}
++
+ static inline void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+ 		enum dma_data_direction dir)
+ {
+ }
++
++static inline void arch_sync_barrier_for_device(enum dma_data_direction dir)
++{
++}
+ #endif /* ARCH_HAS_SYNC_DMA_FOR_DEVICE */
+ 
+ #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU
++#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_RELAXED
++void arch_sync_dma_for_cpu_relaxed(phys_addr_t paddr, size_t size,
++		enum dma_data_direction dir);
++
++static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
++		enum dma_data_direction dir)
++{
++	arch_sync_dma_for_cpu_relaxed(paddr, size, dir);
++	arch_sync_barrier_for_cpu(dir);
++}
++#else
++#define arch_sync_dma_for_cpu_relaxed arch_sync_dma_for_cpu
++
+ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+ 		enum dma_data_direction dir);
++
++static inline void arch_sync_barrier_for_cpu(enum dma_data_direction dir)
++{
++}
++#endif /* ARCH_HAS_SYNC_DMA_FOR_CPU_RELAXED */
+ #else
++static inline void arch_sync_dma_for_cpu_relaxed(phys_addr_t paddr, size_t size,
++		enum dma_data_direction dir)
++{
++}
++
+ static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+ 		enum dma_data_direction dir)
+ {
+ }
++
++static inline void arch_sync_barrier_for_cpu(enum dma_data_direction dir)
++{
++}
+ #endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
+ 
+ #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 847a9d1..d6fe727f1 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -59,6 +59,14 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	bool
+ 	select NEED_DMA_MAP_STATE
+ 
++config ARCH_HAS_SYNC_DMA_FOR_DEVICE_RELAXED
++	bool
++	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++
++config ARCH_HAS_SYNC_DMA_FOR_CPU_RELAXED
++	bool
++	select ARCH_HAS_SYNC_DMA_FOR_CPU
++
+ config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+ 	bool
+ 
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index db6ef07a..52e5fd1 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -321,9 +321,12 @@ void dma_direct_sync_sg_for_device(struct device *dev,
+ 					dir, SYNC_FOR_DEVICE);
+ 
+ 		if (!dev_is_dma_coherent(dev))
+-			arch_sync_dma_for_device(paddr, sg->length,
++			arch_sync_dma_for_device_relaxed(paddr, sg->length,
+ 					dir);
+ 	}
++
++	if (!dev_is_dma_coherent(dev))
++		arch_sync_barrier_for_device(dir);
+ }
+ #endif
+ 
+@@ -340,15 +343,17 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+ 		phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+ 
+ 		if (!dev_is_dma_coherent(dev))
+-			arch_sync_dma_for_cpu(paddr, sg->length, dir);
++			arch_sync_dma_for_cpu_relaxed(paddr, sg->length, dir);
+ 
+ 		if (unlikely(is_swiotlb_buffer(paddr)))
+ 			swiotlb_tbl_sync_single(dev, paddr, sg->length, dir,
+ 					SYNC_FOR_CPU);
+ 	}
+ 
+-	if (!dev_is_dma_coherent(dev))
++	if (!dev_is_dma_coherent(dev)) {
++		arch_sync_barrier_for_cpu(dir);
+ 		arch_sync_dma_for_cpu_all();
++	}
+ }
+ 
+ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+@@ -357,8 +362,11 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+ 	struct scatterlist *sg;
+ 	int i;
+ 
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		dma_direct_sync_sg_for_cpu(dev, sgl, nents, dir);
++
+ 	for_each_sg(sgl, sg, nents, i)
+-		dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
++		__dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
+ 			     attrs);
+ }
+ #endif
+@@ -370,13 +378,20 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 	struct scatterlist *sg;
+ 
+ 	for_each_sg(sgl, sg, nents, i) {
+-		sg->dma_address = dma_direct_map_page(dev, sg_page(sg),
++		sg->dma_address = __dma_direct_map_page(dev, sg_page(sg),
+ 				sg->offset, sg->length, dir, attrs);
+ 		if (sg->dma_address == DMA_MAPPING_ERROR)
+ 			goto out_unmap;
+ 		sg_dma_len(sg) = sg->length;
+ 	}
+ 
++	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
++		for_each_sg(sgl, sg, nents, i)
++			arch_sync_dma_for_device_relaxed(dma_to_phys(dev, sg_dma_address(sg)),
++							 sg->length, dir);
++		arch_sync_barrier_for_device(dir);
++	}
++
+ 	return nents;
+ 
+ out_unmap:
+-- 
+2.7.4
 
 _______________________________________________
 iommu mailing list
