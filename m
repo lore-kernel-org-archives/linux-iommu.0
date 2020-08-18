@@ -2,76 +2,116 @@ Return-Path: <SRS0=kAxJ=B4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B745C433E1
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 16:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A33CFC433DF
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 19:52:10 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E8BD4206B5
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 16:26:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8BD4206B5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4BF562076E
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 19:52:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ID1kX5r7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BF562076E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C9C5020490;
-	Tue, 18 Aug 2020 16:26:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0191420511;
+	Tue, 18 Aug 2020 19:52:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SJzjBM8CAVCu; Tue, 18 Aug 2020 16:26:39 +0000 (UTC)
+	with ESMTP id hnUcuiklsty4; Tue, 18 Aug 2020 19:52:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0F00720471;
-	Tue, 18 Aug 2020 16:26:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id EA22A20452;
+	Tue, 18 Aug 2020 19:52:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04484C088B;
-	Tue, 18 Aug 2020 16:26:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7865C07FF;
+	Tue, 18 Aug 2020 19:52:08 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6407C0051
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 16:26:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A3E7C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 19:52:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B3E0120015
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 16:26:37 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 262D320452
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 19:52:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rplrNgyVnhxY for <iommu@lists.linux-foundation.org>;
- Tue, 18 Aug 2020 16:26:36 +0000 (UTC)
+ with ESMTP id m5sjL1NCLjgR for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Aug 2020 19:52:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id C15892046F
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 16:26:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 133D21FB;
- Tue, 18 Aug 2020 09:26:35 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 738A13F66B;
- Tue, 18 Aug 2020 09:26:32 -0700 (PDT)
-Subject: Re: [PATCH 00/16] IOMMU driver for Kirin 960/970
-To: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-References: <cover.1597650455.git.mchehab+huawei@kernel.org>
- <5c7918b6-c506-680b-cb0f-9e5f6a7038d9@arm.com>
- <20200818172909.71f5243a@coco.lan>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <79f40595-7769-aa6a-fbba-53adcffca327@arm.com>
-Date: Tue, 18 Aug 2020 17:26:30 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by silver.osuosl.org (Postfix) with ESMTPS id A80B1204F8
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 19:52:05 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 07IJWkru076478; Tue, 18 Aug 2020 15:51:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=references : from : to :
+ cc : subject : in-reply-to : date : message-id : mime-version :
+ content-type; s=pp1; bh=k8HiwGiI6W+IU4siScj8bisxpCGNJQYvS818WjWSBx8=;
+ b=ID1kX5r7z9b2F+dQ0eaYWDhW4tnH+1f3xG5cpXtToPGwUU2xh6O+8aX3U8qQyByfu+e8
+ fznS1whhb2jApj/6+BBYc9SBG4fJdBsS8koVm7lsin4oJo/MvzKuCAVdAyFNpqyDbgKg
+ Baa0NTpt+05nkp3+vQ17mO+il09gmdprxFYXRCL3tEcCwpnbyaW4Oa/Qlshzg9HpE0uX
+ 3Iw+9b/JFO4RPHGywpu944OzycrL/6aSGgb5oN2J264pxZG0sPHtiSHnMnJ+Kt7LcVus
+ ovN+zeXcCwe+3mhxvrj0Sd3wJHOHgJbYYpsd5XVRiu45BhXWcDuCdFrbXSfRlZ0ceSG+ RQ== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com
+ [169.55.85.253])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3304swngd4-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 18 Aug 2020 15:51:59 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+ by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07IJilcg019873;
+ Tue, 18 Aug 2020 19:51:58 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com
+ [9.57.198.25]) by ppma01wdc.us.ibm.com with ESMTP id 3304tked05-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 18 Aug 2020 19:51:58 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com
+ [9.57.199.109])
+ by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 07IJpw4127001310
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 18 Aug 2020 19:51:58 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 6D1BB112062;
+ Tue, 18 Aug 2020 19:51:58 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 46F8F112065;
+ Tue, 18 Aug 2020 19:51:55 +0000 (GMT)
+Received: from morokweng.localdomain (unknown [9.163.41.251])
+ by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTPS;
+ Tue, 18 Aug 2020 19:51:54 +0000 (GMT)
+References: <20200817214658.103093-1-bauerman@linux.ibm.com>
+ <20200818065911.GA2324@lst.de>
+User-agent: mu4e 1.2.0; emacs 26.3
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2] powerpc/pseries/svm: Allocate SWIOTLB buffer anywhere
+ in memory
+In-reply-to: <20200818065911.GA2324@lst.de>
+Date: Tue, 18 Aug 2020 16:51:52 -0300
+Message-ID: <877dtvn353.fsf@morokweng.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20200818172909.71f5243a@coco.lan>
-Content-Language: en-GB
-Cc: devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
- Joerg Roedel <jroedel@suse.de>, Manivannan Sadhasivam <mani@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Suzhuangluan <suzhuangluan@hisilicon.com>, linuxarm@huawei.com,
- Wei Xu <xuwei5@hisilicon.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- John Stultz <john.stultz@linaro.org>, Chenfeng <puck.chen@hisilicon.com>,
- mauro.chehab@huawei.com, linux-arm-kernel@lists.infradead.org
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235, 18.0.687
+ definitions=2020-08-18_13:2020-08-18,
+ 2020-08-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 adultscore=0
+ mlxscore=0 malwarescore=0 spamscore=0 mlxlogscore=778 lowpriorityscore=0
+ bulkscore=0 phishscore=0 impostorscore=0 suspectscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2008180131
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linuxppc-dev@lists.ozlabs.org, Ram Pai <linuxram@us.ibm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Satheesh Rajendran <sathnaga@linux.vnet.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,144 +124,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-08-18 16:29, Mauro Carvalho Chehab wrote:
-> Hi Robin,
-> 
-> Em Tue, 18 Aug 2020 15:47:55 +0100
-> Robin Murphy <robin.murphy@arm.com> escreveu:
-> 
->> On 2020-08-17 08:49, Mauro Carvalho Chehab wrote:
->>> Add a driver for the Kirin 960/970 iommu.
->>>
->>> As on the past series, this starts from the original 4.9 driver from
->>> the 96boards tree:
->>>
->>> 	https://github.com/96boards-hikey/linux/tree/hikey970-v4.9
->>>
->>> The remaining patches add SPDX headers and make it build and run with
->>> the upstream Kernel.
->>>
->>> Chenfeng (1):
->>>     iommu: add support for HiSilicon Kirin 960/970 iommu
->>>
->>> Mauro Carvalho Chehab (15):
->>>     iommu: hisilicon: remove default iommu_map_sg handler
->>>     iommu: hisilicon: map and unmap ops gained new arguments
->>>     iommu: hisi_smmu_lpae: rebase it to work with upstream
->>>     iommu: hisi_smmu: remove linux/hisi/hisi-iommu.h
->>>     iommu: hisilicon: cleanup its code style
->>>     iommu: hisi_smmu_lpae: get rid of IOMMU_SEC and IOMMU_DEVICE
->>>     iommu: get rid of map/unmap tile functions
->>>     iommu: hisi_smmu_lpae: use the right code to get domain-priv data
->>>     iommu: hisi_smmu_lpae: convert it to probe_device
->>>     iommu: add Hisilicon Kirin970 iommu at the building system
->>>     iommu: hisi_smmu_lpae: cleanup printk macros
->>>     iommu: hisi_smmu_lpae: make OF compatible more standard
->>
->> Echoing the other comments about none of the driver patches being CC'd
->> to the IOMMU list...
->>
->> Still, I dug the series up on lore and frankly I'm not sure what to make
->> of it - AFAICS the "driver" is just yet another implementation of Arm
->> LPAE pagetable code, with no obvious indication of how those pagetables
->> ever get handed off to IOMMU hardware (and indeed no indication of IOMMU
->> hardware at all). Can you explain how it's supposed to work?
->>
->> And as a pre-emptive strike, we really don't need any more LPAE
->> implementations - that's what the io-pgtable library is all about (which
->> incidentally has been around since 4.0...). I think that should make the
->> issue of preserving authorship largely moot since there's no need to
->> preserve most of the code anyway ;)
-> 
-> I didn't know about that, since I got a Hikey 970 board for the first time
-> about one month ago, and that's the first time I looked into iommu code.
-> 
-> My end goal with this is to make the DRM/KMS driver to work with upstream
-> Kernels.
-> 
-> The full patch series are at:
-> 
-> 	https://github.com/mchehab/linux/commits/hikey970/to_upstream-2.0-v1.1
-> 
-> (I need to put a new version there, after some changes due to recent
-> upstream discussions at the regulator's part of the code)
-> 
-> Basically, the DT binding has this, for IOMMU:
-> 
-> 
-> 	smmu_lpae {
-> 		compatible = "hisilicon,smmu-lpae";
-> 	};
-> 
-> ...
-> 	dpe: dpe@e8600000 {
-> 		compatible = "hisilicon,kirin970-dpe";
-> 		memory-region = <&drm_dma_reserved>;
-> ...
-> 		iommu_info {
-> 			start-addr = <0x8000>;
-> 			size = <0xbfff8000>;
-> 		};
-> 	}
-> 
-> This is used by kirin9xx_drm_dss.c in order to enable and use
-> the iommu:
-> 
-> 
-> 	static int dss_enable_iommu(struct platform_device *pdev, struct dss_hw_ctx *ctx)
-> 	{
-> 		struct device *dev = NULL;
-> 
-> 		dev = &pdev->dev;
-> 
-> 		/* create iommu domain */
-> 		ctx->mmu_domain = iommu_domain_alloc(dev->bus);
-> 		if (!ctx->mmu_domain) {
-> 			pr_err("iommu_domain_alloc failed!\n");
-> 			return -EINVAL;
-> 		}
-> 
-> 		iommu_attach_device(ctx->mmu_domain, dev);
-> 
-> 		return 0;
-> 	}
-> 
-> The only place where the IOMMU domain is used is on this part of the
-> code(error part simplified here) [1]:
-> 
-> 	void hisi_dss_smmu_on(struct dss_hw_ctx *ctx)
-> 	{
-> 		uint64_t fama_phy_pgd_base;
-> 		uint32_t phy_pgd_base;
-> ...
-> 		fama_phy_pgd_base = iommu_iova_to_phys(ctx->mmu_domain, 0);
-> 		phy_pgd_base = (uint32_t)fama_phy_pgd_base;
-> 		if (WARN_ON(!phy_pgd_base))
-> 			return;
-> 
-> 		set_reg(smmu_base + SMMU_CB_TTBR0, phy_pgd_base, 32, 0);
-> 	}
-> 
-> [1] https://github.com/mchehab/linux/commit/36da105e719b47bbe9d6cb7e5619b30c7f3eb1bd
-> 
-> In other words, the driver needs to get the physical address of the frame
-> buffer (mapped via iommu) in order to set some DRM-specific register.
-> 
-> Yeah, the above code is somewhat hackish. I would love to replace
-> this part by a more standard approach.
 
-OK, so from a quick look at that, my impression is that your display 
-controller has its own MMU and you don't need to pretend to use the 
-IOMMU API at all. Just have the DRM driver use io-pgtable directly to 
-run its own set of ARM_32_LPAE_S1 pagetables - see Panfrost for an 
-example (but try to ignore the wacky "Mali LPAE" format).
+Christoph Hellwig <hch@lst.de> writes:
 
-Robin.
+> On Mon, Aug 17, 2020 at 06:46:58PM -0300, Thiago Jung Bauermann wrote:
+>> POWER secure guests (i.e., guests which use the Protection Execution
+>> Facility) need to use SWIOTLB to be able to do I/O with the hypervisor, but
+>> they don't need the SWIOTLB memory to be in low addresses since the
+>> hypervisor doesn't have any addressing limitation.
+>> 
+>> This solves a SWIOTLB initialization problem we are seeing in secure guests
+>> with 128 GB of RAM: they are configured with 4 GB of crashkernel reserved
+>> memory, which leaves no space for SWIOTLB in low addresses.
+>> 
+>> To do this, we use mostly the same code as swiotlb_init(), but allocate the
+>> buffer using memblock_alloc() instead of memblock_alloc_low().
+>> 
+>> We also need to add swiotlb_set_no_iotlb_memory() in order to set the
+>> no_iotlb_memory flag if initialization fails.
+>
+> Do you really need the helper?  As far as I can tell the secure guests
+> very much rely on swiotlb for all I/O, so you might as well panic if
+> you fail to allocate it.
+
+That is true. Ok, I will do that.
+
+-- 
+Thiago Jung Bauermann
+IBM Linux Technology Center
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
