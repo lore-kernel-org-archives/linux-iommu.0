@@ -7,64 +7,63 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323CBC433DF
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 15:17:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94637C433E3
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 15:17:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0613B20855
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 15:17:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5C54D20885
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 15:17:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="m1XiJCmb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0613B20855
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nnpj9aHP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C54D20885
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D73C385D57;
-	Tue, 18 Aug 2020 15:17:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 02EE92044D;
+	Tue, 18 Aug 2020 15:17:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id g-A4EEG4r+9E; Tue, 18 Aug 2020 15:17:44 +0000 (UTC)
+	with ESMTP id WPtcRnB3C1ec; Tue, 18 Aug 2020 15:17:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C30E585F8D;
-	Tue, 18 Aug 2020 15:17:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1736320026;
+	Tue, 18 Aug 2020 15:17:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AFC5EC07FF;
-	Tue, 18 Aug 2020 15:17:44 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3EC26C0051
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DFC9EC07FF;
+	Tue, 18 Aug 2020 15:17:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F7B4C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2DFEC8543A
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:44 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id ED10A203C4
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pXD-ymoqiFUf for <iommu@lists.linux-foundation.org>;
- Tue, 18 Aug 2020 15:17:43 +0000 (UTC)
+ with ESMTP id 8Ro32hCQEmoz for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Aug 2020 15:17:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id ACC0B8538A
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 83A4220026
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:17:54 +0000 (UTC)
 Received: from aquarius.haifa.ibm.com (nesher1.haifa.il.ibm.com [195.110.40.7])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id DB9C120829;
- Tue, 18 Aug 2020 15:17:32 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 1557A2083B;
+ Tue, 18 Aug 2020 15:17:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1597763863;
- bh=ZYR3GBWOTbbLeEGoi1OsOkKb8CEKMyuyBWdLENWnJ1E=;
+ s=default; t=1597763874;
+ bh=J2TTgbSkpqMfLCXDnbmKHenVNbCxcYzX9yMnhVHfk48=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=m1XiJCmbrGx1o925QNv8c/Bp6H5XPTpfeJ1QGf/lnbyqfmruYKi1v8ifq7YUyQIAR
- mOZ35o8Tc86vDo4Lj7DwV982KPoM3khuhgabjNvcxndzkeQsxV3GQCIW74zG8fnva1
- XoxYm1fjkSfMwhRHIMQT4Ivgbg9mEYH8FxQPW2cc=
+ b=Nnpj9aHPG2KrOH4/+klVGNuK/8Jk1zpZIDm/NkthQ+PlCtSHYH5K9SF+vic/Hgljh
+ aX6GYVU+9totQf5Ls3jsX3v4EOxk19bt3ErWGD3vxRwxDr77xrhkql9OdQ1TIDsYPz
+ M1XgT1PKnZBp1hv2FG7lhMFlFVATie/SitWQyBf0=
 From: Mike Rapoport <rppt@kernel.org>
 To: Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v3 05/17] h8300, nds32,
- openrisc: simplify detection of memory extents
-Date: Tue, 18 Aug 2020 18:16:22 +0300
-Message-Id: <20200818151634.14343-6-rppt@kernel.org>
+Subject: [PATCH v3 06/17] riscv: drop unneeded node initialization
+Date: Tue, 18 Aug 2020 18:16:23 +0300
+Message-Id: <20200818151634.14343-7-rppt@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200818151634.14343-1-rppt@kernel.org>
 References: <20200818151634.14343-1-rppt@kernel.org>
@@ -111,85 +110,37 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mike Rapoport <rppt@linux.ibm.com>
 
-Instead of traversing memblock.memory regions to find memory_start and
-memory_end, simply query memblock_{start,end}_of_DRAM().
+RISC-V does not (yet) support NUMA  and for UMA architectures node 0 is
+used implicitly during early memory initialization.
+
+There is no need to call memblock_set_node(), remove this call and the
+surrounding code.
 
 Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-Acked-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/h8300/kernel/setup.c    | 8 +++-----
- arch/nds32/kernel/setup.c    | 8 ++------
- arch/openrisc/kernel/setup.c | 9 ++-------
- 3 files changed, 7 insertions(+), 18 deletions(-)
+ arch/riscv/mm/init.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/arch/h8300/kernel/setup.c b/arch/h8300/kernel/setup.c
-index 28ac88358a89..0281f92eea3d 100644
---- a/arch/h8300/kernel/setup.c
-+++ b/arch/h8300/kernel/setup.c
-@@ -74,17 +74,15 @@ static void __init bootmem_init(void)
- 	memory_end = memory_start = 0;
- 
- 	/* Find main memory where is the kernel */
--	for_each_memblock(memory, region) {
--		memory_start = region->base;
--		memory_end = region->base + region->size;
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index 787c75f751a5..0485cfaacc72 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -191,15 +191,6 @@ void __init setup_bootmem(void)
+ 	early_init_fdt_scan_reserved_mem();
+ 	memblock_allow_resize();
+ 	memblock_dump_all();
+-
+-	for_each_memblock(memory, reg) {
+-		unsigned long start_pfn = memblock_region_memory_base_pfn(reg);
+-		unsigned long end_pfn = memblock_region_memory_end_pfn(reg);
+-
+-		memblock_set_node(PFN_PHYS(start_pfn),
+-				  PFN_PHYS(end_pfn - start_pfn),
+-				  &memblock.memory, 0);
 -	}
-+	memory_start = memblock_start_of_DRAM();
-+	memory_end = memblock_end_of_DRAM();
+ }
  
- 	if (!memory_end)
- 		panic("No memory!");
- 
- 	/* setup bootmem globals (we use no_bootmem, but mm still depends on this) */
- 	min_low_pfn = PFN_UP(memory_start);
--	max_low_pfn = PFN_DOWN(memblock_end_of_DRAM());
-+	max_low_pfn = PFN_DOWN(memory_end);
- 	max_pfn = max_low_pfn;
- 
- 	memblock_reserve(__pa(_stext), _end - _stext);
-diff --git a/arch/nds32/kernel/setup.c b/arch/nds32/kernel/setup.c
-index a066efbe53c0..c356e484dcab 100644
---- a/arch/nds32/kernel/setup.c
-+++ b/arch/nds32/kernel/setup.c
-@@ -249,12 +249,8 @@ static void __init setup_memory(void)
- 	memory_end = memory_start = 0;
- 
- 	/* Find main memory where is the kernel */
--	for_each_memblock(memory, region) {
--		memory_start = region->base;
--		memory_end = region->base + region->size;
--		pr_info("%s: Memory: 0x%x-0x%x\n", __func__,
--			memory_start, memory_end);
--	}
-+	memory_start = memblock_start_of_DRAM();
-+	memory_end = memblock_end_of_DRAM();
- 
- 	if (!memory_end) {
- 		panic("No memory!");
-diff --git a/arch/openrisc/kernel/setup.c b/arch/openrisc/kernel/setup.c
-index b18e775f8be3..5a5940f7ebb1 100644
---- a/arch/openrisc/kernel/setup.c
-+++ b/arch/openrisc/kernel/setup.c
-@@ -48,17 +48,12 @@ static void __init setup_memory(void)
- 	unsigned long ram_start_pfn;
- 	unsigned long ram_end_pfn;
- 	phys_addr_t memory_start, memory_end;
--	struct memblock_region *region;
- 
- 	memory_end = memory_start = 0;
- 
- 	/* Find main memory where is the kernel, we assume its the only one */
--	for_each_memblock(memory, region) {
--		memory_start = region->base;
--		memory_end = region->base + region->size;
--		printk(KERN_INFO "%s: Memory: 0x%x-0x%x\n", __func__,
--		       memory_start, memory_end);
--	}
-+	memory_start = memblock_start_of_DRAM();
-+	memory_end = memblock_end_of_DRAM();
- 
- 	if (!memory_end) {
- 		panic("No memory!");
+ #ifdef CONFIG_MMU
 -- 
 2.26.2
 
