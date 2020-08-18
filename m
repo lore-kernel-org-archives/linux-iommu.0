@@ -2,115 +2,65 @@ Return-Path: <SRS0=kAxJ=B4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79574C433E1
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 22:18:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3511DC433E1
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 23:41:28 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40B05206DA
-	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 22:18:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OIqydpEt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40B05206DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id F3B1920738
+	for <iommu@archiver.kernel.org>; Tue, 18 Aug 2020 23:41:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3B1920738
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0C3F885A92;
-	Tue, 18 Aug 2020 22:18:18 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C857786C7E;
+	Tue, 18 Aug 2020 23:41:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OujWSvRMfQea; Tue, 18 Aug 2020 22:18:17 +0000 (UTC)
+	with ESMTP id prOR44BOmshr; Tue, 18 Aug 2020 23:41:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0D1F685A84;
-	Tue, 18 Aug 2020 22:18:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7BFC086C5A;
+	Tue, 18 Aug 2020 23:41:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3A07C088B;
-	Tue, 18 Aug 2020 22:18:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 761D1C07FF;
+	Tue, 18 Aug 2020 23:41:25 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 005BFC0051
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 22:18:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C307EC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 23:41:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DA58985A84
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 22:18:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BF1DA85C06
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 23:41:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KCgvkxc-vswU for <iommu@lists.linux-foundation.org>;
- Tue, 18 Aug 2020 22:18:14 +0000 (UTC)
+ with ESMTP id XhHk7LuSSVLQ for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Aug 2020 23:41:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f68.google.com (mail-lf1-f68.google.com
- [209.85.167.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1334585118
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 22:18:14 +0000 (UTC)
-Received: by mail-lf1-f68.google.com with SMTP id j22so11048789lfm.2
- for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 15:18:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=nn5mkrGFBbPg90QSTX4ScoaPazdulb+v6hO8tmlQUhM=;
- b=OIqydpEtkNgTroF3lnVBbcPUKQ2ogcmEFiN7wEqPDoyKdbDTrVZZ+NzClaB1tmtiGg
- 1q5dVw3gvA1HPNIt4f5Vr2bR4NBZwxXhiEUf3tzRwKt7NekpaA3/ibZvmA16+OG3grZ+
- Y0pgD14ByceFmFxwkAMy97PtaHPZGmMkTHmHfX1qI8cguewQrhSEyNet//D8uLt3URbX
- wtAIYHJxjbyMRdcrkRjXE+IjNA6JaY3Jp4v8SILylCVLQ416pwm5RG8VS/kkCIf9Vupf
- N2rIlz5ZIsghwkVWwHdlgrBINrap6VQaSjRwMPYFZcqiCFlD1Cw4CyHiSO7wqpA8NX8m
- GJbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=nn5mkrGFBbPg90QSTX4ScoaPazdulb+v6hO8tmlQUhM=;
- b=cq0/SAaSvpAXedEh03FDz1Uq+tQI2XbVfNSY7bxNXYGlwrpl7Una0S4p58Hog24PqY
- MWFqKRgu03NZ3Lr76ftCWT+IVEfko9qUUeCtAoXGJ6hoGUiyENGIvnjQQPObk7eEmnFY
- zFd+Avt//8dlwMPOuHZ1GkCSc2AtddmNKmBapWT4XMcNoOhns9Et0q8QQHnJXua3f4SH
- 64xWr4wkSqjpuPOX5VXZQg9wY4eg3XLzi+ymEpaqLc+i++l8lgOM4ZLziI0vbKtUnw+p
- aVCbS3DzUuaqQOPq3UBQYlcEtdQcMOxtrui4+PLPNcLR34XKIWdgum4M59MweZikA6a9
- Gukw==
-X-Gm-Message-State: AOAM531LcDn60PicD/6Zj45oGI+6GIIahhK58oK4/axmXqUOXegdDkW9
- wALnxhnVApTS4J6He803TXFVRScl17U/QsZuRNA=
-X-Google-Smtp-Source: ABdhPJyYNUN3v5scOCVMaoKuHu78eqvAibUFuUkJdpzA5rqp/I7KCAgyGHrlcUN+z5qLySo7/N7W852szcke7k/pYlA=
-X-Received: by 2002:a19:cb51:: with SMTP id b78mr10676996lfg.130.1597789091106; 
- Tue, 18 Aug 2020 15:18:11 -0700 (PDT)
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7AF6585BFB
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Aug 2020 23:41:23 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+ by Forcepoint Email with ESMTP id 69BB3B72D0DB71A842C8;
+ Wed, 19 Aug 2020 07:41:20 +0800 (CST)
+Received: from SWX921481.china.huawei.com (10.126.203.140) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 19 Aug 2020 07:41:11 +0800
+From: Barry Song <song.bao.hua@hisilicon.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+Subject: [PATCH v4 0/3] iommu/arm-smmu-v3: permit users to disable msi polling
+Date: Wed, 19 Aug 2020 11:38:24 +1200
+Message-ID: <20200818233827.21452-1-song.bao.hua@hisilicon.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
-References: <20200818151634.14343-1-rppt@kernel.org>
- <20200818151634.14343-11-rppt@kernel.org>
-In-Reply-To: <20200818151634.14343-11-rppt@kernel.org>
-From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date: Wed, 19 Aug 2020 00:18:00 +0200
-Message-ID: <CANiq72mnzTv7SphVxsYy++rAPdaKVVLGGHauxNLY5D4dzq3CPA@mail.gmail.com>
-Subject: Re: [PATCH v3 10/17] memblock: reduce number of parameters in
- for_each_mem_range()
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>,
- Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
- Peter Zijlstra <peterz@infradead.org>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
- Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
- sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- linux-arch <linux-arch@vger.kernel.org>, linux-s390@vger.kernel.org,
- linux-c6x-dev@linux-c6x.org, Michael Ellerman <mpe@ellerman.id.au>,
- "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
- Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>,
- clang-built-linux <clang-built-linux@googlegroups.com>,
- Ingo Molnar <mingo@redhat.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
- openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
- Stafford Horne <shorne@gmail.com>, Hari Bathini <hbathini@linux.ibm.com>,
- Daniel Axtens <dja@axtens.net>, Michal Simek <monstr@monstr.eu>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Yoshinori Sato <ysato@users.sourceforge.jp>, Linux-MM <linux-mm@kvack.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Palmer Dabbelt <palmer@dabbelt.com>, Andrew Morton <akpm@linux-foundation.org>,
- linuxppc-dev@lists.ozlabs.org
+X-Originating-IP: [10.126.203.140]
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ prime.zeng@hisilicon.com, linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -128,16 +78,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Aug 18, 2020 at 5:19 PM Mike Rapoport <rppt@kernel.org> wrote:
->
->  .clang-format                          |  2 ++
+patch 1/3 and patch 2/3 are the preparation of patch 3/3 which permits users
+to disable MSI-based polling by cmd line.
 
-For the .clang-format bit:
+-v4:
+  with respect to Robin's comments
+  * cleanup the code of the existing module parameter disable_bypass
+  * add ARM_SMMU_OPT_MSIPOLL flag. on the other hand, we only need to check
+    a bit in options rather than two bits in features
 
-Acked-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Barry Song (3):
+  iommu/arm-smmu-v3: replace symbolic permissions by octal permissions
+    for module parameter
+  iommu/arm-smmu-v3: replace module_param_named by module_param for
+    disable_bypass
+  iommu/arm-smmu-v3: permit users to disable msi polling
 
-Cheers,
-Miguel
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+-- 
+2.27.0
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
