@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC2AC433DF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C973FC433E1
 	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 14E2B207FF
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9E048207FF
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jpOJD02y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14E2B207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UdYV4uHp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E048207FF
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C21DC86B55;
-	Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8AE5E85C9E;
+	Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GyklCKV9ke3G; Wed, 19 Aug 2020 06:56:18 +0000 (UTC)
+	with ESMTP id tlaRFQ2qmyYs; Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AFD0D8575A;
+	by whitealder.osuosl.org (Postfix) with ESMTP id E0BDC86ACB;
 	Wed, 19 Aug 2020 06:56:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 94734C07FF;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC918C0891;
 	Wed, 19 Aug 2020 06:56:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5085CC0051
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CAC14C0051
  for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3A2A020762
+ by whitealder.osuosl.org (Postfix) with ESMTP id BA1A585C9E
  for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6JE3eACfq2pw for <iommu@lists.linux-foundation.org>;
+ with ESMTP id 0-KJcuSSF0Z8 for <iommu@lists.linux-foundation.org>;
  Wed, 19 Aug 2020 06:56:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 0F97B20468
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 922248575A
  for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=wWR7H3WZih9ZGlGO6OHg+MKLXPw0ngda85sKeqyd2Cw=; b=jpOJD02yiZZvWWit1o1weNaitA
- s+mC0xFEIxHdbmZxSuzv05dSkkmY3FK7EbdTpK9QpDLb0Ceqz6l3lQupgrpZuZDgApdny95si0/Rp
- bG4tkK6rP/6JwhYOUJT75htP/Q/gMqWOzdGofFco0K5sALTwUxauCijB+xP3Kcf9yEeh/sEpxQ/kX
- woIRuODRQAv2/adxC0mmIDYPTFtaYjX9N/IW+1s7SFpO4zs2DaqMtizNQdMSvfDbTyk2YhG5bNEly
- ZjwNnhqjEz2y/fnO7Bi5EbWzbuOS+Z3ef8M3gl9vPYrctO6a1rFf7y/8NiaGbJXM/DWJ17xvyusol
- pD8t2u8A==;
+ bh=5I0Wekw7PGkNV3dZaIEsA8c8Eplwzl97xo8vYosQxdI=; b=UdYV4uHpyw9x3F5rwAWsVUPFE0
+ Hqm02Lgcb3b7szXHtRYFh2Q2mQ0XgXJIRXZnNarHY8BTFPY/yfILYo9XBcRi7QMB28ipLhHbeYlLZ
+ mACjmpKK8MPjiLf3dQYi0vBMkZJd/+MdUBQ3P1z7bbLGarn+eG74rMpDjApvZcefIfvlujyIZSqxu
+ wHrDyEJGotoW7dL28Oiu4mTNTADO4SZxq3ID/xa3uKrXpchLC5U0otmEnB0C95mcVGd+TWrgeSorS
+ YoshIRrHigr4PRqKUustXCWc2qvmN6xs6AZEOX38KVFTfpoTISa6SdfuLtcuYFCOYm/EHyRiUeiPJ
+ oIt3VQVw==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I0u-0008Kz-1W; Wed, 19 Aug 2020 06:56:00 +0000
+ id 1k8I0x-0008LJ-Vp; Wed, 19 Aug 2020 06:56:04 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,9 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 02/28] drm/exynos: stop setting DMA_ATTR_NON_CONSISTENT
-Date: Wed, 19 Aug 2020 08:55:29 +0200
-Message-Id: <20200819065555.1802761-3-hch@lst.de>
+Subject: [PATCH 04/28] net/au1000-eth: stop using DMA_ATTR_NON_CONSISTENT
+Date: Wed, 19 Aug 2020 08:55:31 +0200
+Message-Id: <20200819065555.1802761-5-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -103,27 +103,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DMA_ATTR_NON_CONSISTENT is a no-op except on PARISC and some mips
-configs, so don't set it in this ARM specific driver.
+The au1000-eth driver contains none of the manual cache synchronization
+required for using DMA_ATTR_NON_CONSISTENT.  From what I can tell it
+can be used on both dma coherent and non-coherent DMA platforms, but
+I suspect it has been buggy on the non-coherent platforms all along.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/gpu/drm/exynos/exynos_drm_gem.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/amd/au1000_eth.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_gem.c b/drivers/gpu/drm/exynos/exynos_drm_gem.c
-index efa476858db54b..07073222b8f691 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_gem.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_gem.c
-@@ -42,8 +42,6 @@ static int exynos_drm_alloc_buf(struct exynos_drm_gem *exynos_gem, bool kvmap)
- 	if (exynos_gem->flags & EXYNOS_BO_WC ||
- 			!(exynos_gem->flags & EXYNOS_BO_CACHABLE))
- 		attr |= DMA_ATTR_WRITE_COMBINE;
--	else
--		attr |= DMA_ATTR_NON_CONSISTENT;
+diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
+index 75dbd221dc594b..19e195420e2434 100644
+--- a/drivers/net/ethernet/amd/au1000_eth.c
++++ b/drivers/net/ethernet/amd/au1000_eth.c
+@@ -1131,10 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
+ 	/* Allocate the data buffers
+ 	 * Snooping works fine with eth on all au1xxx
+ 	 */
+-	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
++	aup->vaddr = (u32)dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
+ 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-					  &aup->dma_addr, 0,
+-					  DMA_ATTR_NON_CONSISTENT);
++					  &aup->dma_addr, 0);
+ 	if (!aup->vaddr) {
+ 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
+ 		err = -ENOMEM;
+@@ -1310,9 +1309,8 @@ static int au1000_probe(struct platform_device *pdev)
+ err_remap2:
+ 	iounmap(aup->mac);
+ err_remap1:
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
+ err_vaddr:
+ 	free_netdev(dev);
+ err_alloc:
+@@ -1344,9 +1342,8 @@ static int au1000_remove(struct platform_device *pdev)
+ 		if (aup->tx_db_inuse[i])
+ 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
  
- 	/* FBDev emulation requires kernel mapping */
- 	if (!kvmap)
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
+ 
+ 	iounmap(aup->macdma);
+ 	iounmap(aup->mac);
 -- 
 2.28.0
 
