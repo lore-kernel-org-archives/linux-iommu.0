@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B34C433EA
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8D7C433E1
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 112202083B
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7750C20888
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="KZRDty0L"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 112202083B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="u6vSRQC9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7750C20888
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id DD0772094C;
-	Wed, 19 Aug 2020 06:57:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3C14485B3B;
+	Wed, 19 Aug 2020 06:57:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AewiuEW-HAqd; Wed, 19 Aug 2020 06:57:45 +0000 (UTC)
+	with ESMTP id SHnEBC1MQ907; Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A464220BF9;
-	Wed, 19 Aug 2020 06:57:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id CC1F385A74;
+	Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D94EC07FF;
-	Wed, 19 Aug 2020 06:57:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8168C07FF;
+	Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7DECC0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:44 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19A9EC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B687987B25
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:44 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1302987B2E
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eD4S57ec3lcs for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:57:44 +0000 (UTC)
+ with ESMTP id ROmMA0bhLZN0 for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 06:57:46 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 36BED87B1D
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:44 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 140E987B2B
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=n4jQXphtlWRBonOsn2A/IyhKyng5urQ9vpv5ufSXxPk=; b=KZRDty0LVAb6IYb2EgXMMhn/94
- SNEs4mh9p9rnpC99fbEF92zB0m3D7WvJjRrv50NXQbUGZKAsDefMFkOeLXMlu5DGet/i0Q9+pl76I
- aaliGVgEvwT5cxt1TbyaDjkrLykaxId7hOxXC+ZOaJy8uANKWgBSuv8uzKG0dIz02N2Wnv5H5ODMi
- ttApx1YRztY1G2Z8kh2b2znxpwj3fI2l7IbnOPpFlIj5pd/gOp3ou9Ec/tRlwpM24x+nOxNVfmTEW
- S+hiYJx3yCvEXbP8d1qXwPlzIa+qdIhtu9aJV1TdaM8Wtl9rPhU5pdy8P2ws0LiXUnHKn5IwFwvO7
- bsGbSO+A==;
+ bh=x1sUcmGO9MrhIj1ZnTCGxtvCXn3JVCX8pLSqOEGJVeQ=; b=u6vSRQC9fVad37bBaSkK60SHWJ
+ 6EwwbLS18F5aFivn2ChzghfBPrByYl1r51d8Jv8lVMGJ7tcALRFJdo3GWptQYoQ4UUuHQTb9UE51O
+ qTlro6hdElitB7fQIcnMrk2i6qm1OdlP4j38VhfvBmeLtT+8rwS4hsN90yiBnmwrguN69ZTHCHvu8
+ yVuHNDXJuW3tANjr0ql4qsWOdE2wfuOh8g7/5vm5R+uVEwAnleVZQvwn02t9aADNVkJHvbYeU0YMJ
+ JEjWPsC90vMzrSnzJkxDzWYR9Ok7+cLqFWAIN8EcfwA6y18GUJ0g3xj02d3MCThoC0GeH1v8No6S7
+ MnLsgqzg==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I1u-00007J-2i; Wed, 19 Aug 2020 06:57:02 +0000
+ id 1k8I1m-000050-VI; Wed, 19 Aug 2020 06:56:55 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,10 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 27/28] nvme-pci: fix PRP pool size
-Date: Wed, 19 Aug 2020 08:55:54 +0200
-Message-Id: <20200819065555.1802761-28-hch@lst.de>
+Subject: [PATCH 24/28] 53c700: convert from dma_cache_sync to
+ dma_sync_single_for_device
+Date: Wed, 19 Aug 2020 08:55:51 +0200
+Message-Id: <20200819065555.1802761-25-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -103,29 +104,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-All operations are based on the controller, not the host page size.
-Switch the dma pool to use the controller page size as well to avoid
-massive overallocations on large page size systems.
+Use the proper modern API to transfer cache ownership for incoherent DMA.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/nvme/host/pci.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/53c700.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index ba725ae47305ef..a33adab62acbaf 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -2460,7 +2460,8 @@ static int nvme_disable_prepare_reset(struct nvme_dev *dev, bool shutdown)
- static int nvme_setup_prp_pools(struct nvme_dev *dev)
- {
- 	dev->prp_page_pool = dma_pool_create("prp list page", dev->dev,
--						PAGE_SIZE, PAGE_SIZE, 0);
-+						NVME_CTRL_PAGE_SIZE,
-+						NVME_CTRL_PAGE_SIZE, 0);
- 	if (!dev->prp_page_pool)
- 		return -ENOMEM;
+diff --git a/drivers/scsi/53c700.c b/drivers/scsi/53c700.c
+index 521950d0731e4a..57a08c42d00325 100644
+--- a/drivers/scsi/53c700.c
++++ b/drivers/scsi/53c700.c
+@@ -269,18 +269,25 @@ NCR_700_get_SXFER(struct scsi_device *SDp)
+ 					      spi_period(SDp->sdev_target));
+ }
  
++static inline dma_addr_t virt_to_dma(struct NCR_700_Host_Parameters *h, void *p)
++{
++	return h->pScript + ((uintptr_t)p - (uintptr_t)h->script);
++}
++
+ static inline void dma_sync_to_dev(struct NCR_700_Host_Parameters *h,
+ 		void *addr, size_t size)
+ {
+ 	if (h->noncoherent)
+-		dma_cache_sync(h->dev, addr, size, DMA_TO_DEVICE);
++		dma_sync_single_for_device(h->dev, virt_to_dma(h, addr),
++					   size, DMA_BIDIRECTIONAL);
+ }
+ 
+ static inline void dma_sync_from_dev(struct NCR_700_Host_Parameters *h,
+ 		void *addr, size_t size)
+ {
+ 	if (h->noncoherent)
+-		dma_cache_sync(h->dev, addr, size, DMA_FROM_DEVICE);
++		dma_sync_single_for_device(h->dev, virt_to_dma(h, addr), size,
++					   DMA_BIDIRECTIONAL);
+ }
+ 
+ struct Scsi_Host *
 -- 
 2.28.0
 
