@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D8CC433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B251FC433F2
 	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F7232245C
+	by mail.kernel.org (Postfix) with ESMTPS id 7228F2245C
 	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Tv1CWbnL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F7232245C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Stap9nZF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7228F2245C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CDA13214E4;
-	Wed, 19 Aug 2020 06:57:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6327185A84;
+	Wed, 19 Aug 2020 06:57:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AlAx-hVeCxSE; Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
+	with ESMTP id eX3ImsQEz3de; Wed, 19 Aug 2020 06:57:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E155620468;
-	Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6323185A60;
+	Wed, 19 Aug 2020 06:57:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9464C07FF;
-	Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0D07C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 506BCC07FF;
+	Wed, 19 Aug 2020 06:57:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87420C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D8F9F20797
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:17 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7965987B47
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4P35ddLj0cWS for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:57:16 +0000 (UTC)
+ with ESMTP id GTHyLnaq7d6X for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 06:57:22 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 8436820468
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9AEFE87AFF
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=gJaI6Esuqevc5n1odFS47MOCP+KM34I3vDSv3XnZjAI=; b=Tv1CWbnLynvwmWs1Jhy5zKi3md
- uudL4RJWWKY0HA+Skk8RjLPLJTh5m/CPiLgGyyco4MXv4NU9RtzxB6zAQFr16KcUPXrcLcOOhIvEN
- jJr4XvBcs5GY24zClkR+J/+cJPPc+ftEYA+yf9U9PCVauRmjbZpqGKFEWmNjRmgA5OM38RiW7jJIx
- 3R9Tg8QbODpTLKDYSQQbRhIOvxDaEip+asJYYyOr1erjSfyFKIaDyZHzGQMmLigFfGFV53Q+268So
- 6R1k9V4Ymav8GkQQ6bHSD2xeHktpWRG/qBapr3eHyF2P7npqGMhZh6Wb9r08l2HiSbt7nThXkUmIe
- Ipaa1CEQ==;
+ bh=3yo70wOVkF5CaNJSKu+AlarDAtI7zXpUGNpkgTYQVWg=; b=Stap9nZF6GC9QOjwOzcCX1NDYx
+ jGVXomD9Kv31rFvbB7gCdBXXUTES2lhRo/Ye9dplxjvmv9GlaKXFAK0d1WTWoWB8yEbJSVAvr30c8
+ 9F4Wz/h3LBGX5AUsie/duMpRWbktxOomFvprDLV/zNeZybGiCPY3LG1ggZ2w/RgJmGuqL1PpQrHyd
+ BfSAqDAFvc4rwVO/UOekcEg55Q1BUT0J6zjsbm8NsrVFPbisxVXvjV6RTEBiOWIPm0GL8lsuyZQpI
+ Ybvh9GTiwEe0ZBf+TXtIz+htcpCJlIbiRdGYNQxwcwGhofUTsZ8c2xOQdxxerpc6hNAhN6tmLt14n
+ N+flC3iQ==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I1L-0008Pq-VK; Wed, 19 Aug 2020 06:56:28 +0000
+ id 1k8I1r-00006Q-0Z; Wed, 19 Aug 2020 06:57:00 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,9 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 15/28] dma-direct: remove __dma_to_phys
-Date: Wed, 19 Aug 2020 08:55:42 +0200
-Message-Id: <20200819065555.1802761-16-hch@lst.de>
+Subject: [PATCH 26/28] dmapool: add dma_alloc_pages support
+Date: Wed, 19 Aug 2020 08:55:53 +0200
+Message-Id: <20200819065555.1802761-27-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -103,239 +103,369 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-There is no harm in just always clearing the SME encryption bit, while
-significantly simplifying the interface.
+Add an new variant of a dmapool that uses non-coherent memory from
+dma_alloc_pages.  Unlike the existing mempool_create this one
+initialized a pool allocated by the caller to avoid a pointless extra
+allocation.  At some point it might be worth to also switch the coherent
+allocation over to a similar dma_pool_init_coherent helper, but that is
+better done as a separate series including a few conversions.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm/include/asm/dma-direct.h      |  2 +-
- arch/mips/bmips/dma.c                  |  2 +-
- arch/mips/cavium-octeon/dma-octeon.c   |  2 +-
- arch/mips/include/asm/dma-direct.h     |  2 +-
- arch/mips/loongson2ef/fuloong-2e/dma.c |  2 +-
- arch/mips/loongson2ef/lemote-2f/dma.c  |  2 +-
- arch/mips/loongson64/dma.c             |  2 +-
- arch/mips/pci/pci-ar2315.c             |  2 +-
- arch/mips/pci/pci-xtalk-bridge.c       |  2 +-
- arch/mips/sgi-ip32/ip32-dma.c          |  2 +-
- arch/powerpc/include/asm/dma-direct.h  |  2 +-
- include/linux/dma-direct.h             | 21 +++++++++++----------
- kernel/dma/direct.c                    |  6 +-----
- 13 files changed, 23 insertions(+), 26 deletions(-)
+ include/linux/dmapool.h |  23 ++++-
+ mm/dmapool.c            | 211 +++++++++++++++++++++++++---------------
+ 2 files changed, 154 insertions(+), 80 deletions(-)
 
-diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
-index 7c3001a6a775bf..a8cee87a93e8ab 100644
---- a/arch/arm/include/asm/dma-direct.h
-+++ b/arch/arm/include/asm/dma-direct.h
-@@ -8,7 +8,7 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return pfn_to_dma(dev, __phys_to_pfn(paddr)) + offset;
- }
+diff --git a/include/linux/dmapool.h b/include/linux/dmapool.h
+index f632ecfb423840..1387525c4e52e8 100644
+--- a/include/linux/dmapool.h
++++ b/include/linux/dmapool.h
+@@ -11,6 +11,10 @@
+ #ifndef LINUX_DMAPOOL_H
+ #define	LINUX_DMAPOOL_H
  
--static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
-+static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
- {
- 	unsigned int offset = dev_addr & ~PAGE_MASK;
- 	return __pfn_to_phys(dma_to_pfn(dev, dev_addr)) + offset;
-diff --git a/arch/mips/bmips/dma.c b/arch/mips/bmips/dma.c
-index df56bf4179e347..ba2a5d33dfd3fa 100644
---- a/arch/mips/bmips/dma.c
-+++ b/arch/mips/bmips/dma.c
-@@ -52,7 +52,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t pa)
- 	return pa;
- }
++#include <linux/dma-direction.h>
++#include <linux/gfp.h>
++#include <linux/spinlock.h>
++#include <linux/list.h>
+ #include <linux/scatterlist.h>
+ #include <asm/io.h>
  
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	struct bmips_dma_range *r;
+@@ -18,11 +22,28 @@ struct device;
  
-diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-index 14ea680d180e07..388b13ba2558c2 100644
---- a/arch/mips/cavium-octeon/dma-octeon.c
-+++ b/arch/mips/cavium-octeon/dma-octeon.c
-@@ -177,7 +177,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return paddr;
- }
+ #ifdef CONFIG_HAS_DMA
  
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
- {
- #ifdef CONFIG_PCI
- 	if (dev && dev_is_pci(dev))
-diff --git a/arch/mips/include/asm/dma-direct.h b/arch/mips/include/asm/dma-direct.h
-index 14e352651ce946..8e178651c638c2 100644
---- a/arch/mips/include/asm/dma-direct.h
-+++ b/arch/mips/include/asm/dma-direct.h
-@@ -3,6 +3,6 @@
- #define _MIPS_DMA_DIRECT_H 1
- 
- dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr);
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
- 
- #endif /* _MIPS_DMA_DIRECT_H */
-diff --git a/arch/mips/loongson2ef/fuloong-2e/dma.c b/arch/mips/loongson2ef/fuloong-2e/dma.c
-index e122292bf6660a..83fadeb3fd7d56 100644
---- a/arch/mips/loongson2ef/fuloong-2e/dma.c
-+++ b/arch/mips/loongson2ef/fuloong-2e/dma.c
-@@ -6,7 +6,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return paddr | 0x80000000;
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	return dma_addr & 0x7fffffff;
- }
-diff --git a/arch/mips/loongson2ef/lemote-2f/dma.c b/arch/mips/loongson2ef/lemote-2f/dma.c
-index abf0e39d7e4696..302b43a14eee74 100644
---- a/arch/mips/loongson2ef/lemote-2f/dma.c
-+++ b/arch/mips/loongson2ef/lemote-2f/dma.c
-@@ -6,7 +6,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return paddr | 0x80000000;
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	if (dma_addr > 0x8fffffff)
- 		return dma_addr;
-diff --git a/arch/mips/loongson64/dma.c b/arch/mips/loongson64/dma.c
-index dbfe6e82fddd1c..b3dc5d0bd2b113 100644
---- a/arch/mips/loongson64/dma.c
-+++ b/arch/mips/loongson64/dma.c
-@@ -13,7 +13,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return ((nid << 44) ^ paddr) | (nid << node_id_offset);
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
- {
- 	/* We extract 2bit node id (bit 44~47, only bit 44~45 used now) from
- 	 * Loongson-3's 48bit address space and embed it into 40bit */
-diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-index 490953f515282a..d88395684f487d 100644
---- a/arch/mips/pci/pci-ar2315.c
-+++ b/arch/mips/pci/pci-ar2315.c
-@@ -175,7 +175,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return paddr + ar2315_dev_offset(dev);
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	return dma_addr - ar2315_dev_offset(dev);
- }
-diff --git a/arch/mips/pci/pci-xtalk-bridge.c b/arch/mips/pci/pci-xtalk-bridge.c
-index 9b3cc775c55e05..f1b37f32b55395 100644
---- a/arch/mips/pci/pci-xtalk-bridge.c
-+++ b/arch/mips/pci/pci-xtalk-bridge.c
-@@ -33,7 +33,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return bc->baddr + paddr;
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	return dma_addr & ~(0xffUL << 56);
- }
-diff --git a/arch/mips/sgi-ip32/ip32-dma.c b/arch/mips/sgi-ip32/ip32-dma.c
-index fa7b17cb53853e..160317294d97a9 100644
---- a/arch/mips/sgi-ip32/ip32-dma.c
-+++ b/arch/mips/sgi-ip32/ip32-dma.c
-@@ -27,7 +27,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return dma_addr;
- }
- 
--phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	phys_addr_t paddr = dma_addr & RAM_OFFSET_MASK;
- 
-diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
-index abc154d784b078..95b09313d2a4cf 100644
---- a/arch/powerpc/include/asm/dma-direct.h
-+++ b/arch/powerpc/include/asm/dma-direct.h
-@@ -7,7 +7,7 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return paddr + dev->archdata.dma_offset;
- }
- 
--static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
-+static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
- {
- 	return daddr - dev->archdata.dma_offset;
- }
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 6a96a8ecac7cbc..811582a39e291f 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -24,11 +24,17 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return dev_addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
- }
- 
--static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
-+static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
- {
--	phys_addr_t paddr = (phys_addr_t)dev_addr;
--
--	return paddr + ((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
-+	phys_addr_t paddr = (phys_addr_t)dev_addr +
-+		((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
++struct dma_pool {		/* the pool */
++	struct list_head page_list;
++	spinlock_t lock;
++	size_t size;
++	struct device *dev;
++	size_t allocation;
++	size_t boundary;
++	bool is_coherent;
++	enum dma_data_direction dir;
++	char name[32];
++	struct list_head pools;
++};
 +
-+	/*
-+	 * Clear the Memory encryption mask if support by the architecture.  We
-+	 * do this unconditionally so that we don't have to track if someone
-+	 * fed us an encrypted or unencryped DMA address.
-+	 */
-+	return __sme_clr(paddr);
- }
- #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
- 
-@@ -44,7 +50,7 @@ static inline bool force_dma_unencrypted(struct device *dev)
- /*
-  * If memory encryption is supported, phys_to_dma will set the memory encryption
-  * bit in the DMA address, and dma_to_phys will clear it.  The raw __phys_to_dma
-- * and __dma_to_phys versions should only be used on non-encrypted memory for
-+ * version should only be used on non-encrypted memory for
-  * special occasions like DMA coherent buffers.
-  */
- static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
-@@ -52,11 +58,6 @@ static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- 	return __sme_set(__phys_to_dma(dev, paddr));
- }
- 
--static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
--{
--	return __sme_clr(__dma_to_phys(dev, daddr));
--}
+ struct dma_pool *dma_pool_create(const char *name, struct device *dev, 
+ 			size_t size, size_t align, size_t allocation);
 -
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
- 		bool is_ram)
- {
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 2e280b9c063449..a97835983a34f7 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -48,11 +48,6 @@ gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
- {
- 	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
+ void dma_pool_destroy(struct dma_pool *pool);
  
--	if (force_dma_unencrypted(dev))
--		*phys_limit = __dma_to_phys(dev, dma_limit);
--	else
--		*phys_limit = dma_to_phys(dev, dma_limit);
++int dma_pool_init(struct device *dev, struct dma_pool *pool, const char *name,
++		size_t size, size_t align, size_t boundary,
++		enum dma_data_direction dir);
++void dma_pool_exit(struct dma_pool *pool);
++
+ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 		     dma_addr_t *handle);
+ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index f9fb9bbd733e0f..c60a48b22c8d6a 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -6,10 +6,10 @@
+  * Copyright 2007 Intel Corporation
+  *   Author: Matthew Wilcox <willy@linux.intel.com>
+  *
+- * This allocator returns small blocks of a given size which are DMA-able by
+- * the given device.  It uses the dma_alloc_coherent page allocator to get
+- * new pages, then splits them up into blocks of the required size.
+- * Many older drivers still have their own code to do this.
++ * This allocator returns small blocks of a given size which are DMA-able by the
++ * given device.  It either uses the dma_alloc_coherent or the dma_alloc_pages
++ * allocator to get new pages, then splits them up into blocks of the required
++ * size.
+  *
+  * The current design of this allocator is fairly simple.  The pool is
+  * represented by the 'struct dma_pool' which keeps a doubly-linked list of
+@@ -39,17 +39,6 @@
+ #define DMAPOOL_DEBUG 1
+ #endif
+ 
+-struct dma_pool {		/* the pool */
+-	struct list_head page_list;
+-	spinlock_t lock;
+-	size_t size;
+-	struct device *dev;
+-	size_t allocation;
+-	size_t boundary;
+-	char name[32];
+-	struct list_head pools;
+-};
 -
+ struct dma_page {		/* cacheable header for 'allocation' bytes */
+ 	struct list_head page_list;
+ 	void *vaddr;
+@@ -104,74 +93,40 @@ show_pools(struct device *dev, struct device_attribute *attr, char *buf)
+ 
+ static DEVICE_ATTR(pools, 0444, show_pools, NULL);
+ 
+-/**
+- * dma_pool_create - Creates a pool of consistent memory blocks, for dma.
+- * @name: name of pool, for diagnostics
+- * @dev: device that will be doing the DMA
+- * @size: size of the blocks in this pool.
+- * @align: alignment requirement for blocks; must be a power of two
+- * @boundary: returned blocks won't cross this power of two boundary
+- * Context: not in_interrupt()
+- *
+- * Given one of these pools, dma_pool_alloc()
+- * may be used to allocate memory.  Such memory will all have "consistent"
+- * DMA mappings, accessible by the device and its driver without using
+- * cache flushing primitives.  The actual size of blocks allocated may be
+- * larger than requested because of alignment.
+- *
+- * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
+- * cross that size boundary.  This is useful for devices which have
+- * addressing restrictions on individual DMA transfers, such as not crossing
+- * boundaries of 4KBytes.
+- *
+- * Return: a dma allocation pool with the requested characteristics, or
+- * %NULL if one can't be created.
+- */
+-struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+-				 size_t size, size_t align, size_t boundary)
++static int __dma_pool_init(struct device *dev, struct dma_pool *pool,
++		const char *name, size_t size, size_t align, size_t boundary)
+ {
+-	struct dma_pool *retval;
+ 	size_t allocation;
+ 	bool empty = false;
+ 
+ 	if (align == 0)
+ 		align = 1;
+-	else if (align & (align - 1))
+-		return NULL;
++	if (align & (align - 1))
++		return -EINVAL;
+ 
+ 	if (size == 0)
+-		return NULL;
+-	else if (size < 4)
+-		size = 4;
+-
+-	size = ALIGN(size, align);
++		return -EINVAL;
++	size = ALIGN(min_t(size_t, size, 4), align);
+ 	allocation = max_t(size_t, size, PAGE_SIZE);
+ 
+ 	if (!boundary)
+ 		boundary = allocation;
+-	else if ((boundary < size) || (boundary & (boundary - 1)))
+-		return NULL;
+-
+-	retval = kmalloc_node(sizeof(*retval), GFP_KERNEL, dev_to_node(dev));
+-	if (!retval)
+-		return retval;
+-
+-	strlcpy(retval->name, name, sizeof(retval->name));
+-
+-	retval->dev = dev;
+-
+-	INIT_LIST_HEAD(&retval->page_list);
+-	spin_lock_init(&retval->lock);
+-	retval->size = size;
+-	retval->boundary = boundary;
+-	retval->allocation = allocation;
+-
+-	INIT_LIST_HEAD(&retval->pools);
++	if (boundary < size || (boundary & (boundary - 1)))
++		return -EINVAL;
++
++	strlcpy(pool->name, name, sizeof(pool->name));
++	pool->dev = dev;
++	INIT_LIST_HEAD(&pool->page_list);
++	spin_lock_init(&pool->lock);
++	pool->size = size;
++	pool->boundary = boundary;
++	pool->allocation = allocation;
++	INIT_LIST_HEAD(&pool->pools);
+ 
  	/*
- 	 * Optimistically try the zone that the physical address mask falls
- 	 * into first.  If that returns memory that isn't actually addressable
-@@ -61,6 +56,7 @@ gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
- 	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
- 	 * zones.
- 	 */
-+	*phys_limit = dma_to_phys(dev, dma_limit);
- 	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
- 		return GFP_DMA;
- 	if (*phys_limit <= DMA_BIT_MASK(32))
+ 	 * pools_lock ensures that the ->dma_pools list does not get corrupted.
+ 	 * pools_reg_lock ensures that there is not a race between
+-	 * dma_pool_create() and dma_pool_destroy() or within dma_pool_create()
++	 * __dma_pool_init() and dma_pool_exit() or within dma_pool_create()
+ 	 * when the first invocation of dma_pool_create() failed on
+ 	 * device_create_file() and the second assumes that it has been done (I
+ 	 * know it is a short window).
+@@ -180,7 +135,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	mutex_lock(&pools_lock);
+ 	if (list_empty(&dev->dma_pools))
+ 		empty = true;
+-	list_add(&retval->pools, &dev->dma_pools);
++	list_add(&pool->pools, &dev->dma_pools);
+ 	mutex_unlock(&pools_lock);
+ 	if (empty) {
+ 		int err;
+@@ -188,18 +143,94 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 		err = device_create_file(dev, &dev_attr_pools);
+ 		if (err) {
+ 			mutex_lock(&pools_lock);
+-			list_del(&retval->pools);
++			list_del(&pool->pools);
+ 			mutex_unlock(&pools_lock);
+ 			mutex_unlock(&pools_reg_lock);
+-			kfree(retval);
+-			return NULL;
++			return err;
+ 		}
+ 	}
+ 	mutex_unlock(&pools_reg_lock);
+-	return retval;
++	return 0;
++}
++
++/**
++ * dma_pool_create - Creates a pool of consistent memory blocks, for dma.
++ * @name: name of pool, for diagnostics
++ * @dev: device that will be doing the DMA
++ * @size: size of the blocks in this pool.
++ * @align: alignment requirement for blocks; must be a power of two
++ * @boundary: returned blocks won't cross this power of two boundary
++ * Context: not in_interrupt()
++ *
++ * Given one of these pools, dma_pool_alloc()
++ * may be used to allocate memory.  Such memory will all have "consistent"
++ * DMA mappings, accessible by the device and its driver without using
++ * cache flushing primitives.  The actual size of blocks allocated may be
++ * larger than requested because of alignment.
++ *
++ * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
++ * cross that size boundary.  This is useful for devices which have
++ * addressing restrictions on individual DMA transfers, such as not crossing
++ * boundaries of 4KBytes.
++ *  Return: a dma allocation pool with the requested characteristics, or
++ * %NULL if one can't be created.
++ */
++struct dma_pool *dma_pool_create(const char *name, struct device *dev,
++				 size_t size, size_t align, size_t boundary)
++{
++	struct dma_pool *pool;
++
++	pool = kmalloc_node(sizeof(*pool), GFP_KERNEL, dev_to_node(dev));
++	if (!pool)
++		return NULL;
++	if (__dma_pool_init(dev, pool, name, size, align, boundary))
++		goto out_free_pool;
++	pool->is_coherent = true;
++	return pool;
++out_free_pool:
++	kfree(pool);
++	return NULL;
+ }
+ EXPORT_SYMBOL(dma_pool_create);
+ 
++/**
++ * dma_pool_init - initialize a pool DMA addressable memory
++ * @dev:	device that will be doing the DMA
++ * @pool:	pool to initialize
++ * @name:	name of pool, for diagnostics
++ * @size:	size of the blocks in this pool.
++ * @align:	alignment requirement for blocks; must be a power of two
++ * @boundary:	returned blocks won't cross this power of two boundary
++ * @dir:	DMA direction the allocations are going to be used for
++ *
++ * Context:	not in_interrupt()
++ *
++ * Given one of these pools, dma_pool_alloc() may be used to allocate memory.
++ * Such memory will have the same semantics as memory returned from
++ * dma_alloc_pages(), that is ownership needs to be transferred to and from the
++ * device.  The actual size of blocks allocated may be larger than requested
++ * because of alignment.
++ *
++ * If @boundary is nonzero, objects returned from dma_pool_alloc() won't
++ * cross that size boundary.  This is useful for devices which have
++ * addressing restrictions on individual DMA transfers, such as not crossing
++ * boundaries of 4KBytes.
++ */
++int dma_pool_init(struct device *dev, struct dma_pool *pool, const char *name,
++		size_t size, size_t align, size_t boundary,
++		enum dma_data_direction dir)
++{
++	int ret;
++
++	ret = __dma_pool_init(dev, pool, name, size, align, boundary);
++	if (ret)
++		return ret;
++	pool->is_coherent = false;
++	pool->dir = dir;
++	return 0;
++}
++EXPORT_SYMBOL(dma_pool_init);
++
+ static void pool_initialise_page(struct dma_pool *pool, struct dma_page *page)
+ {
+ 	unsigned int offset = 0;
+@@ -223,8 +254,12 @@ static struct dma_page *pool_alloc_page(struct dma_pool *pool, gfp_t mem_flags)
+ 	page = kmalloc(sizeof(*page), mem_flags);
+ 	if (!page)
+ 		return NULL;
+-	page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
+-					 &page->dma, mem_flags);
++	if (pool->is_coherent)
++		page->vaddr = dma_alloc_coherent(pool->dev, pool->allocation,
++						 &page->dma, mem_flags);
++	else
++		page->vaddr = dma_alloc_pages(pool->dev, pool->allocation,
++					      &page->dma, pool->dir, mem_flags);
+ 	if (page->vaddr) {
+ #ifdef	DMAPOOL_DEBUG
+ 		memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
+@@ -251,20 +286,25 @@ static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
+ #ifdef	DMAPOOL_DEBUG
+ 	memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
+ #endif
+-	dma_free_coherent(pool->dev, pool->allocation, page->vaddr, dma);
++	if (pool->is_coherent)
++		dma_free_coherent(pool->dev, pool->allocation, page->vaddr,
++				  dma);
++	else
++		dma_free_pages(pool->dev, pool->allocation, page->vaddr, dma,
++			       pool->dir);
+ 	list_del(&page->page_list);
+ 	kfree(page);
+ }
+ 
+ /**
+- * dma_pool_destroy - destroys a pool of dma memory blocks.
++ * dma_pool_exit - destroys a pool of dma memory blocks.
+  * @pool: dma pool that will be destroyed
+  * Context: !in_interrupt()
+  *
+- * Caller guarantees that no more memory from the pool is in use,
+- * and that nothing will try to use the pool after this call.
++ * Caller guarantees that no more memory from the pool is in use, and that
++ * nothing will try to use the pool after this call.
+  */
+-void dma_pool_destroy(struct dma_pool *pool)
++void dma_pool_exit(struct dma_pool *pool)
+ {
+ 	bool empty = false;
+ 
+@@ -299,7 +339,20 @@ void dma_pool_destroy(struct dma_pool *pool)
+ 		} else
+ 			pool_free_page(pool, page);
+ 	}
++}
++EXPORT_SYMBOL(dma_pool_exit);
+ 
++/**
++ * dma_pool_destroy - destroys a pool of dma memory blocks.
++ * @pool: dma pool that will be destroyed
++ * Context: !in_interrupt()
++ *
++ * Caller guarantees that no more memory from the pool is in use,
++ * and that nothing will try to use the pool after this call.
++ */
++void dma_pool_destroy(struct dma_pool *pool)
++{
++	dma_pool_exit(pool);
+ 	kfree(pool);
+ }
+ EXPORT_SYMBOL(dma_pool_destroy);
 -- 
 2.28.0
 
