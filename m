@@ -2,90 +2,81 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C654C433EB
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565D8C433DF
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 10:12:26 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 36C6B20888
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="hvsEVEvL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36C6B20888
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 25C52206B5
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 10:12:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25C52206B5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F38A2868F9;
-	Wed, 19 Aug 2020 06:57:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DAFA482F21;
+	Wed, 19 Aug 2020 10:12:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jZ9aeRpotYrQ; Wed, 19 Aug 2020 06:57:54 +0000 (UTC)
+	with ESMTP id 1Sk3nYtax36r; Wed, 19 Aug 2020 10:12:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2E36F86BC5;
-	Wed, 19 Aug 2020 06:57:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 39E5482813;
+	Wed, 19 Aug 2020 10:12:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2798BC07FF;
-	Wed, 19 Aug 2020 06:57:54 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D56B6C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E075C0889;
+	Wed, 19 Aug 2020 10:12:25 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68CADC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 10:12:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BAB5E214E4
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:52 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 515B5828B5
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 10:12:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RAh7t3FkhKg0 for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:57:51 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 52B9021135
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=lNMBC694MGzhD+uJcSmWDHi7UPoDvxCv6DsPxBphUDM=; b=hvsEVEvLhFqVJsYwQI9fVfL5lp
- KW/X5c84TRVEWiCq+JWY6sNEc2oPPEGv+njCJOloQQfIY5LUVW8trunjunigerqOpw/bNuW3d15Nk
- KgKieclLAYJPG4mvEkrbXHTLSkS3oIM/sohwRcqd7QHlpj3mv/N3/MXfm3eBRP5C0/LNJ5ouorMBE
- EFFTa7MVts6kBXsmWo/w+5Hd0w5Fe84gvTgCYwvRXDgUbWV9izyuuyq+19e30v6LdcypJRbfFaF/y
- BVzr8sMb9JqE5r5zxB/kHyoI/WzgowY0Vk+Xyd6UQArjHPMonvBv0ewspWNMbu/2jhayLSYkMZBFZ
- 7BeuNtag==;
-Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I1v-00007x-Sa; Wed, 19 Aug 2020 06:57:05 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Mauro Carvalho Chehab <mchehab@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Joonyoung Shim <jy0922.shim@samsung.com>,
- Seung-Woo Kim <sw0312.kim@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
- Pawel Osciak <pawel@osciak.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 28/28] nvme-pci: use dma_alloc_pages backed dmapools
-Date: Wed, 19 Aug 2020 08:55:55 +0200
-Message-Id: <20200819065555.1802761-29-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
-References: <20200819065555.1802761-1-hch@lst.de>
+ with ESMTP id U21Kqn4OCVhR for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 10:12:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4ADD682813
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 10:12:23 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6DCFD101E;
+ Wed, 19 Aug 2020 03:12:22 -0700 (PDT)
+Received: from [10.57.40.122] (unknown [10.57.40.122])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E7F1D3F6CF;
+ Wed, 19 Aug 2020 03:12:19 -0700 (PDT)
+Subject: Re: [PATCH 00/16] IOMMU driver for Kirin 960/970
+To: John Stultz <john.stultz@linaro.org>
+References: <cover.1597650455.git.mchehab+huawei@kernel.org>
+ <5c7918b6-c506-680b-cb0f-9e5f6a7038d9@arm.com>
+ <20200818172909.71f5243a@coco.lan>
+ <79f40595-7769-aa6a-fbba-53adcffca327@arm.com>
+ <CALAqxLXBYvwZ9kiKSGBeO5f-eKi2DD14QtoZgFGyGd-B7EOPQA@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <3c058393-9ad2-3786-f68c-a54698ad3691@arm.com>
+Date: Wed, 19 Aug 2020 11:12:18 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, alsa-devel@alsa-project.org,
- linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org, netdev@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+In-Reply-To: <CALAqxLXBYvwZ9kiKSGBeO5f-eKi2DD14QtoZgFGyGd-B7EOPQA@mail.gmail.com>
+Content-Language: en-GB
+Cc: driverdevel <devel@driverdev.osuosl.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Suzhuangluan <suzhuangluan@hisilicon.com>, linuxarm@huawei.com,
+ Wei Xu <xuwei5@hisilicon.com>, lkml <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Chenfeng <puck.chen@hisilicon.com>, mauro.chehab@huawei.com,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,216 +89,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Switch from coherent DMA pools to those backed by dma_alloc_pages.  This
-helps device with non-coherent DMA to avoid host accesses to uncached
-memory for every submission of a larger than single entry I/O.
+On 2020-08-18 23:02, John Stultz wrote:
+> On Tue, Aug 18, 2020 at 9:26 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 2020-08-18 16:29, Mauro Carvalho Chehab wrote:
+>>> Em Tue, 18 Aug 2020 15:47:55 +0100
+>>> Basically, the DT binding has this, for IOMMU:
+>>>
+>>>
+>>>        smmu_lpae {
+>>>                compatible = "hisilicon,smmu-lpae";
+>>>        };
+>>>
+>>> ...
+>>>        dpe: dpe@e8600000 {
+>>>                compatible = "hisilicon,kirin970-dpe";
+>>>                memory-region = <&drm_dma_reserved>;
+>>> ...
+>>>                iommu_info {
+>>>                        start-addr = <0x8000>;
+>>>                        size = <0xbfff8000>;
+>>>                };
+>>>        }
+>>>
+>>> This is used by kirin9xx_drm_dss.c in order to enable and use
+>>> the iommu:
+>>>
+>>>
+>>>        static int dss_enable_iommu(struct platform_device *pdev, struct dss_hw_ctx *ctx)
+>>>        {
+>>>                struct device *dev = NULL;
+>>>
+>>>                dev = &pdev->dev;
+>>>
+>>>                /* create iommu domain */
+>>>                ctx->mmu_domain = iommu_domain_alloc(dev->bus);
+>>>                if (!ctx->mmu_domain) {
+>>>                        pr_err("iommu_domain_alloc failed!\n");
+>>>                        return -EINVAL;
+>>>                }
+>>>
+>>>                iommu_attach_device(ctx->mmu_domain, dev);
+>>>
+>>>                return 0;
+>>>        }
+>>>
+>>> The only place where the IOMMU domain is used is on this part of the
+>>> code(error part simplified here) [1]:
+>>>
+>>>        void hisi_dss_smmu_on(struct dss_hw_ctx *ctx)
+>>>        {
+>>>                uint64_t fama_phy_pgd_base;
+>>>                uint32_t phy_pgd_base;
+>>> ...
+>>>                fama_phy_pgd_base = iommu_iova_to_phys(ctx->mmu_domain, 0);
+>>>                phy_pgd_base = (uint32_t)fama_phy_pgd_base;
+>>>                if (WARN_ON(!phy_pgd_base))
+>>>                        return;
+>>>
+>>>                set_reg(smmu_base + SMMU_CB_TTBR0, phy_pgd_base, 32, 0);
+>>>        }
+>>>
+>>> [1] https://github.com/mchehab/linux/commit/36da105e719b47bbe9d6cb7e5619b30c7f3eb1bd
+>>>
+>>> In other words, the driver needs to get the physical address of the frame
+>>> buffer (mapped via iommu) in order to set some DRM-specific register.
+>>>
+>>> Yeah, the above code is somewhat hackish. I would love to replace
+>>> this part by a more standard approach.
+>>
+>> OK, so from a quick look at that, my impression is that your display
+>> controller has its own MMU and you don't need to pretend to use the
+>> IOMMU API at all. Just have the DRM driver use io-pgtable directly to
+>> run its own set of ARM_32_LPAE_S1 pagetables - see Panfrost for an
+>> example (but try to ignore the wacky "Mali LPAE" format).
+> 
+> Yea. For the HiKey960, there was originally a similar patch series but
+> it was refactored out and the (still out of tree) DRM driver I'm
+> carrying doesn't seem to need it (though looking we still have the
+> iommu_info subnode in the dts that maybe needs to be cleaned up).
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/nvme/host/pci.c | 80 ++++++++++++++++++++---------------------
- 1 file changed, 40 insertions(+), 40 deletions(-)
+Indeed, I'd assume it's possible to leave the MMU off and just use CMA 
+buffers instead, but wiring it up properly without the downstream 
+mis-design should be pretty clean, so maybe that could ultimately be 
+shared with 960 too (assuming the hardware isn't wildly dissimilar).
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index a33adab62acbaf..fb34dbcb973673 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -114,8 +114,8 @@ struct nvme_dev {
- 	struct blk_mq_tag_set admin_tagset;
- 	u32 __iomem *dbs;
- 	struct device *dev;
--	struct dma_pool *prp_page_pool;
--	struct dma_pool *prp_small_pool;
-+	struct dma_pool prp_page_pool;
-+	struct dma_pool prp_small_pool;
- 	unsigned online_queues;
- 	unsigned max_qid;
- 	unsigned io_queues[HCTX_MAX_TYPES];
-@@ -536,7 +536,7 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- 
- 
- 	if (iod->npages == 0)
--		dma_pool_free(dev->prp_small_pool, nvme_pci_iod_list(req)[0],
-+		dma_pool_free(&dev->prp_small_pool, nvme_pci_iod_list(req)[0],
- 			dma_addr);
- 
- 	for (i = 0; i < iod->npages; i++) {
-@@ -553,7 +553,7 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- 			next_dma_addr = le64_to_cpu(prp_list[last_prp]);
- 		}
- 
--		dma_pool_free(dev->prp_page_pool, addr, dma_addr);
-+		dma_pool_free(&dev->prp_page_pool, addr, dma_addr);
- 		dma_addr = next_dma_addr;
- 	}
- 
-@@ -611,10 +611,10 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 
- 	nprps = DIV_ROUND_UP(length, NVME_CTRL_PAGE_SIZE);
- 	if (nprps <= (256 / 8)) {
--		pool = dev->prp_small_pool;
-+		pool = &dev->prp_small_pool;
- 		iod->npages = 0;
- 	} else {
--		pool = dev->prp_page_pool;
-+		pool = &dev->prp_page_pool;
- 		iod->npages = 1;
- 	}
- 
-@@ -630,6 +630,11 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 	for (;;) {
- 		if (i == NVME_CTRL_PAGE_SIZE >> 3) {
- 			__le64 *old_prp_list = prp_list;
-+
-+			dma_sync_single_for_device(dev->dev, prp_dma,
-+						   i * sizeof(*prp_list),
-+						   DMA_TO_DEVICE);
-+
- 			prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
- 			if (!prp_list)
- 				return BLK_STS_RESOURCE;
-@@ -653,6 +658,8 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 		dma_len = sg_dma_len(sg);
- 	}
- 
-+	dma_sync_single_for_device(dev->dev, prp_dma, i * sizeof(*prp_list),
-+				   DMA_TO_DEVICE);
- done:
- 	cmnd->dptr.prp1 = cpu_to_le64(sg_dma_address(iod->sg));
- 	cmnd->dptr.prp2 = cpu_to_le64(iod->first_dma);
-@@ -706,10 +713,10 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
- 	}
- 
- 	if (entries <= (256 / sizeof(struct nvme_sgl_desc))) {
--		pool = dev->prp_small_pool;
-+		pool = &dev->prp_small_pool;
- 		iod->npages = 0;
- 	} else {
--		pool = dev->prp_page_pool;
-+		pool = &dev->prp_page_pool;
- 		iod->npages = 1;
- 	}
- 
-@@ -728,6 +735,10 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
- 		if (i == SGES_PER_PAGE) {
- 			struct nvme_sgl_desc *old_sg_desc = sg_list;
- 			struct nvme_sgl_desc *link = &old_sg_desc[i - 1];
-+	
-+			dma_sync_single_for_device(dev->dev, sgl_dma,
-+						   i * sizeof(*sg_list),
-+						   DMA_TO_DEVICE);
- 
- 			sg_list = dma_pool_alloc(pool, GFP_ATOMIC, &sgl_dma);
- 			if (!sg_list)
-@@ -743,6 +754,8 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
- 		sg = sg_next(sg);
- 	} while (--entries > 0);
- 
-+	dma_sync_single_for_device(dev->dev, sgl_dma, i * sizeof(*sg_list),
-+				   DMA_TO_DEVICE);
- 	return BLK_STS_OK;
- }
- 
-@@ -2457,30 +2470,6 @@ static int nvme_disable_prepare_reset(struct nvme_dev *dev, bool shutdown)
- 	return 0;
- }
- 
--static int nvme_setup_prp_pools(struct nvme_dev *dev)
--{
--	dev->prp_page_pool = dma_pool_create("prp list page", dev->dev,
--						NVME_CTRL_PAGE_SIZE,
--						NVME_CTRL_PAGE_SIZE, 0);
--	if (!dev->prp_page_pool)
--		return -ENOMEM;
--
--	/* Optimisation for I/Os between 4k and 128k */
--	dev->prp_small_pool = dma_pool_create("prp list 256", dev->dev,
--						256, 256, 0);
--	if (!dev->prp_small_pool) {
--		dma_pool_destroy(dev->prp_page_pool);
--		return -ENOMEM;
--	}
--	return 0;
--}
--
--static void nvme_release_prp_pools(struct nvme_dev *dev)
--{
--	dma_pool_destroy(dev->prp_page_pool);
--	dma_pool_destroy(dev->prp_small_pool);
--}
--
- static void nvme_free_tagset(struct nvme_dev *dev)
- {
- 	if (dev->tagset.tags)
-@@ -2851,10 +2840,6 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	INIT_WORK(&dev->remove_work, nvme_remove_dead_ctrl_work);
- 	mutex_init(&dev->shutdown_lock);
- 
--	result = nvme_setup_prp_pools(dev);
--	if (result)
--		goto unmap;
--
- 	quirks |= check_vendor_combination_bug(pdev);
- 
- 	if (!noacpi && nvme_acpi_storage_d3(pdev)) {
-@@ -2867,6 +2852,18 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		quirks |= NVME_QUIRK_SIMPLE_SUSPEND;
- 	}
- 
-+	result = dma_pool_init(dev->dev, &dev->prp_page_pool, "prp list page",
-+			NVME_CTRL_PAGE_SIZE, NVME_CTRL_PAGE_SIZE, 0,
-+			DMA_TO_DEVICE);
-+	if (result)
-+		goto unmap;
-+
-+	/* Optimisation for I/Os between 4k and 128k */
-+	result = dma_pool_init(dev->dev, &dev->prp_small_pool, "prp list 256",
-+			256, 256, 0, DMA_TO_DEVICE);
-+	if (result)
-+		goto release_prp_page_pool;
-+
- 	/*
- 	 * Double check that our mempool alloc size will cover the biggest
- 	 * command we support.
-@@ -2880,7 +2877,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 						GFP_KERNEL, node);
- 	if (!dev->iod_mempool) {
- 		result = -ENOMEM;
--		goto release_pools;
-+		goto release_prp_small_pool;
- 	}
- 
- 	result = nvme_init_ctrl(&dev->ctrl, &pdev->dev, &nvme_pci_ctrl_ops,
-@@ -2897,8 +2894,10 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
-  release_mempool:
- 	mempool_destroy(dev->iod_mempool);
-- release_pools:
--	nvme_release_prp_pools(dev);
-+ release_prp_small_pool:
-+	dma_pool_exit(&dev->prp_small_pool);
-+ release_prp_page_pool:
-+	dma_pool_exit(&dev->prp_page_pool);
-  unmap:
- 	nvme_dev_unmap(dev);
-  put_pci:
-@@ -2963,7 +2962,8 @@ static void nvme_remove(struct pci_dev *pdev)
- 	nvme_free_host_mem(dev);
- 	nvme_dev_remove_admin(dev);
- 	nvme_free_queues(dev, 0);
--	nvme_release_prp_pools(dev);
-+	dma_pool_exit(&dev->prp_small_pool);
-+	dma_pool_exit(&dev->prp_page_pool);
- 	nvme_dev_unmap(dev);
- 	nvme_uninit_ctrl(&dev->ctrl);
- }
--- 
-2.28.0
+I notice there's already a whole load of MMU configuration hard-coded 
+into the DRM driver - does iommu_info even need to be in the DT, or 
+could that also be decided directly by the driver? (Most other MMU-aware 
+DRM drivers seem to hard-code their drm_mm dimensions.) I can't imagine 
+the *virtual* address space limits need to vary on a per-board basis, 
+and they could easily be tied to the compatible if they legitimately 
+differ across SoCs and a simple lowest-common-denominator approach 
+wouldn't suffice for whatever reason.
 
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
