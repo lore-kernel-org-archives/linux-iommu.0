@@ -2,81 +2,109 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1C7C433E1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:13:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C39C433E3
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:34:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9590E207FF
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:13:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9590E207FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AE4E720758
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:34:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Cf6w4ypy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE4E720758
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2AC9087C76;
-	Wed, 19 Aug 2020 17:13:42 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 82943857A4;
+	Wed, 19 Aug 2020 17:34:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mOqVRZXkCE8J; Wed, 19 Aug 2020 17:13:39 +0000 (UTC)
+	with ESMTP id O7as4ecD40DA; Wed, 19 Aug 2020 17:34:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3A83786D88;
-	Wed, 19 Aug 2020 17:13:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E13F182476;
+	Wed, 19 Aug 2020 17:34:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 02A91C0889;
-	Wed, 19 Aug 2020 17:13:39 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EBBEEC0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:13:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7948C0889;
+	Wed, 19 Aug 2020 17:34:08 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 341CBC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:34:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DA4FF2156F
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:13:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 22D66850EA
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:34:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id za8lIgJH2vXB for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 17:13:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by silver.osuosl.org (Postfix) with ESMTPS id 064DB2001A
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:13:35 +0000 (UTC)
-IronPort-SDR: zVn0+GApsmca2BUcJS05w0tf+9C3kPTfQ/Zj1FuBwFyWJ4eORnymSYj25Z2TC3fDQ15aVJi8WP
- 6hdF5NEh8NIA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9718"; a="135227836"
-X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; d="scan'208";a="135227836"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Aug 2020 10:13:35 -0700
-IronPort-SDR: CVN9NDYw0XmWDOcyKev6oK59OL/V5IFQ7oin/CXiNZ/wnYKad8JTybW/lnVfqYuMbh3nDZ8mKT
- 3AJ6zROpQLEw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; d="scan'208";a="279753189"
-Received: from black.fi.intel.com ([10.237.72.28])
- by fmsmga008.fm.intel.com with ESMTP; 19 Aug 2020 10:13:33 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
- id 68A061FD; Wed, 19 Aug 2020 20:13:32 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, x86@kernel.org,
- Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v1 2/3] swiotlb: Declare swiotlb_late_init_with_default_size()
- in header
-Date: Wed, 19 Aug 2020 20:13:25 +0300
-Message-Id: <20200819171326.35931-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200819171326.35931-1-andriy.shevchenko@linux.intel.com>
-References: <20200819171326.35931-1-andriy.shevchenko@linux.intel.com>
+ with ESMTP id o7B-gJHMvlpK for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 17:34:05 +0000 (UTC)
+X-Greylist: delayed 00:30:52 by SQLgrey-1.7.6
+Received: from mail-qv1-f66.google.com (mail-qv1-f66.google.com
+ [209.85.219.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BFFE382476
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:34:05 +0000 (UTC)
+Received: by mail-qv1-f66.google.com with SMTP id cs12so11662707qvb.2
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 10:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=ktYpsCxiLWJOQgFpjU6rm698Y/qLm2dIO8jCJsadEOU=;
+ b=Cf6w4ypyePA72N9OwZ/X/gIqgQ3/Z2O3rsVEAnbMsPXxSteDXfBbrAJ2YKaLKzi+2G
+ eJlNvZyKM6mcCsbB8rTNwjE0zNlCUOU27vLJyO1vH/Kf6P5hVdc0XLNeLzE0ilaNzTIL
+ c/q/2eCUoXXxQCiuP4bqs7wWJmNaxuO94MGUY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=ktYpsCxiLWJOQgFpjU6rm698Y/qLm2dIO8jCJsadEOU=;
+ b=tXPBKFr0NNu7R1VLIlDmsZ0tLPzLsTWv++nLB7tKHWs+os516tb19jNfNQweiqLlse
+ goblJ0k7OmgXIQQBqDKXMksCxRarQN7q5gmJHOJ/Rcd6ez0TGDYF89awiBy+DSf872us
+ o81f6IyrvF9VUX+SJIMDyu5JmRbOnXbPeiflGHzjxSNDpwNma6dkfQ7Rd/jCJ4OIdifx
+ Z5pfbhb5IE5MC7JpffacCcbONfRstWuZex8eniulQyTQJ38GAMUSOpqvUfjmpXBL8Gyu
+ xEj1FVbZuD+u8ElzvBB61uKNCfEb+u6vahHGmn4dK1xz+5UPaSyYrR8gkXCQJHzFGjqE
+ +WMw==
+X-Gm-Message-State: AOAM5317EmvgCCtDtxXA+3yaI0i7t+JvoIp3zLJLFbn/9VoIEWgWpG88
+ xjEsvzxBMdT0a4YLPAA9qpnEXC7Ztd/vHw==
+X-Google-Smtp-Source: ABdhPJy6GF8JiwQcx7BgPxn1S2ps9t72d1OUb8T4xXXFOMiJUgGyZiWL6iuPSNc9lU9ttt4p3K6xEw==
+X-Received: by 2002:ad4:46e1:: with SMTP id h1mr24761404qvw.129.1597856592720; 
+ Wed, 19 Aug 2020 10:03:12 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com.
+ [209.85.219.173])
+ by smtp.gmail.com with ESMTPSA id k134sm24694651qke.60.2020.08.19.10.02.35
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 19 Aug 2020 10:02:42 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id u6so7870689ybf.1
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 10:02:35 -0700 (PDT)
+X-Received: by 2002:a25:d802:: with SMTP id p2mr37420399ybg.446.1597856554388; 
+ Wed, 19 Aug 2020 10:02:34 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20200817220238.603465-1-robdclark@gmail.com>
+ <20200817220238.603465-11-robdclark@gmail.com>
+In-Reply-To: <20200817220238.603465-11-robdclark@gmail.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Wed, 19 Aug 2020 10:02:20 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VzYSL-3q0oFPPSP7FiEdLeTEN6Zy=kp-73B=8LAavmVw@mail.gmail.com>
+Message-ID: <CAD=FV=VzYSL-3q0oFPPSP7FiEdLeTEN6Zy=kp-73B=8LAavmVw@mail.gmail.com>
+Subject: Re: [PATCH 10/20] dt-bindings: arm-smmu: Add compatible string for
+ Adreno GPU SMMU
+To: Rob Clark <robdclark@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>, Rob Herring <robh@kernel.org>,
+ open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,41 +117,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Q29tcGlsZXIgaXMgbm90IGhhcHB5IGFib3V0IG9uZSBmdW5jdGlvbiBwcm90b3R5cGU6CgogIEND
-ICAgICAga2VybmVsL2RtYS9zd2lvdGxiLm8KICBrZXJuZWwvZG1hL3N3aW90bGIuYzoyNzU6MTog
-d2FybmluZzogbm8gcHJldmlvdXMgcHJvdG90eXBlIGZvciDigJhzd2lvdGxiX2xhdGVfaW5pdF93
-aXRoX2RlZmF1bHRfc2l6ZeKAmSBbLVdtaXNzaW5nLXByb3RvdHlwZXNdCiAgMjc1IHwgc3dpb3Rs
-Yl9sYXRlX2luaXRfd2l0aF9kZWZhdWx0X3NpemUoc2l6ZV90IGRlZmF1bHRfc2l6ZSkKICAgICAg
-fCBefn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fgoKU2luY2UgaXQncyB1c2VkIG91
-dHNpZGUgb2YgdGhlIG1vZHVsZSwgbW92ZSBpdHMgZGVjbGFyYXRpb24gdG8gdGhlIGhlYWRlcgpm
-cm9tIHRoZSB1c2VyLgoKU2lnbmVkLW9mZi1ieTogQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hl
-dmNoZW5rb0BsaW51eC5pbnRlbC5jb20+Ci0tLQogYXJjaC94ODYvcGNpL3N0YTJ4MTEtZml4dXAu
-YyB8IDMgKystCiBpbmNsdWRlL2xpbnV4L3N3aW90bGIuaCAgICAgIHwgMSArCiAyIGZpbGVzIGNo
-YW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2FyY2gv
-eDg2L3BjaS9zdGEyeDExLWZpeHVwLmMgYi9hcmNoL3g4Ni9wY2kvc3RhMngxMS1maXh1cC5jCmlu
-ZGV4IGMzMTNkNzg0ZWZhYi4uNjQzNDdjMzM3MmEwIDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9wY2kv
-c3RhMngxMS1maXh1cC5jCisrKyBiL2FyY2gveDg2L3BjaS9zdGEyeDExLWZpeHVwLmMKQEAgLTEy
-LDEwICsxMiwxMSBAQAogI2luY2x1ZGUgPGxpbnV4L2V4cG9ydC5oPgogI2luY2x1ZGUgPGxpbnV4
-L2xpc3QuaD4KICNpbmNsdWRlIDxsaW51eC9kbWEtZGlyZWN0Lmg+CisjaW5jbHVkZSA8bGludXgv
-c3dpb3RsYi5oPgorCiAjaW5jbHVkZSA8YXNtL2lvbW11Lmg+CiAKICNkZWZpbmUgU1RBMlgxMV9T
-V0lPVExCX1NJWkUgKDQqMTAyNCoxMDI0KQotZXh0ZXJuIGludCBzd2lvdGxiX2xhdGVfaW5pdF93
-aXRoX2RlZmF1bHRfc2l6ZShzaXplX3QgZGVmYXVsdF9zaXplKTsKIAogLyoKICAqIFdlIGJ1aWxk
-IGEgbGlzdCBvZiBidXMgbnVtYmVycyB0aGF0IGFyZSB1bmRlciB0aGUgQ29ubmVYdC4gVGhlCmRp
-ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3N3aW90bGIuaCBiL2luY2x1ZGUvbGludXgvc3dpb3Rs
-Yi5oCmluZGV4IDA0NmJiOTRiZDRkNi4uNTEzOTEzZmY3NDg2IDEwMDY0NAotLS0gYS9pbmNsdWRl
-L2xpbnV4L3N3aW90bGIuaAorKysgYi9pbmNsdWRlL2xpbnV4L3N3aW90bGIuaApAQCAtMzQsNiAr
-MzQsNyBAQCBpbnQgc3dpb3RsYl9pbml0X3dpdGhfdGJsKGNoYXIgKnRsYiwgdW5zaWduZWQgbG9u
-ZyBuc2xhYnMsIGludCB2ZXJib3NlKTsKIGV4dGVybiB1bnNpZ25lZCBsb25nIHN3aW90bGJfbnJf
-dGJsKHZvaWQpOwogdW5zaWduZWQgbG9uZyBzd2lvdGxiX3NpemVfb3JfZGVmYXVsdCh2b2lkKTsK
-IGV4dGVybiBpbnQgc3dpb3RsYl9sYXRlX2luaXRfd2l0aF90YmwoY2hhciAqdGxiLCB1bnNpZ25l
-ZCBsb25nIG5zbGFicyk7CitleHRlcm4gaW50IHN3aW90bGJfbGF0ZV9pbml0X3dpdGhfZGVmYXVs
-dF9zaXplKHNpemVfdCBkZWZhdWx0X3NpemUpOwogZXh0ZXJuIHZvaWQgX19pbml0IHN3aW90bGJf
-dXBkYXRlX21lbV9hdHRyaWJ1dGVzKHZvaWQpOwogCiAvKgotLSAKMi4yOC4wCgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi,
+
+On Mon, Aug 17, 2020 at 3:03 PM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Jordan Crouse <jcrouse@codeaurora.org>
+>
+> Every Qcom Adreno GPU has an embedded SMMU for its own use. These
+> devices depend on unique features such as split pagetables,
+> different stall/halt requirements and other settings. Identify them
+> with a compatible string so that they can be identified in the
+> arm-smmu implementation specific code.
+>
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 503160a7b9a0..5ec5d0d691f6 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -40,6 +40,10 @@ properties:
+>                - qcom,sm8150-smmu-500
+>                - qcom,sm8250-smmu-500
+>            - const: arm,mmu-500
+> +      - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
+> +        items:
+> +          - const: qcom,adreno-smmu
+> +          - const: qcom,smmu-v2
+
+I know I'm kinda late to the game, but this seems weird to me,
+especially given the later patches in the series like:
+
+https://lore.kernel.org/r/20200817220238.603465-19-robdclark@gmail.com
+
+Specifically in that patch you can see that this IOMMU already had a
+compatible string and we're changing it and throwing away the
+model-specific string?  I'm guessing that you're just trying to make
+it easier for code to identify the adreno iommu, but it seems like a
+better way would have been to just add the adreno compatible in the
+middle, like:
+
+      - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
+        items:
+          - enum:
+              - qcom,msm8996-smmu-v2
+              - qcom,msm8998-smmu-v2
+              - qcom,sc7180-smmu-v2
+              - qcom,sdm845-smmu-v2
+        - const: qcom,adreno-smmu
+        - const: qcom,smmu-v2
+
+Then we still have the SoC-specific compatible string in case we need
+it but we also have the generic one?  It also means that we're not
+deleting the old compatible string...
+
+-Doug
+
+
+>        - description: Marvell SoCs implementing "arm,mmu-500"
+>          items:
+>            - const: marvell,ap806-smmu-500
+> --
+> 2.26.2
+>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
