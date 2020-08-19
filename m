@@ -2,88 +2,117 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11070C433E1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:07:21 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4FCC433E1
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:20:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C59F7204FD
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:07:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C59F7204FD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id DF67820639
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="dV/u8lgz"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF67820639
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 84F3185082;
-	Wed, 19 Aug 2020 14:07:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B150A876A0;
+	Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZU5gTYa33MPC; Wed, 19 Aug 2020 14:07:19 +0000 (UTC)
+	with ESMTP id 0MonQcLkH0fK; Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5C4B584964;
-	Wed, 19 Aug 2020 14:07:19 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EFE1286E88;
+	Wed, 19 Aug 2020 14:20:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 49032C0889;
-	Wed, 19 Aug 2020 14:07:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22204C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:07:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1AF1C07FF;
+	Wed, 19 Aug 2020 14:20:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B294DC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 134F120017
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:07:17 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 9954D8780D
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XQZpiVtiqeLH for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 14:07:15 +0000 (UTC)
+ with ESMTP id 8t0Kj11meg3W for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 14:20:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 544872000B
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:07:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 671BB1045;
- Wed, 19 Aug 2020 07:07:14 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A9DCD3F71F;
- Wed, 19 Aug 2020 07:07:07 -0700 (PDT)
-Subject: Re: [PATCH 05/28] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
-To: Tomasz Figa <tfiga@chromium.org>
+Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
+ [209.85.208.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DF4CB876A0
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:04 +0000 (UTC)
+Received: by mail-ed1-f65.google.com with SMTP id cq28so18258414edb.10
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=/Js4y14Ghs6Bq4zdQYDVHKruVAGVzHlKISQN4bMebSg=;
+ b=dV/u8lgzRJf9R13RTyQNVA0z7K0gpop908KdbH7mh1lom7wOwawyDuMH4lJJUnAt3N
+ ER1Hz91rD7vCxhZyzb6LHpsKYbaB2LKK6Ns95j0nfjmJX5hZXauljIjL3//YJqgWaxRv
+ 97QHf+SgHVXKKphnPxr8+LnwmzFET6Ce2ARqc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=/Js4y14Ghs6Bq4zdQYDVHKruVAGVzHlKISQN4bMebSg=;
+ b=CyUjBjzwmjkALysc08YWwR9A+/JjvlNQiRDnoXvPNKdrZ+xDgxP5p0RUbz2L0TQW1R
+ Yi7lyFF42yqWzc/qwAdUtLqFE5Y50EH+HpaFhn0IHdJd1kLMQvIZzKuTl49uvzfPJxD1
+ PVfZSbQolX9139rp1lQF99KLH3W3Qw/Hi8ioCh/Wi9YEy3e1oKykow9gotfDMJvWBEy9
+ pD7hDBfvi4Mqkt3z9W8lYBqYBNVwxHkz3/2lFEwWxrfEBiCv/pj1ev0sXSOFADzxXbWF
+ yVowG17dzTRblcOEsWEMs/Kk8y6YC233bM02BpOQs3YnSdgiEdYJCSLMI+facuZ5J5Z+
+ 2LwQ==
+X-Gm-Message-State: AOAM530Bd8FQey32OpsS55ODJdHbtJhSvUrKVyHg4orYaw/E/yW1a1Uf
+ W3lENju/n98bielmh076wijYvRbiHoSMEg==
+X-Google-Smtp-Source: ABdhPJyN1PUus8rImoP279gAxXi2a+B1mNIY2w7dqOaHLcXRM+wL7NJYqGmNZ6M2+LoDA4x7BG2wmw==
+X-Received: by 2002:aa7:da0e:: with SMTP id r14mr25294080eds.236.1597846803077; 
+ Wed, 19 Aug 2020 07:20:03 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com.
+ [209.85.221.41])
+ by smtp.gmail.com with ESMTPSA id eb11sm12706369edb.76.2020.08.19.07.20.02
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 19 Aug 2020 07:20:02 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id 88so21726673wrh.3
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:20:02 -0700 (PDT)
+X-Received: by 2002:adf:ec4f:: with SMTP id w15mr24104550wrn.385.1597846328915; 
+ Wed, 19 Aug 2020 07:12:08 -0700 (PDT)
+MIME-Version: 1.0
 References: <20200819065555.1802761-1-hch@lst.de>
  <20200819065555.1802761-6-hch@lst.de>
  <CAAFQd5COLxjydDYrfx47ht8tj-aNPiaVnC+WyQA7nvpW4gs=ww@mail.gmail.com>
  <62e4f4fc-c8a5-3ee8-c576-fe7178cb4356@arm.com>
  <CAAFQd5AcCTDguB2C9KyDiutXWoEvBL8tL7+a==Uo8vj_8CLOJw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2b32f1d8-16f7-3352-40a5-420993d52fb5@arm.com>
-Date: Wed, 19 Aug 2020 15:07:04 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <CAAFQd5AcCTDguB2C9KyDiutXWoEvBL8tL7+a==Uo8vj_8CLOJw@mail.gmail.com>
-Content-Language: en-GB
+ <20200819135738.GB17098@lst.de>
+In-Reply-To: <20200819135738.GB17098@lst.de>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 19 Aug 2020 16:11:52 +0200
+X-Gmail-Original-Message-ID: <CAAFQd5BvpzJTycFvjntmX9W_d879hHFX+rJ8W9EK6+6cqFaVMA@mail.gmail.com>
+Message-ID: <CAAFQd5BvpzJTycFvjntmX9W_d879hHFX+rJ8W9EK6+6cqFaVMA@mail.gmail.com>
+Subject: Re: [PATCH 05/28] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
+To: Christoph Hellwig <hch@lst.de>
 Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
  Linux Doc Mailing List <linux-doc@vger.kernel.org>,
  nouveau@lists.freedesktop.org, linux-nvme@lists.infradead.org,
  linux-mips@vger.kernel.org,
  "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
- linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+ linux-mm@kvack.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
  Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
  "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
  Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
  Linux Media Mailing List <linux-media@vger.kernel.org>,
  Tom Lendacky <thomas.lendacky@amd.com>, Pawel Osciak <pawel@osciak.com>,
  Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
  netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Kyungmin Park <kyungmin.park@samsung.com>
+ Kyungmin Park <kyungmin.park@samsung.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,91 +125,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-08-19 13:49, Tomasz Figa wrote:
-> On Wed, Aug 19, 2020 at 1:51 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> Hi Tomasz,
->>
->> On 2020-08-19 12:16, Tomasz Figa wrote:
->>> Hi Christoph,
->>>
->>> On Wed, Aug 19, 2020 at 8:56 AM Christoph Hellwig <hch@lst.de> wrote:
->>>>
->>>> The V4L2-FLAG-MEMORY-NON-CONSISTENT flag is entirely unused,
->>>
->>> Could you explain what makes you think it's unused? It's a feature of
->>> the UAPI generally supported by the videobuf2 framework and relied on
->>> by Chromium OS to get any kind of reasonable performance when
->>> accessing V4L2 buffers in the userspace.
->>>
->>>> and causes
->>>> weird gymanstics with the DMA_ATTR_NON_CONSISTENT flag, which is
->>>> unimplemented except on PARISC and some MIPS configs, and about to be
->>>> removed.
->>>
->>> It is implemented by the generic DMA mapping layer [1], which is used
->>> by a number of architectures including ARM64 and supposed to be used
->>> by new architectures going forward.
->>
->> AFAICS all that V4L2_FLAG_MEMORY_NON_CONSISTENT does is end up
->> controling whether DMA_ATTR_NON_CONSISTENT is added to vb2_queue::dma_attrs.
->>
->> Please can you point to where DMA_ATTR_NON_CONSISTENT does anything at
->> all on arm64?
->>
-> 
-> With the default config it doesn't, but with
-> CONFIG_DMA_NONCOHERENT_CACHE_SYNC enabled it makes dma_pgprot() keep
-> the pgprot value as is, without enforcing coherence attributes.
+On Wed, Aug 19, 2020 at 3:57 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Wed, Aug 19, 2020 at 02:49:01PM +0200, Tomasz Figa wrote:
+> > With the default config it doesn't, but with
+> > CONFIG_DMA_NONCOHERENT_CACHE_SYNC enabled it makes dma_pgprot() keep
+> > the pgprot value as is, without enforcing coherence attributes.
+>
+> Which isn't selected on arm64, and that is for a good reason.
+>
+> > AFAIK dma_cache_sync() isn't the only way to perform the cache
+> > synchronization.
+>
+> Yes, it is the only documented way to do it.  And if you read the whole
+> series instead of screaming you'd see that it provides a proper way
+> to deal with non-coherent memory which will also work with arm64.
+> instead of screaming
+>
 
-How active are the PA-RISC and MIPS ports of Chromium OS?
+I'm sorry if I have offended you in any way, but would also appreciate
+it if a less aggressive tone was directed towards me as well.
 
-Hacking CONFIG_DMA_NONCOHERENT_CACHE_SYNC into an architecture that 
-doesn't provide dma_cache_sync() is wrong, since at worst it may break 
-other drivers. If downstream is wildly misusing an API then so be it, 
-but it's hardly a strong basis for an upstream argument.
+I have valid reasons to object to this patch, as stated in my previous
+emails. The fact that the original feature has problems is of course
+another story and, as I mentioned too, I'm willing to look into fixing
+them.
 
->> Also, I posit that videobuf2 is not actually relying on
->> DMA_ATTR_NON_CONSISTENT anyway, since it's clearly not using it properly:
->>
->> "By using this API, you are guaranteeing to the platform
->> that you have all the correct and necessary sync points for this memory
->> in the driver should it choose to return non-consistent memory."
->>
->> $ git grep dma_cache_sync drivers/media
->> $
-> 
-> AFAIK dma_cache_sync() isn't the only way to perform the cache
-> synchronization. The earlier patch series that I reviewed relied on
-> dma_get_sgtable() and then dma_sync_sg_*() (which existed in the
-> vb2-dc since forever [1]). However, it looks like with the final code
-> the sgtable isn't acquired and the synchronization isn't happening, so
-> you have a point.
+I'm of course happy to review the rest of the series and even more
+happy to help migrating this code to whatever is added there, as long
+as the functionality is preserved.
 
-Using the streaming sync calls on coherent allocations has also always 
-been wrong per the API, regardless of the bodies of code that have 
-happened to get away with it for so long.
+> > By the way, as a videobuf2 reviewer, I'd appreciate being CC'd on any
+> > series related to the subsystem-facing DMA API changes, since
+> > videobuf2 is one of the biggest users of it.
+>
+> The cc list is too long - I cc lists and key maintainers.  As a reviewer
+> should should watch your subsystems lists closely.
 
-> FWIW, I asked back in time what the plan is for non-coherent
-> allocations and it seemed like DMA_ATTR_NON_CONSISTENT and
-> dma_sync_*() was supposed to be the right thing to go with. [2] The
-> same thread also explains why dma_alloc_pages() isn't suitable for the
-> users of dma_alloc_attrs() and DMA_ATTR_NON_CONSISTENT.
+Well, I guess we can disagree on this, because there is no clear
+policy. I'm listed in the MAINTAINERS file for the subsystem and I
+believe the purpose of the file is to list the people to CC on
+relevant patches. We're all overloaded with work and having to look
+through the huge volume of mailing lists like linux-media doesn't help
+and thus I'd still appreciate being added on CC.
 
-AFAICS even back then Christoph was implying getting rid of 
-NON_CONSISTENT and *replacing* it with something streaming-API-based - 
-i.e. this series - not encouraging mixing the existing APIs. It doesn't 
-seem impossible to implement a remapping version of this new 
-dma_alloc_pages() for IOMMU-backed ops if it's really warranted 
-(although at that point it seems like "non-coherent" vb2-dc starts to 
-have significant conceptual overlap with vb2-sg).
-
-Robin.
+Best regards,
+Tomasz
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
