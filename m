@@ -2,117 +2,96 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F55AC433DF
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 19:48:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0113DC433E4
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 20:49:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F65F207BB
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 19:48:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C063222CBB
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 20:49:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="W/8vPs9P"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F65F207BB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="EDED5GsJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C063222CBB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8E5C1221D9;
-	Wed, 19 Aug 2020 19:48:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 97CAD88075;
+	Wed, 19 Aug 2020 20:49:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DOM5SlLlNKeG; Wed, 19 Aug 2020 19:48:50 +0000 (UTC)
+	with ESMTP id KKFCqqkRNTcB; Wed, 19 Aug 2020 20:49:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D6ED720015;
-	Wed, 19 Aug 2020 19:48:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 85DB887FD8;
+	Wed, 19 Aug 2020 20:49:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B1AADC0889;
-	Wed, 19 Aug 2020 19:48:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 821BCC0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 19:48:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 663BEC07FF;
+	Wed, 19 Aug 2020 20:49:06 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A29C9C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 20:49:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7E688877A6
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 19:48:49 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8BCF48619E
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 20:49:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wbIcuTJJBlZv for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 19:48:49 +0000 (UTC)
+ with ESMTP id XUsBHUKAs48F for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 20:49:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C2D4D877A7
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 19:48:48 +0000 (UTC)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
- by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 07JJVgeO023480; Wed, 19 Aug 2020 15:48:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=references : from : to :
- cc : subject : in-reply-to : date : message-id : mime-version :
- content-type; s=pp1; bh=6p6YN/RZSqJvWswcfjxvZccAbszLqtd9RaLr5uEsdfA=;
- b=W/8vPs9PBy6wYinpQI55YAAzI7Ejt7kZ3PIPvISEf7HAkm3FWiOYfisPrOmzKsDDdu+Z
- N8loUCBp79NwEn4QbU9hU0EF/OpNDZkoOmY98qxMJu2XPdAt47k5VjdxyMrNgky8JBr/
- UgTiC86TT+V0F4qIjYOgjTRqkHYYRiVuQIxDQIvReDZqcjfYOfjsxbPoLWRS6FB4Buo4
- TFkMptfAOd8l2p38jdA4bgwuAOhjJev7Grk9ayvo+Jv5iMShaqIlLVSMQw9Oi6Hl1jch
- IGrvylFlnGQgYL68TshZyEVavYSPQYPNlEdT1qx3ZQan+IKLXHAw/SvwsVSQq3tD98j8 NQ== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com
- [169.47.144.26])
- by mx0b-001b2d01.pphosted.com with ESMTP id 3314ed380p-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Wed, 19 Aug 2020 15:48:40 -0400
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
- by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07JJieRu001973;
- Wed, 19 Aug 2020 19:48:39 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com
- [9.57.198.28]) by ppma04wdc.us.ibm.com with ESMTP id 3304uepdmk-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Wed, 19 Aug 2020 19:48:39 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com
- [9.57.199.110])
- by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 07JJmd7o44368298
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 19 Aug 2020 19:48:39 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 0D962AE05F;
- Wed, 19 Aug 2020 19:48:39 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id D60EFAE05C;
- Wed, 19 Aug 2020 19:48:35 +0000 (GMT)
-Received: from morokweng.localdomain (unknown [9.211.41.171])
- by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
- Wed, 19 Aug 2020 19:48:35 +0000 (GMT)
-References: <20200818221126.391073-1-bauerman@linux.ibm.com>
- <20200819170001.GC25497@char.us.oracle.com>
-User-agent: mu4e 1.2.0; emacs 26.3
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH v3] powerpc/pseries/svm: Allocate SWIOTLB buffer anywhere
- in memory
-In-reply-to: <20200819170001.GC25497@char.us.oracle.com>
-Date: Wed, 19 Aug 2020 16:48:33 -0300
-Message-ID: <87k0xue7se.fsf@morokweng.localdomain>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 14EE686141
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 20:49:05 +0000 (UTC)
+Received: from kernel.org (unknown [87.70.91.42])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 4559022B43;
+ Wed, 19 Aug 2020 20:48:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1597870143;
+ bh=qGoMJNQU47bi4Lr27Xvnh0/Sq60m3eAX4xqpvHpl7z0=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=EDED5GsJw4zUuBdGb05pEvujvo8C6rUQNmDr6tFajHgKyq8u0aC1JhmrGGKixlNzr
+ iJK0JwajiHl4HBTkAxVXhkjy+fJ4SSitgCYA/knE1HAPx9DykSi5zvv7ufmh3aqaBj
+ /RQUWYvoEHKL6x5oDDNaW/gHGb6Yyk2UI/DMzVR8=
+Date: Wed, 19 Aug 2020 23:48:48 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v3 09/17] memblock: make memblock_debug and related
+ functionality private
+Message-ID: <20200819204848.GX752365@kernel.org>
+References: <20200818151634.14343-1-rppt@kernel.org>
+ <20200818151634.14343-10-rppt@kernel.org>
+ <20200819122405.88e9719e86ac7c3c44b4db32@linux-foundation.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235, 18.0.687
- definitions=2020-08-19_12:2020-08-19,
- 2020-08-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxlogscore=999 mlxscore=0
- clxscore=1015 bulkscore=0 malwarescore=0 phishscore=0 spamscore=0
- adultscore=0 lowpriorityscore=0 priorityscore=1501 impostorscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190154
-Cc: linuxppc-dev@lists.ozlabs.org, Ram Pai <linuxram@us.ibm.com>,
+Content-Disposition: inline
+In-Reply-To: <20200819122405.88e9719e86ac7c3c44b4db32@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+ Emil Renner Berthing <kernel@esmil.dk>, linux-sh@vger.kernel.org,
+ Peter Zijlstra <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
+ Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>,
+ sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
+ Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ linux-arch@vger.kernel.org, linux-s390@vger.kernel.org,
+ linux-c6x-dev@linux-c6x.org, Michael Ellerman <mpe@ellerman.id.au>,
+ x86@kernel.org, Russell King <linux@armlinux.org.uk>,
+ Mike Rapoport <rppt@linux.ibm.com>, clang-built-linux@googlegroups.com,
+ Ingo Molnar <mingo@redhat.com>, linux-arm-kernel@lists.infradead.org,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org,
+ openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Stafford Horne <shorne@gmail.com>, Hari Bathini <hbathini@linux.ibm.com>,
+ Daniel Axtens <dja@axtens.net>, Michal Simek <monstr@monstr.eu>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, linux-mm@kvack.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Satheesh Rajendran <sathnaga@linux.vnet.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+ Palmer Dabbelt <palmer@dabbelt.com>, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,31 +109,80 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Wed, Aug 19, 2020 at 12:24:05PM -0700, Andrew Morton wrote:
+> On Tue, 18 Aug 2020 18:16:26 +0300 Mike Rapoport <rppt@kernel.org> wrote:
+> 
+> > From: Mike Rapoport <rppt@linux.ibm.com>
+> > 
+> > The only user of memblock_dbg() outside memblock was s390 setup code and it
+> > is converted to use pr_debug() instead.
+> > This allows to stop exposing memblock_debug and memblock_dbg() to the rest
+> > of the kernel.
+> > 
+> > --- a/mm/memblock.c
+> > +++ b/mm/memblock.c
+> > @@ -137,7 +137,10 @@ struct memblock_type physmem = {
+> >  	     i < memblock_type->cnt;					\
+> >  	     i++, rgn = &memblock_type->regions[i])
+> >  
+> > -int memblock_debug __initdata_memblock;
+> > +#define memblock_dbg(fmt, ...) \
+> > +	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+> > +
+> 
+> checkpatch doesn't like this much.
+> 
+> ERROR: Macros starting with if should be enclosed by a do - while loop to avoid possible if/else logic defects
+> #101: FILE: mm/memblock.c:140:
+> +#define memblock_dbg(fmt, ...) \
+> +	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+> 
+> WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
+> #102: FILE: mm/memblock.c:141:
+> +	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+> 
+> ERROR: trailing statements should be on next line
+> #102: FILE: mm/memblock.c:141:
+> +	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+> 
+> 
+> The first one is significant:
+> 
+> 	if (foo)
+> 		memblock_dbg(...);
+> 	else
+> 		save_the_world();
+> 
+> could end up inadvertently destroying the planet.
 
-Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> writes:
+Well, it didn't till now ;-)
 
-> On Tue, Aug 18, 2020 at 07:11:26PM -0300, Thiago Jung Bauermann wrote:
->> POWER secure guests (i.e., guests which use the Protection Execution
->> Facility) need to use SWIOTLB to be able to do I/O with the hypervisor, but
->> they don't need the SWIOTLB memory to be in low addresses since the
->> hypervisor doesn't have any addressing limitation.
->> 
->> This solves a SWIOTLB initialization problem we are seeing in secure guests
->> with 128 GB of RAM: they are configured with 4 GB of crashkernel reserved
->> memory, which leaves no space for SWIOTLB in low addresses.
->> 
->> To do this, we use mostly the same code as swiotlb_init(), but allocate the
->> buffer using memblock_alloc() instead of memblock_alloc_low().
->> 
->> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
->
-> Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> This?
+> 
+> --- a/mm/memblock.c~memblock-make-memblock_debug-and-related-functionality-private-fix
+> +++ a/mm/memblock.c
+> @@ -137,8 +137,11 @@ struct memblock_type physmem = {
+>  	     i < memblock_type->cnt;					\
+>  	     i++, rgn = &memblock_type->regions[i])
+>  
+> -#define memblock_dbg(fmt, ...) \
+> -	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+> +#define memblock_dbg(fmt, ...)						\
+> +	do {								\
+> +		if (memblock_debug)					\
+> +			pr_info(fmt, ##__VA_ARGS__);			\
+> +	} while (0)
 
-Thanks!
+Sure, thanks!
+
+>  static int memblock_debug __initdata_memblock;
+>  static bool system_has_some_mirror __initdata_memblock = false;
+> _
+> 
 
 -- 
-Thiago Jung Bauermann
-IBM Linux Technology Center
+Sincerely yours,
+Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
