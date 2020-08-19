@@ -6,101 +6,103 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4FCC433E1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:20:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88628C433E3
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:22:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF67820639
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 56FC72076E
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 14:22:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="dV/u8lgz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF67820639
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MwoQKU4R"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56FC72076E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B150A876A0;
-	Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 23DAF864DA;
+	Wed, 19 Aug 2020 14:22:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0MonQcLkH0fK; Wed, 19 Aug 2020 14:20:08 +0000 (UTC)
+	with ESMTP id UNJv7NDGybYi; Wed, 19 Aug 2020 14:22:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EFE1286E88;
-	Wed, 19 Aug 2020 14:20:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6CEA9864D7;
+	Wed, 19 Aug 2020 14:22:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1AF1C07FF;
-	Wed, 19 Aug 2020 14:20:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B294DC0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 56B39C07FF;
+	Wed, 19 Aug 2020 14:22:54 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF397C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:22:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9954D8780D
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 97A9D864DA
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:22:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8t0Kj11meg3W for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 14:20:05 +0000 (UTC)
+ with ESMTP id 2GVadbJ-SA-v for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 14:22:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
- [209.85.208.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DF4CB876A0
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:20:04 +0000 (UTC)
-Received: by mail-ed1-f65.google.com with SMTP id cq28so18258414edb.10
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:20:04 -0700 (PDT)
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+ [209.85.208.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 551C8864D7
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 14:22:51 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id v22so18262612edy.0
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:22:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=/Js4y14Ghs6Bq4zdQYDVHKruVAGVzHlKISQN4bMebSg=;
- b=dV/u8lgzRJf9R13RTyQNVA0z7K0gpop908KdbH7mh1lom7wOwawyDuMH4lJJUnAt3N
- ER1Hz91rD7vCxhZyzb6LHpsKYbaB2LKK6Ns95j0nfjmJX5hZXauljIjL3//YJqgWaxRv
- 97QHf+SgHVXKKphnPxr8+LnwmzFET6Ce2ARqc=
+ :cc; bh=uEY7dk9y/9x4HcaWjwFAfwvm+T0doGz7atsT11F+few=;
+ b=MwoQKU4RRVGBwswghQT2kEA4PWtzNJ9PP0GlvGH+VtAzrSvBnEW2dUpr0fs6tqB36t
+ NEatNz3nTo9Srl8JZAX9oVp9pc5TQLgcK+vTRNeNePaaHI1s5H4G84GiGqxdAJ9X51ZU
+ 9RjLZl32ILMLyADH9W9JtyN4rfe/+nXKgJFvs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=/Js4y14Ghs6Bq4zdQYDVHKruVAGVzHlKISQN4bMebSg=;
- b=CyUjBjzwmjkALysc08YWwR9A+/JjvlNQiRDnoXvPNKdrZ+xDgxP5p0RUbz2L0TQW1R
- Yi7lyFF42yqWzc/qwAdUtLqFE5Y50EH+HpaFhn0IHdJd1kLMQvIZzKuTl49uvzfPJxD1
- PVfZSbQolX9139rp1lQF99KLH3W3Qw/Hi8ioCh/Wi9YEy3e1oKykow9gotfDMJvWBEy9
- pD7hDBfvi4Mqkt3z9W8lYBqYBNVwxHkz3/2lFEwWxrfEBiCv/pj1ev0sXSOFADzxXbWF
- yVowG17dzTRblcOEsWEMs/Kk8y6YC233bM02BpOQs3YnSdgiEdYJCSLMI+facuZ5J5Z+
- 2LwQ==
-X-Gm-Message-State: AOAM530Bd8FQey32OpsS55ODJdHbtJhSvUrKVyHg4orYaw/E/yW1a1Uf
- W3lENju/n98bielmh076wijYvRbiHoSMEg==
-X-Google-Smtp-Source: ABdhPJyN1PUus8rImoP279gAxXi2a+B1mNIY2w7dqOaHLcXRM+wL7NJYqGmNZ6M2+LoDA4x7BG2wmw==
-X-Received: by 2002:aa7:da0e:: with SMTP id r14mr25294080eds.236.1597846803077; 
- Wed, 19 Aug 2020 07:20:03 -0700 (PDT)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com.
- [209.85.221.41])
- by smtp.gmail.com with ESMTPSA id eb11sm12706369edb.76.2020.08.19.07.20.02
+ bh=uEY7dk9y/9x4HcaWjwFAfwvm+T0doGz7atsT11F+few=;
+ b=C6W/k/DZ/yGw4tj6odGw5zxUXAasCviOEDkT4KHnj55qIvx9wwRD5O/if4K08cOBo9
+ KaUZLltRNuXbFF+240rHE1rjOhffn3Y+OQhjNnKtxQ56FdI9J39eSeCh+Bok1Sf5Z2sH
+ ESL0vOJiddbhEZABcb8TFbZgvJ+aDh0WZ3nWDWpst3MmcLORBg8Wk5acG2FMLcLemrsf
+ 4PGOf7LSEF8lTekXzDi56pPsHL7fRecz69hFEmCDSwWH5XEMVb5X8rmF8cYqwdn+k83Q
+ xvhtjNeur81SOro6rMfXj5W/Wu/25RujgxqKo5zi9Yrq3Dy46lgN7Jr3E56a8mlDCjkt
+ 84VQ==
+X-Gm-Message-State: AOAM531mtyffIe0fN5NfhgnukIsR4OeLTQ1/3Ia6M/iCAocehgkN4U4a
+ e1Vxi2fOaPtfzIdIHBMrj94tSzrcDfFeiA==
+X-Google-Smtp-Source: ABdhPJyKtnatzqH2+jkSLuWqLZTOFJsNzetfrGXQvxI1fxy8VieRhpEKasp/wLbNjJUmfWgV80d9rw==
+X-Received: by 2002:a05:6402:212:: with SMTP id
+ t18mr25692889edv.124.1597846969285; 
+ Wed, 19 Aug 2020 07:22:49 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com.
+ [209.85.221.51])
+ by smtp.gmail.com with ESMTPSA id g24sm17799074eds.42.2020.08.19.07.22.47
  for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 19 Aug 2020 07:20:02 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id 88so21726673wrh.3
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:20:02 -0700 (PDT)
-X-Received: by 2002:adf:ec4f:: with SMTP id w15mr24104550wrn.385.1597846328915; 
- Wed, 19 Aug 2020 07:12:08 -0700 (PDT)
+ Wed, 19 Aug 2020 07:22:48 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id a14so21737477wra.5
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 07:22:47 -0700 (PDT)
+X-Received: by 2002:adf:ec45:: with SMTP id w5mr25495420wrn.415.1597846966201; 
+ Wed, 19 Aug 2020 07:22:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200819065555.1802761-1-hch@lst.de>
  <20200819065555.1802761-6-hch@lst.de>
  <CAAFQd5COLxjydDYrfx47ht8tj-aNPiaVnC+WyQA7nvpW4gs=ww@mail.gmail.com>
  <62e4f4fc-c8a5-3ee8-c576-fe7178cb4356@arm.com>
  <CAAFQd5AcCTDguB2C9KyDiutXWoEvBL8tL7+a==Uo8vj_8CLOJw@mail.gmail.com>
- <20200819135738.GB17098@lst.de>
-In-Reply-To: <20200819135738.GB17098@lst.de>
+ <2b32f1d8-16f7-3352-40a5-420993d52fb5@arm.com>
+In-Reply-To: <2b32f1d8-16f7-3352-40a5-420993d52fb5@arm.com>
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 19 Aug 2020 16:11:52 +0200
-X-Gmail-Original-Message-ID: <CAAFQd5BvpzJTycFvjntmX9W_d879hHFX+rJ8W9EK6+6cqFaVMA@mail.gmail.com>
-Message-ID: <CAAFQd5BvpzJTycFvjntmX9W_d879hHFX+rJ8W9EK6+6cqFaVMA@mail.gmail.com>
+Date: Wed, 19 Aug 2020 16:22:29 +0200
+X-Gmail-Original-Message-ID: <CAAFQd5DrEq7UVi_aH=-DO4xYC3SbjJ3m1aQSbt=8THL-W+orMQ@mail.gmail.com>
+Message-ID: <CAAFQd5DrEq7UVi_aH=-DO4xYC3SbjJ3m1aQSbt=8THL-W+orMQ@mail.gmail.com>
 Subject: Re: [PATCH 05/28] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
-To: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
 Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
  Linux Doc Mailing List <linux-doc@vger.kernel.org>,
  nouveau@lists.freedesktop.org, linux-nvme@lists.infradead.org,
  linux-mips@vger.kernel.org,
  "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- linux-mm@kvack.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+ linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
+ linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
  Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
  "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
  Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
@@ -112,7 +114,7 @@ Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
  netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Kyungmin Park <kyungmin.park@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+ Kyungmin Park <kyungmin.park@samsung.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,49 +132,114 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Aug 19, 2020 at 3:57 PM Christoph Hellwig <hch@lst.de> wrote:
+On Wed, Aug 19, 2020 at 4:07 PM Robin Murphy <robin.murphy@arm.com> wrote:
 >
-> On Wed, Aug 19, 2020 at 02:49:01PM +0200, Tomasz Figa wrote:
+> On 2020-08-19 13:49, Tomasz Figa wrote:
+> > On Wed, Aug 19, 2020 at 1:51 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> >>
+> >> Hi Tomasz,
+> >>
+> >> On 2020-08-19 12:16, Tomasz Figa wrote:
+> >>> Hi Christoph,
+> >>>
+> >>> On Wed, Aug 19, 2020 at 8:56 AM Christoph Hellwig <hch@lst.de> wrote:
+> >>>>
+> >>>> The V4L2-FLAG-MEMORY-NON-CONSISTENT flag is entirely unused,
+> >>>
+> >>> Could you explain what makes you think it's unused? It's a feature of
+> >>> the UAPI generally supported by the videobuf2 framework and relied on
+> >>> by Chromium OS to get any kind of reasonable performance when
+> >>> accessing V4L2 buffers in the userspace.
+> >>>
+> >>>> and causes
+> >>>> weird gymanstics with the DMA_ATTR_NON_CONSISTENT flag, which is
+> >>>> unimplemented except on PARISC and some MIPS configs, and about to be
+> >>>> removed.
+> >>>
+> >>> It is implemented by the generic DMA mapping layer [1], which is used
+> >>> by a number of architectures including ARM64 and supposed to be used
+> >>> by new architectures going forward.
+> >>
+> >> AFAICS all that V4L2_FLAG_MEMORY_NON_CONSISTENT does is end up
+> >> controling whether DMA_ATTR_NON_CONSISTENT is added to vb2_queue::dma_attrs.
+> >>
+> >> Please can you point to where DMA_ATTR_NON_CONSISTENT does anything at
+> >> all on arm64?
+> >>
+> >
 > > With the default config it doesn't, but with
 > > CONFIG_DMA_NONCOHERENT_CACHE_SYNC enabled it makes dma_pgprot() keep
 > > the pgprot value as is, without enforcing coherence attributes.
 >
-> Which isn't selected on arm64, and that is for a good reason.
+> How active are the PA-RISC and MIPS ports of Chromium OS?
+
+Not active. We enable CONFIG_DMA_NONCOHERENT_CACHE_SYNC for ARM64,
+given the directions received back in April when discussing the
+noncoherent memory functionality on the mailing list in the thread I
+pointed out in my previous message and no clarification on why it is
+disabled for ARM64 in upstream, despite making several attempts to get
+some.
+
 >
+> Hacking CONFIG_DMA_NONCOHERENT_CACHE_SYNC into an architecture that
+> doesn't provide dma_cache_sync() is wrong, since at worst it may break
+> other drivers. If downstream is wildly misusing an API then so be it,
+> but it's hardly a strong basis for an upstream argument.
+
+I guess it means that we're wildly misusing the API, but it still does
+work. Could you explain how it could break other drivers?
+
+>
+> >> Also, I posit that videobuf2 is not actually relying on
+> >> DMA_ATTR_NON_CONSISTENT anyway, since it's clearly not using it properly:
+> >>
+> >> "By using this API, you are guaranteeing to the platform
+> >> that you have all the correct and necessary sync points for this memory
+> >> in the driver should it choose to return non-consistent memory."
+> >>
+> >> $ git grep dma_cache_sync drivers/media
+> >> $
+> >
 > > AFAIK dma_cache_sync() isn't the only way to perform the cache
-> > synchronization.
+> > synchronization. The earlier patch series that I reviewed relied on
+> > dma_get_sgtable() and then dma_sync_sg_*() (which existed in the
+> > vb2-dc since forever [1]). However, it looks like with the final code
+> > the sgtable isn't acquired and the synchronization isn't happening, so
+> > you have a point.
 >
-> Yes, it is the only documented way to do it.  And if you read the whole
-> series instead of screaming you'd see that it provides a proper way
-> to deal with non-coherent memory which will also work with arm64.
-> instead of screaming
+> Using the streaming sync calls on coherent allocations has also always
+> been wrong per the API, regardless of the bodies of code that have
+> happened to get away with it for so long.
 >
-
-I'm sorry if I have offended you in any way, but would also appreciate
-it if a less aggressive tone was directed towards me as well.
-
-I have valid reasons to object to this patch, as stated in my previous
-emails. The fact that the original feature has problems is of course
-another story and, as I mentioned too, I'm willing to look into fixing
-them.
-
-I'm of course happy to review the rest of the series and even more
-happy to help migrating this code to whatever is added there, as long
-as the functionality is preserved.
-
-> > By the way, as a videobuf2 reviewer, I'd appreciate being CC'd on any
-> > series related to the subsystem-facing DMA API changes, since
-> > videobuf2 is one of the biggest users of it.
+> > FWIW, I asked back in time what the plan is for non-coherent
+> > allocations and it seemed like DMA_ATTR_NON_CONSISTENT and
+> > dma_sync_*() was supposed to be the right thing to go with. [2] The
+> > same thread also explains why dma_alloc_pages() isn't suitable for the
+> > users of dma_alloc_attrs() and DMA_ATTR_NON_CONSISTENT.
 >
-> The cc list is too long - I cc lists and key maintainers.  As a reviewer
-> should should watch your subsystems lists closely.
+> AFAICS even back then Christoph was implying getting rid of
+> NON_CONSISTENT and *replacing* it with something streaming-API-based -
 
-Well, I guess we can disagree on this, because there is no clear
-policy. I'm listed in the MAINTAINERS file for the subsystem and I
-believe the purpose of the file is to list the people to CC on
-relevant patches. We're all overloaded with work and having to look
-through the huge volume of mailing lists like linux-media doesn't help
-and thus I'd still appreciate being added on CC.
+That's not how I read his reply from the thread I pointed to, but that
+might of course be my misunderstanding.
+
+> i.e. this series - not encouraging mixing the existing APIs. It doesn't
+> seem impossible to implement a remapping version of this new
+> dma_alloc_pages() for IOMMU-backed ops if it's really warranted
+> (although at that point it seems like "non-coherent" vb2-dc starts to
+> have significant conceptual overlap with vb2-sg).
+
+No, there is no overlap between vb2-dc and vb2-sg. They differ on
+another level - the former is to be used by devices without
+scatter-gather or internal mapping capabilities and gives the driver a
+single DMA address for the whole buffer, regardless of whether it's
+IOVA-contiguous (for devices behind an IOMMU) or physically contiguous
+(for the others), while the latter gives the driver an sgtable, which
+of course may be DMA-contiguous internally, but doesn't have to and
+usually isn't. This model makes it possible to hide the SoC
+implementation details from particular drivers, since those are very
+often reused on many SoCs which differ in the availability of IOMMU,
+DMA addressing restrictions and so on.
 
 Best regards,
 Tomasz
