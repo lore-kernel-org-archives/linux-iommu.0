@@ -2,64 +2,64 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C973FC433E1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7519EC433DF
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E048207FF
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 47DC020897
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UdYV4uHp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E048207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="uRThKpBV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 47DC020897
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8AE5E85C9E;
-	Wed, 19 Aug 2020 06:56:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0CC0D86BB7;
+	Wed, 19 Aug 2020 06:56:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tlaRFQ2qmyYs; Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
+	with ESMTP id c16YfKKr2VCq; Wed, 19 Aug 2020 06:56:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E0BDC86ACB;
-	Wed, 19 Aug 2020 06:56:18 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 16D1E86AA1;
+	Wed, 19 Aug 2020 06:56:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC918C0891;
-	Wed, 19 Aug 2020 06:56:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CAC14C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02ED1C07FF;
+	Wed, 19 Aug 2020 06:56:21 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF3BDC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BA1A585C9E
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:17 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9BACC85A74
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0-KJcuSSF0Z8 for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:56:16 +0000 (UTC)
+ with ESMTP id tVj2iYw4hIlZ for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 06:56:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 922248575A
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:16 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3B00D85742
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=5I0Wekw7PGkNV3dZaIEsA8c8Eplwzl97xo8vYosQxdI=; b=UdYV4uHpyw9x3F5rwAWsVUPFE0
- Hqm02Lgcb3b7szXHtRYFh2Q2mQ0XgXJIRXZnNarHY8BTFPY/yfILYo9XBcRi7QMB28ipLhHbeYlLZ
- mACjmpKK8MPjiLf3dQYi0vBMkZJd/+MdUBQ3P1z7bbLGarn+eG74rMpDjApvZcefIfvlujyIZSqxu
- wHrDyEJGotoW7dL28Oiu4mTNTADO4SZxq3ID/xa3uKrXpchLC5U0otmEnB0C95mcVGd+TWrgeSorS
- YoshIRrHigr4PRqKUustXCWc2qvmN6xs6AZEOX38KVFTfpoTISa6SdfuLtcuYFCOYm/EHyRiUeiPJ
- oIt3VQVw==;
+ Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=z2KvWaZyjho7ndXMH0ORSIBGMLsoLoOlaFmWAQTQuew=; b=uRThKpBVD38wHW4O1Rw+m7ReIB
+ 6g8DAFjC8rOV8slo1/sXfbFmSe2ZQ/D8oXBbMOULOMMqWf/LF2YgmRNBRhy6xw/WNcPfIgir5jkfY
+ jMUBZNOtuPrAml+wEbfI5OBf4FZwNLx4AJ6KLMbazwwdxWKTRuJ8t4QvNBD00a4zi7/l8eeZNVCHo
+ TVip/vAV16StqtD9sSi3vWzGnecdc/pw7stv6o2Z7fnoWC5+a2JoL1fYWc4VJinapBZy26rlLUcYn
+ mtr0U1RQYeE7P0ovTcYzaF9TaQqsHNEEbAFwOJIquRs9u5qnSydzfDIu7+tbwzSbcDpvLkPbTkcNu
+ ySmmqGNA==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I0x-0008LJ-Vp; Wed, 19 Aug 2020 06:56:04 +0000
+ id 1k8I0q-0008Kr-1o; Wed, 19 Aug 2020 06:55:57 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,12 +70,10 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 04/28] net/au1000-eth: stop using DMA_ATTR_NON_CONSISTENT
-Date: Wed, 19 Aug 2020 08:55:31 +0200
-Message-Id: <20200819065555.1802761-5-hch@lst.de>
+Subject: a saner API for allocating DMA addressable pages
+Date: Wed, 19 Aug 2020 08:55:27 +0200
+Message-Id: <20200819065555.1802761-1-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
-References: <20200819065555.1802761-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  casper.infradead.org. See http://www.infradead.org/rpr.html
@@ -103,60 +101,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The au1000-eth driver contains none of the manual cache synchronization
-required for using DMA_ATTR_NON_CONSISTENT.  From what I can tell it
-can be used on both dma coherent and non-coherent DMA platforms, but
-I suspect it has been buggy on the non-coherent platforms all along.
+Hi all,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/net/ethernet/amd/au1000_eth.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+this series replaced the DMA_ATTR_NON_CONSISTENT flag to dma_alloc_attrs
+with a separate new dma_alloc_pages API, which is available on all
+platforms.  In addition to cleaning up the convoluted code path, this
+ensures that other drivers that have asked for better support for
+non-coherent DMA to pages with incurring bounce buffering over can finally
+be properly supported.
 
-diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
-index 75dbd221dc594b..19e195420e2434 100644
---- a/drivers/net/ethernet/amd/au1000_eth.c
-+++ b/drivers/net/ethernet/amd/au1000_eth.c
-@@ -1131,10 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
- 	/* Allocate the data buffers
- 	 * Snooping works fine with eth on all au1xxx
- 	 */
--	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
-+	aup->vaddr = (u32)dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
- 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
--					  &aup->dma_addr, 0,
--					  DMA_ATTR_NON_CONSISTENT);
-+					  &aup->dma_addr, 0);
- 	if (!aup->vaddr) {
- 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
- 		err = -ENOMEM;
-@@ -1310,9 +1309,8 @@ static int au1000_probe(struct platform_device *pdev)
- err_remap2:
- 	iounmap(aup->mac);
- err_remap1:
--	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
--			(void *)aup->vaddr, aup->dma_addr,
--			DMA_ATTR_NON_CONSISTENT);
-+	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
-+			(void *)aup->vaddr, aup->dma_addr);
- err_vaddr:
- 	free_netdev(dev);
- err_alloc:
-@@ -1344,9 +1342,8 @@ static int au1000_remove(struct platform_device *pdev)
- 		if (aup->tx_db_inuse[i])
- 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
- 
--	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
--			(void *)aup->vaddr, aup->dma_addr,
--			DMA_ATTR_NON_CONSISTENT);
-+	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
-+			(void *)aup->vaddr, aup->dma_addr);
- 
- 	iounmap(aup->macdma);
- 	iounmap(aup->mac);
--- 
-2.28.0
+I'm still a little unsure about the API naming, as alloc_pages sort of
+implies a struct page return value, but we return a kernel virtual
+address.  The other alternative would be to name the API
+dma_alloc_noncoherent, but the whole non-coherent naming seems to put
+people off.  As a follow up I plan to move the implementation of the
+DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
+that is also is a fundamentally non coherent allocation.  The replacement
+for that flag would then return a struct page, as it is allowed to
+actually return pages without a kernel mapping as the name suggested
+(although most of the time they will actually have a kernel mapping..)
 
+In addition to the conversions of the existing non-coherent DMA users
+the last three patches also convert the DMA coherent allocations in
+the NVMe driver to use this new framework through a dmapool addition.
+This was both to give me a good testing vehicle, but also because it
+should speed up the NVMe driver on platforms with non-coherent DMA
+nicely, without a downside on platforms with cache coherent DMA.
+
+
+A git tree is available here:
+
+    git://git.infradead.org/users/hch/misc.git dma_alloc_pages
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_pages
+
+
+Diffstat:
+ Documentation/core-api/dma-api.rst                       |   92 ++----
+ Documentation/core-api/dma-attributes.rst                |    8 
+ Documentation/userspace-api/media/v4l/buffer.rst         |   17 -
+ Documentation/userspace-api/media/v4l/vidioc-reqbufs.rst |    1 
+ arch/alpha/kernel/pci_iommu.c                            |    2 
+ arch/arm/include/asm/dma-direct.h                        |    4 
+ arch/arm/mm/dma-mapping-nommu.c                          |    2 
+ arch/arm/mm/dma-mapping.c                                |    4 
+ arch/ia64/Kconfig                                        |    3 
+ arch/ia64/hp/common/sba_iommu.c                          |    2 
+ arch/ia64/kernel/dma-mapping.c                           |   14 
+ arch/ia64/mm/init.c                                      |    3 
+ arch/mips/Kconfig                                        |    1 
+ arch/mips/bmips/dma.c                                    |    4 
+ arch/mips/cavium-octeon/dma-octeon.c                     |    4 
+ arch/mips/include/asm/dma-direct.h                       |    4 
+ arch/mips/include/asm/jazzdma.h                          |    2 
+ arch/mips/jazz/jazzdma.c                                 |  102 +------
+ arch/mips/loongson2ef/fuloong-2e/dma.c                   |    4 
+ arch/mips/loongson2ef/lemote-2f/dma.c                    |    4 
+ arch/mips/loongson64/dma.c                               |    4 
+ arch/mips/mm/dma-noncoherent.c                           |   48 +--
+ arch/mips/pci/pci-ar2315.c                               |    4 
+ arch/mips/pci/pci-xtalk-bridge.c                         |    4 
+ arch/mips/sgi-ip32/ip32-dma.c                            |    4 
+ arch/parisc/Kconfig                                      |    1 
+ arch/parisc/kernel/pci-dma.c                             |    6 
+ arch/powerpc/include/asm/dma-direct.h                    |    4 
+ arch/powerpc/kernel/dma-iommu.c                          |    2 
+ arch/powerpc/platforms/ps3/system-bus.c                  |    4 
+ arch/powerpc/platforms/pseries/vio.c                     |    2 
+ arch/s390/pci/pci_dma.c                                  |    2 
+ arch/x86/kernel/amd_gart_64.c                            |    8 
+ drivers/gpu/drm/exynos/exynos_drm_gem.c                  |    2 
+ drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c      |    3 
+ drivers/iommu/dma-iommu.c                                |    2 
+ drivers/iommu/intel/iommu.c                              |    6 
+ drivers/media/common/videobuf2/videobuf2-core.c          |   36 --
+ drivers/media/common/videobuf2/videobuf2-dma-contig.c    |   19 -
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c        |    3 
+ drivers/media/common/videobuf2/videobuf2-v4l2.c          |   12 
+ drivers/net/ethernet/amd/au1000_eth.c                    |   15 -
+ drivers/net/ethernet/i825xx/lasi_82596.c                 |   36 +-
+ drivers/net/ethernet/i825xx/lib82596.c                   |  148 +++++-----
+ drivers/net/ethernet/i825xx/sni_82596.c                  |   23 -
+ drivers/net/ethernet/seeq/sgiseeq.c                      |   24 -
+ drivers/nvme/host/pci.c                                  |   79 ++---
+ drivers/parisc/ccio-dma.c                                |    2 
+ drivers/parisc/sba_iommu.c                               |    2 
+ drivers/scsi/53c700.c                                    |  120 ++++----
+ drivers/scsi/53c700.h                                    |    9 
+ drivers/scsi/sgiwd93.c                                   |   14 
+ drivers/xen/swiotlb-xen.c                                |    2 
+ include/linux/dma-direct.h                               |   55 ++-
+ include/linux/dma-mapping.h                              |   32 +-
+ include/linux/dma-noncoherent.h                          |   21 -
+ include/linux/dmapool.h                                  |   23 +
+ include/linux/gfp.h                                      |    6 
+ include/media/videobuf2-core.h                           |    3 
+ include/uapi/linux/videodev2.h                           |    2 
+ kernel/dma/Kconfig                                       |    9 
+ kernel/dma/Makefile                                      |    1 
+ kernel/dma/coherent.c                                    |   17 +
+ kernel/dma/direct.c                                      |  112 +++++--
+ kernel/dma/mapping.c                                     |  104 ++-----
+ kernel/dma/ops_helpers.c                                 |   86 ++++++
+ kernel/dma/pool.c                                        |    2 
+ kernel/dma/swiotlb.c                                     |    4 
+ kernel/dma/virt.c                                        |    2 
+ mm/dmapool.c                                             |  211 +++++++++------
+ sound/mips/hal2.c                                        |   58 +---
+ 71 files changed, 872 insertions(+), 803 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
