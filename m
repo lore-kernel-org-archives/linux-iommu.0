@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85585C433E1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD59C433DF
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5692D20897
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 121F020825
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:56:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="vH6bxrET"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5692D20897
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XA1vL5ZQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 121F020825
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2FB8F20797;
-	Wed, 19 Aug 2020 06:56:42 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E519685B04;
+	Wed, 19 Aug 2020 06:56:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wEBwCy94sZqB; Wed, 19 Aug 2020 06:56:41 +0000 (UTC)
+	with ESMTP id r_swnTwoEx4k; Wed, 19 Aug 2020 06:56:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0F6DC20468;
-	Wed, 19 Aug 2020 06:56:41 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3FC5585A84;
+	Wed, 19 Aug 2020 06:56:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB015C07FF;
-	Wed, 19 Aug 2020 06:56:40 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C0040C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A4B1C07FF;
+	Wed, 19 Aug 2020 06:56:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4432CC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AE71F868F9
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:39 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 409BB85A84
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6Q-f46SwjXhl for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:56:39 +0000 (UTC)
+ with ESMTP id xJHwG0nboiKG for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 06:56:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BDD0E86ADD
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:38 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7AADC85742
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:56:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=AizzKTdergNVxrKhEOEhnPghjjTSMqeAtkqlKtBp/X0=; b=vH6bxrETaqMxdx4mGW1el0GaJ+
- NSVeG0+Sh1NWGRby+YHyglVGxyHksQXNJYqQqa9ssWp4C4h3A+SYPLZMdV23zRnCpgPJjJXWg/Lay
- 3Ir0i12xQJQKx7lVNo97rQppxb+/aS4MuRXBMNs7gGALVE09O6cPX3LkEQjclkpmeIpQ/9EXrohw6
- a3zeu5THytGVk9DlrVgqJzLNHCGD7lD1uWGzwx0UVCF58MT7u8xcpVGUZDh4889T2ZMrTXNwMfMwr
- bxy2SfXAPCiFeopJuD84TIjMcyqgAV5sWCTNtUbG+Z7AAKkhx870HN70mDO5NY/psIClSv4j5Qpt6
- Qd6PhpeA==;
+ bh=Zrmu5iMLYvFiMq8HFIdWyHcjZPqxIM1+gxr5lbG6RqA=; b=XA1vL5ZQWcpYB9lkjANXS49TDB
+ B4ryz2QdjuP8CSVshFHtMlIwps20n8Uvvj9no1MwDaCpcCcZfhX/Gj2uSgUWTjPAz5OXyMBrbVKGD
+ ajYZW0DDlmxyRSJMsXsPSb9D2ciwmYov9Vbr1JOlaFrRvKtHMzUm08126ZCxfdvD/dyJkuTv+TeYE
+ eiYvfUd6MFs1jxjBzpN7i8dKQJ07VVYHK05EuOKQJk0T3LhqKnyVRZ6e5RrKUeng0XZZZ9AyNu/Kt
+ KriBqeGn5aoTmk+4GDi5WWbav59d915s38yiVnRFrqLsXZOhRHSg4Tq7mfClfeQss/JTMrVlRK8n+
+ EPYZ+9Kg==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I1E-0008Od-IN; Wed, 19 Aug 2020 06:56:21 +0000
+ id 1k8I12-0008MJ-S1; Wed, 19 Aug 2020 06:56:09 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,10 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 12/28] dma-direct: remove dma_direct_{alloc,free}_pages
-Date: Wed, 19 Aug 2020 08:55:39 +0200
-Message-Id: <20200819065555.1802761-13-hch@lst.de>
+Subject: [PATCH 06/28] lib82596: move DMA allocation into the callers of
+ i82596_probe
+Date: Wed, 19 Aug 2020 08:55:33 +0200
+Message-Id: <20200819065555.1802761-7-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -103,149 +104,187 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Just merge these helpers into the main dma_direct_{alloc,free} routines,
-as the additional checks are always false for the two callers.
+This allows us to get rid of the LIB82596_DMA_ATTR defined and prepare
+for untangling the coherent vs non-coherent DMA allocation API.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/x86/kernel/amd_gart_64.c |  6 +++---
- include/linux/dma-direct.h    |  4 ----
- kernel/dma/direct.c           | 39 ++++++++++++++---------------------
- kernel/dma/pool.c             |  2 +-
- 4 files changed, 19 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/i825xx/lasi_82596.c | 24 ++++++++++------
+ drivers/net/ethernet/i825xx/lib82596.c   | 36 ++++++++----------------
+ drivers/net/ethernet/i825xx/sni_82596.c  | 19 +++++++++----
+ 3 files changed, 40 insertions(+), 39 deletions(-)
 
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index e89031e9c84761..adbf616d35d15d 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -468,7 +468,7 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
- {
- 	void *vaddr;
+diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
+index aec7e98bcc853a..8c5ab9b7553e75 100644
+--- a/drivers/net/ethernet/i825xx/lasi_82596.c
++++ b/drivers/net/ethernet/i825xx/lasi_82596.c
+@@ -96,8 +96,6 @@
  
--	vaddr = dma_direct_alloc_pages(dev, size, dma_addr, flag, attrs);
-+	vaddr = dma_direct_alloc(dev, size, dma_addr, flag, attrs);
- 	if (!vaddr ||
- 	    !force_iommu || dev->coherent_dma_mask <= DMA_BIT_MASK(24))
- 		return vaddr;
-@@ -480,7 +480,7 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
- 		goto out_free;
- 	return vaddr;
- out_free:
--	dma_direct_free_pages(dev, size, vaddr, *dma_addr, attrs);
-+	dma_direct_free(dev, size, vaddr, *dma_addr, attrs);
- 	return NULL;
- }
+ #define OPT_SWAP_PORT	0x0001	/* Need to wordswp on the MPU port */
  
-@@ -490,7 +490,7 @@ gart_free_coherent(struct device *dev, size_t size, void *vaddr,
- 		   dma_addr_t dma_addr, unsigned long attrs)
- {
- 	gart_unmap_page(dev, dma_addr, size, DMA_BIDIRECTIONAL, 0);
--	dma_direct_free_pages(dev, size, vaddr, dma_addr, attrs);
-+	dma_direct_free(dev, size, vaddr, dma_addr, attrs);
- }
- 
- static int no_agp;
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 738485b3578062..6a96a8ecac7cbc 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -80,10 +80,6 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs);
- void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_addr_t dma_addr, unsigned long attrs);
--void *dma_direct_alloc_pages(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs);
--void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
--		dma_addr_t dma_addr, unsigned long attrs);
- int dma_direct_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs);
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 1123e767f4315f..8da9a62dd9a72c 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -151,13 +151,18 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	return page;
- }
- 
--void *dma_direct_alloc_pages(struct device *dev, size_t size,
-+void *dma_direct_alloc(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
- 	struct page *page;
- 	void *ret;
- 	int err;
- 
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
-+	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-+	    dma_alloc_need_uncached(dev, attrs))
-+		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
-+
- 	size = PAGE_ALIGN(size);
- 
- 	if (dma_should_alloc_from_pool(dev, gfp, attrs)) {
-@@ -251,11 +256,18 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
--		dma_addr_t dma_addr, unsigned long attrs)
-+void dma_direct_free(struct device *dev, size_t size,
-+		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
- {
- 	unsigned int page_order = get_order(size);
- 
-+	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
-+	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
-+	    dma_alloc_need_uncached(dev, attrs)) {
-+		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
-+		return;
-+	}
-+
- 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
- 	if (dma_should_free_from_pool(dev, attrs) &&
- 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
-@@ -279,27 +291,6 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
- 	dma_free_contiguous(dev, dma_direct_to_page(dev, dma_addr), size);
- }
- 
--void *dma_direct_alloc(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
--{
--	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
--	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
--	    dma_alloc_need_uncached(dev, attrs))
--		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
--	return dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
--}
+-#define LIB82596_DMA_ATTR	DMA_ATTR_NON_CONSISTENT
 -
--void dma_direct_free(struct device *dev, size_t size,
--		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
--{
--	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
--	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
--	    dma_alloc_need_uncached(dev, attrs))
--		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
--	else
--		dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
--}
+ #define DMA_WBACK(ndev, addr, len) \
+ 	do { dma_cache_sync((ndev)->dev.parent, (void *)addr, len, DMA_TO_DEVICE); } while (0)
+ 
+@@ -155,7 +153,7 @@ lan_init_chip(struct parisc_device *dev)
+ {
+ 	struct	net_device *netdevice;
+ 	struct i596_private *lp;
+-	int	retval;
++	int retval = -ENOMEM;
+ 	int i;
+ 
+ 	if (!dev->irq) {
+@@ -186,12 +184,22 @@ lan_init_chip(struct parisc_device *dev)
+ 
+ 	lp = netdev_priv(netdevice);
+ 	lp->options = dev->id.sversion == 0x72 ? OPT_SWAP_PORT : 0;
++	lp->dma = dma_alloc_attrs(dev->dev.parent, sizeof(struct i596_dma),
++			      &lp->dma_addr, GFP_KERNEL,
++			      DMA_ATTR_NON_CONSISTENT);
++	if (!lp->dma)
++		goto out_free_netdev;
+ 
+ 	retval = i82596_probe(netdevice);
+-	if (retval) {
+-		free_netdev(netdevice);
+-		return -ENODEV;
+-	}
++	if (retval)
++		goto out_free_dma;
++	return 0;
++
++out_free_dma:
++	dma_free_attrs(dev->dev.parent, sizeof(struct i596_dma),
++		       lp->dma, lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
++out_free_netdev:
++	free_netdev(netdevice);
+ 	return retval;
+ }
+ 
+@@ -202,7 +210,7 @@ static int __exit lan_remove_chip(struct parisc_device *pdev)
+ 
+ 	unregister_netdev (dev);
+ 	dma_free_attrs(&pdev->dev, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, LIB82596_DMA_ATTR);
++		       lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
+ 	free_netdev (dev);
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/i825xx/lib82596.c b/drivers/net/ethernet/i825xx/lib82596.c
+index b03757e169e475..b4e4b3eb5758b5 100644
+--- a/drivers/net/ethernet/i825xx/lib82596.c
++++ b/drivers/net/ethernet/i825xx/lib82596.c
+@@ -1047,9 +1047,8 @@ static const struct net_device_ops i596_netdev_ops = {
+ 
+ static int i82596_probe(struct net_device *dev)
+ {
+-	int i;
+ 	struct i596_private *lp = netdev_priv(dev);
+-	struct i596_dma *dma;
++	int ret;
+ 
+ 	/* This lot is ensure things have been cache line aligned. */
+ 	BUILD_BUG_ON(sizeof(struct i596_rfd) != 32);
+@@ -1063,41 +1062,28 @@ static int i82596_probe(struct net_device *dev)
+ 	if (!dev->base_addr || !dev->irq)
+ 		return -ENODEV;
+ 
+-	dma = dma_alloc_attrs(dev->dev.parent, sizeof(struct i596_dma),
+-			      &lp->dma_addr, GFP_KERNEL,
+-			      LIB82596_DMA_ATTR);
+-	if (!dma) {
+-		printk(KERN_ERR "%s: Couldn't get shared memory\n", __FILE__);
+-		return -ENOMEM;
+-	}
 -
- #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-     defined(CONFIG_SWIOTLB)
- void dma_direct_sync_sg_for_device(struct device *dev,
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 6bc74a2d51273e..222cebf1f10548 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -86,7 +86,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- #endif
- 	/*
- 	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
--	 * shrink so no re-encryption occurs in dma_direct_free_pages().
-+	 * shrink so no re-encryption occurs in dma_direct_free().
- 	 */
- 	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
- 				   1 << order);
+ 	dev->netdev_ops = &i596_netdev_ops;
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+ 
+-	memset(dma, 0, sizeof(struct i596_dma));
+-	lp->dma = dma;
+-
+-	dma->scb.command = 0;
+-	dma->scb.cmd = I596_NULL;
+-	dma->scb.rfd = I596_NULL;
++	memset(lp->dma, 0, sizeof(struct i596_dma));
++	lp->dma->scb.command = 0;
++	lp->dma->scb.cmd = I596_NULL;
++	lp->dma->scb.rfd = I596_NULL;
+ 	spin_lock_init(&lp->lock);
+ 
+-	DMA_WBACK_INV(dev, dma, sizeof(struct i596_dma));
++	DMA_WBACK_INV(dev, lp->dma, sizeof(struct i596_dma));
+ 
+-	i = register_netdev(dev);
+-	if (i) {
+-		dma_free_attrs(dev->dev.parent, sizeof(struct i596_dma),
+-			       dma, lp->dma_addr, LIB82596_DMA_ATTR);
+-		return i;
+-	}
++	ret = register_netdev(dev);
++	if (ret)
++		return ret;
+ 
+ 	DEB(DEB_PROBE, printk(KERN_INFO "%s: 82596 at %#3lx, %pM IRQ %d.\n",
+ 			      dev->name, dev->base_addr, dev->dev_addr,
+ 			      dev->irq));
+ 	DEB(DEB_INIT, printk(KERN_INFO
+ 			     "%s: dma at 0x%p (%d bytes), lp->scb at 0x%p\n",
+-			     dev->name, dma, (int)sizeof(struct i596_dma),
+-			     &dma->scb));
++			     dev->name, lp->dma, (int)sizeof(struct i596_dma),
++			     &lp->dma->scb));
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/i825xx/sni_82596.c b/drivers/net/ethernet/i825xx/sni_82596.c
+index 22f5887578b2bd..e80e790ffbd4d4 100644
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -24,8 +24,6 @@
+ 
+ static const char sni_82596_string[] = "snirm_82596";
+ 
+-#define LIB82596_DMA_ATTR	0
+-
+ #define DMA_WBACK(priv, addr, len)     do { } while (0)
+ #define DMA_INV(priv, addr, len)       do { } while (0)
+ #define DMA_WBACK_INV(priv, addr, len) do { } while (0)
+@@ -134,10 +132,19 @@ static int sni_82596_probe(struct platform_device *dev)
+ 	lp->ca = ca_addr;
+ 	lp->mpu_port = mpu_addr;
+ 
++	lp->dma = dma_alloc_coherent(dev->dev.parent, sizeof(struct i596_dma),
++				     &lp->dma_addr, GFP_KERNEL);
++	if (!lp->dma)
++		goto probe_failed;
++
+ 	retval = i82596_probe(netdevice);
+-	if (retval == 0)
+-		return 0;
++	if (retval)
++		goto probe_failed_free_dma;
++	return 0;
+ 
++probe_failed_free_dma:
++	dma_free_coherent(dev->dev.parent, sizeof(struct i596_dma), lp->dma,
++			  lp->dma_addr);
+ probe_failed:
+ 	free_netdev(netdevice);
+ probe_failed_free_ca:
+@@ -153,8 +160,8 @@ static int sni_82596_driver_remove(struct platform_device *pdev)
+ 	struct i596_private *lp = netdev_priv(dev);
+ 
+ 	unregister_netdev(dev);
+-	dma_free_attrs(dev->dev.parent, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, LIB82596_DMA_ATTR);
++	dma_free_coherent(dev->dev.parent, sizeof(struct i596_private), lp->dma,
++			  lp->dma_addr);
+ 	iounmap(lp->ca);
+ 	iounmap(lp->mpu_port);
+ 	free_netdev (dev);
 -- 
 2.28.0
 
