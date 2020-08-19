@@ -7,58 +7,58 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8C2C433DF
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 765A1C433E1
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:54:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 131FC20786
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:53:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 428C9207DE
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 17:54:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PEqUZu6j"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 131FC20786
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wLPAPYRw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 428C9207DE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E3D8B85992;
-	Wed, 19 Aug 2020 17:53:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 19DC885992;
+	Wed, 19 Aug 2020 17:54:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n8CMzW6gGv2P; Wed, 19 Aug 2020 17:53:56 +0000 (UTC)
+	with ESMTP id 9_rm4tCcNVOm; Wed, 19 Aug 2020 17:53:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 86A03857D6;
-	Wed, 19 Aug 2020 17:53:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B6A3485910;
+	Wed, 19 Aug 2020 17:53:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7242AC0889;
-	Wed, 19 Aug 2020 17:53:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D69DC0889;
+	Wed, 19 Aug 2020 17:53:59 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5C34C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8680CC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A27BA87D73
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:54 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7F35587D73
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1RSjAlruUCIu for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 17:53:54 +0000 (UTC)
+ with ESMTP id qr3vAEdFCuYP for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 17:53:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3991B87D11
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:54 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1E86087D11
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 17:53:58 +0000 (UTC)
 Received: from kozik-lap.mshome.net (unknown [194.230.155.216])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id EA86C2067C;
- Wed, 19 Aug 2020 17:53:50 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 9AB2820758;
+ Wed, 19 Aug 2020 17:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1597859634;
- bh=Y40zcl6Aa+tnubG5R7qR1BzVZ4xKAB+1WB0FfN3Cq0I=;
- h=From:To:Subject:Date:From;
- b=PEqUZu6jpSf9ZeO2OvihxUl35QmsAxLdAX4itWA+lSRluzHJjQ3diY7h40y6L3jzT
- F1a3FrFMfF9K3OwVP9inEfCrvRm3x0ZoaWGVw0NjFi6vx48zdVGalp0BDz2GwYM3WT
- aO83p+aQZTcEBc3WzjZH3Fm2qhpyX7A93W8WspzI=
+ s=default; t=1597859637;
+ bh=REyX7sYO8cBj8Z4eVm4euOusP1EBARA9iuGH/ZQYyZQ=;
+ h=From:To:Subject:Date:In-Reply-To:References:From;
+ b=wLPAPYRwpltu3VW0bVUOD96vLGjXwrNSaz+RLccK+Phvh5dLo3t5bDRQiqQTrIVYd
+ 1pM8/WOpxVfWSEPmpUgYhUAYvJgRtYRZ6sa/6Wh+83LntvHVksz9n8XSLWzQBfA6Ut
+ CeO+/5g+068DwMYaDArW+kDKTOchVtJ/TxaKUc14=
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
@@ -69,11 +69,13 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-mediatek@lists.infradead.org
-Subject: [RESEND PATCH 1/5] iommu: mtk: Drop of_match_ptr to fix
- -Wunused-const-variable
-Date: Wed, 19 Aug 2020 19:53:41 +0200
-Message-Id: <20200819175345.20833-1-krzk@kernel.org>
+Subject: [RESEND PATCH 2/5] iommu: amd: Add missing function prototypes to fix
+ -Wmissing-prototypes
+Date: Wed, 19 Aug 2020 19:53:42 +0200
+Message-Id: <20200819175345.20833-2-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200819175345.20833-1-krzk@kernel.org>
+References: <20200819175345.20833-1-krzk@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,32 +94,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The of_device_id is included unconditionally by of.h header and used
-in the driver as well.  Remove of_match_ptr to fix W=1 compile test
-warning with !CONFIG_OF:
+Few exported functions from AMD IOMMU driver are missing prototypes.
+They have declaration in arch/x86/events/amd/iommu.h but this file
+cannot be included in the driver.  Add prototypes to fix W=1 warnings
+like:
 
-    drivers/iommu/mtk_iommu.c:833:34: warning: 'mtk_iommu_of_ids' defined but not used [-Wunused-const-variable=]
-      833 | static const struct of_device_id mtk_iommu_of_ids[] = {
+    drivers/iommu/amd/init.c:3066:19: warning:
+        no previous prototype for 'get_amd_iommu' [-Wmissing-prototypes]
+     3066 | struct amd_iommu *get_amd_iommu(unsigned int idx)
 
-Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd/amd_iommu.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 785b228d39a6..b99c2b4b48ca 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -843,7 +843,7 @@ static struct platform_driver mtk_iommu_driver = {
- 	.remove	= mtk_iommu_remove,
- 	.driver	= {
- 		.name = "mtk-iommu",
--		.of_match_table = of_match_ptr(mtk_iommu_of_ids),
-+		.of_match_table = mtk_iommu_of_ids,
- 		.pm = &mtk_iommu_pm_ops,
- 	}
- };
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 57309716fd18..0781b7112467 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -41,6 +41,15 @@ extern int amd_iommu_guest_ir;
+ struct iommu_domain;
+ 
+ extern bool amd_iommu_v2_supported(void);
++extern struct amd_iommu *get_amd_iommu(unsigned int idx);
++extern u8 amd_iommu_pc_get_max_banks(unsigned int idx);
++extern bool amd_iommu_pc_supported(void);
++extern u8 amd_iommu_pc_get_max_counters(unsigned int idx);
++extern int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
++				u8 fxn, u64 *value);
++extern int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
++				u8 fxn, u64 *value);
++
+ extern int amd_iommu_register_ppr_notifier(struct notifier_block *nb);
+ extern int amd_iommu_unregister_ppr_notifier(struct notifier_block *nb);
+ extern void amd_iommu_domain_direct_map(struct iommu_domain *dom);
 -- 
 2.17.1
 
