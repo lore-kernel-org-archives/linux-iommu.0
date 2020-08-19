@@ -2,64 +2,64 @@ Return-Path: <SRS0=f7gc=B5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E3CC433F1
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D8CC433E1
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:25 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6A92B22B40
-	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2F7232245C
+	for <iommu@archiver.kernel.org>; Wed, 19 Aug 2020 06:57:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="StQNAqDn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6A92B22B40
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Tv1CWbnL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F7232245C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 52AD386BC5;
-	Wed, 19 Aug 2020 06:57:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CDA13214E4;
+	Wed, 19 Aug 2020 06:57:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DKoEpz+4tIkv; Wed, 19 Aug 2020 06:57:19 +0000 (UTC)
+	with ESMTP id AlAx-hVeCxSE; Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 03F1F86AA1;
-	Wed, 19 Aug 2020 06:57:19 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F189CC0891;
+	by silver.osuosl.org (Postfix) with ESMTP id E155620468;
 	Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F182C0051
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C9464C07FF;
+	Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0D07C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 671CB87AFF
- for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:18 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D8F9F20797
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ec-J6-dXUYo6 for <iommu@lists.linux-foundation.org>;
- Wed, 19 Aug 2020 06:57:17 +0000 (UTC)
+ with ESMTP id 4P35ddLj0cWS for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Aug 2020 06:57:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id A9A8486542
+ by silver.osuosl.org (Postfix) with ESMTPS id 8436820468
  for <iommu@lists.linux-foundation.org>; Wed, 19 Aug 2020 06:57:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=YZ1LNeTU2UqEp56RKG/dRCMXbOczIjuNhkDgd1OkZ0o=; b=StQNAqDnYwGhq7Cej5ymHGEMge
- 53Iq68wsW3PuuCYI+5zNq8jz4mIsxc9WjNngj9Dn1ri2gyh+72D8QGILHQMePhW2bqN73YQLRfCUH
- mgAM0/RAyclr7TliuXbF/fj4x6vAaLb7JZcfjNHnskKN057MzPnV+kjBUyc+kICRSpSaoiMPo260i
- +wdWTj7Gqd2z33RhKa+geNXu1zBs28hUgcHpqQhl8ustj8DEXuWr5Hyes1nO021Le69iIrQ/w1rjG
- CMYTmvfpBfNzstPlEYvtNSh/D0fABqn7zz3Zaso+YzIUYaOlBL5hxz7yazOdUFOL9TW4mpwsh6pjP
- RWzv71lQ==;
+ bh=gJaI6Esuqevc5n1odFS47MOCP+KM34I3vDSv3XnZjAI=; b=Tv1CWbnLynvwmWs1Jhy5zKi3md
+ uudL4RJWWKY0HA+Skk8RjLPLJTh5m/CPiLgGyyco4MXv4NU9RtzxB6zAQFr16KcUPXrcLcOOhIvEN
+ jJr4XvBcs5GY24zClkR+J/+cJPPc+ftEYA+yf9U9PCVauRmjbZpqGKFEWmNjRmgA5OM38RiW7jJIx
+ 3R9Tg8QbODpTLKDYSQQbRhIOvxDaEip+asJYYyOr1erjSfyFKIaDyZHzGQMmLigFfGFV53Q+268So
+ 6R1k9V4Ymav8GkQQ6bHSD2xeHktpWRG/qBapr3eHyF2P7npqGMhZh6Wb9r08l2HiSbt7nThXkUmIe
+ Ipaa1CEQ==;
 Received: from [2001:4bb8:198:f3b2:86b6:2277:f429:37a1] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1k8I1O-0008QM-L4; Wed, 19 Aug 2020 06:56:31 +0000
+ id 1k8I1L-0008Pq-VK; Wed, 19 Aug 2020 06:56:28 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,9 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Pawel Osciak <pawel@osciak.com>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 16/28] dma-direct: rename and cleanup __phys_to_dma
-Date: Wed, 19 Aug 2020 08:55:43 +0200
-Message-Id: <20200819065555.1802761-17-hch@lst.de>
+Subject: [PATCH 15/28] dma-direct: remove __dma_to_phys
+Date: Wed, 19 Aug 2020 08:55:42 +0200
+Message-Id: <20200819065555.1802761-16-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
 References: <20200819065555.1802761-1-hch@lst.de>
@@ -103,10 +103,8 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The __phys_to_dma vs phys_to_dma distinction isn't exactly obvious.  Try
-to improve the situation by renaming __phys_to_dma to
-phys_to_dma_unencryped, and not forcing architectures that want to
-override phys_to_dma to actually provide __phys_to_dma.
+There is no harm in just always clearing the SME encryption bit, while
+significantly simplifying the interface.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
@@ -121,271 +119,223 @@ Signed-off-by: Christoph Hellwig <hch@lst.de>
  arch/mips/pci/pci-xtalk-bridge.c       |  2 +-
  arch/mips/sgi-ip32/ip32-dma.c          |  2 +-
  arch/powerpc/include/asm/dma-direct.h  |  2 +-
- drivers/iommu/intel/iommu.c            |  2 +-
- include/linux/dma-direct.h             | 28 +++++++++++++++-----------
- kernel/dma/direct.c                    |  8 ++++----
- kernel/dma/swiotlb.c                   |  4 ++--
- 15 files changed, 34 insertions(+), 30 deletions(-)
+ include/linux/dma-direct.h             | 21 +++++++++++----------
+ kernel/dma/direct.c                    |  6 +-----
+ 13 files changed, 23 insertions(+), 26 deletions(-)
 
 diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
-index a8cee87a93e8ab..bca0de56753439 100644
+index 7c3001a6a775bf..a8cee87a93e8ab 100644
 --- a/arch/arm/include/asm/dma-direct.h
 +++ b/arch/arm/include/asm/dma-direct.h
-@@ -2,7 +2,7 @@
- #ifndef ASM_ARM_DMA_DIRECT_H
- #define ASM_ARM_DMA_DIRECT_H 1
- 
--static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
- 	unsigned int offset = paddr & ~PAGE_MASK;
+@@ -8,7 +8,7 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return pfn_to_dma(dev, __phys_to_pfn(paddr)) + offset;
+ }
+ 
+-static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
++static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+ {
+ 	unsigned int offset = dev_addr & ~PAGE_MASK;
+ 	return __pfn_to_phys(dma_to_pfn(dev, dev_addr)) + offset;
 diff --git a/arch/mips/bmips/dma.c b/arch/mips/bmips/dma.c
-index ba2a5d33dfd3fa..49061b870680b9 100644
+index df56bf4179e347..ba2a5d33dfd3fa 100644
 --- a/arch/mips/bmips/dma.c
 +++ b/arch/mips/bmips/dma.c
-@@ -40,7 +40,7 @@ static struct bmips_dma_range *bmips_dma_ranges;
+@@ -52,7 +52,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t pa)
+ 	return pa;
+ }
  
- #define FLUSH_RAC		0x100
- 
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t pa)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t pa)
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
  {
  	struct bmips_dma_range *r;
  
 diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-index 388b13ba2558c2..232fa1017b1ec9 100644
+index 14ea680d180e07..388b13ba2558c2 100644
 --- a/arch/mips/cavium-octeon/dma-octeon.c
 +++ b/arch/mips/cavium-octeon/dma-octeon.c
-@@ -168,7 +168,7 @@ void __init octeon_pci_dma_init(void)
+@@ -177,7 +177,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+ 	return paddr;
  }
- #endif /* CONFIG_PCI */
  
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
  {
  #ifdef CONFIG_PCI
  	if (dev && dev_is_pci(dev))
 diff --git a/arch/mips/include/asm/dma-direct.h b/arch/mips/include/asm/dma-direct.h
-index 8e178651c638c2..9a640118316c9d 100644
+index 14e352651ce946..8e178651c638c2 100644
 --- a/arch/mips/include/asm/dma-direct.h
 +++ b/arch/mips/include/asm/dma-direct.h
-@@ -2,7 +2,7 @@
- #ifndef _MIPS_DMA_DIRECT_H
+@@ -3,6 +3,6 @@
  #define _MIPS_DMA_DIRECT_H 1
  
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
- phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
+ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr);
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
  
  #endif /* _MIPS_DMA_DIRECT_H */
 diff --git a/arch/mips/loongson2ef/fuloong-2e/dma.c b/arch/mips/loongson2ef/fuloong-2e/dma.c
-index 83fadeb3fd7d56..cea167d8aba8db 100644
+index e122292bf6660a..83fadeb3fd7d56 100644
 --- a/arch/mips/loongson2ef/fuloong-2e/dma.c
 +++ b/arch/mips/loongson2ef/fuloong-2e/dma.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/dma-direct.h>
- 
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
+@@ -6,7 +6,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return paddr | 0x80000000;
+ }
+ 
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	return dma_addr & 0x7fffffff;
  }
 diff --git a/arch/mips/loongson2ef/lemote-2f/dma.c b/arch/mips/loongson2ef/lemote-2f/dma.c
-index 302b43a14eee74..3c9e994563578c 100644
+index abf0e39d7e4696..302b43a14eee74 100644
 --- a/arch/mips/loongson2ef/lemote-2f/dma.c
 +++ b/arch/mips/loongson2ef/lemote-2f/dma.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/dma-direct.h>
- 
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
+@@ -6,7 +6,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return paddr | 0x80000000;
  }
+ 
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	if (dma_addr > 0x8fffffff)
+ 		return dma_addr;
 diff --git a/arch/mips/loongson64/dma.c b/arch/mips/loongson64/dma.c
-index b3dc5d0bd2b113..364f2f27c8723f 100644
+index dbfe6e82fddd1c..b3dc5d0bd2b113 100644
 --- a/arch/mips/loongson64/dma.c
 +++ b/arch/mips/loongson64/dma.c
-@@ -4,7 +4,7 @@
- #include <linux/swiotlb.h>
- #include <boot_param.h>
+@@ -13,7 +13,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+ 	return ((nid << 44) ^ paddr) | (nid << node_id_offset);
+ }
  
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
  {
  	/* We extract 2bit node id (bit 44~47, only bit 44~45 used now) from
  	 * Loongson-3's 48bit address space and embed it into 40bit */
 diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-index d88395684f487d..cef4a47ab06311 100644
+index 490953f515282a..d88395684f487d 100644
 --- a/arch/mips/pci/pci-ar2315.c
 +++ b/arch/mips/pci/pci-ar2315.c
-@@ -170,7 +170,7 @@ static inline dma_addr_t ar2315_dev_offset(struct device *dev)
- 	return 0;
- }
- 
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
+@@ -175,7 +175,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return paddr + ar2315_dev_offset(dev);
  }
+ 
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	return dma_addr - ar2315_dev_offset(dev);
+ }
 diff --git a/arch/mips/pci/pci-xtalk-bridge.c b/arch/mips/pci/pci-xtalk-bridge.c
-index f1b37f32b55395..50f7d42cca5a78 100644
+index 9b3cc775c55e05..f1b37f32b55395 100644
 --- a/arch/mips/pci/pci-xtalk-bridge.c
 +++ b/arch/mips/pci/pci-xtalk-bridge.c
-@@ -25,7 +25,7 @@
- /*
-  * Common phys<->dma mapping for platforms using pci xtalk bridge
-  */
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+@@ -33,7 +33,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+ 	return bc->baddr + paddr;
+ }
+ 
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
  {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct bridge_controller *bc = BRIDGE_CONTROLLER(pdev->bus);
+ 	return dma_addr & ~(0xffUL << 56);
+ }
 diff --git a/arch/mips/sgi-ip32/ip32-dma.c b/arch/mips/sgi-ip32/ip32-dma.c
-index 160317294d97a9..20c6da9d76bc5e 100644
+index fa7b17cb53853e..160317294d97a9 100644
 --- a/arch/mips/sgi-ip32/ip32-dma.c
 +++ b/arch/mips/sgi-ip32/ip32-dma.c
-@@ -18,7 +18,7 @@
+@@ -27,7 +27,7 @@ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+ 	return dma_addr;
+ }
  
- #define RAM_OFFSET_MASK 0x3fffffffUL
- 
--dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+-phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
  {
- 	dma_addr_t dma_addr = paddr & RAM_OFFSET_MASK;
+ 	phys_addr_t paddr = dma_addr & RAM_OFFSET_MASK;
  
 diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
-index 95b09313d2a4cf..128304cbee1d87 100644
+index abc154d784b078..95b09313d2a4cf 100644
 --- a/arch/powerpc/include/asm/dma-direct.h
 +++ b/arch/powerpc/include/asm/dma-direct.h
-@@ -2,7 +2,7 @@
- #ifndef ASM_POWERPC_DMA_DIRECT_H
- #define ASM_POWERPC_DMA_DIRECT_H 1
- 
--static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
+@@ -7,7 +7,7 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return paddr + dev->archdata.dma_offset;
  }
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e9864e52b0e96a..99aa80456b7145 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3736,7 +3736,7 @@ bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
- 	 */
- 	if (!IS_ALIGNED(paddr | size, VTD_PAGE_SIZE)) {
- 		tlb_addr = swiotlb_tbl_map_single(dev,
--				__phys_to_dma(dev, io_tlb_start),
-+				phys_to_dma_unencrypted(dev, io_tlb_start),
- 				paddr, size, aligned_size, dir, attrs);
- 		if (tlb_addr == DMA_MAPPING_ERROR) {
- 			goto swiotlb_error;
+ 
+-static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
++static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
+ {
+ 	return daddr - dev->archdata.dma_offset;
+ }
 diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 811582a39e291f..3797ecccc15466 100644
+index 6a96a8ecac7cbc..811582a39e291f 100644
 --- a/include/linux/dma-direct.h
 +++ b/include/linux/dma-direct.h
-@@ -16,14 +16,29 @@ extern unsigned int zone_dma_bits;
- 
- #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
- #include <asm/dma-direct.h>
-+#ifndef phys_to_dma_unencrypted
-+#define phys_to_dma_unencrypted		phys_to_dma
-+#endif
- #else
--static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+static inline dma_addr_t phys_to_dma_unencrypted(struct device *dev,
-+		phys_addr_t paddr)
- {
- 	dma_addr_t dev_addr = (dma_addr_t)paddr;
- 
+@@ -24,11 +24,17 @@ static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
  	return dev_addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
  }
  
-+/*
-+ * If memory encryption is supported, phys_to_dma will set the memory encryption
-+ * bit in the DMA address, and dma_to_phys will clear it.
-+ * phys_to_dma_unencrypted is for use on special unencrypted memory like swiotlb
-+ * buffers.
-+ */
-+static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
-+{
-+	return __sme_set(phys_to_dma_unencrypted(dev, paddr));
-+}
-+
- static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+-static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
++static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
  {
- 	phys_addr_t paddr = (phys_addr_t)dev_addr +
-@@ -47,17 +62,6 @@ static inline bool force_dma_unencrypted(struct device *dev)
+-	phys_addr_t paddr = (phys_addr_t)dev_addr;
+-
+-	return paddr + ((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
++	phys_addr_t paddr = (phys_addr_t)dev_addr +
++		((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
++
++	/*
++	 * Clear the Memory encryption mask if support by the architecture.  We
++	 * do this unconditionally so that we don't have to track if someone
++	 * fed us an encrypted or unencryped DMA address.
++	 */
++	return __sme_clr(paddr);
  }
- #endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+ #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
  
--/*
-- * If memory encryption is supported, phys_to_dma will set the memory encryption
-- * bit in the DMA address, and dma_to_phys will clear it.  The raw __phys_to_dma
-- * version should only be used on non-encrypted memory for
-- * special occasions like DMA coherent buffers.
-- */
--static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+@@ -44,7 +50,7 @@ static inline bool force_dma_unencrypted(struct device *dev)
+ /*
+  * If memory encryption is supported, phys_to_dma will set the memory encryption
+  * bit in the DMA address, and dma_to_phys will clear it.  The raw __phys_to_dma
+- * and __dma_to_phys versions should only be used on non-encrypted memory for
++ * version should only be used on non-encrypted memory for
+  * special occasions like DMA coherent buffers.
+  */
+ static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+@@ -52,11 +58,6 @@ static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+ 	return __sme_set(__phys_to_dma(dev, paddr));
+ }
+ 
+-static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
 -{
--	return __sme_set(__phys_to_dma(dev, paddr));
+-	return __sme_clr(__dma_to_phys(dev, daddr));
 -}
 -
  static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
  		bool is_ram)
  {
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index a97835983a34f7..e7963e51660792 100644
+index 2e280b9c063449..a97835983a34f7 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -25,7 +25,7 @@ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
- 		phys_addr_t phys)
+@@ -48,11 +48,6 @@ gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
  {
- 	if (force_dma_unencrypted(dev))
--		return __phys_to_dma(dev, phys);
-+		return phys_to_dma_unencrypted(dev, phys);
- 	return phys_to_dma(dev, phys);
- }
+ 	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
  
-@@ -433,13 +433,13 @@ int dma_direct_supported(struct device *dev, u64 mask)
- 		return 1;
- 
+-	if (force_dma_unencrypted(dev))
+-		*phys_limit = __dma_to_phys(dev, dma_limit);
+-	else
+-		*phys_limit = dma_to_phys(dev, dma_limit);
+-
  	/*
--	 * This check needs to be against the actual bit mask value, so
--	 * use __phys_to_dma() here so that the SME encryption mask isn't
-+	 * This check needs to be against the actual bit mask value, so use
-+	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
- 	 * part of the check.
+ 	 * Optimistically try the zone that the physical address mask falls
+ 	 * into first.  If that returns memory that isn't actually addressable
+@@ -61,6 +56,7 @@ gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+ 	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
+ 	 * zones.
  	 */
- 	if (IS_ENABLED(CONFIG_ZONE_DMA))
- 		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
--	return mask >= __phys_to_dma(dev, min_mask);
-+	return mask >= phys_to_dma_unencrypted(dev, min_mask);
- }
- 
- size_t dma_direct_max_mapping_size(struct device *dev)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index c19379fabd200e..4ea72d145cd27d 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -670,13 +670,13 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
- 			      swiotlb_force);
- 
- 	swiotlb_addr = swiotlb_tbl_map_single(dev,
--			__phys_to_dma(dev, io_tlb_start),
-+			phys_to_dma_unencrypted(dev, io_tlb_start),
- 			paddr, size, size, dir, attrs);
- 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
- 
- 	/* Ensure that the address returned is DMA'ble */
--	dma_addr = __phys_to_dma(dev, swiotlb_addr);
-+	dma_addr = phys_to_dma_unencrypted(dev, swiotlb_addr);
- 	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
- 		swiotlb_tbl_unmap_single(dev, swiotlb_addr, size, size, dir,
- 			attrs | DMA_ATTR_SKIP_CPU_SYNC);
++	*phys_limit = dma_to_phys(dev, dma_limit);
+ 	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+ 		return GFP_DMA;
+ 	if (*phys_limit <= DMA_BIT_MASK(32))
 -- 
 2.28.0
 
