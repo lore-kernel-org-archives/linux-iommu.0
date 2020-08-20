@@ -2,63 +2,63 @@ Return-Path: <SRS0=3GNe=B6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1B5C433EA
-	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956CAC433ED
+	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:39 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A52D22B3F
-	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A52D22B3F
+	by mail.kernel.org (Postfix) with ESMTPS id 6C3B3208E4
+	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C3B3208E4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 059598816A;
-	Thu, 20 Aug 2020 15:09:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QMid7he4JVsg; Thu, 20 Aug 2020 15:09:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 786ED87E88;
-	Thu, 20 Aug 2020 15:09:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 65716C07FF;
-	Thu, 20 Aug 2020 15:09:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6196EC07FF
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5592186925
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4E39F8693B;
+	Thu, 20 Aug 2020 15:09:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yidnWg6vfuma; Thu, 20 Aug 2020 15:09:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A424285F92;
+	Thu, 20 Aug 2020 15:09:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 90A5CC07FF;
+	Thu, 20 Aug 2020 15:09:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49D81C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:37 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3796188189
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:37 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7EUR0DlnWnKY for <iommu@lists.linux-foundation.org>;
- Thu, 20 Aug 2020 15:09:32 +0000 (UTC)
+ with ESMTP id n3Y7jtT-ASd5 for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Aug 2020 15:09:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 70279868BF
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4429988185
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:36 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DB83F1476;
- Thu, 20 Aug 2020 08:09:31 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A704E1477;
+ Thu, 20 Aug 2020 08:09:35 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 539A53F6CF;
- Thu, 20 Aug 2020 08:09:28 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 226C33F6CF;
+ Thu, 20 Aug 2020 08:09:32 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: hch@lst.de,
 	joro@8bytes.org,
 	linux@armlinux.org.uk
-Subject: [PATCH 10/18] iommu/msm: Add IOMMU_DOMAIN_DMA support
-Date: Thu, 20 Aug 2020 16:08:29 +0100
-Message-Id: <93d7de3533cfd952aecd6198b9221d7a58c0e521.1597931876.git.robin.murphy@arm.com>
+Subject: [PATCH 11/18] iommu/omap: Add IOMMU_DOMAIN_DMA support
+Date: Thu, 20 Aug 2020 16:08:30 +0100
+Message-Id: <5ac3788f9f61f7698cfa9c5924d62714e230f678.1597931876.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1597931875.git.robin.murphy@arm.com>
 References: <cover.1597931875.git.robin.murphy@arm.com>
@@ -95,47 +95,76 @@ implement the corresponding driver-side support for DMA domains.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/msm_iommu.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/omap-iommu.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 3615cd6241c4..f34efcbb0b2b 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/init.h>
- #include <linux/platform_device.h>
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 71f29c0927fc..ea25c2fe0418 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -9,6 +9,7 @@
+  *		Paul Mundt and Toshihiro Kobayashi
+  */
+ 
 +#include <linux/dma-iommu.h>
- #include <linux/errno.h>
- #include <linux/io.h>
- #include <linux/io-pgtable.h>
-@@ -314,13 +315,16 @@ static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/slab.h>
+@@ -1574,13 +1575,19 @@ static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
  {
- 	struct msm_priv *priv;
+ 	struct omap_iommu_domain *omap_domain;
  
 -	if (type != IOMMU_DOMAIN_UNMANAGED)
 +	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
  		return NULL;
  
- 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
- 		goto fail_nomem;
+ 	omap_domain = kzalloc(sizeof(*omap_domain), GFP_KERNEL);
+ 	if (!omap_domain)
+ 		return NULL;
  
-+	if (type == IOMMU_DOMAIN_DMA && iommu_get_dma_cookie(&priv->domain))
-+		goto fail_nomem;
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&omap_domain->domain)) {
++		kfree(omap_domain);
++		return NULL;
++	}
 +
- 	INIT_LIST_HEAD(&priv->list_attached);
+ 	spin_lock_init(&omap_domain->lock);
  
- 	priv->domain.geometry.aperture_start = 0;
-@@ -339,6 +343,7 @@ static void msm_iommu_domain_free(struct iommu_domain *domain)
- 	struct msm_priv *priv;
- 	unsigned long flags;
+ 	omap_domain->domain.geometry.aperture_start = 0;
+@@ -1601,6 +1608,7 @@ static void omap_iommu_domain_free(struct iommu_domain *domain)
+ 	if (omap_domain->dev)
+ 		_omap_iommu_detach_dev(omap_domain, omap_domain->dev);
  
-+	iommu_put_dma_cookie(domain);
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
- 	priv = to_msm_priv(domain);
- 	kfree(priv);
++	iommu_put_dma_cookie(&omap_domain->domain);
+ 	kfree(omap_domain);
+ }
+ 
+@@ -1736,6 +1744,17 @@ static struct iommu_group *omap_iommu_device_group(struct device *dev)
+ 	return group;
+ }
+ 
++static int omap_iommu_of_xlate(struct device *dev,
++			       struct of_phandle_args *args)
++{
++	/*
++	 * Logically, some of the housekeeping from _omap_iommu_add_device()
++	 * should probably move here, but the minimum we *need* is simply to
++	 * cooperate with of_iommu at all to let iommu-dma work.
++	 */
++	return 0;
++}
++
+ static const struct iommu_ops omap_iommu_ops = {
+ 	.domain_alloc	= omap_iommu_domain_alloc,
+ 	.domain_free	= omap_iommu_domain_free,
+@@ -1747,6 +1766,7 @@ static const struct iommu_ops omap_iommu_ops = {
+ 	.probe_device	= omap_iommu_probe_device,
+ 	.release_device	= omap_iommu_release_device,
+ 	.device_group	= omap_iommu_device_group,
++	.of_xlate	= omap_iommu_of_xlate,
+ 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+ };
+ 
 -- 
 2.28.0.dirty
 
