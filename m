@@ -2,63 +2,63 @@ Return-Path: <SRS0=3GNe=B6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D856C433DF
-	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAF2C433EC
+	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:10:01 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 179762224D
-	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:09:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 179762224D
+	by mail.kernel.org (Postfix) with ESMTPS id 4EEBC21775
+	for <iommu@archiver.kernel.org>; Thu, 20 Aug 2020 15:10:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4EEBC21775
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F0C4E88187;
-	Thu, 20 Aug 2020 15:09:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 25C7B881A8;
+	Thu, 20 Aug 2020 15:10:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JjeRo7ABD0xj; Thu, 20 Aug 2020 15:09:58 +0000 (UTC)
+	with ESMTP id 1RTmHhBrNMNI; Thu, 20 Aug 2020 15:09:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5C9BB8816A;
-	Thu, 20 Aug 2020 15:09:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 851E08816F;
+	Thu, 20 Aug 2020 15:09:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E3F0C07FF;
-	Thu, 20 Aug 2020 15:09:58 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4A190C0051
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 724F2C07FF;
+	Thu, 20 Aug 2020 15:09:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B49B4C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3734688185
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:56 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B13BF8693D
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RaP3JPnSmSHJ for <iommu@lists.linux-foundation.org>;
- Thu, 20 Aug 2020 15:09:55 +0000 (UTC)
+ with ESMTP id kz_WPPFTzope for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Aug 2020 15:09:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 482268816A
- for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:55 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9BC6D868BF
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Aug 2020 15:09:56 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B02CC1529;
- Thu, 20 Aug 2020 08:09:54 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D724B1516;
+ Thu, 20 Aug 2020 08:09:50 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 200693F6CF;
- Thu, 20 Aug 2020 08:09:51 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 48CAB3F6CF;
+ Thu, 20 Aug 2020 08:09:47 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: hch@lst.de,
 	joro@8bytes.org,
 	linux@armlinux.org.uk
-Subject: [PATCH 16/18] staging/media/tegra-vde: Clean up IOMMU workaround
-Date: Thu, 20 Aug 2020 16:08:35 +0100
-Message-Id: <3535c205b9bce52556abbf2f63384fb38e009df9.1597931876.git.robin.murphy@arm.com>
+Subject: [PATCH 15/18] drm/nouveau/tegra: Clean up IOMMU workaround
+Date: Thu, 20 Aug 2020 16:08:34 +0100
+Message-Id: <21d8d42edb9f91e62f9c72875cf2210afacff18c.1597931876.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1597931875.git.robin.murphy@arm.com>
 References: <cover.1597931875.git.robin.murphy@arm.com>
@@ -95,27 +95,27 @@ longer need to work around the arch-private mapping.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/staging/media/tegra-vde/iommu.c | 12 ------------
- 1 file changed, 12 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/staging/media/tegra-vde/iommu.c b/drivers/staging/media/tegra-vde/iommu.c
-index 6af863d92123..4f770189ed34 100644
---- a/drivers/staging/media/tegra-vde/iommu.c
-+++ b/drivers/staging/media/tegra-vde/iommu.c
-@@ -10,10 +10,6 @@
- #include <linux/kernel.h>
- #include <linux/platform_device.h>
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+index d0d52c1d4aee..410ee1f83e0b 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -23,10 +23,6 @@
+ #ifdef CONFIG_NOUVEAU_PLATFORM_DRIVER
+ #include "priv.h"
  
 -#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
 -#include <asm/dma-iommu.h>
 -#endif
 -
- #include "vde.h"
- 
- int tegra_vde_iommu_map(struct tegra_vde *vde,
-@@ -70,14 +66,6 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
- 	if (!vde->group)
- 		return 0;
+ static int
+ nvkm_device_tegra_power_up(struct nvkm_device_tegra *tdev)
+ {
+@@ -109,15 +105,6 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+ 	unsigned long pgsize_bitmap;
+ 	int ret;
  
 -#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
 -	if (dev->archdata.mapping) {
@@ -125,9 +125,10 @@ index 6af863d92123..4f770189ed34 100644
 -		arm_iommu_release_mapping(mapping);
 -	}
 -#endif
- 	vde->domain = iommu_domain_alloc(&platform_bus_type);
- 	if (!vde->domain) {
- 		err = -ENOMEM;
+-
+ 	if (!tdev->func->iommu_bit)
+ 		return;
+ 
 -- 
 2.28.0.dirty
 
