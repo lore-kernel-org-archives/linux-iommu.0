@@ -6,68 +6,68 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2719C433E5
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 16:14:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE15C433DF
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B644522B4B
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 16:14:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C55B921741
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="OgJWzexR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B644522B4B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="M0/81QjC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C55B921741
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8712786A2F;
-	Fri, 21 Aug 2020 16:14:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A7D1F886C5;
+	Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mZgdPb8XlMup; Fri, 21 Aug 2020 16:14:49 +0000 (UTC)
+	with ESMTP id L-S4cuw+sEXj; Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E276886AE4;
-	Fri, 21 Aug 2020 16:14:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 36CB7886AD;
+	Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C4D66C07FF;
-	Fri, 21 Aug 2020 16:14:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 006CCC0051
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:14:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C730C07FF;
+	Fri, 21 Aug 2020 16:16:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E371DC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:16:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F0AFB86CFC
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:14:48 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DDD65886BB
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:16:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HKGBpyG8deP0 for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 16:14:48 +0000 (UTC)
+ with ESMTP id YN9QTykmhqkn for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 16:16:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B0F7986C23
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:14:47 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1D12E886AD
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 16:16:09 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id B41EA20FC3;
- Fri, 21 Aug 2020 16:14:46 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 30C89208DB;
+ Fri, 21 Aug 2020 16:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1598026487;
- bh=hFA+ejo3MW88ZO4xFBQQQLDRxo0rFnG78sbE4dwsNds=;
+ s=default; t=1598026569;
+ bh=VZu/xCLM/zvS86LzuuApCHR8B0eir2DgfJaLNqhOAVA=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=OgJWzexRD3iYaXuZ1LcccMryCrJg+wxQK8WRNJmrdv6lMUcVVtfpsBBf4u0aaw9K8
- Izx5QeM2NBbiYBc7SabIOK3xXXD59TFRKpMjtdB6jXla9O/1YR2Tfxw7wpyhmW7111
- phD77EteYRnwR7kxPHpoowQIzC3+ojkcvgKA9RL8=
+ b=M0/81QjCHN/QgHjWIUKlWa3LQMT9x/xKrIH1+MTxHpMd1a6QW3PtPT7TyesgPkRHE
+ W7VORL+Ru8RiYWl9e3ZpDglb2NYDv+K+VihC6IOLBgTPmhzFiVxj9v+h++eLgsvfUE
+ M6TsPG4K4AgKM3usRhrFVSnNSY0jISqzOKvQC94k=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 19/62] iommu/iova: Don't BUG on invalid PFNs
-Date: Fri, 21 Aug 2020 12:13:40 -0400
-Message-Id: <20200821161423.347071-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 19/61] iommu/iova: Don't BUG on invalid PFNs
+Date: Fri, 21 Aug 2020 12:15:03 -0400
+Message-Id: <20200821161545.347622-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200821161423.347071-1-sashal@kernel.org>
-References: <20200821161423.347071-1-sashal@kernel.org>
+In-Reply-To: <20200821161545.347622-1-sashal@kernel.org>
+References: <20200821161545.347622-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -119,7 +119,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 49fc01f2a28d4..45a251da54537 100644
+index 0e6a9536eca62..612cbf668adf8 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
 @@ -811,7 +811,9 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
