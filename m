@@ -2,63 +2,60 @@ Return-Path: <SRS0=6E3Y=B7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC6ACC433E1
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E85C433E3
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:58:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F70520720
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F70520720
+	by mail.kernel.org (Postfix) with ESMTPS id 4A85120720
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:58:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A85120720
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7AEDC8850A;
-	Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3BF3184471;
+	Fri, 21 Aug 2020 13:58:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZdvXBe5sGZBY; Fri, 21 Aug 2020 13:58:23 +0000 (UTC)
+	with ESMTP id ThbPct8nl_b0; Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5AAFE883B2;
-	Fri, 21 Aug 2020 13:58:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 786AA809D7;
+	Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 37FAAC0889;
-	Fri, 21 Aug 2020 13:58:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6505FC0889;
+	Fri, 21 Aug 2020 13:58:25 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 261C7C0051
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9BAEBC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 14FC286D5D
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:21 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 97FAD86D2F
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9l-PrMz1UrnD for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 13:58:20 +0000 (UTC)
+ with ESMTP id gi01AVMcswU6 for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 13:58:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 98DD486DC4
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:19 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3122486D5D
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:58:21 +0000 (UTC)
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
- by Forcepoint Email with ESMTP id 1F74097332D8AA97487D;
+ by Forcepoint Email with ESMTP id 1382B9333EB0FF14B947;
  Fri, 21 Aug 2020 21:58:15 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
  14.3.487.0; Fri, 21 Aug 2020 21:58:04 +0800
 From: John Garry <john.garry@huawei.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH v2 1/2] iommu/arm-smmu-v3: Calculate max commands per batch
-Date: Fri, 21 Aug 2020 21:54:21 +0800
-Message-ID: <1598018062-175608-2-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
+Date: Fri, 21 Aug 2020 21:54:20 +0800
+Message-ID: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
-References: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.69.192.58]
 X-CFilter-Loop: Reflected
@@ -81,92 +78,42 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Calculate the batch size limit such that all CPUs in the system cannot
-issue so many commands as to fill the command queue.
+As mentioned in [0], the CPU may consume many cycles processing
+arm_smmu_cmdq_issue_cmdlist(). One issue we find is the cmpxchg() loop to
+get space on the queue takes a lot of time once we start getting many
+CPUs contending - from experiment, for 64 CPUs contending the cmdq,
+success rate is ~ 1 in 12, which is poor, but not totally awful.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 46 +++++++++++++++++++--
- 1 file changed, 42 insertions(+), 4 deletions(-)
+This series removes that cmpxchg() and replaces with an atomic_add,
+same as how the actual cmdq deals with maintaining the prod pointer.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7196207be7ea..a705fa3e18ea 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -532,6 +532,7 @@ struct arm_smmu_ll_queue {
- 		u8			__pad[SMP_CACHE_BYTES];
- 	} ____cacheline_aligned_in_smp;
- 	u32				max_n_shift;
-+	u32				max_cmd_per_batch;
- };
- 
- struct arm_smmu_queue {
-@@ -1515,7 +1516,10 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
- 				    struct arm_smmu_cmdq_batch *cmds,
- 				    struct arm_smmu_cmdq_ent *cmd)
- {
--	if (cmds->num == CMDQ_BATCH_ENTRIES) {
-+	struct arm_smmu_cmdq *q = &smmu->cmdq;
-+	struct arm_smmu_ll_queue *llq = &q->q.llq;
-+
-+	if (cmds->num == llq->max_cmd_per_batch) {
- 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
- 		cmds->num = 0;
- 	}
-@@ -3177,6 +3181,41 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 	return 0;
- }
- 
-+static int arm_smmu_init_cmd_queue(struct arm_smmu_device *smmu,
-+				   struct arm_smmu_queue *q,
-+				   unsigned long prod_off,
-+				   unsigned long cons_off,
-+				   size_t dwords)
-+{
-+	u32 cpus = num_possible_cpus(), entries_for_prod;
-+	int ret;
-+
-+	ret = arm_smmu_init_one_queue(smmu, q, prod_off, cons_off, dwords,
-+				      "cmdq");
-+	if (ret)
-+		return ret;
-+
-+	entries_for_prod = 1 << q->llq.max_n_shift;
-+
-+	/*
-+	 * We need at least 2 commands in a batch (1 x CMD_SYNC and 1 x
-+	 * whatever else).
-+	 */
-+	if (entries_for_prod < 2 * cpus) {
-+		dev_err(smmu->dev, "command queue size too small, suggest reduce #CPUs\n");
-+		return -ENXIO;
-+	}
-+
-+	/*
-+	 * When finding max_cmd_per_batch, deduct 1 entry per batch to take
-+	 * account of a CMD_SYNC being issued also.
-+	 */
-+	q->llq.max_cmd_per_batch = min((entries_for_prod / cpus) - 1,
-+				       (u32)CMDQ_BATCH_ENTRIES);
-+
-+	return 0;
-+}
-+
- static void arm_smmu_cmdq_free_bitmap(void *data)
- {
- 	unsigned long *bitmap = data;
-@@ -3210,9 +3249,8 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
- 	int ret;
- 
- 	/* cmdq */
--	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
--				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS,
--				      "cmdq");
-+	ret = arm_smmu_init_cmd_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-+				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS);
- 	if (ret)
- 		return ret;
- 
+For my NVMe test with 3x NVMe SSDs, I'm getting a ~24% throughput
+increase:
+Before: 1250K IOPs
+After: 1550K IOPs
+
+I also have a test harness to check the rate of DMA map+unmaps we can
+achieve:
+
+CPU count	8	16	32	64
+Before:		282K	115K	36K	11K
+After:		302K	193K	80K	30K
+
+(unit is map+unmaps per CPU per second)
+
+[0] https://lore.kernel.org/linux-iommu/B926444035E5E2439431908E3842AFD24B86DB@DGGEMI525-MBS.china.huawei.com/T/#ma02e301c38c3e94b7725e685757c27e39c7cbde3
+
+Differences to v1:
+- Simplify by dropping patch to always issue a CMD_SYNC
+- Use 64b atomic add, keeping prod in a separate 32b field
+
+John Garry (2):
+  iommu/arm-smmu-v3: Calculate max commands per batch
+  iommu/arm-smmu-v3: Remove cmpxchg() in arm_smmu_cmdq_issue_cmdlist()
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 166 ++++++++++++++------
+ 1 file changed, 114 insertions(+), 52 deletions(-)
+
 -- 
 2.26.2
 
