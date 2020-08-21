@@ -2,93 +2,97 @@ Return-Path: <SRS0=6E3Y=B7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31985C433E1
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:09:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2594AC433E3
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:16:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2A56207BB
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:09:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E9AED20724
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 13:16:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="STB2EhqU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2A56207BB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EYBouRuv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9AED20724
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9580C20428;
-	Fri, 21 Aug 2020 13:09:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B65A485FB9;
+	Fri, 21 Aug 2020 13:16:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HXLofNzsEqh0; Fri, 21 Aug 2020 13:09:53 +0000 (UTC)
+	with ESMTP id jcw9SYXP0RmX; Fri, 21 Aug 2020 13:16:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7FF2A2042D;
-	Fri, 21 Aug 2020 13:09:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EC92A864B3;
+	Fri, 21 Aug 2020 13:16:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 69961C07FF;
-	Fri, 21 Aug 2020 13:09:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58CF2C0051
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:09:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C6F2BC0893;
+	Fri, 21 Aug 2020 13:16:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2E5CC0889
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:16:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3B8AE2043C
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:09:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id ACA8E88614
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:16:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2tlc-rCmhZMR for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 13:09:49 +0000 (UTC)
+ with ESMTP id ruwKkivIpY0M for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 13:16:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by silver.osuosl.org (Postfix) with ESMTPS id 06F7E20428
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1598015387;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=Od+bO6wwGHZOpfyUe8CiRlpyX1hZ1GD4+OWd3dAX8YA=;
- b=STB2EhqUyy49UsAXTTFI1HiJZRY1NW+uJWaeMn2QGu+w9LW8TBYTfmPLLha1JUsqcWdRpB
- +H9djbOQgOA8nAcvuI9yLake6AJAWqrUhaWVhCzQwmbazFlGaDYRDs/zKW+i2OACFFZZpp
- dAeL/l+82+ndepKHZ0YMU9UrqPWBT5E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-350-mXq3zwf3MwmX4df6JT2Brg-1; Fri, 21 Aug 2020 09:09:44 -0400
-X-MC-Unique: mXq3zwf3MwmX4df6JT2Brg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E550B18BA282;
- Fri, 21 Aug 2020 13:09:41 +0000 (UTC)
-Received: from [10.36.113.93] (ovpn-113-93.ams2.redhat.com [10.36.113.93])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 8D35877DC2;
- Fri, 21 Aug 2020 13:09:31 +0000 (UTC)
-Subject: Re: [PATCH v6 08/15] iommu: Pass domain to sva_unbind_gpasid()
-To: Alex Williamson <alex.williamson@redhat.com>, Liu Yi L <yi.l.liu@intel.com>
-References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
- <1595917664-33276-9-git-send-email-yi.l.liu@intel.com>
- <20200820150619.5dc1ec7a@x1.home>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <7db3f15c-09e3-6a52-352a-c9a499895922@redhat.com>
-Date: Fri, 21 Aug 2020 15:09:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
+ [209.85.218.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 3B6E388198
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 13:16:09 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id si26so2200350ejb.12
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 06:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=Y/asOEQ7I5lK9SCfOrPxX9Ij7ThPhJXGbgb9Vg60QdU=;
+ b=EYBouRuvx7C7M1g4+Ts8UzFEMdS8ULDwuOJEs1eOkgISO70lUT/4Bvu/b1h1GvERCl
+ rKI7LPJD38AhqdjZ/lSpOArHlbNCvqLuAHOWkeu+OWoua5ljvoIl8M1kqX/r2VxoBq//
+ SOrSe/51+7gXMFValJMarQpshl2SpMbFVAkyEvvD59ixQdldOvOWlq7nETtEXla4XPyN
+ AOPoYkrkNhg9tMEXekpD3atg/nxtUf5yS1cQz2fuBJq10wwAV6IE3DZy7UnG8q5Z3oJ/
+ 3TWv1ugObjE4oa7EDAXgTv8M7m8QyMKkjXIbXeNK8e3KaTGVDHRHUbJcfn9TlVH9F4AV
+ YDEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=Y/asOEQ7I5lK9SCfOrPxX9Ij7ThPhJXGbgb9Vg60QdU=;
+ b=q19QMuROBuiFeqHF51uDYZmjzFxA12Zs+dgpoxUxq35LybL56u28yk9JGuaUfgHHoN
+ yeTqDD1D9qEwXskuUEewfwLaPz67scwXSxFalQ3eq9wcDdEfiBcMNDXczTNKFTZNmLsK
+ mJDv4AaVzb+ibnefSvs/Spg/aFINDzU3p5bHi+MFrVdXXHCuZhrFf+EAmt+CuI8oMrzn
+ 0YHNB6LeswSvMpCQTDc+EWcK8I4WyR02rDWNB+pRoromrmuwhzuFrP4olGEZaJRKZ/AO
+ T7LrZBbiuhSnHpghKEoZKM1vtbcX7DEPrGglaE2//aLu7ZhbLZoIlahWY03KRGI1VcMk
+ b6QQ==
+X-Gm-Message-State: AOAM531owcl6Tr9VZWYXgzYYKx3OAJFxmsGrBYGmFqXTvvXlDOFeLXBl
+ JsQAG3qBnItW4IPCqL31UXeE1+S2uPF20abv
+X-Google-Smtp-Source: ABdhPJwOy/5jkRbdPAXN7lLeuSinZ0dNBsa/xxJXp4vx3NLHlrjucaVJpRbbUOOksUhqw9JvR5D63A==
+X-Received: by 2002:a17:906:dbd2:: with SMTP id
+ yc18mr2371358ejb.394.1598015767083; 
+ Fri, 21 Aug 2020 06:16:07 -0700 (PDT)
+Received: from localhost.localdomain
+ ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id v4sm1299748eje.39.2020.08.21.06.16.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 21 Aug 2020 06:16:06 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: iommu@lists.linux-foundation.org,
+ virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org,
+ linux-pci@vger.kernel.org
+Subject: [PATCH v3 0/6] Add virtio-iommu built-in topology
+Date: Fri, 21 Aug 2020 15:15:34 +0200
+Message-Id: <20200821131540.2801801-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20200820150619.5dc1ec7a@x1.home>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
- kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- yi.y.sun@intel.com, hao.wu@intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
+ mst@redhat.com, sebastien.boeuf@intel.com, bhelgaas@google.com,
+ jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,134 +110,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+Add a topology description to the virtio-iommu driver and enable x86
+platforms.
 
-On 8/20/20 11:06 PM, Alex Williamson wrote:
-> On Mon, 27 Jul 2020 23:27:37 -0700
-> Liu Yi L <yi.l.liu@intel.com> wrote:
-> 
->> From: Yi Sun <yi.y.sun@intel.com>
->>
->> Current interface is good enough for SVA virtualization on an assigned
->> physical PCI device, but when it comes to mediated devices, a physical
->> device may attached with multiple aux-domains. Also, for guest unbind,
-> 
-> s/may/may be/
-> 
->> the PASID to be unbind should be allocated to the VM. This check requires
->> to know the ioasid_set which is associated with the domain.
->>
->> So this interface needs to pass in domain info. Then the iommu driver is
->> able to know which domain will be used for the 2nd stage translation of
->> the nesting mode and also be able to do PASID ownership check. This patch
->> passes @domain per the above reason. Also, the prototype of &pasid is
->> changed frnt" to "u32" as the below link.
-> 
-> s/frnt"/from an "int"/
->  
->> https://lore.kernel.org/kvm/27ac7880-bdd3-2891-139e-b4a7cd18420b@redhat.com/
-> 
-> This is really confusing, the link is to Eric's comment asking that the
-> conversion from (at the time) int to ioasid_t be included in the commit
-> log.  The text here implies that it's pointing to some sort of
-> justification for the change, which it isn't.  It just notes that it
-> happened, not why it happened, with a mostly irrelevant link.
-> 
->> Cc: Kevin Tian <kevin.tian@intel.com>
->> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Alex Williamson <alex.williamson@redhat.com>
->> Cc: Eric Auger <eric.auger@redhat.com>
->> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Eric Auger <eric.auger@redhat.com>
->> Signed-off-by: Yi Sun <yi.y.sun@intel.com>
->> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->> ---
->> v5 -> v6:
->> *) use "u32" prototype for @pasid.
->> *) add review-by from Eric Auger.
-> 
-> I'd probably hold off on adding Eric's R-b given the additional change
-> in this version FWIW.  Thanks,
+Since [v2] we have made some progress on adding ACPI support for
+virtio-iommu, which is the preferred boot method on x86. It will be a
+new vendor-agnostic table describing para-virtual topologies in a
+minimal format. However some platforms don't use either ACPI or DT for
+booting (for example microvm), and will need the alternative topology
+description method proposed here. In addition, since the process to get
+a new ACPI table will take a long time, this provides a boot method even
+to ACPI-based platforms, if only temporarily for testing and
+development.
 
-Yep I did not notice that change given the R-b was applied ;-)
+v3:
+* Add patch 1 that moves virtio-iommu to a subfolder.
+* Split the rest:
+  * Patch 2 adds topology-helper.c, which will be shared with the ACPI
+    support.
+  * Patch 4 adds definitions.
+  * Patch 5 adds parser in topology.c.
+* Address other comments.
 
-Thanks
+Linux and QEMU patches available at:
+https://jpbrucker.net/git/linux virtio-iommu/devel
+https://jpbrucker.net/git/qemu virtio-iommu/devel
 
-Eric
-> 
-> Alex
->  
->> v2 -> v3:
->> *) pass in domain info only
->> *) use u32 for pasid instead of int type
->>
->> v1 -> v2:
->> *) added in v2.
->> ---
->>  drivers/iommu/intel/svm.c   | 3 ++-
->>  drivers/iommu/iommu.c       | 2 +-
->>  include/linux/intel-iommu.h | 3 ++-
->>  include/linux/iommu.h       | 3 ++-
->>  4 files changed, 7 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index c27d16a..c85b8d5 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -436,7 +436,8 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
->>  	return ret;
->>  }
->>  
->> -int intel_svm_unbind_gpasid(struct device *dev, int pasid)
->> +int intel_svm_unbind_gpasid(struct iommu_domain *domain,
->> +			    struct device *dev, u32 pasid)
->>  {
->>  	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
->>  	struct intel_svm_dev *sdev;
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 1ce2a61..bee79d7 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2145,7 +2145,7 @@ int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
->>  	if (unlikely(!domain->ops->sva_unbind_gpasid))
->>  		return -ENODEV;
->>  
->> -	return domain->ops->sva_unbind_gpasid(dev, data->hpasid);
->> +	return domain->ops->sva_unbind_gpasid(domain, dev, data->hpasid);
->>  }
->>  EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
->>  
->> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
->> index 0d0ab32..f98146b 100644
->> --- a/include/linux/intel-iommu.h
->> +++ b/include/linux/intel-iommu.h
->> @@ -738,7 +738,8 @@ extern int intel_svm_enable_prq(struct intel_iommu *iommu);
->>  extern int intel_svm_finish_prq(struct intel_iommu *iommu);
->>  int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
->>  			  struct iommu_gpasid_bind_data *data);
->> -int intel_svm_unbind_gpasid(struct device *dev, int pasid);
->> +int intel_svm_unbind_gpasid(struct iommu_domain *domain,
->> +			    struct device *dev, u32 pasid);
->>  struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm,
->>  				 void *drvdata);
->>  void intel_svm_unbind(struct iommu_sva *handle);
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index b1ff702..80467fc 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -303,7 +303,8 @@ struct iommu_ops {
->>  	int (*sva_bind_gpasid)(struct iommu_domain *domain,
->>  			struct device *dev, struct iommu_gpasid_bind_data *data);
->>  
->> -	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
->> +	int (*sva_unbind_gpasid)(struct iommu_domain *domain,
->> +				 struct device *dev, u32 pasid);
->>  
->>  	int (*def_domain_type)(struct device *dev);
->>  
-> 
+[spec] https://lists.oasis-open.org/archives/virtio-dev/202008/msg00067.html
+[v2] https://lore.kernel.org/linux-iommu/20200228172537.377327-1-jean-philippe@linaro.org/
+[v1] https://lore.kernel.org/linux-iommu/20200214160413.1475396-1-jean-philippe@linaro.org/
+[rfc] https://lore.kernel.org/linux-iommu/20191122105000.800410-1-jean-philippe@linaro.org/
+
+Jean-Philippe Brucker (6):
+  iommu/virtio: Move to drivers/iommu/virtio/
+  iommu/virtio: Add topology helpers
+  PCI: Add DMA configuration for virtual platforms
+  iommu/virtio: Add topology definitions
+  iommu/virtio: Support topology description in config space
+  iommu/virtio: Enable x86 support
+
+ drivers/iommu/Kconfig                     |  18 +-
+ drivers/iommu/Makefile                    |   3 +-
+ drivers/iommu/virtio/Makefile             |   4 +
+ drivers/iommu/virtio/topology-helpers.h   |  50 +++++
+ include/linux/virt_iommu.h                |  15 ++
+ include/uapi/linux/virtio_iommu.h         |  44 ++++
+ drivers/iommu/virtio/topology-helpers.c   | 196 ++++++++++++++++
+ drivers/iommu/virtio/topology.c           | 259 ++++++++++++++++++++++
+ drivers/iommu/{ => virtio}/virtio-iommu.c |   4 +
+ drivers/pci/pci-driver.c                  |   5 +
+ MAINTAINERS                               |   3 +-
+ 11 files changed, 597 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/iommu/virtio/Makefile
+ create mode 100644 drivers/iommu/virtio/topology-helpers.h
+ create mode 100644 include/linux/virt_iommu.h
+ create mode 100644 drivers/iommu/virtio/topology-helpers.c
+ create mode 100644 drivers/iommu/virtio/topology.c
+ rename drivers/iommu/{ => virtio}/virtio-iommu.c (99%)
+
+-- 
+2.28.0
 
 _______________________________________________
 iommu mailing list
