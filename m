@@ -2,97 +2,165 @@ Return-Path: <SRS0=6E3Y=B7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B432C433F4
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0892EC433DF
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:18:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4796F2075E
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C6ABD207BB
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:18:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hfuhL/7f";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vm7OTzxc"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4796F2075E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="HDHJ42Q/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6ABD207BB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 24C1E22F05;
-	Fri, 21 Aug 2020 02:17:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B2B5B885FF;
+	Fri, 21 Aug 2020 02:18:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nY8JJhUQzuAb; Fri, 21 Aug 2020 02:17:29 +0000 (UTC)
+	with ESMTP id LKQEOXpTZMGk; Fri, 21 Aug 2020 02:18:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C991C22D0D;
-	Fri, 21 Aug 2020 02:17:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A980F885F6;
+	Fri, 21 Aug 2020 02:18:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4081C0889;
-	Fri, 21 Aug 2020 02:17:29 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DAEE2C0051
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91B91C0889;
+	Fri, 21 Aug 2020 02:18:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21A46C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:18:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C7646886B3
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:26 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0F5DF885FB
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:18:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id V4-rnLws4eJP for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 02:17:25 +0000 (UTC)
+ with ESMTP id QCu8Nh7qruRa for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 02:18:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1E352886AA
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:25 +0000 (UTC)
-Message-Id: <20200821002948.864315814@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1597976243;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=t2NP7pVQXQ51g4UiBc17WkLPgfxzXUgtml1iOCs60Co=;
- b=hfuhL/7fph6qJyz7le4PFdDuEV6MgavC4eL9tY98pIvs0YVze1YpWy0KRD91j37VO5xh00
- tTfHk67g95+hQUTKU8KKSJA9eo2nfkCdUr6TNnpfLcGvt2wuEY9nmzSH6VO99xeXV0+A4+
- 3UjDpnDV9ZJztKDU7K04c6z+Rh36p1B0DxMcS/s4gAC3meHhAazcpz19IpHsV1rKXTUXlh
- F48/seVKLFST8w9pwF9LxUe+fNZV2bhNMA1EJOOHcS0s4CTtWwFjNzrfnnkfJhn0NvlpGT
- seVvAX6gLDDs+OR8IS0+3pMgXtOebMT5uXucoYewe42TFsA9VJ16SSbZ+2wV0g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1597976243;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=t2NP7pVQXQ51g4UiBc17WkLPgfxzXUgtml1iOCs60Co=;
- b=vm7OTzxc+ZgBvpRZzpZI8vCsQAhHhTud1cF5+49Ul2OutYT4sEg30INjxq8N+0un9/anLJ
- iwhMU1saq0+BRDAw==
-Date: Fri, 21 Aug 2020 02:25:00 +0200
-From: Thomas Gleixner <tglx@linutronix.de>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch RFC 36/38] platform-msi: Add device MSI infrastructure
-References: <20200821002424.119492231@linutronix.de>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A9EE3885F6
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:18:24 +0000 (UTC)
+IronPort-SDR: zm9hCxAuWCayGn1sPq6e6FOzO1Y93dY21bcbbR8BtGOAz2ZAxGiP4XWVbFQGUb0uIdbC1x174K
+ uaW/9RMfJpcw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9719"; a="143241123"
+X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; d="scan'208";a="143241123"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Aug 2020 19:18:24 -0700
+IronPort-SDR: 9TSqtrqdvXJkh6myrPu8FsmeTWuLEsJLKUr0U/ZoFzhe9HQNlrcgRcT+xd4Aagl6rVZyC07rz+
+ phKwKdnrFMdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,335,1592895600"; d="scan'208";a="327628200"
+Received: from fmsmsx601-2.cps.intel.com (HELO fmsmsx601.amr.corp.intel.com)
+ ([10.18.84.211])
+ by orsmga008.jf.intel.com with ESMTP; 20 Aug 2020 19:18:23 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 20 Aug 2020 19:18:23 -0700
+Received: from fmsmsx156.amr.corp.intel.com (10.18.116.74) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 20 Aug 2020 19:18:23 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx156.amr.corp.intel.com (10.18.116.74) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 20 Aug 2020 19:18:22 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.174)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 20 Aug 2020 19:18:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tr0bLISkKbP62vW4961DiFGtUIs7EW7fvBWGF7Ks05MpKuUtGURyibBSp9vpFztp44+qwQ0qEkMz9DqUYwkHe3aQPhX3SzKbrTEJIuOe4aCLevTuVMIHa2PLvFfjPm5erFDO0u/FJ5po2+Ya0aef3F2nupL3oDNV6GCMEjTIWwOsocXO2UM2YxCVWwcoe/k312FttRXtSeO7cBCeJvaCJ5UhTCfcv97y6dA/wlHlVgoRnyxx57RxuNbKXV3KAvzD7k7txmopcpKvQS5tY64oW5uvslozDugTWRtGZkKQ+EUi/IVs+UI04YtPno48Q4qSNge1dPzejUr92OYi2twv9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M+Kg4Og21M4VFMmNisah5+PTegz+58x53VlDzTN8sAE=;
+ b=QFD/5nS4zWdzIFceJqd5TfOqeffArsUTY9Z92JO+ZxFJeuSqmtsgXAnq6ZzEyk2fQgs5kCUxtqrp0AVwyR3Nd/1J6941rm+bcuVyb6sXw7fGfP/3t07NhLboc8sSDVhjiSoQ3UVs74VdJuXNknyBbaftqcXl9oEaGBW3M8S1LEvOcmzOz4MaZdU1qB01BulLRZUfV/1jXVXiwyNacTeg2+WuzwqKOrHcJMjwYbQmLxDksmui8Ovcl8KNaFRszk1QIXr/YHQGx7u9SwugL+R/pKpCJesGImnwTv7OdQqj7qwO7eYrQBFXx0HIJ1a+36Oi0w5k+kHbDQXuwIQmorcxog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M+Kg4Og21M4VFMmNisah5+PTegz+58x53VlDzTN8sAE=;
+ b=HDHJ42Q/j+5gwsZ0UTl0fsyoBLVR35koqardcniQLK8/pFpVYXAi6QQRw2FZ4Q9ylVWORnWIFHJinlz5znEbb8fEzea3NLNfW2RpevOGIBhH8PwBVj20Cstxah0WIuh7VOj8Dx//kYH67s9xvsZ16068xZp8wKMmg6YY5mpRVaI=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM5PR1101MB2186.namprd11.prod.outlook.com (2603:10b6:4:52::12) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3305.24; Fri, 21 Aug 2020 02:18:21 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3305.024; Fri, 21 Aug
+ 2020 02:18:21 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v6 07/15] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
+ (alloc/free)
+Thread-Topic: [PATCH v6 07/15] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
+ (alloc/free)
+Thread-Index: AQHWZKdG9Cu5qyN/2EiULCi4Ic3bNKlBngmAgAA3G1CAABwUAIAABysA
+Date: Fri, 21 Aug 2020 02:18:21 +0000
+Message-ID: <DM5PR11MB143548253F67105A849E4526C35B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1595917664-33276-1-git-send-email-yi.l.liu@intel.com>
+ <1595917664-33276-8-git-send-email-yi.l.liu@intel.com>
+ <20200820145127.61ed8727@x1.home>
+ <DM5PR11MB1435B790F169ACDFFEA03D68C35B0@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <20200820194910.583a3809@x1.home>
+In-Reply-To: <20200820194910.583a3809@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.210]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a7d0844f-961a-4246-20a2-08d8457879c7
+x-ms-traffictypediagnostic: DM5PR1101MB2186:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR1101MB21865F0615D8EDF021CF987AC35B0@DM5PR1101MB2186.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2NtZilft+42/hVlhA3oLEdg/zImVSLC/mljmRA7taNjbP/AYLqXtaT1zuXJ6eOi8jJ/ZxPwetJviUiSdLAgi816wnec+nWRAXHjKjaJGDV6HGo4ug5e2aXKRUTbMbE2NLv4N78x+e51WcjDPY97aQN1fCV9ZfKFH7u9Xs4bK+kr8nIOaQXnDTs/TBKk/VC2MHbxtE3793ZIvRnUZPRFG6GY4qA9FShXfnHl6SJaYdF5pJFPkF9ysJ6UMT0TOTzKiOp+FaYhfgxAyyFR3mP357eCA0RDzxq3ZwQJ9KKy2OZjiiRiqldqoQyBXm4bHv+IYWoTpww5nYZUBornHb3n9LdCsFZ6CHLBolKLaHsn01BZnrfqamOK5fPMZYfwwpnIBEKWmZq1r2h/B3z+HP+RK4A==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(7416002)(76116006)(478600001)(66946007)(33656002)(2906002)(83380400001)(966005)(55016002)(8676002)(316002)(30864003)(52536014)(6916009)(8936002)(86362001)(66556008)(186003)(66476007)(7696005)(64756008)(6506007)(5660300002)(26005)(9686003)(71200400001)(54906003)(4326008)(66446008);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: 2R3spSATm4uiv/PzOEWmC7//Lkz3IpMf0pGsB090VgRmqTTor1a7jDbxqsU1w3XOmmJdiTAO9zrLd40pCc2Dgup2CJV2sd0t1PuU0O+Cz56KBDPXqapovP+4FDaZiavlITWtM3EDjPGJnTBVoaWVXRv7sXMmeF/UvUJXZ6iQyoti1rwFEOTrXjkqoOSQp4hfEShSBWEvYN56kDJXGzzKd1U5Aqo8Xu1v0wsoLGhzx/ELxi+czrbDQS91zl/XM1aPiNzf/a24OiDDR+/GGxUjia6feDY2nuFHGwzwHemvoPJ8uySncFtd/vnwXb5NbRpkrDkOW+VCgJ1O+MljK+toD2lzniahPT5S+Tmc6sZUzmNzKwdGPED9t2rI7ve6Tr2XAkC/HPGyXarzZ/t/OxOUvXylWCzvcHCiEow2Ep+BGrCAAKiLkIeydC8Rv5elJOinl72Nh8CsHe34/KP0zmYfn7Qu7i3fe/v6nc5yniOIKROctYgRcpbHeRpDpNtN5kJ2SmgG721usAEoPGVfqfCBJna5QsTOnZ2MccQPS5aoCyucMAf5yCmS7cNxAkrxNaikpsd9WeSAchBaj394NmpR0ACLtQm+PwSpcBoaMrmKkJv4A/zp4vnonn2BTtJCyQyY/W45uYongNl3OZp3OjEnqQ==
 MIME-Version: 1.0
-Content-Disposition: inline;
- filename="platform-msi--Add-device-MSI-infrastructure.patch"
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- "Rafael J. Wysocki" <rafael@kernel.org>, linux-pci@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org,
- Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jonathan Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7d0844f-961a-4246-20a2-08d8457879c7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2020 02:18:21.2141 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yAgRwHRkVkUAqbwSnLGytkP+daVjeG77+HrUY1CEhgWjlfv1rXVe0L88MuEs1neNllC9DyJUayZ2NuVWbJxFog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1101MB2186
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,236 +178,336 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add device specific MSI domain infrastructure for devices which have their
-own resource management and interrupt chip. These devices are not related
-to PCI and contrary to platform MSI they do not share a common resource and
-interrupt chip. They provide their own domain specific resource management
-and interrupt chip.
+Hi Alex,
 
-This utilizes the new alloc/free override in a non evil way which avoids
-having yet another set of specialized alloc/free functions. Just using
-msi_domain_alloc/free_irqs() is sufficient
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Friday, August 21, 2020 9:49 AM
+> 
+> On Fri, 21 Aug 2020 00:37:19 +0000
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> 
+> > Hi Alex,
+> >
+> > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > Sent: Friday, August 21, 2020 4:51 AM
+> > >
+> > > On Mon, 27 Jul 2020 23:27:36 -0700
+> > > Liu Yi L <yi.l.liu@intel.com> wrote:
+> > >
+> > > > This patch allows userspace to request PASID allocation/free, e.g.
+> > > > when serving the request from the guest.
+> > > >
+> > > > PASIDs that are not freed by userspace are automatically freed when
+> > > > the IOASID set is destroyed when process exits.
+> > > >
+> > > > Cc: Kevin Tian <kevin.tian@intel.com>
+> > > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > > > Cc: Eric Auger <eric.auger@redhat.com>
+> > > > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > > Cc: Joerg Roedel <joro@8bytes.org>
+> > > > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > > > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > ---
+> > > > v5 -> v6:
+> > > > *) address comments from Eric against v5. remove the alloc/free helper.
+> > > >
+> > > > v4 -> v5:
+> > > > *) address comments from Eric Auger.
+> > > > *) the comments for the PASID_FREE request is addressed in patch 5/15 of
+> > > >    this series.
+> > > >
+> > > > v3 -> v4:
+> > > > *) address comments from v3, except the below comment against the range
+> > > >    of PASID_FREE request. needs more help on it.
+> > > >     "> +if (req.range.min > req.range.max)
+> > > >
+> > > >      Is it exploitable that a user can spin the kernel for a long time in
+> > > >      the case of a free by calling this with [0, MAX_UINT] regardless of
+> > > >      their actual allocations?"
+> > > >
+> > > > https://lore.kernel.org/linux-iommu/20200702151832.048b44d1@x1.home/
+> > > >
+> > > > v1 -> v2:
+> > > > *) move the vfio_mm related code to be a seprate module
+> > > > *) use a single structure for alloc/free, could support a range of
+> > > > PASIDs
+> > > > *) fetch vfio_mm at group_attach time instead of at iommu driver open
+> > > > time
+> > > > ---
+> > > >  drivers/vfio/Kconfig            |  1 +
+> > > >  drivers/vfio/vfio_iommu_type1.c | 69
+> > > +++++++++++++++++++++++++++++++++++++++++
+> > > >  drivers/vfio/vfio_pasid.c       | 10 ++++++
+> > > >  include/linux/vfio.h            |  6 ++++
+> > > >  include/uapi/linux/vfio.h       | 37 ++++++++++++++++++++++
+> > > >  5 files changed, 123 insertions(+)
+> > > >
+> > > > diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig index
+> > > > 3d8a108..95d90c6 100644
+> > > > --- a/drivers/vfio/Kconfig
+> > > > +++ b/drivers/vfio/Kconfig
+> > > > @@ -2,6 +2,7 @@
+> > > >  config VFIO_IOMMU_TYPE1
+> > > >  	tristate
+> > > >  	depends on VFIO
+> > > > +	select VFIO_PASID if (X86)
+> > > >  	default n
+> > > >
+> > > >  config VFIO_IOMMU_SPAPR_TCE
+> > > > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > > > b/drivers/vfio/vfio_iommu_type1.c index 18ff0c3..ea89c7c 100644
+> > > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > > @@ -76,6 +76,7 @@ struct vfio_iommu {
+> > > >  	bool				dirty_page_tracking;
+> > > >  	bool				pinned_page_dirty_scope;
+> > > >  	struct iommu_nesting_info	*nesting_info;
+> > > > +	struct vfio_mm			*vmm;
+> > > >  };
+> > > >
+> > > >  struct vfio_domain {
+> > > > @@ -1937,6 +1938,11 @@ static void vfio_iommu_iova_insert_copy(struct
+> > > > vfio_iommu *iommu,
+> > > >
+> > > >  static void vfio_iommu_release_nesting_info(struct vfio_iommu *iommu)
+> > > > {
+> > > > +	if (iommu->vmm) {
+> > > > +		vfio_mm_put(iommu->vmm);
+> > > > +		iommu->vmm = NULL;
+> > > > +	}
+> > > > +
+> > > >  	kfree(iommu->nesting_info);
+> > > >  	iommu->nesting_info = NULL;
+> > > >  }
+> > > > @@ -2071,6 +2077,26 @@ static int vfio_iommu_type1_attach_group(void
+> > > *iommu_data,
+> > > >  					    iommu->nesting_info);
+> > > >  		if (ret)
+> > > >  			goto out_detach;
+> > > > +
+> > > > +		if (iommu->nesting_info->features &
+> > > > +					IOMMU_NESTING_FEAT_SYSWIDE_PASID)
+> > > {
+> > > > +			struct vfio_mm *vmm;
+> > > > +			int sid;
+> > > > +
+> > > > +			vmm = vfio_mm_get_from_task(current);
+> > > > +			if (IS_ERR(vmm)) {
+> > > > +				ret = PTR_ERR(vmm);
+> > > > +				goto out_detach;
+> > > > +			}
+> > > > +			iommu->vmm = vmm;
+> > > > +
+> > > > +			sid = vfio_mm_ioasid_sid(vmm);
+> > > > +			ret = iommu_domain_set_attr(domain->domain,
+> > > > +						    DOMAIN_ATTR_IOASID_SID,
+> > > > +						    &sid);
+> > > > +			if (ret)
+> > > > +				goto out_detach;
+> > > > +		}
+> > > >  	}
+> > > >
+> > > >  	/* Get aperture info */
+> > > > @@ -2859,6 +2885,47 @@ static int vfio_iommu_type1_dirty_pages(struct
+> > > vfio_iommu *iommu,
+> > > >  	return -EINVAL;
+> > > >  }
+> > > >
+> > > > +static int vfio_iommu_type1_pasid_request(struct vfio_iommu *iommu,
+> > > > +					  unsigned long arg)
+> > > > +{
+> > > > +	struct vfio_iommu_type1_pasid_request req;
+> > > > +	unsigned long minsz;
+> > > > +	int ret;
+> > > > +
+> > > > +	minsz = offsetofend(struct vfio_iommu_type1_pasid_request, range);
+> > > > +
+> > > > +	if (copy_from_user(&req, (void __user *)arg, minsz))
+> > > > +		return -EFAULT;
+> > > > +
+> > > > +	if (req.argsz < minsz || (req.flags & ~VFIO_PASID_REQUEST_MASK))
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	if (req.range.min > req.range.max)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	mutex_lock(&iommu->lock);
+> > > > +	if (!iommu->vmm) {
+> > > > +		mutex_unlock(&iommu->lock);
+> > > > +		return -EOPNOTSUPP;
+> > > > +	}
+> > > > +
+> > > > +	switch (req.flags & VFIO_PASID_REQUEST_MASK) {
+> > > > +	case VFIO_IOMMU_FLAG_ALLOC_PASID:
+> > > > +		ret = vfio_pasid_alloc(iommu->vmm, req.range.min,
+> > > > +				       req.range.max);
+> > > > +		break;
+> > > > +	case VFIO_IOMMU_FLAG_FREE_PASID:
+> > > > +		vfio_pasid_free_range(iommu->vmm, req.range.min,
+> > > > +				      req.range.max);
+> > > > +		ret = 0;
+> > > > +		break;
+> > > > +	default:
+> > > > +		ret = -EINVAL;
+> > > > +	}
+> > > > +	mutex_unlock(&iommu->lock);
+> > > > +	return ret;
+> > > > +}
+> > > > +
+> > > >  static long vfio_iommu_type1_ioctl(void *iommu_data,
+> > > >  				   unsigned int cmd, unsigned long arg)  { @@ -
+> > > 2875,6 +2942,8 @@
+> > > > static long vfio_iommu_type1_ioctl(void *iommu_data,
+> > > >  		return vfio_iommu_type1_unmap_dma(iommu, arg);
+> > > >  	case VFIO_IOMMU_DIRTY_PAGES:
+> > > >  		return vfio_iommu_type1_dirty_pages(iommu, arg);
+> > > > +	case VFIO_IOMMU_PASID_REQUEST:
+> > > > +		return vfio_iommu_type1_pasid_request(iommu, arg);
+> > > >  	default:
+> > > >  		return -ENOTTY;
+> > > >  	}
+> > > > diff --git a/drivers/vfio/vfio_pasid.c b/drivers/vfio/vfio_pasid.c
+> > > > index befcf29..8d0317f 100644
+> > > > --- a/drivers/vfio/vfio_pasid.c
+> > > > +++ b/drivers/vfio/vfio_pasid.c
+> > > > @@ -61,6 +61,7 @@ void vfio_mm_put(struct vfio_mm *vmm)  {
+> > > >  	kref_put_mutex(&vmm->kref, vfio_mm_release, &vfio_mm_lock);  }
+> > > > +EXPORT_SYMBOL_GPL(vfio_mm_put);
+> > > >
+> > > >  static void vfio_mm_get(struct vfio_mm *vmm)
+> > > >  {
+> > > > @@ -114,6 +115,13 @@ struct vfio_mm *vfio_mm_get_from_task(struct
+> > > task_struct *task)
+> > > >  	mmput(mm);
+> > > >  	return vmm;
+> > > >  }
+> > > > +EXPORT_SYMBOL_GPL(vfio_mm_get_from_task);
+> > > > +
+> > > > +int vfio_mm_ioasid_sid(struct vfio_mm *vmm)
+> > > > +{
+> > > > +	return vmm->ioasid_sid;
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(vfio_mm_ioasid_sid);
+> > > >
+> > > >  /*
+> > > >   * Find PASID within @min and @max
+> > > > @@ -202,6 +210,7 @@ int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int
+> max)
+> > > >
+> > > >  	return pasid;
+> > > >  }
+> > > > +EXPORT_SYMBOL_GPL(vfio_pasid_alloc);
+> > > >
+> > > >  void vfio_pasid_free_range(struct vfio_mm *vmm,
+> > > >  			   ioasid_t min, ioasid_t max)
+> > > > @@ -218,6 +227,7 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
+> > > >  		vfio_remove_pasid(vmm, vid);
+> > > >  	mutex_unlock(&vmm->pasid_lock);
+> > > >  }
+> > > > +EXPORT_SYMBOL_GPL(vfio_pasid_free_range);
+> > > >
+> > > >  static int __init vfio_pasid_init(void)
+> > > >  {
+> > > > diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+> > > > index 31472a9..a355d01 100644
+> > > > --- a/include/linux/vfio.h
+> > > > +++ b/include/linux/vfio.h
+> > > > @@ -101,6 +101,7 @@ struct vfio_mm;
+> > > >  #if IS_ENABLED(CONFIG_VFIO_PASID)
+> > > >  extern struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task);
+> > > >  extern void vfio_mm_put(struct vfio_mm *vmm);
+> > > > +extern int vfio_mm_ioasid_sid(struct vfio_mm *vmm);
+> > > >  extern int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max);
+> > > >  extern void vfio_pasid_free_range(struct vfio_mm *vmm,
+> > > >  				  ioasid_t min, ioasid_t max);
+> > > > @@ -114,6 +115,11 @@ static inline void vfio_mm_put(struct vfio_mm *vmm)
+> > > >  {
+> > > >  }
+> > > >
+> > > > +static inline int vfio_mm_ioasid_sid(struct vfio_mm *vmm)
+> > > > +{
+> > > > +	return -ENOTTY;
+> > > > +}
+> > > > +
+> > > >  static inline int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max)
+> > > >  {
+> > > >  	return -ENOTTY;
+> > > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > > > index 0cf3d6d..6d79557 100644
+> > > > --- a/include/uapi/linux/vfio.h
+> > > > +++ b/include/uapi/linux/vfio.h
+> > > > @@ -1172,6 +1172,43 @@ struct vfio_iommu_type1_dirty_bitmap_get {
+> > > >
+> > > >  #define VFIO_IOMMU_DIRTY_PAGES             _IO(VFIO_TYPE, VFIO_BASE + 17)
+> > > >
+> > > > +/**
+> > > > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 18,
+> > > > + *				struct vfio_iommu_type1_pasid_request)
+> > > > + *
+> > > > + * PASID (Processor Address Space ID) is a PCIe concept for tagging
+> > > > + * address spaces in DMA requests. When system-wide PASID allocation
+> > > > + * is required by the underlying iommu driver (e.g. Intel VT-d), this
+> > > > + * provides an interface for userspace to request pasid alloc/free
+> > > > + * for its assigned devices. Userspace should check the availability
+> > > > + * of this API by checking VFIO_IOMMU_TYPE1_INFO_CAP_NESTING through
+> > > > + * VFIO_IOMMU_GET_INFO.
+> > > > + *
+> > > > + * @flags=VFIO_IOMMU_FLAG_ALLOC_PASID, allocate a single PASID within
+> > > @range.
+> > > > + * @flags=VFIO_IOMMU_FLAG_FREE_PASID, free the PASIDs within @range.
+> > > > + * @range is [min, max], which means both @min and @max are inclusive.
+> > > > + * ALLOC_PASID and FREE_PASID are mutually exclusive.
+> > > > + *
+> > > > + * returns: allocated PASID value on success, -errno on failure for
+> > > > + *	     ALLOC_PASID;
+> > > > + *	     0 for FREE_PASID operation;
+> > > > + */
+> > > > +struct vfio_iommu_type1_pasid_request {
+> > > > +	__u32	argsz;
+> > > > +#define VFIO_IOMMU_FLAG_ALLOC_PASID	(1 << 0)
+> > > > +#define VFIO_IOMMU_FLAG_FREE_PASID	(1 << 1)
+> > > > +	__u32	flags;
+> > > > +	struct {
+> > > > +		__u32	min;
+> > > > +		__u32	max;
+> > > > +	} range;
+> > > > +};
+> > >
+> > >
+> > > IOCTL(2)                   Linux Programmer's Manual                  IOCTL(2)
+> > >
+> > > NAME
+> > >        ioctl - control device
+> > >
+> > > SYNOPSIS
+> > >        #include <sys/ioctl.h>
+> > >
+> > >        int ioctl(int fd, unsigned long request, ...);
+> > >
+> > >
+> > > ioctl(2) returns a signed int, how can it support returning a __u32
+> > > pasid and -errno?  Thanks,
+> >
+> > yeah, pasid is 20 bits today per PCI spec, so a valid pasid won't use
+> > full 32 bits, so I used it. perhaps I need to add a field in the data
+> > struct to return allocated pasid. that may be safer. do you think it
+> > works?
+> 
+> AIUI, the pasid is defined as 20 bits, this isn't simply an
+> implementation issue, right?  So perhaps it's ok as is and just needs
+> some supplemental comments and checking to verify that the desired
+> pasid range is valid.  Thanks,
 
-While initially it was suggested and tried to piggyback device MSI on
-platform MSI, the better variant is to reimplement platform MSI on top of
-device MSI.
+yep. may add some comments. if VFIO ensures the desired pasid range
+is valid, then the allocated pasid should be valid all the same. :-)
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
----
- drivers/base/platform-msi.c |  129 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/irqdomain.h   |    1 
- include/linux/msi.h         |   24 ++++++++
- kernel/irq/Kconfig          |    4 +
- 4 files changed, 158 insertions(+)
+Regards,
+Yi Liu
 
---- a/drivers/base/platform-msi.c
-+++ b/drivers/base/platform-msi.c
-@@ -412,3 +412,132 @@ int platform_msi_domain_alloc(struct irq
- 
- 	return err;
- }
-+
-+#ifdef CONFIG_DEVICE_MSI
-+/*
-+ * Device specific MSI domain infrastructure for devices which have their
-+ * own resource management and interrupt chip. These devices are not
-+ * related to PCI and contrary to platform MSI they do not share a common
-+ * resource and interrupt chip. They provide their own domain specific
-+ * resource management and interrupt chip.
-+ */
-+
-+static void device_msi_free_msi_entries(struct device *dev)
-+{
-+	struct list_head *msi_list = dev_to_msi_list(dev);
-+	struct msi_desc *entry, *tmp;
-+
-+	list_for_each_entry_safe(entry, tmp, msi_list, list) {
-+		list_del(&entry->list);
-+		free_msi_entry(entry);
-+	}
-+}
-+
-+/**
-+ * device_msi_free_irqs - Free MSI interrupts assigned to  a device
-+ * @dev:	Pointer to the device
-+ *
-+ * Frees the interrupt and the MSI descriptors.
-+ */
-+static void device_msi_free_irqs(struct irq_domain *domain, struct device *dev)
-+{
-+	__msi_domain_free_irqs(domain, dev);
-+	device_msi_free_msi_entries(dev);
-+}
-+
-+/**
-+ * device_msi_alloc_irqs - Allocate MSI interrupts for a device
-+ * @dev:	Pointer to the device
-+ * @nvec:	Number of vectors
-+ *
-+ * Allocates the required number of MSI descriptors and the corresponding
-+ * interrupt descriptors.
-+ */
-+static int device_msi_alloc_irqs(struct irq_domain *domain, struct device *dev, int nvec)
-+{
-+	int i, ret = -ENOMEM;
-+
-+	for (i = 0; i < nvec; i++) {
-+		struct msi_desc *entry = alloc_msi_entry(dev, 1, NULL);
-+
-+		if (!entry)
-+			goto fail;
-+		list_add_tail(&entry->list, dev_to_msi_list(dev));
-+	}
-+
-+	ret = __msi_domain_alloc_irqs(domain, dev, nvec);
-+	if (!ret)
-+		return 0;
-+fail:
-+	device_msi_free_msi_entries(dev);
-+	return ret;
-+}
-+
-+static void device_msi_update_dom_ops(struct msi_domain_info *info)
-+{
-+	if (!info->ops->domain_alloc_irqs)
-+		info->ops->domain_alloc_irqs = device_msi_alloc_irqs;
-+	if (!info->ops->domain_free_irqs)
-+		info->ops->domain_free_irqs = device_msi_free_irqs;
-+	if (!info->ops->msi_prepare)
-+		info->ops->msi_prepare = arch_msi_prepare;
-+}
-+
-+/**
-+ * device_msi_create_msi_irq_domain - Create an irq domain for devices
-+ * @fwnode:	Firmware node of the interrupt controller
-+ * @info:	MSI domain info to configure the new domain
-+ * @parent:	Parent domain
-+ */
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent)
-+{
-+	struct irq_domain *domain;
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
-+		platform_msi_update_chip_ops(info);
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_DOM_OPS)
-+		device_msi_update_dom_ops(info);
-+
-+	domain = msi_create_irq_domain(fn, info, parent);
-+	if (domain)
-+		irq_domain_update_bus_token(domain, DOMAIN_BUS_DEVICE_MSI);
-+	return domain;
-+}
-+
-+#ifdef CONFIG_PCI
-+#include <linux/pci.h>
-+
-+/**
-+ * pci_subdevice_msi_create_irq_domain - Create an irq domain for subdevices
-+ * @pdev:	Pointer to PCI device for which the subdevice domain is created
-+ * @info:	MSI domain info to configure the new domain
-+ */
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info)
-+{
-+	struct irq_domain *domain, *pdev_msi;
-+	struct fwnode_handle *fn;
-+
-+	/*
-+	 * Retrieve the parent domain of the underlying PCI device's MSI
-+	 * domain. This is going to be the parent of the new subdevice
-+	 * domain as well.
-+	 */
-+	pdev_msi = dev_get_msi_domain(&pdev->dev);
-+	if (!pdev_msi)
-+		return NULL;
-+
-+	fn = irq_domain_alloc_named_fwnode(dev_name(&pdev->dev));
-+	if (!fn)
-+		return NULL;
-+	domain = device_msi_create_irq_domain(fn, info, pdev_msi->parent);
-+	if (!domain)
-+		irq_domain_free_fwnode(fn);
-+	return domain;
-+}
-+EXPORT_SYMBOL_GPL(pci_subdevice_msi_create_irq_domain);
-+#endif /* CONFIG_PCI */
-+#endif /* CONFIG_DEVICE_MSI */
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -85,6 +85,7 @@ enum irq_domain_bus_token {
- 	DOMAIN_BUS_TI_SCI_INTA_MSI,
- 	DOMAIN_BUS_WAKEUP,
- 	DOMAIN_BUS_VMD_MSI,
-+	DOMAIN_BUS_DEVICE_MSI,
- };
- 
- /**
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -56,6 +56,18 @@ struct ti_sci_inta_msi_desc {
- };
- 
- /**
-+ * device_msi_desc - Device MSI specific MSI descriptor data
-+ * @priv:		Pointer to device specific private data
-+ * @priv_iomem:		Pointer to device specific private io memory
-+ * @hwirq:		The hardware irq number in the device domain
-+ */
-+struct device_msi_desc {
-+	void		*priv;
-+	void __iomem	*priv_iomem;
-+	u16		hwirq;
-+};
-+
-+/**
-  * struct msi_desc - Descriptor structure for MSI based interrupts
-  * @list:	List head for management
-  * @irq:	The base interrupt number
-@@ -127,6 +139,7 @@ struct msi_desc {
- 		struct platform_msi_desc platform;
- 		struct fsl_mc_msi_desc fsl_mc;
- 		struct ti_sci_inta_msi_desc inta;
-+		struct device_msi_desc device_msi;
- 	};
- };
- 
-@@ -412,6 +425,17 @@ void platform_msi_domain_free(struct irq
- void *platform_msi_get_host_data(struct irq_domain *domain);
- #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
- 
-+#ifdef CONFIG_DEVICE_MSI
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent);
-+
-+# ifdef CONFIG_PCI
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info);
-+# endif
-+#endif /* CONFIG_DEVICE_MSI */
-+
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
- void pci_msi_domain_write_msg(struct irq_data *irq_data, struct msi_msg *msg);
- struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -93,6 +93,10 @@ config GENERIC_MSI_IRQ_DOMAIN
- 	select IRQ_DOMAIN_HIERARCHY
- 	select GENERIC_MSI_IRQ
- 
-+config DEVICE_MSI
-+	bool
-+	select GENERIC_MSI_IRQ_DOMAIN
-+
- config IRQ_MSI_IOMMU
- 	bool
- 
+> Alex
 
 _______________________________________________
 iommu mailing list
