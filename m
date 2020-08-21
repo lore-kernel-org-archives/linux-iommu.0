@@ -2,80 +2,80 @@ Return-Path: <SRS0=6E3Y=B7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25446C433DF
-	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA94C433E1
+	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F00FC21744
+	by mail.kernel.org (Postfix) with ESMTPS id C2C762075E
 	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DQo5o0E2";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="BRfXUkkO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F00FC21744
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Ecc85/hW";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="I6boBPnH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2C762075E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E4C6F86CF6;
+	by silver.osuosl.org (Postfix) with ESMTP id AC99422D22;
 	Fri, 21 Aug 2020 02:17:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kGggpg8EuhOc; Fri, 21 Aug 2020 02:17:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6758386CE0;
-	Fri, 21 Aug 2020 02:17:09 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6114FC0889;
-	Fri, 21 Aug 2020 02:17:09 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1DF79C08A2
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 071C723042
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:08 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 20TTDIbdI+21; Fri, 21 Aug 2020 02:16:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 817F522E89;
+	Fri, 21 Aug 2020 02:16:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DCFBC089F;
+	Fri, 21 Aug 2020 02:16:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87760C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:54 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8381886CC1
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id boHuV-1de2Ev for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 02:17:02 +0000 (UTC)
+ with ESMTP id 5FIybfcLhX83 for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 02:16:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id 2F40D22E96
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:02 +0000 (UTC)
-Message-Id: <20200821002947.075507468@linutronix.de>
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3232586CF1
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:53 +0000 (UTC)
+Message-Id: <20200821002946.297823391@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1597976220;
+ s=2020; t=1597976210;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=R6JxsviuQwbwX1XcXkkzKQyT+T09StpqXEtTQLkEikY=;
- b=DQo5o0E2WeO60HEbPpznUfv/fyHaZz6TzI8gYCMBjgqs4f3s7extmvfXyO7EAhTksKFRKq
- mvtWArIM2U1VOhePfnms1RYw8XDK9WpqVobucAP6JaquG3rVNS2CLVdbHu/TBc3qsigxVg
- uHbxWuIZd26AsH63CUHieyPhvEjiStO37f1hYv54ZnHBkcQKk6bzmSD7/A/Fxdkkb/Syij
- YxqKenD82ZQdMn2h5p5d73A+PqERU4aI52sNyvm88zGFFhHt0oeiD1bMCVY5n3i8KBw+kn
- t0SxvyiQ+H8LfApRgesHYdyXcQ/KzNm81G0Ix1yA/VCHh/asmwD6xUUwXIf3EA==
+ bh=Si6kO+J1vEoaEWJXA2D20vb4LY9tJoOVRUcnzulF00g=;
+ b=Ecc85/hW4+01eu+YGTcWSRkJH7rL71uvNLBqGIBcXyV0iDPqE1AMasaN3s4GcK1w9mBGtu
+ ZBeewtjy/1fuQ9e2AsvtprDHe4EklVwkFIb2DgR5cchN73YI+dwFyB94v6qEhx3Jb7V6B+
+ JWG3EZ0SBaJvsUFrtf7id2mQMxPMZQ77HhTG3JRKR1FDADKAuDja1LL/A74ESLc/mh42Q2
+ AqP+1HoEndAmJgPcK1V97AEoLsqcyPwziF9Yk4N4e/zC3gUKeAD1t/FLySx5ihUPkUszvY
+ 9IsuDEOZ98pXHn5x9Q4K56nE8iu5cij0dIWaICCTY1Q+GlN9DbCWDLcbnyN33A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1597976220;
+ s=2020e; t=1597976210;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=R6JxsviuQwbwX1XcXkkzKQyT+T09StpqXEtTQLkEikY=;
- b=BRfXUkkOYf/yCGZZ1rSc74TlbnMx60yjOLHMFdtEViH1OQED5w/ZEnmHNmx+f/pGQQFIDh
- 05oW78opN0GrQEDA==
-Date: Fri, 21 Aug 2020 02:24:42 +0200
+ bh=Si6kO+J1vEoaEWJXA2D20vb4LY9tJoOVRUcnzulF00g=;
+ b=I6boBPnH5+6FO4Pp3yBZHBps3Bvg7O2N3xa8rS2ZS0zg3XP3QEY9trSDnOpNsSV7h9V70v
+ 0jQLjLdks7BfahDg==
+Date: Fri, 21 Aug 2020 02:24:34 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch RFC 18/38] x86/irq: Initialize PCI/MSI domain at PCI init time
+Subject: [patch RFC 10/38] x86/ioapic: Consolidate IOAPIC allocation
 References: <20200821002424.119492231@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline;
- filename="x86-irq--Initialize-PCI-MSI-domain-at-PCI-init-time.patch"
+ filename="x86-ioapic--Consolidate-IOAPIC-allocation.patch"
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -111,167 +111,345 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-No point in initializing the default PCI/MSI interrupt domain early and no
-point to create it when XEN PV/HVM/DOM0 are active.
-
-Move the initialization to pci_arch_init() and convert it to init ops so
-that XEN can override it as XEN has it's own PCI/MSI management. The XEN
-override comes in a later step.
+Move the IOAPIC specific fields into their own struct and reuse the common
+devid. Get rid of the #ifdeffery as it does not matter at all whether the
+alloc info is a couple of bytes longer or not.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-pci@vger.kernel.org
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: linux-hyperv@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Jon Derrick <jonathan.derrick@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- arch/x86/include/asm/irqdomain.h |    6 ++++--
- arch/x86/include/asm/x86_init.h  |    3 +++
- arch/x86/kernel/apic/msi.c       |   26 ++++++++++++++++----------
- arch/x86/kernel/apic/vector.c    |    2 --
- arch/x86/kernel/x86_init.c       |    3 ++-
- arch/x86/pci/init.c              |    3 +++
- 6 files changed, 28 insertions(+), 15 deletions(-)
+ arch/x86/include/asm/hw_irq.h       |   23 ++++++-----
+ arch/x86/kernel/apic/io_apic.c      |   70 ++++++++++++++++++------------------
+ drivers/iommu/amd/iommu.c           |   14 +++----
+ drivers/iommu/hyperv-iommu.c        |    2 -
+ drivers/iommu/intel/irq_remapping.c |   18 ++++-----
+ 5 files changed, 64 insertions(+), 63 deletions(-)
 
---- a/arch/x86/include/asm/irqdomain.h
-+++ b/arch/x86/include/asm/irqdomain.h
-@@ -51,9 +51,11 @@ extern int mp_irqdomain_ioapic_idx(struc
- #endif /* CONFIG_X86_IO_APIC */
- 
- #ifdef CONFIG_PCI_MSI
--extern void arch_init_msi_domain(struct irq_domain *domain);
-+void x86_create_pci_msi_domain(void);
-+struct irq_domain *native_create_pci_msi_domain(void);
- #else
--static inline void arch_init_msi_domain(struct irq_domain *domain) { }
-+static inline void x86_create_pci_msi_domain(void) { }
-+#define native_create_pci_msi_domain	NULL
- #endif
- 
- #endif
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -8,6 +8,7 @@ struct mpc_bus;
- struct mpc_cpu;
- struct mpc_table;
- struct cpuinfo_x86;
-+struct irq_domain;
- 
- /**
-  * struct x86_init_mpparse - platform specific mpparse ops
-@@ -42,12 +43,14 @@ struct x86_init_resources {
-  * @intr_init:			interrupt init code
-  * @intr_mode_select:		interrupt delivery mode selection
-  * @intr_mode_init:		interrupt delivery mode setup
-+ * @create_pci_msi_domain:	Create the PCI/MSI interrupt domain
-  */
- struct x86_init_irqs {
- 	void (*pre_vector_init)(void);
- 	void (*intr_init)(void);
- 	void (*intr_mode_select)(void);
- 	void (*intr_mode_init)(void);
-+	struct irq_domain *(*create_pci_msi_domain)(void);
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -44,6 +44,15 @@ enum irq_alloc_type {
+ 	X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT,
  };
  
- /**
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -21,7 +21,7 @@
- #include <asm/apic.h>
- #include <asm/irq_remapping.h>
- 
--static struct irq_domain *msi_default_domain;
-+static struct irq_domain *x86_pci_msi_default_domain __ro_after_init;
- 
- static void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg)
- {
-@@ -192,7 +192,7 @@ int native_setup_msi_irqs(struct pci_dev
- 
- 	domain = irq_remapping_get_irq_domain(&info);
- 	if (domain == NULL)
--		domain = msi_default_domain;
-+		domain = x86_pci_msi_default_domain;
- 	if (domain == NULL)
- 		return -ENOSYS;
- 
-@@ -243,25 +243,31 @@ static struct msi_domain_info pci_msi_do
- 	.handler_name	= "edge",
- };
- 
--void __init arch_init_msi_domain(struct irq_domain *parent)
-+struct irq_domain * __init native_create_pci_msi_domain(void)
- {
- 	struct fwnode_handle *fn;
-+	struct irq_domain *d;
- 
- 	if (disable_apic)
--		return;
-+		return NULL;
- 
- 	fn = irq_domain_alloc_named_fwnode("PCI-MSI");
- 	if (fn) {
--		msi_default_domain =
--			pci_msi_create_irq_domain(fn, &pci_msi_domain_info,
--						  parent);
-+		d = pci_msi_create_irq_domain(fn, &pci_msi_domain_info,
-+					      x86_vector_domain);
- 	}
--	if (!msi_default_domain) {
-+	if (!d) {
- 		irq_domain_free_fwnode(fn);
--		pr_warn("failed to initialize irqdomain for MSI/MSI-x.\n");
-+		pr_warn("Failed to initialize PCI-MSI irqdomain.\n");
- 	} else {
--		msi_default_domain->flags |= IRQ_DOMAIN_MSI_NOMASK_QUIRK;
-+		d->flags |= IRQ_DOMAIN_MSI_NOMASK_QUIRK;
- 	}
-+	return d;
-+}
++struct ioapic_alloc_info {
++	int				pin;
++	int				node;
++	u32				trigger : 1;
++	u32				polarity : 1;
++	u32				valid : 1;
++	struct IO_APIC_route_entry	*entry;
++};
 +
-+void __init x86_create_pci_msi_domain(void)
-+{
-+	x86_pci_msi_default_domain = x86_init.irqs.create_pci_msi_domain();
+ /**
+  * irq_alloc_info - X86 specific interrupt allocation info
+  * @type:	X86 specific allocation type
+@@ -53,6 +62,8 @@ enum irq_alloc_type {
+  * @mask:	CPU mask for vector allocation
+  * @desc:	Pointer to msi descriptor
+  * @data:	Allocation specific data
++ *
++ * @ioapic:	IOAPIC specific allocation data
+  */
+ struct irq_alloc_info {
+ 	enum irq_alloc_type	type;
+@@ -64,6 +75,7 @@ struct irq_alloc_info {
+ 	void			*data;
+ 
+ 	union {
++		struct ioapic_alloc_info	ioapic;
+ 		int		unused;
+ #ifdef	CONFIG_PCI_MSI
+ 		struct {
+@@ -71,17 +83,6 @@ struct irq_alloc_info {
+ 			irq_hw_number_t	msi_hwirq;
+ 		};
+ #endif
+-#ifdef	CONFIG_X86_IO_APIC
+-		struct {
+-			int		ioapic_id;
+-			int		ioapic_pin;
+-			int		ioapic_node;
+-			u32		ioapic_trigger : 1;
+-			u32		ioapic_polarity : 1;
+-			u32		ioapic_valid : 1;
+-			struct IO_APIC_route_entry *ioapic_entry;
+-		};
+-#endif
+ #ifdef	CONFIG_DMAR_TABLE
+ 		struct {
+ 			int		dmar_id;
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -860,10 +860,10 @@ void ioapic_set_alloc_attr(struct irq_al
+ {
+ 	init_irq_alloc_info(info, NULL);
+ 	info->type = X86_IRQ_ALLOC_TYPE_IOAPIC;
+-	info->ioapic_node = node;
+-	info->ioapic_trigger = trigger;
+-	info->ioapic_polarity = polarity;
+-	info->ioapic_valid = 1;
++	info->ioapic.node = node;
++	info->ioapic.trigger = trigger;
++	info->ioapic.polarity = polarity;
++	info->ioapic.valid = 1;
  }
  
- #ifdef CONFIG_IRQ_REMAP
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -713,8 +713,6 @@ int __init arch_early_irq_init(void)
- 	BUG_ON(x86_vector_domain == NULL);
- 	irq_set_default_host(x86_vector_domain);
+ #ifndef CONFIG_ACPI
+@@ -878,32 +878,32 @@ static void ioapic_copy_alloc_attr(struc
  
--	arch_init_msi_domain(x86_vector_domain);
--
- 	BUG_ON(!alloc_cpumask_var(&vector_searchmask, GFP_KERNEL));
+ 	copy_irq_alloc_info(dst, src);
+ 	dst->type = X86_IRQ_ALLOC_TYPE_IOAPIC;
+-	dst->ioapic_id = mpc_ioapic_id(ioapic_idx);
+-	dst->ioapic_pin = pin;
+-	dst->ioapic_valid = 1;
+-	if (src && src->ioapic_valid) {
+-		dst->ioapic_node = src->ioapic_node;
+-		dst->ioapic_trigger = src->ioapic_trigger;
+-		dst->ioapic_polarity = src->ioapic_polarity;
++	dst->devid = mpc_ioapic_id(ioapic_idx);
++	dst->ioapic.pin = pin;
++	dst->ioapic.valid = 1;
++	if (src && src->ioapic.valid) {
++		dst->ioapic.node = src->ioapic.node;
++		dst->ioapic.trigger = src->ioapic.trigger;
++		dst->ioapic.polarity = src->ioapic.polarity;
+ 	} else {
+-		dst->ioapic_node = NUMA_NO_NODE;
++		dst->ioapic.node = NUMA_NO_NODE;
+ 		if (acpi_get_override_irq(gsi, &trigger, &polarity) >= 0) {
+-			dst->ioapic_trigger = trigger;
+-			dst->ioapic_polarity = polarity;
++			dst->ioapic.trigger = trigger;
++			dst->ioapic.polarity = polarity;
+ 		} else {
+ 			/*
+ 			 * PCI interrupts are always active low level
+ 			 * triggered.
+ 			 */
+-			dst->ioapic_trigger = IOAPIC_LEVEL;
+-			dst->ioapic_polarity = IOAPIC_POL_LOW;
++			dst->ioapic.trigger = IOAPIC_LEVEL;
++			dst->ioapic.polarity = IOAPIC_POL_LOW;
+ 		}
+ 	}
+ }
+ 
+ static int ioapic_alloc_attr_node(struct irq_alloc_info *info)
+ {
+-	return (info && info->ioapic_valid) ? info->ioapic_node : NUMA_NO_NODE;
++	return (info && info->ioapic.valid) ? info->ioapic.node : NUMA_NO_NODE;
+ }
+ 
+ static void mp_register_handler(unsigned int irq, unsigned long trigger)
+@@ -933,14 +933,14 @@ static bool mp_check_pin_attr(int irq, s
+ 	 * pin with real trigger and polarity attributes.
+ 	 */
+ 	if (irq < nr_legacy_irqs() && data->count == 1) {
+-		if (info->ioapic_trigger != data->trigger)
+-			mp_register_handler(irq, info->ioapic_trigger);
+-		data->entry.trigger = data->trigger = info->ioapic_trigger;
+-		data->entry.polarity = data->polarity = info->ioapic_polarity;
++		if (info->ioapic.trigger != data->trigger)
++			mp_register_handler(irq, info->ioapic.trigger);
++		data->entry.trigger = data->trigger = info->ioapic.trigger;
++		data->entry.polarity = data->polarity = info->ioapic.polarity;
+ 	}
+ 
+-	return data->trigger == info->ioapic_trigger &&
+-	       data->polarity == info->ioapic_polarity;
++	return data->trigger == info->ioapic.trigger &&
++	       data->polarity == info->ioapic.polarity;
+ }
+ 
+ static int alloc_irq_from_domain(struct irq_domain *domain, int ioapic, u32 gsi,
+@@ -1002,7 +1002,7 @@ static int alloc_isa_irq_from_domain(str
+ 		if (!mp_check_pin_attr(irq, info))
+ 			return -EBUSY;
+ 		if (__add_pin_to_irq_node(irq_data->chip_data, node, ioapic,
+-					  info->ioapic_pin))
++					  info->ioapic.pin))
+ 			return -ENOMEM;
+ 	} else {
+ 		info->flags |= X86_IRQ_ALLOC_LEGACY;
+@@ -2092,8 +2092,8 @@ static int mp_alloc_timer_irq(int ioapic
+ 		struct irq_alloc_info info;
+ 
+ 		ioapic_set_alloc_attr(&info, NUMA_NO_NODE, 0, 0);
+-		info.ioapic_id = mpc_ioapic_id(ioapic);
+-		info.ioapic_pin = pin;
++		info.devid = mpc_ioapic_id(ioapic);
++		info.ioapic.pin = pin;
+ 		mutex_lock(&ioapic_mutex);
+ 		irq = alloc_isa_irq_from_domain(domain, 0, ioapic, pin, &info);
+ 		mutex_unlock(&ioapic_mutex);
+@@ -2297,7 +2297,7 @@ static int mp_irqdomain_create(int ioapi
+ 
+ 	init_irq_alloc_info(&info, NULL);
+ 	info.type = X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT;
+-	info.ioapic_id = mpc_ioapic_id(ioapic);
++	info.devid = mpc_ioapic_id(ioapic);
+ 	parent = irq_remapping_get_irq_domain(&info);
+ 	if (!parent)
+ 		parent = x86_vector_domain;
+@@ -2932,9 +2932,9 @@ int mp_ioapic_registered(u32 gsi_base)
+ static void mp_irqdomain_get_attr(u32 gsi, struct mp_chip_data *data,
+ 				  struct irq_alloc_info *info)
+ {
+-	if (info && info->ioapic_valid) {
+-		data->trigger = info->ioapic_trigger;
+-		data->polarity = info->ioapic_polarity;
++	if (info && info->ioapic.valid) {
++		data->trigger = info->ioapic.trigger;
++		data->polarity = info->ioapic.polarity;
+ 	} else if (acpi_get_override_irq(gsi, &data->trigger,
+ 					 &data->polarity) < 0) {
+ 		/* PCI interrupts are always active low level triggered. */
+@@ -2980,7 +2980,7 @@ int mp_irqdomain_alloc(struct irq_domain
+ 		return -EINVAL;
+ 
+ 	ioapic = mp_irqdomain_ioapic_idx(domain);
+-	pin = info->ioapic_pin;
++	pin = info->ioapic.pin;
+ 	if (irq_find_mapping(domain, (irq_hw_number_t)pin) > 0)
+ 		return -EEXIST;
+ 
+@@ -2988,7 +2988,7 @@ int mp_irqdomain_alloc(struct irq_domain
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	info->ioapic_entry = &data->entry;
++	info->ioapic.entry = &data->entry;
+ 	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, info);
+ 	if (ret < 0) {
+ 		kfree(data);
+@@ -2996,7 +2996,7 @@ int mp_irqdomain_alloc(struct irq_domain
+ 	}
+ 
+ 	INIT_LIST_HEAD(&data->irq_2_pin);
+-	irq_data->hwirq = info->ioapic_pin;
++	irq_data->hwirq = info->ioapic.pin;
+ 	irq_data->chip = (domain->parent == x86_vector_domain) ?
+ 			  &ioapic_chip : &ioapic_ir_chip;
+ 	irq_data->chip_data = data;
+@@ -3006,8 +3006,8 @@ int mp_irqdomain_alloc(struct irq_domain
+ 	add_pin_to_irq_node(data, ioapic_alloc_attr_node(info), ioapic, pin);
+ 
+ 	local_irq_save(flags);
+-	if (info->ioapic_entry)
+-		mp_setup_entry(cfg, data, info->ioapic_entry);
++	if (info->ioapic.entry)
++		mp_setup_entry(cfg, data, info->ioapic.entry);
+ 	mp_register_handler(virq, data->trigger);
+ 	if (virq < nr_legacy_irqs())
+ 		legacy_pic->mask(virq);
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3508,7 +3508,7 @@ static int get_devid(struct irq_alloc_in
+ 	switch (info->type) {
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT:
+-		return get_ioapic_devid(info->ioapic_id);
++		return get_ioapic_devid(info->devid);
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+ 	case X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT:
+ 		return get_hpet_devid(info->devid);
+@@ -3586,15 +3586,15 @@ static void irq_remapping_prepare_irte(s
+ 	switch (info->type) {
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
+ 		/* Setup IOAPIC entry */
+-		entry = info->ioapic_entry;
+-		info->ioapic_entry = NULL;
++		entry = info->ioapic.entry;
++		info->ioapic.entry = NULL;
+ 		memset(entry, 0, sizeof(*entry));
+ 		entry->vector        = index;
+ 		entry->mask          = 0;
+-		entry->trigger       = info->ioapic_trigger;
+-		entry->polarity      = info->ioapic_polarity;
++		entry->trigger       = info->ioapic.trigger;
++		entry->polarity      = info->ioapic.polarity;
+ 		/* Mask level triggered irqs. */
+-		if (info->ioapic_trigger)
++		if (info->ioapic.trigger)
+ 			entry->mask = 1;
+ 		break;
+ 
+@@ -3680,7 +3680,7 @@ static int irq_remapping_alloc(struct ir
+ 					iommu->irte_ops->set_allocated(table, i);
+ 			}
+ 			WARN_ON(table->min_index != 32);
+-			index = info->ioapic_pin;
++			index = info->ioapic.pin;
+ 		} else {
+ 			index = -ENOMEM;
+ 		}
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -101,7 +101,7 @@ static int hyperv_irq_remapping_alloc(st
+ 	 * in the chip_data and hyperv_irq_remapping_activate()/hyperv_ir_set_
+ 	 * affinity() set vector and dest_apicid directly into IO-APIC entry.
+ 	 */
+-	irq_data->chip_data = info->ioapic_entry;
++	irq_data->chip_data = info->ioapic.entry;
  
  	/*
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -76,7 +76,8 @@ struct x86_init_ops x86_init __initdata
- 		.pre_vector_init	= init_ISA_irqs,
- 		.intr_init		= native_init_IRQ,
- 		.intr_mode_select	= apic_intr_mode_select,
--		.intr_mode_init		= apic_intr_mode_init
-+		.intr_mode_init		= apic_intr_mode_init,
-+		.create_pci_msi_domain	= native_create_pci_msi_domain,
- 	},
+ 	 * Hypver-V IO APIC irq affinity should be in the scope of
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1113,7 +1113,7 @@ static struct irq_domain *intel_get_irq_
  
- 	.oem = {
---- a/arch/x86/pci/init.c
-+++ b/arch/x86/pci/init.c
-@@ -3,6 +3,7 @@
- #include <linux/init.h>
- #include <asm/pci_x86.h>
- #include <asm/x86_init.h>
-+#include <asm/irqdomain.h>
+ 	switch (info->type) {
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT:
+-		return map_ioapic_to_ir(info->ioapic_id);
++		return map_ioapic_to_ir(info->devid);
+ 	case X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT:
+ 		return map_hpet_to_ir(info->devid);
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+@@ -1254,16 +1254,16 @@ static void intel_irq_remapping_prepare_
+ 	switch (info->type) {
+ 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
+ 		/* Set source-id of interrupt request */
+-		set_ioapic_sid(irte, info->ioapic_id);
++		set_ioapic_sid(irte, info->devid);
+ 		apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: Set IRTE entry (P:%d FPD:%d Dst_Mode:%d Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X Avail:%X Vector:%02X Dest:%08X SID:%04X SQ:%X SVT:%X)\n",
+-			info->ioapic_id, irte->present, irte->fpd,
++			info->devid, irte->present, irte->fpd,
+ 			irte->dst_mode, irte->redir_hint,
+ 			irte->trigger_mode, irte->dlvry_mode,
+ 			irte->avail, irte->vector, irte->dest_id,
+ 			irte->sid, irte->sq, irte->svt);
  
- /* arch_initcall has too random ordering, so call the initializers
-    in the right sequence from here. */
-@@ -10,6 +11,8 @@ static __init int pci_arch_init(void)
- {
- 	int type;
+-		entry = (struct IR_IO_APIC_route_entry *)info->ioapic_entry;
+-		info->ioapic_entry = NULL;
++		entry = (struct IR_IO_APIC_route_entry *)info->ioapic.entry;
++		info->ioapic.entry = NULL;
+ 		memset(entry, 0, sizeof(*entry));
+ 		entry->index2	= (index >> 15) & 0x1;
+ 		entry->zero	= 0;
+@@ -1273,11 +1273,11 @@ static void intel_irq_remapping_prepare_
+ 		 * IO-APIC RTE will be configured with virtual vector.
+ 		 * irq handler will do the explicit EOI to the io-apic.
+ 		 */
+-		entry->vector	= info->ioapic_pin;
++		entry->vector	= info->ioapic.pin;
+ 		entry->mask	= 0;			/* enable IRQ */
+-		entry->trigger	= info->ioapic_trigger;
+-		entry->polarity	= info->ioapic_polarity;
+-		if (info->ioapic_trigger)
++		entry->trigger	= info->ioapic.trigger;
++		entry->polarity	= info->ioapic.polarity;
++		if (info->ioapic.trigger)
+ 			entry->mask = 1; /* Mask level triggered irqs. */
+ 		break;
  
-+	x86_create_pci_msi_domain();
-+
- 	type = pci_direct_probe();
- 
- 	if (!(pci_probe & PCI_PROBE_NOEARLY))
 
 _______________________________________________
 iommu mailing list
