@@ -7,75 +7,75 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38997C433E4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4419CC433F4
 	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C610208E4
+	by mail.kernel.org (Postfix) with ESMTPS id 1A2E52075E
 	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:17:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XYwY5aZB";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="SJFB1hWr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C610208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="oIYWpA1m";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="y7HPmfdR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A2E52075E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E69B28860A;
-	Fri, 21 Aug 2020 02:17:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WWkXW9GmDh1y; Fri, 21 Aug 2020 02:17:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 02FEE88613;
-	Fri, 21 Aug 2020 02:17:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3ABAC08A2;
-	Fri, 21 Aug 2020 02:17:21 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C125BC0051
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id BD9C086CF9
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:20 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 077BF86CE4;
+	Fri, 21 Aug 2020 02:17:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DUT3gYTX0QvE; Fri, 21 Aug 2020 02:17:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 61E9086CC5;
+	Fri, 21 Aug 2020 02:17:21 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E873C0894;
+	Fri, 21 Aug 2020 02:17:21 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 63385C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 59D3222E96
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WJrQurxGOumv for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 02:17:19 +0000 (UTC)
+ with ESMTP id SF4ciy8MHqlS for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 02:17:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7F34586CEF
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:19 +0000 (UTC)
-Message-Id: <20200821002948.472642859@linutronix.de>
+ by silver.osuosl.org (Postfix) with ESMTPS id D5C1522FC6
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:17:14 +0000 (UTC)
+Message-Id: <20200821002948.088290046@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1597976238;
+ s=2020; t=1597976233;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=YM0Jb+0jacRYeAAEIXyvt7LyQs4eenP0P8zOev+VYEA=;
- b=XYwY5aZBZHc/cE8NoEwTRaXWx4kQ9d5LAVJKdZmLxtBDVRWBQIJ1CD55OOiD8/PaSIC/Qz
- 86xyuToyG6fI0SYmZSPxwoPMnRKptHaFKEijx8ccnzdBv83L4NnYP/UaMCRLf1xPIu9QD6
- LnA+w+4x3Jkpbea1y5BQ1kxBaz1UJLA/aMDIsKy/If47+NLxbOJk4c2rnPclYU5gciOWt2
- q7yABVl1IeaRUY1SCLr5pnWVG3Lc67GbPkqqE2Np8EEdfhi2F/dQu1naD6Hi5jWT+CBefq
- 9I1Ctkigd4ye/r+nFa9qaNWht25+BgwifwFgNJLDdwMDEhIbqsoywHttGKLZ8A==
+ bh=I+1xcnxpEKwhL/2w1Df+4sJP4BV3gtVsGmDq2fpteQU=;
+ b=oIYWpA1mK705vLgr0Pi3yvIwVY/JzWY6Zt8eNLdc9jL4sFmxDIPaDT052QDL9CckTVPM90
+ ZJFVX+4ngFjF7amPFN2+FS286alUpCex1etIdfZMLu3UkN838sMfFVP0p9U+LvWeLaFf4H
+ c430ZjWUmX5nUQYzWohUSa6CuOGYMSjpRHgRts7syQ5WyxJsiaxhIEb+Eu7E/PNmrdbAMp
+ 3Ik2FRwKvXFNm3om2igSs17GeofXgRc9iO+IqgqsxsibgkiIu3rvoltPIw81/AdpfrI2z7
+ 3nVAGJCOveCRgWSFYxa1YH+plh0xnrK9Ay0dTd3vL9eLDlz7E/nTv3YxqgsSXQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1597976238;
+ s=2020e; t=1597976233;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=YM0Jb+0jacRYeAAEIXyvt7LyQs4eenP0P8zOev+VYEA=;
- b=SJFB1hWrc9NTcS6nWGalTM0SJUTy+5x03Z372SqiJn9+JXrx5GkSr1rUnc2/RHr+HRLf5m
- OPRQxTlNSr1y7xCA==
-Date: Fri, 21 Aug 2020 02:24:56 +0200
+ bh=I+1xcnxpEKwhL/2w1Df+4sJP4BV3gtVsGmDq2fpteQU=;
+ b=y7HPmfdRFAGEjH7N5iAux5Kp3SKyHIxKVvhZ7t+Z4q47rqymbpcW2zB+eSXhv48NUWrhBJ
+ vhIQMjF0CardtkBA==
+Date: Fri, 21 Aug 2020 02:24:52 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch RFC 32/38] x86/irq: Make most MSI ops XEN private
+Subject: [patch RFC 28/38] iommm/amd: Store irq domain in struct device
 References: <20200821002424.119492231@linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline;
- filename="x86-irq--Make-most-MSI-ops-XEN-private.patch"
+ filename="iommm-amd--Store-irq-domain-in-struct-device.patch"
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -111,85 +111,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Nothing except XEN uses the setup/teardown ops. Hide them there.
+As the next step to make X86 utilize the direct MSI irq domain operations
+store the irq domain pointer in the device struct when a device is probed.
+
+It only overrides the irqdomain of devices which are handled by a regular
+PCI/MSI irq domain which protects PCI devices behind special busses like
+VMD which have their own irq domain.
+
+No functional change.
+
+It just avoids the redirection through arch_*_msi_irqs() and allows the
+PCI/MSI core to directly invoke the irq domain alloc/free functions instead
+of having to look up the irq domain for every single MSI interupt.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: xen-devel@lists.xenproject.org
-Cc: linux-pci@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
 ---
- arch/x86/include/asm/x86_init.h |    2 --
- arch/x86/pci/xen.c              |   23 +++++++++++++++--------
- 2 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/iommu/amd/iommu.c |   17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -276,8 +276,6 @@ struct x86_platform_ops {
- struct pci_dev;
- 
- struct x86_msi_ops {
--	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
--	void (*teardown_msi_irqs)(struct pci_dev *dev);
- 	void (*restore_msi_irqs)(struct pci_dev *dev);
- };
- 
---- a/arch/x86/pci/xen.c
-+++ b/arch/x86/pci/xen.c
-@@ -156,6 +156,13 @@ static int acpi_register_gsi_xen(struct
- struct xen_pci_frontend_ops *xen_pci_frontend;
- EXPORT_SYMBOL_GPL(xen_pci_frontend);
- 
-+struct xen_msi_ops {
-+	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
-+	void (*teardown_msi_irqs)(struct pci_dev *dev);
-+};
-+
-+static struct xen_msi_ops xen_msi_ops __ro_after_init;
-+
- static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
- {
- 	int irq, ret, i;
-@@ -414,7 +421,7 @@ static int xen_msi_domain_alloc_irqs(str
- 	else
- 		type = PCI_CAP_ID_MSI;
- 
--	return x86_msi.setup_msi_irqs(to_pci_dev(dev), nvec, type);
-+	return xen_msi_ops.setup_msi_irqs(to_pci_dev(dev), nvec, type);
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -729,7 +729,21 @@ static void iommu_poll_ga_log(struct amd
+ 		}
+ 	}
  }
+-#endif /* CONFIG_IRQ_REMAP */
++
++static void
++amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu)
++{
++	if (!irq_remapping_enabled || !dev_is_pci(dev) ||
++	    pci_dev_has_special_msi_domain(to_pci_dev(dev)))
++		return;
++
++	dev_set_msi_domain(dev, iommu->msi_domain);
++}
++
++#else /* CONFIG_IRQ_REMAP */
++static inline void
++amd_iommu_set_pci_msi_domain(struct device *dev, struct amd_iommu *iommu) { }
++#endif /* !CONFIG_IRQ_REMAP */
  
- static void xen_msi_domain_free_irqs(struct irq_domain *domain,
-@@ -423,7 +430,7 @@ static void xen_msi_domain_free_irqs(str
- 	if (WARN_ON_ONCE(!dev_is_pci(dev)))
- 		return;
- 
--	x86_msi.teardown_msi_irqs(to_pci_dev(dev));
-+	xen_msi_ops.teardown_msi_irqs(to_pci_dev(dev));
- }
- 
- static struct msi_domain_ops xen_pci_msi_domain_ops = {
-@@ -461,17 +468,17 @@ static __init struct irq_domain *xen_cre
- static __init void xen_setup_pci_msi(void)
- {
- 	if (xen_initial_domain()) {
--		x86_msi.setup_msi_irqs = xen_initdom_setup_msi_irqs;
--		x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
-+		xen_msi_ops.setup_msi_irqs = xen_initdom_setup_msi_irqs;
-+		xen_msi_ops.teardown_msi_irqs = xen_teardown_msi_irqs;
- 		x86_msi.restore_msi_irqs = xen_initdom_restore_msi_irqs;
- 		pci_msi_ignore_mask = 1;
- 	} else if (xen_pv_domain()) {
--		x86_msi.setup_msi_irqs = xen_setup_msi_irqs;
--		x86_msi.teardown_msi_irqs = xen_pv_teardown_msi_irqs;
-+		xen_msi_ops.setup_msi_irqs = xen_setup_msi_irqs;
-+		xen_msi_ops.teardown_msi_irqs = xen_pv_teardown_msi_irqs;
- 		pci_msi_ignore_mask = 1;
- 	} else if (xen_hvm_domain()) {
--		x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
--		x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
-+		xen_msi_ops.setup_msi_irqs = xen_hvm_setup_msi_irqs;
-+		xen_msi_ops.teardown_msi_irqs = xen_teardown_msi_irqs;
+ #define AMD_IOMMU_INT_MASK	\
+ 	(MMIO_STATUS_EVT_INT_MASK | \
+@@ -2157,6 +2171,7 @@ static struct iommu_device *amd_iommu_pr
+ 		iommu_dev = ERR_PTR(ret);
+ 		iommu_ignore_device(dev);
  	} else {
- 		WARN_ON_ONCE(1);
- 		return;
++		amd_iommu_set_pci_msi_domain(dev, iommu);
+ 		iommu_dev = &iommu->iommu;
+ 	}
+ 
 
 _______________________________________________
 iommu mailing list
