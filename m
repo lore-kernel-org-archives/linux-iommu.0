@@ -7,75 +7,75 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A054DC433E4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC3DC433E5
 	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:16:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 74BD1208E4
+	by mail.kernel.org (Postfix) with ESMTPS id 9054A2177B
 	for <iommu@archiver.kernel.org>; Fri, 21 Aug 2020 02:16:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="MMHS08Lk";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="5yc8X5Q+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74BD1208E4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="z5Zw6T7F";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2vc2HTal"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9054A2177B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5BE9686CF9;
+	by silver.osuosl.org (Postfix) with ESMTP id 5989920034;
 	Fri, 21 Aug 2020 02:16:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C9e5L0L2Zvbf; Fri, 21 Aug 2020 02:16:51 +0000 (UTC)
+	with ESMTP id BbTrDzhCAFV8; Fri, 21 Aug 2020 02:16:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C4DE086CEF;
-	Fri, 21 Aug 2020 02:16:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C4B0B22E6E;
+	Fri, 21 Aug 2020 02:16:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BAD7AC0895;
-	Fri, 21 Aug 2020 02:16:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AB7FEC0895;
+	Fri, 21 Aug 2020 02:16:47 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9ABC0C0889
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B79F7C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 82FCD88698
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A694E88690
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lEHCfNjTDMpa for <iommu@lists.linux-foundation.org>;
- Fri, 21 Aug 2020 02:16:49 +0000 (UTC)
+ with ESMTP id kID5AU98DxWR for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Aug 2020 02:16:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A98A188699
- for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:49 +0000 (UTC)
-Message-Id: <20200821002946.102072199@linutronix.de>
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A286A8868A
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Aug 2020 02:16:43 +0000 (UTC)
+Message-Id: <20200821002945.595723096@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1597976208;
+ s=2020; t=1597976202;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=HdiRwW0QBP1llYsOxuGajmw0gw4oc9eOOdN5Md9NR5A=;
- b=MMHS08LkfnEgTXsVoialrqCW9fRJ6AONkb+dykHl1E7z1jSVBMT+2LpAFmpo+8NVarXnD6
- UGbswtCAiv/cqLT2k/YprokRSvKx3qLWDhOCFaqaFqX6sO3O0F49AJVxBSrDd3E/PDWU0r
- iab+jR/ARt1/IQ7gQZ6d76rp5xop1LRLA6f5Hj8nC5kV7Hxj66YnGeCP1AW6zntjn0Ypro
- 4nnTRpnlLenDCD6/DvC0Gd/8jlpZyJIEk7ZKrEuvlHlUkC1mQgeS8nyAHPnc1M7H+Vgew6
- NRR6tC+qYhzyo1jGzNFwhpjMG+JvGP6o56Nrnna4/AGsTd4yK/HI6Xi7vJpUcA==
+ bh=aZajyY2bgQUgD6w0Oy2gZDy5W+Nr6UhttbpOe6imkbA=;
+ b=z5Zw6T7F6WO9tHaOZCWjbBUxhqTz80VOEZ80VDKul4uGQaropOgQb6BcKPfj/9Wlvj5p+r
+ OP36RCtabudX4KoYj9f608pdj9pLU9TRu1Q3jtMOtO2cYjb9lxPGXC6A8Lyaz2v72ig0o8
+ 84sWINgu7TugbF6XX7w85aAfwgzIeXnvMNqvoAI/8Eq1C3pkfYf6UrIPEz0UbebgaIlkom
+ eLiT4D2PzUU0fqRqXin5XBuzprxYDvLYrh1l2/kyVxDcs0G9GpxWgzhl5sC/gcvvvzfgGq
+ tBUculjkto8xPUOMY648x8PhGxobEoviHKsPdc7al8ctqVpYclUAG75TwMSj7Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1597976208;
+ s=2020e; t=1597976202;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=HdiRwW0QBP1llYsOxuGajmw0gw4oc9eOOdN5Md9NR5A=;
- b=5yc8X5Q+KF1CbR4X6zA2pQbmGSA2jQgF397Z0fl0uy9EapMQQ5Mpzjqwtw2DtAfEb0sjFt
- qqRq0A6Mw+TS/cCQ==
-Date: Fri, 21 Aug 2020 02:24:32 +0200
+ bh=aZajyY2bgQUgD6w0Oy2gZDy5W+Nr6UhttbpOe6imkbA=;
+ b=2vc2HTalu8tDHI7RloIWqmjANph7va74Zeuk1d1Pk4AqNK9Vj801oDy0Rg8AK4F2IiwyPc
+ a3lZ5AHBdtqfsYBg==
+Date: Fri, 21 Aug 2020 02:24:27 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch RFC 08/38] x86/irq: Prepare consolidation of irq_alloc_info
+Subject: [patch RFC 03/38] x86/irq: Rename X86_IRQ_ALLOC_TYPE_MSI* to reflect
+ PCI dependency
 References: <20200821002424.119492231@linutronix.de>
 MIME-Version: 1.0
-Content-Disposition: inline;
- filename="x86-irq--Prepare-consolidation-of-irq_alloc_info.patch"
+Content-Disposition: inline; filename="x86-irq--Rename-X86_IRQ_ALLOC_TYPE_MSI"
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -111,61 +111,175 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-struct irq_alloc_info is a horrible zoo of unnamed structs in a union. Many
-of the struct fields can be generic and don't have to be type specific like
-hpet_id, ioapic_id...
-
-Provide a generic set of members to prepare for the consolidation. The goal
-is to make irq_alloc_info have the same basic member as the generic
-msi_alloc_info so generic MSI domain ops can be reused and yet more mess
-can be avoided when (non-PCI) device MSI support comes along.
+No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
 ---
- arch/x86/include/asm/hw_irq.h |   22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/hw_irq.h       |    4 ++--
+ arch/x86/kernel/apic/msi.c          |    6 +++---
+ drivers/iommu/amd/iommu.c           |   24 ++++++++++++------------
+ drivers/iommu/intel/irq_remapping.c |   18 +++++++++---------
+ 4 files changed, 26 insertions(+), 26 deletions(-)
 
 --- a/arch/x86/include/asm/hw_irq.h
 +++ b/arch/x86/include/asm/hw_irq.h
-@@ -44,10 +44,25 @@ enum irq_alloc_type {
- 	X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT,
+@@ -36,8 +36,8 @@ struct msi_desc;
+ enum irq_alloc_type {
+ 	X86_IRQ_ALLOC_TYPE_IOAPIC = 1,
+ 	X86_IRQ_ALLOC_TYPE_HPET,
+-	X86_IRQ_ALLOC_TYPE_MSI,
+-	X86_IRQ_ALLOC_TYPE_MSIX,
++	X86_IRQ_ALLOC_TYPE_PCI_MSI,
++	X86_IRQ_ALLOC_TYPE_PCI_MSIX,
+ 	X86_IRQ_ALLOC_TYPE_DMAR,
+ 	X86_IRQ_ALLOC_TYPE_UV,
  };
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -188,7 +188,7 @@ int native_setup_msi_irqs(struct pci_dev
+ 	struct irq_alloc_info info;
  
-+/**
-+ * irq_alloc_info - X86 specific interrupt allocation info
-+ * @type:	X86 specific allocation type
-+ * @flags:	Flags for allocation tweaks
-+ * @devid:	Device ID for allocations
-+ * @hwirq:	Associated hw interrupt number in the domain
-+ * @mask:	CPU mask for vector allocation
-+ * @desc:	Pointer to msi descriptor
-+ * @data:	Allocation specific data
-+ */
- struct irq_alloc_info {
- 	enum irq_alloc_type	type;
- 	u32			flags;
--	const struct cpumask	*mask;	/* CPU mask for vector allocation */
-+	u32			devid;
-+	irq_hw_number_t		hwirq;
-+	const struct cpumask	*mask;
-+	struct msi_desc		*desc;
-+	void			*data;
-+
- 	union {
- 		int		unused;
- #ifdef	CONFIG_HPET_TIMER
-@@ -88,11 +103,6 @@ struct irq_alloc_info {
- 			char		*uv_name;
- 		};
- #endif
--#if IS_ENABLED(CONFIG_VMD)
--		struct {
--			struct msi_desc *desc;
--		};
--#endif
- 	};
- };
+ 	init_irq_alloc_info(&info, NULL);
+-	info.type = X86_IRQ_ALLOC_TYPE_MSI;
++	info.type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
+ 	info.msi_dev = dev;
  
+ 	domain = irq_remapping_get_irq_domain(&info);
+@@ -220,9 +220,9 @@ int pci_msi_prepare(struct irq_domain *d
+ 	init_irq_alloc_info(arg, NULL);
+ 	arg->msi_dev = pdev;
+ 	if (desc->msi_attrib.is_msix) {
+-		arg->type = X86_IRQ_ALLOC_TYPE_MSIX;
++		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSIX;
+ 	} else {
+-		arg->type = X86_IRQ_ALLOC_TYPE_MSI;
++		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
+ 		arg->flags |= X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+ 	}
+ 
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3514,8 +3514,8 @@ static int get_devid(struct irq_alloc_in
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+ 		devid     = get_hpet_devid(info->hpet_id);
+ 		break;
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		devid = get_device_id(&info->msi_dev->dev);
+ 		break;
+ 	default:
+@@ -3553,8 +3553,8 @@ static struct irq_domain *get_irq_domain
+ 		return NULL;
+ 
+ 	switch (info->type) {
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		devid = get_device_id(&info->msi_dev->dev);
+ 		if (devid < 0)
+ 			return NULL;
+@@ -3615,8 +3615,8 @@ static void irq_remapping_prepare_irte(s
+ 		break;
+ 
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		msg->address_hi = MSI_ADDR_BASE_HI;
+ 		msg->address_lo = MSI_ADDR_BASE_LO;
+ 		msg->data = irte_info->index;
+@@ -3660,15 +3660,15 @@ static int irq_remapping_alloc(struct ir
+ 
+ 	if (!info)
+ 		return -EINVAL;
+-	if (nr_irqs > 1 && info->type != X86_IRQ_ALLOC_TYPE_MSI &&
+-	    info->type != X86_IRQ_ALLOC_TYPE_MSIX)
++	if (nr_irqs > 1 && info->type != X86_IRQ_ALLOC_TYPE_PCI_MSI &&
++	    info->type != X86_IRQ_ALLOC_TYPE_PCI_MSIX)
+ 		return -EINVAL;
+ 
+ 	/*
+ 	 * With IRQ remapping enabled, don't need contiguous CPU vectors
+ 	 * to support multiple MSI interrupts.
+ 	 */
+-	if (info->type == X86_IRQ_ALLOC_TYPE_MSI)
++	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
+ 		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+ 
+ 	devid = get_devid(info);
+@@ -3700,9 +3700,9 @@ static int irq_remapping_alloc(struct ir
+ 		} else {
+ 			index = -ENOMEM;
+ 		}
+-	} else if (info->type == X86_IRQ_ALLOC_TYPE_MSI ||
+-		   info->type == X86_IRQ_ALLOC_TYPE_MSIX) {
+-		bool align = (info->type == X86_IRQ_ALLOC_TYPE_MSI);
++	} else if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI ||
++		   info->type == X86_IRQ_ALLOC_TYPE_PCI_MSIX) {
++		bool align = (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI);
+ 
+ 		index = alloc_irq_index(devid, nr_irqs, align, info->msi_dev);
+ 	} else {
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1115,8 +1115,8 @@ static struct irq_domain *intel_get_ir_i
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+ 		iommu = map_hpet_to_ir(info->hpet_id);
+ 		break;
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		iommu = map_dev_to_ir(info->msi_dev);
+ 		break;
+ 	default:
+@@ -1135,8 +1135,8 @@ static struct irq_domain *intel_get_irq_
+ 		return NULL;
+ 
+ 	switch (info->type) {
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		iommu = map_dev_to_ir(info->msi_dev);
+ 		if (iommu)
+ 			return iommu->ir_msi_domain;
+@@ -1306,8 +1306,8 @@ static void intel_irq_remapping_prepare_
+ 		break;
+ 
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+-	case X86_IRQ_ALLOC_TYPE_MSI:
+-	case X86_IRQ_ALLOC_TYPE_MSIX:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
++	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+ 		if (info->type == X86_IRQ_ALLOC_TYPE_HPET)
+ 			set_hpet_sid(irte, info->hpet_id);
+ 		else
+@@ -1362,15 +1362,15 @@ static int intel_irq_remapping_alloc(str
+ 
+ 	if (!info || !iommu)
+ 		return -EINVAL;
+-	if (nr_irqs > 1 && info->type != X86_IRQ_ALLOC_TYPE_MSI &&
+-	    info->type != X86_IRQ_ALLOC_TYPE_MSIX)
++	if (nr_irqs > 1 && info->type != X86_IRQ_ALLOC_TYPE_PCI_MSI &&
++	    info->type != X86_IRQ_ALLOC_TYPE_PCI_MSIX)
+ 		return -EINVAL;
+ 
+ 	/*
+ 	 * With IRQ remapping enabled, don't need contiguous CPU vectors
+ 	 * to support multiple MSI interrupts.
+ 	 */
+-	if (info->type == X86_IRQ_ALLOC_TYPE_MSI)
++	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
+ 		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+ 
+ 	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, arg);
 
 _______________________________________________
 iommu mailing list
