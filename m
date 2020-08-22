@@ -2,83 +2,63 @@ Return-Path: <SRS0=KEvp=CA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1101DC433E1
-	for <iommu@archiver.kernel.org>; Sat, 22 Aug 2020 14:19:19 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1560FC433E1
+	for <iommu@archiver.kernel.org>; Sat, 22 Aug 2020 16:02:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFEBC2072D
-	for <iommu@archiver.kernel.org>; Sat, 22 Aug 2020 14:19:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFEBC2072D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
+	by mail.kernel.org (Postfix) with ESMTPS id DEF0D20738
+	for <iommu@archiver.kernel.org>; Sat, 22 Aug 2020 16:02:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DEF0D20738
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 927D286928;
-	Sat, 22 Aug 2020 14:19:18 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A29D68809D;
+	Sat, 22 Aug 2020 16:02:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nxwLy0Qy0nfF; Sat, 22 Aug 2020 14:19:17 +0000 (UTC)
+	with ESMTP id Zryntnso0VTB; Sat, 22 Aug 2020 16:02:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AB1798691A;
-	Sat, 22 Aug 2020 14:19:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 35C0387F86;
+	Sat, 22 Aug 2020 16:02:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FFC7C0889;
-	Sat, 22 Aug 2020 14:19:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A9B4C07FF;
+	Sat, 22 Aug 2020 16:02:40 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67957C0051
- for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 14:19:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3BF87C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 16:02:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 561C2884B5
- for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 14:19:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 24A03880C1
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 16:02:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8rdKN+GoVJ5W for <iommu@lists.linux-foundation.org>;
- Sat, 22 Aug 2020 14:19:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 050A2884A7
- for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 14:19:14 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id D6EE5ABE9;
- Sat, 22 Aug 2020 14:19:40 +0000 (UTC)
-Subject: Re: [patch RFC 00/38] x86, PCI, XEN, genirq ...: Prepare for device
- MSI
-To: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>
-References: <20200821002424.119492231@linutronix.de>
-From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <863e2e57-97a4-5625-4aaf-901092e673b1@suse.com>
-Date: Sat, 22 Aug 2020 16:19:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+ with ESMTP id v4IvAGOvE7Rx for <iommu@lists.linux-foundation.org>;
+ Sat, 22 Aug 2020 16:02:37 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from fireflyinternet.com (unknown [77.68.26.236])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E6ABE87CD6
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Aug 2020 16:02:36 +0000 (UTC)
+X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
+ x-ip-name=78.156.65.138; 
+Received: from build.alporthouse.com (unverified [78.156.65.138]) 
+ by fireflyinternet.com (Firefly Internet (M1)) with ESMTP id 22208727-1500050 
+ for multiple; Sat, 22 Aug 2020 17:02:11 +0100
+From: Chris Wilson <chris@chris-wilson.co.uk>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/intel: Handle 36b addressing for x86-32
+Date: Sat, 22 Aug 2020 17:02:09 +0100
+Message-Id: <20200822160209.28512-1-chris@chris-wilson.co.uk>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20200821002424.119492231@linutronix.de>
-Content-Language: en-US
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org,
- Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jon Derrick <jonathan.derrick@intel.com>, Russ Anderson <rja@hpe.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Joerg Roedel <jroedel@suse.de>, intel-gfx@lists.freedesktop.org,
+ stable@vger.kernel.org, Chris Wilson <chris@chris-wilson.co.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,148 +71,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 21.08.20 02:24, Thomas Gleixner wrote:
-> First of all, sorry for the horrible long Cc list, which was
-> unfortunately unavoidable as this touches the world and some more.
-> 
-> This patch series aims to provide a base to support device MSI (non
-> PCI based) in a halfways architecture independent way.
-> 
-> It's a mixed bag of bug fixes, cleanups and general improvements which
-> are worthwhile independent of the device MSI stuff. Unfortunately this
-> also comes with an evil abuse of the irqdomain system to coerce XEN on
-> x86 into compliance without rewriting XEN from scratch.
-> 
-> As discussed in length in this mail thread:
-> 
->    https://lore.kernel.org/r/87h7tcgbs2.fsf@nanos.tec.linutronix.de
-> 
-> the initial attempt of piggypacking device MSI support on platform MSI
-> is doomed for various reasons, but creating independent interrupt
-> domains for these upcoming magic PCI subdevices which are not PCI, but
-> might be exposed as PCI devices is not as trivial as it seems.
-> 
-> The initially suggested and evaluated approach of extending platform
-> MSI turned out to be the completely wrong direction and in fact
-> platform MSI should be rewritten on top of device MSI or completely
-> replaced by it.
-> 
-> One of the main issues is that x86 does not support the concept of irq
-> domains associations stored in device::msi_domain and still relies on
-> the arch_*_msi_irqs() fallback implementations which has it's own set
-> of problems as outlined in
-> 
->    https://lore.kernel.org/r/87bljg7u4f.fsf@nanos.tec.linutronix.de/
-> 
-> in the very same thread.
-> 
-> The main obstacle of storing that pointer is XEN which has it's own
-> historical notiion of handling PCI MSI interupts.
-> 
-> This series tries to address these issues in several steps:
-> 
->   1) Accidental bug fixes
-> 	iommu/amd: Prevent NULL pointer dereference
-> 
->   2) Janitoring
-> 	x86/init: Remove unused init ops
-> 
->   3) Simplification of the x86 specific interrupt allocation mechanism
-> 
-> 	x86/irq: Rename X86_IRQ_ALLOC_TYPE_MSI* to reflect PCI dependency
-> 	x86/irq: Add allocation type for parent domain retrieval
-> 	iommu/vt-d: Consolidate irq domain getter
-> 	iommu/amd: Consolidate irq domain getter
-> 	iommu/irq_remapping: Consolidate irq domain lookup
-> 
->   4) Consolidation of the X86 specific interrupt allocation mechanism to be as close
->      as possible to the generic MSI allocation mechanism which allows to get rid
->      of quite a bunch of x86'isms which are pointless
-> 
-> 	x86/irq: Prepare consolidation of irq_alloc_info
-> 	x86/msi: Consolidate HPET allocation
-> 	x86/ioapic: Consolidate IOAPIC allocation
-> 	x86/irq: Consolidate DMAR irq allocation
-> 	x86/irq: Consolidate UV domain allocation
-> 	PCI: MSI: Rework pci_msi_domain_calc_hwirq()
-> 	x86/msi: Consolidate MSI allocation
-> 	x86/msi: Use generic MSI domain ops
-> 
->    5) x86 specific cleanups to remove the dependency on arch_*_msi_irqs()
-> 
-> 	x86/irq: Move apic_post_init() invocation to one place
-> 	z86/pci: Reducde #ifdeffery in PCI init code
-> 	x86/irq: Initialize PCI/MSI domain at PCI init time
-> 	irqdomain/msi: Provide DOMAIN_BUS_VMD_MSI
-> 	PCI: vmd: Mark VMD irqdomain with DOMAIN_BUS_VMD_MSI
-> 	PCI: MSI: Provide pci_dev_has_special_msi_domain() helper
-> 	x86/xen: Make xen_msi_init() static and rename it to xen_hvm_msi_init()
-> 	x86/xen: Rework MSI teardown
-> 	x86/xen: Consolidate XEN-MSI init
-> 	irqdomain/msi: Allow to override msi_domain_alloc/free_irqs()
-> 	x86/xen: Wrap XEN MSI management into irqdomain
-> 	iommm/vt-d: Store irq domain in struct device
-> 	iommm/amd: Store irq domain in struct device
-> 	x86/pci: Set default irq domain in pcibios_add_device()
-> 	PCI/MSI: Allow to disable arch fallbacks
-> 	x86/irq: Cleanup the arch_*_msi_irqs() leftovers
-> 	x86/irq: Make most MSI ops XEN private
-> 
->      This one is paving the way to device MSI support, but it comes
->      with an ugly and evil hack. The ability of overriding the default
->      allocation/free functions of an MSI irq domain is useful in general as
->      (hopefully) demonstrated with the device MSI POC, but the abuse
->      in context of XEN is evil. OTOH without enough XENology and without
->      rewriting XEN from scratch wrapping XEN MSI handling into a pseudo
->      irq domain is a reasonable step forward for mere mortals with severly
->      limited XENology. One day the XEN folks might make it a real irq domain.
->      Perhaps when they have to support the same mess on other architectures.
->      Hope dies last...
-> 
->      At least the mechanism to override alloc/free turned out to be useful
->      for implementing the base infrastructure for device MSI. So it's not a
->      completely lost case.
-> 
->    6) X86 specific preparation for device MSI
-> 
->         x86/irq: Add DEV_MSI allocation type
->         x86/msi: Let pci_msi_prepare() handle non-PCI MSI
-> 
->    7) Generic device MSI infrastructure
-> 
->         platform-msi: Provide default irq_chip:ack
->         platform-msi: Add device MSI infrastructure
-> 
->    8) Infrastructure for and a POC of an IMS (Interrupt Message
->       Storm) irq domain and irqchip implementation
-> 
->         irqdomain/msi: Provide msi_alloc/free_store() callbacks
->         irqchip: Add IMS array driver - NOT FOR MERGING
-> 
-> The whole lot is also available from git:
-> 
->     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git device-msi
-> 
-> This has been tested on Intel/AMD/KVM but lacks testing on:
-> 
->      - HYPERV (-ENODEV)
->      - VMD enabled systems (-ENODEV)
->      - XEN (-ENOCLUE)
+Beware that the address size for x86-32 may exceed unsigned long.
 
-Tested to work in Xen dom0. Network is running fine with eth0 MSI
-interrupts being routed through Xen.
+[    0.368971] UBSAN: shift-out-of-bounds in drivers/iommu/intel/iommu.c:128:14
+[    0.369055] shift exponent 36 is too large for 32-bit type 'long unsigned int'
 
-You can add my:
+If we don't handle the wide addresses, the pages are mismapped and the
+device read/writes go astray, detected as DMAR faults and leading to
+device failure. The behaviour changed (from working to broken) in commit
+fa954e683178 ("iommu/vt-d: Delegate the dma domain to upper layer"), but
+the error looks older.
 
-Tested-by: Juergen Gross <jgross@suse.com>
+Fixes: fa954e683178 ("iommu/vt-d: Delegate the dma domain to upper layer")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: James Sewart <jamessewart@arista.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: <stable@vger.kernel.org> # v5.3+
+---
+ drivers/iommu/intel/iommu.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e9c8c3d0da4..ba78a2e854f9 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -123,29 +123,29 @@ static inline unsigned int level_to_offset_bits(int level)
+ 	return (level - 1) * LEVEL_STRIDE;
+ }
+ 
+-static inline int pfn_level_offset(unsigned long pfn, int level)
++static inline int pfn_level_offset(u64 pfn, int level)
+ {
+ 	return (pfn >> level_to_offset_bits(level)) & LEVEL_MASK;
+ }
+ 
+-static inline unsigned long level_mask(int level)
++static inline u64 level_mask(int level)
+ {
+-	return -1UL << level_to_offset_bits(level);
++	return -1ULL << level_to_offset_bits(level);
+ }
+ 
+-static inline unsigned long level_size(int level)
++static inline u64 level_size(int level)
+ {
+-	return 1UL << level_to_offset_bits(level);
++	return 1ULL << level_to_offset_bits(level);
+ }
+ 
+-static inline unsigned long align_to_level(unsigned long pfn, int level)
++static inline u64 align_to_level(u64 pfn, int level)
+ {
+ 	return (pfn + level_size(level) - 1) & level_mask(level);
+ }
+ 
+ static inline unsigned long lvl_to_nr_pages(unsigned int lvl)
+ {
+-	return  1 << min_t(int, (lvl - 1) * LEVEL_STRIDE, MAX_AGAW_PFN_WIDTH);
++	return 1UL << min_t(int, (lvl - 1) * LEVEL_STRIDE, MAX_AGAW_PFN_WIDTH);
+ }
+ 
+ /* VT-d pages must always be _smaller_ than MM pages. Otherwise things
+-- 
+2.20.1
 
-Juergen
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
