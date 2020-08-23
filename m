@@ -2,100 +2,68 @@ Return-Path: <SRS0=4upI=CB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B65C433DF
-	for <iommu@archiver.kernel.org>; Sun, 23 Aug 2020 23:05:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 417B7C433E1
+	for <iommu@archiver.kernel.org>; Sun, 23 Aug 2020 23:06:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 328F520724
-	for <iommu@archiver.kernel.org>; Sun, 23 Aug 2020 23:05:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TsXvoWqU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 328F520724
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+	by mail.kernel.org (Postfix) with ESMTPS id 1BE0A20724
+	for <iommu@archiver.kernel.org>; Sun, 23 Aug 2020 23:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BE0A20724
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EE3AF8763B;
-	Sun, 23 Aug 2020 23:05:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A43B12043A;
+	Sun, 23 Aug 2020 23:06:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n8Gvh7IxnKAS; Sun, 23 Aug 2020 23:05:52 +0000 (UTC)
+	with ESMTP id 8eck9TxL0BkY; Sun, 23 Aug 2020 23:06:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 829BE869BF;
-	Sun, 23 Aug 2020 23:05:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AC1092034F;
+	Sun, 23 Aug 2020 23:06:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FAA8C016F;
-	Sun, 23 Aug 2020 23:05:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A32A4C016F;
+	Sun, 23 Aug 2020 23:06:23 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 915E3C0051
- for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:05:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CC60FC0051
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:06:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6986C87D75
- for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:05:50 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C07F587D75
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:06:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZNxqusyP0fvP for <iommu@lists.linux-foundation.org>;
- Sun, 23 Aug 2020 23:05:49 +0000 (UTC)
+ with ESMTP id zD05Y3oRpvek for <iommu@lists.linux-foundation.org>;
+ Sun, 23 Aug 2020 23:06:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5061387D3D
- for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:05:49 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id 67so557970pgd.12
- for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 16:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=rXg5ASTJKuS2X6twhw4KiiTJ11cb3nEvoe/6O1rzpFA=;
- b=TsXvoWqU84vmi9BoaUbGwBu0FapYlXJXX/AAIBvYoJuj01qPejSnDkFHpmgu5hFyBR
- v/8EnTWuOcu9kayTHFrbtnRsfVWfrvwa+FUoU1AjQ9heIhjTC0J3LJv/GFGISYKkEG4e
- LkGd32MHVU6nP/z5Rq6++B1/c+Mzj0qlPhqjMjo97MnMT8JY0dlLjANmm8qDaesTc5uF
- A3WZXlgcUGBugnJNmOCIgtyLqktpYiH7I8Ox4lchKO8tMcmyBnCeDTrOq1VMCLWWp6t5
- AXZVc4aFAFLQzJeFTEG2NskFitLMQWBneex1agMFvl57FU7qbyWkCKhoKEtL4r8XNubQ
- l/Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
- :references:mime-version:content-disposition:in-reply-to:user-agent;
- bh=rXg5ASTJKuS2X6twhw4KiiTJ11cb3nEvoe/6O1rzpFA=;
- b=h+fK8JvthsxuJbAqelgf2HoogafGBHOnua4gcuqgJVeSR5BCHYHPJ81v4lqsJ/3/FH
- xQSetwJEIpV3hbWqtX6Rfxeb0ctEdxgDn5d3UqeEwz2C/UXjTZRS8xC4iGWQsfIbt6En
- H9zfhP2ACE17gxAvQJxirXa6ti6tjFV6WYTZ5QSWo66L5we3khbgNQMHDvlhJjwRunEQ
- 5bb7rQKCSQWdvQHZP7v5gjLubvXXrmMC98ffvgwsC9Y5GHORHBihEXf3Wu7Wwxjdt4Mq
- UE2tc4HbUdTfhVVDZVa5qtmvnUU9FYTMoRuNzJv3jPQdkrXlj982puGTBh/z45kJH95+
- 5/Mw==
-X-Gm-Message-State: AOAM533oXNcbEarPs2mwax+MHEu5od9T7u3X3mpl6XwWV0WWWBgkC6Op
- Bkchl0wiRRDAPTh6TjCdm/8=
-X-Google-Smtp-Source: ABdhPJwfvPy+sDses+GtoesDUewMlb1JaroSst40hW/p6qpgdSpWzbIrAHIwiqfhj0Iikn7Qc0J4Nw==
-X-Received: by 2002:a65:4502:: with SMTP id n2mr1758109pgq.132.1598223948586; 
- Sun, 23 Aug 2020 16:05:48 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id b24sm7562652pjp.22.2020.08.23.16.05.47
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Sun, 23 Aug 2020 16:05:48 -0700 (PDT)
-Date: Sun, 23 Aug 2020 16:05:46 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jordan Crouse <jcrouse@codeaurora.org>
-Subject: Re: [PATCH v12 09/13] drm/msm: Add support to create a local pagetable
-Message-ID: <20200823230546.GA189660@roeck-us.net>
-References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
- <20200810222657.1841322-10-jcrouse@codeaurora.org>
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 95E1A87D3D
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Aug 2020 23:06:18 +0000 (UTC)
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+ by Forcepoint Email with ESMTP id 0693D937EF3BC3F2D734;
+ Mon, 24 Aug 2020 07:06:13 +0800 (CST)
+Received: from SWX921481.china.huawei.com (10.126.203.214) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 24 Aug 2020 07:06:02 +0800
+From: Barry Song <song.bao.hua@hisilicon.com>
+To: <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+ <will@kernel.org>, <ganapatrao.kulkarni@cavium.com>,
+ <catalin.marinas@arm.com>, <akpm@linux-foundation.org>
+Subject: [PATCH v8 0/3] make dma_alloc_coherent NUMA-aware by per-NUMA CMA
+Date: Mon, 24 Aug 2020 11:03:06 +1200
+Message-ID: <20200823230309.28980-1-song.bao.hua@hisilicon.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200810222657.1841322-10-jcrouse@codeaurora.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: Sean Paul <sean@poorly.run>, Will Deacon <will@kernel.org>,
- David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, dri-devel@lists.freedesktop.org,
- iommu@lists.linux-foundation.org, freedreno@lists.freedesktop.org,
- linux-kernel@vger.kernel.org
+X-Originating-IP: [10.126.203.214]
+X-CFilter-Loop: Reflected
+Cc: linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, prime.zeng@hisilicon.com,
+ huangdaode@huawei.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,304 +81,126 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 10, 2020 at 04:26:53PM -0600, Jordan Crouse wrote:
-> Add support to create a io-pgtable for use by targets that support
-> per-instance pagetables. In order to support per-instance pagetables the
-> GPU SMMU device needs to have the qcom,adreno-smmu compatible string and
-> split pagetables enabled.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+Ganapatrao Kulkarni has put some effort on making arm-smmu-v3 use local
+memory to save command queues[1]. I also did similar job in patch
+"iommu/arm-smmu-v3: allocate the memory of queues in local numa node"
+[2] while not realizing Ganapatrao has done that before.
 
-This patch adds a hard dependency on IOMMU_IO_PGTABLE (for
-alloc_io_pgtable_ops and free_io_pgtable_ops).
+But it seems it is much better to make dma_alloc_coherent() to be
+inherently NUMA-aware on NUMA-capable systems.
 
-Guenter
+Right now, smmu is using dma_alloc_coherent() to get memory to save queues
+and tables. Typically, on ARM64 server, there is a default CMA located at
+node0, which could be far away from node2, node3 etc.
+Saving queues and tables remotely will increase the latency of ARM SMMU
+significantly. For example, when SMMU is at node2 and the default global
+CMA is at node0, after sending a CMD_SYNC in an empty command queue, we
+have to wait more than 550ns for the completion of the command CMD_SYNC.
+However, if we save them locally, we only need to wait for 240ns.
 
-> ---
-> 
->  drivers/gpu/drm/msm/msm_gpummu.c |   2 +-
->  drivers/gpu/drm/msm/msm_iommu.c  | 190 ++++++++++++++++++++++++++++++-
->  drivers/gpu/drm/msm/msm_mmu.h    |  16 ++-
->  3 files changed, 205 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_gpummu.c b/drivers/gpu/drm/msm/msm_gpummu.c
-> index 310a31b05faa..aab121f4beb7 100644
-> --- a/drivers/gpu/drm/msm/msm_gpummu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpummu.c
-> @@ -102,7 +102,7 @@ struct msm_mmu *msm_gpummu_new(struct device *dev, struct msm_gpu *gpu)
->  	}
->  
->  	gpummu->gpu = gpu;
-> -	msm_mmu_init(&gpummu->base, dev, &funcs);
-> +	msm_mmu_init(&gpummu->base, dev, &funcs, MSM_MMU_GPUMMU);
->  
->  	return &gpummu->base;
->  }
-> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> index 1b6635504069..bc04dda8a198 100644
-> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> @@ -4,15 +4,201 @@
->   * Author: Rob Clark <robdclark@gmail.com>
->   */
->  
-> +#include <linux/io-pgtable.h>
->  #include "msm_drv.h"
->  #include "msm_mmu.h"
->  
->  struct msm_iommu {
->  	struct msm_mmu base;
->  	struct iommu_domain *domain;
-> +	atomic_t pagetables;
->  };
-> +
->  #define to_msm_iommu(x) container_of(x, struct msm_iommu, base)
->  
-> +struct msm_iommu_pagetable {
-> +	struct msm_mmu base;
-> +	struct msm_mmu *parent;
-> +	struct io_pgtable_ops *pgtbl_ops;
-> +	phys_addr_t ttbr;
-> +	u32 asid;
-> +};
-> +static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
-> +{
-> +	return container_of(mmu, struct msm_iommu_pagetable, base);
-> +}
-> +
-> +static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
-> +		size_t size)
-> +{
-> +	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> +	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
-> +	size_t unmapped = 0;
-> +
-> +	/* Unmap the block one page at a time */
-> +	while (size) {
-> +		unmapped += ops->unmap(ops, iova, 4096, NULL);
-> +		iova += 4096;
-> +		size -= 4096;
-> +	}
-> +
-> +	iommu_flush_tlb_all(to_msm_iommu(pagetable->parent)->domain);
-> +
-> +	return (unmapped == size) ? 0 : -EINVAL;
-> +}
-> +
-> +static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
-> +		struct sg_table *sgt, size_t len, int prot)
-> +{
-> +	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> +	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
-> +	struct scatterlist *sg;
-> +	size_t mapped = 0;
-> +	u64 addr = iova;
-> +	unsigned int i;
-> +
-> +	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-> +		size_t size = sg->length;
-> +		phys_addr_t phys = sg_phys(sg);
-> +
-> +		/* Map the block one page at a time */
-> +		while (size) {
-> +			if (ops->map(ops, addr, phys, 4096, prot, GFP_KERNEL)) {
-> +				msm_iommu_pagetable_unmap(mmu, iova, mapped);
-> +				return -EINVAL;
-> +			}
-> +
-> +			phys += 4096;
-> +			addr += 4096;
-> +			size -= 4096;
-> +			mapped += 4096;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void msm_iommu_pagetable_destroy(struct msm_mmu *mmu)
-> +{
-> +	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> +	struct msm_iommu *iommu = to_msm_iommu(pagetable->parent);
-> +
-> +	/*
-> +	 * If this is the last attached pagetable for the parent,
-> +	 * disable TTBR0 in the arm-smmu driver
-> +	 */
-> +	if (atomic_dec_return(&iommu->pagetables) == 0)
-> +		iommu_domain_set_attr(iommu->domain,
-> +			DOMAIN_ATTR_PGTABLE_CFG, NULL);
-> +
-> +	free_io_pgtable_ops(pagetable->pgtbl_ops);
-> +	kfree(pagetable);
-> +}
-> +
-> +int msm_iommu_pagetable_params(struct msm_mmu *mmu,
-> +		phys_addr_t *ttbr, int *asid)
-> +{
-> +	struct msm_iommu_pagetable *pagetable;
-> +
-> +	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-> +		return -EINVAL;
-> +
-> +	pagetable = to_pagetable(mmu);
-> +
-> +	if (ttbr)
-> +		*ttbr = pagetable->ttbr;
-> +
-> +	if (asid)
-> +		*asid = pagetable->asid;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct msm_mmu_funcs pagetable_funcs = {
-> +		.map = msm_iommu_pagetable_map,
-> +		.unmap = msm_iommu_pagetable_unmap,
-> +		.destroy = msm_iommu_pagetable_destroy,
-> +};
-> +
-> +static void msm_iommu_tlb_flush_all(void *cookie)
-> +{
-> +}
-> +
-> +static void msm_iommu_tlb_flush_walk(unsigned long iova, size_t size,
-> +		size_t granule, void *cookie)
-> +{
-> +}
-> +
-> +static void msm_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
-> +		unsigned long iova, size_t granule, void *cookie)
-> +{
-> +}
-> +
-> +static const struct iommu_flush_ops null_tlb_ops = {
-> +	.tlb_flush_all = msm_iommu_tlb_flush_all,
-> +	.tlb_flush_walk = msm_iommu_tlb_flush_walk,
-> +	.tlb_flush_leaf = msm_iommu_tlb_flush_walk,
-> +	.tlb_add_page = msm_iommu_tlb_add_page,
-> +};
-> +
-> +struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
-> +{
-> +	struct msm_iommu *iommu = to_msm_iommu(parent);
-> +	static int next_asid = 16;
-> +	struct msm_iommu_pagetable *pagetable;
-> +	struct io_pgtable_cfg cfg;
-> +	int ret;
-> +
-> +	/* Get the pagetable configuration from the domain */
-> +	ret = iommu_domain_get_attr(iommu->domain,
-> +		DOMAIN_ATTR_PGTABLE_CFG, &cfg);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	pagetable = kzalloc(sizeof(*pagetable), GFP_KERNEL);
-> +	if (!pagetable)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	msm_mmu_init(&pagetable->base, parent->dev, &pagetable_funcs,
-> +		MSM_MMU_IOMMU_PAGETABLE);
-> +
-> +	/* The incoming cfg will have the TTBR1 quirk enabled */
-> +	cfg.quirks &= ~IO_PGTABLE_QUIRK_ARM_TTBR1;
-> +	cfg.tlb = &null_tlb_ops;
-> +
-> +	pagetable->pgtbl_ops = alloc_io_pgtable_ops(ARM_64_LPAE_S1,
-> +		&cfg, iommu->domain);
-> +
-> +	if (!pagetable->pgtbl_ops) {
-> +		kfree(pagetable);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	/*
-> +	 * If this is the first pagetable that we've allocated, send it back to
-> +	 * the arm-smmu driver as a trigger to set up TTBR0
-> +	 */
-> +	if (atomic_inc_return(&iommu->pagetables) == 1) {
-> +		ret = iommu_domain_set_attr(iommu->domain,
-> +			DOMAIN_ATTR_PGTABLE_CFG, &cfg);
-> +		if (ret) {
-> +			free_io_pgtable_ops(pagetable->pgtbl_ops);
-> +			kfree(pagetable);
-> +			return ERR_PTR(ret);
-> +		}
-> +	}
-> +
-> +	/* Needed later for TLB flush */
-> +	pagetable->parent = parent;
-> +	pagetable->ttbr = cfg.arm_lpae_s1_cfg.ttbr;
-> +
-> +	pagetable->asid = next_asid;
-> +	next_asid = (next_asid + 1) % 255;
-> +	next_asid = min(16, next_asid);
-> +
-> +	return &pagetable->base;
-> +}
-> +
->  static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
->  		unsigned long iova, int flags, void *arg)
->  {
-> @@ -85,9 +271,11 @@ struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain)
->  		return ERR_PTR(-ENOMEM);
->  
->  	iommu->domain = domain;
-> -	msm_mmu_init(&iommu->base, dev, &funcs);
-> +	msm_mmu_init(&iommu->base, dev, &funcs, MSM_MMU_IOMMU);
->  	iommu_set_fault_handler(domain, msm_fault_handler, iommu);
->  
-> +	atomic_set(&iommu->pagetables, 0);
-> +
->  	ret = iommu_attach_device(iommu->domain, dev);
->  	if (ret) {
->  		kfree(iommu);
-> diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-> index 3a534ee59bf6..61ade89d9e48 100644
-> --- a/drivers/gpu/drm/msm/msm_mmu.h
-> +++ b/drivers/gpu/drm/msm/msm_mmu.h
-> @@ -17,18 +17,26 @@ struct msm_mmu_funcs {
->  	void (*destroy)(struct msm_mmu *mmu);
->  };
->  
-> +enum msm_mmu_type {
-> +	MSM_MMU_GPUMMU,
-> +	MSM_MMU_IOMMU,
-> +	MSM_MMU_IOMMU_PAGETABLE,
-> +};
-> +
->  struct msm_mmu {
->  	const struct msm_mmu_funcs *funcs;
->  	struct device *dev;
->  	int (*handler)(void *arg, unsigned long iova, int flags);
->  	void *arg;
-> +	enum msm_mmu_type type;
->  };
->  
->  static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
-> -		const struct msm_mmu_funcs *funcs)
-> +		const struct msm_mmu_funcs *funcs, enum msm_mmu_type type)
->  {
->  	mmu->dev = dev;
->  	mmu->funcs = funcs;
-> +	mmu->type = type;
->  }
->  
->  struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain);
-> @@ -41,7 +49,13 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
->  	mmu->handler = handler;
->  }
->  
-> +struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
-> +
->  void msm_gpummu_params(struct msm_mmu *mmu, dma_addr_t *pt_base,
->  		dma_addr_t *tran_error);
->  
-> +
-> +int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
-> +		int *asid);
-> +
->  #endif /* __MSM_MMU_H__ */
+with per-numa CMA, smmu will get memory from local numa node to save command
+queues and page tables. that means dma_unmap latency will be shrunk much.
+
+Meanwhile, when iommu.passthrough is on, device drivers which call dma_
+alloc_coherent() will also get local memory and avoid the travel between
+numa nodes.
+
+[1] https://lists.linuxfoundation.org/pipermail/iommu/2017-October/024455.html
+[2] https://www.spinics.net/lists/iommu/msg44767.html
+
+-v8:
+ * rename parameter from pernuma_cma to cma_pernuma with respect to the comments
+   of Mike Rapoport and Randy Dunlap
+ * if both hugetlb_cma and pernuma_cma are enabled, we may need a larger default
+   CMA_AREAS. In numa, we set it to 19 based on the discussion with Mike Kravetz
+
+-v7:
+ * add Will's acked-by
+ * some cleanup with respect to Will's comments
+ * add patch 3/3 to remove the hardcode of defining the size of cma name.
+   this patch requires some header file change in include/linux
+
+-v6:
+ * rebase on top of 5.9-rc1
+ * doc cleanup
+
+-v5:
+ refine code according to Christoph Hellwig's comments
+ * remove Kconfig option for pernuma cma size;
+ * add Kconfig option for pernuma cma enable;
+ * code cleanup like line over 80 char
+
+ I haven't removed the cma NULL check code in cma_alloc() as it requires
+ a bundle of other changes. So I prefer to handle this issue separately.
+
+-v4:
+ * rebase on top of Christoph Hellwig's patch:
+ [PATCH v2] dma-contiguous: cleanup dma_alloc_contiguous
+ https://lore.kernel.org/linux-iommu/20200723120133.94105-1-hch@lst.de/
+ * cleanup according to Christoph's comment
+ * rebase on top of linux-next to avoid arch/arm64 conflicts
+ * reserve cma by checking N_MEMORY rather than N_ONLINE
+
+-v3:
+  * move to use page_to_nid() while freeing cma with respect to Robin's
+  comment, but this will only work after applying my below patch:
+  "mm/cma.c: use exact_nid true to fix possible per-numa cma leak"
+  https://marc.info/?l=linux-mm&m=159333034726647&w=2
+
+  * handle the case count <= 1 more properly according to Robin's
+  comment;
+
+  * add pernuma_cma parameter to support dynamic setting of per-numa
+  cma size;
+  ideally we can leverage the CMA_SIZE_MBYTES, CMA_SIZE_PERCENTAGE and
+  "cma=" kernel parameter and avoid a new paramter separately for per-
+  numa cma. Practically, it is really too complicated considering the
+  below problems:
+  (1) if we leverage the size of default numa for per-numa, we have to
+  avoid creating two cma with same size in node0 since default cma is
+  probably on node0.
+  (2) default cma can consider the address limitation for old devices
+  while per-numa cma doesn't support GFP_DMA and GFP_DMA32. all
+  allocations with limitation flags will fallback to default one.
+  (3) hard to apply CMA_SIZE_PERCENTAGE to per-numa. it is hard to
+  decide if the percentage should apply to the whole memory size
+  or only apply to the memory size of a specific numa node.
+  (4) default cma size has CMA_SIZE_SEL_MIN and CMA_SIZE_SEL_MAX, it
+  makes things even more complicated to per-numa cma.
+
+  I haven't figured out a good way to leverage the size of default cma
+  for per-numa cma. it seems a separate parameter for per-numa could
+  make life easier.
+
+  * move dma_pernuma_cma_reserve() after hugetlb_cma_reserve() to
+  reuse the comment before hugetlb_cma_reserve() with respect to
+  Robin's comment
+
+-v2: 
+  * fix some issues reported by kernel test robot
+  * fallback to default cma while allocation fails in per-numa cma
+     free memory properly
+
+Barry Song (3):
+  dma-contiguous: provide the ability to reserve per-numa CMA
+  arm64: mm: reserve per-numa CMA to localize coherent dma buffers
+  mm: cma: use CMA_MAX_NAME to define the length of cma name array
+
+ .../admin-guide/kernel-parameters.txt         |  11 ++
+ arch/arm64/mm/init.c                          |   2 +
+ include/linux/cma.h                           |   2 +
+ include/linux/dma-contiguous.h                |   6 ++
+ kernel/dma/Kconfig                            |  11 ++
+ kernel/dma/contiguous.c                       | 100 ++++++++++++++++--
+ mm/Kconfig                                    |   3 +-
+ mm/cma.h                                      |   2 -
+ mm/hugetlb.c                                  |   4 +-
+ 9 files changed, 126 insertions(+), 15 deletions(-)
+
+-- 
+2.27.0
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
