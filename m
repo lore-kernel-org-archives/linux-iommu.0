@@ -2,98 +2,102 @@ Return-Path: <SRS0=rIde=CC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9CAC433E1
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 21:40:51 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F1EC433E1
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 21:56:32 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09B0F20702
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 21:40:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BE8A6204EA
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 21:56:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="tJ6RhK6w"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09B0F20702
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="ejZiB6ta"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE8A6204EA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6F15F860B0;
-	Mon, 24 Aug 2020 21:40:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 50AA522179;
+	Mon, 24 Aug 2020 21:56:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aSfDUflThXyQ; Mon, 24 Aug 2020 21:40:47 +0000 (UTC)
+	with ESMTP id VD5sOQFiRpQR; Mon, 24 Aug 2020 21:56:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7513085F4E;
-	Mon, 24 Aug 2020 21:40:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 656202155B;
+	Mon, 24 Aug 2020 21:56:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 582E0C07FF;
-	Mon, 24 Aug 2020 21:40:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6B88C0051
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:40:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 473F7C07FF;
+	Mon, 24 Aug 2020 21:56:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CF568C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:56:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6303A85FFC
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:40:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 9570521563
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:56:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wKKXr475u9AR for <iommu@lists.linux-foundation.org>;
- Mon, 24 Aug 2020 21:40:43 +0000 (UTC)
+ with ESMTP id z+ZL52o+NwrQ for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Aug 2020 21:56:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3CBFF85F4E
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:40:43 +0000 (UTC)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
- by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07OLdsPY046027;
- Mon, 24 Aug 2020 16:39:54 -0500
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4A29E2155B
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 21:56:25 +0000 (UTC)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+ by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07OLtjYQ054833;
+ Mon, 24 Aug 2020 16:55:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
- s=ti-com-17Q1; t=1598305194;
- bh=bf+6mDZifTI9HQJSeivn4me8d5zREYk1XPJ3eAaDXHY=;
+ s=ti-com-17Q1; t=1598306145;
+ bh=ToO+3NPhNZ4b2VimF7JI2m/Y+G+uDEUZKNJic2RPL6o=;
  h=Subject:To:CC:References:From:Date:In-Reply-To;
- b=tJ6RhK6wvGyEiAhqwOPDwT69Y3+7BoJNjgEuOOW+0PGCMSlzIrjy7T2GrEFwuAAcZ
- 51c8X4oGyc7X5b+1hxYLGjFw1iyT+DGwI6G2Whe/r0fmJRG1pX1zZGWT3yn2053eaa
- 4Szann3xS0X39D0KAerooEYGEMuFIf1zy1xME1pQ=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
- by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07OLdr7q044652
+ b=ejZiB6taEENr+Hn0hc5bAxqg24U0O44RwRV6vWtKHX8yF2fcogQtJomSomBv68bsw
+ PLYH2FmE7jGwhcY7LIUnfJ+iODjLSNf3FaJ0nJiaJysxQlv4DWvzMPBjl/LP0PdV54
+ oEReJqNmiKlUmO1gpvLUOBekMLgyCfT8DdSLNWaM=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+ by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07OLtiU8069939
  (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
- Mon, 24 Aug 2020 16:39:53 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ Mon, 24 Aug 2020 16:55:44 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 24
- Aug 2020 16:39:53 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ Aug 2020 16:55:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 24 Aug 2020 16:39:53 -0500
+ Frontend Transport; Mon, 24 Aug 2020 16:55:43 -0500
 Received: from [10.250.32.171] (ileax41-snat.itg.ti.com [10.172.224.153])
- by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07OLdqBH090259;
- Mon, 24 Aug 2020 16:39:52 -0500
-Subject: Re: [PATCH 11/18] iommu/omap: Add IOMMU_DOMAIN_DMA support
-To: Robin Murphy <robin.murphy@arm.com>, <hch@lst.de>, <joro@8bytes.org>,
- <linux@armlinux.org.uk>
+ by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07OLtgT3075587;
+ Mon, 24 Aug 2020 16:55:43 -0500
+Subject: Re: [PATCH 17/18] media/omap3isp: Clean up IOMMU workaround
+To: Robin Murphy <robin.murphy@arm.com>, Sakari Ailus <sakari.ailus@iki.fi>
 References: <cover.1597931875.git.robin.murphy@arm.com>
- <5ac3788f9f61f7698cfa9c5924d62714e230f678.1597931876.git.robin.murphy@arm.com>
-Message-ID: <c98765ad-e824-a54c-7cf8-c245dbf960d3@ti.com>
-Date: Mon, 24 Aug 2020 16:39:52 -0500
+ <11d8419744e4e744a9448180801b0c4683328afd.1597931876.git.robin.murphy@arm.com>
+ <20200820165339.GK7145@valkosipuli.retiisi.org.uk>
+ <be010209-4abc-ba48-4e31-185427776a13@arm.com>
+ <20200820195536.GL7145@valkosipuli.retiisi.org.uk>
+ <5190a40e-ad24-d98e-3588-b95592ea2db3@arm.com>
+Message-ID: <86d2fb37-33b8-68f1-fe0c-dad496869b29@ti.com>
+Date: Mon, 24 Aug 2020 16:55:42 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <5ac3788f9f61f7698cfa9c5924d62714e230f678.1597931876.git.robin.murphy@arm.com>
+In-Reply-To: <5190a40e-ad24-d98e-3588-b95592ea2db3@arm.com>
 Content-Language: en-US
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Cc: geert+renesas@glider.be, dri-devel@lists.freedesktop.org,
- matthias.bgg@gmail.com, thierry.reding@gmail.com,
+ linux-tegra@vger.kernel.org, thierry.reding@gmail.com,
  laurent.pinchart@ideasonboard.com, digetx@gmail.com, will@kernel.org,
- linux-samsung-soc@vger.kernel.org, magnus.damm@gmail.com,
- kyungmin.park@samsung.com, jonathanh@nvidia.com, agross@kernel.org,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- inki.dae@samsung.com, linux-mediatek@lists.infradead.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- sw0312.kim@samsung.com, linux-kernel@vger.kernel.org, t-kristo@ti.com,
+ hch@lst.de, linux-samsung-soc@vger.kernel.org, magnus.damm@gmail.com,
+ linux@armlinux.org.uk, jonathanh@nvidia.com, agross@kernel.org,
+ kyungmin.park@samsung.com, linux-media@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, inki.dae@samsung.com,
+ linux-mediatek@lists.infradead.org, matthias.bgg@gmail.com,
+ linux-arm-kernel@lists.infradead.org, sw0312.kim@samsung.com,
+ linux-kernel@vger.kernel.org, t-kristo@ti.com,
  iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -109,111 +113,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Suman Anna via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Suman Anna <s-anna@ti.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
-On 8/20/20 10:08 AM, Robin Murphy wrote:
-> Now that arch/arm is wired up for default domains and iommu-dma,
-> implement the corresponding driver-side support for DMA domains.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/omap-iommu.c | 22 +++++++++++++++++++++-
->  1 file changed, 21 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 71f29c0927fc..ea25c2fe0418 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -9,6 +9,7 @@
->   *		Paul Mundt and Toshihiro Kobayashi
->   */
->  
-> +#include <linux/dma-iommu.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/err.h>
->  #include <linux/slab.h>
-> @@ -1574,13 +1575,19 @@ static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
->  {
->  	struct omap_iommu_domain *omap_domain;
->  
-> -	if (type != IOMMU_DOMAIN_UNMANAGED)
-> +	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
->  		return NULL;
->  
->  	omap_domain = kzalloc(sizeof(*omap_domain), GFP_KERNEL);
->  	if (!omap_domain)
->  		return NULL;
->  
-> +	if (type == IOMMU_DOMAIN_DMA &&
-> +	    iommu_get_dma_cookie(&omap_domain->domain)) {
-> +		kfree(omap_domain);
-> +		return NULL;
-> +	}
-> +
->  	spin_lock_init(&omap_domain->lock);
->  
->  	omap_domain->domain.geometry.aperture_start = 0;
-> @@ -1601,6 +1608,7 @@ static void omap_iommu_domain_free(struct iommu_domain *domain)
->  	if (omap_domain->dev)
->  		_omap_iommu_detach_dev(omap_domain, omap_domain->dev);
->  
-> +	iommu_put_dma_cookie(&omap_domain->domain);
->  	kfree(omap_domain);
->  }
->  
-> @@ -1736,6 +1744,17 @@ static struct iommu_group *omap_iommu_device_group(struct device *dev)
->  	return group;
->  }
->  
-> +static int omap_iommu_of_xlate(struct device *dev,
-> +			       struct of_phandle_args *args)
-> +{
-> +	/*
-> +	 * Logically, some of the housekeeping from _omap_iommu_add_device()
-> +	 * should probably move here, but the minimum we *need* is simply to
-> +	 * cooperate with of_iommu at all to let iommu-dma work.
-> +	 */
-> +	return 0;
-> +}
-> +
-
-I have tested this series, and it is breaking the OMAP remoteproc functionality.
-We definitely need some more plumbing. I am currently getting MMU faults and
-also the DMA allocated addresses are not coming from the device-specific CMA
-pools (opposite of what Sakari has reported with OMAP3 ISP). Just removing the
-of_xlate gets me back the expected allocations, and no MMU faults, but I don't
-see any valid traces.
-
-The MMU devices that the OMAP IOMMU driver deals with are not traditional
-bus-level IOMMU devices, but local MMU devices that are present within a remote
-processor sub-system or hardware accelerator (eg: OMAP3 ISP). The usage is also
-slightly different between remoteprocs and OMAP3 ISP. The former uses the CMA
-pools and iommu_map/unmap API (UNMANAGED iommu domain), as the allocated regions
-need to be mapped using specific device addresses adhering to the firmware
-linker map, while OMAP3 ISP uses it like a traditional DMA pool.
-
-regards
-Suman
-
->  static const struct iommu_ops omap_iommu_ops = {
->  	.domain_alloc	= omap_iommu_domain_alloc,
->  	.domain_free	= omap_iommu_domain_free,
-> @@ -1747,6 +1766,7 @@ static const struct iommu_ops omap_iommu_ops = {
->  	.probe_device	= omap_iommu_probe_device,
->  	.release_device	= omap_iommu_release_device,
->  	.device_group	= omap_iommu_device_group,
-> +	.of_xlate	= omap_iommu_of_xlate,
->  	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
->  };
->  
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gOC8yMC8yMCA2OjAxIFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMC0wOC0yMCAy
+MDo1NSwgU2FrYXJpIEFpbHVzIHdyb3RlOgo+PiBPbiBUaHUsIEF1ZyAyMCwgMjAyMCBhdCAwNjoy
+NToxOVBNICswMTAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+PiBPbiAyMDIwLTA4LTIwIDE3OjUz
+LCBTYWthcmkgQWlsdXMgd3JvdGU6Cj4+Pj4gSGkgUm9iaW4sCj4+Pj4KPj4+PiBPbiBUaHUsIEF1
+ZyAyMCwgMjAyMCBhdCAwNDowODozNlBNICswMTAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+Pj4+
+IE5vdyB0aGF0IGFyY2gvYXJtIGlzIHdpcmVkIHVwIGZvciBkZWZhdWx0IGRvbWFpbnMgYW5kIGlv
+bW11LWRtYSwgZGV2aWNlcwo+Pj4+PiBiZWhpbmQgSU9NTVVzIHdpbGwgZ2V0IG1hcHBpbmdzIHNl
+dCB1cCBhdXRvbWF0aWNhbGx5IGFzIGFwcHJvcHJpYXRlLCBzbwo+Pj4+PiB0aGVyZSBpcyBubyBu
+ZWVkIGZvciBkcml2ZXJzIHRvIGRvIHNvIG1hbnVhbGx5Lgo+Pj4+Pgo+Pj4+PiBTaWduZWQtb2Zm
+LWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgo+Pj4+Cj4+Pj4gVGhhbmtz
+IGZvciB0aGUgcGF0Y2guCj4+Pgo+Pj4gTWFueSB0aGFua3MgZm9yIHRlc3Rpbmcgc28gcXVpY2ts
+eSEKPj4+Cj4+Pj4gSSBoYXZlbid0IGxvb2tlZCBhdCB0aGUgZGV0YWlscyBidXQgaXQgc2VlbXMg
+dGhhdCB0aGlzIGNhdXNlcyB0aGUgYnVmZmVyCj4+Pj4gbWVtb3J5IGFsbG9jYXRpb24gdG8gYmUg
+cGh5c2ljYWxseSBjb250aWd1b3VzLCB3aGljaCBjYXVzZXMgYSBmYWlsdXJlIHRvCj4+Pj4gYWxs
+b2NhdGUgdmlkZW8gYnVmZmVycyBvZiBlbnRpcmVseSBub3JtYWwgc2l6ZS4gSSBndWVzcyB0aGF0
+IHdhcyBub3QKPj4+PiBpbnRlbnRpb25hbD8KPj4+Cj4+PiBIbW0sIGl0IGxvb2tzIGxpa2UgdGhl
+IGRldmljZSBlbmRzIHVwIHdpdGggdGhlIHdyb25nIERNQSBvcHMsIHdoaWNoIGltcGxpZXMKPj4+
+IHNvbWV0aGluZyBkaWRuJ3QgZ28gYXMgZXhwZWN0ZWQgd2l0aCB0aGUgZWFybGllciBJT01NVSBz
+ZXR1cCBhbmQgZGVmYXVsdAo+Pj4gZG9tYWluIGNyZWF0aW9uLiBDaGFuY2VzIGFyZSB0aGF0IGVp
+dGhlciBJIG1pc3NlZCBzb21lIHN1YnRsZXR5IGluIHRoZQo+Pj4gb21hcF9pb21tdSBjaGFuZ2Us
+IG9yIEkndmUgZnVuZGFtZW50YWxseSBtaXNqdWRnZWQgaG93IHRoZSBJU1AgcHJvYmluZyB3b3Jr
+cwo+Pj4gYW5kIGl0IG5ldmVyIGFjdHVhbGx5IGdvZXMgZG93biB0aGUgb2ZfaW9tbXVfY29uZmln
+dXJlKCkgcGF0aCBpbiB0aGUgZmlyc3QKPj4+IHBsYWNlLiBEbyB5b3UgZ2V0IGFueSBtZXNzYWdl
+cyBmcm9tIHRoZSBJT01NVSBsYXllciBlYXJsaWVyIG9uIGR1cmluZyBib290PwoKWWVhaCwgSSBk
+b24ndCB0aGluayB3ZSBnbyB0aHJvdWdoIHRoZSBvZl9pb21tdV9jb25maWd1cmUoKSBwYXRoLCB0
+aGUgc2V0dXAgaXMKbW9zdGx5IGRvbmUgdXNpbmcgLnByb2JlX2RldmljZSgpIGFuZCAuYXR0YWNo
+X2RldigpIG9wcy4gU2luY2UgdGhlIE1NVXMgYXJlCnByZXNlbnQgZGlyZWN0bHkgaW4gdGhlIHJl
+c3BlY3RpdmUgc3ViLXN5c3RlbXMgYW5kIHJlbGllcyBvbiB0aGUgc3ViLXN5c3RlbQpjbG9ja2lu
+ZyBhbmQgcG93ZXIsIHRoZSBNTVUgaXRzZWxmIGlzIHR1cm5lZCBPTiBhbmQgZW5hYmxlZCBkdXJp
+bmcgLmF0dGFjaF9kZXYoKS4KCnJlZ2FyZHMKU3VtYW4KCj4+Cj4+IEkgZG8gZ2V0IHRoZXNlOgo+
+Pgo+PiBbwqDCoMKgIDIuOTM0OTM2XSBpb21tdTogRGVmYXVsdCBkb21haW4gdHlwZTogVHJhbnNs
+YXRlZAo+PiBbwqDCoMKgIDIuOTQwOTE3XSBvbWFwLWlvbW11IDQ4MGJkNDAwLm1tdTogNDgwYmQ0
+MDAubW11IHJlZ2lzdGVyZWQKPj4gW8KgwqDCoCAyLjk0Njg5OV0gcGxhdGZvcm0gNDgwYmMwMDAu
+aXNwOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMAo+Pgo+IAo+IFNvIHRoYXQgbXVjaCBsb29rcyBP
+SywgaWYgdGhlcmUgYXJlIG5vIG9idmlvdXMgZXJyb3JzLiBVbmZvcnR1bmF0ZWx5IHRoZXJlJ3Mg
+bm8KPiBlYXN5IHdheSB0byB0ZWxsIGV4YWN0bHkgd2hhdCBvZl9pb21tdV9jb25maWd1cmUoKSBp
+cyBkb2luZyAoYmV5b25kIGVuYWJsaW5nIGEKPiBjb3VwbGUgb2YgdmFndWUgZGVidWcgbWVzc2Fn
+ZXMpLiBUaGUgZmlyc3QgdGhpbmcgSSdsbCBkbyB0b21vcnJvdyBpcwo+IGRvdWJsZS1jaGVjayB3
+aGV0aGVyIGl0J3MgcmVhbGx5IHdvcmtpbmcgb24gbXkgYm9hcmRzIGhlcmUsIG9yIHdoZXRoZXIg
+SSB3YXMKPiBqdXN0IGdldHRpbmcgbHVja3kgd2l0aCBDTUEuLi4gKEkgYXNzdW1lIHlvdSBkb24n
+dCBoYXZlIENNQSBlbmFibGVkIGlmIHlvdSdyZQo+IGVuZGluZyB1cCBpbiByZW1hcF9hbGxvY2F0
+b3JfYWxsb2MoKSkKPiAKPiBSb2Jpbi4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
