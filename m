@@ -7,107 +7,93 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE41C433E1
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 17:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3AFC433E5
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:29:15 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DBDA320738
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 17:24:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 210F220738
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:29:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MQXLFuQX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBDA320738
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="x0Sfr/Yl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 210F220738
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5CD0687CB2;
-	Mon, 24 Aug 2020 17:24:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BAB978822B;
+	Mon, 24 Aug 2020 18:29:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ig5VvirgxRgi; Mon, 24 Aug 2020 17:24:49 +0000 (UTC)
+	with ESMTP id jWuVl4VyuE5l; Mon, 24 Aug 2020 18:29:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3FD4F87B41;
-	Mon, 24 Aug 2020 17:24:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E4DCF87E6C;
+	Mon, 24 Aug 2020 18:29:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 27E0CC07FF;
-	Mon, 24 Aug 2020 17:24:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99F66C0051
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 17:24:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C15C7C016F;
+	Mon, 24 Aug 2020 18:29:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 968F8C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:29:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8E3B585D4B
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 17:24:47 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 832518816B
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:29:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XKfIiedogLAJ for <iommu@lists.linux-foundation.org>;
- Mon, 24 Aug 2020 17:24:46 +0000 (UTC)
+ with ESMTP id mnyBte+-lOQ4 for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Aug 2020 18:29:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4FC1985D40
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 17:24:46 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id dp2so7635353ejc.4
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 10:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=0pv9P9U6pxLlwMoplcSWHM0HVEAc+hsmuC2XIfXUykA=;
- b=MQXLFuQXuwoKlu3fd4XyBErZA9e2H8z9kAXsrL9JfqOnhiArUFNm5rTXpHuyaca30B
- j3+Hb+BLsOR6HAmseGR/njI2ubT9hInGmg3VFUve5o7gAsNT0w9XzR1I3+fUD512IgTP
- eEEIU2xOtudBI0wVeRc4FJOElyTL0U0PmPFBg=
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+ [209.85.208.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0D1C487E6C
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:29:08 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id c8so5567763edn.8
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 11:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=snzKM5vEA97goNtat3Sa2jITJjm5pT9WOcA8bka39g4=;
+ b=x0Sfr/Ylujee3iz/zzltJ9br+by1ysbyHSgl/n6MPwICzVFbrONY2m7Y0RwhKx2+H8
+ U5TrqRrVy857+R4orCBfk0AwbCOjBAsjm+0qdxRlBxLBgGKwUeQu9+mxABh+rPd1YaSv
+ YwY1XHk5EwWpkaqpyBw+cNVQ9f+2F//kUO8H+Ze5Q6CSjkwItpDEieZdbzxWv9rTxvU2
+ be96pmmKh0vBXdi3kdAChGQ9jxo+ZOe88xzUruOk8PMI4NBRP7DEvholLECUSHHQWFAk
+ v4NtjnpAp13yLn9gmBa3LibG1+F73Lxznq7YcqwEpIv5+i8HGbhc+vtwnILRB8I6RRNP
+ GLYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=0pv9P9U6pxLlwMoplcSWHM0HVEAc+hsmuC2XIfXUykA=;
- b=eYt7GBmhaToHjGTfXLNu0a3xnomFpg/FUNAm2VUIegrkBzgYvspoPZpiLCLsRiCDyp
- cc6dowbRXHciDgf451B3TpUZh1NY+2j9I+o0U9HY+B6yQ4DFjqp2fbyqeRqex+9IDXVu
- r0HnwftWCb4+ciaBKDcT0HhJ8mmdVQZ0LMdc1wP5nmtoVyR5wy+VhElGK4pjxCOg9Qzw
- rGOx5w+bxAvS6YP3DirGJskOcnqk1CmAGMhxrQAXY/LTy5D/aIVRFZHXZ7sUh+dDDSjH
- 59cEm92uU6oEQpQ+dAeaeiPuJISKYFkmFIKP4mMEBU21zPtjjdy4bKO1By3ouQUoY04K
- cPdg==
-X-Gm-Message-State: AOAM533fL6g4wNGqJpnLAeZhxWGC9hBxsyLmd31NEc+ShmhzBv7zh5Z5
- IQghbXuKN0qnCvnah6FLuMEGgZRPZ2f6cg==
-X-Google-Smtp-Source: ABdhPJx+D8II/Fx4O+yNwu5HqHLRq8VtDtVLG+SAgK415CHWK8tJwA6t9ZKK4kUhEdw0pEVEguG2dA==
-X-Received: by 2002:a17:906:2506:: with SMTP id
- i6mr6380606ejb.72.1598289880253; 
- Mon, 24 Aug 2020 10:24:40 -0700 (PDT)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com.
- [209.85.128.44])
- by smtp.gmail.com with ESMTPSA id d24sm10064683edz.77.2020.08.24.10.24.38
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 24 Aug 2020 10:24:38 -0700 (PDT)
-Received: by mail-wm1-f44.google.com with SMTP id g75so8948695wme.4
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 10:24:38 -0700 (PDT)
-X-Received: by 2002:a05:600c:2314:: with SMTP id
- 20mr256519wmo.183.1598289877815; 
- Mon, 24 Aug 2020 10:24:37 -0700 (PDT)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=snzKM5vEA97goNtat3Sa2jITJjm5pT9WOcA8bka39g4=;
+ b=C4a1mA1jugVhiXbPAu4uZUEtoiThjcLorm4GoexnOSl0QGSreO1sR4JWzkIA7IdStY
+ 3bHrHG+qryQZBuInVPelZYv9Uh3b72lIfpLRLwCc0n88v07fdE7//fCSmlelGpQ3nKCq
+ JzgA+kSo6vnsTOkQwICdATrJ8KB6o606NKeMPb/X7ASqxUKKgnqTngIKj2SqEFDchRF/
+ OCPfdKaTNg7FRtfu4h2QN+s7QzQ0pQ3O9jRVhjCiM8c4Xavmdz/m4Tab3LSY7R7+w0aq
+ Iuwj45Lx/P1eJQMGqYgAhg+KoFLAO+TORMBLaIPMz6/7DEqQpaiw8QpIuV2wOzP73c15
+ flhg==
+X-Gm-Message-State: AOAM531HzsaiJKDAp6rr0sphaToa0p+wbvGAR9WEi7+OtbqLuuXXe0lY
+ cX5p1xMd6/q6lRh47iQnXcBL7A==
+X-Google-Smtp-Source: ABdhPJzxLeLUHW4KGBQXuk+9NiYSz397HzkTvM9dZ87RtKK3ipDPI0Y53OBnGrJ4GdkMKVrtePdhng==
+X-Received: by 2002:a50:fc18:: with SMTP id i24mr6512604edr.176.1598293745898; 
+ Mon, 24 Aug 2020 11:29:05 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id f5sm10077087edx.8.2020.08.24.11.29.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 24 Aug 2020 11:29:05 -0700 (PDT)
+Date: Mon, 24 Aug 2020 20:28:48 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.pan.linux@gmail.com>
+Subject: Re: [PATCH v2 3/9] iommu/ioasid: Introduce ioasid_set APIs
+Message-ID: <20200824182848.GB3210689@myrica>
+References: <1598070918-21321-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1598070918-21321-4-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-References: <20200728050140.996974-1-tientzu@chromium.org>
- <20200728050140.996974-5-tientzu@chromium.org>
- <20200731205804.GB756942@bogus>
- <CALiNf2-BGQ+8Lm6A61oM6v+6N1zRTJYvod7LQLsCmK-ADsrMaw@mail.gmail.com>
- <CAAFQd5Cm+ZGx9ia2sAdvHQC6zC1U=+9AWs7iW7o-qE4g7wZgsw@mail.gmail.com>
- <CAAFQd5AfbN0V3sGCs8vhmeD-MNn3bTvfWBCaT-OY3hgjBUs-LQ@mail.gmail.com>
-In-Reply-To: <CAAFQd5AfbN0V3sGCs8vhmeD-MNn3bTvfWBCaT-OY3hgjBUs-LQ@mail.gmail.com>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Mon, 24 Aug 2020 19:24:25 +0200
-X-Gmail-Original-Message-ID: <CAAFQd5B_LAb0uU3J9umGWBhaVSKT3N9SynnvTxw_PVEwHu4Cww@mail.gmail.com>
-Message-ID: <CAAFQd5B_LAb0uU3J9umGWBhaVSKT3N9SynnvTxw_PVEwHu4Cww@mail.gmail.com>
-Subject: Re: [RFC v2 4/5] dt-bindings: of: Add plumbing for restricted DMA pool
-To: Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: linux-devicetree <devicetree@vger.kernel.org>,
- heikki.krogerus@linux.intel.com, Saravana Kannan <saravanak@google.com>,
- suzuki.poulose@arm.com, Greg KH <gregkh@linuxfoundation.org>,
- lkml <linux-kernel@vger.kernel.org>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Nicolas Boichat <drinkcat@chromium.org>, Claire Chang <tientzu@chromium.org>,
- dan.j.williams@intel.com, Thierry Reding <treding@nvidia.com>,
- Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <1598070918-21321-4-git-send-email-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Wu Hao <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,185 +111,858 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Aug 11, 2020 at 11:15 AM Tomasz Figa <tfiga@chromium.org> wrote:
->
-> On Mon, Aug 3, 2020 at 5:15 PM Tomasz Figa <tfiga@chromium.org> wrote:
-> >
-> > Hi Claire and Rob,
-> >
-> > On Mon, Aug 3, 2020 at 4:26 PM Claire Chang <tientzu@chromium.org> wrote:
-> > >
-> > > On Sat, Aug 1, 2020 at 4:58 AM Rob Herring <robh@kernel.org> wrote:
-> > > >
-> > > > On Tue, Jul 28, 2020 at 01:01:39PM +0800, Claire Chang wrote:
-> > > > > Introduce the new compatible string, device-swiotlb-pool, for restricted
-> > > > > DMA. One can specify the address and length of the device swiotlb memory
-> > > > > region by device-swiotlb-pool in the device tree.
-> > > > >
-> > > > > Signed-off-by: Claire Chang <tientzu@chromium.org>
-> > > > > ---
-> > > > >  .../reserved-memory/reserved-memory.txt       | 35 +++++++++++++++++++
-> > > > >  1 file changed, 35 insertions(+)
-> > > > >
-> > > > > diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> > > > > index 4dd20de6977f..78850896e1d0 100644
-> > > > > --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> > > > > +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> > > > > @@ -51,6 +51,24 @@ compatible (optional) - standard definition
-> > > > >            used as a shared pool of DMA buffers for a set of devices. It can
-> > > > >            be used by an operating system to instantiate the necessary pool
-> > > > >            management subsystem if necessary.
-> > > > > +        - device-swiotlb-pool: This indicates a region of memory meant to be
-> > > >
-> > > > swiotlb is a Linux thing. The binding should be independent.
-> > > Got it. Thanks for pointing this out.
-> > >
-> > > >
-> > > > > +          used as a pool of device swiotlb buffers for a given device. When
-> > > > > +          using this, the no-map and reusable properties must not be set, so the
-> > > > > +          operating system can create a virtual mapping that will be used for
-> > > > > +          synchronization. Also, there must be a restricted-dma property in the
-> > > > > +          device node to specify the indexes of reserved-memory nodes. One can
-> > > > > +          specify two reserved-memory nodes in the device tree. One with
-> > > > > +          shared-dma-pool to handle the coherent DMA buffer allocation, and
-> > > > > +          another one with device-swiotlb-pool for regular DMA to/from system
-> > > > > +          memory, which would be subject to bouncing. The main purpose for
-> > > > > +          restricted DMA is to mitigate the lack of DMA access control on
-> > > > > +          systems without an IOMMU, which could result in the DMA accessing the
-> > > > > +          system memory at unexpected times and/or unexpected addresses,
-> > > > > +          possibly leading to data leakage or corruption. The feature on its own
-> > > > > +          provides a basic level of protection against the DMA overwriting buffer
-> > > > > +          contents at unexpected times. However, to protect against general data
-> > > > > +          leakage and system memory corruption, the system needs to provide a
-> > > > > +          way to restrict the DMA to a predefined memory region.
-> > > >
-> > > > I'm pretty sure we already support per device carveouts and I don't
-> > > > understand how this is different.
-> > > We use this to bounce streaming DMA in and out of a specially allocated region.
-> > > I'll try to merge this with the existing one (i.e., shared-dma-pool)
-> > > to see if that
-> > > makes things clearer.
-> > >
-> >
-> > Indeed, from the firmware point of view, this is just a carveout, for
-> > which we have the "shared-dma-pool" compatible string defined already.
-> >
-> > However, depending on the device and firmware setup, the way the
-> > carevout is used may change. I can see the following scenarios:
-> >
-> > 1) coherent DMA (dma_alloc_*) within a reserved pool and no
-> > non-coherent DMA (dma_map_*).
-> >
-> > This is how the "memory-region" property is handled today in Linux for
-> > devices which can only DMA from/to the given memory region. However,
-> > I'm not sure if no non-coherent DMA is actually enforced in any way by
-> > the DMA subsystem.
-> >
-> > 2) coherent DMA from a reserved pool and non-coherent DMA from system memory
-> >
-> > This is the case for the systems which have some dedicated part of
-> > memory which is guaranteed to be coherent with the DMA, but still can
-> > do non-coherent DMA to any part of the system memory. Linux handles it
-> > the same way as 1), which is what made me believe that 1) might not
-> > actually be handled correctly.
-> >
-> > 3) coherent DMA and bounced non-coherent DMA within a reserved pool
-> > 4) coherent DMA within one pool and bounced non-coherent within another pool
-> >
-> > These are the two cases we're interested in. Basically they make it
-> > possible for non-coherent DMA from arbitrary system memory to be
-> > bounced through a reserved pool, which the device has access to. The
-> > current series implements 4), but I'd argue that it:
-> >
-> > - is problematic from the firmware point of view, because on most of
-> > the systems, both pools would be just some carveouts and the fact that
-> > Linux would use one for coherent and the other for non-coherent DMA
-> > would be an OS implementation detail,
-> > - suffers from the static memory split between coherent and
-> > non-coherent DMA, which could either result in some wasted memory or
-> > the DMA stopped working after a kernel update if the driver changes
-> > its allocation pattern,
-> >
-> > and so we should rather go with 3).
-> >
-> > Now, from the firmware point of view, it doesn't matter how the OS
-> > uses the carveout, but I think it's still necessary to tell the OS
-> > about the device DMA capability. Right now we use "memory-region" for
-> > any kind of reserved memory, but looking at the above scenarios, there
-> > are 2 cases:
-> >
-> > a) the memory region is preferred for the device, e.g. it enables
-> > coherency, but the device can still DMA across the rest of the system
-> > memory. This is the case in scenario 2) and is kind of assumed in the
-> > Linux DMA subsystem, although it's certainly not the case for a lot of
-> > hardware, even if they use the "memory-region" binding.
-> >
-> > b) the memory region is the only region that the device can access.
-> > This is the case in scenarios 1), 3) and 4).
-> >
-> > For this, I'd like to propose a "restricted-dma-region" (feel free to
-> > suggest a better name) binding, which is explicitly specified to be
-> > the only DMA-able memory for this device and make Linux use the given
-> > pool for coherent DMA allocations and bouncing non-coherent DMA.
-> >
-> > What do you think?
->
-> Rob, Robin, we'd appreciate your feedback on this when you have a
-> chance to take a look again. Thanks!
+On Fri, Aug 21, 2020 at 09:35:12PM -0700, Jacob Pan wrote:
+> ioasid_set was introduced as an arbitrary token that are shared by a
+> group of IOASIDs. For example, if IOASID #1 and #2 are allocated via the
+> same ioasid_set*, they are viewed as to belong to the same set.
+> 
+> For guest SVA usages, system-wide IOASID resources need to be
+> partitioned such that VMs can have its own quota and being managed
+> separately. ioasid_set is the perfect candidate for meeting such
+> requirements. This patch redefines and extends ioasid_set with the
+> following new fields:
+> - Quota
+> - Reference count
+> - Storage of its namespace
+> - The token is stored in the new ioasid_set but with optional types
+> 
+> ioasid_set level APIs are introduced that wires up these new data.
+> Existing users of IOASID APIs are converted where a host IOASID set is
+> allocated for bare-metal usage.
+> 
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c |  27 ++-
+>  drivers/iommu/intel/pasid.h |   1 +
+>  drivers/iommu/intel/svm.c   |   8 +-
+>  drivers/iommu/ioasid.c      | 390 +++++++++++++++++++++++++++++++++++++++++---
+>  include/linux/ioasid.h      |  82 ++++++++--
+>  5 files changed, 465 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index a3a0b5c8921d..5813eeaa5edb 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -42,6 +42,7 @@
+>  #include <linux/crash_dump.h>
+>  #include <linux/numa.h>
+>  #include <linux/swiotlb.h>
+> +#include <linux/ioasid.h>
+>  #include <asm/irq_remapping.h>
+>  #include <asm/cacheflush.h>
+>  #include <asm/iommu.h>
+> @@ -103,6 +104,9 @@
+>   */
+>  #define INTEL_IOMMU_PGSIZES	(~0xFFFUL)
+>  
+> +/* PASIDs used by host SVM */
+> +struct ioasid_set *host_pasid_set;
+> +
+>  static inline int agaw_to_level(int agaw)
+>  {
+>  	return agaw + 2;
+> @@ -3103,8 +3107,8 @@ static void intel_vcmd_ioasid_free(ioasid_t ioasid, void *data)
+>  	 * Sanity check the ioasid owner is done at upper layer, e.g. VFIO
+>  	 * We can only free the PASID when all the devices are unbound.
+>  	 */
+> -	if (ioasid_find(NULL, ioasid, NULL)) {
+> -		pr_alert("Cannot free active IOASID %d\n", ioasid);
+> +	if (IS_ERR(ioasid_find(host_pasid_set, ioasid, NULL))) {
+> +		pr_err("Cannot free IOASID %d, not in system set\n", ioasid);
+>  		return;
+>  	}
+>  	vcmd_free_pasid(iommu, ioasid);
+> @@ -3288,6 +3292,19 @@ static int __init init_dmars(void)
+>  	if (ret)
+>  		goto free_iommu;
+>  
+> +	/* PASID is needed for scalable mode irrespective to SVM */
+> +	if (intel_iommu_sm) {
+> +		ioasid_install_capacity(intel_pasid_max_id);
+> +		/* We should not run out of IOASIDs at boot */
+> +		host_pasid_set = ioasid_alloc_set(NULL, PID_MAX_DEFAULT,
+> +						IOASID_SET_TYPE_NULL);
+> +		if (IS_ERR_OR_NULL(host_pasid_set)) {
+> +			pr_err("Failed to enable host PASID allocator %lu\n",
+> +				PTR_ERR(host_pasid_set));
+> +			intel_iommu_sm = 0;
+> +		}
+> +	}
+> +
+>  	/*
+>  	 * for each drhd
+>  	 *   enable fault log
+> @@ -5149,7 +5166,7 @@ static void auxiliary_unlink_device(struct dmar_domain *domain,
+>  	domain->auxd_refcnt--;
+>  
+>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> -		ioasid_free(domain->default_pasid);
+> +		ioasid_free(host_pasid_set, domain->default_pasid);
+>  }
+>  
+>  static int aux_domain_add_dev(struct dmar_domain *domain,
+> @@ -5167,7 +5184,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+>  		int pasid;
+>  
+>  		/* No private data needed for the default pasid */
+> -		pasid = ioasid_alloc(NULL, PASID_MIN,
+> +		pasid = ioasid_alloc(host_pasid_set, PASID_MIN,
+>  				     pci_max_pasids(to_pci_dev(dev)) - 1,
+>  				     NULL);
+>  		if (pasid == INVALID_IOASID) {
+> @@ -5210,7 +5227,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+>  	spin_unlock(&iommu->lock);
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> -		ioasid_free(domain->default_pasid);
+> +		ioasid_free(host_pasid_set, domain->default_pasid);
+>  
+>  	return ret;
+>  }
+> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+> index c9850766c3a9..ccdc23446015 100644
+> --- a/drivers/iommu/intel/pasid.h
+> +++ b/drivers/iommu/intel/pasid.h
+> @@ -99,6 +99,7 @@ static inline bool pasid_pte_is_present(struct pasid_entry *pte)
+>  }
+>  
+>  extern u32 intel_pasid_max_id;
+> +extern struct ioasid_set *host_pasid_set;
+>  int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
+>  void intel_pasid_free_id(int pasid);
+>  void *intel_pasid_lookup_id(int pasid);
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 37a9beabc0ca..634e191ca2c3 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -551,7 +551,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
+>  			pasid_max = intel_pasid_max_id;
+>  
+>  		/* Do not use PASID 0, reserved for RID to PASID */
+> -		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
+> +		svm->pasid = ioasid_alloc(host_pasid_set, PASID_MIN,
+>  					  pasid_max - 1, svm);
+>  		if (svm->pasid == INVALID_IOASID) {
+>  			kfree(svm);
+> @@ -568,7 +568,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
+>  		if (mm) {
+>  			ret = mmu_notifier_register(&svm->notifier, mm);
+>  			if (ret) {
+> -				ioasid_free(svm->pasid);
+> +				ioasid_free(host_pasid_set, svm->pasid);
+>  				kfree(svm);
+>  				kfree(sdev);
+>  				goto out;
+> @@ -586,7 +586,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
+>  		if (ret) {
+>  			if (mm)
+>  				mmu_notifier_unregister(&svm->notifier, mm);
+> -			ioasid_free(svm->pasid);
+> +			ioasid_free(host_pasid_set, svm->pasid);
+>  			kfree(svm);
+>  			kfree(sdev);
+>  			goto out;
+> @@ -655,7 +655,7 @@ static int intel_svm_unbind_mm(struct device *dev, int pasid)
+>  			kfree_rcu(sdev, rcu);
+>  
+>  			if (list_empty(&svm->devs)) {
+> -				ioasid_free(svm->pasid);
+> +				ioasid_free(host_pasid_set, svm->pasid);
+>  				if (svm->mm)
+>  					mmu_notifier_unregister(&svm->notifier, svm->mm);
+>  				list_del(&svm->list);
+> diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+> index 5f63af07acd5..f73b3dbfc37a 100644
+> --- a/drivers/iommu/ioasid.c
+> +++ b/drivers/iommu/ioasid.c
+> @@ -1,22 +1,58 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * I/O Address Space ID allocator. There is one global IOASID space, split into
+> - * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
+> - * free IOASIDs with ioasid_alloc and ioasid_free.
+> + * subsets. Users create a subset with ioasid_alloc_set, then allocate/free IDs
+> + * with ioasid_alloc and ioasid_free.
+>   */
+> -#include <linux/ioasid.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/xarray.h>
+> +#include <linux/ioasid.h>
 
-Gentle ping.
+Spurious change (best keep the includes in alphabetical order)
 
->
-> Best regards,
-> Tomasz
->
-> >
-> > Best regards,
-> > Tomasz
-> >
-> > > >
-> > > > What is the last sentence supposed to imply? You need an IOMMU?
-> > > The main purpose is to mitigate the lack of DMA access control on
-> > > systems without an IOMMU.
-> > > For example, we plan to use this plus a MPU for our PCIe WiFi which is
-> > > not behind an IOMMU.
-> > >
-> > > >
-> > > > >          - vendor specific string in the form <vendor>,[<device>-]<usage>
-> > > > >  no-map (optional) - empty property
-> > > > >      - Indicates the operating system must not create a virtual mapping
-> > > > > @@ -117,6 +135,16 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-> > > > >                       compatible = "acme,multimedia-memory";
-> > > > >                       reg = <0x77000000 0x4000000>;
-> > > > >               };
-> > > > > +
-> > > > > +             wifi_coherent_mem_region: wifi_coherent_mem_region {
-> > > > > +                     compatible = "shared-dma-pool";
-> > > > > +                     reg = <0x50000000 0x400000>;
-> > > > > +             };
-> > > > > +
-> > > > > +             wifi_device_swiotlb_region: wifi_device_swiotlb_region {
-> > > > > +                     compatible = "device-swiotlb-pool";
-> > > > > +                     reg = <0x50400000 0x4000000>;
-> > > > > +             };
-> > > > >       };
-> > > > >
-> > > > >       /* ... */
-> > > > > @@ -135,4 +163,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-> > > > >               memory-region = <&multimedia_reserved>;
-> > > > >               /* ... */
-> > > > >       };
-> > > > > +
-> > > > > +     pcie_wifi: pcie_wifi@0,0 {
-> > > > > +             memory-region = <&wifi_coherent_mem_region>,
-> > > > > +                      <&wifi_device_swiotlb_region>;
-> > > > > +             restricted-dma = <0>, <1>;
-> > > > > +             /* ... */
-> > > > > +     };
-> > > > >  };
-> > > > > --
-> > > > > 2.28.0.rc0.142.g3c755180ce-goog
-> > > > >
+> +
+> +static DEFINE_XARRAY_ALLOC(ioasid_sets);
+
+I'd prefer keeping all static variables together
+
+> +enum ioasid_state {
+> +	IOASID_STATE_INACTIVE,
+> +	IOASID_STATE_ACTIVE,
+> +	IOASID_STATE_FREE_PENDING,
+> +};
+>  
+> +/**
+> + * struct ioasid_data - Meta data about ioasid
+> + *
+> + * @id:		Unique ID
+> + * @users	Number of active users
+> + * @state	Track state of the IOASID
+> + * @set		Meta data of the set this IOASID belongs to
+> + * @private	Private data associated with the IOASID
+> + * @rcu		For free after RCU grace period
+
+nit: it would be nicer to follow the struct order
+
+> + */
+>  struct ioasid_data {
+>  	ioasid_t id;
+>  	struct ioasid_set *set;
+> +	refcount_t users;
+> +	enum ioasid_state state;
+>  	void *private;
+>  	struct rcu_head rcu;
+>  };
+>  
+> +/* Default to PCIe standard 20 bit PASID */
+> +#define PCI_PASID_MAX 0x100000
+> +static ioasid_t ioasid_capacity = PCI_PASID_MAX;
+> +static ioasid_t ioasid_capacity_avail = PCI_PASID_MAX;
+> +
+> +void ioasid_install_capacity(ioasid_t total)
+> +{
+> +	ioasid_capacity = ioasid_capacity_avail = total;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_install_capacity);
+> +
+> +ioasid_t ioasid_get_capacity()
+> +{
+> +	return ioasid_capacity;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_get_capacity);
+> +
+>  /*
+>   * struct ioasid_allocator_data - Internal data structure to hold information
+>   * about an allocator. There are two types of allocators:
+> @@ -306,11 +342,23 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  {
+>  	struct ioasid_data *data;
+>  	void *adata;
+> -	ioasid_t id;
+> +	ioasid_t id = INVALID_IOASID;
+> +
+> +	spin_lock(&ioasid_allocator_lock);
+> +	/* Check if the IOASID set has been allocated and initialized */
+> +	if (WARN_ON(xa_load(&ioasid_sets, set->sid) != set)) {
+> +		pr_warn("Invalid set\n");
+
+WARN_ON() is sufficient
+
+> +		goto done_unlock;
+> +	}
+> +
+> +	if (set->quota <= set->nr_ioasids) {
+> +		pr_err("IOASID set %d out of quota %d\n", set->sid, set->quota);
+
+As this can be called directly by userspace via VFIO, I wonder if we
+should remove non-bug error messages like this one to avoid leaking
+internal IDs, or at least rate-limit them. We already have a few, perhaps
+we should deal with them before the VFIO_IOMMU_ALLOC_PASID patches land?
+
+> +		goto done_unlock;
+> +	}
+>  
+>  	data = kzalloc(sizeof(*data), GFP_ATOMIC);
+>  	if (!data)
+> -		return INVALID_IOASID;
+> +		goto done_unlock;
+>  
+>  	data->set = set;
+>  	data->private = private;
+> @@ -319,7 +367,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  	 * Custom allocator needs allocator data to perform platform specific
+>  	 * operations.
+>  	 */
+> -	spin_lock(&ioasid_allocator_lock);
+>  	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
+>  	id = active_allocator->ops->alloc(min, max, adata);
+>  	if (id == INVALID_IOASID) {
+> @@ -335,42 +382,339 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		goto exit_free;
+>  	}
+>  	data->id = id;
+> +	data->state = IOASID_STATE_ACTIVE;
+> +	refcount_set(&data->users, 1);
+> +
+> +	/* Store IOASID in the per set data */
+> +	if (xa_err(xa_store(&set->xa, id, data, GFP_ATOMIC))) {
+> +		pr_err("Failed to ioasid %d in set %d\n", id, set->sid);
+
+"Failed to store"
+Don't we need to call active_allocator->ops->free()?
+
+And I need to think about this more, but do you see any issue with
+revoking here the data that we published into the xarray above through
+alloc()?  We might need to free data in an RCU callback.
+
+> +		goto exit_free;
+> +	}
+> +	set->nr_ioasids++;
+> +	goto done_unlock;
+>  
+> -	spin_unlock(&ioasid_allocator_lock);
+> -	return id;
+>  exit_free:
+> -	spin_unlock(&ioasid_allocator_lock);
+>  	kfree(data);
+> -	return INVALID_IOASID;
+> +done_unlock:
+> +	spin_unlock(&ioasid_allocator_lock);
+> +	return id;
+>  }
+>  EXPORT_SYMBOL_GPL(ioasid_alloc);
+>  
+> +static void ioasid_do_free(struct ioasid_data *data)
+> +{
+> +	struct ioasid_data *ioasid_data;
+> +	struct ioasid_set *sdata;
+> +
+> +	active_allocator->ops->free(data->id, active_allocator->ops->pdata);
+> +	/* Custom allocator needs additional steps to free the xa element */
+> +	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
+> +		ioasid_data = xa_erase(&active_allocator->xa, data->id);
+> +		kfree_rcu(ioasid_data, rcu);
+> +	}
+> +
+> +	sdata = xa_load(&ioasid_sets, data->set->sid);
+> +	if (!sdata) {
+> +		pr_err("No set %d for IOASID %d\n", data->set->sid,
+> +		       data->id);
+> +		return;
+
+I don't think we're allowed to fail at this point. If we need more
+sanity-check on the parameters, it should be before we start removing from
+the active_allocator above. Otherwise this should be a WARN
+
+> +	}
+> +	xa_erase(&sdata->xa, data->id);
+> +	sdata->nr_ioasids--;
+
+Would be nicer to perform the cleanup in the order opposite from
+ioasid_alloc()
+
+> +}
+> +
+> +static void ioasid_free_locked(struct ioasid_set *set, ioasid_t ioasid)
+> +{
+> +	struct ioasid_data *data;
+> +
+> +	data = xa_load(&active_allocator->xa, ioasid);
+> +	if (!data) {
+> +		pr_err("Trying to free unknown IOASID %u\n", ioasid);
+> +		return;
+> +	}
+> +
+> +	if (data->set != set) {
+> +		pr_warn("Cannot free IOASID %u due to set ownership\n", ioasid);
+> +		return;
+> +	}
+> +	data->state = IOASID_STATE_FREE_PENDING;
+> +
+> +	if (!refcount_dec_and_test(&data->users))
+> +		return;
+> +
+> +	ioasid_do_free(data);
+> +}
+> +
+>  /**
+> - * ioasid_free - Free an IOASID
+> - * @ioasid: the ID to remove
+> + * ioasid_free - Drop reference on an IOASID. Free if refcount drops to 0,
+> + *               including free from its set and system-wide list.
+> + * @set:	The ioasid_set to check permission with. If not NULL, IOASID
+> + *		free will fail if the set does not match.
+> + * @ioasid:	The IOASID to remove
+>   */
+> -void ioasid_free(ioasid_t ioasid)
+> +void ioasid_free(struct ioasid_set *set, ioasid_t ioasid)
+>  {
+> -	struct ioasid_data *ioasid_data;
+> +	spin_lock(&ioasid_allocator_lock);
+> +	ioasid_free_locked(set, ioasid);
+> +	spin_unlock(&ioasid_allocator_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_free);
+>  
+> +/**
+> + * ioasid_alloc_set - Allocate a new IOASID set for a given token
+> + *
+> + * @token:	Unique token of the IOASID set, cannot be NULL
+> + * @quota:	Quota allowed in this set. Only for new set creation
+> + * @flags:	Special requirements
+
+There is no @flags, but @type is missing
+
+> + *
+> + * IOASID can be limited system-wide resource that requires quota management.
+> + * If caller does not wish to enforce quota, use IOASID_SET_NO_QUOTA flag.
+
+The flag isn't introduced in this patch. How about passing @quota == 0 in
+this case?  For now I'm fine with leaving this as TODO and returning
+-EINVAL.
+
+> + *
+> + * Token will be stored in the ioasid_set returned. A reference will be taken
+> + * upon finding a matching set or newly created set.
+> + * IOASID allocation within the set and other per set operations will use
+> + * the retured ioasid_set *.
+> + *
+> + */
+> +struct ioasid_set *ioasid_alloc_set(void *token, ioasid_t quota, int type)
+> +{
+> +	struct ioasid_set *sdata;
+> +	unsigned long index;
+> +	ioasid_t id;
+> +
+> +	if (type >= IOASID_SET_TYPE_NR)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	/*
+> +	 * Need to check space available if we share system-wide quota.
+> +	 * TODO: we may need to support quota free sets in the future.
+> +	 */
+>  	spin_lock(&ioasid_allocator_lock);
+> -	ioasid_data = xa_load(&active_allocator->xa, ioasid);
+> -	if (!ioasid_data) {
+> -		pr_err("Trying to free unknown IOASID %u\n", ioasid);
+> +	if (quota > ioasid_capacity_avail) {
+> +		pr_warn("Out of IOASID capacity! ask %d, avail %d\n",
+> +			quota, ioasid_capacity_avail);
+> +		sdata = ERR_PTR(-ENOSPC);
+>  		goto exit_unlock;
+>  	}
+>  
+> -	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
+> -	/* Custom allocator needs additional steps to free the xa element */
+> -	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
+> -		ioasid_data = xa_erase(&active_allocator->xa, ioasid);
+> -		kfree_rcu(ioasid_data, rcu);
+> +	/*
+> +	 * Token is only unique within its types but right now we have only
+> +	 * mm type. If we have more token types, we have to match type as well.
+> +	 */
+> +	switch (type) {
+> +	case IOASID_SET_TYPE_MM:
+> +		/* Search existing set tokens, reject duplicates */
+> +		xa_for_each(&ioasid_sets, index, sdata) {
+> +			if (sdata->token == token &&
+> +				sdata->type == IOASID_SET_TYPE_MM) {
+
+Should be aligned at the "if ("
+
+According to the function doc, shouldn't we take a reference to the set in
+this case, and return it?
+"A reference will be taken upon finding a matching set or newly created
+set."
+
+However it might be better to separate the two functionalities into
+ioasid_alloc_set() and ioasid_find_set(). Because two modules can want to
+work on the same set for an mm, but they won't pass the same @quota,
+right?  So it'd make more sense for one of them (VFIO) to alloc the set
+and the other to reuse it.
+
+> +				sdata = ERR_PTR(-EEXIST);
+> +				goto exit_unlock;
+> +			}
+> +		}
+> +		break;
+> +	case IOASID_SET_TYPE_NULL:
+> +		if (!token)
+> +			break;
+> +		fallthrough;
+> +	default:
+> +		pr_err("Invalid token and IOASID type\n");
+> +		sdata = ERR_PTR(-EINVAL);
+> +		goto exit_unlock;
+>  	}
+>  
+> +	/* REVISIT: may support set w/o quota, use system available */
+> +	if (!quota) {
+
+Maybe move this next to the other quota check above
+
+> +		sdata = ERR_PTR(-EINVAL);
+> +		goto exit_unlock;
+> +	}
+> +
+> +	sdata = kzalloc(sizeof(*sdata), GFP_ATOMIC);
+> +	if (!sdata) {
+> +		sdata = ERR_PTR(-ENOMEM);
+> +		goto exit_unlock;
+> +	}
+> +
+> +	if (xa_alloc(&ioasid_sets, &id, sdata,
+> +			XA_LIMIT(0, ioasid_capacity_avail - quota),
+
+Why this limit?  sid could just be an arbitrary u32 (xa_limit_32b)
+
+> +			GFP_ATOMIC)) {
+> +		kfree(sdata);
+> +		sdata = ERR_PTR(-ENOSPC);
+> +		goto exit_unlock;
+> +	}
+> +
+> +	sdata->token = token;
+> +	sdata->type = type;
+> +	sdata->quota = quota;
+> +	sdata->sid = id;
+> +	refcount_set(&sdata->ref, 1);
+> +
+> +	/*
+> +	 * Per set XA is used to store private IDs within the set, get ready
+> +	 * for ioasid_set private ID and system-wide IOASID allocation
+> +	 * results.
+> +	 */
+> +	xa_init_flags(&sdata->xa, XA_FLAGS_ALLOC);
+
+Since it's only used for storage, you could use xa_init()
+
+> +	ioasid_capacity_avail -= quota;
+> +
+>  exit_unlock:
+>  	spin_unlock(&ioasid_allocator_lock);
+> +
+> +	return sdata;
+>  }
+> -EXPORT_SYMBOL_GPL(ioasid_free);
+> +EXPORT_SYMBOL_GPL(ioasid_alloc_set);
+> +
+> +void ioasid_set_get_locked(struct ioasid_set *set)
+> +{
+> +	if (WARN_ON(xa_load(&ioasid_sets, set->sid) != set)) {
+> +		pr_warn("Invalid set data\n");
+
+WARN_ON() is sufficient
+
+> +		return;
+> +	}
+> +
+> +	refcount_inc(&set->ref);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_get_locked);
+
+Why is this function public, is it for an iterator?  Might want to add a
+lockdep_assert_held() annotation.
+
+> +
+> +void ioasid_set_get(struct ioasid_set *set)
+> +{
+> +	spin_lock(&ioasid_allocator_lock);
+> +	ioasid_set_get_locked(set);
+> +	spin_unlock(&ioasid_allocator_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_get);
+> +
+> +void ioasid_set_put_locked(struct ioasid_set *set)
+> +{
+> +	struct ioasid_data *entry;
+> +	unsigned long index;
+> +
+> +	if (WARN_ON(xa_load(&ioasid_sets, set->sid) != set)) {
+> +		pr_warn("Invalid set data\n");
+
+WARN_ON() is sufficient
+
+> +		return;
+> +	}
+> +
+> +	if (!refcount_dec_and_test(&set->ref)) {
+> +		pr_debug("%s: IOASID set %d has %d users\n",
+> +			__func__, set->sid, refcount_read(&set->ref));
+> +		return;
+> +	}
+> +
+> +	/* The set is already empty, we just destroy the set. */
+> +	if (xa_empty(&set->xa))
+> +		goto done_destroy;
+> +
+> +	/*
+> +	 * Free all PASIDs from system-wide IOASID pool, all subscribers gets
+> +	 * notified and do cleanup of their own.
+> +	 * Note that some references of the IOASIDs within the set can still
+> +	 * be held after the free call. This is OK in that the IOASIDs will be
+> +	 * marked inactive, the only operations can be done is ioasid_put.
+> +	 * No need to track IOASID set states since there is no reclaim phase.
+> +	 */
+> +	xa_for_each(&set->xa, index, entry) {
+> +		ioasid_free_locked(set, index);
+> +		/* Free from per set private pool */
+> +		xa_erase(&set->xa, index);
+> +	}
+> +
+> +done_destroy:
+> +	/* Return the quota back to system pool */
+> +	ioasid_capacity_avail += set->quota;
+> +	kfree_rcu(set, rcu);
+> +
+> +	/*
+> +	 * Token got released right away after the ioasid_set is freed.
+> +	 * If a new set is created immediately with the newly released token,
+> +	 * it will not allocate the same IOASIDs unless they are reclaimed.
+> +	 */
+> +	xa_erase(&ioasid_sets, set->sid);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_put_locked);
+
+Same comment as ioasid_set_get_locked
+
+> +
+> +/**
+> + * ioasid_set_put - Drop a reference to the IOASID set. Free all IOASIDs within
+> + *                  the set if there are no more users.
+> + *
+> + * @set:	The IOASID set ID to be freed
+> + *
+> + * If refcount drops to zero, all IOASIDs allocated within the set will be
+> + * freed.
+> + */
+> +void ioasid_set_put(struct ioasid_set *set)
+> +{
+> +	spin_lock(&ioasid_allocator_lock);
+> +	ioasid_set_put_locked(set);
+> +	spin_unlock(&ioasid_allocator_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_put);
+> +
+> +/**
+> + * ioasid_adjust_set - Adjust the quota of an IOASID set
+> + * @set:	IOASID set to be assigned
+> + * @quota:	Quota allowed in this set
+> + *
+> + * Return 0 on success. If the new quota is smaller than the number of
+> + * IOASIDs already allocated, -EINVAL will be returned. No change will be
+> + * made to the existing quota.
+> + */
+> +int ioasid_adjust_set(struct ioasid_set *set, int quota)
+> +{
+> +	int ret = 0;
+> +
+> +	spin_lock(&ioasid_allocator_lock);
+> +	if (set->nr_ioasids > quota) {
+> +		pr_err("New quota %d is smaller than outstanding IOASIDs %d\n",
+> +			quota, set->nr_ioasids);
+> +		ret = -EINVAL;
+> +		goto done_unlock;
+> +	}
+> +
+> +	if (quota >= ioasid_capacity_avail) {
+> +		ret = -ENOSPC;
+> +		goto done_unlock;
+> +	}
+> +
+> +	/* Return the delta back to system pool */
+> +	ioasid_capacity_avail += set->quota - quota;
+
+I think this is correct as long as the above check is fixed (as pointed
+out by Baolu). A check that quota >= 0 could be nice too.
+
+> +
+> +	/*
+> +	 * May have a policy to prevent giving all available IOASIDs
+> +	 * to one set. But we don't enforce here, it should be in the
+> +	 * upper layers.
+> +	 */
+> +	set->quota = quota;
+> +
+> +done_unlock:
+> +	spin_unlock(&ioasid_allocator_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_adjust_set);
+> +
+> +/**
+> + * ioasid_set_for_each_ioasid - Iterate over all the IOASIDs within the set
+> + *
+> + * Caller must hold a reference of the set and handles its own locking.
+> + */
+> +int ioasid_set_for_each_ioasid(struct ioasid_set *set,
+> +			       void (*fn)(ioasid_t id, void *data),
+> +			       void *data)
+> +{
+> +	struct ioasid_data *entry;
+> +	unsigned long index;
+> +	int ret = 0;
+> +
+> +	if (xa_empty(&set->xa)) {
+
+Who calls this function?  Empty xa may be a normal use-case if the caller
+just uses it for sweeping, so pr_warn() could be problematic. The returned
+value also isn't particularly accurate if concurrent ioasid_alloc/free are
+allowed, so I'd drop this.
+
+> +		pr_warn("No IOASIDs in the set %d\n", set->sid);
+> +		return -ENOENT;
+> +	}
+> +
+> +	xa_for_each(&set->xa, index, entry) {
+> +		fn(index, data);
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_set_for_each_ioasid);
+>  
+>  /**
+>   * ioasid_find - Find IOASID data
+> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+> index 9c44947a68c8..412d025d440e 100644
+> --- a/include/linux/ioasid.h
+> +++ b/include/linux/ioasid.h
+> @@ -10,8 +10,35 @@ typedef unsigned int ioasid_t;
+>  typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
+>  typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
+>  
+> +/* IOASID set types */
+> +enum ioasid_set_type {
+> +	IOASID_SET_TYPE_NULL = 1, /* Set token is NULL */
+> +	IOASID_SET_TYPE_MM,	  /* Set token is a mm_struct,
+> +				   * i.e. associated with a process
+> +				   */
+> +	IOASID_SET_TYPE_NR,
+> +};
+> +
+> +/**
+> + * struct ioasid_set - Meta data about ioasid_set
+> + * @type:	Token types and other features
+
+nit: doesn't follow struct order
+
+> + * @token:	Unique to identify an IOASID set
+> + * @xa:		XArray to store ioasid_set private IDs, can be used for
+> + *		guest-host IOASID mapping, or just a private IOASID namespace.
+> + * @quota:	Max number of IOASIDs can be allocated within the set
+> + * @nr_ioasids	Number of IOASIDs currently allocated in the set
+> + * @sid:	ID of the set
+> + * @ref:	Reference count of the users
+> + */
+>  struct ioasid_set {
+> -	int dummy;
+> +	void *token;
+> +	struct xarray xa;
+> +	int type;
+> +	int quota;
+> +	int nr_ioasids;
+> +	int sid;
+> +	refcount_t ref;
+> +	struct rcu_head rcu;
+>  };
+>  
+>  /**
+> @@ -29,31 +56,64 @@ struct ioasid_allocator_ops {
+>  	void *pdata;
+>  };
+>  
+> -#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
+> -
+>  #if IS_ENABLED(CONFIG_IOASID)
+> +void ioasid_install_capacity(ioasid_t total);
+> +ioasid_t ioasid_get_capacity(void);
+> +struct ioasid_set *ioasid_alloc_set(void *token, ioasid_t quota, int type);
+> +int ioasid_adjust_set(struct ioasid_set *set, int quota);
+> +void ioasid_set_get_locked(struct ioasid_set *set);
+> +void ioasid_set_put_locked(struct ioasid_set *set);
+> +void ioasid_set_put(struct ioasid_set *set);
+
+These three functions need a stub for !CONFIG_IOASID
+
+> +
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private);
+> -void ioasid_free(ioasid_t ioasid);
+> -void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> -		  bool (*getter)(void *));
+> +void ioasid_free(struct ioasid_set *set, ioasid_t ioasid);
+> +
+> +bool ioasid_is_active(ioasid_t ioasid);
+
+Not implemented by this series?
+
+> +
+> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, bool (*getter)(void *));
+
+Spurious change
+
+> +int ioasid_attach_data(ioasid_t ioasid, void *data);
+>  int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+>  void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+> -int ioasid_attach_data(ioasid_t ioasid, void *data);
+
+Spurious change?
+> -
+> +void ioasid_is_in_set(struct ioasid_set *set, ioasid_t ioasid);
+
+Not implemented here
+
+> +int ioasid_set_for_each_ioasid(struct ioasid_set *sdata,
+> +			       void (*fn)(ioasid_t id, void *data),
+> +			       void *data);
+
+Needs a stub for !CONFIG_IOASID
+
+>  #else /* !CONFIG_IOASID */
+> +static inline void ioasid_install_capacity(ioasid_t total)
+> +{
+> +}
+> +
+> +static inline ioasid_t ioasid_get_capacity(void)
+> +{
+> +	return 0;
+> +}
+> +
+>  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+>  				    ioasid_t max, void *private)
+>  {
+>  	return INVALID_IOASID;
+>  }
+>  
+> -static inline void ioasid_free(ioasid_t ioasid)
+> +static inline void ioasid_free(struct ioasid_set *set, ioasid_t ioasid)
+> +{
+> +}
+> +
+> +static inline bool ioasid_is_active(ioasid_t ioasid)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline struct ioasid_set *ioasid_alloc_set(void *token, ioasid_t quota, int type)
+> +{
+> +	return ERR_PTR(-ENOTSUPP);
+> +}
+> +
+> +static inline void ioasid_set_put(struct ioasid_set *set)
+>  {
+>  }
+>  
+> -static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+> -				bool (*getter)(void *))
+> +static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, bool (*getter)(void *))
+
+Spurious change
+
+Thanks,
+Jean
+
+>  {
+>  	return NULL;
+>  }
+> -- 
+> 2.7.4
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
