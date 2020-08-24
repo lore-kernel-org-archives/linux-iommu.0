@@ -8,87 +8,87 @@ X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CEAC433E5
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:43:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62461C433E5
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:43:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE1312074D
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 381A92177B
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 18:43:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cKnPnNCT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE1312074D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KTt1cEYi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 381A92177B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BD9B7875EA;
-	Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1ACDE8816B;
+	Mon, 24 Aug 2020 18:43:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D+n1dEjeSiLJ; Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
+	with ESMTP id fwsJ47EjLBVR; Mon, 24 Aug 2020 18:43:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 69398875CD;
-	Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 946C187CB5;
+	Mon, 24 Aug 2020 18:43:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 57420C016F;
-	Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F54DC0051
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:43:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EAF0C016F;
+	Mon, 24 Aug 2020 18:43:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11212C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:43:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7DA5D875E0
+ by silver.osuosl.org (Postfix) with ESMTP id D770A2077C
  for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:43:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id S+x9S64-IVpW for <iommu@lists.linux-foundation.org>;
- Mon, 24 Aug 2020 18:43:04 +0000 (UTC)
+ with ESMTP id eUTSa1J4Hyj2 for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Aug 2020 18:43:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 180AA875CB
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:43:04 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id l191so2885443pgd.5
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 11:43:04 -0700 (PDT)
+Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
+ [209.85.215.194])
+ by silver.osuosl.org (Postfix) with ESMTPS id 810342157D
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 18:43:01 +0000 (UTC)
+Received: by mail-pg1-f194.google.com with SMTP id w186so2886569pgb.8
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 11:43:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=eTzVI35DRVJv330Nqj3ET+6aUZCHukORN2vVqCI+diU=;
- b=cKnPnNCTWkaPr7f7iLMlg926WJU4UrOaPzfxFuLlQmLn9Y7XcZslcjvmp0E6xfwtOz
- gkZQ4IxM+pDxd4psoqGqo7WxSHhR+rc9dYIzzwOlOCQ54tBGHD34WnB4UECsRykp5Z8O
- en2Cp+5/9BQErxsjVk1881aQLuK1GHfb+6Audna0letrJ1mnS+M9eeRvQ2l3nnk7CkYZ
- VuSOgl2NAMCIReBC9EYVI7F2m71uuDLKcVLwZ/+E7fsvoPVq3BNE946SmCMo451CQMyq
- H0ykDMGQU5viHtIQmzaf397UPKBZhq7vuQRH58n7N/mCbXaIvgplxyPjozVjUFMh4ZGu
- VEtg==
+ bh=VJrx+AWRDEEJgr3DuJf5FGtuFm676MmhtRSCNhrUo5I=;
+ b=KTt1cEYiXU1s2DyRWGrMCMo6aJgvTJHSOS5G/PYktd3Wc3mxeZoM15gjdxnPZe78K9
+ XE9kcJ59YIkPbY8QB1lvDFs/JjIQzAi6D7il7Ftv97hGIAlmL3nZSUWNu222bfOExK5y
+ cGVNuCNUbgVJvmdzGAms4T7gFByYkXSMm+vTCf8p30/l2RnccdsynVF1xU0oPQ6SeIng
+ TdWYS/jga0mys7CXXXSfJmRn19C/gx/34duKD2WlVftweVsNx8rowU6Vpn5ovYm0oy05
+ Pyer/HwI/331NwJN8A0NuiS9QKTGkWSHYYCvTJCa+5Sztp9QmcZHZvwQvMinpKic6mNh
+ KoXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=eTzVI35DRVJv330Nqj3ET+6aUZCHukORN2vVqCI+diU=;
- b=Q+Zmcd45ziukC+Qk/2JFmDOqW8Z+3NgPHmHKMSkody1sTRNZ3+yMS/vYSpM9D3edeS
- 1vHw5qne4TJ6HYzTyqh80dXlMh1GRPhiaoTdKvgUbgrS3w4lCp5ZQJVfYHVTL/Q3L6wP
- dsHFcWVtOgbd/sGG6qt8JlnC14tYwIm6V/2ruqO+gT3KFw8rfER2Jtd/4peBKyZ9taWQ
- zPYg4gnos0ZfOTVryT1I/aXIZ4TV2GlYzL0IRxEI9WT5x4agjOlrGUneBI+i5suauOdK
- h2n5ZvV3VIOQ7bDWpkkRdwKgfCMjQjI6YOtRIy0iSNWcSd50aT9N/gdTM+Vs41uIw0wh
- ef6Q==
-X-Gm-Message-State: AOAM5318L53WemQA38YHiHiisneo3c6AFqCwWQ6NyZgZNAzdhCq1nnd2
- PK4ApkoSCw4VcgpwegRH8IE=
-X-Google-Smtp-Source: ABdhPJziwKfT/ADuD97U1DcjSVUyIfoo1r/o3mFvVUDV/G+U1SSbfm8cvQlIS6s62gMCK8gPj+Br6Q==
-X-Received: by 2002:a17:902:b193:: with SMTP id
- s19mr4902466plr.194.1598294583688; 
- Mon, 24 Aug 2020 11:43:03 -0700 (PDT)
+ bh=VJrx+AWRDEEJgr3DuJf5FGtuFm676MmhtRSCNhrUo5I=;
+ b=eiLkk2zs5I4F/nD2ICN7tltS3QlnTOA3vlX7EYTHHI0usvaxCOCck3fd6HuNx/OuyY
+ xz9KE0bC1tQ1cs4xFlcT914ouDDQ+Lm9XpwOwqBqZXqs3tGPVour8vdk4EH7yutv9dzB
+ EUXUgAoUV4T9DVUnRBaoiugffpQCamMBe4h17ZM1COeX2WG0QciTRYfbVInYwGKwag29
+ oFsn16wMCFj7NMLSbu99vROGMHOwCnlkIJ7DF6MWQqTElSwkRn9G/Lzx+jTI54rAa7f3
+ 77Bz2qUYiOpUM3erp6mOhZCB2T1NR+D60U364nN2Yj26cXnORft9jzZC93OmhimT7MW9
+ 5b9Q==
+X-Gm-Message-State: AOAM5303eCPW4iU9lQJVQlQTxck6i0QMEViiYR6jg6WIXxBd7fjgk9P7
+ 1prmYSUaxZe9gAvDghUY9S0=
+X-Google-Smtp-Source: ABdhPJxVOMMAzbTzCneKhacGBtyMfiXVyO5KNsF0pzpQXeI8dRQjCOIVGM8GwnqXHXzy+GM65O2HsA==
+X-Received: by 2002:a17:902:900a:: with SMTP id
+ a10mr4551045plp.203.1598294580998; 
+ Mon, 24 Aug 2020 11:43:00 -0700 (PDT)
 Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
- by smtp.gmail.com with ESMTPSA id in12sm241872pjb.29.2020.08.24.11.43.02
+ by smtp.gmail.com with ESMTPSA id x14sm11840582pfj.157.2020.08.24.11.42.59
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Aug 2020 11:43:02 -0700 (PDT)
+ Mon, 24 Aug 2020 11:42:59 -0700 (PDT)
 From: Rob Clark <robdclark@gmail.com>
 To: dri-devel@lists.freedesktop.org,
 	iommu@lists.linux-foundation.org
-Subject: [PATCH 18/20] arm: dts: qcom: sc7180: Set the compatible string for
+Subject: [PATCH 17/20] arm: dts: qcom: sm845: Set the compatible string for
  the GPU SMMU
-Date: Mon, 24 Aug 2020 11:37:52 -0700
-Message-Id: <20200824183825.1778810-19-robdclark@gmail.com>
+Date: Mon, 24 Aug 2020 11:37:51 -0700
+Message-Id: <20200824183825.1778810-18-robdclark@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200824183825.1778810-1-robdclark@gmail.com>
 References: <20200824183825.1778810-1-robdclark@gmail.com>
@@ -123,27 +123,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Rob Clark <robdclark@chromium.org>
+From: Jordan Crouse <jcrouse@codeaurora.org>
 
 Set the qcom,adreno-smmu compatible string for the GPU SMMU to enable
 split pagetables and per-instance pagetables for drm/msm.
 
+Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi | 9 +++++++++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi       | 2 +-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index d46b3833e52f..f3bef1cad889 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -1937,7 +1937,7 @@ opp-180000000 {
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi b/arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi
+index 64fc1bfd66fa..39f23cdcbd02 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi
+@@ -633,6 +633,15 @@ &mdss_mdp {
+ 	status = "okay";
+ };
+ 
++/*
++ * Cheza fw does not properly program the GPU aperture to allow the
++ * GPU to update the SMMU pagetables for context switches.  Work
++ * around this by dropping the "qcom,adreno-smmu" compat string.
++ */
++&adreno_smmu {
++	compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
++};
++
+ &mss_pil {
+ 	iommus = <&apps_smmu 0x781 0x0>,
+ 		 <&apps_smmu 0x724 0x3>;
+diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+index 2884577dcb77..76a8a34640ae 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+@@ -4058,7 +4058,7 @@ opp-257000000 {
  		};
  
  		adreno_smmu: iommu@5040000 {
--			compatible = "qcom,sc7180-smmu-v2", "qcom,smmu-v2";
-+			compatible = "qcom,sc7180-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2";
- 			reg = <0 0x05040000 0 0x10000>;
+-			compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
++			compatible = "qcom,sdm845-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2";
+ 			reg = <0 0x5040000 0 0x10000>;
  			#iommu-cells = <1>;
  			#global-interrupts = <2>;
 -- 
