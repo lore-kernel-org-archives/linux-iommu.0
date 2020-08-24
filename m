@@ -2,80 +2,113 @@ Return-Path: <SRS0=rIde=CC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CA0C433E5
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 14:02:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9F8C433E5
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 15:07:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 867E42065F
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 14:02:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 867E42065F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 54AA1206B5
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 15:07:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="frIi7Wtv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 54AA1206B5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4352187FC3;
-	Mon, 24 Aug 2020 14:02:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3001786365;
+	Mon, 24 Aug 2020 15:07:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QWGdEygjaUbH; Mon, 24 Aug 2020 14:02:06 +0000 (UTC)
+	with ESMTP id sRFd6wpsdts0; Mon, 24 Aug 2020 15:07:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 17A8C87FB5;
-	Mon, 24 Aug 2020 14:02:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 05ADC86303;
+	Mon, 24 Aug 2020 15:07:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F2F55C07FF;
-	Mon, 24 Aug 2020 14:02:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8201DC0051
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 14:02:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9244C016F;
+	Mon, 24 Aug 2020 15:07:50 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C7891C0051;
+ Mon, 24 Aug 2020 15:07:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6EBDA87746
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 14:02:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B626886365;
+ Mon, 24 Aug 2020 15:07:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gqRqmFoxamtj for <iommu@lists.linux-foundation.org>;
- Mon, 24 Aug 2020 14:01:59 +0000 (UTC)
+ with ESMTP id Wo1fNRui7wjp; Mon, 24 Aug 2020 15:07:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id B1FB886B33
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 14:01:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C6AE61FB;
- Mon, 24 Aug 2020 07:01:58 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A711F3F71F;
- Mon, 24 Aug 2020 07:01:52 -0700 (PDT)
-Subject: Re: [PATCH 16/18] staging/media/tegra-vde: Clean up IOMMU workaround
-To: Dmitry Osipenko <digetx@gmail.com>, hch@lst.de, joro@8bytes.org,
- linux@armlinux.org.uk
-References: <cover.1597931875.git.robin.murphy@arm.com>
- <3535c205b9bce52556abbf2f63384fb38e009df9.1597931876.git.robin.murphy@arm.com>
- <07135a55-cbc9-83e5-60dc-731282192554@gmail.com>
- <cb12808b-7316-19db-7413-b7f852a6f8ae@arm.com>
- <62a72187-442b-2103-46c3-39d3cd999f54@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <affe2cfb-19e8-8e55-acd0-7170e274ab34@arm.com>
-Date: Mon, 24 Aug 2020 15:01:51 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A75A286303;
+ Mon, 24 Aug 2020 15:07:48 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07OEwuOO191839;
+ Mon, 24 Aug 2020 15:07:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=l1AEyXzH7zlSNEaTv5VG5Ok+VBmrQiP21evzrcvBBX8=;
+ b=frIi7WtvzqlBw3+GerrRjHSaBPH3i+8eFV/QCEGRfLiBatGCngd3aDvtcAh02TVxIBRz
+ FOw/xH6J5cZs8D+mfuCHyO2/jjonU4Y7qk4sV5N/tYXyN57TiOt/V6qWnA36RpQ7mbVk
+ Be1Fl878fWxLsRdaR17O4V8MRo3jV6s/c+D29avST/UvJiTw2D8uCcehM1w7E7x0bSrq
+ /z6bYIXWLXMf1QGB/g+j0IY8MM3LXLFmqCjri0t8INMG3iawsCnuaVWubkq8QGsNM0iw
+ WIJpg8S5FS0ZGUbEF3ifetuK3z3A55u/WcROEmrA8AjKeWVBZ+6LAYpGcf3quBmpizd8 vg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2130.oracle.com with ESMTP id 333cshw5m8-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Mon, 24 Aug 2020 15:07:39 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07OF1F45142381;
+ Mon, 24 Aug 2020 15:05:39 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by userp3030.oracle.com with ESMTP id 333r9hcmqa-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 24 Aug 2020 15:05:39 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 07OF5bgd006612;
+ Mon, 24 Aug 2020 15:05:37 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Mon, 24 Aug 2020 08:05:36 -0700
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id 3AE8E6A0132; Mon, 24 Aug 2020 11:06:51 -0400 (EDT)
+Date: Mon, 24 Aug 2020 11:06:51 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: syzbot <syzbot+3f86afd0b1e4bf1cb64c@syzkaller.appspotmail.com>,
+ thomas.tai@oracle.com, airlied@redhat.com, kraxel@redhat.com,
+ virtualization@lists.linux-foundation.org, dri-devel@lists.freedesktop.org
+Subject: Is: virtio_gpu_object_shmem_init  issues? Was:Re: upstream boot
+ error: general protection fault in swiotlb_map
+Message-ID: <20200824150650.GD21321@char.us.oracle.com>
+References: <0000000000000c1f0005ac333382@google.com>
 MIME-Version: 1.0
-In-Reply-To: <62a72187-442b-2103-46c3-39d3cd999f54@gmail.com>
-Content-Language: en-GB
-Cc: geert+renesas@glider.be, dri-devel@lists.freedesktop.org,
- matthias.bgg@gmail.com, thierry.reding@gmail.com,
- laurent.pinchart@ideasonboard.com, will@kernel.org,
- linux-samsung-soc@vger.kernel.org, magnus.damm@gmail.com,
- kyungmin.park@samsung.com, jonathanh@nvidia.com, agross@kernel.org,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- inki.dae@samsung.com, linux-mediatek@lists.infradead.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- sw0312.kim@samsung.com, linux-kernel@vger.kernel.org, t-kristo@ti.com,
- iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <0000000000000c1f0005ac333382@google.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9722
+ signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ phishscore=0
+ suspectscore=0 malwarescore=0 spamscore=0 mlxlogscore=999 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008240121
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9722
+ signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ bulkscore=0 clxscore=1011
+ spamscore=0 priorityscore=1501 impostorscore=0 adultscore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008240121
+Cc: syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,122 +121,205 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMC0wOC0yMyAyMjozNCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDIxLjA4LjIwMjAg
-MDM6MTEsIFJvYmluIE11cnBoeSDQv9C40YjQtdGCOgo+IC4uLgo+Pj4gSGVsbG8sIFJvYmluISBU
-aGFuayB5b3UgZm9yIHlvdXJzIHdvcmshCj4+Pgo+Pj4gU29tZSBkcml2ZXJzLCBsaWtlIHRoaXMg
-VGVncmEgVkRFIChWaWRlbyBEZWNvZGVyIEVuZ2luZSkgZHJpdmVyIGZvcgo+Pj4gZXhhbXBsZSwg
-ZG8gbm90IHdhbnQgdG8gdXNlIGltcGxpY2l0IElPTU1VIGRvbWFpbi4KPj4KPj4gVGhhdCBpc24n
-dCAoaW50ZW50aW9uYWxseSkgY2hhbmdpbmcgaGVyZSAtIHRoZSBvbmx5IGRpZmZlcmVuY2Ugc2hv
-dWxkIGJlCj4+IHRoYXQgaW5zdGVhZCBvZiBoYXZpbmcgdGhlIEFSTS1zcGVjaWFsIGltcGxpY2l0
-IGRvbWFpbiwgd2hpY2ggeW91IGhhdmUKPj4gdG8ga2ljayBvdXQgb2YgdGhlIHdheSB3aXRoIHRo
-ZSBBUk0tc3BlY2lmaWMgQVBJIGJlZm9yZSB5b3UncmUgYWJsZSB0bwo+PiBhdHRhY2ggeW91ciBv
-d24gZG9tYWluLCB0aGUgaW1wbGljaXQgZG9tYWluIGlzIG5vdyBhIHByb3BlciBJT01NVSBBUEkK
-Pj4gZGVmYXVsdCBkb21haW4sIHdoaWNoIGF1dG9tYXRpY2FsbHkgZ2V0cyBidW1wZWQgYnkgeW91
-ciBhdHRhY2guIFRoZQo+PiBkZWZhdWx0IGRvbWFpbnMgc2hvdWxkIHN0aWxsIG9ubHkgYmUgY3Jl
-YXRlZCBpbiB0aGUgc2FtZSBjYXNlcyB0aGF0IHRoZQo+PiBBUk0gZG1hX2lvbW11X21hcHBpbmdz
-IHdlcmUuCj4+Cj4+PiBUZWdyYSBWREUgZHJpdmVyCj4+PiByZWxpZXMgb24gZXhwbGljaXQgSU9N
-TVUgZG9tYWluIGluIGEgY2FzZSBvZiBUZWdyYSBTTU1VIGJlY2F1c2UgVkRFCj4+PiBoYXJkd2Fy
-ZSBjYW4ndCBhY2Nlc3MgbGFzdCBwYWdlIG9mIHRoZSBBUyBhbmQgYmVjYXVzZSBkcml2ZXIgd2Fu
-dHMgdG8KPj4+IHJlc2VydmUgc29tZSBmaXhlZCBhZGRyZXNzZXMgWzFdLgo+Pj4KPj4+IFsxXQo+
-Pj4gaHR0cHM6Ly9lbGl4aXIuYm9vdGxpbi5jb20vbGludXgvdjUuOS1yYzEvc291cmNlL2RyaXZl
-cnMvc3RhZ2luZy9tZWRpYS90ZWdyYS12ZGUvaW9tbXUuYyNMMTAwCj4+Pgo+Pj4KPj4+IFRlZ3Jh
-MzAgU29DIHN1cHBvcnRzIHVwIHRvIDQgZG9tYWlucywgaGVuY2UgaXQncyBub3QgcG9zc2libGUg
-dG8gYWZmb3JkCj4+PiB3YXN0aW5nIHVudXNlZCBpbXBsaWNpdCBkb21haW5zLiBJIHRoaW5rIHRo
-aXMgbmVlZHMgdG8gYmUgYWRkcmVzc2VkCj4+PiBiZWZvcmUgdGhpcyBwYXRjaCBjb3VsZCBiZSBh
-cHBsaWVkLgo+Pgo+PiBZZWFoLCB0aGVyZSBpcyBvbmUgc3VidGxlIGNoYW5nZSBpbiBiZWhhdmlv
-dXIgZnJvbSByZW1vdmluZyB0aGUgQVJNCj4+IGxheWVyIG9uIHRvcCBvZiB0aGUgY29yZSBBUEks
-IGluIHRoYXQgdGhlIElPTU1VIGRyaXZlciB3aWxsIG5vIGxvbmdlcgo+PiBzZWUgYW4gZXhwbGlj
-aXQgZGV0YWNoIGNhbGwuIFRodXMgaXQgZG9lcyBzdGFuZCB0byBiZW5lZml0IGZyb20gYmVpbmcg
-YQo+PiBiaXQgY2xldmVyZXIgYWJvdXQgbm90aWNpbmcgZGV2aWNlcyBiZWluZyBtb3ZlZCBmcm9t
-IG9uZSBkb21haW4gdG8KPj4gYW5vdGhlciBieSBhbiBhdHRhY2ggY2FsbCwgZWl0aGVyIGJ5IHJl
-bGVhc2luZyB0aGUgaGFyZHdhcmUgY29udGV4dCBmb3IKPj4gdGhlIGluYWN0aXZlIGRvbWFpbiBv
-bmNlIHRoZSBkZXZpY2UocykgYXJlIG1vdmVkIGFjcm9zcyB0byB0aGUgbmV3IG9uZSwKPj4gb3Ig
-Ynkgc2ltcGx5IHJlcHJvZ3JhbW1pbmcgdGhlIGhhcmR3YXJlIGNvbnRleHQgaW4tcGxhY2UgZm9y
-IHRoZSBuZXcKPj4gZG9tYWluJ3MgYWRkcmVzcyBzcGFjZSB3aXRob3V0IGFsbG9jYXRpbmcgYSBu
-ZXcgb25lIGF0IGFsbCAobW9zdCBvZiB0aGUKPj4gZHJpdmVycyB0aGF0IGRvbid0IGhhdmUgbXVs
-dGlwbGUgY29udGV4dHMgYWxyZWFkeSBoYW5kbGUgdGhlIGxhdHRlcgo+PiBhcHByb2FjaCBxdWl0
-ZSB3ZWxsKS4KPj4KPj4+IFdvdWxkIGl0IGJlIHBvc3NpYmxlIGZvciBJT01NVSBkcml2ZXJzIHRv
-IGdhaW4gc3VwcG9ydCBmb3IgZmlsdGVyaW5nIG91dAo+Pj4gZGV2aWNlcyBpbiBpb21tdV9kb21h
-aW5fYWxsb2MoZGV2LCB0eXBlKT8gVGhlbiBwZXJoYXBzIFRlZ3JhIFNNTVUgZHJpdmVyCj4+PiBj
-b3VsZCBzaW1wbHkgcmV0dXJuIE5VTEwgaW4gYSBjYXNlIG9mIHR5cGU9SU9NTVVfRE9NQUlOX0RN
-QSBhbmQKPj4+IGRldj10ZWdyYS12ZGUuCj4+Cj4+IElmIHlvdSBjYW4gaW1wbGVtZW50IElPTU1V
-X0RPTUFJTl9JREVOVElUWSBieSBhbGxvd2luZyB0aGUgcmVsZXZhbnQKPj4gZGV2aWNlcyB0byBi
-eXBhc3MgdHJhbnNsYXRpb24gZW50aXJlbHkgd2l0aG91dCBuZWVkaW5nIGEgaGFyZHdhcmUKPj4g
-Y29udGV4dCAob3IgYXQgd29yc3QsIGNhbiBzcGFyZSBvbmUgY29udGV4dCB3aGljaCBhbGwgaWRl
-bnRpdHktbWFwcGVkCj4+IGxvZ2ljYWwgZG9tYWlucyBjYW4gc2hhcmUpLCB0aGVuIHlvdSBjb3Vs
-ZCBjZXJ0YWlubHkgZG8gdGhhdCBraW5kIG9mCj4+IGZpbHRlcmluZyB3aXRoIHRoZSAuZGVmX2Rv
-bWFpbl90eXBlIGNhbGxiYWNrIGlmIHlvdSByZWFsbHkgd2FudGVkIHRvLiBBcwo+PiBhYm92ZSwg
-dGhlIGludGVudCBpcyB0aGF0IHRoYXQgc2hvdWxkbid0IGJlIG5lY2Vzc2FyeSBmb3IgdGhpcwo+
-PiBwYXJ0aWN1bGFyIGNhc2UsIHNpbmNlIG9ubHkgb25lIG9mIGEgZ3JvdXAncyBkZWZhdWx0IGRv
-bWFpbiBhbmQKPj4gZXhwbGljaXRseSBhdHRhY2hlZCBkb21haW4gY2FuIGJlIGxpdmUgYXQgYW55
-IGdpdmVuIHRpbWUsIHNvIHRoZSBkcml2ZXIKPj4gc2hvdWxkIGJlIGFibGUgdG8gdGFrZSBhZHZh
-bnRhZ2Ugb2YgdGhhdC4KPj4KPj4gSWYgeW91IHNpbXBseSBoYXZlIG1vcmUgYWN0aXZlIGRldmlj
-ZXMgKGdyb3VwcykgdGhhbiBhdmFpbGFibGUgY29udGV4dHMKPj4gdGhlbiB5ZXMsIHlvdSBwcm9i
-YWJseSB3b3VsZCB3YW50IHRvIGRvIHNvbWUgZmlsdGVyaW5nIHRvIGRlY2lkZSB3aG8KPj4gZGVz
-ZXJ2ZXMgYSB0cmFuc2xhdGlvbiBkb21haW4gYW5kIHdobyBkb2Vzbid0LCBidXQgaW4gdGhhdCBj
-YXNlIHlvdQo+PiBzaG91bGQgYWxyZWFkeSBoYXZlIGhhZCBhIGxvbmctc3RhbmRpbmcgcHJvYmxl
-bSB3aXRoIHRoZSBBUk0gaW1wbGljaXQKPj4gZG9tYWlucy4KPj4KPj4+IEFsdGVybmF0aXZlbHks
-IHRoZSBUZWdyYSBTTU1VIGNvdWxkIGJlIGNoYW5nZWQgc3VjaCB0aGF0IHRoZSBkZXZpY2VzCj4+
-PiB3aWxsIGJlIGF0dGFjaGVkIHRvIGEgZG9tYWluIGF0IHRoZSB0aW1lIG9mIGEgZmlyc3QgSU9N
-TVUgbWFwcGluZwo+Pj4gaW52b2NhdGlvbiBpbnN0ZWFkIG9mIGF0dGFjaGluZyBhdCB0aGUgdGlt
-ZSBvZiBhdHRhY2hfZGV2KCkgY2FsbGJhY2sKPj4+IGludm9jYXRpb24uCj4+Pgo+Pj4gT3IgbWF5
-YmUgZXZlbiBJT01NVSBjb3JlIGNvdWxkIGJlIGNoYW5nZWQgdG8gYXR0YWNoIGRldmljZXMgYXQg
-dGhlIHRpbWUKPj4+IG9mIHRoZSBmaXJzdCBJT01NVSBtYXBwaW5nIGludm9jYXRpb24/IFRoaXMg
-Y291bGQgYmUgYSB1bml2ZXJzYWwKPj4+IHNvbHV0aW9uIGZvciBhbGwgZHJpdmVycy4KPj4KPj4g
-SSBzdXBwb3NlIHRlY2huaWNhbGx5IHlvdSBjb3VsZCBkbyB0aGF0IHdpdGhpbiBhbiBJT01NVSBk
-cml2ZXIgYWxyZWFkeQo+PiAoc2ltaWxhciB0byBob3cgc29tZSBkZWZlciBtb3N0IG9mIHNldHVw
-IHRoYXQgbG9naWNhbGx5IGJlbG9uZ3MgdG8KPj4gLT5kb21haW5fYWxsb2MgdW50aWwgdGhlIGZp
-cnN0IC0+YXR0YWNoX2RldikuIEl0J3MgYSBiaXQgZ3JpbSBmcm9tIHRoZQo+PiBjYWxsZXIncyBQ
-b1YgdGhvdWdoLCBpbiB0ZXJtcyBvZiB0aGUgZmFpbHVyZSBtb2RlIGJlaW5nIG5vbi1vYnZpb3Vz
-IGFuZAo+PiBoYXZpbmcgbm8gcmVhbCB3YXkgdG8gcmVjb3Zlci4gQWdhaW4sIHlvdSdkIGJlIGJl
-dHRlciBvZmYgc2ltcGx5IG1ha2luZwo+PiBkZWNpc2lvbnMgdXAtZnJvbnQgYXQgZG9tYWluX2Fs
-bG9jIG9yIGF0dGFjaCB0aW1lIGJhc2VkIG9uIHRoZSBkb21haW4gdHlwZS4KPiAKPiBSb2Jpbiwg
-dGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgdGhlIGNsYXJpZmljYXRpb25zIQo+IAo+IEluIGFjY29y
-ZGFuY2UgdG8geW91cnMgY29tbWVudHMsIHRoaXMgcGF0Y2ggY2FuJ3QgYmUgYXBwbGllZCB1bnRp
-bCBUZWdyYQo+IFNNTVUgd2lsbCBzdXBwb3J0IElPTU1VX0RPTUFJTl9JREVOVElUWSBhbmQgaW1w
-bGVtZW50IGRlZl9kb21haW5fdHlwZSgpCj4gY2FsbGJhY2sgdGhhdCByZXR1cm5zIElPTU1VX0RP
-TUFJTl9JREVOVElUWSBmb3IgdGhlIFZERSBkZXZpY2UuCj4gCj4gT3RoZXJ3aXNlIHlvdSdyZSBi
-cmVha2luZyB0aGUgVkRFIGRyaXZlciBiZWNhdXNlCj4gZG1hX2J1Zl9tYXBfYXR0YWNobWVudCgp
-IFsxXSByZXR1cm5zIHRoZSBJT01NVSBTR1Qgb2YgdGhlIGltcGxpY2l0Cj4gZG9tYWluIHdoaWNo
-IGlzIHRoZW4gbWFwcGVkIGludG8gdGhlIFZERSdzIGV4cGxpY2l0IGRvbWFpbiBbMl0sIGFuZCB0
-aGlzCj4gaXMgYSBub25zZW5zZS4KCkl0J3MgdHJ1ZSB0aGF0IGlvbW11X2RtYV9vcHMgd2lsbCBk
-byBzb21lIHdvcmsgaW4gdGhlIHVuYXR0YWNoZWQgZGVmYXVsdCAKZG9tYWluLCBidXQgbm9uLWNv
-aGVyZW50IGNhY2hlIG1haW50ZW5hbmNlIHdpbGwgc3RpbGwgYmUgcGVyZm9ybWVkIApjb3JyZWN0
-bHkgb24gdGhlIHVuZGVybHlpbmcgbWVtb3J5LCB3aGljaCBpcyByZWFsbHkgYWxsIHRoYXQgeW91
-IGNhcmUgCmFib3V0IGZvciB0aGlzIGNhc2UuIEFzIGZvciB0ZWdyYV92ZGVfaW9tbXVfbWFwKCks
-IHRoYXQgc2VlbXMgdG8gZG8gdGhlIApyaWdodCB0aGluZyBpbiBvbmx5IHJlZmVyZW5jaW5nIHRo
-ZSBwaHlzaWNhbCBzaWRlIG9mIHRoZSBzY2F0dGVybGlzdCAKKHZpYSBpb21tdV9tYXBfc2coKSkg
-YW5kIGlnbm9yaW5nIHRoZSBETUEgc2lkZSwgc28gdGhpbmdzIG91Z2h0IHRvIHdvcmsgCm91dCBP
-SyBldmVuIGlmIGl0IGlzIGEgbGl0dGxlIG5vbi1vYnZpb3VzLgoKPiBbMV0KPiBodHRwczovL2Vs
-aXhpci5ib290bGluLmNvbS9saW51eC92NS45LXJjMS9zb3VyY2UvZHJpdmVycy9zdGFnaW5nL21l
-ZGlhL3RlZ3JhLXZkZS9kbWFidWYtY2FjaGUuYyNMMTAyCj4gCj4gWzJdCj4gaHR0cHM6Ly9lbGl4
-aXIuYm9vdGxpbi5jb20vbGludXgvdjUuOS1yYzEvc291cmNlL2RyaXZlcnMvc3RhZ2luZy9tZWRp
-YS90ZWdyYS12ZGUvZG1hYnVmLWNhY2hlLmMjTDEyMgo+IAo+IEhlbmNlLCBlaXRoZXIgVkRFIGRy
-aXZlciBzaG91bGQgYnlwYXNzIGlvbW11X2RtYV9vcHMgZnJvbSB0aGUgc3RhcnQgb3IKPiBpdCBu
-ZWVkcyBhIHdheSB0byBraWNrIG91dCB0aGUgb3BzLCBsaWtlIGl0IGRvZXMgdGhpcyB1c2luZyBB
-Uk0ncwo+IGFybV9pb21tdV9kZXRhY2hfZGV2aWNlKCkuCj4gCj4gCj4gVGhlIHNhbWUgYXBwbGll
-cyB0byB0aGUgVGVncmEgR1BVIGRldmljZXMsIG90aGVyd2lzZSB5b3UncmUgYnJlYWtpbmcKPiB0
-aGVtIGFzIHdlbGwgYmVjYXVzZSBUZWdyYSBEUk0gaXMgc2Vuc2libGUgdG8gaW1wbGljaXQgdnMg
-ZXhwbGljaXQgZG9tYWluLgoKTm90ZSB0aGF0IFRlZ3JhIERSTSB3aWxsIG9ubHkgYmUgYXMgYnJv
-a2VuIGFzIGl0cyBjdXJyZW50IHN0YXRlIG9uIAphcm02NCwgYW5kIEkgd2FzIHVuZGVyIHRoZSBp
-bXByZXNzaW9uIHRoYXQgdGhhdCB3YXMgT0sgbm93IC0gYXQgbGVhc3QgSSAKZG9uJ3QgcmVjYWxs
-IHNlZWluZyBhbnkgY29tcGxhaW50cyBzaW5jZSA0M2M1YmYxMWE2MTAuIEFsdGhvdWdoIHRoYXQg
-CmNvbW1pdCBhbmQgdGhlIG9uZSBiZWZvcmUgaXQgYXJlIHJlc29sdmluZyB0aGUgc2NhbGFiaWxp
-dHkgaXNzdWUgdGhhdCAKdGhleSBkZXNjcmliZSwgaXQgd2FzIHZlcnkgbXVjaCBpbiBteSBtaW5k
-IGF0IHRoZSB0aW1lIHRoYXQgdGhleSBhbHNvIApoYXZlIHRoZSBoYXBweSBzaWRlLWVmZmVjdCBk
-ZXNjcmliZWQgYWJvdmUgLSB0aGUgZGVmYXVsdCBkb21haW4gaXNuJ3QgCipjb21wbGV0ZWx5KiBv
-dXQgb2YgdGhlIHdheSwgYnV0IGl0J3MgZmFyIGVub3VnaCB0aGF0IHNlbnNpYmxlIGNhc2VzIApz
-aG91bGQgYmUgYWJsZSB0byB3b3JrIGFzIGV4cGVjdGVkLgoKPiBCVFcsIEkgdHJpZWQgdG8gYXBw
-bHkgdGhpcyBzZXJpZXMgYW5kIFQzMCBkb2Vzbid0IGJvb3QgYW55bW9yZS4gSSBkb24ndAo+IGhh
-dmUgbW9yZSBpbmZvIGZvciBub3cuCgpZZWFoLCBJJ20gc3RpbGwgdHJ5aW5nIHRvIGdldCB0byB0
-aGUgYm90dG9tIG9mIHdoZXRoZXIgaXQncyBhY3R1YWxseSAKd29ya2luZyBhcyBpbnRlbmRlZCBh
-dCBhbGwsIGV2ZW4gb24gbXkgUkszMjg4LiBTbyBmYXIgbXkgZGVidWdnaW5nIAppbnN0cnVtZW50
-YXRpb24gaGFzIGJlZW4gY29uZnVzaW5nbHkgaW5jb25jbHVzaXZlIDovCgpSb2Jpbi4KX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
-aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
-b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Aug 06, 2020 at 03:46:23AM -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    47ec5303 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16fe1dea900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7c06047f622c5724
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3f86afd0b1e4bf1cb64c
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+3f86afd0b1e4bf1cb64c@syzkaller.appspotmail.com
+> 
+> ceph: loaded (mds proto 32)
+> NET: Registered protocol family 38
+> async_tx: api initialized (async)
+> Key type asymmetric registered
+> Asymmetric key parser 'x509' registered
+> Asymmetric key parser 'pkcs8' registered
+> Key type pkcs7_test registered
+> Asymmetric key parser 'tpm_parser' registered
+> Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+> io scheduler mq-deadline registered
+> io scheduler kyber registered
+> io scheduler bfq registered
+> hgafb: HGA card not detected.
+> hgafb: probe of hgafb.0 failed with error -22
+> usbcore: registered new interface driver udlfb
+> uvesafb: failed to execute /sbin/v86d
+> uvesafb: make sure that the v86d helper is installed and executable
+> uvesafb: Getting VBE info block failed (eax=0x4f00, err=-2)
+> uvesafb: vbe_init() failed with -22
+> uvesafb: probe of uvesafb.0 failed with error -22
+> vga16fb: mapped to 0x000000008aac772d
+> Console: switching to colour frame buffer device 80x30
+> fb0: VGA16 VGA frame buffer device
+> input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+> ACPI: Power Button [PWRF]
+> ioatdma: Intel(R) QuickData Technology Driver 5.00
+> PCI Interrupt Link [GSIF] enabled at IRQ 21
+> PCI Interrupt Link [GSIG] enabled at IRQ 22
+> PCI Interrupt Link [GSIH] enabled at IRQ 23
+> N_HDLC line discipline registered with maxframe=4096
+> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+> 00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+> Cyclades driver 2.6
+> Initializing Nozomi driver 2.1d
+> RocketPort device driver module, version 2.09, 12-June-2003
+> No rocketport ports found; unloading driver
+> Non-volatile memory driver v1.3
+> Linux agpgart interface v0.103
+> [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+> [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
+> usbcore: registered new interface driver udl
+> [drm] pci: virtio-vga detected at 0000:00:01.0
+> fb0: switching to virtiodrmfb from VGA16 VGA
+> Console: switching to colour VGA+ 80x25
+> virtio-pci 0000:00:01.0: vgaarb: deactivate vga console
+> Console: switching to colour dummy device 80x25
+> [drm] features: -virgl +edid
+> [drm] number of scanouts: 1
+> [drm] number of cap sets: 0
+> [drm] Initialized virtio_gpu 0.1.0 0 for virtio0 on minor 2
+> general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.8.0-syzkaller #0
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+> RIP: 0010:swiotlb_map+0x5ac/0x700 kernel/dma/swiotlb.c:683
+> Code: 28 04 00 00 48 c1 ea 03 80 3c 02 00 0f 85 4d 01 00 00 4c 8b a5 18 04 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 0f 85 1e 01 00 00 48 8d 7d 50 4d 8b 24 24 48 b8 00 00
+> RSP: 0000:ffffc9000034f3e0 EFLAGS: 00010246
+> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8162cc1d
+> RDX: 0000000000000000 RSI: ffffffff8162cc98 RDI: ffff88802971a470
+> RBP: ffff88802971a048 R08: 0000000000000001 R09: ffffffff8c5dba77
+> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> R13: 000000007ac00000 R14: dffffc0000000000 R15: 0000000000001000
+> FS:  0000000000000000(0000) GS:ffff88802ce00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000ffffffff CR3: 0000000009a8d000 CR4: 0000000000350ef0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  dma_direct_map_page include/linux/dma-direct.h:170 [inline]
+>  dma_direct_map_sg+0x3bb/0x670 kernel/dma/direct.c:368
+>  dma_map_sg_attrs+0xd0/0x160 kernel/dma/mapping.c:183
+>  drm_gem_shmem_get_pages_sgt drivers/gpu/drm/drm_gem_shmem_helper.c:700 [inline]
+>  drm_gem_shmem_get_pages_sgt+0x1fc/0x310 drivers/gpu/drm/drm_gem_shmem_helper.c:679
+>  virtio_gpu_object_shmem_init drivers/gpu/drm/virtio/virtgpu_object.c:153 [inline]
+>  virtio_gpu_object_create+0x2fd/0xa70 drivers/gpu/drm/virtio/virtgpu_object.c:232
+>  virtio_gpu_gem_create drivers/gpu/drm/virtio/virtgpu_gem.c:45 [inline]
+>  virtio_gpu_mode_dumb_create+0x298/0x530 drivers/gpu/drm/virtio/virtgpu_gem.c:85
+>  drm_mode_create_dumb+0x27c/0x300 drivers/gpu/drm/drm_dumb_buffers.c:94
+>  drm_client_buffer_create drivers/gpu/drm/drm_client.c:267 [inline]
+>  drm_client_framebuffer_create+0x1b7/0x770 drivers/gpu/drm/drm_client.c:412
+>  drm_fb_helper_generic_probe+0x1e5/0x810 drivers/gpu/drm/drm_fb_helper.c:2086
+>  drm_fb_helper_single_fb_probe drivers/gpu/drm/drm_fb_helper.c:1635 [inline]
+>  __drm_fb_helper_initial_config_and_unlock+0xbc6/0x12d0 drivers/gpu/drm/drm_fb_helper.c:1793
+>  drm_fb_helper_initial_config drivers/gpu/drm/drm_fb_helper.c:1888 [inline]
+>  drm_fb_helper_initial_config drivers/gpu/drm/drm_fb_helper.c:1880 [inline]
+>  drm_fbdev_client_hotplug+0x2d4/0x580 drivers/gpu/drm/drm_fb_helper.c:2180
+>  drm_fbdev_generic_setup+0x1c8/0x450 drivers/gpu/drm/drm_fb_helper.c:2262
+>  virtio_gpu_probe+0x28f/0x2e0 drivers/gpu/drm/virtio/virtgpu_drv.c:127
+>  virtio_dev_probe+0x445/0x6f0 drivers/virtio/virtio.c:248
+>  really_probe+0x282/0x9f0 drivers/base/dd.c:553
+>  driver_probe_device+0xfe/0x1d0 drivers/base/dd.c:738
+>  device_driver_attach+0x228/0x290 drivers/base/dd.c:1013
+>  __driver_attach drivers/base/dd.c:1090 [inline]
+>  __driver_attach+0xda/0x240 drivers/base/dd.c:1044
+>  bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:305
+>  bus_add_driver+0x348/0x5a0 drivers/base/bus.c:622
+>  driver_register+0x220/0x3a0 drivers/base/driver.c:171
+>  do_one_initcall+0x10a/0x7b0 init/main.c:1201
+>  do_initcall_level init/main.c:1274 [inline]
+>  do_initcalls init/main.c:1290 [inline]
+>  do_basic_setup init/main.c:1310 [inline]
+>  kernel_init_freeable+0x589/0x638 init/main.c:1505
+>  kernel_init+0xd/0x1c0 init/main.c:1399
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+> Modules linked in:
+> ---[ end trace 11a290451cfd19ed ]---
+> RIP: 0010:swiotlb_map+0x5ac/0x700 kernel/dma/swiotlb.c:683
+> Code: 28 04 00 00 48 c1 ea 03 80 3c 02 00 0f 85 4d 01 00 00 4c 8b a5 18 04 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 0f 85 1e 01 00 00 48 8d 7d 50 4d 8b 24 24 48 b8 00 00
+> RSP: 0000:ffffc9000034f3e0 EFLAGS: 00010246
+> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff8162cc1d
+> RDX: 0000000000000000 RSI: ffffffff8162cc98 RDI: ffff88802971a470
+> RBP: ffff88802971a048 R08: 0000000000000001 R09: ffffffff8c5dba77
+> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> R13: 000000007ac00000 R14: dffffc0000000000 R15: 0000000000001000
+> FS:  0000000000000000(0000) GS:ffff88802ce00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000ffffffff CR3: 0000000009a8d000 CR4: 0000000000350ef0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+So it fails at
+
+683                 dev_WARN_ONCE(dev, 1,                                           
+684                         "swiotlb addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
+685                         &dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);   
+
+
+which makes no sense to me as `dev` surely exists. I can see in the console log:
+
+virtio-pci 0000:00:01.0: vgaarb: deactivate vga console
+
+So what gives?
+
+Code: 28 04 00 00 48 c1 ea 03 80 3c 02 00 0f 85 4d 01 00 00 4c 8b a5 18 04 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 0f 85 1e 01 00 00 48 8d 7d 50 4d 8b 24 24 48 b8 00 00
+is
+All code
+========
+   0:   28 04 00                sub    %al,(%rax,%rax,1)
+   3:   00 48 c1                add    %cl,-0x3f(%rax)
+   6:   ea                      (bad)
+   7:   03 80 3c 02 00 0f       add    0xf00023c(%rax),%eax
+   d:   85 4d 01                test   %ecx,0x1(%rbp)
+  10:   00 00                   add    %al,(%rax)
+  12:   4c 8b a5 18 04 00 00    mov    0x418(%rbp),%r12
+  19:   48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
+  20:   fc ff df
+  23:   4c 89 e2                mov    %r12,%rdx
+  26:   48 c1 ea 03             shr    $0x3,%rdx
+  2a:*  80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)               <-- trapping instruction
+  2e:   0f 85 1e 01 00 00       jne    0x152
+  34:   48 8d 7d 50             lea    0x50(%rbp),%rdi
+  38:   4d 8b 24 24             mov    (%r12),%r12
+  3c:   48                      rex.W
+  3d:   b8                      .byte 0xb8
+
+So %r12 was expected to have something valid, put in %rdx, and shifted by three (line 26). Then
+we fetch from
+base =  0000000000000000 (%rdx) + 0xdffffc0000000000(%rax)* scale 1.
+
+and compare against 0 (if I am reading this right).
+
+No clue here. 
+
+I tried compiling the upstream kernel with the .config mentioned at the top
+but sadly I can't find anything that similar to this code to figure out
+what exactly it is trying to access and crash.
+
+CC-ing a fellow engineer who is debugging this, but it looks to be related to VirtIO DRM.
+
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
