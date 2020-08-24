@@ -7,66 +7,64 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78673C433E1
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 04:48:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F661C433DF
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 04:59:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43CFF20774
-	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 04:48:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43CFF20774
+	by mail.kernel.org (Postfix) with ESMTPS id 268A92078D
+	for <iommu@archiver.kernel.org>; Mon, 24 Aug 2020 04:59:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 268A92078D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0364587E41;
-	Mon, 24 Aug 2020 04:48:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E7D3520470;
+	Mon, 24 Aug 2020 04:59:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6WuF+zpujlxg; Mon, 24 Aug 2020 04:48:56 +0000 (UTC)
+	with ESMTP id sKQ9+IBhgP88; Mon, 24 Aug 2020 04:59:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7502C87CCB;
-	Mon, 24 Aug 2020 04:48:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CEE2D2044F;
+	Mon, 24 Aug 2020 04:59:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 57C99C016F;
-	Mon, 24 Aug 2020 04:48:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1737C0051
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:48:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4641C016F;
+	Mon, 24 Aug 2020 04:59:10 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE3CAC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:59:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D875D87CD6
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:48:54 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id AB26520474
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:59:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VWhmzykKdJ3e for <iommu@lists.linux-foundation.org>;
- Mon, 24 Aug 2020 04:48:54 +0000 (UTC)
+ with ESMTP id bYiZMT-LsFCz for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Aug 2020 04:59:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C49BE87CCB
- for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:48:53 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 97F122045C
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Aug 2020 04:59:08 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 33352AAC7;
- Mon, 24 Aug 2020 04:49:21 +0000 (UTC)
-Subject: Re: [patch RFC 22/38] x86/xen: Make xen_msi_init() static and rename
- it to xen_hvm_msi_init()
+ by mx2.suse.de (Postfix) with ESMTP id 8B36BAD2E;
+ Mon, 24 Aug 2020 04:59:36 +0000 (UTC)
+Subject: Re: [patch RFC 24/38] x86/xen: Consolidate XEN-MSI init
 To: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>
 References: <20200821002424.119492231@linutronix.de>
- <20200821002947.464203710@linutronix.de>
+ <20200821002947.667887608@linutronix.de>
 From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <1af3d4a2-0f73-4e58-0e23-ac667d2c9141@suse.com>
-Date: Mon, 24 Aug 2020 06:48:49 +0200
+Message-ID: <5caec213-8f56-9f12-34db-a29de8326f95@suse.com>
+Date: Mon, 24 Aug 2020 06:59:05 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200821002947.464203710@linutronix.de>
+In-Reply-To: <20200821002947.667887608@linutronix.de>
 Content-Language: en-US
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
  "K. Y. Srinivasan" <kys@microsoft.com>,
  Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stefano Stabellini <sstabellini@kernel.org>,
  Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
  Marc Zyngier <maz@kernel.org>, x86@kernel.org,
  Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
@@ -74,6 +72,7 @@ Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
  Haiyang Zhang <haiyangz@microsoft.com>,
  Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
  Boris Ostrovsky <boris.ostrovsky@oracle.com>,
  Jon Derrick <jonathan.derrick@intel.com>, Russ Anderson <rja@hpe.com>,
@@ -98,19 +97,59 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 21.08.20 02:24, Thomas Gleixner wrote:
-> The only user is in the same file and the name is too generic because this
-> function is only ever used for HVM domains.
+> X86 cannot store the irq domain pointer in struct device without breaking
+> XEN because the irq domain pointer takes precedence over arch_*_msi_irqs()
+> fallbacks.
+> 
+> To achieve this XEN MSI interrupt management needs to be wrapped into an
+> irq domain.
+> 
+> Move the x86_msi ops setup into a single function to prepare for this.
 > 
 > Signed-off-by: Thomas Gleixner<tglx@linutronix.de>
-> Cc: Konrad Rzeszutek Wilk<konrad.wilk@oracle.com>
-> Cc:linux-pci@vger.kernel.org
-> Cc:xen-devel@lists.xenproject.org
-> Cc: Juergen Gross<jgross@suse.com>
-> Cc: Boris Ostrovsky<boris.ostrovsky@oracle.com>
-> Cc: Stefano Stabellini<sstabellini@kernel.org>
+> ---
+>   arch/x86/pci/xen.c |   51 ++++++++++++++++++++++++++++++++-------------------
+>   1 file changed, 32 insertions(+), 19 deletions(-)
+> 
+> --- a/arch/x86/pci/xen.c
+> +++ b/arch/x86/pci/xen.c
+> @@ -371,7 +371,10 @@ static void xen_initdom_restore_msi_irqs
+>   		WARN(ret && ret != -ENOSYS, "restore_msi -> %d\n", ret);
+>   	}
+>   }
+> -#endif
+> +#else /* CONFIG_XEN_DOM0 */
+> +#define xen_initdom_setup_msi_irqs	NULL
+> +#define xen_initdom_restore_msi_irqs	NULL
+> +#endif /* !CONFIG_XEN_DOM0 */
+>   
+>   static void xen_teardown_msi_irqs(struct pci_dev *dev)
+>   {
+> @@ -403,7 +406,31 @@ static void xen_teardown_msi_irq(unsigne
+>   	WARN_ON_ONCE(1);
+>   }
+>   
+> -#endif
+> +static __init void xen_setup_pci_msi(void)
+> +{
+> +	if (xen_initial_domain()) {
+> +		x86_msi.setup_msi_irqs = xen_initdom_setup_msi_irqs;
+> +		x86_msi.teardown_msi_irqs = xen_teardown_msi_irqs;
+> +		x86_msi.restore_msi_irqs = xen_initdom_restore_msi_irqs;
+> +		pci_msi_ignore_mask = 1;
 
-Reviewed-by: Juergen Gross<jgross@suse.com>
+This is wrong, as a PVH initial domain shouldn't do the pv settings.
 
+The "if (xen_initial_domain())" should be inside the pv case, like:
+
+if (xen_pv_domain()) {
+	if (xen_initial_domain()) {
+		...
+	} else {
+		...
+	}
+} else if (xen_hvm_domain()) {
+	...
 
 Juergen
 _______________________________________________
