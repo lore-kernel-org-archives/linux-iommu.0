@@ -2,91 +2,88 @@ Return-Path: <SRS0=rFPO=CD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8306C433DF
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162FCC433E3
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:03:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A0D362074D
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DB3A72072D
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:03:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="inv0oad5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0D362074D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="l4bpkPmX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB3A72072D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5327287A12;
-	Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9C3618769E;
+	Tue, 25 Aug 2020 20:03:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PJCQnu4v03m3; Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
+	with ESMTP id cYUsyzDsBObu; Tue, 25 Aug 2020 20:03:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 96425878C8;
-	Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 82CD287673;
+	Tue, 25 Aug 2020 20:03:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6842BC016F;
-	Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60413C07FF;
+	Tue, 25 Aug 2020 20:03:34 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1D18EC0051
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:33 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 12C9BC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:03:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0F7D787774
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 06111882A4
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:03:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tEH9F6At0oQO for <iommu@lists.linux-foundation.org>;
- Tue, 25 Aug 2020 19:01:31 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2902C88373
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:23 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1598382091; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=TRQuySeZQtx9Xu8p/LTvIapZAq6d9k1oOwhDjvqNYBE=;
- b=inv0oad5RcS3D7DVL9JjYi0p+0SOQf+jm6zEzqhYBQqfwsYzNlWb9/j4PEJhpQ803cmR/H+X
- NTRKx+DHUOWFHpNxGR85NgjVXqVcP1gqbCFfaTQ5Z+zWWEdQHj+k4WOuQsN6j/MErkDu4Vdc
- XabXyHPpflNs+cjBn+mMmlSkDy0=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5f455fd7e2cf79f0e2a628a1 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 25 Aug 2020 19:00:39
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 29C18C433A1; Tue, 25 Aug 2020 19:00:39 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ with ESMTP id AILuliA9Zcgu for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Aug 2020 20:03:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 747868829D
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:03:31 +0000 (UTC)
+Received: from localhost (104.sub-72-107-126.myvzw.com [72.107.126.104])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 142A3C433CB;
- Tue, 25 Aug 2020 19:00:38 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id ADB662072D;
+ Tue, 25 Aug 2020 20:03:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1598385811;
+ bh=bLQ/6Ns9xbbW32dBksiiwUFLCmw1usZgfNu6wzOIRRA=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=l4bpkPmXM7023mZgcud7LiuXiDySo6mIf1kjucmaMFMfdwWuxCgjMXMMeZWTQlTNZ
+ S8ccFLX7/o+uLWvZssFvEMAlrztDO4R5uWWMK5/l+J5KEs2v6I2ftwQ6ue1mdzaRhM
+ G1nZBjJwkbjF80aF+i2KZjX8PiAMGCDb4+gafrqQ=
+Date: Tue, 25 Aug 2020 15:03:29 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch RFC 13/38] PCI: MSI: Rework pci_msi_domain_calc_hwirq()
+Message-ID: <20200825200329.GA1923406@bjorn-Precision-5520>
 MIME-Version: 1.0
-Date: Wed, 26 Aug 2020 00:30:38 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-In-Reply-To: <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
- <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
-Message-ID: <3df7edd53ebca00be288e69b92b8d4b9@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
- Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200821002946.594509001@linutronix.de>
+Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
+ Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
+ Marc Zyngier <maz@kernel.org>, x86@kernel.org,
+ Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
+ Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,137 +96,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Fri, Aug 21, 2020 at 02:24:37AM +0200, Thomas Gleixner wrote:
+> Retrieve the PCI device from the msi descriptor instead of doing so at the
+> call sites.
 
-On 2020-08-25 21:40, Doug Anderson wrote:
-> Hi,
+I'd like it *better* with "PCI/MSI: " in the subject (to match history
+and other patches in this series) and "MSI" here in the commit log,
+but nice cleanup and:
+
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+Minor comments below.
+
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: linux-pci@vger.kernel.org
+> ---
+>  arch/x86/kernel/apic/msi.c |    2 +-
+>  drivers/pci/msi.c          |   13 ++++++-------
+>  include/linux/msi.h        |    3 +--
+>  3 files changed, 8 insertions(+), 10 deletions(-)
 > 
-> On Tue, Aug 25, 2020 at 8:43 AM Sai Prakash Ranjan
-> <saiprakash.ranjan@codeaurora.org> wrote:
->> 
->> Currently the non-strict or lazy mode of TLB invalidation can only be 
->> set
->> for all or no domains. This works well for development platforms where
->> setting to non-strict/lazy mode is fine for performance reasons but on
->> production devices, we need a more fine grained control to allow only
->> certain peripherals to support this mode where we can be sure that it 
->> is
->> safe. So add support to filter non-strict/lazy mode based on the 
->> device
->> names that are passed via cmdline parameter "iommu.nonstrict_device".
->> 
->> Example: 
->> iommu.nonstrict_device="7c4000.sdhci,a600000.dwc3,6048000.etr"
+> --- a/arch/x86/kernel/apic/msi.c
+> +++ b/arch/x86/kernel/apic/msi.c
+> @@ -232,7 +232,7 @@ EXPORT_SYMBOL_GPL(pci_msi_prepare);
+>  
+>  void pci_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
+>  {
+> -	arg->msi_hwirq = pci_msi_domain_calc_hwirq(arg->msi_dev, desc);
+> +	arg->msi_hwirq = pci_msi_domain_calc_hwirq(desc);
+
+I guess it's safe to assume that "arg->msi_dev ==
+msi_desc_to_pci_dev(desc)"?  I didn't try to verify that.
+
+>  }
+>  EXPORT_SYMBOL_GPL(pci_msi_set_desc);
+>  
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -1346,17 +1346,17 @@ void pci_msi_domain_write_msg(struct irq
+>  
+>  /**
+>   * pci_msi_domain_calc_hwirq - Generate a unique ID for an MSI source
+> - * @dev:	Pointer to the PCI device
+>   * @desc:	Pointer to the MSI descriptor
+>   *
+>   * The ID number is only used within the irqdomain.
+>   */
+> -irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
+> -					  struct msi_desc *desc)
+> +irq_hw_number_t pci_msi_domain_calc_hwirq(struct msi_desc *desc)
+>  {
+> +	struct pci_dev *pdev = msi_desc_to_pci_dev(desc);
+
+If you named this "struct pci_dev *dev" (not "pdev"), the diff would
+be a little smaller and it would match other usage in the file.
+
+>  	return (irq_hw_number_t)desc->msi_attrib.entry_nr |
+> -		pci_dev_id(dev) << 11 |
+> -		(pci_domain_nr(dev->bus) & 0xFFFFFFFF) << 27;
+> +		pci_dev_id(pdev) << 11 |
+> +		(pci_domain_nr(pdev->bus) & 0xFFFFFFFF) << 27;
+>  }
+>  
+>  static inline bool pci_msi_desc_is_multi_msi(struct msi_desc *desc)
+> @@ -1406,8 +1406,7 @@ static void pci_msi_domain_set_desc(msi_
+>  				    struct msi_desc *desc)
+>  {
+>  	arg->desc = desc;
+> -	arg->hwirq = pci_msi_domain_calc_hwirq(msi_desc_to_pci_dev(desc),
+> -					       desc);
+> +	arg->hwirq = pci_msi_domain_calc_hwirq(desc);
+>  }
+>  #else
+>  #define pci_msi_domain_set_desc		NULL
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -369,8 +369,7 @@ void pci_msi_domain_write_msg(struct irq
+>  struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
+>  					     struct msi_domain_info *info,
+>  					     struct irq_domain *parent);
+> -irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
+> -					  struct msi_desc *desc);
+> +irq_hw_number_t pci_msi_domain_calc_hwirq(struct msi_desc *desc);
+>  int pci_msi_domain_check_cap(struct irq_domain *domain,
+>  			     struct msi_domain_info *info, struct device *dev);
+>  u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev);
 > 
-> I have an inherent dislike of jamming things like this onto the
-> command line.  IMHO the command line is the last resort for specifying
-> configuration and generally should be limited to some specialized
-> debug options and cases where the person running the kernel needs to
-> override a config that was set by the person (or company) compiling
-> the kernel.  Specifically, having a long/unwieldy command line makes
-> it harder to use for the case when an end user actually wants to use
-> it to override something.  It's also just another place to look for
-> config.
-> 
-
-Good thing about command line parameters are that they are optional, 
-they do
-not specify any default behaviour (I mean they are not mandatory to be 
-set
-for the system to be functional), so I would like to view it as an 
-optional
-config. And this command line parameter (nonstrict_device) is strictly 
-optional
-with default being strict already set in the driver.
-
-They can be passed from the bootloader via chosen node for DT platforms 
-or choose
-a new *bootconfig* as a way to pass the cmdline but finally it does boil 
-down to
-just another config.
-
-I agree with general boolean or single value command line parameters 
-being just
-more messy which could just be Kconfigs instead but for multiple value 
-parameters
-like these do not fit in Kconfig.
-
-As you might already know, command line also gives an advantage to the 
-end user
-to configure system without building kernel, for this specific command 
-line its
-very useful because the performance bump is quite noticeable when the 
-iommu.strict
-is off. Now for end user who would not be interested in building entire 
-kernel(majority)
-and just cares about good speeds or throughput can find this very 
-beneficial.
-I am not talking about one specific OS usecase here but more in general 
-term.
-
-> The other problem is that this doesn't necessarily scale very well.
-> While it works OK for embedded cases it doesn't work terribly well for
-> distributions.  I know that in an out-of-band thread you indicated
-> that it doesn't break anything that's not already broken (AKA this
-> doesn't fix the distro case but it doesn't make it worse), it would be
-> better to come up with a more universal solution.
-> 
-
-Is the universal solution here referring to fix all the command line 
-parameters
-in the kernel or this specific command line? Are we going to remove any 
-more
-addition to the cmdline ;)
-
-So possible other solution is the *bootconfig* which is again just 
-another place
-to look for a config. So thing is that this universal solution would 
-result in
-just more new fancy ways of passing configs or adding such configs to 
-the drivers
-or subsystems in kernel which is pretty much similar to implementing 
-policy in
-kernel which I think is frowned upon and mentioned in the other thread.
-
-> Ideally it feels like we should figure out how to tag devices in a
-> generic manner automatically (hardcode at the driver or in the device
-> tree).  I think the out-of-band discussions talked about "external
-> facing" and the like.  We could also, perhaps, tag devices that have
-> "binary blob" firmware if we wanted.  Then we'd have a policy (set by
-> Kconfig, perhaps overridable via commandline) that indicated the
-> strictness level for the various classes of devices.  So policy would
-> be decided by KConfig and/or command line.
-> 
-
-How is tagging in driver or device tree better than the simple command 
-line
-approach to pass the same list of devices which otherwise you would 
-hardcode
-in the corresponding drivers and device tree all over the kernel other 
-than
-the scalability part for command line? IMHO it is too much churn.
-
-Device tree could be used but then we have a problem with it being for 
-only
-describing hardware and it doesn't work for ACPI based systems.
-
-Command line approach works for all systems (both DT and ACPI) without 
-having
-to add too much churn to drivers. Lastly, I think we can have both 
-options, it
-doesn't hurt to add command line parameter since it is optional.
-
-Thanks,
-Sai
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
