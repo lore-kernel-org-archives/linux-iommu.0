@@ -2,125 +2,91 @@ Return-Path: <SRS0=rFPO=CD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.4 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FCFC433E1
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 17:40:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8306C433DF
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 245932076C
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 17:40:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A0D362074D
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OWtTyCh4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 245932076C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="inv0oad5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0D362074D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E70FD2261A;
-	Tue, 25 Aug 2020 17:40:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5327287A12;
+	Tue, 25 Aug 2020 19:01:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eWNJhd4vSS1m; Tue, 25 Aug 2020 17:40:33 +0000 (UTC)
+	with ESMTP id PJCQnu4v03m3; Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id ECE641FDFB;
-	Tue, 25 Aug 2020 17:40:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 96425878C8;
+	Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BD835C07FF;
-	Tue, 25 Aug 2020 17:40:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6842BC016F;
+	Tue, 25 Aug 2020 19:01:34 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8BCFC0051
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D18EC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D700F88798
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0F7D787774
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2kDM7AmsoJnV for <iommu@lists.linux-foundation.org>;
- Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com
- [209.85.216.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2CE5088788
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
-Received: by mail-pj1-f65.google.com with SMTP id ds1so1628156pjb.1
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 10:40:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=2CIAlEB0sn0czmBCstmmbk0rRRc0a7Q7Eg5uRFK+DTM=;
- b=OWtTyCh4mBkSanD+KT2LmsSmys9GdgNPDuMOUrEMBvirSVEpgWaccxzuVDCSUPzr+g
- UL3d/b/WhkUnWbhm0C+dKAbICczXHeEay6JEghnYPq1AWGXV0OqUHZVzSR0vH40qB4T7
- CvKheJOKe1bLwlHMjKz6V1TnFYQX/QwQ3zFo3OtKNBualjgvS3McIxk5bZckCXdHUxPn
- y5cllopsvswApow32o5Hqk8i69l4DMq5zNUIBV31X/TRx3SDq4RkHJpDQFbpdjwtNLEK
- YafzqTXU3/pyTiKmRDgRCRX9RrujtgeJf8Hbr9VBxTZRL/Jzkqt3LfmQHxV5h/PRKVwB
- vyvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=2CIAlEB0sn0czmBCstmmbk0rRRc0a7Q7Eg5uRFK+DTM=;
- b=g/WfA6UpAASrRsZ3GY4pLD3jvAPwnOpu9gQ0X2d66+qZcL4n62eJp9OaQ7xIMJVEv9
- osrliq2LVFMgDixEKYrIKAXsZAL/atJqIiw3wOYY1x/NmKtl5Kz3tKWMJb7clGiKPYsp
- 6UFsdQLcGC+CosOvr0BdDuPNSn/jssYukvYwjsZ6Eg6hgpii4/6sPSiC7OBkSVM8kP5o
- lxZEK4BhV6AaxVIcHgO/jnTVRx8KUWOxnhZR7yYZ6Q5R7YZCZ86A1zuLroWfFzT9/a9t
- OSdGHhoTDtg7Ai+2SYkP0E7zLhwChZBpEu/mPgaGki/KS2dLDvrCXyJR67zuc/8lt+l8
- BGCw==
-X-Gm-Message-State: AOAM531jBJj57M9JpZjl3cNV/QxjVYItT+3v1i8pq3WhtNnYuYBc7/92
- 3m22m4G+0Ak8qpD0wvd7924=
-X-Google-Smtp-Source: ABdhPJygG/iRoMRtYkc62+6+vovnxiIUBYXGvz6sXIt/PP/MjnVCr6wdHgCpE82t+Egu2LRmdgvskQ==
-X-Received: by 2002:a17:90a:eb17:: with SMTP id
- j23mr2403499pjz.151.1598377230639; 
- Tue, 25 Aug 2020 10:40:30 -0700 (PDT)
-Received: from [10.69.79.32] ([192.19.223.252])
- by smtp.gmail.com with ESMTPSA id b6sm3378574pjz.33.2020.08.25.10.40.27
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 25 Aug 2020 10:40:29 -0700 (PDT)
-Subject: Re: [PATCH v11 00/11] PCI: brcmstb: enable PCIe for STB chips
-To: Jim Quinlan <james.quinlan@broadcom.com>, linux-pci@vger.kernel.org,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
- Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
- bcm-kernel-feedback-list@broadcom.com
-References: <20200824193036.6033-1-james.quinlan@broadcom.com>
-From: Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <b19bc982-a0c4-c6ff-d8f5-650f2b3a83c8@gmail.com>
-Date: Tue, 25 Aug 2020 10:40:27 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+ with ESMTP id tEH9F6At0oQO for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Aug 2020 19:01:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2902C88373
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 19:01:23 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1598382091; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=TRQuySeZQtx9Xu8p/LTvIapZAq6d9k1oOwhDjvqNYBE=;
+ b=inv0oad5RcS3D7DVL9JjYi0p+0SOQf+jm6zEzqhYBQqfwsYzNlWb9/j4PEJhpQ803cmR/H+X
+ NTRKx+DHUOWFHpNxGR85NgjVXqVcP1gqbCFfaTQ5Z+zWWEdQHj+k4WOuQsN6j/MErkDu4Vdc
+ XabXyHPpflNs+cjBn+mMmlSkDy0=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5f455fd7e2cf79f0e2a628a1 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 25 Aug 2020 19:00:39
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 29C18C433A1; Tue, 25 Aug 2020 19:00:39 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 142A3C433CB;
+ Tue, 25 Aug 2020 19:00:38 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20200824193036.6033-1-james.quinlan@broadcom.com>
-Content-Language: en-US
-Cc: "open list:SUPERH" <linux-sh@vger.kernel.org>,
- "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
- <linux-remoteproc@vger.kernel.org>,
- "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
- Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
- "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
- Rob Herring <robh@kernel.org>, Stefano Stabellini <sstabellini@kernel.org>,
- Saravana Kannan <saravanak@google.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
- Alan Stern <stern@rowland.harvard.edu>,
- "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
- "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE"
- <linux-rpi-kernel@lists.infradead.org>,
- Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
- Felipe Balbi <balbi@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+Date: Wed, 26 Aug 2020 00:30:38 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
+ on device names
+In-Reply-To: <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
+References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
+ <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
+Message-ID: <3df7edd53ebca00be288e69b92b8d4b9@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+ Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -140,23 +106,130 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi,
 
-On 8/24/2020 12:30 PM, Jim Quinlan wrote:
+On 2020-08-25 21:40, Doug Anderson wrote:
+> Hi,
 > 
-> Patchset Summary:
->    Enhance a PCIe host controller driver.  Because of its unusual design
->    we are foced to change dev->dma_pfn_offset into a more general role
->    allowing multiple offsets.  See the 'v1' notes below for more info.
+> On Tue, Aug 25, 2020 at 8:43 AM Sai Prakash Ranjan
+> <saiprakash.ranjan@codeaurora.org> wrote:
+>> 
+>> Currently the non-strict or lazy mode of TLB invalidation can only be 
+>> set
+>> for all or no domains. This works well for development platforms where
+>> setting to non-strict/lazy mode is fine for performance reasons but on
+>> production devices, we need a more fine grained control to allow only
+>> certain peripherals to support this mode where we can be sure that it 
+>> is
+>> safe. So add support to filter non-strict/lazy mode based on the 
+>> device
+>> names that are passed via cmdline parameter "iommu.nonstrict_device".
+>> 
+>> Example: 
+>> iommu.nonstrict_device="7c4000.sdhci,a600000.dwc3,6048000.etr"
+> 
+> I have an inherent dislike of jamming things like this onto the
+> command line.  IMHO the command line is the last resort for specifying
+> configuration and generally should be limited to some specialized
+> debug options and cases where the person running the kernel needs to
+> override a config that was set by the person (or company) compiling
+> the kernel.  Specifically, having a long/unwieldy command line makes
+> it harder to use for the case when an end user actually wants to use
+> it to override something.  It's also just another place to look for
+> config.
+> 
 
-We are version 11 and counting, and it is not clear to me whether there 
-is any chance of getting these patches reviewed and hopefully merged for 
-the 5.10 merge window.
+Good thing about command line parameters are that they are optional, 
+they do
+not specify any default behaviour (I mean they are not mandatory to be 
+set
+for the system to be functional), so I would like to view it as an 
+optional
+config. And this command line parameter (nonstrict_device) is strictly 
+optional
+with default being strict already set in the driver.
 
-There are a lot of different files being touched, so what would be the 
-ideal way of routing those changes towards inclusion?
+They can be passed from the bootloader via chosen node for DT platforms 
+or choose
+a new *bootconfig* as a way to pass the cmdline but finally it does boil 
+down to
+just another config.
 
-Thanks!
+I agree with general boolean or single value command line parameters 
+being just
+more messy which could just be Kconfigs instead but for multiple value 
+parameters
+like these do not fit in Kconfig.
+
+As you might already know, command line also gives an advantage to the 
+end user
+to configure system without building kernel, for this specific command 
+line its
+very useful because the performance bump is quite noticeable when the 
+iommu.strict
+is off. Now for end user who would not be interested in building entire 
+kernel(majority)
+and just cares about good speeds or throughput can find this very 
+beneficial.
+I am not talking about one specific OS usecase here but more in general 
+term.
+
+> The other problem is that this doesn't necessarily scale very well.
+> While it works OK for embedded cases it doesn't work terribly well for
+> distributions.  I know that in an out-of-band thread you indicated
+> that it doesn't break anything that's not already broken (AKA this
+> doesn't fix the distro case but it doesn't make it worse), it would be
+> better to come up with a more universal solution.
+> 
+
+Is the universal solution here referring to fix all the command line 
+parameters
+in the kernel or this specific command line? Are we going to remove any 
+more
+addition to the cmdline ;)
+
+So possible other solution is the *bootconfig* which is again just 
+another place
+to look for a config. So thing is that this universal solution would 
+result in
+just more new fancy ways of passing configs or adding such configs to 
+the drivers
+or subsystems in kernel which is pretty much similar to implementing 
+policy in
+kernel which I think is frowned upon and mentioned in the other thread.
+
+> Ideally it feels like we should figure out how to tag devices in a
+> generic manner automatically (hardcode at the driver or in the device
+> tree).  I think the out-of-band discussions talked about "external
+> facing" and the like.  We could also, perhaps, tag devices that have
+> "binary blob" firmware if we wanted.  Then we'd have a policy (set by
+> Kconfig, perhaps overridable via commandline) that indicated the
+> strictness level for the various classes of devices.  So policy would
+> be decided by KConfig and/or command line.
+> 
+
+How is tagging in driver or device tree better than the simple command 
+line
+approach to pass the same list of devices which otherwise you would 
+hardcode
+in the corresponding drivers and device tree all over the kernel other 
+than
+the scalability part for command line? IMHO it is too much churn.
+
+Device tree could be used but then we have a problem with it being for 
+only
+describing hardware and it doesn't work for ACPI based systems.
+
+Command line approach works for all systems (both DT and ACPI) without 
+having
+to add too much churn to drivers. Lastly, I think we can have both 
+options, it
+doesn't hurt to add command line parameter since it is optional.
+
+Thanks,
+Sai
 -- 
-Florian
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
