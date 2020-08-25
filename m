@@ -2,102 +2,125 @@ Return-Path: <SRS0=rFPO=CD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.4 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE70C433E1
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 16:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FCFC433E1
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 17:40:34 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2545520782
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 16:10:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 245932076C
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 17:40:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bFps5sAm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2545520782
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OWtTyCh4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 245932076C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D4E9F22D55;
-	Tue, 25 Aug 2020 16:10:58 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E70FD2261A;
+	Tue, 25 Aug 2020 17:40:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p9-jeCGUU7u4; Tue, 25 Aug 2020 16:10:57 +0000 (UTC)
+	with ESMTP id eWNJhd4vSS1m; Tue, 25 Aug 2020 17:40:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2E53E1FFFE;
-	Tue, 25 Aug 2020 16:10:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id ECE641FDFB;
+	Tue, 25 Aug 2020 17:40:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13E5BC016F;
-	Tue, 25 Aug 2020 16:10:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30BB2C0051
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 16:10:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD835C07FF;
+	Tue, 25 Aug 2020 17:40:32 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8BCFC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1EB6F8758A
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 16:10:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D700F88798
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JFW32tmjbYgZ for <iommu@lists.linux-foundation.org>;
- Tue, 25 Aug 2020 16:10:55 +0000 (UTC)
+ with ESMTP id 2kDM7AmsoJnV for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ua1-f66.google.com (mail-ua1-f66.google.com
- [209.85.222.66])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4222B86FD1
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 16:10:55 +0000 (UTC)
-Received: by mail-ua1-f66.google.com with SMTP id x17so3896617uao.5
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 09:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=WgWByWGvguKIeIoz2+159dX6x4UuEkDuTZbs4BUSmnA=;
- b=bFps5sAmhdTDJhNVxL1nFnSKSn5gg1ysP1pQuHcF2HYjtCQl+LECrZqH7IHlUmNWY7
- k42yemoAfbjbGsQdB3VL4GU1eGJDvTb0Lf5BCj305ARzwvSADE3QxswOOxOFEAvUeynp
- pGEol79S1Wfm/yaUHQYpiWmto96jvLx6UpnVI=
+Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com
+ [209.85.216.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2CE5088788
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 17:40:31 +0000 (UTC)
+Received: by mail-pj1-f65.google.com with SMTP id ds1so1628156pjb.1
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 10:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=2CIAlEB0sn0czmBCstmmbk0rRRc0a7Q7Eg5uRFK+DTM=;
+ b=OWtTyCh4mBkSanD+KT2LmsSmys9GdgNPDuMOUrEMBvirSVEpgWaccxzuVDCSUPzr+g
+ UL3d/b/WhkUnWbhm0C+dKAbICczXHeEay6JEghnYPq1AWGXV0OqUHZVzSR0vH40qB4T7
+ CvKheJOKe1bLwlHMjKz6V1TnFYQX/QwQ3zFo3OtKNBualjgvS3McIxk5bZckCXdHUxPn
+ y5cllopsvswApow32o5Hqk8i69l4DMq5zNUIBV31X/TRx3SDq4RkHJpDQFbpdjwtNLEK
+ YafzqTXU3/pyTiKmRDgRCRX9RrujtgeJf8Hbr9VBxTZRL/Jzkqt3LfmQHxV5h/PRKVwB
+ vyvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=WgWByWGvguKIeIoz2+159dX6x4UuEkDuTZbs4BUSmnA=;
- b=P1SxHSxHBDHdIsuSPfUNvNUUPVQKRrSu0xHntI7bRGVj9k3kiUVHfJv/EIT1TConBX
- HTzMSdF4Rp+83Sw2HOxbqIZWQmxhuRqOu7GkuHhEYr1TTltnGlVC689zJjjWjt4N71WD
- 1AjceDcnsRzKEWF3LRFkPtX+1KCWENtDe/eQ3RqSCrZAqk46Kr64s7fPdopeHg3aNVXY
- HxyJvET5uBHKAzxsZTx082KhA24G1jtkC3QfDC2uIIWBstb/t641h5z+XI0ASjR5GevI
- Z3lsFtKvbho3ejlbw1itlRElS0E1JUDspZoQGpzHOw0/o4SKzWqlRsmYybJ0kSoEinS+
- H8YA==
-X-Gm-Message-State: AOAM530Gzith1SlYBfZmFnyjHZmewEfqCM3D/eCNZ36amI9xF8KvQKxs
- 2Wv9i/J0SMCRgqwuwn9VZrRuHr7fYrvy0A==
-X-Google-Smtp-Source: ABdhPJz5aLrr+YQLpZfI4yvpbmoNd0TmItwt4xkUz93Qhy2+RH/7C73KKpM38XwJKN8f8DS0B7P45w==
-X-Received: by 2002:ab0:3791:: with SMTP id d17mr5812366uav.28.1598371853818; 
- Tue, 25 Aug 2020 09:10:53 -0700 (PDT)
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com.
- [209.85.217.50])
- by smtp.gmail.com with ESMTPSA id b21sm2073391uap.15.2020.08.25.09.10.52
- for <iommu@lists.linux-foundation.org>
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=2CIAlEB0sn0czmBCstmmbk0rRRc0a7Q7Eg5uRFK+DTM=;
+ b=g/WfA6UpAASrRsZ3GY4pLD3jvAPwnOpu9gQ0X2d66+qZcL4n62eJp9OaQ7xIMJVEv9
+ osrliq2LVFMgDixEKYrIKAXsZAL/atJqIiw3wOYY1x/NmKtl5Kz3tKWMJb7clGiKPYsp
+ 6UFsdQLcGC+CosOvr0BdDuPNSn/jssYukvYwjsZ6Eg6hgpii4/6sPSiC7OBkSVM8kP5o
+ lxZEK4BhV6AaxVIcHgO/jnTVRx8KUWOxnhZR7yYZ6Q5R7YZCZ86A1zuLroWfFzT9/a9t
+ OSdGHhoTDtg7Ai+2SYkP0E7zLhwChZBpEu/mPgaGki/KS2dLDvrCXyJR67zuc/8lt+l8
+ BGCw==
+X-Gm-Message-State: AOAM531jBJj57M9JpZjl3cNV/QxjVYItT+3v1i8pq3WhtNnYuYBc7/92
+ 3m22m4G+0Ak8qpD0wvd7924=
+X-Google-Smtp-Source: ABdhPJygG/iRoMRtYkc62+6+vovnxiIUBYXGvz6sXIt/PP/MjnVCr6wdHgCpE82t+Egu2LRmdgvskQ==
+X-Received: by 2002:a17:90a:eb17:: with SMTP id
+ j23mr2403499pjz.151.1598377230639; 
+ Tue, 25 Aug 2020 10:40:30 -0700 (PDT)
+Received: from [10.69.79.32] ([192.19.223.252])
+ by smtp.gmail.com with ESMTPSA id b6sm3378574pjz.33.2020.08.25.10.40.27
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 25 Aug 2020 09:10:52 -0700 (PDT)
-Received: by mail-vs1-f50.google.com with SMTP id r7so6642432vsq.5
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 09:10:52 -0700 (PDT)
-X-Received: by 2002:a67:fbcc:: with SMTP id o12mr6262613vsr.213.1598371852357; 
- Tue, 25 Aug 2020 09:10:52 -0700 (PDT)
+ Tue, 25 Aug 2020 10:40:29 -0700 (PDT)
+Subject: Re: [PATCH v11 00/11] PCI: brcmstb: enable PCIe for STB chips
+To: Jim Quinlan <james.quinlan@broadcom.com>, linux-pci@vger.kernel.org,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+ Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+ bcm-kernel-feedback-list@broadcom.com
+References: <20200824193036.6033-1-james.quinlan@broadcom.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b19bc982-a0c4-c6ff-d8f5-650f2b3a83c8@gmail.com>
+Date: Tue, 25 Aug 2020 10:40:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
-In-Reply-To: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
-From: Doug Anderson <dianders@chromium.org>
-Date: Tue, 25 Aug 2020 09:10:40 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
-Message-ID: <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Cc: Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
- Stephen Boyd <swboyd@chromium.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20200824193036.6033-1-james.quinlan@broadcom.com>
+Content-Language: en-US
+Cc: "open list:SUPERH" <linux-sh@vger.kernel.org>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Rob Herring <robh@kernel.org>, Stefano Stabellini <sstabellini@kernel.org>,
+ Saravana Kannan <saravanak@google.com>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
+ Alan Stern <stern@rowland.harvard.edu>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE"
+ <linux-rpi-kernel@lists.infradead.org>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Felipe Balbi <balbi@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,53 +133,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi,
 
-On Tue, Aug 25, 2020 at 8:43 AM Sai Prakash Ranjan
-<saiprakash.ranjan@codeaurora.org> wrote:
->
-> Currently the non-strict or lazy mode of TLB invalidation can only be set
-> for all or no domains. This works well for development platforms where
-> setting to non-strict/lazy mode is fine for performance reasons but on
-> production devices, we need a more fine grained control to allow only
-> certain peripherals to support this mode where we can be sure that it is
-> safe. So add support to filter non-strict/lazy mode based on the device
-> names that are passed via cmdline parameter "iommu.nonstrict_device".
->
-> Example: iommu.nonstrict_device="7c4000.sdhci,a600000.dwc3,6048000.etr"
+On 8/24/2020 12:30 PM, Jim Quinlan wrote:
+> 
+> Patchset Summary:
+>    Enhance a PCIe host controller driver.  Because of its unusual design
+>    we are foced to change dev->dma_pfn_offset into a more general role
+>    allowing multiple offsets.  See the 'v1' notes below for more info.
 
-I have an inherent dislike of jamming things like this onto the
-command line.  IMHO the command line is the last resort for specifying
-configuration and generally should be limited to some specialized
-debug options and cases where the person running the kernel needs to
-override a config that was set by the person (or company) compiling
-the kernel.  Specifically, having a long/unwieldy command line makes
-it harder to use for the case when an end user actually wants to use
-it to override something.  It's also just another place to look for
-config.
+We are version 11 and counting, and it is not clear to me whether there 
+is any chance of getting these patches reviewed and hopefully merged for 
+the 5.10 merge window.
 
-The other problem is that this doesn't necessarily scale very well.
-While it works OK for embedded cases it doesn't work terribly well for
-distributions.  I know that in an out-of-band thread you indicated
-that it doesn't break anything that's not already broken (AKA this
-doesn't fix the distro case but it doesn't make it worse), it would be
-better to come up with a more universal solution.
+There are a lot of different files being touched, so what would be the 
+ideal way of routing those changes towards inclusion?
 
-Ideally it feels like we should figure out how to tag devices in a
-generic manner automatically (hardcode at the driver or in the device
-tree).  I think the out-of-band discussions talked about "external
-facing" and the like.  We could also, perhaps, tag devices that have
-"binary blob" firmware if we wanted.  Then we'd have a policy (set by
-Kconfig, perhaps overridable via commandline) that indicated the
-strictness level for the various classes of devices.  So policy would
-be decided by KConfig and/or command line.
-
--Doug
+Thanks!
+-- 
+Florian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
