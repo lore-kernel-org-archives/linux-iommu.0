@@ -6,67 +6,66 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C75C433DF
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:16:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1A2C433DF
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:20:05 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 533632074D
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:16:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A53CF2075F
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 20:20:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ov+X/vU+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 533632074D
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="UeuOVm1Z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A53CF2075F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1787187699;
-	Tue, 25 Aug 2020 20:16:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8676E86B1A;
+	Tue, 25 Aug 2020 20:20:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DQnaS2+cxaVO; Tue, 25 Aug 2020 20:16:49 +0000 (UTC)
+	with ESMTP id UFbscAEab7Xb; Tue, 25 Aug 2020 20:20:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7826E87634;
-	Tue, 25 Aug 2020 20:16:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EF65F868E5;
+	Tue, 25 Aug 2020 20:20:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A5B3C016F;
-	Tue, 25 Aug 2020 20:16:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DA64DC016F;
+	Tue, 25 Aug 2020 20:20:04 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A070C0051
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:16:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11C46C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:20:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 406778766C
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:16:48 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0943B882EC
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:20:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Mf1jfZmOeASh for <iommu@lists.linux-foundation.org>;
- Tue, 25 Aug 2020 20:16:36 +0000 (UTC)
+ with ESMTP id uNh9EoBnpNWG for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Aug 2020 20:20:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9332487634
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:16:36 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8AA52882EB
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 20:20:02 +0000 (UTC)
 Received: from localhost (104.sub-72-107-126.myvzw.com [72.107.126.104])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 067E02074D;
- Tue, 25 Aug 2020 20:16:36 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 01E6D2074D;
+ Tue, 25 Aug 2020 20:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1598386596;
- bh=D7Rw2PMoe8IDZOMsNEwXYiBG5PbxcS/orkj8Yivovec=;
+ s=default; t=1598386802;
+ bh=SS+t45IQlef2ZNO8GZOFRl2+c25Lro4JNuNwmNwc8zQ=;
  h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=ov+X/vU+a12BRBzFUckIxiGJXa6k21v6DegMqYXhC5Zng0n4wC039Oo6Bh3gFLV6x
- 5vD3ZwCEzBTgAbeasiFHcdum1DtDxjLMC1uSLEqHlzqHo8MC0nxm4f0VoTgli+T0Qr
- kEY+uzx7LZz3MSVAGwF8UOQyU/JHe/YeVdDsMVuw=
-Date: Tue, 25 Aug 2020 15:16:34 -0500
+ b=UeuOVm1ZSIo+ErhE6OlxewMDFPnV4NsWvJxM77q2rQm3Y6ZJ+3mnLIcJH7jIXO4EC
+ /XE+2wmGjyHazKgT/AJKml79ce5k1iC5Q8WKAKcLKlgCau+LQEJi/95s8aaS2ETMil
+ Wsikip6rcjjaxBoIOlqOC42TYjOKJ7dhkIDcMCCw=
+Date: Tue, 25 Aug 2020 15:20:00 -0500
 From: Bjorn Helgaas <helgaas@kernel.org>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch RFC 21/38] PCI: MSI: Provide
- pci_dev_has_special_msi_domain() helper
-Message-ID: <20200825201634.GA1924972@bjorn-Precision-5520>
+Subject: Re: [patch RFC 17/38] x86/pci: Reducde #ifdeffery in PCI init code
+Message-ID: <20200825202000.GA1925088@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200821002947.373714034@linutronix.de>
+In-Reply-To: <20200821002946.982695529@linutronix.de>
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -102,64 +101,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Aug 21, 2020 at 02:24:45AM +0200, Thomas Gleixner wrote:
-> Provide a helper function to check whether a PCI device is handled by a
-> non-standard PCI/MSI domain. This will be used to exclude such devices
-> which hang of a special bus, e.g. VMD, to be excluded from the irq domain
-> override in irq remapping.
+s/Reducde/Reduce/ (in subject)
+
+On Fri, Aug 21, 2020 at 02:24:41AM +0200, Thomas Gleixner wrote:
+> Adding a function call before the first #ifdef in arch_pci_init() triggers
+> a 'mixed declarations and code' warning if PCI_DIRECT is enabled.
+> 
+> Use stub functions and move the #ifdeffery to the header file where it is
+> not in the way.
 > 
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
 > Cc: linux-pci@vger.kernel.org
+
+Nice cleanup, thanks.  Glad to get rid of the useless initializer,
+too.
 
 Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-s|PCI: MSI:|PCI/MSI:| in the subject if feasible.
-
 > ---
->  drivers/pci/msi.c   |   22 ++++++++++++++++++++++
->  include/linux/msi.h |    1 +
->  2 files changed, 23 insertions(+)
+>  arch/x86/include/asm/pci_x86.h |   11 +++++++++++
+>  arch/x86/pci/init.c            |   10 +++-------
+>  2 files changed, 14 insertions(+), 7 deletions(-)
 > 
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -1553,4 +1553,26 @@ struct irq_domain *pci_msi_get_device_do
->  					     DOMAIN_BUS_PCI_MSI);
->  	return dom;
->  }
+> --- a/arch/x86/include/asm/pci_x86.h
+> +++ b/arch/x86/include/asm/pci_x86.h
+> @@ -114,9 +114,20 @@ extern const struct pci_raw_ops pci_dire
+>  extern bool port_cf9_safe;
+>  
+>  /* arch_initcall level */
+> +#ifdef CONFIG_PCI_DIRECT
+>  extern int pci_direct_probe(void);
+>  extern void pci_direct_init(int type);
+> +#else
+> +static inline int pci_direct_probe(void) { return -1; }
+> +static inline  void pci_direct_init(int type) { }
+> +#endif
 > +
-> +/**
-> + * pci_dev_has_special_msi_domain - Check whether the device is handled by
-> + *				    a non-standard PCI-MSI domain
-> + * @pdev:	The PCI device to check.
-> + *
-> + * Returns: True if the device irqdomain or the bus irqdomain is
-> + * non-standard PCI/MSI.
-> + */
-> +bool pci_dev_has_special_msi_domain(struct pci_dev *pdev)
-> +{
-> +	struct irq_domain *dom = dev_get_msi_domain(&pdev->dev);
+> +#ifdef CONFIG_PCI_BIOS
+>  extern void pci_pcbios_init(void);
+> +#else
+> +static inline void pci_pcbios_init(void) { }
+> +#endif
 > +
-> +	if (!dom)
-> +		dom = dev_get_msi_domain(&pdev->bus->dev);
-> +
-> +	if (!dom)
-> +		return true;
-> +
-> +	return dom->bus_token != DOMAIN_BUS_PCI_MSI;
-> +}
-> +
->  #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -374,6 +374,7 @@ int pci_msi_domain_check_cap(struct irq_
->  			     struct msi_domain_info *info, struct device *dev);
->  u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev);
->  struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev);
-> +bool pci_dev_has_special_msi_domain(struct pci_dev *pdev);
->  #else
->  static inline struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+>  extern void __init dmi_check_pciprobe(void);
+>  extern void __init dmi_check_skip_isa_align(void);
+>  
+> --- a/arch/x86/pci/init.c
+> +++ b/arch/x86/pci/init.c
+> @@ -8,11 +8,9 @@
+>     in the right sequence from here. */
+>  static __init int pci_arch_init(void)
 >  {
+> -#ifdef CONFIG_PCI_DIRECT
+> -	int type = 0;
+> +	int type;
+>  
+>  	type = pci_direct_probe();
+> -#endif
+>  
+>  	if (!(pci_probe & PCI_PROBE_NOEARLY))
+>  		pci_mmcfg_early_init();
+> @@ -20,18 +18,16 @@ static __init int pci_arch_init(void)
+>  	if (x86_init.pci.arch_init && !x86_init.pci.arch_init())
+>  		return 0;
+>  
+> -#ifdef CONFIG_PCI_BIOS
+>  	pci_pcbios_init();
+> -#endif
+> +
+>  	/*
+>  	 * don't check for raw_pci_ops here because we want pcbios as last
+>  	 * fallback, yet it's needed to run first to set pcibios_last_bus
+>  	 * in case legacy PCI probing is used. otherwise detecting peer busses
+>  	 * fails.
+>  	 */
+> -#ifdef CONFIG_PCI_DIRECT
+>  	pci_direct_init(type);
+> -#endif
+> +
+>  	if (!raw_pci_ops && !raw_pci_ext_ops)
+>  		printk(KERN_ERR
+>  		"PCI: Fatal: No config space access function found\n");
 > 
 _______________________________________________
 iommu mailing list
