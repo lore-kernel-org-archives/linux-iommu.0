@@ -4,54 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BFFC433E1
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 14:19:13 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716A9C433E1
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 14:19:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1B5EF20665
-	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 14:19:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B5EF20665
+	by mail.kernel.org (Postfix) with ESMTPS id 3CEC220665
+	for <iommu@archiver.kernel.org>; Tue, 25 Aug 2020 14:19:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CEC220665
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2F6DC81AD9;
-	Tue, 25 Aug 2020 14:19:12 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D13C222225;
+	Tue, 25 Aug 2020 14:19:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MPFcjjJZtuei; Tue, 25 Aug 2020 14:19:11 +0000 (UTC)
+	with ESMTP id yKUgVMBtwh0s; Tue, 25 Aug 2020 14:19:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9091488148;
-	Tue, 25 Aug 2020 14:19:11 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C138922001;
+	Tue, 25 Aug 2020 14:19:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DC75C07FF;
-	Tue, 25 Aug 2020 14:19:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B60B4C07FF;
+	Tue, 25 Aug 2020 14:19:28 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A52EC0051
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:10 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7253FC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8254222225
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:10 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 5B8A622225
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UeE2XJdviZux for <iommu@lists.linux-foundation.org>;
- Tue, 25 Aug 2020 14:19:08 +0000 (UTC)
+ with ESMTP id zxHOpL1tFs7H for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Aug 2020 14:19:26 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
  [210.160.252.171])
- by silver.osuosl.org (Postfix) with ESMTP id 6DD652318D
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:07 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.76,352,1592838000"; d="scan'208";a="55488784"
+ by silver.osuosl.org (Postfix) with ESMTP id 7736022001
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 14:19:26 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.76,352,1592838000"; d="scan'208";a="55488792"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
- by relmlie5.idc.renesas.com with ESMTP; 25 Aug 2020 23:19:05 +0900
+ by relmlie5.idc.renesas.com with ESMTP; 25 Aug 2020 23:19:25 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
- by relmlir5.idc.renesas.com (Postfix) with ESMTP id A58324005E3F;
- Tue, 25 Aug 2020 23:19:03 +0900 (JST)
+ by relmlir5.idc.renesas.com (Postfix) with ESMTP id 990644001950;
+ Tue, 25 Aug 2020 23:19:23 +0900 (JST)
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Geert Uytterhoeven <geert+renesas@glider.be>,
  Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
@@ -59,10 +59,9 @@ To: Geert Uytterhoeven <geert+renesas@glider.be>,
  Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
  iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org,
  devicetree@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: iommu: renesas,
- ipmmu-vmsa: Add r8a7742 support
-Date: Tue, 25 Aug 2020 15:18:04 +0100
-Message-Id: <20200825141805.27105-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/2] ARM: dts: r8a7742: Add IPMMU DT nodes
+Date: Tue, 25 Aug 2020 15:18:05 +0100
+Message-Id: <20200825141805.27105-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200825141805.27105-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20200825141805.27105-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -86,29 +85,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Document RZ/G1H (R8A7742) SoC bindings.
-
-No driver change is needed due to the fallback compatible value
-"renesas,ipmmu-vmsa".
+Add the five IPMMU instances found in the r8a7742 to DT with a disabled
+status.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
 ---
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/r8a7742.dtsi | 48 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 6bfa090fd73a..a79b172b75cb 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -20,6 +20,7 @@ properties:
-       - items:
-           - enum:
-               - renesas,ipmmu-r8a73a4  # R-Mobile APE6
-+              - renesas,ipmmu-r8a7742  # RZ/G1H
-               - renesas,ipmmu-r8a7743  # RZ/G1M
-               - renesas,ipmmu-r8a7744  # RZ/G1N
-               - renesas,ipmmu-r8a7745  # RZ/G1E
+diff --git a/arch/arm/boot/dts/r8a7742.dtsi b/arch/arm/boot/dts/r8a7742.dtsi
+index 0fc52b27ae64..c62e26876f95 100644
+--- a/arch/arm/boot/dts/r8a7742.dtsi
++++ b/arch/arm/boot/dts/r8a7742.dtsi
+@@ -412,6 +412,54 @@
+ 			#thermal-sensor-cells = <0>;
+ 		};
+ 
++		ipmmu_sy0: iommu@e6280000 {
++			compatible = "renesas,ipmmu-r8a7742",
++				     "renesas,ipmmu-vmsa";
++			reg = <0 0xe6280000 0 0x1000>;
++			interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			status = "disabled";
++		};
++
++		ipmmu_sy1: iommu@e6290000 {
++			compatible = "renesas,ipmmu-r8a7742",
++				     "renesas,ipmmu-vmsa";
++			reg = <0 0xe6290000 0 0x1000>;
++			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			status = "disabled";
++		};
++
++		ipmmu_ds: iommu@e6740000 {
++			compatible = "renesas,ipmmu-r8a7742",
++				     "renesas,ipmmu-vmsa";
++			reg = <0 0xe6740000 0 0x1000>;
++			interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			status = "disabled";
++		};
++
++		ipmmu_mp: iommu@ec680000 {
++			compatible = "renesas,ipmmu-r8a7742",
++				     "renesas,ipmmu-vmsa";
++			reg = <0 0xec680000 0 0x1000>;
++			interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			status = "disabled";
++		};
++
++		ipmmu_mx: iommu@fe951000 {
++			compatible = "renesas,ipmmu-r8a7742",
++				     "renesas,ipmmu-vmsa";
++			reg = <0 0xfe951000 0 0x1000>;
++			interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			status = "disabled";
++		};
++
+ 		icram0: sram@e63a0000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0 0xe63a0000 0 0x12000>;
 -- 
 2.17.1
 
