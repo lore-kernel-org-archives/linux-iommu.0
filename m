@@ -2,78 +2,77 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561EFC433E1
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 19:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB07CC433E1
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:21:46 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 19F2B20786
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 19:50:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8EE9B208E4
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:21:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wVAlzqBn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 19F2B20786
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMTbNDQw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EE9B208E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CA056878EA;
-	Wed, 26 Aug 2020 19:50:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6E9EB867F0;
+	Wed, 26 Aug 2020 20:21:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ssRYvnzz17bv; Wed, 26 Aug 2020 19:50:39 +0000 (UTC)
+	with ESMTP id JUOk-uNUvBE9; Wed, 26 Aug 2020 20:21:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2E86D86BC5;
-	Wed, 26 Aug 2020 19:50:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A59CE86824;
+	Wed, 26 Aug 2020 20:21:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 140BEC0051;
-	Wed, 26 Aug 2020 19:50:39 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 07163C088B
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 19:50:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81E93C016F;
+	Wed, 26 Aug 2020 20:21:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A719AC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:21:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DC13522C44
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 19:50:37 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8FE64873DC
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:21:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id InZ+sLElazgo for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 19:50:34 +0000 (UTC)
+ with ESMTP id YCyokjo-hGWo for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 20:21:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A3F0C22817
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 19:50:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0B71F8731E
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:21:44 +0000 (UTC)
 Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
  [51.254.78.96])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 18DCE20737;
- Wed, 26 Aug 2020 19:50:32 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id A897E2076C;
+ Wed, 26 Aug 2020 20:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1598471432;
- bh=KBI1XSZ0Ad4xgoosNG6cTrKv6S5jK+snnqWS91Va+wE=;
+ s=default; t=1598473303;
+ bh=YMfWFqC5hD4XcAvqBAU0k4rGeGVgIOGdihLkY7QIQuI=;
  h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=wVAlzqBnZxrhwq4g59h1BqgZe4cjmugIYxbR5GIGwfeysAM6eAc4CWYIqW9hF3LAZ
- sSNgA34LV7NKVzYibSSl1Tj/m+gZW9MyM3uMkINrrmLoqO+RIHYDkNyzJ9NT72H8W3
- iXfYUmSWAaJOeprSTR4wThp63ynt9XVjYxRatDfE=
+ b=NMTbNDQwmiy1TI7fQW+JBmDTTcazSYXOKy3VJ01rf1Ap90CQohqzakM3jl9iiJ6Du
+ SP+RZY3eNF4e+puBPocRu65f+SDsiCWCqgkjpNooqC9R8TqsTM97vhGhGVPC/oD/qy
+ 7abz/f4FoDiNVRC+OaPlMVmemXAtkSFDMTV+ZL3M=
 Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
  helo=wait-a-minute.misterjones.org)
  by disco-boy.misterjones.org with esmtpsa
  (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
  (envelope-from <maz@kernel.org>)
- id 1kB1RG-006xgP-FJ; Wed, 26 Aug 2020 20:50:30 +0100
-Date: Wed, 26 Aug 2020 20:50:28 +0100
-Message-ID: <87a6yh2nln.wl-maz@kernel.org>
+ id 1kB1vS-006y5k-3Z; Wed, 26 Aug 2020 21:21:42 +0100
+Date: Wed, 26 Aug 2020 21:21:40 +0100
+Message-ID: <878se12m5n.wl-maz@kernel.org>
 From: Marc Zyngier <maz@kernel.org>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 04/46] genirq/chip: Use the first chip in
- irq_chip_compose_msi_msg()
-In-Reply-To: <20200826112331.047917603@linutronix.de>
+Subject: Re: [patch V2 19/46] x86/msi: Use generic MSI domain ops
+In-Reply-To: <20200826112332.564274859@linutronix.de>
 References: <20200826111628.794979401@linutronix.de>
- <20200826112331.047917603@linutronix.de>
+ <20200826112332.564274859@linutronix.de>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
  (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -129,129 +128,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 26 Aug 2020 12:16:32 +0100,
+On Wed, 26 Aug 2020 12:16:47 +0100,
 Thomas Gleixner <tglx@linutronix.de> wrote:
 > 
-> The documentation of irq_chip_compose_msi_msg() claims that with
-> hierarchical irq domains the first chip in the hierarchy which has an
-> irq_compose_msi_msg() callback is chosen. But the code just keeps
-> iterating after it finds a chip with a compose callback.
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-> The x86 HPET MSI implementation relies on that behaviour, but that does not
-> make it more correct.
-> 
-> The message should always be composed at the domain which manages the
-> underlying resource (e.g. APIC or remap table) because that domain knows
-> about the required layout of the message.
-> 
-> On X86 the following hierarchies exist:
-> 
-> 1)   vector -------- PCI/MSI
-> 2)   vector -- IR -- PCI/MSI
-> 
-> The vector domain has a different message format than the IR (remapping)
-> domain. So obviously the PCI/MSI domain can't compose the message without
-> having knowledge about the parent domain, which is exactly the opposite of
-> what hierarchical domains want to achieve.
-> 
-> X86 actually has two different PCI/MSI chips where #1 has a compose
-> callback and #2 does not. #2 delegates the composition to the remap domain
-> where it belongs, but #1 does it at the PCI/MSI level.
-> 
-> For the upcoming device MSI support it's necessary to change this and just
-> let the first domain which can compose the message take care of it. That
-> way the top level chip does not have to worry about it and the device MSI
-> code does not need special knowledge about topologies. It just sets the
-> compose callback to NULL and lets the hierarchy pick the first chip which
-> has one.
-> 
-> Due to that the attempt to move the compose callback from the direct
-> delivery PCI/MSI domain to the vector domain made the system fail to boot
-> with interrupt remapping enabled because in the remapping case
-> irq_chip_compose_msi_msg() keeps iterating and choses the compose callback
-> of the vector domain which obviously creates the wrong format for the remap
-> table.
-> 
-> Break out of the loop when the first irq chip with a compose callback is
-> found and fixup the HPET code temporarily. That workaround will be removed
-> once the direct delivery compose callback is moved to the place where it
-> belongs in the vector domain.
+> pci_msi_get_hwirq() and pci_msi_set_desc are not longer special. Enable the
+> generic MSI domain ops in the core and PCI MSI code unconditionally and get
+> rid of the x86 specific implementations in the X86 MSI code and in the
+> hyperv PCI driver.
 > 
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
-> V2: New patch. Note, that this might break other stuff which relies on the
->     current behaviour, but the hierarchy composition of DT based chips is
->     really hard to follow.
-
-Grepping around, I don't think there is any occurrence of two irqchips
-providing irq_compose_msi() that can share a hierarchy on any real
-system, so we should be fine. Famous last words.
-
-> ---
->  arch/x86/kernel/apic/msi.c |    7 +++++--
->  kernel/irq/chip.c          |   12 +++++++++---
->  2 files changed, 14 insertions(+), 5 deletions(-)
 > 
+> ---
+>  arch/x86/include/asm/msi.h          |    2 --
+>  arch/x86/kernel/apic/msi.c          |   15 ---------------
+>  drivers/pci/controller/pci-hyperv.c |    8 --------
+>  drivers/pci/msi.c                   |    4 ----
+>  kernel/irq/msi.c                    |    6 ------
+>  5 files changed, 35 deletions(-)
+> 
+> --- a/arch/x86/include/asm/msi.h
+> +++ b/arch/x86/include/asm/msi.h
+> @@ -9,6 +9,4 @@ typedef struct irq_alloc_info msi_alloc_
+>  int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+>  		    msi_alloc_info_t *arg);
+>  
+> -void pci_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc);
+> -
+>  #endif /* _ASM_X86_MSI_H */
 > --- a/arch/x86/kernel/apic/msi.c
 > +++ b/arch/x86/kernel/apic/msi.c
-> @@ -479,10 +479,13 @@ struct irq_domain *hpet_create_irq_domai
->  	info.type = X86_IRQ_ALLOC_TYPE_HPET;
->  	info.hpet_id = hpet_id;
->  	parent = irq_remapping_get_ir_irq_domain(&info);
-> -	if (parent == NULL)
-> +	if (parent == NULL) {
->  		parent = x86_vector_domain;
-> -	else
-> +	} else {
->  		hpet_msi_controller.name = "IR-HPET-MSI";
-> +		/* Temporary fix: Will go away */
-> +		hpet_msi_controller.irq_compose_msi_msg = NULL;
-> +	}
+> @@ -204,12 +204,6 @@ void native_teardown_msi_irq(unsigned in
+>  	irq_domain_free_irqs(irq, 1);
+>  }
 >  
->  	fn = irq_domain_alloc_named_id_fwnode(hpet_msi_controller.name,
->  					      hpet_id);
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -1544,10 +1544,16 @@ int irq_chip_compose_msi_msg(struct irq_
->  	struct irq_data *pos = NULL;
+> -static irq_hw_number_t pci_msi_get_hwirq(struct msi_domain_info *info,
+> -					 msi_alloc_info_t *arg)
+> -{
+> -	return arg->hwirq;
+> -}
+> -
+>  int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+>  		    msi_alloc_info_t *arg)
+>  {
+> @@ -228,17 +222,8 @@ int pci_msi_prepare(struct irq_domain *d
+>  }
+>  EXPORT_SYMBOL_GPL(pci_msi_prepare);
 >  
->  #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
-> -	for (; data; data = data->parent_data)
-> -#endif
-> -		if (data->chip && data->chip->irq_compose_msi_msg)
-> +	for (; data; data = data->parent_data) {
-> +		if (data->chip && data->chip->irq_compose_msi_msg) {
->  			pos = data;
-> +			break;
-> +		}
-> +	}
-> +#else
-> +	if (data->chip && data->chip->irq_compose_msi_msg)
-> +		pos = data;
-> +#endif
->  	if (!pos)
->  		return -ENOSYS;
->  
-> 
-> 
+> -void pci_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
+> -{
+> -	arg->desc = desc;
+> -	arg->hwirq = pci_msi_domain_calc_hwirq(desc);
+> -}
+> -EXPORT_SYMBOL_GPL(pci_msi_set_desc);
 
-Is it just me, or is this last change more complex than it ought to be?
-
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 857f5f4c8098..25e18b73699c 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1544,7 +1544,7 @@ int irq_chip_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 	struct irq_data *pos = NULL;
- 
- #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
--	for (; data; data = data->parent_data)
-+	for (; data && !pos; data = data->parent_data)
- #endif
- 		if (data->chip && data->chip->irq_compose_msi_msg)
- 			pos = data;
-
-Though the for loop in a #ifdef in admittedly an acquired taste...
+I think that at this stage, pci_msi_domain_calc_hwirq() can be made
+static, as it was only ever exported for this call site. Nice cleanup!
 
 Reviewed-by: Marc Zyngier <maz@kernel.org>
 
