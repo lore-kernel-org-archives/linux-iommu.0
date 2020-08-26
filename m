@@ -6,71 +6,72 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB38C433E3
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C54AC433E1
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:22 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 97D8C2087D
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 60CD92087C
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2u4vytYI";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="PSjOt7VF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97D8C2087D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DLCrWRXa";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="d/g1akpo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60CD92087C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 525BD86FD1;
-	Wed, 26 Aug 2020 12:01:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2253D228DC;
+	Wed, 26 Aug 2020 12:01:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MQmlyNbeZc9K; Wed, 26 Aug 2020 12:01:20 +0000 (UTC)
+	with ESMTP id NL007rTjsnLj; Wed, 26 Aug 2020 12:01:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6C49186AF2;
-	Wed, 26 Aug 2020 12:01:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7D9DC21561;
+	Wed, 26 Aug 2020 12:01:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5701DC07FF;
-	Wed, 26 Aug 2020 12:01:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 59432C0891;
+	Wed, 26 Aug 2020 12:01:04 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8EEB5C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F05BCC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7640186EB1
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:18 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EC18D86DA3
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fcW5lLCnqOMp for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:01:17 +0000 (UTC)
+ with ESMTP id XMTKA5Yre7G2 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 12:01:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 1A7F387B94
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:17 +0000 (UTC)
-Message-Id: <20200826112332.255792469@linutronix.de>
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1462A86D2D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:02 +0000 (UTC)
+Message-Id: <20200826112331.047917603@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1598443275;
+ s=2020; t=1598443260;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=+SoMFjSy3jxF5f7dqPyd8PSV+JeMGK6juDfUnA5hngg=;
- b=2u4vytYI/UB7itfPfJyvcdtqgCSKW46Ox/zzv2XerZ/InxrGE2GWHhUDKlY8KgMdB7HXL0
- aLOdvn+B7AKdSbMuJNLtpZnHpUhROBD88RM3sZNaYgn4L9mRZ01tMg9oUEB7hNqxxpaxWu
- PuWPB9GE8gYW2nV/GNNUJXz2QRA1aGEbBgme8ZLddYRvk8mJdtNuM8JAPZV39AP5FWFg+e
- 6mCaujWeR7ty5TW1jh05CxG1dO0TpdiTKJadJRyoTzko/NyP4r516waUKG+f3i3UxKVb33
- jOoOW+eKn8eNokn5EzeqiaAzG15RYHWhPZq+zVKV7VaRVNEAB9gP2x3UcAMe9Q==
+ bh=aNA6imWCCycyDoE7I/LUogJu92HNj5sOKiAANrwrDhI=;
+ b=DLCrWRXadgrQCf4qFjiJ+39EHne5FXGzCP9hiodZy6C8kQ1/WBZONwRpITcKeNKBrD1AWK
+ rF/EG4OJ4JLSWL/HoTIqnPXKvoPYzGcme0j15L3eojvZ2bWAiS7Mtp6MC3bxVEb0cBOUC9
+ yg4BEsBD55+FiJ8p6JF3228cFuTpo4myNllLNfJ6Fh7oNyAQy3Eqj0+p/pwh4qFx+ZTFbN
+ X8rK+gsgw02K975GfmmssF7oLxWMt/bW4zGm2/v0gmC9AwwlH59Uhn5HEaoAcw83sZ1qnk
+ 6UwasHDKTy053t1sugGUnbd9oxc0qCPpErEWb9QDItLE7iM7JBH4ygOMbYregw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1598443275;
+ s=2020e; t=1598443260;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=+SoMFjSy3jxF5f7dqPyd8PSV+JeMGK6juDfUnA5hngg=;
- b=PSjOt7VFjQr229YKNjiivKh8I6ovDgS9HVBurRV+6P90PPJdlYxwtL6KbmLSwDXPUAQZH4
- W8RvnGxIZdv3mZBw==
-Date: Wed, 26 Aug 2020 13:16:44 +0200
+ bh=aNA6imWCCycyDoE7I/LUogJu92HNj5sOKiAANrwrDhI=;
+ b=d/g1akpo73oJHiKD3AFk+oXcaGgFtQKzORD6f4yN1CPu2he0HCayOxiJxkUBpk9OkfVzCq
+ JLPec94nQktRTKBQ==
+Date: Wed, 26 Aug 2020 13:16:32 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 16/46] x86/irq: Consolidate UV domain allocation
+Subject: [patch V2 04/46] genirq/chip: Use the first chip in
+ irq_chip_compose_msi_msg()
 References: <20200826111628.794979401@linutronix.de>
 MIME-Version: 1.0
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
@@ -108,108 +109,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
+The documentation of irq_chip_compose_msi_msg() claims that with
+hierarchical irq domains the first chip in the hierarchy which has an
+irq_compose_msi_msg() callback is chosen. But the code just keeps
+iterating after it finds a chip with a compose callback.
 
-Move the UV specific fields into their own struct for readability sake. Get
-rid of the #ifdeffery as it does not matter at all whether the alloc info
-is a couple of bytes longer or not.
+The x86 HPET MSI implementation relies on that behaviour, but that does not
+make it more correct.
+
+The message should always be composed at the domain which manages the
+underlying resource (e.g. APIC or remap table) because that domain knows
+about the required layout of the message.
+
+On X86 the following hierarchies exist:
+
+1)   vector -------- PCI/MSI
+2)   vector -- IR -- PCI/MSI
+
+The vector domain has a different message format than the IR (remapping)
+domain. So obviously the PCI/MSI domain can't compose the message without
+having knowledge about the parent domain, which is exactly the opposite of
+what hierarchical domains want to achieve.
+
+X86 actually has two different PCI/MSI chips where #1 has a compose
+callback and #2 does not. #2 delegates the composition to the remap domain
+where it belongs, but #1 does it at the PCI/MSI level.
+
+For the upcoming device MSI support it's necessary to change this and just
+let the first domain which can compose the message take care of it. That
+way the top level chip does not have to worry about it and the device MSI
+code does not need special knowledge about topologies. It just sets the
+compose callback to NULL and lets the hierarchy pick the first chip which
+has one.
+
+Due to that the attempt to move the compose callback from the direct
+delivery PCI/MSI domain to the vector domain made the system fail to boot
+with interrupt remapping enabled because in the remapping case
+irq_chip_compose_msi_msg() keeps iterating and choses the compose callback
+of the vector domain which obviously creates the wrong format for the remap
+table.
+
+Break out of the loop when the first irq chip with a compose callback is
+found and fixup the HPET code temporarily. That workaround will be removed
+once the direct delivery compose callback is moved to the place where it
+belongs in the vector domain.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
 ---
- arch/x86/include/asm/hw_irq.h |   21 ++++++++++++---------
- arch/x86/platform/uv/uv_irq.c |   16 ++++++++--------
- 2 files changed, 20 insertions(+), 17 deletions(-)
+V2: New patch. Note, that this might break other stuff which relies on the
+    current behaviour, but the hierarchy composition of DT based chips is
+    really hard to follow.
+---
+ arch/x86/kernel/apic/msi.c |    7 +++++--
+ kernel/irq/chip.c          |   12 +++++++++---
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -53,6 +53,14 @@ struct ioapic_alloc_info {
- 	struct IO_APIC_route_entry	*entry;
- };
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -479,10 +479,13 @@ struct irq_domain *hpet_create_irq_domai
+ 	info.type = X86_IRQ_ALLOC_TYPE_HPET;
+ 	info.hpet_id = hpet_id;
+ 	parent = irq_remapping_get_ir_irq_domain(&info);
+-	if (parent == NULL)
++	if (parent == NULL) {
+ 		parent = x86_vector_domain;
+-	else
++	} else {
+ 		hpet_msi_controller.name = "IR-HPET-MSI";
++		/* Temporary fix: Will go away */
++		hpet_msi_controller.irq_compose_msi_msg = NULL;
++	}
  
-+struct uv_alloc_info {
-+	int		limit;
-+	int		blade;
-+	unsigned long	offset;
-+	char		*name;
-+
-+};
-+
- /**
-  * irq_alloc_info - X86 specific interrupt allocation info
-  * @type:	X86 specific allocation type
-@@ -64,7 +72,8 @@ struct ioapic_alloc_info {
-  * @data:	Allocation specific data
-  *
-  * @ioapic:	IOAPIC specific allocation data
-- */
-+ * @uv:		UV specific allocation data
-+*/
- struct irq_alloc_info {
- 	enum irq_alloc_type	type;
- 	u32			flags;
-@@ -76,6 +85,8 @@ struct irq_alloc_info {
+ 	fn = irq_domain_alloc_named_id_fwnode(hpet_msi_controller.name,
+ 					      hpet_id);
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1544,10 +1544,16 @@ int irq_chip_compose_msi_msg(struct irq_
+ 	struct irq_data *pos = NULL;
  
- 	union {
- 		struct ioapic_alloc_info	ioapic;
-+		struct uv_alloc_info		uv;
-+
- 		int		unused;
- #ifdef	CONFIG_PCI_MSI
- 		struct {
-@@ -83,14 +94,6 @@ struct irq_alloc_info {
- 			irq_hw_number_t	msi_hwirq;
- 		};
- #endif
--#ifdef	CONFIG_X86_UV
--		struct {
--			int		uv_limit;
--			int		uv_blade;
--			unsigned long	uv_offset;
--			char		*uv_name;
--		};
+ #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
+-	for (; data; data = data->parent_data)
 -#endif
- 	};
- };
+-		if (data->chip && data->chip->irq_compose_msi_msg)
++	for (; data; data = data->parent_data) {
++		if (data->chip && data->chip->irq_compose_msi_msg) {
+ 			pos = data;
++			break;
++		}
++	}
++#else
++	if (data->chip && data->chip->irq_compose_msi_msg)
++		pos = data;
++#endif
+ 	if (!pos)
+ 		return -ENOSYS;
  
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -90,15 +90,15 @@ static int uv_domain_alloc(struct irq_do
- 
- 	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, arg);
- 	if (ret >= 0) {
--		if (info->uv_limit == UV_AFFINITY_CPU)
-+		if (info->uv.limit == UV_AFFINITY_CPU)
- 			irq_set_status_flags(virq, IRQ_NO_BALANCING);
- 		else
- 			irq_set_status_flags(virq, IRQ_MOVE_PCNTXT);
- 
--		chip_data->pnode = uv_blade_to_pnode(info->uv_blade);
--		chip_data->offset = info->uv_offset;
-+		chip_data->pnode = uv_blade_to_pnode(info->uv.blade);
-+		chip_data->offset = info->uv.offset;
- 		irq_domain_set_info(domain, virq, virq, &uv_irq_chip, chip_data,
--				    handle_percpu_irq, NULL, info->uv_name);
-+				    handle_percpu_irq, NULL, info->uv.name);
- 	} else {
- 		kfree(chip_data);
- 	}
-@@ -193,10 +193,10 @@ int uv_setup_irq(char *irq_name, int cpu
- 
- 	init_irq_alloc_info(&info, cpumask_of(cpu));
- 	info.type = X86_IRQ_ALLOC_TYPE_UV;
--	info.uv_limit = limit;
--	info.uv_blade = mmr_blade;
--	info.uv_offset = mmr_offset;
--	info.uv_name = irq_name;
-+	info.uv.limit = limit;
-+	info.uv.blade = mmr_blade;
-+	info.uv.offset = mmr_offset;
-+	info.uv.name = irq_name;
- 
- 	return irq_domain_alloc_irqs(domain, 1,
- 				     uv_blade_to_memory_nid(mmr_blade), &info);
-
 
 _______________________________________________
 iommu mailing list
