@@ -6,71 +6,71 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68502C433E4
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87476C433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:02:08 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CA9A20786
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5BB3E2087D
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:02:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RSaEHbjL";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZWD1CYot"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CA9A20786
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="H5ct7yxy";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IbCUcGl7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5BB3E2087D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 11A63203E4;
-	Wed, 26 Aug 2020 12:01:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 19650228D1;
+	Wed, 26 Aug 2020 12:02:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t-ZWL--hBCzj; Wed, 26 Aug 2020 12:01:44 +0000 (UTC)
+	with ESMTP id AtUR1cWjDY+8; Wed, 26 Aug 2020 12:02:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1014222817;
-	Wed, 26 Aug 2020 12:01:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DC29E21561;
+	Wed, 26 Aug 2020 12:02:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DEAADC07FF;
-	Wed, 26 Aug 2020 12:01:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C9A60C07FF;
+	Wed, 26 Aug 2020 12:02:00 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33282C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:33 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45246C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 128022043D
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:33 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0CD8322011
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aO-hpggYWz2Z for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:01:25 +0000 (UTC)
+ with ESMTP id vtDXfEByiYwg for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 12:01:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id 2C62922888
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:18 +0000 (UTC)
-Message-Id: <20200826112332.352583299@linutronix.de>
+ by silver.osuosl.org (Postfix) with ESMTPS id 91BBA21561
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
+Message-Id: <20200826112334.493642963@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1598443276;
+ s=2020; t=1598443303;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=fVhW8KAVATdE5OfIFLDkUDKtiJTirmfoZAw4dLuU/10=;
- b=RSaEHbjLpnFji4hz+Yy4c8bqEMxRRjqZmMzNy+AsOAmz7haEpvScma2J862+aoSt0Jx/fP
- wpEZ+m8CFz87Kms6JDCsSXqlUYZRurteUMJFTFx70vJA7FUDukHRSRbiN2HDQup3j0fQ3p
- /eGjZPH40K//Odahljcf5ldDXbN8qqgBwFjJA35ecwN1YGnp4feI3LppSIVBNHUHZKgejP
- gko7AY5/4LhNw2+mzjbusGmail/fwVNjbKC0AQ8pOqtbOKBUIqXP48nAHDhE8odchS6+r8
- NPJeA/Ftnj+6dYgmmZjy2mywn3wwhVlETbtZA+kA82uPSz1OkvV+5fPeO6WKYQ==
+ bh=Jbe7LG9G4Zvu5BS675dx2ovvPd7Zs7K+V3j/Ww3fTeI=;
+ b=H5ct7yxyfPkw9COn6I7pDw6V1ilNzNBmxLT5gZpiqG5VFJDTYIRVrKS9MvIkCv/cVCNxwb
+ 9rABWH11GRrt/F1XhhSDp0w0Wy41gVFSZzn9pQiNTcHs+63DsMc+BAwMYNXNq+QlX8TbDd
+ 4nuvxxC6zG54EVKX1tE1lNMYsndx6DnV51i+GGKczVfx6JZBYjHMTx3ogkXMbyFmrmgHIh
+ /Vtqytt4cTeGvYKfsbOypaBGU6hCS9jWwmQ59jHoutngqHxs7Z7hy9qB5xiKsaUmM/tmYI
+ M4N9kw88/wBcNGfGIXWdqU/EB32+w2yt5iCXEHIfU/0M3jstk1ercqpAR2sL5A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1598443276;
+ s=2020e; t=1598443303;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=fVhW8KAVATdE5OfIFLDkUDKtiJTirmfoZAw4dLuU/10=;
- b=ZWD1CYotXnOjjXp+138Tk20c5w43RAEe9EOJjlrH+LlQz81yGpSUwNDWRKCxwEqnBM92DI
- BqABSllW7MPHyeCQ==
-Date: Wed, 26 Aug 2020 13:16:45 +0200
+ bh=Jbe7LG9G4Zvu5BS675dx2ovvPd7Zs7K+V3j/Ww3fTeI=;
+ b=IbCUcGl7XvQeZPqcjY0sMmXx+SATO7tqwsqpLLv6njqYgigJNA52AxgTU6srAQXn4Ie9po
+ 9VYvOCbhOnB1xaDg==
+Date: Wed, 26 Aug 2020 13:17:07 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 17/46] PCI/MSI: Rework pci_msi_domain_calc_hwirq()
+Subject: [patch V2 39/46] x86/irq: Add DEV_MSI allocation type
 References: <20200826111628.794979401@linutronix.de>
 MIME-Version: 1.0
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
@@ -110,72 +110,26 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Retrieve the PCI device from the msi descriptor instead of doing so at the
-call sites.
+For the upcoming device MSI support a new allocation type is
+required.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
----
-V2: Address Bjorns comments (subject prefix, pdev/dev)
----
- arch/x86/kernel/apic/msi.c |    2 +-
- drivers/pci/msi.c          |    9 ++++-----
- include/linux/msi.h        |    3 +--
- 3 files changed, 6 insertions(+), 8 deletions(-)
 
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -232,7 +232,7 @@ EXPORT_SYMBOL_GPL(pci_msi_prepare);
- 
- void pci_msi_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
- {
--	arg->msi_hwirq = pci_msi_domain_calc_hwirq(arg->msi_dev, desc);
-+	arg->msi_hwirq = pci_msi_domain_calc_hwirq(desc);
- }
- EXPORT_SYMBOL_GPL(pci_msi_set_desc);
- 
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1346,14 +1346,14 @@ void pci_msi_domain_write_msg(struct irq
- 
- /**
-  * pci_msi_domain_calc_hwirq - Generate a unique ID for an MSI source
-- * @dev:	Pointer to the PCI device
-  * @desc:	Pointer to the MSI descriptor
-  *
-  * The ID number is only used within the irqdomain.
-  */
--irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
--					  struct msi_desc *desc)
-+irq_hw_number_t pci_msi_domain_calc_hwirq(struct msi_desc *desc)
- {
-+	struct pci_dev *dev = msi_desc_to_pci_dev(desc);
-+
- 	return (irq_hw_number_t)desc->msi_attrib.entry_nr |
- 		pci_dev_id(dev) << 11 |
- 		(pci_domain_nr(dev->bus) & 0xFFFFFFFF) << 27;
-@@ -1406,8 +1406,7 @@ static void pci_msi_domain_set_desc(msi_
- 				    struct msi_desc *desc)
- {
- 	arg->desc = desc;
--	arg->hwirq = pci_msi_domain_calc_hwirq(msi_desc_to_pci_dev(desc),
--					       desc);
-+	arg->hwirq = pci_msi_domain_calc_hwirq(desc);
- }
- #else
- #define pci_msi_domain_set_desc		NULL
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -369,8 +369,7 @@ void pci_msi_domain_write_msg(struct irq
- struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
- 					     struct msi_domain_info *info,
- 					     struct irq_domain *parent);
--irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
--					  struct msi_desc *desc);
-+irq_hw_number_t pci_msi_domain_calc_hwirq(struct msi_desc *desc);
- int pci_msi_domain_check_cap(struct irq_domain *domain,
- 			     struct msi_domain_info *info, struct device *dev);
- u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev);
+---
+ arch/x86/include/asm/hw_irq.h |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/x86/include/asm/hw_irq.h
++++ b/arch/x86/include/asm/hw_irq.h
+@@ -40,6 +40,7 @@ enum irq_alloc_type {
+ 	X86_IRQ_ALLOC_TYPE_PCI_MSIX,
+ 	X86_IRQ_ALLOC_TYPE_DMAR,
+ 	X86_IRQ_ALLOC_TYPE_UV,
++	X86_IRQ_ALLOC_TYPE_DEV_MSI,
+ 	X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT,
+ 	X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT,
+ };
+
 
 _______________________________________________
 iommu mailing list
