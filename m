@@ -2,72 +2,78 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9714FC433E3
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:51:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C25DFC433E1
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:54:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 695F02177B
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:51:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 695F02177B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8EB0622B4E
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:54:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qy5vfyAY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EB0622B4E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3918286977;
-	Wed, 26 Aug 2020 13:51:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5DFDB87B36;
+	Wed, 26 Aug 2020 13:54:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eXjBiv3KQclZ; Wed, 26 Aug 2020 13:51:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 46BE9867CC;
-	Wed, 26 Aug 2020 13:51:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C72DC07FF;
-	Wed, 26 Aug 2020 13:51:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3DD43C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:51:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2CCC187A00
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:51:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
+X-Amavis-Alert: BAD HEADER SECTION, Header field occurs more than once: "To"
+	occurs 3 times
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id obH4Hr5Ld8Uf; Wed, 26 Aug 2020 13:54:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id C32A187A43;
+	Wed, 26 Aug 2020 13:54:07 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ADFB7C07FF;
+	Wed, 26 Aug 2020 13:54:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C264BC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:54:05 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id B3E832045C
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:54:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+X-Amavis-Alert: BAD HEADER SECTION, Header field occurs more than once: "To"
+ occurs 3 times
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ESa7hqBJIolp for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 13:51:30 +0000 (UTC)
+ with ESMTP id aYZpsl1yRrUq for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 13:54:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1E01D8798B
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:51:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 56820101E;
- Wed, 26 Aug 2020 06:51:29 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8CB003F68F;
- Wed, 26 Aug 2020 06:51:27 -0700 (PDT)
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Douglas Anderson <dianders@chromium.org>
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
- <e3e4da33-a44f-0a07-9e2e-0f806875ab0b@arm.com>
- <d9b1f1b614057d87279c26e13cbbb1f5@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a03ce8f0-cab5-2782-ac50-930cf94b7dcd@arm.com>
-Date: Wed, 26 Aug 2020 14:51:22 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <d9b1f1b614057d87279c26e13cbbb1f5@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 122F720427
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:54:05 +0000 (UTC)
+Received: from localhost (unknown [70.37.104.77])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id A7215208E4;
+ Wed, 26 Aug 2020 13:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1598450044;
+ bh=gDOILFHQ8erfZ+RKeyL/QbShSWOKn3N680xVgmW8MQs=;
+ h=Date:From:To:To:To:Cc:Cc:Cc:Subject:In-Reply-To:References:From;
+ b=Qy5vfyAY1vq9SfSmsWuWYKZuRD5kzrN7XOV3/P6ZMmr1dj2lY9CxDRRLyWZwWmven
+ dh2dhoDxY2eA31OcW+HQbomtQjvLWn01YyY0JEcpU36i+c/9xQiQ2qtRGhK4vncm8z
+ 99w1OfuvS6p8RssolthXYD6xbNZqkwkcU2uDPcUI=
+Date: Wed, 26 Aug 2020 13:54:04 +0000
+From: Sasha Levin <sashal@kernel.org>
+To: Sasha Levin <sashal@kernel.org>
+To: Dmitry Osipenko <digetx@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH RESEND v3] iommu/tegra-smmu: Add missing locks around
+ mapping operations
+In-Reply-To: <20200814162252.31965-1-digetx@gmail.com>
+References: <20200814162252.31965-1-digetx@gmail.com>
+Message-Id: <20200826135404.A7215208E4@mail.kernel.org>
+Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
+ stable@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,67 +86,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-08-26 13:17, Sai Prakash Ranjan wrote:
-> On 2020-08-26 17:07, Robin Murphy wrote:
->> On 2020-08-25 16:42, Sai Prakash Ranjan wrote:
->>> Currently the non-strict or lazy mode of TLB invalidation can only be 
->>> set
->>> for all or no domains. This works well for development platforms where
->>> setting to non-strict/lazy mode is fine for performance reasons but on
->>> production devices, we need a more fine grained control to allow only
->>> certain peripherals to support this mode where we can be sure that it is
->>> safe. So add support to filter non-strict/lazy mode based on the device
->>> names that are passed via cmdline parameter "iommu.nonstrict_device".
->>
->> There seems to be considerable overlap here with both the existing
->> patches for per-device default domain control [1], and the broader
->> ongoing development on how to define, evaluate and handle "trusted"
->> vs. "untrusted" devices (e.g. [2],[3]). I'd rather see work done to
->> make sure those integrate properly together and work well for
->> everyone's purposes, than add more disjoint mechanisms that only
->> address small pieces of the overall issue.
->>
->> Robin.
->>
->> [1]
->> https://lore.kernel.org/linux-iommu/20200824051726.7xaJRTTszJuzdFWGJ8YNsshCtfNR0BNeMrlILAyqt_0@z/ 
->>
->> [2]
->> https://lore.kernel.org/linux-iommu/20200630044943.3425049-1-rajatja@google.com/ 
->>
->> [3]
->> https://lore.kernel.org/linux-iommu/20200626002710.110200-2-rajatja@google.com/ 
->>
->>
-> 
-> Thanks for the links, [1] definitely sounds interesting, I was under the 
-> impression
-> that changing such via sysfs is late, but seems like other Sai has got 
-> it working
-> for the default domain type. So we can extend that and add a strict 
-> attribute as well,
-> we should be definitely OK with system booting with default strict mode 
-> for all
-> peripherals as long as we have an option to change that later, Doug?
+Hi
 
-Right, IIRC there was initially a proposal of a command line option 
-there too, and it faced the same criticism around not being very generic 
-or scalable. I believe sysfs works as a reasonable compromise since in 
-many cases it can be tweaked relatively early from an initrd, and 
-non-essential devices can effectively be switched at any time by 
-removing and reprobing their driver.
+[This is an automated email]
 
-As for a general approach for internal devices where you do believe the 
-hardware is honest but don't necessarily trust whatever firmware it 
-happens to be running, I'm pretty sure that's come up already, but I'll 
-be sure to mention it at Rajat's imminent LPC talk if nobody else does.
+This commit has been processed because it contains a -stable tag.
+The stable tag indicates that it's relevant for the following trees: all
 
-Robin.
+The bot has tested the following trees: v5.8.2, v5.7.16, v5.4.59, v4.19.140, v4.14.193, v4.9.232, v4.4.232.
+
+v5.8.2: Build OK!
+v5.7.16: Build OK!
+v5.4.59: Failed to apply! Possible dependencies:
+    781ca2de89ba ("iommu: Add gfp parameter to iommu_ops::map")
+
+v4.19.140: Failed to apply! Possible dependencies:
+    06d60728ff5c ("iommu/dma: move the arm64 wrappers to common code")
+    44f6876a00e8 ("iommu/arm-smmu: Support non-strict mode")
+    46053c736854 ("dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops")
+    781ca2de89ba ("iommu: Add gfp parameter to iommu_ops::map")
+    886643b76632 ("arm64: use the generic swiotlb_dma_ops")
+    92aec09cc879 ("iommu/dma: Move __iommu_dma_map")
+    96a299d24cfb ("iommu/arm-smmu: Add pm_runtime/sleep ops")
+    c4dae366925f ("swiotlb: refactor swiotlb_map_page")
+    d4a44f0750bb ("iommu/arm-smmu: Invoke pm_runtime across the driver")
+    dff8d6c1ed58 ("swiotlb: remove the overflow buffer")
+    fafadcd16595 ("swiotlb: don't dip into swiotlb pool for coherent allocations")
+
+v4.14.193: Failed to apply! Possible dependencies:
+    06d60728ff5c ("iommu/dma: move the arm64 wrappers to common code")
+    10dac04c79b1 ("mips: fix an off-by-one in dma_capable")
+    32b124492bdf ("iommu/io-pgtable-arm: Convert to IOMMU API TLB sync")
+    32ce3862af3c ("powerpc/lib: Implement PMEM API")
+    44f6876a00e8 ("iommu/arm-smmu: Support non-strict mode")
+    781ca2de89ba ("iommu: Add gfp parameter to iommu_ops::map")
+    92aec09cc879 ("iommu/dma: Move __iommu_dma_map")
+    96a299d24cfb ("iommu/arm-smmu: Add pm_runtime/sleep ops")
+    d4a44f0750bb ("iommu/arm-smmu: Invoke pm_runtime across the driver")
+    ea8c64ace866 ("dma-mapping: move swiotlb arch helpers to a new header")
+
+v4.9.232: Failed to apply! Possible dependencies:
+    125458ab3aef ("iommu/arm-smmu: Fix 16-bit ASID configuration")
+    280b683ceace ("iommu/arm-smmu: Simplify ASID/VMID handling")
+    32b124492bdf ("iommu/io-pgtable-arm: Convert to IOMMU API TLB sync")
+    3677a649a751 ("iommu/arm-smmu: Fix for ThunderX erratum #27704")
+    44f6876a00e8 ("iommu/arm-smmu: Support non-strict mode")
+    452107c79035 ("iommu/arm-smmu: Tidy up context bank indexing")
+    523d7423e21b ("iommu/arm-smmu: Remove io-pgtable spinlock")
+    58188afeb727 ("iommu/arm-smmu-v3: Remove io-pgtable spinlock")
+    61bc671179f1 ("iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains")
+    781ca2de89ba ("iommu: Add gfp parameter to iommu_ops::map")
+    bdf95923086f ("iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is bypassed")
+    d4a44f0750bb ("iommu/arm-smmu: Invoke pm_runtime across the driver")
+
+v4.4.232: Failed to apply! Possible dependencies:
+    267b62a96951 ("clk: tegra: pll: Update PLLM handling")
+    287980e49ffc ("remove lots of IS_ERR_VALUE abuses")
+    407254da291c ("clk: tegra: pll: Add logic for out-of-table rates for T210")
+    56fd27b31f1a ("clk: tegra: pll: Change misc_reg count from 3 to 6")
+    58188afeb727 ("iommu/arm-smmu-v3: Remove io-pgtable spinlock")
+    6583a6309e83 ("clk: tegra: pll: Add tegra_pll_wait_for_lock to clk header")
+    6929715cf6b9 ("clk: tegra: pll: Add support for PLLMB for Tegra210")
+    6b301a059eb2 ("clk: tegra: Add support for Tegra210 clocks")
+    781ca2de89ba ("iommu: Add gfp parameter to iommu_ops::map")
+    7db864c9deb2 ("clk: tegra: pll: Simplify clk_enable_path")
+    8cfb0cdf07e2 ("ACPI / debugger: Add IO interface to access debugger functionalities")
+    8f78515425da ("iommu/arm-smmu: Implement of_xlate() for SMMUv3")
+    9adb95949a34 ("iommu/arm-smmu: Support DMA-API domains")
+    bc7f2ce0a7b5 ("iommu/arm-smmu: Don't fail device attach if already attached to a domain")
+    bdf95923086f ("iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is bypassed")
+    d907f4b4a178 ("clk: tegra: pll: Add logic for handling SDM data")
+    f8d31489629c ("ACPICA: Debugger: Convert some mechanisms to OSPM specific")
+
+
+NOTE: The patch will not be queued to stable trees until it is upstream.
+
+How should we proceed with this patch?
+
+-- 
+Thanks
+Sasha
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
