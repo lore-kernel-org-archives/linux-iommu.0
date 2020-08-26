@@ -6,72 +6,71 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4016C433DF
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188EEC433E5
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:49 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 989C021775
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E1D3B20786
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0jSenzh6";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="C8u5XcoT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 989C021775
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2s4c2y6v";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3q3l2bUB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1D3B20786
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 77C1786A95;
-	Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D4D77864EC;
+	Wed, 26 Aug 2020 12:01:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GHbQ49eQY2YE; Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
+	with ESMTP id 6OUiCiaQnhO5; Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8DD70864EC;
-	Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 31BCD86A70;
+	Wed, 26 Aug 2020 12:01:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AC56C0891;
-	Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6911BC0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D559C0893;
+	Wed, 26 Aug 2020 12:01:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94BB5C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2D2BE228DB
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:41 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9028D869E3
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iAL7LytGi4Dc for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:01:34 +0000 (UTC)
+ with ESMTP id BeGlBaq8Su63 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 12:01:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id 5E832228E7
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:29 +0000 (UTC)
-Message-Id: <20200826112333.234097629@linutronix.de>
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 164F4864EC
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:43 +0000 (UTC)
+Message-Id: <20200826112334.305699301@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1598443287;
+ s=2020; t=1598443301;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=s4SeYBthv8w4UR8KrcCzunKzBoXJmS11W4/9Ii+wPwg=;
- b=0jSenzh6VMcbo5+9rHYdiJaVUtSyatLMPnP8UId36opBJ9reS21zWdvIP9laqMLP72TxHN
- qJyfblVrn8J8N517J1EWmCfktvN/NZ1CtZN8nlF7bZid5zFAegxBMcdfQHQgHC+Gp90H7n
- 9sESDryS5HzKppZp1LW/c/8dAAsikLDjI2lZJqftZV6DBFcT+b9vqq03XohIEfOcxWc38J
- 6ES89Am49KT0SjmgVddjV0/u3LM1wfI75S6yDON/Jm2XufuKdlV2oFDfwlySAbkxdY492a
- CHmqsE5ke05SYtf5Cmr0DlQ88El+cd+cFGaXihvD7PXFoDTGLuoQC9YRKVzlDw==
+ bh=NwMc6HHKOuHFHcs9NWEQ/BqYaKGLdBqNmeOK/gzAh14=;
+ b=2s4c2y6vMTA/ieuCUb5qVuGjCDXggTJgYejSfg0lcfKJYt5P4jPML4GNoFJfltIsMgj9J/
+ VsYGggzk6sZLyaSo1vduT1Cs8ZCZJF+gcFI5TysO5jNKER7ArJbOJSsKrAYyuBkOukGuOb
+ FQ1uwyKinluUzGE5jmKOqJ1Nn3myMvav7uegmQbKQ00Jnr5lAPorFBwcH4owHKpC4eqmcQ
+ nTCtjB4ARME8/+Eka6y5gKr8nqGuy7LuhYt+7/6KtE/SFCe8bHEMYab4NG78feBGLj58qW
+ zNS4V06IzETi4o9ul8bZJDO9OOlWl4cILudMLmaIif3jM3lc5O0/X0iLtZvTvA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1598443287;
+ s=2020e; t=1598443301;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=s4SeYBthv8w4UR8KrcCzunKzBoXJmS11W4/9Ii+wPwg=;
- b=C8u5XcoTZYCozPWWBT669Nb/bz2gzhwadoicELlzkl29EJb0qX+wUaZv2O6m5j6Ql9skbp
- WYNcQvMK17AqSGCQ==
-Date: Wed, 26 Aug 2020 13:16:54 +0200
+ bh=NwMc6HHKOuHFHcs9NWEQ/BqYaKGLdBqNmeOK/gzAh14=;
+ b=3q3l2bUBLfdN8GkRZWgvhVoU0iSm0dsQYXjNUnttHUPTMWchNTEnImRkpz4neyKjFHiPYO
+ cgmpPnzdfvDOXADA==
+Date: Wed, 26 Aug 2020 13:17:05 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 26/46] x86/xen: Make xen_msi_init() static and rename it to
- xen_hvm_msi_init()
+Subject: [patch V2 37/46] iommu/vt-d: Remove domain search for PCI/MSI[X]
 References: <20200826111628.794979401@linutronix.de>
 MIME-Version: 1.0
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
@@ -109,39 +108,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
-
-The only user is in the same file and the name is too generic because this
-function is only ever used for HVM domains.
+Now that the domain can be retrieved through device::msi_domain the domain
+search for PCI_MSI[X] is not longer required. Remove it.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Juergen Gross<jgross@suse.com>
-
-
 ---
- arch/x86/pci/xen.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+V2: New patch
+---
+ drivers/iommu/intel/irq_remapping.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/arch/x86/pci/xen.c
-+++ b/arch/x86/pci/xen.c
-@@ -420,7 +420,7 @@ int __init pci_xen_init(void)
- }
- 
- #ifdef CONFIG_PCI_MSI
--void __init xen_msi_init(void)
-+static void __init xen_hvm_msi_init(void)
- {
- 	if (!disable_apic) {
- 		/*
-@@ -460,7 +460,7 @@ int __init pci_xen_hvm_init(void)
- 	 * We need to wait until after x2apic is initialized
- 	 * before we can set MSI IRQ ops.
- 	 */
--	x86_platform.apic_post_init = xen_msi_init;
-+	x86_platform.apic_post_init = xen_hvm_msi_init;
- #endif
- 	return 0;
- }
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1132,9 +1132,6 @@ static struct irq_domain *intel_get_irq_
+ 		return map_ioapic_to_ir(info->devid);
+ 	case X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT:
+ 		return map_hpet_to_ir(info->devid);
+-	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+-	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+-		return map_dev_to_ir(msi_desc_to_pci_dev(info->desc));
+ 	default:
+ 		WARN_ON_ONCE(1);
+ 		return NULL;
 
 _______________________________________________
 iommu mailing list
