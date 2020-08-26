@@ -6,76 +6,76 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E499C433E3
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 21:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE7EC433E3
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 21:33:38 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 255AF20737
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 21:32:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2F0062087D
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 21:33:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="i9DoDgsi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 255AF20737
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ze75GSnV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F0062087D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E9F2C87EE3;
-	Wed, 26 Aug 2020 21:32:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0D17887FE8;
+	Wed, 26 Aug 2020 21:33:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ch8TbRKcR7hO; Wed, 26 Aug 2020 21:32:07 +0000 (UTC)
+	with ESMTP id Nbki1Eoz6sub; Wed, 26 Aug 2020 21:33:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 36FBC87890;
-	Wed, 26 Aug 2020 21:32:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 98A2786917;
+	Wed, 26 Aug 2020 21:33:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A1D7C07FF;
-	Wed, 26 Aug 2020 21:32:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8633AC0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:32:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 808F8C07FF;
+	Wed, 26 Aug 2020 21:33:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45565C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:33:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8194886BE1
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:32:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3BD4C87FE8
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:33:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bDrxcHf8Tt4d for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 21:32:06 +0000 (UTC)
+ with ESMTP id VmHJ3iHez8Df for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 21:33:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 127EE86BAE
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:32:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A77EC86917
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 21:33:35 +0000 (UTC)
 Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
  [51.254.78.96])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id ADEB620737;
- Wed, 26 Aug 2020 21:32:05 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 619A820737;
+ Wed, 26 Aug 2020 21:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1598477525;
- bh=VdsE3G0WVplLGteqa6jAyZDVfUl58SftRfor4592Lhc=;
+ s=default; t=1598477615;
+ bh=YW+rIBasGHh+otBTvN1XkgP5e9k6NldvJXC4gJyKR58=;
  h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=i9DoDgsiUX+wkkK/l5339mYtR4k1TJ5aipWvRxq1xcBpRA5BvZDTI5nWZ01nieUzS
- 44gss4r1HcSekfb8E0GDg4TUzWrb4+Qd/PQRK38Z0kl1kIPdwfbz3o/yK6F6uNmfR6
- kBeb9yp3s6zsMTc9qxjyWjE6liTypklbtWoSbVm0=
+ b=ze75GSnVu1xfS6xKQa3PMkeLwc9wY7nMYazNki7oeT0LUlePw0Jm59U12hcPyfRAt
+ tyxRrFUh8E/er/Ben6cRUvuYwXkO+DOUu9MHR0AOVwliboMYJNmNpYWzZMp5WyvLL0
+ KrNgTCJoAN8jXt3bFS1kKpKI0lYGg8z85cSB+20Y=
 Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
  helo=wait-a-minute.misterjones.org)
  by disco-boy.misterjones.org with esmtpsa
  (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
  (envelope-from <maz@kernel.org>)
- id 1kB31Y-006ytl-2b; Wed, 26 Aug 2020 22:32:04 +0100
-Date: Wed, 26 Aug 2020 22:32:02 +0100
-Message-ID: <87zh6h14bx.wl-maz@kernel.org>
+ id 1kB32z-006yv7-Gz; Wed, 26 Aug 2020 22:33:34 +0100
+Date: Wed, 26 Aug 2020 22:33:31 +0100
+Message-ID: <87y2m1149g.wl-maz@kernel.org>
 From: Marc Zyngier <maz@kernel.org>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 04/46] genirq/chip: Use the first chip in
- irq_chip_compose_msi_msg()
-In-Reply-To: <87o8mxt88z.fsf@nanos.tec.linutronix.de>
+Subject: Re: [patch V2 29/46] irqdomain/msi: Allow to override
+ msi_domain_alloc/free_irqs()
+In-Reply-To: <87zh6htcit.fsf@nanos.tec.linutronix.de>
 References: <20200826111628.794979401@linutronix.de>
- <20200826112331.047917603@linutronix.de>
- <87a6yh2nln.wl-maz@kernel.org>
- <87o8mxt88z.fsf@nanos.tec.linutronix.de>
+ <20200826112333.526797548@linutronix.de>
+ <87blix2pna.wl-maz@kernel.org>
+ <87zh6htcit.fsf@nanos.tec.linutronix.de>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
  (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -131,73 +131,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 26 Aug 2020 22:19:56 +0100,
+On Wed, 26 Aug 2020 20:47:38 +0100,
 Thomas Gleixner <tglx@linutronix.de> wrote:
 > 
-> On Wed, Aug 26 2020 at 20:50, Marc Zyngier wrote:
-> > On Wed, 26 Aug 2020 12:16:32 +0100,
+> On Wed, Aug 26 2020 at 20:06, Marc Zyngier wrote:
+> > On Wed, 26 Aug 2020 12:16:57 +0100,
 > > Thomas Gleixner <tglx@linutronix.de> wrote:
-> >> ---
-> >> V2: New patch. Note, that this might break other stuff which relies on the
-> >>     current behaviour, but the hierarchy composition of DT based chips is
-> >>     really hard to follow.
+> >>  /**
+> >> - * msi_domain_free_irqs - Free interrupts from a MSI interrupt @domain associated tp @dev
+> >> - * @domain:	The domain to managing the interrupts
+> >> + * msi_domain_alloc_irqs - Allocate interrupts from a MSI interrupt domain
+> >> + * @domain:	The domain to allocate from
+> >>   * @dev:	Pointer to device struct of the device for which the interrupts
+> >> - *		are free
+> >> + *		are allocated
+> >> + * @nvec:	The number of interrupts to allocate
+> >> + *
+> >> + * Returns 0 on success or an error code.
+> >>   */
+> >> -void msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
+> >> +int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
+> >> +			  int nvec)
+> >> +{
+> >> +	struct msi_domain_info *info = domain->host_data;
+> >> +	struct msi_domain_ops *ops = info->ops;
 > >
-
-[...]
-
-> What about the below?
+> > Rework leftovers, I imagine.
 > 
-> Thanks,
-> 
->         tglx
-> ---
-> --- a/kernel/irq/internals.h
-> +++ b/kernel/irq/internals.h
-> @@ -473,6 +473,15 @@ static inline void irq_domain_deactivate
->  }
->  #endif
->  
-> +static inline struct irq_data *irqd_get_parent_data(struct irq_data *irqd)
-> +{
-> +#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
-> +	return irqd->parent_data;
-> +#else
-> +	return NULL;
-> +#endif
-> +}
-> +
+> Hmm, no. How would it call ops->domain_alloc_irqs() without getting the
+> ops. I know, that the diff is horrible, but don't blame me for it. diff
+> sucks at times.
 
-We obviously should have had this forever.
+I can't read. Time to put the laptop away!
 
->  #ifdef CONFIG_GENERIC_IRQ_DEBUGFS
->  #include <linux/debugfs.h>
->  
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -1541,18 +1541,17 @@ EXPORT_SYMBOL_GPL(irq_chip_release_resou
->   */
->  int irq_chip_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->  {
-> -	struct irq_data *pos = NULL;
-> +	struct irq_data *pos;
->  
-> -#ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
-> -	for (; data; data = data->parent_data)
-> -#endif
-> +	for (pos = NULL; !pos && data; data = irqd_get_parent_data(data)) {
->  		if (data->chip && data->chip->irq_compose_msi_msg)
->  			pos = data;
-> +	}
-> +
->  	if (!pos)
->  		return -ENOSYS;
->  
->  	pos->chip->irq_compose_msi_msg(pos, msg);
-> -
->  	return 0;
->  }
-
-Perfect, ship it! ;-)
+Thanks,
 
 	M.
 
