@@ -2,82 +2,100 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F65C433DF
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0154C433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 09:53:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D17EA2071E
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:56:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 699F02067C
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 09:53:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="hqvi7lbj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D17EA2071E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="gry5Gqjf";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="T18EHlog"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 699F02067C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8562586D08;
-	Wed, 26 Aug 2020 08:56:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 13CE8871F0;
+	Wed, 26 Aug 2020 09:53:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Vw13Z-idUoyx; Wed, 26 Aug 2020 08:56:28 +0000 (UTC)
+	with ESMTP id yVM4A6-QSFBq; Wed, 26 Aug 2020 09:53:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C28FA86FD1;
-	Wed, 26 Aug 2020 08:56:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2814986C1A;
+	Wed, 26 Aug 2020 09:53:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA6ACC016F;
-	Wed, 26 Aug 2020 08:56:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 11C64C07FF;
+	Wed, 26 Aug 2020 09:53:21 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 887B0C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:56:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C30D8C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 09:53:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6DDF886FD1
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:56:26 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id BE9E586C34
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 09:53:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CoWGVOnM5a4m for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 08:56:25 +0000 (UTC)
+ with ESMTP id 516rE9S7ZuEH for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 09:53:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1B7D186D08
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:56:24 +0000 (UTC)
-X-UUID: 5449f9c61e02490db3bee6e3dc33b42a-20200826
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From;
- bh=0y0Vfo6/get6fXxv+JKbgOiwCIDoQLsBCkYvCv7n8ek=; 
- b=hqvi7lbj0WRx7lbM4KJFWEvN8WPZZaznw0EePpBG/ULsutCHqAWvkQlrmufhNrzPdaMBLCkgxLAFcHWHysK0j6I3t+ftEEGzpASlUI8duR3SzWNPTeY+jVOP2T+pjGhvolLwVho7CBeWCG2Fz4aqaArdWWSwhSYfOOlwflbbvCU=;
-X-UUID: 5449f9c61e02490db3bee6e3dc33b42a-20200826
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
- (envelope-from <miles.chen@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 990541766; Wed, 26 Aug 2020 16:56:20 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs02n1.mediatek.inc (172.21.101.77) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 26 Aug 2020 16:56:17 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
- Frontend Transport; Wed, 26 Aug 2020 16:56:17 +0800
-From: Miles Chen <miles.chen@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
- Rob Herring <robh@kernel.org>
-Subject: [RESEND PATCH v4] iommu/mediatek: check 4GB mode by reading infracfg
-Date: Wed, 26 Aug 2020 16:56:18 +0800
-Message-ID: <20200826085618.2889-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 1CFB886C1A
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 09:53:19 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1598435595;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=mv4TqayOvYT1PZy4IB6XdyAxCqLJFuyrG/iBXdVvDGo=;
+ b=gry5Gqjf5XbHVcJKaDXMPK4boPx5u/IEBob5D9Wn36xeFWifKRFQGrLYl80/EuQiMfzysE
+ R0d4KWtrjVjHsKfDbzzjWDT5squtWA8CAJmXu6ssTTvFAl1Dp0Qb/5Gseu91lYmL0/YUjO
+ NbsGg1x1qsfcwMmq40s6f8QzME/wE8mMh0jkO28671y+OSXzdMJAa+d/pRnJ+IIBJUer6F
+ myfzP6CTQbmP/AgP0sGex0XapaKloSSKztkVFL6Agugb80R0gctiC6HeZ9PqzrabjLNIkQ
+ pAIkMvt8UaWwzx1EMmCW7rVmlO3SHuNH8U5WRqRwrLaG8IAQqyASWZnve1tyYQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1598435595;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=mv4TqayOvYT1PZy4IB6XdyAxCqLJFuyrG/iBXdVvDGo=;
+ b=T18EHlogGsekmXEOkS3bdJRDQU5OgZArZ4psx/80SWGB5Jkvh72YqFLOhYbYkZrSz/1STi
+ ppR6UR793IwPtlAg==
+To: Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [patch RFC 10/38] x86/ioapic: Consolidate IOAPIC allocation
+In-Reply-To: <20200826084019.GA6174@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+References: <20200821002424.119492231@linutronix.de>
+ <20200821002946.297823391@linutronix.de>
+ <20200826084019.GA6174@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+Date: Wed, 26 Aug 2020 11:53:15 +0200
+Message-ID: <871rjtwx6c.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-X-MTK: N
-Cc: wsd_upstream@mediatek.com, David Hildenbrand <david@redhat.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Miles Chen <miles.chen@mediatek.com>, linux-mediatek@lists.infradead.org,
- Yingjoe Chen <yingjoe.chen@mediatek.com>, Mike Rapoport <rppt@linux.ibm.com>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
+ Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
+ Marc Zyngier <maz@kernel.org>, x86@kernel.org,
+ Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
+ Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,145 +108,19 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In previous discussion [1] and [2], we found that it is risky to
-use max_pfn or totalram_pages to tell if 4GB mode is enabled.
-
-Check 4GB mode by reading infracfg register, remove the usage
-of the un-exported symbol max_pfn.
-
-This is a step towards building mtk_iommu as a kernel module.
-
-[1] https://lore.kernel.org/lkml/20200603161132.2441-1-miles.chen@mediatek.com/
-[2] https://lore.kernel.org/lkml/20200604080120.2628-1-miles.chen@mediatek.com/
-[3] https://lore.kernel.org/lkml/20200715205120.GA778876@bogus/
-
-Cc: Mike Rapoport <rppt@linux.ibm.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Yong Wu <yong.wu@mediatek.com>
-Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-
----
-
-Change since v3
-- use lore.kernel.org links
-- move "change since..." after "---"
-
-Change since v2:
-- determine compatible string by m4u_plat
-- rebase to next-20200720
-- add "---"
-
-Change since v1:
-- remove the phandle usage, search for infracfg instead [3]
-- use infracfg instead of infracfg_regmap
-- move infracfg definitaions to linux/soc/mediatek/infracfg.h
-- update enable_4GB only when has_4gb_mode
----
- drivers/iommu/mtk_iommu.c             | 34 +++++++++++++++++++++++----
- include/linux/soc/mediatek/infracfg.h |  3 +++
- 2 files changed, 32 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 785b228d39a6..adc350150492 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -3,7 +3,6 @@
-  * Copyright (c) 2015-2016 MediaTek Inc.
-  * Author: Yong Wu <yong.wu@mediatek.com>
-  */
--#include <linux/memblock.h>
- #include <linux/bug.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-@@ -15,13 +14,16 @@
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
- #include <linux/list.h>
-+#include <linux/mfd/syscon.h>
- #include <linux/of_address.h>
- #include <linux/of_iommu.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/regmap.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-+#include <linux/soc/mediatek/infracfg.h>
- #include <asm/barrier.h>
- #include <soc/mediatek/smi.h>
- 
-@@ -640,8 +642,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	struct resource         *res;
- 	resource_size_t		ioaddr;
- 	struct component_match  *match = NULL;
-+	struct regmap		*infracfg;
- 	void                    *protect;
- 	int                     i, larb_nr, ret;
-+	u32			val;
-+	char                    *p;
- 
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
-@@ -655,10 +660,29 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
- 
--	/* Whether the current dram is over 4GB */
--	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
--	if (!MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
--		data->enable_4GB = false;
-+	data->enable_4GB = false;
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
-+		switch (data->plat_data->m4u_plat) {
-+		case M4U_MT2712:
-+			p = "mediatek,mt2712-infracfg";
-+			break;
-+		case M4U_MT8173:
-+			p = "mediatek,mt8173-infracfg";
-+			break;
-+		default:
-+			p = NULL;
-+		}
-+
-+		infracfg = syscon_regmap_lookup_by_compatible(p);
-+
-+		if (IS_ERR(infracfg))
-+			return PTR_ERR(infracfg);
-+
-+		ret = regmap_read(infracfg, REG_INFRA_MISC, &val);
-+		if (ret)
-+			return ret;
-+		data->enable_4GB = !!(val & F_DDR_4GB_SUPPORT_EN);
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	data->base = devm_ioremap_resource(dev, res);
-diff --git a/include/linux/soc/mediatek/infracfg.h b/include/linux/soc/mediatek/infracfg.h
-index fd25f0148566..233463d789c6 100644
---- a/include/linux/soc/mediatek/infracfg.h
-+++ b/include/linux/soc/mediatek/infracfg.h
-@@ -32,6 +32,9 @@
- #define MT7622_TOP_AXI_PROT_EN_WB		(BIT(2) | BIT(6) | \
- 						 BIT(7) | BIT(8))
- 
-+#define REG_INFRA_MISC				0xf00
-+#define F_DDR_4GB_SUPPORT_EN			BIT(13)
-+
- int mtk_infracfg_set_bus_protection(struct regmap *infracfg, u32 mask,
- 		bool reg_update);
- int mtk_infracfg_clear_bus_protection(struct regmap *infracfg, u32 mask,
--- 
-2.18.0
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gV2VkLCBBdWcgMjYgMjAyMCBhdCAxNjo0MCwgQm9xdW4gRmVuZyB3cm90ZToKPiBJIGhpdCBh
+IGNvbXBpbGVyIGVycm9yIHdoaWxlIEkgd2FzIHRyeWluZyB0byBjb21waWxlIHRoaXMgcGF0Y2hz
+ZXQ6Cj4KPiBhcmNoL3g4Ni9rZXJuZWwvZGV2aWNldHJlZS5jOiBJbiBmdW5jdGlvbiDigJhkdF9p
+cnFkb21haW5fYWxsb2PigJk6Cj4gYXJjaC94ODYva2VybmVsL2RldmljZXRyZWUuYzoyMzI6Njog
+ZXJyb3I6IOKAmHN0cnVjdCBpcnFfYWxsb2NfaW5mb+KAmSBoYXMgbm8gbWVtYmVyIG5hbWVkIOKA
+mGlvYXBpY19pZOKAmTsgZGlkIHlvdSBtZWFuIOKAmGlvYXBpY+KAmT8KPiAgIDIzMiB8ICB0bXAu
+aW9hcGljX2lkID0gbXBjX2lvYXBpY19pZChtcF9pcnFkb21haW5faW9hcGljX2lkeChkb21haW4p
+KTsKClllYWgsIG5vdGljZWQgbXlzZWxmIGFscmVhZHkgYW5kIDBkYXkgY29tcGxhaW5lZCBhcyB3
+ZWxsIDopCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
+b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
