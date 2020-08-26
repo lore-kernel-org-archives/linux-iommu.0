@@ -2,100 +2,79 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734B5C433E3
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 01:16:25 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DC8C433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 02:53:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F19620737
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 01:16:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hektBrpB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F19620737
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9148F20737
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 02:53:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9148F20737
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A274E8701C;
-	Wed, 26 Aug 2020 01:16:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rBzJNZGDfZGT; Wed, 26 Aug 2020 01:16:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6FF2586B53;
-	Wed, 26 Aug 2020 01:16:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A3C2C07FF;
-	Wed, 26 Aug 2020 01:16:23 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 17358C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 01:16:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F3E4A86A00
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 01:16:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4E52185218;
+	Wed, 26 Aug 2020 02:53:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AVXytZEd33jy; Wed, 26 Aug 2020 02:53:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 515CE84B80;
+	Wed, 26 Aug 2020 02:53:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 218C6C016F;
+	Wed, 26 Aug 2020 02:53:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71453C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 02:53:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6032B879C5
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 02:53:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6BlbfHENrO1v for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 01:16:20 +0000 (UTC)
+ with ESMTP id mh2tJTMJ0iGP for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 02:53:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9B0D0851A4
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 01:16:20 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id z9so162781wmk.1
- for <iommu@lists.linux-foundation.org>; Tue, 25 Aug 2020 18:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=X+ZwMGLa5HX2rHpL0aTFFHipz/FU+LJc9s7WOeWT7w8=;
- b=hektBrpBcD7QhPXMq5pUowKVu/YPWU4R7SnLon7v1RZkrOVCQPZapEBhRq3h9sAyPN
- n8sXwxzbh3NP/hJ2vAjZS5fOUElwmmdeBIZUNHZRKoA0vtvCST/nCyF6kaay8yJlNm97
- 4IV3ETrot/sn8iB4fhwWfNW3/AjFB3MDXIh8BawTi72rCsnA2CYLEFbwFJJAGAKE84wj
- 3otw+WH+ksSR6CEIJYSUyTyzHOa67AuwzjTF54+5VDzDiZ3SQN0z6qY6KxepnrL9+DXK
- lyugoxugaBxtnl91jaiVdeVIs9MnjysTfl3GvYgCmP6HrbM30hMWMIj9S7Urgzos1xUV
- jAYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=X+ZwMGLa5HX2rHpL0aTFFHipz/FU+LJc9s7WOeWT7w8=;
- b=R48IaYCTDth6kITpzvobhXH4sZhEPC1CrY7fvUENb9vBDLFj9TEPwwFs5MXiwX9Pse
- bHvDB9lwqMqUvyHsvL6JapmrOOrHxIPxiXmky+UffkbhtMN2BCDNusVGKm2s0ObsAebp
- dD9YFRKbU9Ld5ZdefP/7mycrhJ6v7g68pNgE3TMsCdOwBeCnS9X8XwsPMOMbA9cJ1kQI
- k+cWvVX/woADx70MScW+Okrp3cIaTMluOYr1FQhEeZsNoqLNzihkoKpspOxGargsvGS6
- 3/e5nlzGeV7gaUKxdzlJrHrqg8cfnPGdvHv2AQ07hdD9kzRdQXZW2GwaQHIWk0r5EZAn
- Eb9g==
-X-Gm-Message-State: AOAM5303++bs/Meg2Chbo7RjjrxJrEjjAzQKLdquGvEGBqhG997JxMiC
- Jx1eFT/xBDMcTK6DeCBbmdpJi5hgTnoMm54daYc=
-X-Google-Smtp-Source: ABdhPJwSXT7uPXFPlAgMLVdVe72hd+C75D5H+acfo8xCECdQs+4Wbt0E15qBrw1Hdr3K+0LyEa8fxEJ8668pJAIZZ5U=
-X-Received: by 2002:a1c:e919:: with SMTP id q25mr4325964wmc.123.1598404578787; 
- Tue, 25 Aug 2020 18:16:18 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 309A0879A3
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 02:53:43 +0000 (UTC)
+IronPort-SDR: dRnMolSn9hG6pzcsKmdG7xrvUndeXfgLrwW/5iJqLN+AW1Tz5FB5w/lURDxghBlxgFofswO+r4
+ wyh5JmFZCgug==
+X-IronPort-AV: E=McAfee;i="6000,8403,9724"; a="155486652"
+X-IronPort-AV: E=Sophos;i="5.76,354,1592895600"; d="scan'208";a="155486652"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Aug 2020 19:53:41 -0700
+IronPort-SDR: 3jHNgUz/QtngVIFtUyejaI2JwGGqvmSLiE81xtG4juH9HB0EVbULMEy6+CoSS5E4jNaKDAK7uJ
+ CBcTpkXNiFOg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,354,1592895600"; d="scan'208";a="323019916"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
+ ([10.239.159.139])
+ by fmsmga004.fm.intel.com with ESMTP; 25 Aug 2020 19:53:39 -0700
+Subject: Re: [PATCH] iommu/vt-d:Add support for detecting ACPI device in RMRR
+To: FelixCuioc <FelixCui-oc@zhaoxin.com>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ David Woodhouse <dwmw2@infradead.org>
+References: <20200818024441.2317-1-FelixCui-oc@zhaoxin.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <1d0d696a-8459-24f9-355d-63dc114dc008@linux.intel.com>
+Date: Wed, 26 Aug 2020 10:48:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
- <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
- <3df7edd53ebca00be288e69b92b8d4b9@codeaurora.org>
- <CAD=FV=X=3Jae7_gXN_05EsmZjrM1bN=TMZ0qoGKz=UaNrthzAg@mail.gmail.com>
- <CAF6AEGsuusnGaN-H9geFa+jwX_hkvMHGZCWvwk5-MDGQ7cBsbQ@mail.gmail.com>
- <CAD=FV=WyL3ttE_F3YJJxOWAJANeNueqH0gO3phu8q5F4NP809g@mail.gmail.com>
-In-Reply-To: <CAD=FV=WyL3ttE_F3YJJxOWAJANeNueqH0gO3phu8q5F4NP809g@mail.gmail.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 25 Aug 2020 18:16:07 -0700
-Message-ID: <CAF6AEGvvi5AKShsCk9GT8osF3kQmMJ69HzF1AbgM+Q46GN+dEA@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-To: Doug Anderson <dianders@chromium.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Will Deacon <will@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20200818024441.2317-1-FelixCui-oc@zhaoxin.com>
+Content-Language: en-US
+Cc: CobeChen-oc@zhaoxin.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,210 +87,240 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Aug 25, 2020 at 5:24 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Tue, Aug 25, 2020 at 3:54 PM Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > On Tue, Aug 25, 2020 at 3:23 PM Doug Anderson <dianders@chromium.org> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Tue, Aug 25, 2020 at 12:01 PM Sai Prakash Ranjan
-> > > <saiprakash.ranjan@codeaurora.org> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > On 2020-08-25 21:40, Doug Anderson wrote:
-> > > > > Hi,
-> > > > >
-> > > > > On Tue, Aug 25, 2020 at 8:43 AM Sai Prakash Ranjan
-> > > > > <saiprakash.ranjan@codeaurora.org> wrote:
-> > > > >>
-> > > > >> Currently the non-strict or lazy mode of TLB invalidation can only be
-> > > > >> set
-> > > > >> for all or no domains. This works well for development platforms where
-> > > > >> setting to non-strict/lazy mode is fine for performance reasons but on
-> > > > >> production devices, we need a more fine grained control to allow only
-> > > > >> certain peripherals to support this mode where we can be sure that it
-> > > > >> is
-> > > > >> safe. So add support to filter non-strict/lazy mode based on the
-> > > > >> device
-> > > > >> names that are passed via cmdline parameter "iommu.nonstrict_device".
-> > > > >>
-> > > > >> Example:
-> > > > >> iommu.nonstrict_device="7c4000.sdhci,a600000.dwc3,6048000.etr"
-> > >
-> > > Just curious: are device names like this really guaranteed to be
-> > > stable across versions?
-> > >
-> > >
-> > > > > I have an inherent dislike of jamming things like this onto the
-> > > > > command line.  IMHO the command line is the last resort for specifying
-> > > > > configuration and generally should be limited to some specialized
-> > > > > debug options and cases where the person running the kernel needs to
-> > > > > override a config that was set by the person (or company) compiling
-> > > > > the kernel.  Specifically, having a long/unwieldy command line makes
-> > > > > it harder to use for the case when an end user actually wants to use
-> > > > > it to override something.  It's also just another place to look for
-> > > > > config.
-> > > > >
-> > > >
-> > > > Good thing about command line parameters are that they are optional,
-> > > > they do
-> > > > not specify any default behaviour (I mean they are not mandatory to be
-> > > > set
-> > > > for the system to be functional), so I would like to view it as an
-> > > > optional
-> > > > config. And this command line parameter (nonstrict_device) is strictly
-> > > > optional
-> > > > with default being strict already set in the driver.
-> > > >
-> > > > They can be passed from the bootloader via chosen node for DT platforms
-> > > > or choose
-> > > > a new *bootconfig* as a way to pass the cmdline but finally it does boil
-> > > > down to
-> > > > just another config.
-> > >
-> > > Never looked at bootconfig.  Unfortunately it seems to require
-> > > initramfs so that pretty much means it's out for my usage.  :(
-> > >
-> > >
-> > > > I agree with general boolean or single value command line parameters
-> > > > being just
-> > > > more messy which could just be Kconfigs instead but for multiple value
-> > > > parameters
-> > > > like these do not fit in Kconfig.
-> > > >
-> > > > As you might already know, command line also gives an advantage to the
-> > > > end user
-> > > > to configure system without building kernel, for this specific command
-> > > > line its
-> > > > very useful because the performance bump is quite noticeable when the
-> > > > iommu.strict
-> > > > is off. Now for end user who would not be interested in building entire
-> > > > kernel(majority)
-> > > > and just cares about good speeds or throughput can find this very
-> > > > beneficial.
-> > > > I am not talking about one specific OS usecase here but more in general
-> > > > term.
-> > > >
-> > > > > The other problem is that this doesn't necessarily scale very well.
-> > > > > While it works OK for embedded cases it doesn't work terribly well for
-> > > > > distributions.  I know that in an out-of-band thread you indicated
-> > > > > that it doesn't break anything that's not already broken (AKA this
-> > > > > doesn't fix the distro case but it doesn't make it worse), it would be
-> > > > > better to come up with a more universal solution.
-> > > > >
-> > > >
-> > > > Is the universal solution here referring to fix all the command line
-> > > > parameters
-> > > > in the kernel or this specific command line? Are we going to remove any
-> > > > more
-> > > > addition to the cmdline ;)
-> > >
-> > > There are very few cases where a kernel command line parameter is the
-> > > only way to configure something.  Most of the time it's just there to
-> > > override a config.  I wouldn't suggest removing those.  I just don't
-> > > want a kernel command line parameter to be the primary way to enable
-> > > something.
-> > >
-> > >
-> > > > So possible other solution is the *bootconfig* which is again just
-> > > > another place
-> > > > to look for a config. So thing is that this universal solution would
-> > > > result in
-> > > > just more new fancy ways of passing configs or adding such configs to
-> > > > the drivers
-> > > > or subsystems in kernel which is pretty much similar to implementing
-> > > > policy in
-> > > > kernel which I think is frowned upon and mentioned in the other thread.
-> > > >
-> > > > > Ideally it feels like we should figure out how to tag devices in a
-> > > > > generic manner automatically (hardcode at the driver or in the device
-> > > > > tree).  I think the out-of-band discussions talked about "external
-> > > > > facing" and the like.  We could also, perhaps, tag devices that have
-> > > > > "binary blob" firmware if we wanted.  Then we'd have a policy (set by
-> > > > > Kconfig, perhaps overridable via commandline) that indicated the
-> > > > > strictness level for the various classes of devices.  So policy would
-> > > > > be decided by KConfig and/or command line.
-> > > > >
-> > > >
-> > > > How is tagging in driver or device tree better than the simple command
-> > > > line
-> > > > approach to pass the same list of devices which otherwise you would
-> > > > hardcode
-> > > > in the corresponding drivers and device tree all over the kernel other
-> > > > than
-> > > > the scalability part for command line? IMHO it is too much churn.
-> > >
-> > > It's better because it doesn't require keeping track and updating
-> > > these per-board (or per machine) arguments for each and every
-> > > board/machine you maintain.  If, for instance, we start out by
-> > > allowing HW video decoder to use non-strict.  So:
-> > >
-> > > On one board, we add in "aa00000.video-codec" to the command line.
-> > > On some other board, maybe we add in "1d00000.video-codec" to the command line.
-> > > On some other board, maybe we add in "90400000.video-codec" to the command line.
-> > >
-> > > Now we realize that there's some problem and we have to remove it, so
-> > > we need to go through and remove this from our command line
-> > > everywhere.  Worse is that we have to proactively notice it and remove
-> > > it.
-> > >
-> > > Instead, let's imagine that we set a policy at a bit of a higher
-> > > level.  Different ideas:
-> > >
-> > > a) We could have a CONFIG_ option for the video codec that's something
-> > > like "CONFIG_VIDEOCODEC_DEFAULT_NONSTRICT".  If this was set then if
-> > > there is no "iommu.strict" command line argument then this device
-> > > would be mapped as non-strict.  If "iommu.strict=0" or
-> > > "iommu.strict=1" is on the command line then it would override all of
-> > > these defaults.  Probably the existence (or maybe the default value)
-> > > of this CONFIG option implies that there are no known/expected
-> > > exploits related to it.
-> >
-> > jumping in a bit late so might have missed some of the background, but
-> > shouldn't the driver decide strict vs non-strict?  It should be the
-> > one that knows if non-strict is safe or not?
->
-> Part of the problem is that we need some way for the driver to know if
-> the connected device is external or not.  A soldered-down storage
-> device connected via an internal PCIe bus is probably OK to use w/
-> non-strict.  An exposed PCIe port that anyone could plug anything into
-> is probably not OK to use with non-strict.  Right now the kernel
-> doesn't have this info.
+Hi Felix,
 
-hmm, ok, so sounds like it is a combination of what the driver thinks,
-and what the bus thinks then?  Ie. the bus should be able to overrule
-the driver when it comes to being non-strict.
+On 8/18/20 10:44 AM, FelixCuioc wrote:
+> Some ACPI devices need to issue dma requests to access
+> the reserved memory area.BIOS uses the device scope type
+> ACPI_NAMESPACE_DEVICE in RMRR to report these ACPI devices.
+> This patch add support for detecting ACPI devices in RMRR.
+> 
 
-> Part of the problem is also trying to describe the risk level that
-> you're OK with and/or which risks you're willing to take and which
-> ones you're not willing to take.  Right now there's a binary: "accept
-> all the risk so I can get the best performance" and "accept none of
-> the risk".  ...but what if you want to accept some risks and not
-> others?  Maybe you're compiling the firmware for the video decoder
-> yourself and you're very convinced that it really sanitizes all input
-> and can't be compromised (or, if it is, you can quickly patch the
-> compromise).  You might be willing to run this video codec in "non
-> strict mode".  ...but if you give the video decoder firmware to
-> someone else as a binary blob they might not be willing to trust you
-> and might want to run the same firmware as "non-strict".
+If you are willing to submit a new version of this series, can you
+please add the version tag (commit title) and a change log (under the
+tear line)?
 
-I'm not sure this sways me one way or another.. even if I compile the
-fw myself, I should assume there are bugs.. when it comes to fw, I'm
-more interested in how the hw operates and what it has access to and
-what the fw can influence.
+Best regards,
+baolu
 
-BR,
--R
+> Signed-off-by: FelixCuioc <FelixCui-oc@zhaoxin.com>
+> ---
+>   drivers/iommu/intel/dmar.c  | 74 ++++++++++++++++++++-----------------
+>   drivers/iommu/intel/iommu.c | 22 ++++++++++-
+>   include/linux/dmar.h        | 12 +++++-
+>   3 files changed, 72 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 93e6345f3414..024ca38dba12 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -215,7 +215,7 @@ static bool dmar_match_pci_path(struct dmar_pci_notify_info *info, int bus,
+>   }
+>   
+>   /* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
+> -int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+> +int dmar_pci_insert_dev_scope(struct dmar_pci_notify_info *info,
+>   			  void *start, void*end, u16 segment,
+>   			  struct dmar_dev_scope *devices,
+>   			  int devices_cnt)
+> @@ -304,7 +304,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
+>   
+>   		drhd = container_of(dmaru->hdr,
+>   				    struct acpi_dmar_hardware_unit, header);
+> -		ret = dmar_insert_dev_scope(info, (void *)(drhd + 1),
+> +		ret = dmar_pci_insert_dev_scope(info, (void *)(drhd + 1),
+>   				((void *)drhd) + drhd->header.length,
+>   				dmaru->segment,
+>   				dmaru->devices, dmaru->devices_cnt);
+> @@ -696,48 +696,56 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+>   
+>   	return dmaru;
+>   }
+> -
+> -static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+> -					      struct acpi_device *adev)
+> +int dmar_acpi_insert_dev_scope(u8 device_number,
+> +				struct acpi_device *adev,
+> +				void *start, void *end,
+> +				struct dmar_dev_scope *devices,
+> +				int devices_cnt)
+>   {
+> -	struct dmar_drhd_unit *dmaru;
+> -	struct acpi_dmar_hardware_unit *drhd;
+>   	struct acpi_dmar_device_scope *scope;
+>   	struct device *tmp;
+>   	int i;
+>   	struct acpi_dmar_pci_path *path;
+>   
+> +	for (; start < end; start += scope->length) {
+> +		scope = start;
+> +		if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
+> +			continue;
+> +		if (scope->enumeration_id != device_number)
+> +			continue;
+> +		path = (void *)(scope + 1);
+> +		for_each_dev_scope(devices, devices_cnt, i, tmp)
+> +			if (tmp == NULL) {
+> +				devices[i].bus = scope->bus;
+> +				devices[i].devfn = PCI_DEVFN(path->device, path->function);
+> +				rcu_assign_pointer(devices[i].dev,
+> +						   get_device(&adev->dev));
+> +				return 1;
+> +			}
+> +		WARN_ON(i >= devices_cnt);
+> +	}
+> +	return 0;
+> +}
+> +static int dmar_acpi_bus_add_dev(u8 device_number, struct acpi_device *adev)
+> +{
+> +	struct dmar_drhd_unit *dmaru;
+> +	struct acpi_dmar_hardware_unit *drhd;
+> +	int ret = 0;
+> +
+>   	for_each_drhd_unit(dmaru) {
+>   		drhd = container_of(dmaru->hdr,
+>   				    struct acpi_dmar_hardware_unit,
+>   				    header);
+> +		ret = dmar_acpi_insert_dev_scope(device_number, adev, (void *)(drhd+1),
+> +						((void *)drhd)+drhd->header.length,
+> +						dmaru->devices, dmaru->devices_cnt);
+> +		if (ret)
+> +			break;
+> +	}
+> +	ret = dmar_rmrr_add_acpi_dev(device_number, adev);
+>   
+> -		for (scope = (void *)(drhd + 1);
+> -		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
+> -		     scope = ((void *)scope) + scope->length) {
+> -			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
+> -				continue;
+> -			if (scope->enumeration_id != device_number)
+> -				continue;
+> +	return ret;
+>   
+> -			path = (void *)(scope + 1);
+> -			pr_info("ACPI device \"%s\" under DMAR at %llx as %02x:%02x.%d\n",
+> -				dev_name(&adev->dev), dmaru->reg_base_addr,
+> -				scope->bus, path->device, path->function);
+> -			for_each_dev_scope(dmaru->devices, dmaru->devices_cnt, i, tmp)
+> -				if (tmp == NULL) {
+> -					dmaru->devices[i].bus = scope->bus;
+> -					dmaru->devices[i].devfn = PCI_DEVFN(path->device,
+> -									    path->function);
+> -					rcu_assign_pointer(dmaru->devices[i].dev,
+> -							   get_device(&adev->dev));
+> -					return;
+> -				}
+> -			BUG_ON(i >= dmaru->devices_cnt);
+> -		}
+> -	}
+> -	pr_warn("No IOMMU scope found for ANDD enumeration ID %d (%s)\n",
+> -		device_number, dev_name(&adev->dev));
+>   }
+>   
+>   static int __init dmar_acpi_dev_scope_init(void)
+> @@ -766,7 +774,7 @@ static int __init dmar_acpi_dev_scope_init(void)
+>   				       andd->device_name);
+>   				continue;
+>   			}
+> -			dmar_acpi_insert_dev_scope(andd->device_number, adev);
+> +			dmar_acpi_bus_add_dev(andd->device_number, adev);
+>   		}
+>   	}
+>   	return 0;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index ca557d351518..f774ef63d473 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4507,6 +4507,24 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+>   
+>   	return ret;
+>   }
+> +int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev)
+> +{
+> +	int ret;
+> +	struct dmar_rmrr_unit *rmrru;
+> +	struct acpi_dmar_reserved_memory *rmrr;
+> +
+> +	list_for_each_entry(rmrru, &dmar_rmrr_units, list) {
+> +		rmrr = container_of(rmrru->hdr,
+> +				struct acpi_dmar_reserved_memory,
+> +				header);
+> +		ret = dmar_acpi_insert_dev_scope(device_number, adev, (void *)(rmrr + 1),
+> +						((void *)rmrr) + rmrr->header.length,
+> +						rmrru->devices, rmrru->devices_cnt);
+> +		if (ret)
+> +			break;
+> +	}
+> +	return 0;
+> +}
+>   
+>   int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+>   {
+> @@ -4523,7 +4541,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+>   		rmrr = container_of(rmrru->hdr,
+>   				    struct acpi_dmar_reserved_memory, header);
+>   		if (info->event == BUS_NOTIFY_ADD_DEVICE) {
+> -			ret = dmar_insert_dev_scope(info, (void *)(rmrr + 1),
+> +			ret = dmar_pci_insert_dev_scope(info, (void *)(rmrr + 1),
+>   				((void *)rmrr) + rmrr->header.length,
+>   				rmrr->segment, rmrru->devices,
+>   				rmrru->devices_cnt);
+> @@ -4541,7 +4559,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+>   
+>   		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
+>   		if (info->event == BUS_NOTIFY_ADD_DEVICE) {
+> -			ret = dmar_insert_dev_scope(info, (void *)(atsr + 1),
+> +			ret = dmar_pci_insert_dev_scope(info, (void *)(atsr + 1),
+>   					(void *)atsr + atsr->header.length,
+>   					atsr->segment, atsru->devices,
+>   					atsru->devices_cnt);
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index 65565820328a..881ac61a4336 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -113,10 +113,14 @@ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+>   				struct dmar_dev_scope **devices, u16 segment);
+>   extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+>   extern void dmar_free_dev_scope(struct dmar_dev_scope **devices, int *cnt);
+> -extern int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+> +extern int dmar_pci_insert_dev_scope(struct dmar_pci_notify_info *info,
+>   				 void *start, void*end, u16 segment,
+>   				 struct dmar_dev_scope *devices,
+>   				 int devices_cnt);
+> +extern int dmar_acpi_insert_dev_scope(u8 device_number,
+> +				struct acpi_device *adev, void *start, void *end,
+> +				struct dmar_dev_scope *devices, int devices_cnt);
+> +
+>   extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
+>   				 u16 segment, struct dmar_dev_scope *devices,
+>   				 int count);
+> @@ -140,6 +144,7 @@ extern int dmar_parse_one_atsr(struct acpi_dmar_header *header, void *arg);
+>   extern int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg);
+>   extern int dmar_release_one_atsr(struct acpi_dmar_header *hdr, void *arg);
+>   extern int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert);
+> +extern int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev);
+>   extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
+>   #else /* !CONFIG_INTEL_IOMMU: */
+>   static inline int intel_iommu_init(void) { return -ENODEV; }
+> @@ -150,6 +155,11 @@ static inline void intel_iommu_shutdown(void) { }
+>   #define	dmar_check_one_atsr		dmar_res_noop
+>   #define	dmar_release_one_atsr		dmar_res_noop
+>   
+> +static inline int dmar_rmrr_add_acpi_dev(u8 device_number, struct acpi_device *adev)
+> +{
+> +	return 0;
+> +}
+> +
+>   static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+>   {
+>   	return 0;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
