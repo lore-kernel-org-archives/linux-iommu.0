@@ -2,94 +2,138 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E4A4C433E1
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:04:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CAAFC433E3
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:40:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C87C5207DF
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:04:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 566AF206F0
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 08:40:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="MmIkPwve"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C87C5207DF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZaSYnvQy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 566AF206F0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9A2B48689C;
-	Wed, 26 Aug 2020 08:04:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D9BE787D36;
+	Wed, 26 Aug 2020 08:40:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RHmcZPseC2Tp; Wed, 26 Aug 2020 08:40:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2242187D98;
+	Wed, 26 Aug 2020 08:40:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F093BC016F;
+	Wed, 26 Aug 2020 08:40:27 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D47BC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:40:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id F4102868E4
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:40:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3KDRTzg0vFre; Wed, 26 Aug 2020 08:04:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0EC42866F2;
-	Wed, 26 Aug 2020 08:04:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2B3FC07FF;
-	Wed, 26 Aug 2020 08:04:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D141CC0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:04:03 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A23552002B
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:04:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nb23-W+8vYKt for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 08:03:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by silver.osuosl.org (Postfix) with ESMTPS id BF7DF22855
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:03:28 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1598429008; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=hleoJnRPFgTh4Q3Z/gEZpKKg+hswZ9iuwWfl1+U3mJY=;
- b=MmIkPwvevIIj/ljq4kRXDe4FhwwdaTs3gMLArsWrzoXlPBW5kWpE6pJYkVpU51Pon1UlLYJL
- vzKgrL4y5HA4/HA6oawtnLutBpQfjkMv/VeH3ZpeBZ4uuggjq8bhk3RDXtz2DZLsvz1bPpfu
- XRNcWXbjP+rjSqRYcx2lBoK5hjA=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 5f46174f4bd493d13ebc7ef6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Aug 2020 08:03:27
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 7818CC433A0; Wed, 26 Aug 2020 08:03:26 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 9896FC433CA;
- Wed, 26 Aug 2020 08:03:24 +0000 (UTC)
+ with ESMTP id 56Gow5_n2rNs for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 08:40:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
+ [209.85.160.196])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 86EA38610F
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 08:40:25 +0000 (UTC)
+Received: by mail-qt1-f196.google.com with SMTP id o22so798723qtt.13
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 01:40:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=zMOE7BVmPyRTv2jz4mqPIGALZmc5cotG47cZLpXd7P0=;
+ b=ZaSYnvQy0bZisuDNUS64pc52zd3LStKE6fxdhLmMutAsJpcLtr3O7vWkQ19sGAlveC
+ BBOOuFfzOgi1axGeSq9N/yrlUBHzw9kVBY0Zd0ZulXw0csdcWbLp+Oq77HCmgZZXsMxM
+ vkVFH+blEU1Q/nIWUCEkVlDTWPGMOOZqHzSn5mU6HYechdmff1rnM1oZJOJLNJX73OJU
+ FkU7sslh11sccyp9/XxvpalpzGcjcHUHFzqNTyABV6Yhvs/owq9++Zczca6uuqR6saMU
+ jQBkKMUJBtXXfb3e0ZcK4x4l5geDFMLwxqx+y6X2By/HFKUPuNhLbX2i6N2ylwVm0YCQ
+ +taw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=zMOE7BVmPyRTv2jz4mqPIGALZmc5cotG47cZLpXd7P0=;
+ b=igUcXd9M30kDbjCteQLQ2L1jCm2ZryTIp0RAXg2lAWctjq1v33wF2oyVpFxUXKCOYU
+ 0isoNvBRqPlwsTIWpluvLhRxti2AC6Yk2q8zAc/LGSF1guo+i3MLie+lpYqFEWY/hQnq
+ LkmPgvOgm9stEzQReVJehrBQ472Sco0Ff7g9ryB0T4goFKOqe/Bb3/LM8q14lasYDy3+
+ 6CjJJNnVpNdbblDzbvEC2Oo6rEV5BPE64Yu9IAQI+9OLMMDvPVm3+JL7uFNNveMR4154
+ 8LcmsZXIRWLVXpASWPPh7m9/xpr66WaDGZd4VnTzwS+iUZTLFI8Ty3+g/Qq2Nogzzyrn
+ qB/A==
+X-Gm-Message-State: AOAM530UHhLSRHVMS+TrRHYVPOCYykpo6gZi7HoFA9zF8WvQNmU086sc
+ qAULtFPYkxj5Sy6J55GMENw=
+X-Google-Smtp-Source: ABdhPJz7C4WtYCX7DFVDZ9wXqDcxQZTjOJS5RkidUejP7+S68XGumDHrfNLnPq5K4GdTGkEpaMpliQ==
+X-Received: by 2002:ac8:5d43:: with SMTP id g3mr4770683qtx.369.1598431224464; 
+ Wed, 26 Aug 2020 01:40:24 -0700 (PDT)
+Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com.
+ [66.111.4.227])
+ by smtp.gmail.com with ESMTPSA id y46sm1470153qth.78.2020.08.26.01.40.23
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Wed, 26 Aug 2020 01:40:23 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailauth.nyi.internal (Postfix) with ESMTP id A347427C0054;
+ Wed, 26 Aug 2020 04:40:22 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+ by compute3.internal (MEProxy); Wed, 26 Aug 2020 04:40:22 -0400
+X-ME-Sender: <xms:9R9GX2xKCIeJJilVotELTMVRdOdEtU0GVimu1XaSTnQMyQ2q2QZSNg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddvvddgtdejucetufdoteggodetrfdotf
+ fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+ uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+ cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtjeenucfhrhhomhepuehoqhhu
+ nhcuhfgvnhhguceosghoqhhunhdrfhgvnhhgsehgmhgrihhlrdgtohhmqeenucggtffrrg
+ htthgvrhhnpefhteehtdfhhfduiedvueegvdfgveehvdehueefgedtffehgfffgffgtddt
+ gfetjeenucffohhmrghinhepihhorghpihgtrdhpihhnnecukfhppeehvddrudehhedrud
+ duuddrjedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
+ mhepsghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghe
+ dtieegqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhes
+ fhhigihmvgdrnhgrmhgv
+X-ME-Proxy: <xmx:9R9GXyTU6nzfcRktziV4XRtRPEiLJ9JN-4rgRw0VHw7cAuHIJQguag>
+ <xmx:9R9GX4UDJesbN8TYSy0lvivr41ncAik1fvQoKEIfcGNtV5vLtU_I0A>
+ <xmx:9R9GX8hpaznz7Pz2KTJ0IZWUwzUA3IckfIUnFyOT0BvfD8HlnFrd5Q>
+ <xmx:9h9GX4uHBZvzMVvlKIVX5qICQjtuLHpMLqq45SzvFf5kxurzdPDIXVZy3xk>
+Received: from localhost (unknown [52.155.111.71])
+ by mail.messagingengine.com (Postfix) with ESMTPA id D824830600A9;
+ Wed, 26 Aug 2020 04:40:20 -0400 (EDT)
+Date: Wed, 26 Aug 2020 16:40:19 +0800
+From: Boqun Feng <boqun.feng@gmail.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch RFC 10/38] x86/ioapic: Consolidate IOAPIC allocation
+Message-ID: <20200826084019.GA6174@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+References: <20200821002424.119492231@linutronix.de>
+ <20200821002946.297823391@linutronix.de>
 MIME-Version: 1.0
-Date: Wed, 26 Aug 2020 13:33:24 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-In-Reply-To: <CAD=FV=X=3Jae7_gXN_05EsmZjrM1bN=TMZ0qoGKz=UaNrthzAg@mail.gmail.com>
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
- <CAD=FV=XK3Xa3rRWvuSA_jA+5_1XYBmHEX2B2XSb8h3oOe1PHLw@mail.gmail.com>
- <3df7edd53ebca00be288e69b92b8d4b9@codeaurora.org>
- <CAD=FV=X=3Jae7_gXN_05EsmZjrM1bN=TMZ0qoGKz=UaNrthzAg@mail.gmail.com>
-Message-ID: <4224f8580d19e9a7eae80299fa2ffa37@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Rajat Jain <rajatja@google.com>, Will Deacon <will@kernel.org>,
- LKML <linux-kernel@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
- iommu@lists.linux-foundation.org,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200821002946.297823391@linutronix.de>
+Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
+ Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
+ Marc Zyngier <maz@kernel.org>, x86@kernel.org,
+ Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
+ Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,291 +146,257 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-On 2020-08-26 03:45, Doug Anderson wrote:
-> Hi,
-> 
-> On Tue, Aug 25, 2020 at 12:01 PM Sai Prakash Ranjan
-> <saiprakash.ranjan@codeaurora.org> wrote:
->> 
->> Hi,
->> 
->> On 2020-08-25 21:40, Doug Anderson wrote:
->> > Hi,
->> >
->> > On Tue, Aug 25, 2020 at 8:43 AM Sai Prakash Ranjan
->> > <saiprakash.ranjan@codeaurora.org> wrote:
->> >>
->> >> Currently the non-strict or lazy mode of TLB invalidation can only be
->> >> set
->> >> for all or no domains. This works well for development platforms where
->> >> setting to non-strict/lazy mode is fine for performance reasons but on
->> >> production devices, we need a more fine grained control to allow only
->> >> certain peripherals to support this mode where we can be sure that it
->> >> is
->> >> safe. So add support to filter non-strict/lazy mode based on the
->> >> device
->> >> names that are passed via cmdline parameter "iommu.nonstrict_device".
->> >>
->> >> Example:
->> >> iommu.nonstrict_device="7c4000.sdhci,a600000.dwc3,6048000.etr"
-> 
-> Just curious: are device names like this really guaranteed to be
-> stable across versions?
-> 
-
-Good question, AFAIK the device names are based on the DT node address 
-and
-the node name, for ex:  etr@6048000 and device name - "6048000.etr", now 
-I
-believe these are pretty stable for a particular SoC or board since 
-there
-is no reason to change the device node name or the address unless 
-something
-has gone terribly wrong. I don't know about ACPI systems, but however 
-they
-are described can be specified in this command line parameter. This is 
-an
-advantage over the DT property where ACPI systems get left out unless 
-someone
-goes and adds the same/similar property over there.
-
-> 
->> > I have an inherent dislike of jamming things like this onto the
->> > command line.  IMHO the command line is the last resort for specifying
->> > configuration and generally should be limited to some specialized
->> > debug options and cases where the person running the kernel needs to
->> > override a config that was set by the person (or company) compiling
->> > the kernel.  Specifically, having a long/unwieldy command line makes
->> > it harder to use for the case when an end user actually wants to use
->> > it to override something.  It's also just another place to look for
->> > config.
->> >
->> 
->> Good thing about command line parameters are that they are optional,
->> they do
->> not specify any default behaviour (I mean they are not mandatory to be
->> set
->> for the system to be functional), so I would like to view it as an
->> optional
->> config. And this command line parameter (nonstrict_device) is strictly
->> optional
->> with default being strict already set in the driver.
->> 
->> They can be passed from the bootloader via chosen node for DT 
->> platforms
->> or choose
->> a new *bootconfig* as a way to pass the cmdline but finally it does 
->> boil
->> down to
->> just another config.
-> 
-> Never looked at bootconfig.  Unfortunately it seems to require
-> initramfs so that pretty much means it's out for my usage.  :(
-> 
-
-Yes that won't fit everywhere.
-
-> 
->> I agree with general boolean or single value command line parameters
->> being just
->> more messy which could just be Kconfigs instead but for multiple value
->> parameters
->> like these do not fit in Kconfig.
->> 
->> As you might already know, command line also gives an advantage to the
->> end user
->> to configure system without building kernel, for this specific command
->> line its
->> very useful because the performance bump is quite noticeable when the
->> iommu.strict
->> is off. Now for end user who would not be interested in building 
->> entire
->> kernel(majority)
->> and just cares about good speeds or throughput can find this very
->> beneficial.
->> I am not talking about one specific OS usecase here but more in 
->> general
->> term.
->> 
->> > The other problem is that this doesn't necessarily scale very well.
->> > While it works OK for embedded cases it doesn't work terribly well for
->> > distributions.  I know that in an out-of-band thread you indicated
->> > that it doesn't break anything that's not already broken (AKA this
->> > doesn't fix the distro case but it doesn't make it worse), it would be
->> > better to come up with a more universal solution.
->> >
->> 
->> Is the universal solution here referring to fix all the command line
->> parameters
->> in the kernel or this specific command line? Are we going to remove 
->> any
->> more
->> addition to the cmdline ;)
-> 
-> There are very few cases where a kernel command line parameter is the
-> only way to configure something.  Most of the time it's just there to
-> override a config.  I wouldn't suggest removing those.  I just don't
-> want a kernel command line parameter to be the primary way to enable
-> something.
-> 
-
-Agreed that command line parameters are not supposed to be some primary
-way of setting things but an optional way to override settings, in this
-case to override the strict mode already set by the driver. Then we can
-probably agree that this command line is just an optional way provided
-to the end user for his convenience? We would still need to find a 
-primary
-way to set this non-strict mode in drivers via DT passing the 
-information
-or some other way.
-
-> 
->> So possible other solution is the *bootconfig* which is again just
->> another place
->> to look for a config. So thing is that this universal solution would
->> result in
->> just more new fancy ways of passing configs or adding such configs to
->> the drivers
->> or subsystems in kernel which is pretty much similar to implementing
->> policy in
->> kernel which I think is frowned upon and mentioned in the other 
->> thread.
->> 
->> > Ideally it feels like we should figure out how to tag devices in a
->> > generic manner automatically (hardcode at the driver or in the device
->> > tree).  I think the out-of-band discussions talked about "external
->> > facing" and the like.  We could also, perhaps, tag devices that have
->> > "binary blob" firmware if we wanted.  Then we'd have a policy (set by
->> > Kconfig, perhaps overridable via commandline) that indicated the
->> > strictness level for the various classes of devices.  So policy would
->> > be decided by KConfig and/or command line.
->> >
->> 
->> How is tagging in driver or device tree better than the simple command
->> line
->> approach to pass the same list of devices which otherwise you would
->> hardcode
->> in the corresponding drivers and device tree all over the kernel other
->> than
->> the scalability part for command line? IMHO it is too much churn.
-> 
-> It's better because it doesn't require keeping track and updating
-> these per-board (or per machine) arguments for each and every
-> board/machine you maintain.
-
-If you choose to pass the information via DT which seems like the most 
-ideal
-way, then you would still have to update them per-board for every board 
-you
-maintain which is the same thing.
-
-If, for instance, we start out by
-> allowing HW video decoder to use non-strict.  So:
-> 
-> On one board, we add in "aa00000.video-codec" to the command line.
-> On some other board, maybe we add in "1d00000.video-codec" to the 
-> command line.
-> On some other board, maybe we add in "90400000.video-codec" to the 
-> command line.
-> 
-> Now we realize that there's some problem and we have to remove it, so
-> we need to go through and remove this from our command line
-> everywhere.  Worse is that we have to proactively notice it and remove
-> it.
-> 
-
-Same as above where we need to modify DT to mark certain devices as 
-strict
-in case something goes wrong.
-
-> Instead, let's imagine that we set a policy at a bit of a higher
-> level.  Different ideas:
-> 
-> a) We could have a CONFIG_ option for the video codec that's something
-> like "CONFIG_VIDEOCODEC_DEFAULT_NONSTRICT".  If this was set then if
-> there is no "iommu.strict" command line argument then this device
-> would be mapped as non-strict.  If "iommu.strict=0" or
-> "iommu.strict=1" is on the command line then it would override all of
-> these defaults.  Probably the existence (or maybe the default value)
-> of this CONFIG option implies that there are no known/expected
-> exploits related to it.
-> 
-
-Hmm, so then we'd have tens of Kconfigs for each device being non strict
-by default?  Then I guess we'd need a menuconfig for this and where 
-should
-this go into, IOMMU layer or under respective drivers? Let's say we do 
-this,
-but how would the IOMMU know about such classes of devices, the only way 
-I
-can think of is adding such a field in "struct device" which can be 
-tried
-but may not be well received.
-
-Also default should be strict in my opinion as it is today similar to 
-bypassing
-SMMU and then non strict option to override it.
-
-> b) We could find some way to tag the video codec and then set
-> non-strictness on certain classes of devices, then we could have a
-> policy to disable strictness on certain classes of devices.
-> 
-
-If tagging is based on the DT property then we have ACPI to think about 
-and it
-poses the same problems which you listed for command line parameter 
-where you
-would have to go and update all the DT entries.
-
-> The nice thing about the above is that you could imagine someone
-> pushing a change to the stable trees that would fix everyone affected.
-> Nobody would need to go around and adjust command line options, they'd
-> just get the newest stable and it could cause devices to move into
-> strict mode if there was a known exploit.  I suppose with your
-> proposal stable trees could have a "blacklist" where the commandline
-> is ignored for exploited devices, but that seems ugly.
-> 
-
-Yes this is true but then we can keep this cmdline parameter as only 
-optional
-and find a different way to enforce the non-strict mode setting.
-
-> 
->> Device tree could be used but then we have a problem with it being for
->> only
->> describing hardware and it doesn't work for ACPI based systems.
->> 
->> Command line approach works for all systems (both DT and ACPI) without
->> having
->> to add too much churn to drivers. Lastly, I think we can have both
->> options, it
->> doesn't hurt to add command line parameter since it is optional.
-> 
-> I'm not opposed to something existing that lets you override this on
-> the command line, but I'm just not a fan of it being the primary way.
-> 
-
-Agreed, so we can treat non-strict command line parameter as just 
-optional
-and we find a different way to set this mode in drivers via whatever 
-method
-everyone finds suitable.
-
-Thanks,
-Sai
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgVGhvbWFzLAoKSSBoaXQgYSBjb21waWxlciBlcnJvciB3aGlsZSBJIHdhcyB0cnlpbmcgdG8g
+Y29tcGlsZSB0aGlzIHBhdGNoc2V0OgoKYXJjaC94ODYva2VybmVsL2RldmljZXRyZWUuYzogSW4g
+ZnVuY3Rpb24g4oCYZHRfaXJxZG9tYWluX2FsbG9j4oCZOgphcmNoL3g4Ni9rZXJuZWwvZGV2aWNl
+dHJlZS5jOjIzMjo2OiBlcnJvcjog4oCYc3RydWN0IGlycV9hbGxvY19pbmZv4oCZIGhhcyBubyBt
+ZW1iZXIgbmFtZWQg4oCYaW9hcGljX2lk4oCZOyBkaWQgeW91IG1lYW4g4oCYaW9hcGlj4oCZPwog
+IDIzMiB8ICB0bXAuaW9hcGljX2lkID0gbXBjX2lvYXBpY19pZChtcF9pcnFkb21haW5faW9hcGlj
+X2lkeChkb21haW4pKTsKICAgICAgfCAgICAgIF5+fn5+fn5+fgogICAgICB8ICAgICAgaW9hcGlj
+CmFyY2gveDg2L2tlcm5lbC9kZXZpY2V0cmVlLmM6MjMzOjY6IGVycm9yOiDigJhzdHJ1Y3QgaXJx
+X2FsbG9jX2luZm/igJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhpb2FwaWNfcGlu4oCZOyBkaWQg
+eW91IG1lYW4g4oCYaW9hcGlj4oCZPwogIDIzMyB8ICB0bXAuaW9hcGljX3BpbiA9IGZ3c3BlYy0+
+cGFyYW1bMF0KICAgICAgfCAgICAgIF5+fn5+fn5+fn4KICAgICAgfCAgICAgIGlvYXBpYwoKd2l0
+aCBDT05GSUdfT0Y9eS4gSUlVQywgdGhlIGZvbGxvd2luZyBjaGFuZ2VzIGFyZSBuZWVkZWQgdG8g
+Zm9sZCBpbnRvCnRoaXMgcGF0Y2guIChBdCBsZWFzdCBJIGNhbiBjb250aW51ZSB0byBjb21waWxl
+IHRoZSBrZXJuZWwgd2l0aCB0aGlzCmNoYW5nZSkKCmRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJu
+ZWwvZGV2aWNldHJlZS5jIGIvYXJjaC94ODYva2VybmVsL2RldmljZXRyZWUuYwppbmRleCBhMGU4
+ZmM3ZDg1ZjEuLmRkZmZkODBmNWM1MiAxMDA2NDQKLS0tIGEvYXJjaC94ODYva2VybmVsL2Rldmlj
+ZXRyZWUuYworKysgYi9hcmNoL3g4Ni9rZXJuZWwvZGV2aWNldHJlZS5jCkBAIC0yMjksOCArMjI5
+LDggQEAgc3RhdGljIGludCBkdF9pcnFkb21haW5fYWxsb2Moc3RydWN0IGlycV9kb21haW4gKmRv
+bWFpbiwgdW5zaWduZWQgaW50IHZpcnEsCiAKIAlpdCA9ICZvZl9pb2FwaWNfdHlwZVt0eXBlX2lu
+ZGV4XTsKIAlpb2FwaWNfc2V0X2FsbG9jX2F0dHIoJnRtcCwgTlVNQV9OT19OT0RFLCBpdC0+dHJp
+Z2dlciwgaXQtPnBvbGFyaXR5KTsKLQl0bXAuaW9hcGljX2lkID0gbXBjX2lvYXBpY19pZChtcF9p
+cnFkb21haW5faW9hcGljX2lkeChkb21haW4pKTsKLQl0bXAuaW9hcGljX3BpbiA9IGZ3c3BlYy0+
+cGFyYW1bMF07CisJdG1wLmRldmlkID0gbXBjX2lvYXBpY19pZChtcF9pcnFkb21haW5faW9hcGlj
+X2lkeChkb21haW4pKTsKKwl0bXAuaW9hcGljLnBpbiA9IGZ3c3BlYy0+cGFyYW1bMF07CiAKIAly
+ZXR1cm4gbXBfaXJxZG9tYWluX2FsbG9jKGRvbWFpbiwgdmlycSwgbnJfaXJxcywgJnRtcCk7CiB9
+CgpSZWdhcmRzLApCb3F1bgoKT24gRnJpLCBBdWcgMjEsIDIwMjAgYXQgMDI6MjQ6MzRBTSArMDIw
+MCwgVGhvbWFzIEdsZWl4bmVyIHdyb3RlOgo+IE1vdmUgdGhlIElPQVBJQyBzcGVjaWZpYyBmaWVs
+ZHMgaW50byB0aGVpciBvd24gc3RydWN0IGFuZCByZXVzZSB0aGUgY29tbW9uCj4gZGV2aWQuIEdl
+dCByaWQgb2YgdGhlICNpZmRlZmZlcnkgYXMgaXQgZG9lcyBub3QgbWF0dGVyIGF0IGFsbCB3aGV0
+aGVyIHRoZQo+IGFsbG9jIGluZm8gaXMgYSBjb3VwbGUgb2YgYnl0ZXMgbG9uZ2VyIG9yIG5vdC4K
+PiAKPiBTaWduZWQtb2ZmLWJ5OiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5kZT4K
+PiBDYzogV2VpIExpdSA8d2VpLmxpdUBrZXJuZWwub3JnPgo+IENjOiAiSy4gWS4gU3Jpbml2YXNh
+biIgPGt5c0BtaWNyb3NvZnQuY29tPgo+IENjOiBTdGVwaGVuIEhlbW1pbmdlciA8c3RoZW1taW5A
+bWljcm9zb2Z0LmNvbT4KPiBDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+Cj4gQ2M6
+IGxpbnV4LWh5cGVydkB2Z2VyLmtlcm5lbC5vcmcKPiBDYzogaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKPiBDYzogSGFpeWFuZyBaaGFuZyA8aGFpeWFuZ3pAbWljcm9zb2Z0LmNvbT4K
+PiBDYzogSm9uIERlcnJpY2sgPGpvbmF0aGFuLmRlcnJpY2tAaW50ZWwuY29tPgo+IENjOiBMdSBC
+YW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPgo+IC0tLQo+ICBhcmNoL3g4Ni9pbmNsdWRl
+L2FzbS9od19pcnEuaCAgICAgICB8ICAgMjMgKysrKysrLS0tLS0KPiAgYXJjaC94ODYva2VybmVs
+L2FwaWMvaW9fYXBpYy5jICAgICAgfCAgIDcwICsrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0t
+LS0tLS0tLQo+ICBkcml2ZXJzL2lvbW11L2FtZC9pb21tdS5jICAgICAgICAgICB8ICAgMTQgKysr
+LS0tLQo+ICBkcml2ZXJzL2lvbW11L2h5cGVydi1pb21tdS5jICAgICAgICB8ICAgIDIgLQo+ICBk
+cml2ZXJzL2lvbW11L2ludGVsL2lycV9yZW1hcHBpbmcuYyB8ICAgMTggKysrKy0tLS0tCj4gIDUg
+ZmlsZXMgY2hhbmdlZCwgNjQgaW5zZXJ0aW9ucygrKSwgNjMgZGVsZXRpb25zKC0pCj4gCj4gLS0t
+IGEvYXJjaC94ODYvaW5jbHVkZS9hc20vaHdfaXJxLmgKPiArKysgYi9hcmNoL3g4Ni9pbmNsdWRl
+L2FzbS9od19pcnEuaAo+IEBAIC00NCw2ICs0NCwxNSBAQCBlbnVtIGlycV9hbGxvY190eXBlIHsK
+PiAgCVg4Nl9JUlFfQUxMT0NfVFlQRV9IUEVUX0dFVF9QQVJFTlQsCj4gIH07Cj4gIAo+ICtzdHJ1
+Y3QgaW9hcGljX2FsbG9jX2luZm8gewo+ICsJaW50CQkJCXBpbjsKPiArCWludAkJCQlub2RlOwo+
+ICsJdTMyCQkJCXRyaWdnZXIgOiAxOwo+ICsJdTMyCQkJCXBvbGFyaXR5IDogMTsKPiArCXUzMgkJ
+CQl2YWxpZCA6IDE7Cj4gKwlzdHJ1Y3QgSU9fQVBJQ19yb3V0ZV9lbnRyeQkqZW50cnk7Cj4gK307
+Cj4gKwo+ICAvKioKPiAgICogaXJxX2FsbG9jX2luZm8gLSBYODYgc3BlY2lmaWMgaW50ZXJydXB0
+IGFsbG9jYXRpb24gaW5mbwo+ICAgKiBAdHlwZToJWDg2IHNwZWNpZmljIGFsbG9jYXRpb24gdHlw
+ZQo+IEBAIC01Myw2ICs2Miw4IEBAIGVudW0gaXJxX2FsbG9jX3R5cGUgewo+ICAgKiBAbWFzazoJ
+Q1BVIG1hc2sgZm9yIHZlY3RvciBhbGxvY2F0aW9uCj4gICAqIEBkZXNjOglQb2ludGVyIHRvIG1z
+aSBkZXNjcmlwdG9yCj4gICAqIEBkYXRhOglBbGxvY2F0aW9uIHNwZWNpZmljIGRhdGEKPiArICoK
+PiArICogQGlvYXBpYzoJSU9BUElDIHNwZWNpZmljIGFsbG9jYXRpb24gZGF0YQo+ICAgKi8KPiAg
+c3RydWN0IGlycV9hbGxvY19pbmZvIHsKPiAgCWVudW0gaXJxX2FsbG9jX3R5cGUJdHlwZTsKPiBA
+QCAtNjQsNiArNzUsNyBAQCBzdHJ1Y3QgaXJxX2FsbG9jX2luZm8gewo+ICAJdm9pZAkJCSpkYXRh
+Owo+ICAKPiAgCXVuaW9uIHsKPiArCQlzdHJ1Y3QgaW9hcGljX2FsbG9jX2luZm8JaW9hcGljOwo+
+ICAJCWludAkJdW51c2VkOwo+ICAjaWZkZWYJQ09ORklHX1BDSV9NU0kKPiAgCQlzdHJ1Y3Qgewo+
+IEBAIC03MSwxNyArODMsNiBAQCBzdHJ1Y3QgaXJxX2FsbG9jX2luZm8gewo+ICAJCQlpcnFfaHdf
+bnVtYmVyX3QJbXNpX2h3aXJxOwo+ICAJCX07Cj4gICNlbmRpZgo+IC0jaWZkZWYJQ09ORklHX1g4
+Nl9JT19BUElDCj4gLQkJc3RydWN0IHsKPiAtCQkJaW50CQlpb2FwaWNfaWQ7Cj4gLQkJCWludAkJ
+aW9hcGljX3BpbjsKPiAtCQkJaW50CQlpb2FwaWNfbm9kZTsKPiAtCQkJdTMyCQlpb2FwaWNfdHJp
+Z2dlciA6IDE7Cj4gLQkJCXUzMgkJaW9hcGljX3BvbGFyaXR5IDogMTsKPiAtCQkJdTMyCQlpb2Fw
+aWNfdmFsaWQgOiAxOwo+IC0JCQlzdHJ1Y3QgSU9fQVBJQ19yb3V0ZV9lbnRyeSAqaW9hcGljX2Vu
+dHJ5Owo+IC0JCX07Cj4gLSNlbmRpZgo+ICAjaWZkZWYJQ09ORklHX0RNQVJfVEFCTEUKPiAgCQlz
+dHJ1Y3Qgewo+ICAJCQlpbnQJCWRtYXJfaWQ7Cj4gLS0tIGEvYXJjaC94ODYva2VybmVsL2FwaWMv
+aW9fYXBpYy5jCj4gKysrIGIvYXJjaC94ODYva2VybmVsL2FwaWMvaW9fYXBpYy5jCj4gQEAgLTg2
+MCwxMCArODYwLDEwIEBAIHZvaWQgaW9hcGljX3NldF9hbGxvY19hdHRyKHN0cnVjdCBpcnFfYWwK
+PiAgewo+ICAJaW5pdF9pcnFfYWxsb2NfaW5mbyhpbmZvLCBOVUxMKTsKPiAgCWluZm8tPnR5cGUg
+PSBYODZfSVJRX0FMTE9DX1RZUEVfSU9BUElDOwo+IC0JaW5mby0+aW9hcGljX25vZGUgPSBub2Rl
+Owo+IC0JaW5mby0+aW9hcGljX3RyaWdnZXIgPSB0cmlnZ2VyOwo+IC0JaW5mby0+aW9hcGljX3Bv
+bGFyaXR5ID0gcG9sYXJpdHk7Cj4gLQlpbmZvLT5pb2FwaWNfdmFsaWQgPSAxOwo+ICsJaW5mby0+
+aW9hcGljLm5vZGUgPSBub2RlOwo+ICsJaW5mby0+aW9hcGljLnRyaWdnZXIgPSB0cmlnZ2VyOwo+
+ICsJaW5mby0+aW9hcGljLnBvbGFyaXR5ID0gcG9sYXJpdHk7Cj4gKwlpbmZvLT5pb2FwaWMudmFs
+aWQgPSAxOwo+ICB9Cj4gIAo+ICAjaWZuZGVmIENPTkZJR19BQ1BJCj4gQEAgLTg3OCwzMiArODc4
+LDMyIEBAIHN0YXRpYyB2b2lkIGlvYXBpY19jb3B5X2FsbG9jX2F0dHIoc3RydWMKPiAgCj4gIAlj
+b3B5X2lycV9hbGxvY19pbmZvKGRzdCwgc3JjKTsKPiAgCWRzdC0+dHlwZSA9IFg4Nl9JUlFfQUxM
+T0NfVFlQRV9JT0FQSUM7Cj4gLQlkc3QtPmlvYXBpY19pZCA9IG1wY19pb2FwaWNfaWQoaW9hcGlj
+X2lkeCk7Cj4gLQlkc3QtPmlvYXBpY19waW4gPSBwaW47Cj4gLQlkc3QtPmlvYXBpY192YWxpZCA9
+IDE7Cj4gLQlpZiAoc3JjICYmIHNyYy0+aW9hcGljX3ZhbGlkKSB7Cj4gLQkJZHN0LT5pb2FwaWNf
+bm9kZSA9IHNyYy0+aW9hcGljX25vZGU7Cj4gLQkJZHN0LT5pb2FwaWNfdHJpZ2dlciA9IHNyYy0+
+aW9hcGljX3RyaWdnZXI7Cj4gLQkJZHN0LT5pb2FwaWNfcG9sYXJpdHkgPSBzcmMtPmlvYXBpY19w
+b2xhcml0eTsKPiArCWRzdC0+ZGV2aWQgPSBtcGNfaW9hcGljX2lkKGlvYXBpY19pZHgpOwo+ICsJ
+ZHN0LT5pb2FwaWMucGluID0gcGluOwo+ICsJZHN0LT5pb2FwaWMudmFsaWQgPSAxOwo+ICsJaWYg
+KHNyYyAmJiBzcmMtPmlvYXBpYy52YWxpZCkgewo+ICsJCWRzdC0+aW9hcGljLm5vZGUgPSBzcmMt
+PmlvYXBpYy5ub2RlOwo+ICsJCWRzdC0+aW9hcGljLnRyaWdnZXIgPSBzcmMtPmlvYXBpYy50cmln
+Z2VyOwo+ICsJCWRzdC0+aW9hcGljLnBvbGFyaXR5ID0gc3JjLT5pb2FwaWMucG9sYXJpdHk7Cj4g
+IAl9IGVsc2Ugewo+IC0JCWRzdC0+aW9hcGljX25vZGUgPSBOVU1BX05PX05PREU7Cj4gKwkJZHN0
+LT5pb2FwaWMubm9kZSA9IE5VTUFfTk9fTk9ERTsKPiAgCQlpZiAoYWNwaV9nZXRfb3ZlcnJpZGVf
+aXJxKGdzaSwgJnRyaWdnZXIsICZwb2xhcml0eSkgPj0gMCkgewo+IC0JCQlkc3QtPmlvYXBpY190
+cmlnZ2VyID0gdHJpZ2dlcjsKPiAtCQkJZHN0LT5pb2FwaWNfcG9sYXJpdHkgPSBwb2xhcml0eTsK
+PiArCQkJZHN0LT5pb2FwaWMudHJpZ2dlciA9IHRyaWdnZXI7Cj4gKwkJCWRzdC0+aW9hcGljLnBv
+bGFyaXR5ID0gcG9sYXJpdHk7Cj4gIAkJfSBlbHNlIHsKPiAgCQkJLyoKPiAgCQkJICogUENJIGlu
+dGVycnVwdHMgYXJlIGFsd2F5cyBhY3RpdmUgbG93IGxldmVsCj4gIAkJCSAqIHRyaWdnZXJlZC4K
+PiAgCQkJICovCj4gLQkJCWRzdC0+aW9hcGljX3RyaWdnZXIgPSBJT0FQSUNfTEVWRUw7Cj4gLQkJ
+CWRzdC0+aW9hcGljX3BvbGFyaXR5ID0gSU9BUElDX1BPTF9MT1c7Cj4gKwkJCWRzdC0+aW9hcGlj
+LnRyaWdnZXIgPSBJT0FQSUNfTEVWRUw7Cj4gKwkJCWRzdC0+aW9hcGljLnBvbGFyaXR5ID0gSU9B
+UElDX1BPTF9MT1c7Cj4gIAkJfQo+ICAJfQo+ICB9Cj4gIAo+ICBzdGF0aWMgaW50IGlvYXBpY19h
+bGxvY19hdHRyX25vZGUoc3RydWN0IGlycV9hbGxvY19pbmZvICppbmZvKQo+ICB7Cj4gLQlyZXR1
+cm4gKGluZm8gJiYgaW5mby0+aW9hcGljX3ZhbGlkKSA/IGluZm8tPmlvYXBpY19ub2RlIDogTlVN
+QV9OT19OT0RFOwo+ICsJcmV0dXJuIChpbmZvICYmIGluZm8tPmlvYXBpYy52YWxpZCkgPyBpbmZv
+LT5pb2FwaWMubm9kZSA6IE5VTUFfTk9fTk9ERTsKPiAgfQo+ICAKPiAgc3RhdGljIHZvaWQgbXBf
+cmVnaXN0ZXJfaGFuZGxlcih1bnNpZ25lZCBpbnQgaXJxLCB1bnNpZ25lZCBsb25nIHRyaWdnZXIp
+Cj4gQEAgLTkzMywxNCArOTMzLDE0IEBAIHN0YXRpYyBib29sIG1wX2NoZWNrX3Bpbl9hdHRyKGlu
+dCBpcnEsIHMKPiAgCSAqIHBpbiB3aXRoIHJlYWwgdHJpZ2dlciBhbmQgcG9sYXJpdHkgYXR0cmli
+dXRlcy4KPiAgCSAqLwo+ICAJaWYgKGlycSA8IG5yX2xlZ2FjeV9pcnFzKCkgJiYgZGF0YS0+Y291
+bnQgPT0gMSkgewo+IC0JCWlmIChpbmZvLT5pb2FwaWNfdHJpZ2dlciAhPSBkYXRhLT50cmlnZ2Vy
+KQo+IC0JCQltcF9yZWdpc3Rlcl9oYW5kbGVyKGlycSwgaW5mby0+aW9hcGljX3RyaWdnZXIpOwo+
+IC0JCWRhdGEtPmVudHJ5LnRyaWdnZXIgPSBkYXRhLT50cmlnZ2VyID0gaW5mby0+aW9hcGljX3Ry
+aWdnZXI7Cj4gLQkJZGF0YS0+ZW50cnkucG9sYXJpdHkgPSBkYXRhLT5wb2xhcml0eSA9IGluZm8t
+PmlvYXBpY19wb2xhcml0eTsKPiArCQlpZiAoaW5mby0+aW9hcGljLnRyaWdnZXIgIT0gZGF0YS0+
+dHJpZ2dlcikKPiArCQkJbXBfcmVnaXN0ZXJfaGFuZGxlcihpcnEsIGluZm8tPmlvYXBpYy50cmln
+Z2VyKTsKPiArCQlkYXRhLT5lbnRyeS50cmlnZ2VyID0gZGF0YS0+dHJpZ2dlciA9IGluZm8tPmlv
+YXBpYy50cmlnZ2VyOwo+ICsJCWRhdGEtPmVudHJ5LnBvbGFyaXR5ID0gZGF0YS0+cG9sYXJpdHkg
+PSBpbmZvLT5pb2FwaWMucG9sYXJpdHk7Cj4gIAl9Cj4gIAo+IC0JcmV0dXJuIGRhdGEtPnRyaWdn
+ZXIgPT0gaW5mby0+aW9hcGljX3RyaWdnZXIgJiYKPiAtCSAgICAgICBkYXRhLT5wb2xhcml0eSA9
+PSBpbmZvLT5pb2FwaWNfcG9sYXJpdHk7Cj4gKwlyZXR1cm4gZGF0YS0+dHJpZ2dlciA9PSBpbmZv
+LT5pb2FwaWMudHJpZ2dlciAmJgo+ICsJICAgICAgIGRhdGEtPnBvbGFyaXR5ID09IGluZm8tPmlv
+YXBpYy5wb2xhcml0eTsKPiAgfQo+ICAKPiAgc3RhdGljIGludCBhbGxvY19pcnFfZnJvbV9kb21h
+aW4oc3RydWN0IGlycV9kb21haW4gKmRvbWFpbiwgaW50IGlvYXBpYywgdTMyIGdzaSwKPiBAQCAt
+MTAwMiw3ICsxMDAyLDcgQEAgc3RhdGljIGludCBhbGxvY19pc2FfaXJxX2Zyb21fZG9tYWluKHN0
+cgo+ICAJCWlmICghbXBfY2hlY2tfcGluX2F0dHIoaXJxLCBpbmZvKSkKPiAgCQkJcmV0dXJuIC1F
+QlVTWTsKPiAgCQlpZiAoX19hZGRfcGluX3RvX2lycV9ub2RlKGlycV9kYXRhLT5jaGlwX2RhdGEs
+IG5vZGUsIGlvYXBpYywKPiAtCQkJCQkgIGluZm8tPmlvYXBpY19waW4pKQo+ICsJCQkJCSAgaW5m
+by0+aW9hcGljLnBpbikpCj4gIAkJCXJldHVybiAtRU5PTUVNOwo+ICAJfSBlbHNlIHsKPiAgCQlp
+bmZvLT5mbGFncyB8PSBYODZfSVJRX0FMTE9DX0xFR0FDWTsKPiBAQCAtMjA5Miw4ICsyMDkyLDgg
+QEAgc3RhdGljIGludCBtcF9hbGxvY190aW1lcl9pcnEoaW50IGlvYXBpYwo+ICAJCXN0cnVjdCBp
+cnFfYWxsb2NfaW5mbyBpbmZvOwo+ICAKPiAgCQlpb2FwaWNfc2V0X2FsbG9jX2F0dHIoJmluZm8s
+IE5VTUFfTk9fTk9ERSwgMCwgMCk7Cj4gLQkJaW5mby5pb2FwaWNfaWQgPSBtcGNfaW9hcGljX2lk
+KGlvYXBpYyk7Cj4gLQkJaW5mby5pb2FwaWNfcGluID0gcGluOwo+ICsJCWluZm8uZGV2aWQgPSBt
+cGNfaW9hcGljX2lkKGlvYXBpYyk7Cj4gKwkJaW5mby5pb2FwaWMucGluID0gcGluOwo+ICAJCW11
+dGV4X2xvY2soJmlvYXBpY19tdXRleCk7Cj4gIAkJaXJxID0gYWxsb2NfaXNhX2lycV9mcm9tX2Rv
+bWFpbihkb21haW4sIDAsIGlvYXBpYywgcGluLCAmaW5mbyk7Cj4gIAkJbXV0ZXhfdW5sb2NrKCZp
+b2FwaWNfbXV0ZXgpOwo+IEBAIC0yMjk3LDcgKzIyOTcsNyBAQCBzdGF0aWMgaW50IG1wX2lycWRv
+bWFpbl9jcmVhdGUoaW50IGlvYXBpCj4gIAo+ICAJaW5pdF9pcnFfYWxsb2NfaW5mbygmaW5mbywg
+TlVMTCk7Cj4gIAlpbmZvLnR5cGUgPSBYODZfSVJRX0FMTE9DX1RZUEVfSU9BUElDX0dFVF9QQVJF
+TlQ7Cj4gLQlpbmZvLmlvYXBpY19pZCA9IG1wY19pb2FwaWNfaWQoaW9hcGljKTsKPiArCWluZm8u
+ZGV2aWQgPSBtcGNfaW9hcGljX2lkKGlvYXBpYyk7Cj4gIAlwYXJlbnQgPSBpcnFfcmVtYXBwaW5n
+X2dldF9pcnFfZG9tYWluKCZpbmZvKTsKPiAgCWlmICghcGFyZW50KQo+ICAJCXBhcmVudCA9IHg4
+Nl92ZWN0b3JfZG9tYWluOwo+IEBAIC0yOTMyLDkgKzI5MzIsOSBAQCBpbnQgbXBfaW9hcGljX3Jl
+Z2lzdGVyZWQodTMyIGdzaV9iYXNlKQo+ICBzdGF0aWMgdm9pZCBtcF9pcnFkb21haW5fZ2V0X2F0
+dHIodTMyIGdzaSwgc3RydWN0IG1wX2NoaXBfZGF0YSAqZGF0YSwKPiAgCQkJCSAgc3RydWN0IGly
+cV9hbGxvY19pbmZvICppbmZvKQo+ICB7Cj4gLQlpZiAoaW5mbyAmJiBpbmZvLT5pb2FwaWNfdmFs
+aWQpIHsKPiAtCQlkYXRhLT50cmlnZ2VyID0gaW5mby0+aW9hcGljX3RyaWdnZXI7Cj4gLQkJZGF0
+YS0+cG9sYXJpdHkgPSBpbmZvLT5pb2FwaWNfcG9sYXJpdHk7Cj4gKwlpZiAoaW5mbyAmJiBpbmZv
+LT5pb2FwaWMudmFsaWQpIHsKPiArCQlkYXRhLT50cmlnZ2VyID0gaW5mby0+aW9hcGljLnRyaWdn
+ZXI7Cj4gKwkJZGF0YS0+cG9sYXJpdHkgPSBpbmZvLT5pb2FwaWMucG9sYXJpdHk7Cj4gIAl9IGVs
+c2UgaWYgKGFjcGlfZ2V0X292ZXJyaWRlX2lycShnc2ksICZkYXRhLT50cmlnZ2VyLAo+ICAJCQkJ
+CSAmZGF0YS0+cG9sYXJpdHkpIDwgMCkgewo+ICAJCS8qIFBDSSBpbnRlcnJ1cHRzIGFyZSBhbHdh
+eXMgYWN0aXZlIGxvdyBsZXZlbCB0cmlnZ2VyZWQuICovCj4gQEAgLTI5ODAsNyArMjk4MCw3IEBA
+IGludCBtcF9pcnFkb21haW5fYWxsb2Moc3RydWN0IGlycV9kb21haW4KPiAgCQlyZXR1cm4gLUVJ
+TlZBTDsKPiAgCj4gIAlpb2FwaWMgPSBtcF9pcnFkb21haW5faW9hcGljX2lkeChkb21haW4pOwo+
+IC0JcGluID0gaW5mby0+aW9hcGljX3BpbjsKPiArCXBpbiA9IGluZm8tPmlvYXBpYy5waW47Cj4g
+IAlpZiAoaXJxX2ZpbmRfbWFwcGluZyhkb21haW4sIChpcnFfaHdfbnVtYmVyX3QpcGluKSA+IDAp
+Cj4gIAkJcmV0dXJuIC1FRVhJU1Q7Cj4gIAo+IEBAIC0yOTg4LDcgKzI5ODgsNyBAQCBpbnQgbXBf
+aXJxZG9tYWluX2FsbG9jKHN0cnVjdCBpcnFfZG9tYWluCj4gIAlpZiAoIWRhdGEpCj4gIAkJcmV0
+dXJuIC1FTk9NRU07Cj4gIAo+IC0JaW5mby0+aW9hcGljX2VudHJ5ID0gJmRhdGEtPmVudHJ5Owo+
+ICsJaW5mby0+aW9hcGljLmVudHJ5ID0gJmRhdGEtPmVudHJ5Owo+ICAJcmV0ID0gaXJxX2RvbWFp
+bl9hbGxvY19pcnFzX3BhcmVudChkb21haW4sIHZpcnEsIG5yX2lycXMsIGluZm8pOwo+ICAJaWYg
+KHJldCA8IDApIHsKPiAgCQlrZnJlZShkYXRhKTsKPiBAQCAtMjk5Niw3ICsyOTk2LDcgQEAgaW50
+IG1wX2lycWRvbWFpbl9hbGxvYyhzdHJ1Y3QgaXJxX2RvbWFpbgo+ICAJfQo+ICAKPiAgCUlOSVRf
+TElTVF9IRUFEKCZkYXRhLT5pcnFfMl9waW4pOwo+IC0JaXJxX2RhdGEtPmh3aXJxID0gaW5mby0+
+aW9hcGljX3BpbjsKPiArCWlycV9kYXRhLT5od2lycSA9IGluZm8tPmlvYXBpYy5waW47Cj4gIAlp
+cnFfZGF0YS0+Y2hpcCA9IChkb21haW4tPnBhcmVudCA9PSB4ODZfdmVjdG9yX2RvbWFpbikgPwo+
+ICAJCQkgICZpb2FwaWNfY2hpcCA6ICZpb2FwaWNfaXJfY2hpcDsKPiAgCWlycV9kYXRhLT5jaGlw
+X2RhdGEgPSBkYXRhOwo+IEBAIC0zMDA2LDggKzMwMDYsOCBAQCBpbnQgbXBfaXJxZG9tYWluX2Fs
+bG9jKHN0cnVjdCBpcnFfZG9tYWluCj4gIAlhZGRfcGluX3RvX2lycV9ub2RlKGRhdGEsIGlvYXBp
+Y19hbGxvY19hdHRyX25vZGUoaW5mbyksIGlvYXBpYywgcGluKTsKPiAgCj4gIAlsb2NhbF9pcnFf
+c2F2ZShmbGFncyk7Cj4gLQlpZiAoaW5mby0+aW9hcGljX2VudHJ5KQo+IC0JCW1wX3NldHVwX2Vu
+dHJ5KGNmZywgZGF0YSwgaW5mby0+aW9hcGljX2VudHJ5KTsKPiArCWlmIChpbmZvLT5pb2FwaWMu
+ZW50cnkpCj4gKwkJbXBfc2V0dXBfZW50cnkoY2ZnLCBkYXRhLCBpbmZvLT5pb2FwaWMuZW50cnkp
+Owo+ICAJbXBfcmVnaXN0ZXJfaGFuZGxlcih2aXJxLCBkYXRhLT50cmlnZ2VyKTsKPiAgCWlmICh2
+aXJxIDwgbnJfbGVnYWN5X2lycXMoKSkKPiAgCQlsZWdhY3lfcGljLT5tYXNrKHZpcnEpOwo+IC0t
+LSBhL2RyaXZlcnMvaW9tbXUvYW1kL2lvbW11LmMKPiArKysgYi9kcml2ZXJzL2lvbW11L2FtZC9p
+b21tdS5jCj4gQEAgLTM1MDgsNyArMzUwOCw3IEBAIHN0YXRpYyBpbnQgZ2V0X2RldmlkKHN0cnVj
+dCBpcnFfYWxsb2NfaW4KPiAgCXN3aXRjaCAoaW5mby0+dHlwZSkgewo+ICAJY2FzZSBYODZfSVJR
+X0FMTE9DX1RZUEVfSU9BUElDOgo+ICAJY2FzZSBYODZfSVJRX0FMTE9DX1RZUEVfSU9BUElDX0dF
+VF9QQVJFTlQ6Cj4gLQkJcmV0dXJuIGdldF9pb2FwaWNfZGV2aWQoaW5mby0+aW9hcGljX2lkKTsK
+PiArCQlyZXR1cm4gZ2V0X2lvYXBpY19kZXZpZChpbmZvLT5kZXZpZCk7Cj4gIAljYXNlIFg4Nl9J
+UlFfQUxMT0NfVFlQRV9IUEVUOgo+ICAJY2FzZSBYODZfSVJRX0FMTE9DX1RZUEVfSFBFVF9HRVRf
+UEFSRU5UOgo+ICAJCXJldHVybiBnZXRfaHBldF9kZXZpZChpbmZvLT5kZXZpZCk7Cj4gQEAgLTM1
+ODYsMTUgKzM1ODYsMTUgQEAgc3RhdGljIHZvaWQgaXJxX3JlbWFwcGluZ19wcmVwYXJlX2lydGUo
+cwo+ICAJc3dpdGNoIChpbmZvLT50eXBlKSB7Cj4gIAljYXNlIFg4Nl9JUlFfQUxMT0NfVFlQRV9J
+T0FQSUM6Cj4gIAkJLyogU2V0dXAgSU9BUElDIGVudHJ5ICovCj4gLQkJZW50cnkgPSBpbmZvLT5p
+b2FwaWNfZW50cnk7Cj4gLQkJaW5mby0+aW9hcGljX2VudHJ5ID0gTlVMTDsKPiArCQllbnRyeSA9
+IGluZm8tPmlvYXBpYy5lbnRyeTsKPiArCQlpbmZvLT5pb2FwaWMuZW50cnkgPSBOVUxMOwo+ICAJ
+CW1lbXNldChlbnRyeSwgMCwgc2l6ZW9mKCplbnRyeSkpOwo+ICAJCWVudHJ5LT52ZWN0b3IgICAg
+ICAgID0gaW5kZXg7Cj4gIAkJZW50cnktPm1hc2sgICAgICAgICAgPSAwOwo+IC0JCWVudHJ5LT50
+cmlnZ2VyICAgICAgID0gaW5mby0+aW9hcGljX3RyaWdnZXI7Cj4gLQkJZW50cnktPnBvbGFyaXR5
+ICAgICAgPSBpbmZvLT5pb2FwaWNfcG9sYXJpdHk7Cj4gKwkJZW50cnktPnRyaWdnZXIgICAgICAg
+PSBpbmZvLT5pb2FwaWMudHJpZ2dlcjsKPiArCQllbnRyeS0+cG9sYXJpdHkgICAgICA9IGluZm8t
+PmlvYXBpYy5wb2xhcml0eTsKPiAgCQkvKiBNYXNrIGxldmVsIHRyaWdnZXJlZCBpcnFzLiAqLwo+
+IC0JCWlmIChpbmZvLT5pb2FwaWNfdHJpZ2dlcikKPiArCQlpZiAoaW5mby0+aW9hcGljLnRyaWdn
+ZXIpCj4gIAkJCWVudHJ5LT5tYXNrID0gMTsKPiAgCQlicmVhazsKPiAgCj4gQEAgLTM2ODAsNyAr
+MzY4MCw3IEBAIHN0YXRpYyBpbnQgaXJxX3JlbWFwcGluZ19hbGxvYyhzdHJ1Y3QgaXIKPiAgCQkJ
+CQlpb21tdS0+aXJ0ZV9vcHMtPnNldF9hbGxvY2F0ZWQodGFibGUsIGkpOwo+ICAJCQl9Cj4gIAkJ
+CVdBUk5fT04odGFibGUtPm1pbl9pbmRleCAhPSAzMik7Cj4gLQkJCWluZGV4ID0gaW5mby0+aW9h
+cGljX3BpbjsKPiArCQkJaW5kZXggPSBpbmZvLT5pb2FwaWMucGluOwo+ICAJCX0gZWxzZSB7Cj4g
+IAkJCWluZGV4ID0gLUVOT01FTTsKPiAgCQl9Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9oeXBlcnYt
+aW9tbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaHlwZXJ2LWlvbW11LmMKPiBAQCAtMTAxLDcg
+KzEwMSw3IEBAIHN0YXRpYyBpbnQgaHlwZXJ2X2lycV9yZW1hcHBpbmdfYWxsb2Moc3QKPiAgCSAq
+IGluIHRoZSBjaGlwX2RhdGEgYW5kIGh5cGVydl9pcnFfcmVtYXBwaW5nX2FjdGl2YXRlKCkvaHlw
+ZXJ2X2lyX3NldF8KPiAgCSAqIGFmZmluaXR5KCkgc2V0IHZlY3RvciBhbmQgZGVzdF9hcGljaWQg
+ZGlyZWN0bHkgaW50byBJTy1BUElDIGVudHJ5Lgo+ICAJICovCj4gLQlpcnFfZGF0YS0+Y2hpcF9k
+YXRhID0gaW5mby0+aW9hcGljX2VudHJ5Owo+ICsJaXJxX2RhdGEtPmNoaXBfZGF0YSA9IGluZm8t
+PmlvYXBpYy5lbnRyeTsKPiAgCj4gIAkvKgo+ICAJICogSHlwdmVyLVYgSU8gQVBJQyBpcnEgYWZm
+aW5pdHkgc2hvdWxkIGJlIGluIHRoZSBzY29wZSBvZgo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50
+ZWwvaXJxX3JlbWFwcGluZy5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pcnFfcmVtYXBw
+aW5nLmMKPiBAQCAtMTExMyw3ICsxMTEzLDcgQEAgc3RhdGljIHN0cnVjdCBpcnFfZG9tYWluICpp
+bnRlbF9nZXRfaXJxXwo+ICAKPiAgCXN3aXRjaCAoaW5mby0+dHlwZSkgewo+ICAJY2FzZSBYODZf
+SVJRX0FMTE9DX1RZUEVfSU9BUElDX0dFVF9QQVJFTlQ6Cj4gLQkJcmV0dXJuIG1hcF9pb2FwaWNf
+dG9faXIoaW5mby0+aW9hcGljX2lkKTsKPiArCQlyZXR1cm4gbWFwX2lvYXBpY190b19pcihpbmZv
+LT5kZXZpZCk7Cj4gIAljYXNlIFg4Nl9JUlFfQUxMT0NfVFlQRV9IUEVUX0dFVF9QQVJFTlQ6Cj4g
+IAkJcmV0dXJuIG1hcF9ocGV0X3RvX2lyKGluZm8tPmRldmlkKTsKPiAgCWNhc2UgWDg2X0lSUV9B
+TExPQ19UWVBFX1BDSV9NU0k6Cj4gQEAgLTEyNTQsMTYgKzEyNTQsMTYgQEAgc3RhdGljIHZvaWQg
+aW50ZWxfaXJxX3JlbWFwcGluZ19wcmVwYXJlXwo+ICAJc3dpdGNoIChpbmZvLT50eXBlKSB7Cj4g
+IAljYXNlIFg4Nl9JUlFfQUxMT0NfVFlQRV9JT0FQSUM6Cj4gIAkJLyogU2V0IHNvdXJjZS1pZCBv
+ZiBpbnRlcnJ1cHQgcmVxdWVzdCAqLwo+IC0JCXNldF9pb2FwaWNfc2lkKGlydGUsIGluZm8tPmlv
+YXBpY19pZCk7Cj4gKwkJc2V0X2lvYXBpY19zaWQoaXJ0ZSwgaW5mby0+ZGV2aWQpOwo+ICAJCWFw
+aWNfcHJpbnRrKEFQSUNfVkVSQk9TRSwgS0VSTl9ERUJVRyAiSU9BUElDWyVkXTogU2V0IElSVEUg
+ZW50cnkgKFA6JWQgRlBEOiVkIERzdF9Nb2RlOiVkIFJlZGlyX2hpbnQ6JWQgVHJpZ19Nb2RlOiVk
+IERsdnJ5X01vZGU6JVggQXZhaWw6JVggVmVjdG9yOiUwMlggRGVzdDolMDhYIFNJRDolMDRYIFNR
+OiVYIFNWVDolWClcbiIsCj4gLQkJCWluZm8tPmlvYXBpY19pZCwgaXJ0ZS0+cHJlc2VudCwgaXJ0
+ZS0+ZnBkLAo+ICsJCQlpbmZvLT5kZXZpZCwgaXJ0ZS0+cHJlc2VudCwgaXJ0ZS0+ZnBkLAo+ICAJ
+CQlpcnRlLT5kc3RfbW9kZSwgaXJ0ZS0+cmVkaXJfaGludCwKPiAgCQkJaXJ0ZS0+dHJpZ2dlcl9t
+b2RlLCBpcnRlLT5kbHZyeV9tb2RlLAo+ICAJCQlpcnRlLT5hdmFpbCwgaXJ0ZS0+dmVjdG9yLCBp
+cnRlLT5kZXN0X2lkLAo+ICAJCQlpcnRlLT5zaWQsIGlydGUtPnNxLCBpcnRlLT5zdnQpOwo+ICAK
+PiAtCQllbnRyeSA9IChzdHJ1Y3QgSVJfSU9fQVBJQ19yb3V0ZV9lbnRyeSAqKWluZm8tPmlvYXBp
+Y19lbnRyeTsKPiAtCQlpbmZvLT5pb2FwaWNfZW50cnkgPSBOVUxMOwo+ICsJCWVudHJ5ID0gKHN0
+cnVjdCBJUl9JT19BUElDX3JvdXRlX2VudHJ5ICopaW5mby0+aW9hcGljLmVudHJ5Owo+ICsJCWlu
+Zm8tPmlvYXBpYy5lbnRyeSA9IE5VTEw7Cj4gIAkJbWVtc2V0KGVudHJ5LCAwLCBzaXplb2YoKmVu
+dHJ5KSk7Cj4gIAkJZW50cnktPmluZGV4Mgk9IChpbmRleCA+PiAxNSkgJiAweDE7Cj4gIAkJZW50
+cnktPnplcm8JPSAwOwo+IEBAIC0xMjczLDExICsxMjczLDExIEBAIHN0YXRpYyB2b2lkIGludGVs
+X2lycV9yZW1hcHBpbmdfcHJlcGFyZV8KPiAgCQkgKiBJTy1BUElDIFJURSB3aWxsIGJlIGNvbmZp
+Z3VyZWQgd2l0aCB2aXJ0dWFsIHZlY3Rvci4KPiAgCQkgKiBpcnEgaGFuZGxlciB3aWxsIGRvIHRo
+ZSBleHBsaWNpdCBFT0kgdG8gdGhlIGlvLWFwaWMuCj4gIAkJICovCj4gLQkJZW50cnktPnZlY3Rv
+cgk9IGluZm8tPmlvYXBpY19waW47Cj4gKwkJZW50cnktPnZlY3Rvcgk9IGluZm8tPmlvYXBpYy5w
+aW47Cj4gIAkJZW50cnktPm1hc2sJPSAwOwkJCS8qIGVuYWJsZSBJUlEgKi8KPiAtCQllbnRyeS0+
+dHJpZ2dlcgk9IGluZm8tPmlvYXBpY190cmlnZ2VyOwo+IC0JCWVudHJ5LT5wb2xhcml0eQk9IGlu
+Zm8tPmlvYXBpY19wb2xhcml0eTsKPiAtCQlpZiAoaW5mby0+aW9hcGljX3RyaWdnZXIpCj4gKwkJ
+ZW50cnktPnRyaWdnZXIJPSBpbmZvLT5pb2FwaWMudHJpZ2dlcjsKPiArCQllbnRyeS0+cG9sYXJp
+dHkJPSBpbmZvLT5pb2FwaWMucG9sYXJpdHk7Cj4gKwkJaWYgKGluZm8tPmlvYXBpYy50cmlnZ2Vy
+KQo+ICAJCQllbnRyeS0+bWFzayA9IDE7IC8qIE1hc2sgbGV2ZWwgdHJpZ2dlcmVkIGlycXMuICov
+Cj4gIAkJYnJlYWs7Cj4gIAo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
+bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
+aW9tbXU=
