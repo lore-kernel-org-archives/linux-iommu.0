@@ -2,138 +2,144 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24985C433DF
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 15:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B89FC433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 15:58:04 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD7D42078D
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 15:57:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 15FFF2078D
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 15:58:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="DEUlJ33l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD7D42078D
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="pLtCIIrI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15FFF2078D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4073B21FA8;
-	Wed, 26 Aug 2020 15:57:25 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E3613220B2;
+	Wed, 26 Aug 2020 15:58:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RSa4iK3m9Fx1; Wed, 26 Aug 2020 15:57:23 +0000 (UTC)
+	with ESMTP id Yt4nlLkdzss1; Wed, 26 Aug 2020 15:58:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8005E203AC;
-	Wed, 26 Aug 2020 15:57:23 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B687F20457;
+	Wed, 26 Aug 2020 15:58:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 69A29C07FF;
-	Wed, 26 Aug 2020 15:57:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 43EFCC0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2322C07FF;
+	Wed, 26 Aug 2020 15:58:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8F766C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3B1B9879C5
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 86DC885D94
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JIv9axjhKhal for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 15:57:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7E51187BC0
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:21 +0000 (UTC)
+ with ESMTP id mik1K21LK1H4 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 15:57:58 +0000 (UTC)
+X-Greylist: delayed 00:17:44 by SQLgrey-1.7.6
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7608785D8D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 15:57:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OKT0DuWZVJrDwwD9ijG10RxLvR2CZTaAeivrM5k2YuAMB+A2axr0UHUvIhvD9jvYWN5TAA4msc31yijqyR5csOM2qY6BUL+zRlXaWlIfxhAlRg749mYU+mqgYgbQq7h/tUUyiCNKxlkCVObpfdhYz5hefSN/IQ2WAjg1lmGVqR5gRv9lxDKw8QZrnHt60PtbdrwT/QWtgPsXsMrvAjv1bYZJNi/rSPOPePQn+unNX9EqZDXuVSC2JJmrZNV7SKc4paetcH5kul6N3X03LHlGEdH5BNm3ATLdM7b2i6Z8oQhQYMq5ZEFMXocis+uwrciuHmr1Z4PYc+92qN5v7lOT3A==
+ b=fMiM1szRBI7o+sTvbFR0IdXeKLCYemW+TwYBJ81kstukF/Rg2FuRdB8Vo3FtcmgrPKZN5lbhuTra0CF/OaZeHm7WhiZ0MxV9DUPEHiwUpZ91Em89EpWAn2IIN0toXzjlDbVzP9I3/MKGCtnjIPnCNyZH+TipvkTOkqRfGGub1rWtPwzUFyxFdIAao0XYXOA96dZTHzLVKUvUrXEaRuM57vdieyhpvkMJx5CorUuKJRvdUGKurp3tYbXyEF5Sj3lHmGMMPQarR9IBUXfSffAd7HejyRdSagsahxCr7UePnNrThHW14tSn2JHsk4C1KNNqOUOSXuNGFBNiDjKbhpH1kw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mvsxsrD4+yaAfXt5bAJ1kJPuHeH79aRd6vAdtW4y5Qo=;
- b=ES6YiiUss7s1OME4enetq1xdtnsdVxo6WH8pTeudxUpHzF9H0dil/aameBJqL18p1srgTLasYIsGJDUFI3MyxGcZDQLdD7BFyngZfvWj5k+ByPLHciZU+hy4wrxU2fMUQKtG1VW9Wub5Zw/VQLMCrcQzldDdqHvbAFVtZvkENZMxwD8Nn8x8QJe1XphUUmRJInFSoZLXHiaNOXpTYFUxWH1ZOslAUjWQtiTYhV3qzWpgrP1uawz6PjHXNSpc7NvEv/uXlRW/hg2KgrAU7EPocoQ2D+G5KZe4ILU9m9qUGIRcByWzeKYOYmqw0A0vYl+Mx2Xsvmmg4hFZD8LqQkcBpA==
+ bh=53Vl1qu09+gdoU0PT5mzj18pxRChE5315g04VguuCBE=;
+ b=CYwiqKSh7A0xyYuG18KYQ0qRd7j1yQW+2bbNHBEzg3iPcHXz/eYVMi4IqBFbNzzx2qgknrHPCiW4EhbSrFmo41i5arZb4bpaZJ3TC2sB12GdeA7fTvWeqQ2agTkHjG5xx7KikXfNugMHQKXGpJA6iPYuUhIlbAoD4Rjb34oBRVBRxOIn/w0jHso+tMeujnOPSRUFvtn4bgbOkYEYTUTkWbh85DEQS8z2YOhTLHUDE8gP8dgMMGMPCn38be0MdqNdGOp612Ux/X1DuRgy8iWnkEWHQUP3U5xPWq+MkxcAIFAck29OJsD7lsFZM+YJUDtOFpalIhCjMZGp0H8FxQBTVw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mvsxsrD4+yaAfXt5bAJ1kJPuHeH79aRd6vAdtW4y5Qo=;
- b=DEUlJ33l3IJNEizPTTB9cxs6sharKUySquuLDTBELI/vbNGcUmdLwQtTKH2T3hNrgMh7OlAfpMoSbhgj6ySqT5vdltPrPsijluP4Nj149d4pZwdsfWoT996OZF5LjTOOnmwvgkvr7MrbRKcxjRzKpUcrqQyUS+K2Gwb84kKo4/w=
+ bh=53Vl1qu09+gdoU0PT5mzj18pxRChE5315g04VguuCBE=;
+ b=pLtCIIrIuX5AqgJSFi7ANmhjYWi2wlKpRr1LhBkRsEn/sDl/MO2HEiqqF4TrLqhseG+ySNgXOz1d8pxcpNp5Zj7hgXPZUBQu7zfUG6ffXH+iXc8AaTX+3PNcvB71Y3yfTpRQrTBxoAahuKq6BRRFFdLOZXBaOJ7+acT4LRS0+Ss=
 Received: from MN2PR12MB4488.namprd12.prod.outlook.com (2603:10b6:208:24e::19)
- by MN2PR12MB4472.namprd12.prod.outlook.com (2603:10b6:208:267::11)
+ by MN2PR12MB4046.namprd12.prod.outlook.com (2603:10b6:208:1da::23)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3261.22; Wed, 26 Aug
- 2020 14:23:44 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24; Wed, 26 Aug
+ 2020 15:25:58 +0000
 Received: from MN2PR12MB4488.namprd12.prod.outlook.com
  ([fe80::889d:3c2f:a794:67fb]) by MN2PR12MB4488.namprd12.prod.outlook.com
  ([fe80::889d:3c2f:a794:67fb%7]) with mapi id 15.20.3305.032; Wed, 26 Aug 2020
- 14:23:44 +0000
+ 15:25:58 +0000
 From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
-To: Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "Kuehling, Felix"
- <Felix.Kuehling@amd.com>, "Koenig, Christian" <Christian.Koenig@amd.com>
-Subject: RE: [PATCH 1/2] iommu/amd: Do not force direct mapping when SME is
- active
-Thread-Topic: [PATCH 1/2] iommu/amd: Do not force direct mapping when SME is
- active
-Thread-Index: AQHWegTsBj7N+qef/0+36KKtrMBTq6lKc7sQ
-Date: Wed, 26 Aug 2020 14:23:44 +0000
-Message-ID: <MN2PR12MB44887D5839767CFF49C24696F7540@MN2PR12MB4488.namprd12.prod.outlook.com>
+To: "Kuehling, Felix" <Felix.Kuehling@amd.com>, Joerg Roedel
+ <joro@8bytes.org>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>, "Huang, Ray" <Ray.Huang@amd.com>,
+ "Koenig, Christian" <Christian.Koenig@amd.com>
+Subject: RE: [PATCH 0/2] iommu/amd: Fix IOMMUv2 devices when SME is active
+Thread-Topic: [PATCH 0/2] iommu/amd: Fix IOMMUv2 devices when SME is active
+Thread-Index: AQHWegTrKFaLvteaIU+zNTDEWFvNM6lKcXK8gAATzoCAAABa0A==
+Date: Wed, 26 Aug 2020 15:25:58 +0000
+Message-ID: <MN2PR12MB4488BF7DDE700378F7B2776CF7540@MN2PR12MB4488.namprd12.prod.outlook.com>
 References: <20200824105415.21000-1-joro@8bytes.org>
- <20200824105415.21000-2-joro@8bytes.org>
-In-Reply-To: <20200824105415.21000-2-joro@8bytes.org>
+ <MN2PR12MB4488D6B7BBF98845DF796E0BF7540@MN2PR12MB4488.namprd12.prod.outlook.com>
+ <34db343f-cd23-09af-3bc5-29b9d385f85d@amd.com>
+In-Reply-To: <34db343f-cd23-09af-3bc5-29b9d385f85d@amd.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 msip_labels: MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Enabled=true;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SetDate=2020-08-26T14:20:54Z; 
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SetDate=2020-08-26T15:25:54Z; 
  MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Method=Privileged;
  MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Name=Public_0;
  MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ActionId=0ef889e4-247e-4615-9728-0000bae6c8b2;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ActionId=6ae8be09-ce8e-4efa-a4a1-00008c7e989e;
  MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ContentBits=1
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_enabled: true
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_setdate: 2020-08-26T15:25:47Z
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_method: Standard
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_name: Internal Use Only -
+ Unrestricted
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_actionid: e8f06bcb-5e94-45a5-ad11-000086ddffd9
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_contentbits: 0
 msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_enabled: true
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_setdate: 2020-08-26T14:23:41Z
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_setdate: 2020-08-26T15:25:55Z
 msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_method: Privileged
 msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_name: Public_0
 msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_actionid: 08e3a570-2169-4890-9234-00006685c9d7
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_actionid: 1eebae05-bcb0-4c5e-a089-0000f220ab8b
 msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_contentbits: 0
-authentication-results: 8bytes.org; dkim=none (message not signed)
- header.d=none;8bytes.org; dmarc=none action=none header.from=amd.com;
+authentication-results: amd.com; dkim=none (message not signed)
+ header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
 x-originating-ip: [165.204.10.250]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c78fe514-f17a-40ff-10f3-08d849cba3d2
-x-ms-traffictypediagnostic: MN2PR12MB4472:
+x-ms-office365-filtering-correlation-id: 1f7af918-9711-43f5-b6b1-08d849d4551a
+x-ms-traffictypediagnostic: MN2PR12MB4046:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR12MB4472D42FF78461C44CA4A922F7540@MN2PR12MB4472.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-microsoft-antispam-prvs: <MN2PR12MB40469978AB4A1C39E19F6E77F7540@MN2PR12MB4046.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xU+cMJwtd3vDeJ2EPliN6gbHPlGOdaZG3zvOLVjG4jQYeF0u4MQplIz4OJnq0rZCe1IEbsFIHh1FQ/fTgTEkLkwhEoHehB2FCOlmnh73iwJ19amei08C9iwadM/KhZzMcYyhigOlHBUf6lqoF5zcamFP/qGwCocnsaqLndw4HGtyxULlb0eKXzoQIa6KhUvs2WPpRIbKvBZM439AroicLvb89W6iBBHraFW0GHPpcLEdf0pTZnSZ8gnDm1JFjMVQH7lNHPwiMASOuwMXQz2KFKy+tNUXTQVjfk8kG/Ym0HTUHZJPIbk2Kn3AeZFH3CKCTwIv0+2YoACIZOyf6TC9DA==
+x-microsoft-antispam-message-info: 6yLp+PSRr3pubdCTZRlHarhLC2K82D0dghTT1jzLtrw3Wd9ByIjYO6aZd4+K2kTLBiuMa9IR24ektyPE7b6skkrjqqVd5e8srdScolJcYLHOXjtSfd3T/BAmmAtWmS1rOQQHP5YQR6OioL5x7Y/MsYrFdJUaAOUY4hs8ziSEHUVX+ihbpl8tEiecJWCkSwU1PM6KUs9yaPH5K68WvCl1RfCFiuHqKk8gK5Bptu9YaoD2THuvF1S9FhMZ7jRx7qdlUI1GsFhx3WiPjgsm7lLsbEiux6q+7gfarTEWajsrhtKCyVmWfojhfFv3oDKXw/MlMnz1eh1xB3ZyCy9z5/5doQ==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MN2PR12MB4488.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(396003)(376002)(39860400002)(136003)(346002)(366004)(478600001)(55016002)(2906002)(6506007)(26005)(53546011)(6636002)(52536014)(76116006)(8936002)(316002)(71200400001)(86362001)(66946007)(33656002)(66446008)(54906003)(66476007)(110136005)(64756008)(83380400001)(8676002)(66556008)(5660300002)(4326008)(7696005)(9686003)(186003);
+ SFS:(4636009)(376002)(39860400002)(346002)(396003)(136003)(366004)(86362001)(8936002)(8676002)(7696005)(4326008)(71200400001)(6506007)(186003)(53546011)(26005)(110136005)(83380400001)(54906003)(52536014)(66946007)(64756008)(66476007)(76116006)(316002)(66446008)(66556008)(55016002)(9686003)(478600001)(33656002)(5660300002)(6636002)(2906002);
  DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: UqghtZlKRi5ySrRS30Lb31rtGr6AaB5IUHHPFAaP4Aj7nHf2CTxTwzV3yktpUAO8brhPOsCHD4P7LAEDoCr6IJbkrUbezQVPBMjmAJrlAzHahOgxT0M6f4uwlrT78c4f1c8JEKYaOu8iG1yXJXFqLE7txJx/6/PoB+cEwM5wv+nOWUDKof52SX+EFpqOdACz48WmJJE3ZIh++z1RMVkLPzbTKMk9hDTaVVn6g28/vOBYAdS7kf+CZyyViqiH4UiUjPq/hujV1u1B7PkhMokMcVO5XhGeICqVZyz5YRDRh/2prAulGBplV2ylEAFD0tRr7VCvX2AxToouPo87pSXAML7aQ9pv1o6IM7vnMofjdw2QQ2hcZPCN0iMPOvLF0/plN22yPpA8hGPgs2GxledTjnvlMGZkf93/fIkzulf+HvTzzM1Knx8UX0V4YRBi2++WfvKlmcW0NZ7nPpKw2qNeI1dng9O8YUPaj/5Nb2Dk40QdveLv2Hw7xGXOvxHk1pGzel5/l3uWr3osQOVVqaybI+PR7XKmJj+iE1wXViiacRFw5ANuMPewWbnjLxZ5As78SEuTWyfLGSceWVGe5mctkgammvCkjiOWSRV2TtVvbOYoLZGrhbaUQp+mlTc7W8mP0Jb4QM8a3W0Ie0+i6/h8mg==
+x-ms-exchange-antispam-messagedata: C2Kd5a0n4y1hfVwJSYcYBFg89Sj3vVeKPWyj/1xT4pYdeSFgeXc+xuGAkU2RfwyjvmdsKAxu5qWoqDJ1aTYlLqG0RfHAWqmOaKS/lGDiznCAmBZByV3WQ1dq2uSKZgSoVIm9Kvv+EHELLESEvcyl6YODV9qBfW+ZfQWqpEXeATUNvb7U443yY8+au5wWnofUN3Ti4Y+fDBhlyGWn3//rL4IXmvy5jGW4hy8umj1uMZXi1qJfa9w94erMUojUG2/+9A7plB29L6/BUi3cSZAnLWdwJ579OCbw82A2xprJiL+rMv49zZzx1XoamCajQIlOey6u0hV70ylG5QSUWIPWKfWjUvZzBRB13rquxijjCv4oDJ+JhbcaEw5g7/LilI2/vVVJiwdBopChW0EnwU5oiNVcybWnFSg1SbHulPt1cOBnTD/VYIrjeOLqrKcPgho0jYUOZnjtRt4Rc2OyWDqyX5uV4myAnYQnOXcayxNjiB0kNZYpYXpsI5jDOIvo5UddatvoY3ZMdI3KZPxCCFZ6TB40AF46iseE0wiqa7xoOuq+2MuuC6u+nBHwqI566WbEYFB/NiwJrf2JCTKKJLU8e5cvwnVKzGwJikeVLO8kx1Wn9GyENYhs+YKDq/0upz0vRNBrFwQq72C8PPJ5+jJ57w==
 MIME-Version: 1.0
 X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4488.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c78fe514-f17a-40ff-10f3-08d849cba3d2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2020 14:23:44.7551 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f7af918-9711-43f5-b6b1-08d849d4551a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2020 15:25:58.1289 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GdhocXPeA7wM8mdLWj+2ZEKi9uzwCkS5WCekyW1NMMzkrzkATJVUuHHNuDKatV2wo26mJAq6ahGXd+S6zTbEKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4472
+X-MS-Exchange-CrossTenant-userprincipalname: nsNKzfSQi9qLCBDGyXb3OIfdVQYcw4SQX0pNmp5URc8B1J810Szyy+NXkiDydLbA4+XIxxnaZ5g4eDd0jvdWYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4046
 Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
  "jroedel@suse.de" <jroedel@suse.de>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
@@ -149,65 +155,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-[AMD Public Use]
-
-+ Felix, Christian
-
-> -----Original Message-----
-> From: Joerg Roedel <joro@8bytes.org>
-> Sent: Monday, August 24, 2020 6:54 AM
-> To: iommu@lists.linux-foundation.org
-> Cc: Joerg Roedel <joro@8bytes.org>; jroedel@suse.de; Lendacky, Thomas
-> <Thomas.Lendacky@amd.com>; Suthikulpanit, Suravee
-> <Suravee.Suthikulpanit@amd.com>; Deucher, Alexander
-> <Alexander.Deucher@amd.com>; linux-kernel@vger.kernel.org
-> Subject: [PATCH 1/2] iommu/amd: Do not force direct mapping when SME is
-> active
-> 
-> From: Joerg Roedel <jroedel@suse.de>
-> 
-> Do not force devices supporting IOMMUv2 to be direct mapped when
-> memory encryption is active. This might cause them to be unusable because
-> their DMA mask does not include the encryption bit.
-> 
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/iommu/amd/iommu.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index ba9f3dbc5b94..77e4268e41cf 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2659,7 +2659,12 @@ static int amd_iommu_def_domain_type(struct
-> device *dev)
->  	if (!dev_data)
->  		return 0;
-> 
-> -	if (dev_data->iommu_v2)
-> +	/*
-> +	 * Do not identity map IOMMUv2 capable devices when memory
-> encryption is
-> +	 * active, because some of those devices (AMD GPUs) don't have the
-> +	 * encryption bit in their DMA-mask and require remapping.
-> +	 */
-
-I think on the integrated GPUs in APUs I'd prefer to have the identity mapping over SME, but I guess this is fine because you have to explicitly enable SME and if you do that you know what you are getting into.
-
-Alex
-
-> +	if (!mem_encrypt_active() && dev_data->iommu_v2)
->  		return IOMMU_DOMAIN_IDENTITY;
-> 
->  	return 0;
-> --
-> 2.28.0
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+W0FNRCBQdWJsaWMgVXNlXQ0KDQogKyBDaHJpc3RpYW4NCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KPiBGcm9tOiBLdWVobGluZywgRmVsaXggPEZlbGl4Lkt1ZWhsaW5nQGFtZC5jb20+
+DQo+IFNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDI2LCAyMDIwIDExOjIyIEFNDQo+IFRvOiBEZXVj
+aGVyLCBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+OyBKb2VyZyBSb2VkZWwN
+Cj4gPGpvcm9AOGJ5dGVzLm9yZz47IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBI
+dWFuZywgUmF5DQo+IDxSYXkuSHVhbmdAYW1kLmNvbT4NCj4gQ2M6IGpyb2VkZWxAc3VzZS5kZTsg
+TGVuZGFja3ksIFRob21hcyA8VGhvbWFzLkxlbmRhY2t5QGFtZC5jb20+Ow0KPiBTdXRoaWt1bHBh
+bml0LCBTdXJhdmVlIDxTdXJhdmVlLlN1dGhpa3VscGFuaXRAYW1kLmNvbT47IGxpbnV4LQ0KPiBr
+ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMC8yXSBpb21tdS9h
+bWQ6IEZpeCBJT01NVXYyIGRldmljZXMgd2hlbiBTTUUgaXMNCj4gYWN0aXZlDQo+IA0KPiBbK1Jh
+eV0NCj4gDQo+IA0KPiBUaGFua3MgZm9yIHRoZSBoZWFkcyB1cC4gQ3VycmVudGx5IEtGRCB3b24n
+dCB3b3JrIG9uIEFQVXMgd2hlbiBJT01NVXYyDQo+IGlzIGRpc2FibGVkLiBCdXQgUmF5IGlzIHdv
+cmtpbmcgb24gZmFsbGJhY2tzIHRoYXQgd2lsbCBhbGxvdyBLRkQgdG8gd29yayBvbg0KPiBBUFVz
+IGV2ZW4gd2l0aG91dCBJT01NVXYyLCBzaW1pbGFyIHRvIG91ciBkR1BVcy4gQWxvbmcgd2l0aCBj
+aGFuZ2VzIGluDQo+IFJPQ20gdXNlciBtb2RlLCB0aG9zZSBmYWxsYmFja3MgYXJlIG5lY2Vzc2Fy
+eSBmb3IgbWFraW5nIFJPQ20gb24gQVBVcw0KPiBnZW5lcmFsbHkgdXNlZnVsLg0KPiANCj4gDQo+
+IEhvdyBjb21tb24gaXMgU01FIG9uIHR5cGljYWwgUENzIG9yIGxhcHRvcHMgdGhhdCB3b3VsZCB1
+c2UgQU1EIEFQVXM/DQoNCkkgdGhpbmsgdGhlIGh3IHN1cHBvcnRzIGl0LCBidXQgaXQgYXMgZmFy
+IGFzIEkga25vdyBpdCdzIG5vdCBmb3JtYWxseSBwcm9kdWN0aXplZCBvbiBjbGllbnQgcGFydHMu
+DQoNCj4gDQo+IA0KPiBBbGV4LCBkbyB5b3Uga25vdyBpZiBhbnlvbmUgaGFzIHRlc3RlZCBhbWRn
+cHUgb24gYW4gQVBVIHdpdGggU01FDQo+IGVuYWJsZWQ/IElzIHRoaXMgY29uc2lkZXJlZCBzb21l
+dGhpbmcgd2Ugc3VwcG9ydD8NCg0KSXQncyBub3Qgc29tZXRoaW5nIHdlJ3ZlIHRlc3RlZC4gIEkn
+bSBub3QgZXZlbiBzdXJlIHRoZSBHUFUgcG9ydGlvbiBvZiBBUFVzIHdpbGwgd29yayBwcm9wZXJs
+eSB3aXRob3V0IGFuIGlkZW50aXR5IG1hcHBpbmcuICBTTUUgc2hvdWxkIHdvcmsgcHJvcGVybHkg
+d2l0aCBkR1BVcyBob3dldmVyLCBzbyB0aGlzIGlzIGEgcHJvcGVyIGZpeCBmb3IgdGhlbS4gIFdl
+IGRvbid0IHVzZSB0aGUgSU9NTVV2MiBwYXRoIG9uIGRHUFVzIGF0IGFsbC4NCg0KQWxleA0KDQo+
+IA0KPiANCj4gVGhhbmtzLA0KPiDCoCBGZWxpeA0KPiANCj4gDQo+IEFtIDIwMjAtMDgtMjYgdW0g
+MTA6MTQgYS5tLiBzY2hyaWViIERldWNoZXIsIEFsZXhhbmRlcjoNCj4gPg0KPiA+IFtBTUQgT2Zm
+aWNpYWwgVXNlIE9ubHkgLSBJbnRlcm5hbCBEaXN0cmlidXRpb24gT25seV0NCj4gPg0KPiA+DQo+
+ID4gKyBGZWxpeA0KPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiAtLQ0KPiA+ICpGcm9tOiogSm9lcmcg
+Um9lZGVsIDxqb3JvQDhieXRlcy5vcmc+DQo+ID4gKlNlbnQ6KiBNb25kYXksIEF1Z3VzdCAyNCwg
+MjAyMCA2OjU0IEFNDQo+ID4gKlRvOiogaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcN
+Cj4gPiA8aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc+DQo+ID4gKkNjOiogSm9lcmcg
+Um9lZGVsIDxqb3JvQDhieXRlcy5vcmc+OyBqcm9lZGVsQHN1c2UuZGUNCj4gPiA8anJvZWRlbEBz
+dXNlLmRlPjsgTGVuZGFja3ksIFRob21hcyA8VGhvbWFzLkxlbmRhY2t5QGFtZC5jb20+Ow0KPiA+
+IFN1dGhpa3VscGFuaXQsIFN1cmF2ZWUgPFN1cmF2ZWUuU3V0aGlrdWxwYW5pdEBhbWQuY29tPjsg
+RGV1Y2hlciwNCj4gPiBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+OyBsaW51
+eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+ID4gPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
+cmc+DQo+ID4gKlN1YmplY3Q6KiBbUEFUQ0ggMC8yXSBpb21tdS9hbWQ6IEZpeCBJT01NVXYyIGRl
+dmljZXMgd2hlbiBTTUUgaXMNCj4gPiBhY3RpdmUNCj4gPg0KPiA+IEZyb206IEpvZXJnIFJvZWRl
+bCA8anJvZWRlbEBzdXNlLmRlPg0KPiA+DQo+ID4gSGksDQo+ID4NCj4gPiBTb21lIElPTU1VdjIg
+Y2FwYWJsZSBkZXZpY2VzIGRvIG5vdCB3b3JrIGNvcnJlY3RseSB3aGVuIFNNRSBpcyBhY3RpdmUs
+DQo+ID4gYmVjYXVzZSB0aGVpciBETUEgbWFzayBkb2VzIG5vdCBpbmNsdWRlIHRoZSBlbmNyeXB0
+aW9uIGJpdCwgc28gdGhhdA0KPiA+IHRoZXkgY2FuIG5vdCBETUEgdG8gZW5jcnlwdGVkIG1lbW9y
+eSBkaXJlY3RseS4NCj4gPg0KPiA+IFRoZSBJT01NVSBjYW4ganVtcCBpbiBoZXJlLCBidXQgdGhl
+IEFNRCBJT01NVSBkcml2ZXIgcHV0cyBJT01NVXYyDQo+ID4gY2FwYWJsZSBkZXZpY2VzIGludG8g
+YW4gaWRlbnRpdHkgbWFwcGVkIGRvbWFpbi4gRml4IHRoYXQgYnkgbm90DQo+ID4gZm9yY2luZyBh
+biBpZGVudGl0eSBtYXBwZWQgZG9tYWluIG9uIGRldmljZXMgd2hlbiBTTUUgaXMgYWN0aXZlIGFu
+ZA0KPiA+IGZvcmJpZCB1c2luZyB0aGVpciBJT01NVXYyIGZ1bmN0aW9uYWxpdHkuDQo+ID4NCj4g
+PiBQbGVhc2UgcmV2aWV3Lg0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+DQo+ID4gwqDCoMKgwqDCoMKg
+wqAgSm9lcmcNCj4gPg0KPiA+IEpvZXJnIFJvZWRlbCAoMik6DQo+ID4gwqAgaW9tbXUvYW1kOiBE
+byBub3QgZm9yY2UgZGlyZWN0IG1hcHBpbmcgd2hlbiBTTUUgaXMgYWN0aXZlDQo+ID4gwqAgaW9t
+bXUvYW1kOiBEbyBub3QgdXNlIElPTU1VdjIgZnVuY3Rpb25hbGl0eSB3aGVuIFNNRSBpcyBhY3Rp
+dmUNCj4gPg0KPiA+IMKgZHJpdmVycy9pb21tdS9hbWQvaW9tbXUuY8KgwqDCoCB8IDcgKysrKysr
+LQ0KPiA+IMKgZHJpdmVycy9pb21tdS9hbWQvaW9tbXVfdjIuYyB8IDcgKysrKysrKw0KPiA+IMKg
+MiBmaWxlcyBjaGFuZ2VkLCAxMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4g
+PiAtLQ0KPiA+IDIuMjguMA0KPiA+DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
+Zm8vaW9tbXU=
