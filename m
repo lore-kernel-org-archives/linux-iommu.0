@@ -2,95 +2,91 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FCBC433E3
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2588C433E1
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1728920786
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:09:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ABCFF2080C
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="y2aaM3VT";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IBdG0MXZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1728920786
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="AHAhjrDV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABCFF2080C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0FBE7868C7;
-	Wed, 26 Aug 2020 12:09:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 94448861F1;
+	Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BLDj0abxW6nZ; Wed, 26 Aug 2020 12:09:00 +0000 (UTC)
+	with ESMTP id cium5oz1xeSP; Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 59FF384F2E;
-	Wed, 26 Aug 2020 12:09:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 931FD858DA;
+	Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4783EC016F;
-	Wed, 26 Aug 2020 12:09:00 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CB221C0891
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:08:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8CB0AC016F;
+	Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77F27C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AB451203E4
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:08:57 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 67C7A86A48
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EkX-IQW2Jg2O for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:08:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id 0352E20406
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:08:50 +0000 (UTC)
-Message-Id: <20200826112334.985197056@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1598443309;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=BMT6qDj2uBUhNhaXmY2IZfaaybCNXAgFl59YZnlPXcU=;
- b=y2aaM3VTRpFprInazgsfdsQRk1PfHKEcBEufPY5JCHo6TjB1GrAUgauLTHxn1/0tIDz5pR
- eR8f7TDSOicZrqu4MAejG2lcgOjnVXjnECCL+ZYRb1FRR6tZLz+otnfi8jTdiWsgPArHGX
- zyXyHn+KDgPQC5fAwhXvedQ6r3SPMEMBDKykGGhjcVVn4qGlyu5KXtFZDYUrPTO5A/oL6c
- /6uq8IDJLdA0LntLvunkvoZ0uigb7efs0PL4gQEtfhZDalE9u9hK/gD/vsoWqKTNHBTr/X
- U9ZHxala/5z4vdwP0/i8KfmT2rVid9ujlG1443MP7tN5TUNuCd1i9Dt5OwbwTQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1598443309;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=BMT6qDj2uBUhNhaXmY2IZfaaybCNXAgFl59YZnlPXcU=;
- b=IBdG0MXZRHj29jEIQrBByxhhiaBZGuqn44GRIBBkrL+TghYScK/n1yTADhJ7BzfxO+eqUc
- VJL3h52GlMGsf8AQ==
-Date: Wed, 26 Aug 2020 13:17:12 +0200
-From: Thomas Gleixner <tglx@linutronix.de>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 44/46] platform-msi: Add device MSI infrastructure
-References: <20200826111628.794979401@linutronix.de>
+ with ESMTP id c01xTz3l3QP3 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 12:17:44 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id AF1938650E
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:40 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1598444264; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=r/4qUAmqAI0V7gRbqKrmT3zgfbrjj739xnjXpNtJKmA=;
+ b=AHAhjrDVOLBOKFAP9fyruXKE3MrzuS68DTnsFaC2cg84Fu20UDTVvJ+/MjkS9vYD3GAT4zon
+ C9/fJdc7xonfOH+snB0W2MsSPJlWY67o+KN9tuFFIjmHs7H+EHnN5O6EFk0p+lMUb3ibvr06
+ F7sfP5HgN1WK5u5I6ZOSL8GmQPs=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 5f4652dbe64cc21df87f2fdf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Aug 2020 12:17:31
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 24441C4339C; Wed, 26 Aug 2020 12:17:31 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 5D919C433CA;
+ Wed, 26 Aug 2020 12:17:30 +0000 (UTC)
 MIME-Version: 1.0
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org,
- Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Wed, 26 Aug 2020 17:47:30 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>, Douglas Anderson
+ <dianders@chromium.org>
+Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
+ on device names
+In-Reply-To: <e3e4da33-a44f-0a07-9e2e-0f806875ab0b@arm.com>
+References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
+ <e3e4da33-a44f-0a07-9e2e-0f806875ab0b@arm.com>
+Message-ID: <d9b1f1b614057d87279c26e13cbbb1f5@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,244 +99,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
+On 2020-08-26 17:07, Robin Murphy wrote:
+> On 2020-08-25 16:42, Sai Prakash Ranjan wrote:
+>> Currently the non-strict or lazy mode of TLB invalidation can only be 
+>> set
+>> for all or no domains. This works well for development platforms where
+>> setting to non-strict/lazy mode is fine for performance reasons but on
+>> production devices, we need a more fine grained control to allow only
+>> certain peripherals to support this mode where we can be sure that it 
+>> is
+>> safe. So add support to filter non-strict/lazy mode based on the 
+>> device
+>> names that are passed via cmdline parameter "iommu.nonstrict_device".
+> 
+> There seems to be considerable overlap here with both the existing
+> patches for per-device default domain control [1], and the broader
+> ongoing development on how to define, evaluate and handle "trusted"
+> vs. "untrusted" devices (e.g. [2],[3]). I'd rather see work done to
+> make sure those integrate properly together and work well for
+> everyone's purposes, than add more disjoint mechanisms that only
+> address small pieces of the overall issue.
+> 
+> Robin.
+> 
+> [1]
+> https://lore.kernel.org/linux-iommu/20200824051726.7xaJRTTszJuzdFWGJ8YNsshCtfNR0BNeMrlILAyqt_0@z/
+> [2]
+> https://lore.kernel.org/linux-iommu/20200630044943.3425049-1-rajatja@google.com/
+> [3]
+> https://lore.kernel.org/linux-iommu/20200626002710.110200-2-rajatja@google.com/
+> 
 
-Add device specific MSI domain infrastructure for devices which have their
-own resource management and interrupt chip. These devices are not related
-to PCI and contrary to platform MSI they do not share a common resource and
-interrupt chip. They provide their own domain specific resource management
-and interrupt chip.
+Thanks for the links, [1] definitely sounds interesting, I was under the 
+impression
+that changing such via sysfs is late, but seems like other Sai has got 
+it working
+for the default domain type. So we can extend that and add a strict 
+attribute as well,
+we should be definitely OK with system booting with default strict mode 
+for all
+peripherals as long as we have an option to change that later, Doug?
 
-This utilizes the new alloc/free override in a non evil way which avoids
-having yet another set of specialized alloc/free functions. Just using
-msi_domain_alloc/free_irqs() is sufficient
+Thanks,
+Sai
 
-While initially it was suggested and tried to piggyback device MSI on
-platform MSI, the better variant is to reimplement platform MSI on top of
-device MSI.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
----
- drivers/base/platform-msi.c |  131 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/irqdomain.h   |    1 
- include/linux/msi.h         |   24 ++++++++
- kernel/irq/Kconfig          |    4 +
- 4 files changed, 160 insertions(+)
-
---- a/drivers/base/platform-msi.c
-+++ b/drivers/base/platform-msi.c
-@@ -412,3 +412,134 @@ int platform_msi_domain_alloc(struct irq
- 
- 	return err;
- }
-+
-+#ifdef CONFIG_DEVICE_MSI
-+/*
-+ * Device specific MSI domain infrastructure for devices which have their
-+ * own resource management and interrupt chip. These devices are not
-+ * related to PCI and contrary to platform MSI they do not share a common
-+ * resource and interrupt chip. They provide their own domain specific
-+ * resource management and interrupt chip.
-+ */
-+
-+static void device_msi_free_msi_entries(struct device *dev)
-+{
-+	struct list_head *msi_list = dev_to_msi_list(dev);
-+	struct msi_desc *entry, *tmp;
-+
-+	list_for_each_entry_safe(entry, tmp, msi_list, list) {
-+		list_del(&entry->list);
-+		free_msi_entry(entry);
-+	}
-+}
-+
-+/**
-+ * device_msi_free_irqs - Free MSI interrupts assigned to  a device
-+ * @dev:	Pointer to the device
-+ *
-+ * Frees the interrupt and the MSI descriptors.
-+ */
-+static void device_msi_free_irqs(struct irq_domain *domain, struct device *dev)
-+{
-+	__msi_domain_free_irqs(domain, dev);
-+	device_msi_free_msi_entries(dev);
-+}
-+
-+/**
-+ * device_msi_alloc_irqs - Allocate MSI interrupts for a device
-+ * @dev:	Pointer to the device
-+ * @nvec:	Number of vectors
-+ *
-+ * Allocates the required number of MSI descriptors and the corresponding
-+ * interrupt descriptors.
-+ */
-+static int device_msi_alloc_irqs(struct irq_domain *domain, struct device *dev, int nvec)
-+{
-+	int i, ret = -ENOMEM;
-+
-+	for (i = 0; i < nvec; i++) {
-+		struct msi_desc *entry = alloc_msi_entry(dev, 1, NULL);
-+
-+		if (!entry)
-+			goto fail;
-+		list_add_tail(&entry->list, dev_to_msi_list(dev));
-+	}
-+
-+	ret = __msi_domain_alloc_irqs(domain, dev, nvec);
-+	if (!ret)
-+		return 0;
-+fail:
-+	device_msi_free_msi_entries(dev);
-+	return ret;
-+}
-+
-+static void device_msi_update_dom_ops(struct msi_domain_info *info)
-+{
-+	if (!info->ops->domain_alloc_irqs)
-+		info->ops->domain_alloc_irqs = device_msi_alloc_irqs;
-+	if (!info->ops->domain_free_irqs)
-+		info->ops->domain_free_irqs = device_msi_free_irqs;
-+	if (!info->ops->msi_prepare)
-+		info->ops->msi_prepare = arch_msi_prepare;
-+}
-+
-+/**
-+ * device_msi_create_msi_irq_domain - Create an irq domain for devices
-+ * @fwnode:	Firmware node of the interrupt controller
-+ * @info:	MSI domain info to configure the new domain
-+ * @parent:	Parent domain
-+ */
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent)
-+{
-+	struct irq_domain *domain;
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
-+		platform_msi_update_chip_ops(info);
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_DOM_OPS)
-+		device_msi_update_dom_ops(info);
-+
-+	msi_domain_set_default_info_flags(info);
-+
-+	domain = msi_create_irq_domain(fn, info, parent);
-+	if (domain)
-+		irq_domain_update_bus_token(domain, DOMAIN_BUS_DEVICE_MSI);
-+	return domain;
-+}
-+
-+#ifdef CONFIG_PCI
-+#include <linux/pci.h>
-+
-+/**
-+ * pci_subdevice_msi_create_irq_domain - Create an irq domain for subdevices
-+ * @pdev:	Pointer to PCI device for which the subdevice domain is created
-+ * @info:	MSI domain info to configure the new domain
-+ */
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info)
-+{
-+	struct irq_domain *domain, *pdev_msi;
-+	struct fwnode_handle *fn;
-+
-+	/*
-+	 * Retrieve the MSI domain of the underlying PCI device's MSI
-+	 * domain. The PCI device domain's parent domain is also the parent
-+	 * domain of the new subdevice domain.
-+	 */
-+	pdev_msi = dev_get_msi_domain(&pdev->dev);
-+	if (!pdev_msi)
-+		return NULL;
-+
-+	fn = irq_domain_alloc_named_fwnode(dev_name(&pdev->dev));
-+	if (!fn)
-+		return NULL;
-+	domain = device_msi_create_irq_domain(fn, info, pdev_msi->parent);
-+	if (!domain)
-+		irq_domain_free_fwnode(fn);
-+	return domain;
-+}
-+EXPORT_SYMBOL_GPL(pci_subdevice_msi_create_irq_domain);
-+#endif /* CONFIG_PCI */
-+#endif /* CONFIG_DEVICE_MSI */
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -85,6 +85,7 @@ enum irq_domain_bus_token {
- 	DOMAIN_BUS_TI_SCI_INTA_MSI,
- 	DOMAIN_BUS_WAKEUP,
- 	DOMAIN_BUS_VMD_MSI,
-+	DOMAIN_BUS_DEVICE_MSI,
- };
- 
- /**
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -56,6 +56,18 @@ struct ti_sci_inta_msi_desc {
- };
- 
- /**
-+ * device_msi_desc - Device MSI specific MSI descriptor data
-+ * @priv:		Pointer to device specific private data
-+ * @priv_iomem:		Pointer to device specific private io memory
-+ * @hwirq:		The hardware irq number in the device domain
-+ */
-+struct device_msi_desc {
-+	void		*priv;
-+	void __iomem	*priv_iomem;
-+	u16		hwirq;
-+};
-+
-+/**
-  * struct msi_desc - Descriptor structure for MSI based interrupts
-  * @list:	List head for management
-  * @irq:	The base interrupt number
-@@ -127,6 +139,7 @@ struct msi_desc {
- 		struct platform_msi_desc platform;
- 		struct fsl_mc_msi_desc fsl_mc;
- 		struct ti_sci_inta_msi_desc inta;
-+		struct device_msi_desc device_msi;
- 	};
- };
- 
-@@ -413,6 +426,17 @@ void *platform_msi_get_host_data(struct
- void msi_domain_set_default_info_flags(struct msi_domain_info *info);
- #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
- 
-+#ifdef CONFIG_DEVICE_MSI
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent);
-+
-+# ifdef CONFIG_PCI
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info);
-+# endif
-+#endif /* CONFIG_DEVICE_MSI */
-+
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
- void pci_msi_domain_write_msg(struct irq_data *irq_data, struct msi_msg *msg);
- struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -93,6 +93,10 @@ config GENERIC_MSI_IRQ_DOMAIN
- 	select IRQ_DOMAIN_HIERARCHY
- 	select GENERIC_MSI_IRQ
- 
-+config DEVICE_MSI
-+	bool
-+	select GENERIC_MSI_IRQ_DOMAIN
-+
- config IRQ_MSI_IOMMU
- 	bool
- 
-
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
