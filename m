@@ -6,87 +6,102 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2588C433E1
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1913CC433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:26:32 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ABCFF2080C
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CF06C214F1
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 13:26:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="AHAhjrDV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABCFF2080C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iTWsgNyO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF06C214F1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 94448861F1;
-	Wed, 26 Aug 2020 12:17:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9877087BBF;
+	Wed, 26 Aug 2020 13:26:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cium5oz1xeSP; Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
+	with ESMTP id btxv8eWxb6Y0; Wed, 26 Aug 2020 13:26:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 931FD858DA;
-	Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F0D4D87916;
+	Wed, 26 Aug 2020 13:26:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8CB0AC016F;
-	Wed, 26 Aug 2020 12:17:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 77F27C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6BA9C07FF;
+	Wed, 26 Aug 2020 13:26:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8019C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:26:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 67C7A86A48
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8F7A6203C9
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:26:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c01xTz3l3QP3 for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:17:44 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by whitealder.osuosl.org (Postfix) with ESMTPS id AF1938650E
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:17:40 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1598444264; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=r/4qUAmqAI0V7gRbqKrmT3zgfbrjj739xnjXpNtJKmA=;
- b=AHAhjrDVOLBOKFAP9fyruXKE3MrzuS68DTnsFaC2cg84Fu20UDTVvJ+/MjkS9vYD3GAT4zon
- C9/fJdc7xonfOH+snB0W2MsSPJlWY67o+KN9tuFFIjmHs7H+EHnN5O6EFk0p+lMUb3ibvr06
- F7sfP5HgN1WK5u5I6ZOSL8GmQPs=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5f4652dbe64cc21df87f2fdf (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Aug 2020 12:17:31
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 24441C4339C; Wed, 26 Aug 2020 12:17:31 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 5D919C433CA;
- Wed, 26 Aug 2020 12:17:30 +0000 (UTC)
+ with ESMTP id 8gM8Ft5vrABy for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 13:26:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by silver.osuosl.org (Postfix) with ESMTPS id 79125203AA
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 13:26:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1598448387;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=MkzQ6QG6I3q9nGpvzTY0xeeHjgqsvGJlxwUyvGFDZ+4=;
+ b=iTWsgNyOACqcCH9DnQgv/Jt567GaYxfBx2Xr92qdYiHhaZN00FQn1Js8Bga6DgnAjrCcFG
+ HMQuQRvqazoY5ZkDG/pH8FQAQFJ//jCsJAP+2PX0n6odZLeX48fvSCNBN2F2xMDFoym5YU
+ qMBTzIuDGw+W4QixXTpB/uhAQ7+6qrs=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-428-0a4RpfqXMruGxzheWruI4A-1; Wed, 26 Aug 2020 09:26:21 -0400
+X-MC-Unique: 0a4RpfqXMruGxzheWruI4A-1
+Received: by mail-wm1-f72.google.com with SMTP id g79so880470wmg.0
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 06:26:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=MkzQ6QG6I3q9nGpvzTY0xeeHjgqsvGJlxwUyvGFDZ+4=;
+ b=JlFkBRXy1Mw1tTUx0tDH64s3IrZkZ9xes9DnLwEl54vtCYiu6f4ASMBAkS/qjlpi9c
+ h5yEd+SsQr6Pi/TmTz14Xtq5kzQd6A6EiHMTdOtwUEgVcqZo8hb/hBQkaT+UmIHVMpQv
+ g2+tcj26akmBuBa0jSC9dJStgfIpHj851CrCkgKVOpTVvybaoreTd4vME//qUw/3AXUr
+ h/ysu2Fc5nae+lqz+r/Dm0DFerGEcd5nkJq5Nexb2xljQrxHT99MaRpP4ws11wsPWQxA
+ OGwsPyKuUX9rf4K1zu5Ec3e37l2tyUDvsRzxW8lv4JOeL9v2cbiZG5kawGi67u21zfmb
+ QLvQ==
+X-Gm-Message-State: AOAM530J6J0RJVLCiLqtQI269iu55u0OqF6K5FsgnPKxQXZjZ3FtqyTj
+ 5PyvFDu2t8wDq3XwliML/Nk8BERL7vZNhLP6pMr20HxkQXGBVpsvMMi+Q4iirQwfodU1AH5bN+a
+ YfMYPHc+YDXCY/svIgrkFF+dAFHQoCw==
+X-Received: by 2002:a7b:cc0b:: with SMTP id f11mr7456526wmh.31.1598448379770; 
+ Wed, 26 Aug 2020 06:26:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwi9aZpSBzDPZ4YhRao8GK4t0yYAUzHdvj2YCsqb1ChjyiMN53z1cQZmWVo7qm7qMPKOLNWDA==
+X-Received: by 2002:a7b:cc0b:: with SMTP id f11mr7456493wmh.31.1598448379478; 
+ Wed, 26 Aug 2020 06:26:19 -0700 (PDT)
+Received: from redhat.com ([192.117.173.58])
+ by smtp.gmail.com with ESMTPSA id v7sm8462813wma.1.2020.08.26.06.26.10
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 26 Aug 2020 06:26:18 -0700 (PDT)
+Date: Wed, 26 Aug 2020 09:26:02 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
+Message-ID: <20200826092542-mutt-send-email-mst@kernel.org>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Date: Wed, 26 Aug 2020 17:47:30 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>, Douglas Anderson
- <dianders@chromium.org>
-Subject: Re: [PATCH] iommu: Add support to filter non-strict/lazy mode based
- on device names
-In-Reply-To: <e3e4da33-a44f-0a07-9e2e-0f806875ab0b@arm.com>
-References: <20200825154249.20011-1-saiprakash.ranjan@codeaurora.org>
- <e3e4da33-a44f-0a07-9e2e-0f806875ab0b@arm.com>
-Message-ID: <d9b1f1b614057d87279c26e13cbbb1f5@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200821131540.2801801-1-jean-philippe@linaro.org>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
+X-Mimecast-Spam-Score: 0.002
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
+ linux-pci@vger.kernel.org, jasowang@redhat.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, bhelgaas@google.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,59 +114,80 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-08-26 17:07, Robin Murphy wrote:
-> On 2020-08-25 16:42, Sai Prakash Ranjan wrote:
->> Currently the non-strict or lazy mode of TLB invalidation can only be 
->> set
->> for all or no domains. This works well for development platforms where
->> setting to non-strict/lazy mode is fine for performance reasons but on
->> production devices, we need a more fine grained control to allow only
->> certain peripherals to support this mode where we can be sure that it 
->> is
->> safe. So add support to filter non-strict/lazy mode based on the 
->> device
->> names that are passed via cmdline parameter "iommu.nonstrict_device".
+On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
+> Add a topology description to the virtio-iommu driver and enable x86
+> platforms.
 > 
-> There seems to be considerable overlap here with both the existing
-> patches for per-device default domain control [1], and the broader
-> ongoing development on how to define, evaluate and handle "trusted"
-> vs. "untrusted" devices (e.g. [2],[3]). I'd rather see work done to
-> make sure those integrate properly together and work well for
-> everyone's purposes, than add more disjoint mechanisms that only
-> address small pieces of the overall issue.
-> 
-> Robin.
-> 
-> [1]
-> https://lore.kernel.org/linux-iommu/20200824051726.7xaJRTTszJuzdFWGJ8YNsshCtfNR0BNeMrlILAyqt_0@z/
-> [2]
-> https://lore.kernel.org/linux-iommu/20200630044943.3425049-1-rajatja@google.com/
-> [3]
-> https://lore.kernel.org/linux-iommu/20200626002710.110200-2-rajatja@google.com/
-> 
+> Since [v2] we have made some progress on adding ACPI support for
+> virtio-iommu, which is the preferred boot method on x86. It will be a
+> new vendor-agnostic table describing para-virtual topologies in a
+> minimal format. However some platforms don't use either ACPI or DT for
+> booting (for example microvm), and will need the alternative topology
+> description method proposed here. In addition, since the process to get
+> a new ACPI table will take a long time, this provides a boot method even
+> to ACPI-based platforms, if only temporarily for testing and
+> development.
 
-Thanks for the links, [1] definitely sounds interesting, I was under the 
-impression
-that changing such via sysfs is late, but seems like other Sai has got 
-it working
-for the default domain type. So we can extend that and add a strict 
-attribute as well,
-we should be definitely OK with system booting with default strict mode 
-for all
-peripherals as long as we have an option to change that later, Doug?
+OK should I park this in next now? Seems appropriate ...
 
-Thanks,
-Sai
+> v3:
+> * Add patch 1 that moves virtio-iommu to a subfolder.
+> * Split the rest:
+>   * Patch 2 adds topology-helper.c, which will be shared with the ACPI
+>     support.
+>   * Patch 4 adds definitions.
+>   * Patch 5 adds parser in topology.c.
+> * Address other comments.
+> 
+> Linux and QEMU patches available at:
+> https://jpbrucker.net/git/linux virtio-iommu/devel
+> https://jpbrucker.net/git/qemu virtio-iommu/devel
+> 
+> [spec] https://lists.oasis-open.org/archives/virtio-dev/202008/msg00067.html
+> [v2] https://lore.kernel.org/linux-iommu/20200228172537.377327-1-jean-philippe@linaro.org/
+> [v1] https://lore.kernel.org/linux-iommu/20200214160413.1475396-1-jean-philippe@linaro.org/
+> [rfc] https://lore.kernel.org/linux-iommu/20191122105000.800410-1-jean-philippe@linaro.org/
+> 
+> Jean-Philippe Brucker (6):
+>   iommu/virtio: Move to drivers/iommu/virtio/
+>   iommu/virtio: Add topology helpers
+>   PCI: Add DMA configuration for virtual platforms
+>   iommu/virtio: Add topology definitions
+>   iommu/virtio: Support topology description in config space
+>   iommu/virtio: Enable x86 support
+> 
+>  drivers/iommu/Kconfig                     |  18 +-
+>  drivers/iommu/Makefile                    |   3 +-
+>  drivers/iommu/virtio/Makefile             |   4 +
+>  drivers/iommu/virtio/topology-helpers.h   |  50 +++++
+>  include/linux/virt_iommu.h                |  15 ++
+>  include/uapi/linux/virtio_iommu.h         |  44 ++++
+>  drivers/iommu/virtio/topology-helpers.c   | 196 ++++++++++++++++
+>  drivers/iommu/virtio/topology.c           | 259 ++++++++++++++++++++++
+>  drivers/iommu/{ => virtio}/virtio-iommu.c |   4 +
+>  drivers/pci/pci-driver.c                  |   5 +
+>  MAINTAINERS                               |   3 +-
+>  11 files changed, 597 insertions(+), 4 deletions(-)
+>  create mode 100644 drivers/iommu/virtio/Makefile
+>  create mode 100644 drivers/iommu/virtio/topology-helpers.h
+>  create mode 100644 include/linux/virt_iommu.h
+>  create mode 100644 drivers/iommu/virtio/topology-helpers.c
+>  create mode 100644 drivers/iommu/virtio/topology.c
+>  rename drivers/iommu/{ => virtio}/virtio-iommu.c (99%)
+> 
+> -- 
+> 2.28.0
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
