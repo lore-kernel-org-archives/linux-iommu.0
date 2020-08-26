@@ -6,71 +6,71 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB0AC433E3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3082C433E1
 	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31DCC20786
+	by mail.kernel.org (Postfix) with ESMTPS id 781B920838
 	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="15vzrh+W";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="kD7LSBOG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31DCC20786
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="KU244bnL";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="L0z/1eeN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 781B920838
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1EDF686FAD;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 65DFF87EB0;
 	Wed, 26 Aug 2020 12:01:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6JGuc7+q2FKe; Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
+	with ESMTP id Tdbw7zpg6pa4; Wed, 26 Aug 2020 12:01:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9D18E87009;
+	by hemlock.osuosl.org (Postfix) with ESMTP id F0D25880A1;
 	Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 974ECC088B;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8793C0891;
 	Wed, 26 Aug 2020 12:01:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53848C0051
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DFF4BC088B
  for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 306F586936
+ by silver.osuosl.org (Postfix) with ESMTP id B7DD5228DB
  for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6Pklwh2kRMfo for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 12:01:41 +0000 (UTC)
+ with ESMTP id FcaRQRNTR3uT for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 12:01:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A7B5F86A10
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:40 +0000 (UTC)
-Message-Id: <20200826112334.086003720@linutronix.de>
+ by silver.osuosl.org (Postfix) with ESMTPS id 8B70A228DF
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 12:01:23 +0000 (UTC)
+Message-Id: <20200826112332.767707340@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1598443298;
+ s=2020; t=1598443281;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=4GR30s5GgYbrNACLVjkL2Z4Vc3S8YRxhz8JprbkQ4/Q=;
- b=15vzrh+WEt/YNZOsozwZ+WvaE0KRfmdkhA6KFC+jQ577UxrHhrtciftZ2WN553VbQ7FbrN
- nxh/mQXcDb42ecdHwTgxAxp/rVdziiFKVIlqPDDDmhA8wcipnzpgcAy9YX31cElht5snPh
- aRe8AL/ngpPV/0D6Gcvrm9OAh8W8OUeFGBdTh59wOMgelq9vBfUd1pV769vuqbRPcVUwvc
- iWO/jJU+1PKpMQ65WwaKFIRX/4fbahxl8EHUOErEg/LhtqzshmKPdjLuyHJdjBfekPfehw
- sAbS5Ei1NWTirGg3JVgec2tphKQAaviPw68KaXjf76/TOdCoZ+q+MgjrOTzDlA==
+ bh=dYN9jX79rKIWQfhP8dq1fK8m0T2bDgxKsf6OxKJhURs=;
+ b=KU244bnLCRTLggIkAhPoRrnNk4ecCLY5jSzkQr6tLrIl0Rk53IfMfXlDPNJwZMmLCFLGkD
+ FowqqLBIyHL7DDqMUmJGrs0bDiR0AEPQmJOlKQbIc6jWLyGSXeSScT/iGGqH3nE1lbwVJh
+ hDGEwBiQjs58m5lMA87cVjCA60Mx4YpaQoRKiP1/+tFJpURnzokJJNJm41O7i4z82WEpGq
+ mrTXb25RBx4IIwRjyNMumY46rKZFYwBOnn6FEiCJGF+9CJUHRlIIjM3XetbKQy3rPyH5W5
+ 0oxvv87MCFdKOtE+q8tpyYW13CiWVcS8XxQGqRrfVTeqS/G6WRa8DXIZoOu31Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1598443298;
+ s=2020e; t=1598443281;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:  references:references;
- bh=4GR30s5GgYbrNACLVjkL2Z4Vc3S8YRxhz8JprbkQ4/Q=;
- b=kD7LSBOGP377ptxMy8QUsT8p4tGWKTXIjr5euUh4DjI5Nu9+rSEdclDD/RedRs6uVRrjoi
- q5eGzh+h+HBqKyAQ==
-Date: Wed, 26 Aug 2020 13:17:03 +0200
+ bh=dYN9jX79rKIWQfhP8dq1fK8m0T2bDgxKsf6OxKJhURs=;
+ b=L0z/1eeNvfqCZHeoL4JEuN1YMBW1Iiw6iNV20WAqkSdplzffASpgi2hZ4NMQTB/x3w87bA
+ czWHTCA8dXDh6gAw==
+Date: Wed, 26 Aug 2020 13:16:49 +0200
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 35/46] x86/irq: Cleanup the arch_*_msi_irqs() leftovers
+Subject: [patch V2 21/46] x86/pci: Reducde #ifdeffery in PCI init code
 References: <20200826111628.794979401@linutronix.de>
 MIME-Version: 1.0
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
@@ -110,149 +110,79 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Get rid of all the gunk and remove the 'select PCI_MSI_ARCH_FALLBACK' from
-the x86 Kconfig so the weak functions in the PCI core are replaced by stubs
-which emit a warning, which ensures that any fail to set the irq domain
-pointer results in a warning when the device is used.
+Adding a function call before the first #ifdef in arch_pci_init() triggers
+a 'mixed declarations and code' warning if PCI_DIRECT is enabled.
+
+Use stub functions and move the #ifdeffery to the header file where it is
+not in the way.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
-V2: Adjust to the PCI_MSI_ARCH_FALLBACK change, i.e. remove it instead
-    of selecting the disabler.
----
- arch/x86/Kconfig                |    1 -
- arch/x86/include/asm/pci.h      |   11 -----------
- arch/x86/include/asm/x86_init.h |    1 -
- arch/x86/kernel/apic/msi.c      |   22 ----------------------
- arch/x86/kernel/x86_init.c      |   18 ------------------
- arch/x86/pci/xen.c              |    7 -------
- 6 files changed, 60 deletions(-)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -225,7 +225,6 @@ config X86
- 	select NEED_SG_DMA_LENGTH
- 	select PCI_DOMAINS			if PCI
- 	select PCI_LOCKLESS_CONFIG		if PCI
--	select PCI_MSI_ARCH_FALLBACKS
- 	select PERF_EVENTS
- 	select RTC_LIB
- 	select RTC_MC146818_LIB
---- a/arch/x86/include/asm/pci.h
-+++ b/arch/x86/include/asm/pci.h
-@@ -105,17 +105,6 @@ static inline void early_quirks(void) {
+---
+ arch/x86/include/asm/pci_x86.h |   11 +++++++++++
+ arch/x86/pci/init.c            |   10 +++-------
+ 2 files changed, 14 insertions(+), 7 deletions(-)
+
+--- a/arch/x86/include/asm/pci_x86.h
++++ b/arch/x86/include/asm/pci_x86.h
+@@ -114,9 +114,20 @@ extern const struct pci_raw_ops pci_dire
+ extern bool port_cf9_safe;
  
- extern void pci_iommu_alloc(void);
+ /* arch_initcall level */
++#ifdef CONFIG_PCI_DIRECT
+ extern int pci_direct_probe(void);
+ extern void pci_direct_init(int type);
++#else
++static inline int pci_direct_probe(void) { return -1; }
++static inline  void pci_direct_init(int type) { }
++#endif
++
++#ifdef CONFIG_PCI_BIOS
+ extern void pci_pcbios_init(void);
++#else
++static inline void pci_pcbios_init(void) { }
++#endif
++
+ extern void __init dmi_check_pciprobe(void);
+ extern void __init dmi_check_skip_isa_align(void);
  
--#ifdef CONFIG_PCI_MSI
--/* implemented in arch/x86/kernel/apic/io_apic. */
--struct msi_desc;
--int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
--void native_teardown_msi_irq(unsigned int irq);
--void native_restore_msi_irqs(struct pci_dev *dev);
--#else
--#define native_setup_msi_irqs		NULL
--#define native_teardown_msi_irq		NULL
+--- a/arch/x86/pci/init.c
++++ b/arch/x86/pci/init.c
+@@ -8,11 +8,9 @@
+    in the right sequence from here. */
+ static __init int pci_arch_init(void)
+ {
+-#ifdef CONFIG_PCI_DIRECT
+-	int type = 0;
++	int type;
+ 
+ 	type = pci_direct_probe();
 -#endif
--
- /* generic pci stuff */
- #include <asm-generic/pci.h>
  
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -277,7 +277,6 @@ struct pci_dev;
+ 	if (!(pci_probe & PCI_PROBE_NOEARLY))
+ 		pci_mmcfg_early_init();
+@@ -20,18 +18,16 @@ static __init int pci_arch_init(void)
+ 	if (x86_init.pci.arch_init && !x86_init.pci.arch_init())
+ 		return 0;
  
- struct x86_msi_ops {
- 	int (*setup_msi_irqs)(struct pci_dev *dev, int nvec, int type);
--	void (*teardown_msi_irq)(unsigned int irq);
- 	void (*teardown_msi_irqs)(struct pci_dev *dev);
- 	void (*restore_msi_irqs)(struct pci_dev *dev);
- };
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -182,28 +182,6 @@ static struct irq_chip pci_msi_controlle
- 	.flags			= IRQCHIP_SKIP_SET_WAKE,
- };
- 
--int native_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
--{
--	struct irq_domain *domain;
--	struct irq_alloc_info info;
--
--	init_irq_alloc_info(&info, NULL);
--	info.type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
--
--	domain = irq_remapping_get_irq_domain(&info);
--	if (domain == NULL)
--		domain = x86_pci_msi_default_domain;
--	if (domain == NULL)
--		return -ENOSYS;
--
--	return msi_domain_alloc_irqs(domain, &dev->dev, nvec);
--}
--
--void native_teardown_msi_irq(unsigned int irq)
--{
--	irq_domain_free_irqs(irq, 1);
--}
--
- int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
- 		    msi_alloc_info_t *arg)
- {
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -146,28 +146,10 @@ EXPORT_SYMBOL_GPL(x86_platform);
- 
- #if defined(CONFIG_PCI_MSI)
- struct x86_msi_ops x86_msi __ro_after_init = {
--	.setup_msi_irqs		= native_setup_msi_irqs,
--	.teardown_msi_irq	= native_teardown_msi_irq,
--	.teardown_msi_irqs	= default_teardown_msi_irqs,
- 	.restore_msi_irqs	= default_restore_msi_irqs,
- };
- 
- /* MSI arch specific hooks */
--int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
--{
--	return x86_msi.setup_msi_irqs(dev, nvec, type);
--}
--
--void arch_teardown_msi_irqs(struct pci_dev *dev)
--{
--	x86_msi.teardown_msi_irqs(dev);
--}
--
--void arch_teardown_msi_irq(unsigned int irq)
--{
--	x86_msi.teardown_msi_irq(irq);
--}
--
- void arch_restore_msi_irqs(struct pci_dev *dev)
- {
- 	x86_msi.restore_msi_irqs(dev);
---- a/arch/x86/pci/xen.c
-+++ b/arch/x86/pci/xen.c
-@@ -402,11 +402,6 @@ static void xen_pv_teardown_msi_irqs(str
- 	xen_teardown_msi_irqs(dev);
- }
- 
--static void xen_teardown_msi_irq(unsigned int irq)
--{
--	WARN_ON_ONCE(1);
--}
--
- static int xen_msi_domain_alloc_irqs(struct irq_domain *domain,
- 				     struct device *dev,  int nvec)
- {
-@@ -483,8 +478,6 @@ static __init void xen_setup_pci_msi(voi
- 		return;
- 	}
- 
--	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
--
+-#ifdef CONFIG_PCI_BIOS
+ 	pci_pcbios_init();
+-#endif
++
  	/*
- 	 * Override the PCI/MSI irq domain init function. No point
- 	 * in allocating the native domain and never use it.
+ 	 * don't check for raw_pci_ops here because we want pcbios as last
+ 	 * fallback, yet it's needed to run first to set pcibios_last_bus
+ 	 * in case legacy PCI probing is used. otherwise detecting peer busses
+ 	 * fails.
+ 	 */
+-#ifdef CONFIG_PCI_DIRECT
+ 	pci_direct_init(type);
+-#endif
++
+ 	if (!raw_pci_ops && !raw_pci_ext_ops)
+ 		printk(KERN_ERR
+ 		"PCI: Fatal: No config space access function found\n");
+
 
 _______________________________________________
 iommu mailing list
