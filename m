@@ -2,105 +2,87 @@ Return-Path: <SRS0=L2Qy=CE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 576D2C433E1
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:47:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7EAC433DF
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:50:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1DF0A2078D
-	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:47:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3B3BA2078D
+	for <iommu@archiver.kernel.org>; Wed, 26 Aug 2020 20:50:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZQ8obdSC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DF0A2078D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="s4YbUFCt";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="aS6JntOD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B3BA2078D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0129386B10;
-	Wed, 26 Aug 2020 20:47:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EA9E18829B;
+	Wed, 26 Aug 2020 20:50:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JF4igqFDh4RN; Wed, 26 Aug 2020 20:50:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0C315882B0;
+	Wed, 26 Aug 2020 20:50:44 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D732FC016F;
+	Wed, 26 Aug 2020 20:50:43 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 63DA0C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:50:42 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 51E3A86ACE
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:50:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3JEzCrJVTaJx; Wed, 26 Aug 2020 20:47:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8C70786A70;
-	Wed, 26 Aug 2020 20:47:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A3E1C016F;
-	Wed, 26 Aug 2020 20:47:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04CC9C0051
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:47:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CEC17228E8
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:47:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cv31IbkE6S-W for <iommu@lists.linux-foundation.org>;
- Wed, 26 Aug 2020 20:47:50 +0000 (UTC)
+ with ESMTP id GD6VqtzipBck for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Aug 2020 20:50:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A819E228CA
- for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:47:50 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 3E4FD2078A;
- Wed, 26 Aug 2020 20:47:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1598474870;
- bh=i8Nzg2oejYholt+EiwM1o/VjUvfdhq04DttU2sfhjNU=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=ZQ8obdSCSBUqtvuKshu3hHdexmJgOE2MHg4ZG2kHAAH1QoTRT//POD+SQxMFAixM9
- 5sAVsrqgoulIwzX0JrKCEJkKdy0k0eRUp2IEH/3NDSF7/HMaVHW+UJxUCeM64EWpfl
- bkl0TcDNFWpsJTHJjuy5rUu7QMbtbeuxim3T/L/A=
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=wait-a-minute.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa
- (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
- (envelope-from <maz@kernel.org>)
- id 1kB2Ki-006yOu-Ey; Wed, 26 Aug 2020 21:47:48 +0100
-Date: Wed, 26 Aug 2020 21:47:46 +0100
-Message-ID: <874kop2ky5.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 24/46] PCI: vmd: Mark VMD irqdomain with
- DOMAIN_BUS_VMD_MSI
-In-Reply-To: <20200826112333.047315047@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A93EA8073A
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Aug 2020 20:50:17 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1598475014;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=JG/TkMq9NWC6OfHgPC/IbFpW4xr9Kt9L0ix/14aZbxc=;
+ b=s4YbUFCtbJEMrLqgKd7OwtYh18vHyM4HfQLj0mVtwmVQVO9mPe+rbcu9/9RQcu7BDqxIXq
+ 4SC8x5F55ReokeL0LN8UUQFD5m3BjRCcVnOHVA++cJ3n9iGLghzLvQHLb6sr4Opghelyw7
+ wtiHRsopz/7aQ7mxdNa4ubr9zMjw6kUfb9G723x0mquWT/8sbYu95BnkyTknE0X6c2XJfj
+ G2IbL55VnbnoeT093T8n8BdlC4i9HNmIpjyrPxF0OWHJtvkDyBhZ80We7p7G5tVUd/JFYJ
+ lndw1zv+U67ElbvOK78N7X9qxyNKvPXDl0P5nwVk071fVAGS++QK4AuCw0xoVg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1598475014;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=JG/TkMq9NWC6OfHgPC/IbFpW4xr9Kt9L0ix/14aZbxc=;
+ b=aS6JntODH9ZvZZJHE2vQuw6G8LnzzNi8bSa6D1XA+HMxu+eOePiLVi0SGkTN8Uz37jCbMJ
+ TOeuyIqSX/IO5mCA==
+To: "Dey\, Megha" <megha.dey@intel.com>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [patch V2 15/46] x86/irq: Consolidate DMAR irq allocation
+In-Reply-To: <878se1uulb.fsf@nanos.tec.linutronix.de>
 References: <20200826111628.794979401@linutronix.de>
- <20200826112333.047315047@linutronix.de>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, linux-kernel@vger.kernel.org,
- x86@kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org,
- linux-hyperv@vger.kernel.org, haiyangz@microsoft.com,
- jonathan.derrick@intel.com, baolu.lu@linux.intel.com, wei.liu@kernel.org,
- kys@microsoft.com, sthemmin@microsoft.com, steve.wahl@hpe.com,
- sivanich@hpe.com, rja@hpe.com, linux-pci@vger.kernel.org, bhelgaas@google.com,
- lorenzo.pieralisi@arm.com, konrad.wilk@oracle.com,
- xen-devel@lists.xenproject.org, jgross@suse.com, boris.ostrovsky@oracle.com,
- sstabellini@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
- megha.dey@intel.com, jgg@mellanox.com, dave.jiang@intel.com,
- alex.williamson@redhat.com, jacob.jun.pan@intel.com, baolu.lu@intel.com,
- kevin.tian@intel.com, dan.j.williams@intel.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
+ <20200826112332.163462706@linutronix.de>
+ <812d9647-ad2e-95e9-aa99-b54ff7ebc52d@intel.com>
+ <878se1uulb.fsf@nanos.tec.linutronix.de>
+Date: Wed, 26 Aug 2020 22:50:13 +0200
+Message-ID: <87r1rtt9mi.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
 Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- x86@kernel.org, Jason Gunthorpe <jgg@mellanox.com>,
- Megha Dey <megha.dey@intel.com>, xen-devel@lists.xenproject.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org, "K. Y.
+ Srinivasan" <kys@microsoft.com>, Dan Williams <dan.j.williams@intel.com>,
+ Wei Liu <wei.liu@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>,
+ Baolu Lu <baolu.lu@intel.com>, Marc Zyngier <maz@kernel.org>, x86@kernel.org,
+ Jason Gunthorpe <jgg@mellanox.com>, xen-devel@lists.xenproject.org,
  Kevin Tian <kevin.tian@intel.com>,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
  Haiyang Zhang <haiyangz@microsoft.com>,
@@ -110,8 +92,8 @@ Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
  Boris Ostrovsky <boris.ostrovsky@oracle.com>,
  Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
  Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+ iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,46 +111,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 26 Aug 2020 12:16:52 +0100,
-Thomas Gleixner <tglx@linutronix.de> wrote:
-> 
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Devices on the VMD bus use their own MSI irq domain, but it is not
-> distinguishable from regular PCI/MSI irq domains. This is required
-> to exclude VMD devices from getting the irq domain pointer set by
-> interrupt remapping.
-> 
-> Override the default bus token.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> ---
->  drivers/pci/controller/vmd.c |    6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> --- a/drivers/pci/controller/vmd.c
-> +++ b/drivers/pci/controller/vmd.c
-> @@ -579,6 +579,12 @@ static int vmd_enable_domain(struct vmd_
->  		return -ENODEV;
->  	}
->  
-> +	/*
-> +	 * Override the irq domain bus token so the domain can be distinguished
-> +	 * from a regular PCI/MSI domain.
-> +	 */
-> +	irq_domain_update_bus_token(vmd->irq_domain, DOMAIN_BUS_VMD_MSI);
-> +
+On Wed, Aug 26 2020 at 20:32, Thomas Gleixner wrote:
+> On Wed, Aug 26 2020 at 09:50, Megha Dey wrote:
+>>> @@ -329,15 +329,15 @@ static struct irq_chip dmar_msi_controll
+>>>   static irq_hw_number_t dmar_msi_get_hwirq(struct msi_domain_info *info,
+>>>   					  msi_alloc_info_t *arg)
+>>>   {
+>>> -	return arg->dmar_id;
+>>> +	return arg->hwirq;
+>>
+>> Shouldn't this return the arg->devid which gets set in dmar_alloc_hwirq?
+>
+> Indeed.
 
-One day, we'll be able to set the token at domain creation time. In
-the meantime,
-
-Acked-by: Marc Zyngier <maz@kernel.org>
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+But for simplicity we can set arg->hwirq to the dmar id right in the
+alloc function and then once the generic ops are enabled remove the dmar
+callback completely.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
