@@ -7,57 +7,57 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B953C433E3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B35C433E1
 	for <iommu@archiver.kernel.org>; Thu, 27 Aug 2020 15:07:11 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A7D422B40
+	by mail.kernel.org (Postfix) with ESMTPS id 7522F22B40
 	for <iommu@archiver.kernel.org>; Thu, 27 Aug 2020 15:07:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A7D422B40
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7522F22B40
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D9128884CE;
-	Thu, 27 Aug 2020 15:07:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 424C1876F7;
+	Thu, 27 Aug 2020 15:07:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MaCfnXG98o-b; Thu, 27 Aug 2020 15:07:10 +0000 (UTC)
+	with ESMTP id j+rkd5U7Bqdy; Thu, 27 Aug 2020 15:07:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 06D5A8848A;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 20B0086ACB;
 	Thu, 27 Aug 2020 15:07:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7FDEC016F;
-	Thu, 27 Aug 2020 15:07:09 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7D486C0895
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19D35C089E;
+	Thu, 27 Aug 2020 15:07:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94928C089F
  for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 15:07:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 61C83203B4
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7256186A70
  for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 15:07:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wOvwXzO1spcZ for <iommu@lists.linux-foundation.org>;
+ with ESMTP id IdkOxKCUNXsR for <iommu@lists.linux-foundation.org>;
  Thu, 27 Aug 2020 15:07:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by silver.osuosl.org (Postfix) with ESMTPS id 964712046D
- for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 15:07:01 +0000 (UTC)
-IronPort-SDR: uSTpuj5/keJag6kBQoFeLHX5tugpC2MRsPGizLVHWz6dag7GQ/c7k/OxJkBAd/6r/g3nrKMuyr
- b6i0IPb1Ez3A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="144175675"
-X-IronPort-AV: E=Sophos;i="5.76,359,1592895600"; d="scan'208";a="144175675"
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0CA8B86A0B
+ for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 15:07:02 +0000 (UTC)
+IronPort-SDR: uTu6TSeZfeIW+/bhtVXqYd46j5x1Ed/hyJ8GGQ6NyAfroUYdc40AGDyydHfyypUHmrQ5ztnTVJ
+ TS1H1zWvCOMQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="144175680"
+X-IronPort-AV: E=Sophos;i="5.76,359,1592895600"; d="scan'208";a="144175680"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Aug 2020 08:06:59 -0700
-IronPort-SDR: cBn9q+apgifhi7UBQchXs6FzM3elcYrPqkxT2b34od0wtClNftbfc+4Zvhmy+vXkowapOZoE8V
- kho6CcuYV6fw==
+ 27 Aug 2020 08:07:00 -0700
+IronPort-SDR: +1+O5UfDHpxkIOlRIBMNamw/8Uio4LOdowYo9WZF0Lq5OYp1P4krhKcsyf6jDUk/4IFhmCibqT
+ S+JI6VcL3/9g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,359,1592895600"; d="scan'208";a="332212855"
+X-IronPort-AV: E=Sophos;i="5.76,359,1592895600"; d="scan'208";a="332212870"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
  by fmsmga002.fm.intel.com with ESMTP; 27 Aug 2020 08:06:59 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
@@ -74,10 +74,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Jun Pan" <jacob.jun.pan@intel.com>,
  "Dave Jiang" <dave.jiang@intel.com>, "Sohil Mehta" <sohil.mehta@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v7 4/9] x86/cpufeatures: Enumerate ENQCMD and ENQCMDS
- instructions
-Date: Thu, 27 Aug 2020 08:06:29 -0700
-Message-Id: <1598540794-132666-5-git-send-email-fenghua.yu@intel.com>
+Subject: [PATCH v7 8/9] x86/cpufeatures: Mark ENQCMD as disabled when
+ configured out
+Date: Thu, 27 Aug 2020 08:06:33 -0700
+Message-Id: <1598540794-132666-9-git-send-email-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.5.0
 In-Reply-To: <1598540794-132666-1-git-send-email-fenghua.yu@intel.com>
 References: <1598540794-132666-1-git-send-email-fenghua.yu@intel.com>
@@ -101,49 +101,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Work submission instruction comes in two flavors. ENQCMD can be called
-both in ring 3 and ring 0 and always uses the contents of PASID MSR when
-shipping the command to the device. ENQCMDS allows a kernel driver to
-submit commands on behalf of a user process. The driver supplies the
-PASID value in ENQCMDS. There isn't any usage of ENQCMD in the kernel
-as of now.
-
-The CPU feature flag is shown as "enqcmd" in /proc/cpuinfo.
+Currently the ENQCMD feature cannot be used if CONFIG_INTEL_IOMMU_SVM
+is not set. Add X86_FEATURE_ENQCMD to the disabled features mask.
 
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
-v2:
-- Re-write commit message (Thomas)
+v7:
+- Split this patch from a previous patch.
 
- arch/x86/include/asm/cpufeatures.h | 1 +
- arch/x86/kernel/cpu/cpuid-deps.c   | 1 +
- 2 files changed, 2 insertions(+)
+ arch/x86/include/asm/disabled-features.h | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 2901d5df4366..fea10d04d05f 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -353,6 +353,7 @@
- #define X86_FEATURE_CLDEMOTE		(16*32+25) /* CLDEMOTE instruction */
- #define X86_FEATURE_MOVDIRI		(16*32+27) /* MOVDIRI instruction */
- #define X86_FEATURE_MOVDIR64B		(16*32+28) /* MOVDIR64B instruction */
-+#define X86_FEATURE_ENQCMD		(16*32+29) /* ENQCMD and ENQCMDS instructions */
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index 4ea8584682f9..588d83e9da49 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -56,6 +56,12 @@
+ # define DISABLE_PTI		(1 << (X86_FEATURE_PTI & 31))
+ #endif
  
- /* AMD-defined CPU features, CPUID level 0x80000007 (EBX), word 17 */
- #define X86_FEATURE_OVERFLOW_RECOV	(17*32+ 0) /* MCA overflow recovery support */
-diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
-index 3cbe24ca80ab..3a02707c1f4d 100644
---- a/arch/x86/kernel/cpu/cpuid-deps.c
-+++ b/arch/x86/kernel/cpu/cpuid-deps.c
-@@ -69,6 +69,7 @@ static const struct cpuid_dep cpuid_deps[] = {
- 	{ X86_FEATURE_CQM_MBM_TOTAL,		X86_FEATURE_CQM_LLC   },
- 	{ X86_FEATURE_CQM_MBM_LOCAL,		X86_FEATURE_CQM_LLC   },
- 	{ X86_FEATURE_AVX512_BF16,		X86_FEATURE_AVX512VL  },
-+	{ X86_FEATURE_ENQCMD,			X86_FEATURE_XSAVES    },
- 	{}
- };
- 
++#ifdef CONFIG_INTEL_IOMMU_SVM
++# define DISABLE_ENQCMD	0
++#else
++# define DISABLE_ENQCMD (1 << (X86_FEATURE_ENQCMD & 31))
++#endif
++
+ /*
+  * Make sure to add features to the correct mask
+  */
+@@ -75,7 +81,8 @@
+ #define DISABLED_MASK13	0
+ #define DISABLED_MASK14	0
+ #define DISABLED_MASK15	0
+-#define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP)
++#define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
++			 DISABLE_ENQCMD)
+ #define DISABLED_MASK17	0
+ #define DISABLED_MASK18	0
+ #define DISABLED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 19)
 -- 
 2.19.1
 
