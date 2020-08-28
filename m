@@ -1,119 +1,83 @@
-Return-Path: <SRS0=m4IM=CF=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=8RI2=CG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268BEC43461
-	for <iommu@archiver.kernel.org>; Thu, 27 Aug 2020 23:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E080FC433E6
+	for <iommu@archiver.kernel.org>; Fri, 28 Aug 2020 00:05:46 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E457E20872
-	for <iommu@archiver.kernel.org>; Thu, 27 Aug 2020 23:34:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="z5afeT1u"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E457E20872
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
+	by mail.kernel.org (Postfix) with ESMTPS id B370F2080C
+	for <iommu@archiver.kernel.org>; Fri, 28 Aug 2020 00:05:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B370F2080C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 857FC882FB;
-	Thu, 27 Aug 2020 23:34:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8451C87D09;
+	Fri, 28 Aug 2020 00:05:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K1d4RgUUJU8m; Thu, 27 Aug 2020 23:34:57 +0000 (UTC)
+	with ESMTP id 2hzVp+rbJgxE; Fri, 28 Aug 2020 00:05:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9638787941;
-	Thu, 27 Aug 2020 23:34:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4AF9C878D1;
+	Fri, 28 Aug 2020 00:05:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 85713C016F;
-	Thu, 27 Aug 2020 23:34:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84392C0051
- for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 23:34:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B946C016F;
+	Fri, 28 Aug 2020 00:05:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6773CC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Aug 2020 00:05:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 772D986AC8
- for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 23:34:55 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 38ED6204EF
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Aug 2020 00:05:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6yvienDHi1-q for <iommu@lists.linux-foundation.org>;
- Thu, 27 Aug 2020 23:34:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f194.google.com (mail-il1-f194.google.com
- [209.85.166.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 309D486AAB
- for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 23:34:53 +0000 (UTC)
-Received: by mail-il1-f194.google.com with SMTP id c6so6362535ilo.13
- for <iommu@lists.linux-foundation.org>; Thu, 27 Aug 2020 16:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=tcd-ie.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=WedloSq7WEmmdLIoMis0OnTbQ3vwipQyHuMeYXqSrtc=;
- b=z5afeT1uAO8r4nUnyvdyA9XOFk/fx4rNEV7OzYIxSzIyRPXSSuP0kLR0uFLb5b32/u
- 2F9MWfvV9WNZ+AXIi+QLZ8p0NAvNTBNro8XHBAkvaJyY3ufO9Q62GJ4oCd3Mw0z1agKr
- qFAx/HdJ+EmG1djyMZ9CSGcKQmWFu/zVKz5vJDxg6Nx++SMMng1dGMX9Fmd/wZDTKzHU
- hK7p1r057Z3QOjx4Tgjjmk5k/beu18E/9gkjDnfpmsN6+7UO8xqzHsjZBJhd37zZ1RdM
- prBipf1AI2muUbFcyfU3La5FJDcrT8wuyB+danzKbVnftQC2AzrWmBaIjshroZB9Cb96
- Llhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=WedloSq7WEmmdLIoMis0OnTbQ3vwipQyHuMeYXqSrtc=;
- b=TI48tctGfn/BqZhiC1SJe6FyRXe0mFYCUoEM13Z18NuCKzyb/qVWBuVJayzeYUmT9X
- IKnPtZXbE7NkE/nzYgVoix3GtLnjjvZF+QH4cEZfhs410257lr4SHT90b0wul2CgSZJt
- HUtUbulIqi2xuapUvW/0Gz4MUowZoVA8XqD5aZOl/alS9pUOTCJB2/XK9gaLvoaW8QYJ
- tyhBn/tZawDWe4F6oo8hOiHwgb2u8MgARgzWNpoaWQydzcMttGYaV+DYZSM3Rq1qKmqt
- ZtPO+GBpTqq3eUBmothrjflk4XWFVvUX3xUR2za1vI1CWdbWfAqMkdflGUyq33AnE5jr
- 8O4w==
-X-Gm-Message-State: AOAM533hQA+GgI4SNmqtaD6Coq3CGH4kAap62yFYdNG2uQzhaLUtGHDo
- ynuPjxpJI7dti1gpr2mbMuYk2XrgeOj96q6Z9hq/vQ==
-X-Google-Smtp-Source: ABdhPJw0W2KNMSiVDCp6qP+D3bxqQi5szrf3hiteZz0kvkkYuvF0+Qn7lDLtjb0Ko+kJMcKtvMnZ3YU+iAfoJmlGVTk=
-X-Received: by 2002:a92:4f:: with SMTP id 76mr18588367ila.11.1598571293162;
- Thu, 27 Aug 2020 16:34:53 -0700 (PDT)
+ with ESMTP id 2AbnsXK9be6x for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Aug 2020 00:05:43 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by silver.osuosl.org (Postfix) with ESMTPS id E62ED2042E
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Aug 2020 00:05:42 +0000 (UTC)
+IronPort-SDR: hdeSjbcOaCbh3bWDJxUbXyuVNWANzvkF/YOPDSX3pPdZuyt2ge+Y0DPipKvV/ouU+mapKbUxKS
+ M6OeW/VElamQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="144333167"
+X-IronPort-AV: E=Sophos;i="5.76,361,1592895600"; d="scan'208";a="144333167"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Aug 2020 17:05:39 -0700
+IronPort-SDR: v9peXfmc5VrHw0cZ+YxUQNp5p78XNfC9kwBhK26wof+XOZJ1+68uUXnPtkkJXqKAtvJh7qqUzt
+ tl+qNiSkiakQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,361,1592895600"; d="scan'208";a="323800614"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
+ ([10.239.159.139])
+ by fmsmga004.fm.intel.com with ESMTP; 27 Aug 2020 17:05:37 -0700
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Serialize IOMMU GCMD register
+ modifications
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>
+References: <20200827042513.30292-1-baolu.lu@linux.intel.com>
+ <MWHPR11MB164521E12E86B1681C132C0E8C550@MWHPR11MB1645.namprd11.prod.outlook.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <131a9e8a-1299-cf55-3477-dd6e2c1373f4@linux.intel.com>
+Date: Fri, 28 Aug 2020 08:00:06 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20191221150402.13868-1-murphyt7@tcd.ie>
- <465815ae-9292-f37a-59b9-03949cb68460@deltatee.com>
- <20200529124523.GA11817@infradead.org>
- <CGME20200529190523eucas1p2c086133e707257c0cdc002f502d4f51d@eucas1p2.samsung.com>
- <33137cfb-603c-86e8-1091-f36117ecfaf3@deltatee.com>
- <ef2150d5-7b6a-df25-c10d-e43316fe7812@samsung.com>
- <b9140772-0370-a858-578c-af503a06d8e9@deltatee.com>
- <CALQxJuutRaeX89k2o4ffTKYRMizmMu0XbRnzpFuSSrkQR02jKg@mail.gmail.com>
- <766525c3-4da9-6db7-cd90-fb4b82cd8083@deltatee.com>
-In-Reply-To: <766525c3-4da9-6db7-cd90-fb4b82cd8083@deltatee.com>
-From: Tom Murphy <murphyt7@tcd.ie>
-Date: Fri, 28 Aug 2020 00:34:41 +0100
-Message-ID: <CALQxJuuS8KKUX_eWWSE81gsq5ePAETB-FoqRUSWFfqgr+B13gg@mail.gmail.com>
-Subject: Re: [PATCH 0/8] Convert the intel iommu driver to the dma-iommu api
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
- Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
- Julien Grall <julien.grall@arm.com>, Thierry Reding <thierry.reding@gmail.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, linux-rockchip@lists.infradead.org,
- Andy Gross <agross@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- intel-gfx@lists.freedesktop.org, Jani Nikula <jani.nikula@linux.intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- linux-mediatek@lists.infradead.org, Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Thomas Gleixner <tglx@linutronix.de>,
- virtualization@lists.linux-foundation.org,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- David Woodhouse <dwmw2@infradead.org>, Cornelia Huck <cohuck@redhat.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <MWHPR11MB164521E12E86B1681C132C0E8C550@MWHPR11MB1645.namprd11.prod.outlook.com>
+Content-Language: en-US
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Andy Lutomirski <luto@amacapital.net>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,75 +90,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 27 Aug 2020 at 22:36, Logan Gunthorpe <logang@deltatee.com> wrote:
->
->
->
-> On 2020-08-23 6:04 p.m., Tom Murphy wrote:
-> > I have added a check for the sg_dma_len == 0 :
-> > """
-> >  } __sgt_iter(struct scatterlist *sgl, bool dma) {
-> >         struct sgt_iter s = { .sgp = sgl };
-> >
-> > +       if (sgl && sg_dma_len(sgl) == 0)
-> > +           s.sgp = NULL;
-> >
-> >         if (s.sgp) {
-> >             .....
-> > """
-> > at location [1].
-> > but it doens't fix the problem.
->
-> Based on my read of the code, it looks like we also need to change usage
-> of sgl->length... Something like the rough patch below, maybe?
->
-> Also, Tom, do you have an updated version of the patchset to convert the
-> Intel IOMMU to dma-iommu available? The last one I've found doesn't
-> apply cleanly (I'm assuming parts of it have been merged in slightly
-> modified forms).
->
+Hi,
 
-I'll try and post one in the next 24hours
+On 8/27/20 1:39 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, August 27, 2020 12:25 PM
+>>
+>> The VT-d spec requires (10.4.4 Global Command Register, GCMD_REG
+>> General
+>> Description) that:
+>>
+>> If multiple control fields in this register need to be modified, software
+>> must serialize the modifications through multiple writes to this register.
+>>
+>> However, in irq_remapping.c, modifications of IRE and CFI are done in one
+>> write. We need to do two separate writes with STS checking after each.
+>>
+>> Fixes: af8d102f999a4 ("x86/intel/irq_remapping: Clean up x2apic opt-out
+>> security warning mess")
+>> Cc: Andy Lutomirski <luto@amacapital.net>
+>> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Cc: Kevin Tian <kevin.tian@intel.com>
+>> Cc: Ashok Raj <ashok.raj@intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/irq_remapping.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> Change log:
+>> v1->v2:
+>>    - v1 posted here
+>>      https://lore.kernel.org/linux-iommu/20200826025825.2322-1-
+>> baolu.lu@linux.intel.com/;
+>>    - Add status check before disabling CFI. (Kevin)
+>>
+>> diff --git a/drivers/iommu/intel/irq_remapping.c
+>> b/drivers/iommu/intel/irq_remapping.c
+>> index 9564d23d094f..7552bb7e92c8 100644
+>> --- a/drivers/iommu/intel/irq_remapping.c
+>> +++ b/drivers/iommu/intel/irq_remapping.c
+>> @@ -507,12 +507,19 @@ static void iommu_enable_irq_remapping(struct
+>> intel_iommu *iommu)
+>>
+>>   	/* Enable interrupt-remapping */
+>>   	iommu->gcmd |= DMA_GCMD_IRE;
+>> -	iommu->gcmd &= ~DMA_GCMD_CFI;  /* Block compatibility-format
+>> MSIs */
+>>   	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
+>> -
+>>   	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
+>>   		      readl, (sts & DMA_GSTS_IRES), sts);
+>>
+>> +	/* Block compatibility-format MSIs */
+>> +	sts = readl(iommu->reg + DMAR_GSTS_REG);
+> 
+> no need of this readl as the status is already three in IOMMU_WAIT_OP.
 
-> Thanks,
->
-> Logan
->
-> --
->
-> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h
-> b/drivers/gpu/drm/i915/i915
-> index b7b59328cb76..9367ac801f0c 100644
-> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
-> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
-> @@ -27,13 +27,19 @@ static __always_inline struct sgt_iter {
->  } __sgt_iter(struct scatterlist *sgl, bool dma) {
->         struct sgt_iter s = { .sgp = sgl };
->
-> +       if (sgl && !sg_dma_len(s.sgp))
-> +               s.sgp = NULL;
-> +
->         if (s.sgp) {
->                 s.max = s.curr = s.sgp->offset;
-> -               s.max += s.sgp->length;
-> -               if (dma)
-> +
-> +               if (dma) {
-> +                       s.max += sg_dma_len(s.sgp);
->                         s.dma = sg_dma_address(s.sgp);
-> -               else
-> +               } else {
-> +                       s.max += s.sgp->length;
->                         s.pfn = page_to_pfn(sg_page(s.sgp));
-> +               }
->         }
->
->         return s;
+Yes. Really!
+
+Best regards,
+baolu
+
+> 
+>> +	if (sts & DMA_GSTS_CFIS) {
+>> +		iommu->gcmd &= ~DMA_GCMD_CFI;
+>> +		writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
+>> +		IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
+>> +			      readl, !(sts & DMA_GSTS_CFIS), sts);
+>> +	}
+>> +
+>>   	/*
+>>   	 * With CFI clear in the Global Command register, we should be
+>>   	 * protected from dangerous (i.e. compatibility) interrupts
+>> --
+>> 2.17.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
