@@ -2,88 +2,169 @@ Return-Path: <SRS0=2ZMi=CH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7FBC433E2
-	for <iommu@archiver.kernel.org>; Sat, 29 Aug 2020 08:51:31 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40271C433E7
+	for <iommu@archiver.kernel.org>; Sat, 29 Aug 2020 09:48:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38DED208A9
-	for <iommu@archiver.kernel.org>; Sat, 29 Aug 2020 08:51:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0A6F62075B
+	for <iommu@archiver.kernel.org>; Sat, 29 Aug 2020 09:48:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="P3IN9sfz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38DED208A9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="hRmWoz6r"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A6F62075B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gmx.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0E7A986D56;
-	Sat, 29 Aug 2020 08:51:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C800D8780F;
+	Sat, 29 Aug 2020 09:48:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vzMZRk609mod; Sat, 29 Aug 2020 08:51:28 +0000 (UTC)
+	with ESMTP id z3A7x4bBEzQU; Sat, 29 Aug 2020 09:47:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8D9E986433;
-	Sat, 29 Aug 2020 08:51:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 89C49877E3;
+	Sat, 29 Aug 2020 09:47:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CC31C016F;
-	Sat, 29 Aug 2020 08:51:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EFE43C0051
- for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 08:51:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 755B7C07FF;
+	Sat, 29 Aug 2020 09:47:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1EA7C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 09:47:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D8BD586433
- for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 08:51:26 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B699A87E54
+ for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 09:47:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uQ2-zY_noCH6 for <iommu@lists.linux-foundation.org>;
- Sat, 29 Aug 2020 08:51:25 +0000 (UTC)
+ with ESMTP id Ec4Xyn8yiy7h for <iommu@lists.linux-foundation.org>;
+ Sat, 29 Aug 2020 09:47:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DCDB2861C5
- for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 08:51:24 +0000 (UTC)
-X-UUID: a3ef6c5f6f394e619b9502582e028790-20200829
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=qB65JvNr4zmGYx3nhQrYXy0tBUEmKp+M+ZtGMwCgkrg=; 
- b=P3IN9sfz2JqgBKezp3WwLMQOHzCCPvZU44zmxVehZ0Lzunafo3VDxSIvdKOqkpABGE2JNZhRUzUiENVQc3FKlrbMqqH7yHVe+BfWjL82Losk1TDmLVbitawkeXBpxOLwQXqeysFmY0HoAclfkPt5sV5oMaEj/PHsbQHB/nO0+3s=;
-X-UUID: a3ef6c5f6f394e619b9502582e028790-20200829
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <miles.chen@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 1633658668; Sat, 29 Aug 2020 16:51:21 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 29 Aug 2020 16:51:19 +0800
-Received: from [172.21.77.33] (172.21.77.33) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 29 Aug 2020 16:51:19 +0800
-Message-ID: <1598691080.9982.9.camel@mtkswgap22>
-Subject: Re: [RESEND PATCH v4] iommu/mediatek: check 4GB mode by reading
- infracfg
-From: Miles Chen <miles.chen@mediatek.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Date: Sat, 29 Aug 2020 16:51:20 +0800
-In-Reply-To: <e34db4dc-49a6-d414-e438-b528703ffb80@arm.com>
-References: <20200826085618.2889-1-miles.chen@mediatek.com>
- <1598506280.19851.5.camel@mhfsdcap03>
- <e34db4dc-49a6-d414-e438-b528703ffb80@arm.com>
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B5B6D87E0B
+ for <iommu@lists.linux-foundation.org>; Sat, 29 Aug 2020 09:47:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+ s=badeba3b8450; t=1598694423;
+ bh=3F15H2PNzBIc0EFjrxqHH0XfkEEFa8OSmYddqGK8H+0=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=hRmWoz6rZevnpTgcGALcudzkz+sRJOQ0ltLUeGjQ1hiGHADIz7w+PLuQnJplTpS25
+ Qto8lTm0NsBGfkg2KJTy+wnqmbnRguZCa00cMk7o+ZMXlFDTxk3DNxHoapovDbfSzV
+ MAj78BvYtiEvWHkojaanyM4LFeVjGHtFgvra5dlY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.169.105]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MryTF-1kzqb42Rgj-00nwOw; Sat, 29
+ Aug 2020 11:47:03 +0200
+Subject: Re: a saner API for allocating DMA addressable pages
+To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Joonyoung Shim <jy0922.shim@samsung.com>,
+ Seung-Woo Kim <sw0312.kim@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Pawel Osciak <pawel@osciak.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Matt Porter <mporter@kernel.crashing.org>,
+ iommu@lists.linux-foundation.org
+References: <20200819065555.1802761-1-hch@lst.de>
+From: Helge Deller <deller@gmx.de>
+Autocrypt: addr=deller@gmx.de; keydata=
+ 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
+ c2TFWAS8k6RLkk41ZUU8ENX8+qZx/Q==
+Message-ID: <73b81ba2-3f1c-cce9-0bcf-e739c2a2f6d8@gmx.de>
+Date: Sat, 29 Aug 2020 11:46:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: CC0124F12646A90ABE3CE289DF8E2C577772453E21C8EABC2308FFBE2B5335F42000:8
-X-MTK: N
-Cc: Rob Herring <robh@kernel.org>, wsd_upstream@mediatek.com,
- David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
- Mike Rapoport <rppt@linux.ibm.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Yingjoe Chen <yingjoe.chen@mediatek.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20200819065555.1802761-1-hch@lst.de>
+Content-Language: en-US
+X-Provags-ID: V03:K1:oJ0DWTaeXj/z2c6/t19vHP7YStT4MiWtTWeFmCetTtBo49Hh4sa
+ MXIOt4fOrWhKcajKOQn9yDtXPWoBtqQjT0jJihKGRY7MdilOq6ZLvEQJAHP/3tQc3VMSqjw
+ 8nrw+oyKRGNPfYAhYsTPKH1SOnK7ozn1tLaEFYkGuZxVaZV1fMUaMHgotwKVH1EV+Qr8QAH
+ zOF0hIOTIYaJkqfweauPA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mkE72tOExKA=:aTlUtADXpjDZT7OxFiuYUj
+ v8/4kHwb2Mua8hEhk7Go/U2/ZVjYzuTKybn/zEYMtbMxrUlv2KV8hlNK/aX0VjGkoOI0DwG22
+ n3rsdAjGaSUVVg/X62fzzWnbNoOST8/wh+BbxtDxG02I7XrmtJ6pPsi6+sFOMvHTB9vOrNvXG
+ AwrT6QlUq2sykd+XUwh5bjMi1ghb1VeBINeLz01bZMxgasdT3SwXsBly2VULyLKKMWvqsBIFQ
+ C/pu6CzlTJwktGeYeOmP93ppFx8zyomEinE6j97hLi8ACR2Vv4+EdRnza7fHIwzn6Z4o/e68T
+ CL+o7ZMuMfdCf83r3xd+wKzNEpL8MUbkQsj81LCh/N4+7EAwcj2sY9eCAeIS734k2x9WKzhOm
+ k5p/dzqW4h3NVw/bvw1II7RtoSntk6Nu2jssSbqE+e5UGhYAO64IRI100wLj0j+ydVaVBiMEr
+ ewBbRKh2MG35gTQhi2tbxYtq3AMM79pnsf/DEKNe1Vhfn3oXdPr0xR3d5+51lntmf5Cszy0Sh
+ 4gIARnAPzJtKh/Ftm7D1haHNvG6EMaYJm/1016zyvm8wFY+xMfndGAtOJGBg2gl72/OklVTTU
+ 4r8J65WvqyNxCGHBlcYl13FQo0ig1JukwtnidnbUgGPh1vPmVSUh0QGRlo+FZ/9rCQG6emvf6
+ sYQUlP0/rJjjQvVqS9WpipHHEhsDh/tVYqOFC9hbLhoxzsgqHiNe31n96SHCT9n5eeprzIQnY
+ zKs2u4K2cB+S/ewejdeXOepPMED8Z/Yvf3CYwTT/W1YWuMpJtOqDHA+B9gOkRixd9kH9WPDwl
+ Yq8YwexQ2fo0rXZ6Hb/LNMwtILrHFTAdqcmwQ30yHCqZs71Ka4yRR1YO0J0lMlVan091rWU3P
+ XmdvZ/T1ABg8LZuI9xFe4NeHLjSlHmrq2qIi+D10YlCZv5iYCBg7odt83vpLZQNixoDJ/PWSA
+ ZUoS3p7GoFjjm+scTc3Z+vtqks5pWfXGgKvq7FgERXN5SoVS1DDUGkbsyoEMLpFCiPARvSnC9
+ Zw5byRRwwNj766pNE2YDmj3LOYWf9x4zwovaUS1T3ywgN7ZtUkr4Wgr7YKIoGBbAmQ+PW3oI0
+ mhMcdUTFFR/wrCYaY2SZvOHJANBD9TdeGyZCpOIBtqGlXbwTfRnIVypZEfee2tKfCWnFrRngi
+ xV4RAwdwqSQkWctal3BkGgiFZbu3byNVAX4Phev8myjqyGmpeZ1XvNcHSGoismCnziw8e3+Lp
+ ihUo0gzdHci+IKtQW
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, alsa-devel@alsa-project.org,
+ linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org, netdev@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,182 +182,109 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2020-08-27 at 20:27 +0100, Robin Murphy wrote:
-> On 2020-08-27 06:31, Yong Wu wrote:
-> > On Wed, 2020-08-26 at 16:56 +0800, Miles Chen wrote:
-> >> In previous discussion [1] and [2], we found that it is risky to
-> >> use max_pfn or totalram_pages to tell if 4GB mode is enabled.
-> >>
-> >> Check 4GB mode by reading infracfg register, remove the usage
-> >> of the un-exported symbol max_pfn.
-> >>
-> >> This is a step towards building mtk_iommu as a kernel module.
-> >>
-> >> [1] https://lore.kernel.org/lkml/20200603161132.2441-1-miles.chen@mediatek.com/
-> >> [2] https://lore.kernel.org/lkml/20200604080120.2628-1-miles.chen@mediatek.com/
-> >> [3] https://lore.kernel.org/lkml/20200715205120.GA778876@bogus/
-> >>
-> >> Cc: Mike Rapoport <rppt@linux.ibm.com>
-> >> Cc: David Hildenbrand <david@redhat.com>
-> >> Cc: Yong Wu <yong.wu@mediatek.com>
-> >> Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>
-> >> Cc: Christoph Hellwig <hch@lst.de>
-> >> Cc: Rob Herring <robh@kernel.org>
-> >> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> >> Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-> >>
-> >> ---
-> >>
-> >> Change since v3
-> >> - use lore.kernel.org links
-> >> - move "change since..." after "---"
-> >>
-> >> Change since v2:
-> >> - determine compatible string by m4u_plat
-> >> - rebase to next-20200720
-> >> - add "---"
-> >>
-> >> Change since v1:
-> >> - remove the phandle usage, search for infracfg instead [3]
-> >> - use infracfg instead of infracfg_regmap
-> >> - move infracfg definitaions to linux/soc/mediatek/infracfg.h
-> >> - update enable_4GB only when has_4gb_mode
-> >> ---
-> >>   drivers/iommu/mtk_iommu.c             | 34 +++++++++++++++++++++++----
-> >>   include/linux/soc/mediatek/infracfg.h |  3 +++
-> >>   2 files changed, 32 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> >> index 785b228d39a6..adc350150492 100644
-> >> --- a/drivers/iommu/mtk_iommu.c
-> >> +++ b/drivers/iommu/mtk_iommu.c
-> >> @@ -3,7 +3,6 @@
-> >>    * Copyright (c) 2015-2016 MediaTek Inc.
-> >>    * Author: Yong Wu <yong.wu@mediatek.com>
-> >>    */
-> >> -#include <linux/memblock.h>
-> >>   #include <linux/bug.h>
-> >>   #include <linux/clk.h>
-> >>   #include <linux/component.h>
-> >> @@ -15,13 +14,16 @@
-> >>   #include <linux/iommu.h>
-> >>   #include <linux/iopoll.h>
-> >>   #include <linux/list.h>
-> >> +#include <linux/mfd/syscon.h>
-> >>   #include <linux/of_address.h>
-> >>   #include <linux/of_iommu.h>
-> >>   #include <linux/of_irq.h>
-> >>   #include <linux/of_platform.h>
-> >>   #include <linux/platform_device.h>
-> >> +#include <linux/regmap.h>
-> >>   #include <linux/slab.h>
-> >>   #include <linux/spinlock.h>
-> >> +#include <linux/soc/mediatek/infracfg.h>
-> >>   #include <asm/barrier.h>
-> >>   #include <soc/mediatek/smi.h>
-> >>   
-> >> @@ -640,8 +642,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
-> >>   	struct resource         *res;
-> >>   	resource_size_t		ioaddr;
-> >>   	struct component_match  *match = NULL;
-> >> +	struct regmap		*infracfg;
-> >>   	void                    *protect;
-> >>   	int                     i, larb_nr, ret;
-> >> +	u32			val;
-> >> +	char                    *p;
-> >>   
-> >>   	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> >>   	if (!data)
-> >> @@ -655,10 +660,29 @@ static int mtk_iommu_probe(struct platform_device *pdev)
-> >>   		return -ENOMEM;
-> >>   	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
-> >>   
-> >> -	/* Whether the current dram is over 4GB */
-> >> -	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
-> >> -	if (!MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
-> >> -		data->enable_4GB = false;
-> >> +	data->enable_4GB = false;
-> 
-> Nit: this isn't really necessary, since the structure is kzalloc()ed.
+Hi Christoph,
 
-Thanks for the comment, I will remove this this in v5.
-> 
-> >> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
-> >> +		switch (data->plat_data->m4u_plat) {
-> >> +		case M4U_MT2712:
-> >> +			p = "mediatek,mt2712-infracfg";
-> >> +			break;
-> >> +		case M4U_MT8173:
-> >> +			p = "mediatek,mt8173-infracfg";
-> >> +			break;
-> >> +		default:
-> >> +			p = NULL;
-> >> +		}
-> >> +
-> > 
-> > This can be simplified:
-> > 
-> >          if (data->plat_data->m4u_plat == M4U_MT2712)
-> > 		p = "mediatek,mt2712-infracfg";
-> > 	else if(data->plat_data->m4u_plat == M4U_MT8173)
-> > 		p = "mediatek,mt8173-infracfg";
-> > 	else
-> > 		return -EINVAL;
-> 
-> Right, at this point the HAS_4GB_MODE flag is entirely redundant and 
-> should be removed. FWIW I still think your suggestion of putting the 
-> infracfg names into plat_data would be even better and cleaner - there's 
-> plenty of precedent for that sort of thing (see "git grep '\.clk_name'" 
-> for example).
-> 
-> Robin.
+On 19.08.20 08:55, Christoph Hellwig wrote:
+> this series replaced the DMA_ATTR_NON_CONSISTENT flag to dma_alloc_attrs
+> with a separate new dma_alloc_pages API, which is available on all
+> platforms.  In addition to cleaning up the convoluted code path, this
+> ensures that other drivers that have asked for better support for
+> non-coherent DMA to pages with incurring bounce buffering over can finally
+> be properly supported.
+> ....
+> A git tree is available here:
+>
+>     git://git.infradead.org/users/hch/misc.git dma_alloc_pages
 
-hmm, I have no strong opinion about this. We have discussed this
-approach before and built this patch based on the discussion.
-https://lore.kernel.org/patchwork/patch/1276801/
+I've tested this tree on my parisc machine which uses the 53c700
+and lasi_82596 drivers.
+Everything worked as expected, so you may add:
 
+Tested-by: Helge Deller <deller@gmx.de> # parisc
 
+Thanks!
+Helge
 
-Miles
-> 
-> > 
-> > Then,
-> > Reviewed-by: Yong Wu <yong.wu@mediatek.com>
-> > 	
-> > 
-> >> +		infracfg = syscon_regmap_lookup_by_compatible(p);
-> >> +
-> >> +		if (IS_ERR(infracfg))
-> >> +			return PTR_ERR(infracfg);
-> >> +
-> >> +		ret = regmap_read(infracfg, REG_INFRA_MISC, &val);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +		data->enable_4GB = !!(val & F_DDR_4GB_SUPPORT_EN);
-> >> +	}
-> >>   
-> >>   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >>   	data->base = devm_ioremap_resource(dev, res);
-> >> diff --git a/include/linux/soc/mediatek/infracfg.h b/include/linux/soc/mediatek/infracfg.h
-> >> index fd25f0148566..233463d789c6 100644
-> >> --- a/include/linux/soc/mediatek/infracfg.h
-> >> +++ b/include/linux/soc/mediatek/infracfg.h
-> >> @@ -32,6 +32,9 @@
-> >>   #define MT7622_TOP_AXI_PROT_EN_WB		(BIT(2) | BIT(6) | \
-> >>   						 BIT(7) | BIT(8))
-> >>   
-> >> +#define REG_INFRA_MISC				0xf00
-> >> +#define F_DDR_4GB_SUPPORT_EN			BIT(13)
-> >> +
-> >>   int mtk_infracfg_set_bus_protection(struct regmap *infracfg, u32 mask,
-> >>   		bool reg_update);
-> >>   int mtk_infracfg_clear_bus_protection(struct regmap *infracfg, u32 mask,
-> > 
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> > 
+>
+> Gitweb:
+>
+>     http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_pages
+>
+>
+> Diffstat:
+>  Documentation/core-api/dma-api.rst                       |   92 ++----
+>  Documentation/core-api/dma-attributes.rst                |    8
+>  Documentation/userspace-api/media/v4l/buffer.rst         |   17 -
+>  Documentation/userspace-api/media/v4l/vidioc-reqbufs.rst |    1
+>  arch/alpha/kernel/pci_iommu.c                            |    2
+>  arch/arm/include/asm/dma-direct.h                        |    4
+>  arch/arm/mm/dma-mapping-nommu.c                          |    2
+>  arch/arm/mm/dma-mapping.c                                |    4
+>  arch/ia64/Kconfig                                        |    3
+>  arch/ia64/hp/common/sba_iommu.c                          |    2
+>  arch/ia64/kernel/dma-mapping.c                           |   14
+>  arch/ia64/mm/init.c                                      |    3
+>  arch/mips/Kconfig                                        |    1
+>  arch/mips/bmips/dma.c                                    |    4
+>  arch/mips/cavium-octeon/dma-octeon.c                     |    4
+>  arch/mips/include/asm/dma-direct.h                       |    4
+>  arch/mips/include/asm/jazzdma.h                          |    2
+>  arch/mips/jazz/jazzdma.c                                 |  102 +------
+>  arch/mips/loongson2ef/fuloong-2e/dma.c                   |    4
+>  arch/mips/loongson2ef/lemote-2f/dma.c                    |    4
+>  arch/mips/loongson64/dma.c                               |    4
+>  arch/mips/mm/dma-noncoherent.c                           |   48 +--
+>  arch/mips/pci/pci-ar2315.c                               |    4
+>  arch/mips/pci/pci-xtalk-bridge.c                         |    4
+>  arch/mips/sgi-ip32/ip32-dma.c                            |    4
+>  arch/parisc/Kconfig                                      |    1
+>  arch/parisc/kernel/pci-dma.c                             |    6
+>  arch/powerpc/include/asm/dma-direct.h                    |    4
+>  arch/powerpc/kernel/dma-iommu.c                          |    2
+>  arch/powerpc/platforms/ps3/system-bus.c                  |    4
+>  arch/powerpc/platforms/pseries/vio.c                     |    2
+>  arch/s390/pci/pci_dma.c                                  |    2
+>  arch/x86/kernel/amd_gart_64.c                            |    8
+>  drivers/gpu/drm/exynos/exynos_drm_gem.c                  |    2
+>  drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c      |    3
+>  drivers/iommu/dma-iommu.c                                |    2
+>  drivers/iommu/intel/iommu.c                              |    6
+>  drivers/media/common/videobuf2/videobuf2-core.c          |   36 --
+>  drivers/media/common/videobuf2/videobuf2-dma-contig.c    |   19 -
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c        |    3
+>  drivers/media/common/videobuf2/videobuf2-v4l2.c          |   12
+>  drivers/net/ethernet/amd/au1000_eth.c                    |   15 -
+>  drivers/net/ethernet/i825xx/lasi_82596.c                 |   36 +-
+>  drivers/net/ethernet/i825xx/lib82596.c                   |  148 +++++-----
+>  drivers/net/ethernet/i825xx/sni_82596.c                  |   23 -
+>  drivers/net/ethernet/seeq/sgiseeq.c                      |   24 -
+>  drivers/nvme/host/pci.c                                  |   79 ++---
+>  drivers/parisc/ccio-dma.c                                |    2
+>  drivers/parisc/sba_iommu.c                               |    2
+>  drivers/scsi/53c700.c                                    |  120 ++++----
+>  drivers/scsi/53c700.h                                    |    9
+>  drivers/scsi/sgiwd93.c                                   |   14
+>  drivers/xen/swiotlb-xen.c                                |    2
+>  include/linux/dma-direct.h                               |   55 ++-
+>  include/linux/dma-mapping.h                              |   32 +-
+>  include/linux/dma-noncoherent.h                          |   21 -
+>  include/linux/dmapool.h                                  |   23 +
+>  include/linux/gfp.h                                      |    6
+>  include/media/videobuf2-core.h                           |    3
+>  include/uapi/linux/videodev2.h                           |    2
+>  kernel/dma/Kconfig                                       |    9
+>  kernel/dma/Makefile                                      |    1
+>  kernel/dma/coherent.c                                    |   17 +
+>  kernel/dma/direct.c                                      |  112 +++++--
+>  kernel/dma/mapping.c                                     |  104 ++-----
+>  kernel/dma/ops_helpers.c                                 |   86 ++++++
+>  kernel/dma/pool.c                                        |    2
+>  kernel/dma/swiotlb.c                                     |    4
+>  kernel/dma/virt.c                                        |    2
+>  mm/dmapool.c                                             |  211 +++++++++------
+>  sound/mips/hal2.c                                        |   58 +---
+>  71 files changed, 872 insertions(+), 803 deletions(-)
+>
 
 _______________________________________________
 iommu mailing list
