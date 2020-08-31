@@ -2,178 +2,82 @@ Return-Path: <SRS0=U/E5=CJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,RCVD_ILLEGAL_IP,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82F2C433E7
-	for <iommu@archiver.kernel.org>; Mon, 31 Aug 2020 14:45:44 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CFD7C433E2
+	for <iommu@archiver.kernel.org>; Mon, 31 Aug 2020 17:45:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 92AB120684
-	for <iommu@archiver.kernel.org>; Mon, 31 Aug 2020 14:45:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="J3A7OgaP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92AB120684
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0C5D420866
+	for <iommu@archiver.kernel.org>; Mon, 31 Aug 2020 17:45:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C5D420866
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 71A4E85DC4;
-	Mon, 31 Aug 2020 14:45:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id BC5DA21FA8;
+	Mon, 31 Aug 2020 17:45:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GYdfndVCg-6e; Mon, 31 Aug 2020 14:45:42 +0000 (UTC)
+	with ESMTP id 4ga7zzZxGTnh; Mon, 31 Aug 2020 17:45:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3467C85D54;
-	Mon, 31 Aug 2020 14:45:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7256020BF8;
+	Mon, 31 Aug 2020 17:45:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D981C07FF;
-	Mon, 31 Aug 2020 14:45:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B70EC0051
- for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 14:45:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60B3DC0052;
+	Mon, 31 Aug 2020 17:45:22 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2519FC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 17:45:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1A31E867C5
- for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 14:45:41 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id E5E3821FA8
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 17:45:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yrNf3DPzx80Q for <iommu@lists.linux-foundation.org>;
- Mon, 31 Aug 2020 14:45:40 +0000 (UTC)
+ with ESMTP id 3qgWM98LsmK5 for <iommu@lists.linux-foundation.org>;
+ Mon, 31 Aug 2020 17:45:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
- [216.228.121.64])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5D9F784702
- for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 14:45:40 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5f4d0ce50000>; Mon, 31 Aug 2020 07:44:53 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Mon, 31 Aug 2020 07:45:38 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Mon, 31 Aug 2020 07:45:38 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 31 Aug
- 2020 14:45:25 +0000
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.174)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 31 Aug 2020 14:45:25 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F8aEz99/KSDTN3nP+QzdPQapQRnBIXBnb8vCGI9M31MXF3uG0WDkad1kAWwm1CmVxHH8HteD6j8FEQOl9ijLktMYnZG0fPPn8lEUVI0+S53w1iFdmndIj7NImb059nzQAsBo3NCc1tGVEwT6hUNpSM+pUZYEnGUGf9pTkvmHhRMtcRhomj52+xwdByrLtq+f80+GE0R8iGCgbuSmsYdocTuc19GHncn3LHWwDDT9vXeFi7N+twW5WhqiRDq5tJRkODm74JhgfbVRhALYAkyK8R7roS/Dm/zpLPKCfxNVQbVtoee41ruRYVdlELnU9N8n96uKOJnEpJFE3fzNSxYCog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+p2OQ+w2QhUZpZuQpXKjZgwmQFPfbqx1uP3RMVBpyL0=;
- b=X+9c4RuiTxpBM5hk2MMVLll5zGTdb6clIQrB0PkpfY659OO/BMYbY96QRZGKYQ55teCTx71lIyZVX/B9ajFX5hMyay/uqZLmfvPIZcYHo26Tk4FxlrqTWA2ZilzzSMFlu4Fvob/l+osP+Gx20+VuVTSnot4WRvKeZTcboeeKJR3yPezGDrBtmw1jS7+t7ZULDRYyuLo9kcOJi4OdH8MzcEM32MMHYFQnlFJXmPB/axy1fFPFJzM7O4QI0udRVUUOt6spcqkS2w1276VZfzatK546JNQ2Q79Speun9PiRbZ9YbKEGBkJfVNE5rlsYG7xzdyyMbM4TwC4GWzxSVocyCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: linutronix.de; dkim=none (message not signed)
- header.d=none;linutronix.de; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2604.namprd12.prod.outlook.com (2603:10b6:5:4d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.23; Mon, 31 Aug
- 2020 14:45:23 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::2d79:7f96:6406:6c76]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::2d79:7f96:6406:6c76%3]) with mapi id 15.20.3326.025; Mon, 31 Aug 2020
- 14:45:23 +0000
-Date: Mon, 31 Aug 2020 11:45:22 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 46/46] irqchip: Add IMS (Interrupt Message Storm)
- driver - NOT FOR MERGING
-Message-ID: <20200831144522.GB1152540@nvidia.com>
-References: <20200826111628.794979401@linutronix.de>
- <20200826112335.202234502@linutronix.de>
-Content-Disposition: inline
-In-Reply-To: <20200826112335.202234502@linutronix.de>
-X-ClientProxiedBy: MN2PR19CA0007.namprd19.prod.outlook.com
- (2603:10b6:208:178::20) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by silver.osuosl.org (Postfix) with ESMTPS id D5FF220BF8
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 17:45:19 +0000 (UTC)
+IronPort-SDR: wUs8AEsV/tpcx/+EYg2SW5+OzoEILnbAmTqskcIb2mWCBYxIz7ln8hKWhob7d7htlGDDv3M7G+
+ /lwsOVZ/CA8w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9730"; a="221260793"
+X-IronPort-AV: E=Sophos;i="5.76,376,1592895600"; d="scan'208";a="221260793"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Aug 2020 10:45:18 -0700
+IronPort-SDR: 4V0HKjPMEFKjJ0dIOMZTyD7eACTRqRvtsa0jzkyZrLLFrCUNsnqyHPIMd+XP7P1heylDfFA6Ly
+ bRfswT/CRLSw==
+X-IronPort-AV: E=Sophos;i="5.76,376,1592895600"; d="scan'208";a="340728810"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Aug 2020 10:45:17 -0700
+Date: Mon, 31 Aug 2020 10:52:24 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v7 7/7] iommu/vt-d: Check UAPI data processed by IOMMU core
+Message-ID: <20200831105224.7a90ba34@jacob-builder>
+In-Reply-To: <1b131401-a9a3-3641-99cc-430d9b51efa5@redhat.com>
+References: <1596068467-49322-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1596068467-49322-8-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1b131401-a9a3-3641-99cc-430d9b51efa5@redhat.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by
- MN2PR19CA0007.namprd19.prod.outlook.com (2603:10b6:208:178::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend
- Transport; Mon, 31 Aug 2020 14:45:23 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1kCl3i-002PjF-0q; Mon, 31 Aug 2020 11:45:22 -0300
-X-Originating-IP: [156.34.48.30]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 34d1efa2-a3dc-438a-e1d4-08d84dbc7db6
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2604:
-X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2604F9D0B465248648069424C2510@DM6PR12MB2604.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zCS6biWS9VderdeY+wH9rdyhIsNx8cPd5mDZyttorDH9HE8IU1t3M3X54HQFRhAxON6uPZxNflD3rIr68MZX3x2onBAnBi86TSnJOmz+UppBW//iLQ50Uw5Qs4ZoDt5YzgPis8+RzhUTILJYW6y7y6+gPzmJuyCQR9e76valPJK+5kpYwXzXsdcWT9q7gLGneVn7mhw07LLmk+yOXiwA8EODEnkOczWGcQa2ZBIqDDcxObUByjzNrPdjwvFan6tArqxqm721H2HQKTkIQnGdU4BeS0xS3nrUtrqvU5bq3F44tDH2q9FJk7e3bU4lajJYAAsGV5sc78f3qShodpuEAA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(136003)(376002)(366004)(39860400002)(346002)(66476007)(54906003)(478600001)(15650500001)(4326008)(7406005)(7416002)(316002)(2616005)(86362001)(426003)(36756003)(5660300002)(6916009)(2906002)(8676002)(8936002)(1076003)(83380400001)(9746002)(66946007)(26005)(66556008)(186003)(9786002)(33656002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: +qyXgxD1DXXhF03lH7eERw6H2hiqfVqnhGDtV4+HZ+KGkTKvQex1mI0vEvkeK6WWm0ngjcCHER6DlLQuiEhYasba9uuWobwgU2Os52tDWfF1wEKIrZEWPpM9OhUPYb9rQA7Q0VfuNBBgVcA30YlsKbU19A7yW1wiWaZ933p8cPayxevSpK4viSQhEyT5tTlpPPO5weeJVoN3rN80miASm86GurA30fE9n3pRgy2Xpb0HW+dSAWHcp3rCJy5wrvUy0T92NDcu0aIwybEOlhUtIoC3mrUBxvq10Pw//L7+JdnkEdGwl1hReDkdWreJchC5r1oNPDyHPyiRsf/n2PGIUI4pSQX+cB7OxvBEOdp7jRH06m2MHoqBNKr1QeeYAuzwNBRM1oeGLArL2O6ZAR8yjOzWLqRt19F/dXsaoslKcoLAgkNpep4sDt46x+ETHgBBkvUosBojp+F4giLhyNlKHKzXyaB4JNxb8EWYsGRx7f1XtRx4XpqmywoPc8DOvpKabzIIOWBUcEDQaxi48tuVJglGUSDySuQ49yGnw2VkLp1AFLURKYqDZh2eL2TdPRndrjLklq/pRuQ8YvqZjUfvpdTHtdLRccKhX+2j1Jw0uOtbyE5VTiMSWO3LS9voNw8LOaBzld4SA7OftR3UUTtQ4Q==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34d1efa2-a3dc-438a-e1d4-08d84dbc7db6
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2020 14:45:23.5590 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cNW30hTXDkdTmfm2UvOp/Z0PNtKBr2eZ6W7xuJUX1Zpo+BKR/sIUrXkBjEt7sbhz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2604
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1598885093; bh=+p2OQ+w2QhUZpZuQpXKjZgwmQFPfbqx1uP3RMVBpyL0=;
- h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
- ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
- Subject:Message-ID:References:Content-Type:Content-Disposition:
- In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
- X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
- X-MS-TrafficTypeDiagnostic:X-LD-Processed:
- X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
- X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
- X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
- X-MS-Exchange-AntiSpam-MessageData:
- X-MS-Exchange-CrossTenant-Network-Message-Id:
- X-MS-Exchange-CrossTenant-AuthSource:
- X-MS-Exchange-CrossTenant-AuthAs:
- X-MS-Exchange-CrossTenant-OriginalArrivalTime:
- X-MS-Exchange-CrossTenant-FromEntityHeader:
- X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
- X-MS-Exchange-CrossTenant-UserPrincipalName:
- X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
- b=J3A7OgaPYJU6BiUW6BeiDJRQBAYMW9TTbtmeff/BGM3gXUSa+334cFooX+4CK1OGV
- sQyE9mMd9FPYBalDnBTKhMTvnW3bdpHf4n4ZusW98fyI8FzzvL0KKTPim2PeTmvpX0
- grwFwwkj4tmlydfpaXYrWQZ6el5SOat3Fg+SLBPEUJu8mcEYgbHuxvaoLfEWdb3d9z
- +ZOByyz9BwOUsmpxQcaynz8T4UHU3CLx/Znd33Vv2Uzfuaev5+D3vINal2JYw/R3d5
- TSt7XIF3vVHsApj0GpGH5Le005XQc5F99xNpYAccUQvREHGDZwx80VlHnS+Rk6bcFu
- Tg8E9rT+0GhkQ==
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org, Megha Dey <megha.dey@intel.com>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>, Jon
- Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -191,49 +95,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Aug 26, 2020 at 01:17:14PM +0200, Thomas Gleixner wrote:
-> + * ims_queue_info - Information to create an IMS queue domain
-> + * @queue_lock:		Callback which informs the device driver that
-> + *			an interrupt management operation starts.
-> + * @queue_sync_unlock:	Callback which informs the device driver that an
-> + *			interrupt management operation ends.
-> +
-> + * @queue_get_shadow:   Callback to retrieve te shadow storage for a MSI
-> + *			entry associated to a queue. The queue is
-> + *			identified by the device struct which is used for
-> + *			allocating interrupts and the msi entry index.
-> + *
-> + * @queue_lock() and @queue_sync_unlock() are only called for management
-> + * operations on a particular interrupt: request, free, enable, disable,
-> + * affinity setting.  These functions are never called from atomic context,
-> + * like low level interrupt handling code. The purpose of these functions
-> + * is to signal the device driver the start and end of an operation which
-> + * affects the IMS queue shadow state. @queue_lock() allows the driver to
-> + * do preperatory work, e.g. locking. Note, that @queue_lock() has to
-> + * preserve the sleepable state on return. That means the driver cannot
-> + * disable preemption and (soft)interrupts in @queue_lock and then undo
-> + * that operation in @queue_sync_unlock() which restricts the lock types
-> + * for eventual serialization of these operations to sleepable locks. Of
-> + * course the driver can disable preemption and (soft)interrupts
-> + * temporarily for internal work.
-> + *
-> + * On @queue_sync_unlock() the driver has to check whether the shadow state
-> + * changed and issue a command to update the hardware state and wait for
-> + * the command to complete. If the command fails or times out then the
-> + * driver has to take care of the resulting mess as this is called from
-> + * functions which have no return value and none of the callers can deal
-> + * with the failure. The lock which is used by the driver to protect a
-> + * operation sequence must obviously not be released before the command
-> + * completes or fails. Otherwise new operations on the same interrupt line
-> + * could take place and change the shadow state before the driver was able
-> + * to compose the command.
+On Thu, 13 Aug 2020 11:19:46 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
 
-I haven't looked through everything in detail, but this does look like
-it is good for the mlx5 devices. Looked like it was only one small
-update to the set_affinity, so not very disruptive?
+> Hi Jacob,
+> 
+> On 7/30/20 2:21 AM, Jacob Pan wrote:
+> > IOMMU generic layer already does sanity checks UAPI data for version
+> > match and argsz range under generic information.
+> > Remove the redundant version check from VT-d driver and check for
+> > vendor specific data size.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
+> 
+> > ---
+> >  drivers/iommu/intel/iommu.c | 3 +--
+> >  drivers/iommu/intel/svm.c   | 7 +++++--
+> >  2 files changed, 6 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/intel/iommu.c
+> > b/drivers/iommu/intel/iommu.c index 021f62078f52..7e03cca31a0e
+> > 100644 --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -5391,8 +5391,7 @@ intel_iommu_sva_invalidate(struct
+> > iommu_domain *domain, struct device *dev, int ret = 0;
+> >  	u64 size = 0;
+> >  
+> > -	if (!inv_info || !dmar_domain ||
+> > -	    inv_info->version !=
+> > IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
+> > +	if (!inv_info || !dmar_domain)
+> >  		return -EINVAL;
+> >  
+> >  	if (!dev || !dev_is_pci(dev))
+> > diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> > index 713b3a218483..55ea11e9c0f5 100644
+> > --- a/drivers/iommu/intel/svm.c
+> > +++ b/drivers/iommu/intel/svm.c
+> > @@ -240,8 +240,11 @@ int intel_svm_bind_gpasid(struct iommu_domain
+> > *domain, struct device *dev, if (WARN_ON(!iommu) || !data)
+> >  		return -EINVAL;
+> >  
+> > -	if (data->version != IOMMU_GPASID_BIND_VERSION_1 ||
+> > -	    data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
+> > +	if (data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
+> > +		return -EINVAL;
+> > +
+> > +	/* IOMMU core ensures argsz is more than the start of the
+> > union */
+> > +	if (data->argsz < offsetofend(struct
+> > iommu_gpasid_bind_data, vendor.vtd)) return -EINVAL;  
+> Shouldn't you test the vendor flags here?
+> intel_pasid_setup_bind_data() only checks valid ones but not ~mask.
+> 
+Yes, vendor flags should be tested to make sure there is no undefined
+flags being used.
 
-Thanks,
-Jason
+Thanks!
+
+> Thanks
+> 
+> Eric
+> >  
+> >  	if (!dev_is_pci(dev))
+> >   
+> 
+
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
