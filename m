@@ -2,91 +2,94 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.4 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10193C433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:53:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66032C433E6
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:03:38 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA7E3206C0
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:53:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2FFE4206FA
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:03:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Qp7cO1c6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA7E3206C0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IxO1NOeP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FFE4206FA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 60E2986A09;
-	Tue,  1 Sep 2020 16:53:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F184D85D3D;
+	Tue,  1 Sep 2020 17:03:37 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ibjN2PRrr-j7; Tue,  1 Sep 2020 17:03:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1544184CC2;
+	Tue,  1 Sep 2020 17:03:37 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC773C0052;
+	Tue,  1 Sep 2020 17:03:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8E7A2C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:03:35 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8A70D8693F
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:03:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3MCU6B+tcnhS; Tue,  1 Sep 2020 16:53:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C7EFB869A3;
-	Tue,  1 Sep 2020 16:53:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0624C0052;
-	Tue,  1 Sep 2020 16:53:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A93AC0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:53:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 23374870F0
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:53:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EpSCGbl83mgm for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 16:53:31 +0000 (UTC)
+ with ESMTP id giNof+jrpX7L for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 17:03:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5DFA8870EE
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:53:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=mr+spIm0j102sxFcc3WXz2mCLWqWkBrKAQyNQoZhMH4=; b=Qp7cO1c6obl/HbURjQhpBiYPQG
- zMVpdHyURqSWTczQUMKFJAjOy/TiFuPuIO99chev9Opx0LZ/TLT95QaNoVyb4m6rgj02rzNms21bD
- l/OJj+Pn3H4e3Mzua6ZOGdf7TbV7b19zK1HK8PwPz1sPjHOWtXsWoQGxS7DBoTJGYTbRtUYGJqxI7
- 8CsalzSoTglaLhiOvz2SYPVRp3wWJsHM/wtbu2DlirQcXKmjLD+1CJIvyaMBTnf2S3HPWyMsavtNt
- 3tJ7WFYYYteWuJLPBqd7P2w3N7flwqDEkXxZ8pD/Jd3z/6ksKCRHFQo9SY2r/QQ5XzKyjmUUHgPI3
- osL/2N3Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red
- Hat Linux)) id 1kD9Wy-0001ZZ-0r; Tue, 01 Sep 2020 16:53:12 +0000
-Date: Tue, 1 Sep 2020 17:53:11 +0100
-From: Matthew Wilcox <willy@infradead.org>
-To: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 07/28] 53c700: improve non-coherent DMA handling
-Message-ID: <20200901165311.GS14765@casper.infradead.org>
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-8-hch@lst.de>
- <1598971960.4238.5.camel@HansenPartnership.com>
- <20200901150554.GN14765@casper.infradead.org>
- <1598973776.4238.11.camel@HansenPartnership.com>
- <3369218e-eea4-14e9-15f1-870269e4649d@gmx.de>
- <77c9b2b6-bedc-d090-8b23-6ac664df1d1f@gmx.de>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9D048869AD
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:03:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1598979811;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=QWFn91v9jwxb4FQ+OzyyCBPLeQ75xcVaOZUTQVfcSyQ=;
+ b=IxO1NOePKW/eMeSN5IJR0jdxbtHaRagApRRQ5CmByTgICO7KzCJEZgP+xswgP7m69h1XNE
+ +zCgECAdBxziLGhfK/e/P09My1zYNEW0jsb+KMEt5XPOMgCtKsMcSJypr3x46z8Ky9ZgQE
+ 5iaDFb9TPf2cKrwL+se7EQ5fqKVtfPM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-554-TDnHW8uOOv-P_WcGfmNhSw-1; Tue, 01 Sep 2020 13:03:29 -0400
+X-MC-Unique: TDnHW8uOOv-P_WcGfmNhSw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2ACA110ABDA1;
+ Tue,  1 Sep 2020 17:03:28 +0000 (UTC)
+Received: from [10.36.112.51] (ovpn-112-51.ams2.redhat.com [10.36.112.51])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 8C29360BE2;
+ Tue,  1 Sep 2020 17:03:25 +0000 (UTC)
+Subject: Re: [PATCH v2 7/9] iommu/vt-d: Listen to IOASID notifications
+To: Jacob Pan <jacob.pan.linux@gmail.com>, iommu@lists.linux-foundation.org,
+ LKML <linux-kernel@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <1598070918-21321-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1598070918-21321-8-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <e9394a9e-c9d0-9ebc-30a7-745e6b6d8fa0@redhat.com>
+Date: Tue, 1 Sep 2020 19:03:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <77c9b2b6-bedc-d090-8b23-6ac664df1d1f@gmx.de>
-Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
- linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- James Bottomley <James.Bottomley@hansenpartnership.com>, linux-mm@kvack.org,
- Christoph Hellwig <hch@lst.de>, linux-samsung-soc@vger.kernel.org,
- Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
- Kyungmin Park <kyungmin.park@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
- Matt Porter <mporter@kernel.crashing.org>, linux-media@vger.kernel.org,
- Tom Lendacky <thomas.lendacky@amd.com>, Pawel Osciak <pawel@osciak.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
- netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
- linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
+In-Reply-To: <1598070918-21321-8-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Wu Hao <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,13 +107,149 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 01, 2020 at 06:41:12PM +0200, Helge Deller wrote:
-> > I still have a zoo of machines running for such testing, including a
-> > 715/64 and two 730.
-> > I'm going to test this git tree on the 715/64:
+Hi Jacob,
 
-The 715/64 is a 7100LC machine though.  I think you need to boot on
-the 730 to test the non-coherent path.
+On 8/22/20 6:35 AM, Jacob Pan wrote:
+> On Intel Scalable I/O Virtualization (SIOV) enabled platforms, IOMMU
+> driver is one of the users of IOASIDs. In normal flow, callers will
+> perform IOASID allocation, bind, unbind, and free in order. However, for
+> guest SVA, IOASID free could come before unbind as guest is untrusted.
+> This patch registers IOASID notification handler such that IOMMU driver
+> can perform PASID teardown upon receiving an unexpected IOASID free
+> event.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/intel/svm.c   | 74 ++++++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/intel-iommu.h |  2 ++
+>  2 files changed, 75 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 634e191ca2c3..600e3ae5b656 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -95,6 +95,72 @@ static inline bool intel_svm_capable(struct intel_iommu *iommu)
+>  	return iommu->flags & VTD_FLAG_SVM_CAPABLE;
+>  }
+>  
+> +#define pasid_lock_held() lock_is_held(&pasid_mutex.dep_map)
+put after the pasid_mutex definition?
+> +static DEFINE_MUTEX(pasid_mutex);
+> +
+> +static void intel_svm_free_async_fn(struct work_struct *work)
+> +{
+> +	struct intel_svm *svm = container_of(work, struct intel_svm, work);
+> +	struct intel_svm_dev *sdev;
+> +
+> +	/*
+> +	 * Unbind all devices associated with this PASID which is
+> +	 * being freed by other users such as VFIO.
+> +	 */
+> +	mutex_lock(&pasid_mutex);
+> +	list_for_each_entry_rcu(sdev, &svm->devs, list, pasid_lock_held()) {
+> +		/* Does not poison forward pointer */
+> +		list_del_rcu(&sdev->list);
+> +		spin_lock(&svm->iommu->lock);
+> +		intel_pasid_tear_down_entry(svm->iommu, sdev->dev,
+> +					svm->pasid, true);
+> +		spin_unlock(&svm->iommu->lock);
+> +		kfree_rcu(sdev, rcu);
+> +		/*
+> +		 * Free before unbind only happens with guest usaged
+usaged?
+> +		 * host PASIDs. IOASID free will detach private data
+> +		 * and free the IOASID entry.
+> +		 */
+> +		ioasid_put(NULL, svm->pasid);
+> +		if (list_empty(&svm->devs))
+> +			kfree(svm);
+> +	}
+> +	mutex_unlock(&pasid_mutex);
+> +}
+> +
+> +
+> +static int pasid_status_change(struct notifier_block *nb,
+> +				unsigned long code, void *data)
+> +{
+> +	struct ioasid_nb_args *args = (struct ioasid_nb_args *)data;
+> +	struct intel_svm *svm = (struct intel_svm *)args->pdata;
+> +	int ret = NOTIFY_DONE;
+> +
+> +	if (code == IOASID_FREE) {
+> +		if (!svm)
+> +			goto done;
+> +		if (args->id != svm->pasid) {
+> +			pr_warn("Notify PASID does not match data %d : %d\n",
+> +				args->id, svm->pasid);
+> +			goto done;
+> +		}
+> +		schedule_work(&svm->work);
+> +		return NOTIFY_OK;
+> +	}
+> +done:
+> +	return ret;> +}
+> +
+> +static struct notifier_block pasid_nb = {
+> +	.notifier_call = pasid_status_change,
+> +};
+> +
+> +void intel_svm_add_pasid_notifier(void)
+> +{
+> +	/* Listen to all PASIDs, not specific to a set */
+> +	ioasid_register_notifier(NULL, &pasid_nb);
+> +}
+> +
+>  void intel_svm_check(struct intel_iommu *iommu)
+>  {
+>  	if (!pasid_supported(iommu))
+> @@ -221,7 +287,6 @@ static const struct mmu_notifier_ops intel_mmuops = {
+>  	.invalidate_range = intel_invalidate_range,
+>  };
+>  
+> -static DEFINE_MUTEX(pasid_mutex);
+>  static LIST_HEAD(global_svm_list);
+>  
+>  #define for_each_svm_dev(sdev, svm, d)			\
+> @@ -342,7 +407,14 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>  			svm->gpasid = data->gpasid;
+>  			svm->flags |= SVM_FLAG_GUEST_PASID;
+>  		}
+> +		svm->iommu = iommu;
+> +		/*
+> +		 * Set up cleanup async work in case IOASID core notify us PASID
+> +		 * is freed before unbind.
+> +		 */
+> +		INIT_WORK(&svm->work, intel_svm_free_async_fn);
+>  		ioasid_attach_data(data->hpasid, svm);
+> +		ioasid_get(NULL, svm->pasid);
+>  		INIT_LIST_HEAD_RCU(&svm->devs);
+>  		mmput(svm->mm);
+>  	}
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index b1ed2f25f7c0..d36038e6ae0b 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -744,6 +744,7 @@ void intel_svm_unbind(struct iommu_sva *handle);
+>  int intel_svm_get_pasid(struct iommu_sva *handle);
+>  int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
+>  			    struct iommu_page_response *msg);
+> +void intel_svm_add_pasid_notifier(void);
+>  
+>  struct svm_dev_ops;
+>  
+> @@ -770,6 +771,7 @@ struct intel_svm {
+>  	int gpasid; /* In case that guest PASID is different from host PASID */
+>  	struct list_head devs;
+>  	struct list_head list;
+> +	struct work_struct work; /* For deferred clean up */
+>  };
+>  #else
+>  static inline void intel_svm_check(struct intel_iommu *iommu) {}
+> 
+
+Thanks
+
+Eric
 
 _______________________________________________
 iommu mailing list
