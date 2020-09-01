@@ -7,72 +7,70 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C38C433E6
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:46:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CA4C433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 18:26:42 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B732207D3
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:46:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B732207D3
+	by mail.kernel.org (Postfix) with ESMTPS id 293C4206FA
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 18:26:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 293C4206FA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 06DF2870E2;
-	Tue,  1 Sep 2020 17:46:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E47FD864EE;
+	Tue,  1 Sep 2020 18:26:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4CbQtIQ7AIFD; Tue,  1 Sep 2020 18:26:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 31B2586407;
+	Tue,  1 Sep 2020 18:26:39 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 14A36C0052;
+	Tue,  1 Sep 2020 18:26:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53678C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:26:37 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3C14B8650F
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:26:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8SQ7OEErTCrN; Tue,  1 Sep 2020 17:46:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D4EE986DEE;
-	Tue,  1 Sep 2020 17:46:47 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC7CAC07FF;
-	Tue,  1 Sep 2020 17:46:47 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BF953C0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:46:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 891CE220B2
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:46:46 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uwiaSeAJkEsZ for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 17:46:45 +0000 (UTC)
+ with ESMTP id q7JFxqMKryk2 for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 18:26:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 384F2204E7
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:46:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 298C4861E3
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:26:36 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 679CC1FB;
- Tue,  1 Sep 2020 10:46:44 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B5561FB;
+ Tue,  1 Sep 2020 11:26:35 -0700 (PDT)
 Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A5AC3F71F;
- Tue,  1 Sep 2020 10:46:37 -0700 (PDT)
-Subject: Re: [PATCH v9 03/32] drm: core: fix common struct sg_table related
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63A0F3F71F;
+ Tue,  1 Sep 2020 11:26:33 -0700 (PDT)
+Subject: Re: [PATCH v9 04/32] drm: armada: fix common struct sg_table related
  issues
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
  dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
  linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
 References: <20200826063316.23486-1-m.szyprowski@samsung.com>
- <CGME20200826063529eucas1p19d797cf74bf653bf68b0a0e860806dbf@eucas1p1.samsung.com>
- <20200826063316.23486-4-m.szyprowski@samsung.com>
+ <CGME20200826063529eucas1p24a398fd2bacf53a33a14d7977a097f61@eucas1p2.samsung.com>
+ <20200826063316.23486-5-m.szyprowski@samsung.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a96aefea-936a-e54d-1604-93902443b360@arm.com>
-Date: Tue, 1 Sep 2020 18:46:33 +0100
+Message-ID: <f3a3e178-4d52-7015-1913-bf44993f07f3@arm.com>
+Date: Tue, 1 Sep 2020 19:26:32 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200826063316.23486-4-m.szyprowski@samsung.com>
+In-Reply-To: <20200826063316.23486-5-m.szyprowski@samsung.com>
 Content-Language: en-GB
-Cc: Thomas Zimmermann <tzimmermann@suse.de>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Russell King <linux@armlinux.org.uk>,
+ Daniel Vetter <daniel@ffwll.ch>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,118 +113,66 @@ On 2020-08-26 07:32, Marek Szyprowski wrote:
 > and copy/paste safe.
 > 
 > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reviewed-by: Andrzej Hajda <a.hajda@samsung.com>
 > ---
->   drivers/gpu/drm/drm_cache.c            |  2 +-
->   drivers/gpu/drm/drm_gem_shmem_helper.c | 14 +++++++++-----
->   drivers/gpu/drm/drm_prime.c            | 11 ++++++-----
->   3 files changed, 16 insertions(+), 11 deletions(-)
+>   drivers/gpu/drm/armada/armada_gem.c | 12 ++++++------
+>   1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
-> index 03e01b000f7a..0fe3c496002a 100644
-> --- a/drivers/gpu/drm/drm_cache.c
-> +++ b/drivers/gpu/drm/drm_cache.c
-> @@ -127,7 +127,7 @@ drm_clflush_sg(struct sg_table *st)
->   		struct sg_page_iter sg_iter;
+> diff --git a/drivers/gpu/drm/armada/armada_gem.c b/drivers/gpu/drm/armada/armada_gem.c
+> index 8005614d2e6b..bedd8937d8a1 100644
+> --- a/drivers/gpu/drm/armada/armada_gem.c
+> +++ b/drivers/gpu/drm/armada/armada_gem.c
+> @@ -395,7 +395,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
 >   
->   		mb(); /*CLFLUSH is ordered only by using memory barriers*/
-> -		for_each_sg_page(st->sgl, &sg_iter, st->nents, 0)
-> +		for_each_sgtable_page(st, &sg_iter, 0)
->   			drm_clflush_page(sg_page_iter_page(&sg_iter));
->   		mb(); /*Make sure that all cache line entry is flushed*/
+>   		mapping = dobj->obj.filp->f_mapping;
 >   
-> diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-> index 4b7cfbac4daa..47d8211221f2 100644
-> --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-> +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-> @@ -126,8 +126,8 @@ void drm_gem_shmem_free_object(struct drm_gem_object *obj)
->   		drm_prime_gem_destroy(obj, shmem->sgt);
->   	} else {
->   		if (shmem->sgt) {
-> -			dma_unmap_sg(obj->dev->dev, shmem->sgt->sgl,
-> -				     shmem->sgt->nents, DMA_BIDIRECTIONAL);
-> +			dma_unmap_sgtable(obj->dev->dev, shmem->sgt,
-> +					  DMA_BIDIRECTIONAL, 0);
->   			sg_free_table(shmem->sgt);
->   			kfree(shmem->sgt);
+> -		for_each_sg(sgt->sgl, sg, count, i) {
+> +		for_each_sgtable_sg(sgt, sg, i) {
+>   			struct page *page;
+>   
+>   			page = shmem_read_mapping_page(mapping, i);
+> @@ -407,8 +407,8 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+>   			sg_set_page(sg, page, PAGE_SIZE, 0);
 >   		}
-> @@ -424,8 +424,7 @@ void drm_gem_shmem_purge_locked(struct drm_gem_object *obj)
 >   
->   	WARN_ON(!drm_gem_shmem_is_purgeable(shmem));
->   
-> -	dma_unmap_sg(obj->dev->dev, shmem->sgt->sgl,
-> -		     shmem->sgt->nents, DMA_BIDIRECTIONAL);
-> +	dma_unmap_sgtable(obj->dev->dev, shmem->sgt, DMA_BIDIRECTIONAL, 0);
->   	sg_free_table(shmem->sgt);
->   	kfree(shmem->sgt);
->   	shmem->sgt = NULL;
-> @@ -697,12 +696,17 @@ struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_object *obj)
->   		goto err_put_pages;
->   	}
->   	/* Map the pages for use by the h/w. */
-> -	dma_map_sg(obj->dev->dev, sgt->sgl, sgt->nents, DMA_BIDIRECTIONAL);
-> +	ret = dma_map_sgtable(obj->dev->dev, sgt, DMA_BIDIRECTIONAL, 0);
-> +	if (ret)
-> +		goto err_free_sgt;
->   
->   	shmem->sgt = sgt;
->   
->   	return sgt;
->   
-> +err_free_sgt:
-> +	sg_free_table(sgt);
-> +	kfree(sgt);
+> -		if (dma_map_sg(attach->dev, sgt->sgl, sgt->nents, dir) == 0) {
+> -			num = sgt->nents;
+> +		if (dma_map_sgtable(attach->dev, sgt, dir, 0)) {
+> +			num = count;
 
-Should this be a separate patch to add the missing error handling to the 
-existing code first?
+I think it might be even nicer to get rid of "num" entirely and convert 
+the cleanup path to for_each_sgtable_sg() for completeness - AFAICS it 
+should only need an extra "if (sg_page(sg))..." check in that loop. Then 
+"count" could possibly be squashed into its one remaining use as well, 
+but maybe it's worth keeping for readability.
 
-Otherwise the rest of the mechanical conversion looks straightforward 
-enough, and I'm not the separation-of-concerns police (for this 
-subsystem, at least), so either way,
+Robin.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
->   err_put_pages:
->   	drm_gem_shmem_put_pages(shmem);
->   	return ERR_PTR(ret);
-> diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
-> index 5d181bf60a44..c45b0cc6e31d 100644
-> --- a/drivers/gpu/drm/drm_prime.c
-> +++ b/drivers/gpu/drm/drm_prime.c
-> @@ -617,6 +617,7 @@ struct sg_table *drm_gem_map_dma_buf(struct dma_buf_attachment *attach,
->   {
->   	struct drm_gem_object *obj = attach->dmabuf->priv;
->   	struct sg_table *sgt;
-> +	int ret;
+>   			goto release;
+>   		}
+>   	} else if (dobj->page) {
+> @@ -418,7 +418,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
 >   
->   	if (WARN_ON(dir == DMA_NONE))
->   		return ERR_PTR(-EINVAL);
-> @@ -626,11 +627,12 @@ struct sg_table *drm_gem_map_dma_buf(struct dma_buf_attachment *attach,
->   	else
->   		sgt = obj->dev->driver->gem_prime_get_sg_table(obj);
+>   		sg_set_page(sgt->sgl, dobj->page, dobj->obj.size, 0);
 >   
-> -	if (!dma_map_sg_attrs(attach->dev, sgt->sgl, sgt->nents, dir,
-> -			      DMA_ATTR_SKIP_CPU_SYNC)) {
-> +	ret = dma_map_sgtable(attach->dev, sgt, dir,
-> +			      DMA_ATTR_SKIP_CPU_SYNC);
-> +	if (ret) {
->   		sg_free_table(sgt);
->   		kfree(sgt);
-> -		sgt = ERR_PTR(-ENOMEM);
-> +		sgt = ERR_PTR(ret);
+> -		if (dma_map_sg(attach->dev, sgt->sgl, sgt->nents, dir) == 0)
+> +		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
+>   			goto free_table;
+>   	} else if (dobj->linear) {
+>   		/* Single contiguous physical region - no struct page */
+> @@ -449,11 +449,11 @@ static void armada_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
+>   	int i;
+>   
+>   	if (!dobj->linear)
+> -		dma_unmap_sg(attach->dev, sgt->sgl, sgt->nents, dir);
+> +		dma_unmap_sgtable(attach->dev, sgt, dir, 0);
+>   
+>   	if (dobj->obj.filp) {
+>   		struct scatterlist *sg;
+> -		for_each_sg(sgt->sgl, sg, sgt->nents, i)
+> +		for_each_sgtable_sg(sgt, sg, i)
+>   			put_page(sg_page(sg));
 >   	}
 >   
->   	return sgt;
-> @@ -652,8 +654,7 @@ void drm_gem_unmap_dma_buf(struct dma_buf_attachment *attach,
->   	if (!sgt)
->   		return;
->   
-> -	dma_unmap_sg_attrs(attach->dev, sgt->sgl, sgt->nents, dir,
-> -			   DMA_ATTR_SKIP_CPU_SYNC);
-> +	dma_unmap_sgtable(attach->dev, sgt, dir, DMA_ATTR_SKIP_CPU_SYNC);
->   	sg_free_table(sgt);
->   	kfree(sgt);
->   }
 > 
 _______________________________________________
 iommu mailing list
