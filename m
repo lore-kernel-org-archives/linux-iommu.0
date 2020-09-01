@@ -2,78 +2,77 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CD1C433E6
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:16:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1E3C433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:24:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73E0D20767
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:16:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73E0D20767
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id DDA932087D
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 17:24:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDA932087D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5FA7C86F76;
-	Tue,  1 Sep 2020 17:16:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HGj7WTcKFSAk; Tue,  1 Sep 2020 17:16:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D943486F13;
-	Tue,  1 Sep 2020 17:16:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CF9EDC07FF;
-	Tue,  1 Sep 2020 17:16:35 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C12B1C0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:16:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A56C91FE32
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:16:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 937322263C;
+	Tue,  1 Sep 2020 17:24:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UhPbvOXqKle7; Tue,  1 Sep 2020 17:24:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 030B21FE0A;
+	Tue,  1 Sep 2020 17:24:02 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1286C07FF;
+	Tue,  1 Sep 2020 17:24:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D085C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:24:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 39270870AE
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:24:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GaO-6G9bp1Wx for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 17:16:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 7BD261FD90
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:16:32 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 48CDB68B05; Tue,  1 Sep 2020 19:16:27 +0200 (CEST)
-Date: Tue, 1 Sep 2020 19:16:27 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: Re: [PATCH 22/28] sgiseeq: convert from dma_cache_sync to
- dma_sync_single_for_device
-Message-ID: <20200901171627.GA8255@lst.de>
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-23-hch@lst.de>
- <20200901152209.GA14288@alpha.franken.de>
- <20200901171241.GA20685@alpha.franken.de>
+ with ESMTP id rnqU1YpVqemw for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 17:23:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 082E1870A0
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 17:23:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52E8A1FB;
+ Tue,  1 Sep 2020 10:23:58 -0700 (PDT)
+Received: from [10.57.40.122] (unknown [10.57.40.122])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 401F73F71F;
+ Tue,  1 Sep 2020 10:23:56 -0700 (PDT)
+Subject: Re: [PATCH v9 01/32] drm: prime: add common helper to check
+ scatterlist contiguity
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20200826063316.23486-1-m.szyprowski@samsung.com>
+ <CGME20200826063527eucas1p1d68954adf1c25e1d760b92ca0845ab48@eucas1p1.samsung.com>
+ <20200826063316.23486-2-m.szyprowski@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <bbbd5f0c-a0ae-015e-dbfd-4ae41e586983@arm.com>
+Date: Tue, 1 Sep 2020 18:23:54 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200901171241.GA20685@alpha.franken.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
- linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
- linux-nvme@lists.infradead.org, linux-mips@vger.kernel.org,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
- linux-samsung-soc@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>,
- linux-scsi@vger.kernel.org, iommu@lists.linux-foundation.org,
- Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
- linux-media@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
- Pawel Osciak <pawel@osciak.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
- netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
- linux-kernel@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>
+In-Reply-To: <20200826063316.23486-2-m.szyprowski@samsung.com>
+Content-Language: en-GB
+Cc: Thomas Zimmermann <tzimmermann@suse.de>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,62 +85,120 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 01, 2020 at 07:12:41PM +0200, Thomas Bogendoerfer wrote:
-> On Tue, Sep 01, 2020 at 05:22:09PM +0200, Thomas Bogendoerfer wrote:
-> > On Wed, Aug 19, 2020 at 08:55:49AM +0200, Christoph Hellwig wrote:
-> > > Use the proper modern API to transfer cache ownership for incoherent DMA.
-> > > 
-> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > ---
-> > >  drivers/net/ethernet/seeq/sgiseeq.c | 12 ++++++++----
-> > >  1 file changed, 8 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/seeq/sgiseeq.c b/drivers/net/ethernet/seeq/sgiseeq.c
-> > > index 39599bbb5d45b6..f91dae16d69a19 100644
-> > > --- a/drivers/net/ethernet/seeq/sgiseeq.c
-> > > +++ b/drivers/net/ethernet/seeq/sgiseeq.c
-> > > @@ -112,14 +112,18 @@ struct sgiseeq_private {
-> > >  
-> > >  static inline void dma_sync_desc_cpu(struct net_device *dev, void *addr)
-> > >  {
-> > > -	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
-> > > -		       DMA_FROM_DEVICE);
-> > > +	struct sgiseeq_private *sp = netdev_priv(dev);
-> > > +
-> > > +	dma_sync_single_for_cpu(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-> > > +			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
-> > >  }
-> > >  
-> > >  static inline void dma_sync_desc_dev(struct net_device *dev, void *addr)
-> > >  {
-> > > -	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
-> > > -		       DMA_TO_DEVICE);
-> > > +	struct sgiseeq_private *sp = netdev_priv(dev);
-> > > +
-> > > +	dma_sync_single_for_device(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-> > > +			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
-> > >  }
-> > 
-> > this breaks ethernet on IP22 completely, but I haven't figured out why, yet.
-> 
-> the problem is that dma_sync_single_for_cpu() doesn't flush anything
-> for IP22, because it only flushes for CPUs which do speculation. So
-> either MIPS arch_sync_dma_for_cpu() should always flush or sgiseeq
-> needs to use a different sync funktion, when it wants to re-read descriptors
-> from memory.
+On 2020-08-26 07:32, Marek Szyprowski wrote:
+> It is a common operation done by DRM drivers to check the contiguity
+> of the DMA-mapped buffer described by a scatterlist in the
+> sg_table object. Let's add a common helper for this operation.
 
-Well, if IP22 doesn't speculate (which I'm pretty sure is the case),
-dma_sync_single_for_cpu should indeeed be a no-op.  But then there
-also shouldn't be anything in the cache, as the previous
-dma_sync_single_for_device should have invalidated it.  So it seems like
-we are missing one (or more) ownership transfers to the device.  I'll
-try to look at the the ownership management in a little more detail
-tomorrow.
+I still think this could be hoisted even further out to the common 
+sgtable API level, but let's get the individual subsystems straightened 
+out first then worry about consolidation later.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reviewed-by: Andrzej Hajda <a.hajda@samsung.com>
+> ---
+>   drivers/gpu/drm/drm_gem_cma_helper.c | 23 +++------------------
+>   drivers/gpu/drm/drm_prime.c          | 31 ++++++++++++++++++++++++++++
+>   include/drm/drm_prime.h              |  2 ++
+>   3 files changed, 36 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_gem_cma_helper.c b/drivers/gpu/drm/drm_gem_cma_helper.c
+> index 822edeadbab3..59b9ca207b42 100644
+> --- a/drivers/gpu/drm/drm_gem_cma_helper.c
+> +++ b/drivers/gpu/drm/drm_gem_cma_helper.c
+> @@ -471,26 +471,9 @@ drm_gem_cma_prime_import_sg_table(struct drm_device *dev,
+>   {
+>   	struct drm_gem_cma_object *cma_obj;
+>   
+> -	if (sgt->nents != 1) {
+> -		/* check if the entries in the sg_table are contiguous */
+> -		dma_addr_t next_addr = sg_dma_address(sgt->sgl);
+> -		struct scatterlist *s;
+> -		unsigned int i;
+> -
+> -		for_each_sg(sgt->sgl, s, sgt->nents, i) {
+> -			/*
+> -			 * sg_dma_address(s) is only valid for entries
+> -			 * that have sg_dma_len(s) != 0
+> -			 */
+> -			if (!sg_dma_len(s))
+> -				continue;
+> -
+> -			if (sg_dma_address(s) != next_addr)
+> -				return ERR_PTR(-EINVAL);
+> -
+> -			next_addr = sg_dma_address(s) + sg_dma_len(s);
+> -		}
+> -	}
+> +	/* check if the entries in the sg_table are contiguous */
+> +	if (drm_prime_get_contiguous_size(sgt) < attach->dmabuf->size)
+> +		return ERR_PTR(-EINVAL);
+>   
+>   	/* Create a CMA GEM buffer. */
+>   	cma_obj = __drm_gem_cma_create(dev, attach->dmabuf->size);
+> diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+> index 1693aa7c14b5..4ed5ed1f078c 100644
+> --- a/drivers/gpu/drm/drm_prime.c
+> +++ b/drivers/gpu/drm/drm_prime.c
+> @@ -825,6 +825,37 @@ struct sg_table *drm_prime_pages_to_sg(struct page **pages, unsigned int nr_page
+>   }
+>   EXPORT_SYMBOL(drm_prime_pages_to_sg);
+>   
+> +/**
+> + * drm_prime_get_contiguous_size - returns the contiguous size of the buffer
+> + * @sgt: sg_table describing the buffer to check
+> + *
+> + * This helper calculates the contiguous size in the DMA address space
+> + * of the the buffer described by the provided sg_table.
+> + *
+> + * This is useful for implementing
+> + * &drm_gem_object_funcs.gem_prime_import_sg_table.
+> + */
+> +unsigned long drm_prime_get_contiguous_size(struct sg_table *sgt)
+> +{
+> +	dma_addr_t expected = sg_dma_address(sgt->sgl);
+> +	struct scatterlist *sg;
+> +	unsigned long size = 0;
+> +	int i;
+> +
+> +	for_each_sgtable_dma_sg(sgt, sg, i) {
+> +		unsigned int len = sg_dma_len(sg);
+> +
+> +		if (!len)
+> +			break;
+> +		if (sg_dma_address(sg) != expected)
+> +			break;
+> +		expected += len;
+> +		size += len;
+> +	}
+> +	return size;
+> +}
+> +EXPORT_SYMBOL(drm_prime_get_contiguous_size);
+> +
+>   /**
+>    * drm_gem_prime_export - helper library implementation of the export callback
+>    * @obj: GEM object to export
+> diff --git a/include/drm/drm_prime.h b/include/drm/drm_prime.h
+> index 9af7422b44cf..47ef11614627 100644
+> --- a/include/drm/drm_prime.h
+> +++ b/include/drm/drm_prime.h
+> @@ -92,6 +92,8 @@ struct sg_table *drm_prime_pages_to_sg(struct page **pages, unsigned int nr_page
+>   struct dma_buf *drm_gem_prime_export(struct drm_gem_object *obj,
+>   				     int flags);
+>   
+> +unsigned long drm_prime_get_contiguous_size(struct sg_table *sgt);
+> +
+>   /* helper functions for importing */
+>   struct drm_gem_object *drm_gem_prime_import_dev(struct drm_device *dev,
+>   						struct dma_buf *dma_buf,
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
