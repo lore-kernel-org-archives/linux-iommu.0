@@ -2,102 +2,101 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BC4C433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 03:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25DAC433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 03:57:58 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 768AB20693
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 03:42:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6FA782078B
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 03:57:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CWrOGraZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 768AB20693
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dyaEu3K2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FA782078B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 367D086650;
-	Tue,  1 Sep 2020 03:42:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5654C86864;
+	Tue,  1 Sep 2020 03:57:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tuPVvvgW8O99; Tue,  1 Sep 2020 03:42:16 +0000 (UTC)
+	with ESMTP id Ts1dWUiGb8Ag; Tue,  1 Sep 2020 03:57:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8F74086654;
-	Tue,  1 Sep 2020 03:42:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 76DDE86805;
+	Tue,  1 Sep 2020 03:57:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B6A0C088B;
-	Tue,  1 Sep 2020 03:42:16 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F411EC0052
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:42:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D063C088B;
+	Tue,  1 Sep 2020 03:57:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02BA2C0052
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:57:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E11CD86654
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:42:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EB4E785F4D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:57:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bl6yCfQJE+Yv for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 03:42:12 +0000 (UTC)
+ with ESMTP id c_zOQykp7iRh for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 03:57:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D789C86650
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:42:11 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id m6so5701342wrn.0
- for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 20:42:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=gEP+l6VmZ2AQhT9y6MxnJyCmEVijpcWpEhbN/rykvcE=;
- b=CWrOGraZ3/zNXixoJEwLA3hwBYU2PWVJEJ6ylxVJux52OFGXCCNEGTUhC6mkNsNKpA
- i1TXATaF9rTSGwMaVqrUu1Zz/Y1O9y1drCGCIQXqHRHg9tOaU+j7fvsU/CuvZxVlMMw5
- jVxSR6ue24PPOYOWBejC9MloKJqqT/iDlRnzo7+6cRlhm0s17nQW9Gh2F7FrU9ZfvUxp
- kAj8AgciZRjeU/IJPsUe/joigfP+Mc6xw8KC+pdmtDdlV3fkmAR0oIVELnk2GPlk1ru0
- iqtKfLijhcQEQ37e9PwlNuKupuMgl1u6xVjd2ZRO3vozd8LXzB4Mr45MwWeEmJ4j6Osg
- kkIA==
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
+ [209.85.210.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 267A985D7D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 03:57:55 +0000 (UTC)
+Received: by mail-ot1-f67.google.com with SMTP id g96so4744502otb.12
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 20:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=DHgd1Cn7DbLEoeK4tX+vty8BzXm7n6usmD/UeI07Mrk=;
+ b=dyaEu3K2fa7X2g3Iy4XaFmUwFb2VziG9VK8UPB8GwRUXnqKa7ib6yl+CECA0Q1vPLz
+ IjQ+mn612HdIbhc5odg6OfaT3Qb/TYbaI5T/zWIex5gVUoWgirWjKb0AvwZRDaqbzzCO
+ Y1OtNL+0UUlSJmpsQ0sd9QBKMSwBu6kJ5paH3wPa4P9agbIv6yxHgu7afTYDTEwIeYGH
+ DJZ6IsI3RU6NTWK8tqqEnwY3s/hCocMGlybV+ffvg6CgjQt6J50QWplKw+lBIr/ief3F
+ psjjzA+evsRqJDJS9fx7ldrRPcAmxLmEOhyENyNuK+ikFrDogOJS+r6DRfJGytxsSq3x
+ WDZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=gEP+l6VmZ2AQhT9y6MxnJyCmEVijpcWpEhbN/rykvcE=;
- b=E1INYBPPqgFtEMq+xsxbLbEpfDdgcrtgyOfw9aO0k9eq5JGB8EyP1YaKZgCAcTkH9G
- 4LpvARWScDB7+3Z5CjUTLIRlaM4ujC3Whh8hGqBhFP9rGbcJx0vXAGpN9TWc1b5zg0/b
- 2AJvpXCNacacijK7nq/eIMECTifIlmuAvqoTvu7FADttYNkmlWHPIKWGF5u1UM0fvgBM
- 6dH30KdcOE1sQZCzfw+9zaP/66LaPnkWxBzfpg5FPZSIjy9HFI9LnFi3tvuwsEID0goS
- w2915co26zFtbsJrWwV2HthymjQc5XN34Pw2YjjUad85RMghhi8rC6hEIwKzBC6RFNsF
- 3Cgg==
-X-Gm-Message-State: AOAM5339oB8k7tpwtl53vWggEShSCf9XvtwOPzZ4afalQOK2oGRZ5t7e
- kLLDN4sbwILSRvRS/2IaCB42jctjm8+DPvNpDxA=
-X-Google-Smtp-Source: ABdhPJyAYV0Dm0qLaL1mXbuG+PPAW1SP8BjwTCx+mqZtIG0Clr3g+Jy+4HR4m6cw7nu44h9gRxaSIWDuskrjmVwm3j8=
-X-Received: by 2002:adf:e6c7:: with SMTP id y7mr4030589wrm.147.1598931729990; 
- Mon, 31 Aug 2020 20:42:09 -0700 (PDT)
-MIME-Version: 1.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=DHgd1Cn7DbLEoeK4tX+vty8BzXm7n6usmD/UeI07Mrk=;
+ b=CXH3seiQPPqcz5ipv+Xi3eFgoyH4v6wBQFqcKvSwEe4pPja9Ay/bD/ixJUqnfw/dsR
+ lguCdzuWIgtHy6Gho1anrQ4GOi9FqbeSH8FJUWp1k4nKHkA6Z1RUedjwt9+l8R63TkFH
+ try46Ywl7oSSPrvmTSII7xxSRc3Em3PLja3natnlcTTfKgkk61YbNmv3T58efVKNQ0TF
+ zzPM9YsxMSD1RyOwrujfR2+kIVT2H6Gq4UQceDqNVLku9R9LN+ErXbrVpxS73pM6G2ii
+ 3Cp6QlZ8qQ92TnBs2IR1eNus548TqLlZZOt7t0vODHtjhLIwpStgjJobLyeQ4GvUiAco
+ fn5A==
+X-Gm-Message-State: AOAM530lUzkw47majfhhmGF3zZ9GrxTP2A+di8CK2YgYCXIzM/v9waJk
+ sN7RXwfiYvqwjAKP28wjUq9ctTgkm043Tg==
+X-Google-Smtp-Source: ABdhPJyW82+oNd0uKsSlubviePmT2U0GHcTQ3RDx78hC9s24SzOxGZRfPqGKe1d6Eg2D6goGkTWR0w==
+X-Received: by 2002:a4a:aec3:: with SMTP id v3mr2968825oon.69.1598932339869;
+ Mon, 31 Aug 2020 20:52:19 -0700 (PDT)
+Received: from yoga ([2605:6000:e5cb:c100:8898:14ff:fe6d:34e])
+ by smtp.gmail.com with ESMTPSA id u19sm2067501oic.10.2020.08.31.20.52.17
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 31 Aug 2020 20:52:19 -0700 (PDT)
+Date: Mon, 31 Aug 2020 22:52:16 -0500
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH 05/19] iommu: add private interface for adreno-smmu
+Message-ID: <20200901035216.GM3715@yoga>
 References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
- <20200814024114.1177553-2-robdclark@gmail.com> <20200901023517.GA54956@uller>
-In-Reply-To: <20200901023517.GA54956@uller>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 31 Aug 2020 20:42:57 -0700
-Message-ID: <CAF6AEGsx5mmUCuNApP692L-rS3wEbn4UqJBXuSr-38MAcVfoBw@mail.gmail.com>
-Subject: Re: [PATCH 01/19] drm/msm: remove dangling submitqueue references
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
+ <20200814024114.1177553-6-robdclark@gmail.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20200814024114.1177553-6-robdclark@gmail.com>
 Cc: Rob Clark <robdclark@chromium.org>,
- open list <linux-kernel@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- Will Deacon <will@kernel.org>, David Airlie <airlied@linux.ie>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Stephen Boyd <swboyd@chromium.org>, Sean Paul <sean@poorly.run>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Sibi Sankar <sibis@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+ open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ iommu@lists.linux-foundation.org, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>, freedreno@lists.freedesktop.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,73 +114,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 31, 2020 at 7:35 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> On Fri 14 Aug 02:40 UTC 2020, Rob Clark wrote:
->
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > Currently it doesn't matter, since we free the ctx immediately.  But
-> > when we start refcnt'ing the ctx, we don't want old dangling list
-> > entries to hang around.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> >  drivers/gpu/drm/msm/msm_submitqueue.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/msm/msm_submitqueue.c b/drivers/gpu/drm/msm/msm_submitqueue.c
-> > index a1d94be7883a..90c9d84e6155 100644
-> > --- a/drivers/gpu/drm/msm/msm_submitqueue.c
-> > +++ b/drivers/gpu/drm/msm/msm_submitqueue.c
-> > @@ -49,8 +49,10 @@ void msm_submitqueue_close(struct msm_file_private *ctx)
-> >        * No lock needed in close and there won't
-> >        * be any more user ioctls coming our way
-> >        */
-> > -     list_for_each_entry_safe(entry, tmp, &ctx->submitqueues, node)
-> > +     list_for_each_entry_safe(entry, tmp, &ctx->submitqueues, node) {
-> > +             list_del(&entry->node);
->
-> If you refcount ctx, what does that do for the entries in the submit
-> queue?
->
-> "entry" here is kref'ed, but you're popping it off the list regardless
-> of the put ends up freeing the object or not - which afaict would mean
-> leaking the object.
->
+On Thu 13 Aug 21:41 CDT 2020, Rob Clark wrote:
 
-What ends up happening is the submit has reference to submit-queue,
-which has reference to the ctx.. the submitqueue could be alive still
-pending in-flight submits (in a later patch), but dead from the PoV of
-userspace interface.
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> This interface will be used for drm/msm to coordinate with the
+> qcom_adreno_smmu_impl to enable/disable TTBR0 translation.
+> 
+> Once TTBR0 translation is enabled, the GPU's CP (Command Processor)
+> will directly switch TTBR0 pgtables (and do the necessary TLB inv)
+> synchronized to the GPU's operation.  But help from the SMMU driver
+> is needed to initially bootstrap TTBR0 translation, which cannot be
+> done from the GPU.
+> 
+> Since this is a very special case, a private interface is used to
+> avoid adding highly driver specific things to the public iommu
+> interface.
+> 
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 
-We aren't relying (or at least aren't in the end, and I *think* I
-didn't miss anything in the middle) relying on ctx->submitqueues list
-to clean anything up in the end, just track what is still a valid
-submitqueue from userspace PoV
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-BR,
--R
-
->
-> On the other hand, with the current implementation an object with higher
-> refcount with adjacent objects of single refcount would end up with
-> dangling pointers after the put. So in itself this change seems like a
-> net gain, but I'm wondering about the plan described in the commit
-> message.
->
-> Regards,
-> Bjorn
->
-> >               msm_submitqueue_put(entry);
-> > +     }
-> >  }
-> >
-> >  int msm_submitqueue_create(struct drm_device *drm, struct msm_file_private *ctx,
-> > --
-> > 2.26.2
-> >
+> ---
+>  include/linux/adreno-smmu-priv.h | 36 ++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+>  create mode 100644 include/linux/adreno-smmu-priv.h
+> 
+> diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
+> new file mode 100644
+> index 000000000000..a889f28afb42
+> --- /dev/null
+> +++ b/include/linux/adreno-smmu-priv.h
+> @@ -0,0 +1,36 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2020 Google, Inc
+> + */
+> +
+> +#ifndef __ADRENO_SMMU_PRIV_H
+> +#define __ADRENO_SMMU_PRIV_H
+> +
+> +#include <linux/io-pgtable.h>
+> +
+> +/**
+> + * struct adreno_smmu_priv - private interface between adreno-smmu and GPU
+> + *
+> + * @cookie:        An opque token provided by adreno-smmu and passed
+> + *                 back into the callbacks
+> + * @get_ttbr1_cfg: Get the TTBR1 config for the GPUs context-bank
+> + * @set_ttbr0_cfg: Set the TTBR0 config for the GPUs context bank.  A
+> + *                 NULL config disables TTBR0 translation, otherwise
+> + *                 TTBR0 translation is enabled with the specified cfg
+> + *
+> + * The GPU driver (drm/msm) and adreno-smmu work together for controlling
+> + * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
+> + * updating the SMMU for context switches, while on the other hand we do
+> + * not want to duplicate all of the initial setup logic from arm-smmu.
+> + *
+> + * This private interface is used for the two drivers to coordinate.  The
+> + * cookie and callback functions are populated when the GPU driver attaches
+> + * it's domain.
+> + */
+> +struct adreno_smmu_priv {
+> +    const void *cookie;
+> +    const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);
+> +    int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);
+> +};
+> +
+> +#endif /* __ADRENO_SMMU_PRIV_H */
+> \ No newline at end of file
+> -- 
+> 2.26.2
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
