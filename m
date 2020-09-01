@@ -2,76 +2,106 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1575C433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:34:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A03C433E7
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:39:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 802D52087C
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:34:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 802D52087C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 62EF5206FA
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:39:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 62EF5206FA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 656128711C;
-	Tue,  1 Sep 2020 19:34:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3D64286079;
+	Tue,  1 Sep 2020 19:39:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KusfLnjuGF-K; Tue,  1 Sep 2020 19:34:35 +0000 (UTC)
+	with ESMTP id k-gJJbEqm8LB; Tue,  1 Sep 2020 19:39:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ABF0C8710D;
-	Tue,  1 Sep 2020 19:34:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5278D85F32;
+	Tue,  1 Sep 2020 19:39:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98F1DC07FF;
-	Tue,  1 Sep 2020 19:34:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44FD6C07FF;
+	Tue,  1 Sep 2020 19:39:03 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89B8CC0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:34:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A659C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:39:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7833F8710D
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:34:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0FF4A8710D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:39:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W10dFJ9grUnp for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 19:34:33 +0000 (UTC)
+ with ESMTP id ENadr2VB4eVv for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 19:39:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id F3AAF8710C
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:34:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 63F041FB;
- Tue,  1 Sep 2020 12:34:32 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D91FB3F71F;
- Tue,  1 Sep 2020 12:34:29 -0700 (PDT)
-Subject: Re: [PATCH v9 16/32] drm: rockchip: use common helper for a
- scatterlist contiguity check
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0BDF28710C
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:38:59 +0000 (UTC)
+IronPort-SDR: ECql2hOlhZpdMNwueotr6edhPa4AzV/8veP673GKTus2OZVRqlle7rQ10RQsrYzAI4sszsJVuV
+ CCeUfLeKSfFA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9731"; a="157263569"
+X-IronPort-AV: E=Sophos;i="5.76,380,1592895600"; d="scan'208";a="157263569"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Sep 2020 12:38:59 -0700
+IronPort-SDR: 61Amtlaes050RxB0qQH7XOzsM3bz8pU+DMPJXc2mdFfd5F2AgqumdZmYXriBmSvC/d2wlrasXC
+ L7mwHzZZwUmg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,380,1592895600"; d="scan'208";a="404882026"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+ by fmsmga001.fm.intel.com with ESMTP; 01 Sep 2020 12:38:58 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 1 Sep 2020 12:38:58 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 1 Sep 2020 12:38:57 -0700
+Received: from orsmsx611.amr.corp.intel.com ([10.22.229.24]) by
+ ORSMSX611.amr.corp.intel.com ([10.22.229.24]) with mapi id 15.01.1713.004;
+ Tue, 1 Sep 2020 12:38:57 -0700
+From: "Ruhl, Michael J" <michael.j.ruhl@intel.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-gfx] [PATCH v9 08/32] drm: i915: fix common struct
+ sg_table related issues
+Thread-Topic: [Intel-gfx] [PATCH v9 08/32] drm: i915: fix common struct
+ sg_table related issues
+Thread-Index: AQHWe3Ml/rRJPBw9lEWMq6REwJ0ovqlUN/gw
+Date: Tue, 1 Sep 2020 19:38:57 +0000
+Message-ID: <259df561c4bb4ef484799e3776dbb402@intel.com>
 References: <20200826063316.23486-1-m.szyprowski@samsung.com>
- <CGME20200826063537eucas1p1462d4761c8eb6d762fe5ea0fbd3b6e3b@eucas1p1.samsung.com>
- <20200826063316.23486-17-m.szyprowski@samsung.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <263143f0-8b39-6daa-1d26-54ef32b54c27@arm.com>
-Date: Tue, 1 Sep 2020 20:34:28 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ <CGME20200826063532eucas1p2a9e0215f483104d45af0560d5dbfa8e0@eucas1p2.samsung.com>
+ <20200826063316.23486-9-m.szyprowski@samsung.com>
+In-Reply-To: <20200826063316.23486-9-m.szyprowski@samsung.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
 MIME-Version: 1.0
-In-Reply-To: <20200826063316.23486-17-m.szyprowski@samsung.com>
-Content-Language: en-GB
-Cc: =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Sandy Huang <hjc@rock-chips.com>,
- linux-rockchip@lists.infradead.org, Daniel Vetter <daniel@ffwll.ch>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>,
+ "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,59 +114,138 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-08-26 07:33, Marek Szyprowski wrote:
-> Use common helper for checking the contiguity of the imported dma-buf.
+>-----Original Message-----
+>From: Intel-gfx <intel-gfx-bounces@lists.freedesktop.org> On Behalf Of
+>Marek Szyprowski
+>Sent: Wednesday, August 26, 2020 2:33 AM
+>To: dri-devel@lists.freedesktop.org; iommu@lists.linux-foundation.org;
+>linaro-mm-sig@lists.linaro.org; linux-kernel@vger.kernel.org
+>Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>; David Airlie
+><airlied@linux.ie>; intel-gfx@lists.freedesktop.org; Robin Murphy
+><robin.murphy@arm.com>; Christoph Hellwig <hch@lst.de>; linux-arm-
+>kernel@lists.infradead.org; Marek Szyprowski
+><m.szyprowski@samsung.com>
+>Subject: [Intel-gfx] [PATCH v9 08/32] drm: i915: fix common struct sg_table
+>related issues
+>
+>The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg()
+>function
+>returns the number of the created entries in the DMA address space.
+>However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+>dma_unmap_sg must be called with the original number of the entries
+>passed to the dma_map_sg().
+>
+>struct sg_table is a common structure used for describing a non-contiguous
+>memory buffer, used commonly in the DRM and graphics subsystems. It
+>consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+>as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+>and DMA mapped pages (nents entry).
+>
+>It turned out that it was a common mistake to misuse nents and orig_nents
+>entries, calling DMA-mapping functions with a wrong number of entries or
+>ignoring the number of mapped entries returned by the dma_map_sg()
+>function.
+>
+>This driver creatively uses sg_table->orig_nents to store the size of the
+>allocated scatterlist and ignores the number of the entries returned by
+>dma_map_sg function. The sg_table->orig_nents is (mis)used to properly
+>free the (over)allocated scatterlist.
+>
+>This patch only introduces the common DMA-mapping wrappers operating
+>directly on the struct sg_table objects to the dmabuf related functions,
+>so the other drivers, which might share buffers with i915 could rely on
+>the properly set nents and orig_nents values.
+>
+>Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>---
+> drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c       | 11 +++--------
+> drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c |  7 +++----
+> 2 files changed, 6 insertions(+), 12 deletions(-)
+>
+>diff --git a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+>b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+>index 2679380159fc..8a988592715b 100644
+>--- a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+>+++ b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+>@@ -48,12 +48,9 @@ static struct sg_table *i915_gem_map_dma_buf(struct
+>dma_buf_attachment *attachme
+> 		src = sg_next(src);
+> 	}
+>
+>-	if (!dma_map_sg_attrs(attachment->dev,
+>-			      st->sgl, st->nents, dir,
+>-			      DMA_ATTR_SKIP_CPU_SYNC)) {
+>-		ret = -ENOMEM;
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+You have dropped this error value.
 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->   drivers/gpu/drm/rockchip/rockchip_drm_gem.c | 19 +------------------
->   1 file changed, 1 insertion(+), 18 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_gem.c b/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
-> index b9275ba7c5a5..2970e534e2bb 100644
-> --- a/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
-> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_gem.c
-> @@ -460,23 +460,6 @@ struct sg_table *rockchip_gem_prime_get_sg_table(struct drm_gem_object *obj)
->   	return sgt;
->   }
->   
-> -static unsigned long rockchip_sg_get_contiguous_size(struct sg_table *sgt,
-> -						     int count)
-> -{
-> -	struct scatterlist *s;
-> -	dma_addr_t expected = sg_dma_address(sgt->sgl);
-> -	unsigned int i;
-> -	unsigned long size = 0;
-> -
-> -	for_each_sg(sgt->sgl, s, count, i) {
-> -		if (sg_dma_address(s) != expected)
-> -			break;
-> -		expected = sg_dma_address(s) + sg_dma_len(s);
-> -		size += sg_dma_len(s);
-> -	}
-> -	return size;
-> -}
-> -
->   static int
->   rockchip_gem_iommu_map_sg(struct drm_device *drm,
->   			  struct dma_buf_attachment *attach,
-> @@ -498,7 +481,7 @@ rockchip_gem_dma_map_sg(struct drm_device *drm,
->   	if (!count)
->   		return -EINVAL;
->   
-> -	if (rockchip_sg_get_contiguous_size(sg, count) < attach->dmabuf->size) {
-> +	if (drm_prime_get_contiguous_size(sg) < attach->dmabuf->size) {
->   		DRM_ERROR("failed to map sg_table to contiguous linear address.\n");
->   		dma_unmap_sg(drm->dev, sg->sgl, sg->nents,
->   			     DMA_BIDIRECTIONAL);
-> 
+Do you now if this is a benign loss?
+
+M
+
+>+	ret = dma_map_sgtable(attachment->dev, st, dir,
+>DMA_ATTR_SKIP_CPU_SYNC);
+>+	if (ret)
+> 		goto err_free_sg;
+>-	}
+>
+> 	return st;
+>
+>@@ -73,9 +70,7 @@ static void i915_gem_unmap_dma_buf(struct
+>dma_buf_attachment *attachment,
+> {
+> 	struct drm_i915_gem_object *obj = dma_buf_to_obj(attachment-
+>>dmabuf);
+>
+>-	dma_unmap_sg_attrs(attachment->dev,
+>-			   sg->sgl, sg->nents, dir,
+>-			   DMA_ATTR_SKIP_CPU_SYNC);
+>+	dma_unmap_sgtable(attachment->dev, sg, dir,
+>DMA_ATTR_SKIP_CPU_SYNC);
+> 	sg_free_table(sg);
+> 	kfree(sg);
+>
+>diff --git a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+>b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+>index debaf7b18ab5..be30b27e2926 100644
+>--- a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+>+++ b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+>@@ -28,10 +28,9 @@ static struct sg_table *mock_map_dma_buf(struct
+>dma_buf_attachment *attachment,
+> 		sg = sg_next(sg);
+> 	}
+>
+>-	if (!dma_map_sg(attachment->dev, st->sgl, st->nents, dir)) {
+>-		err = -ENOMEM;
+>+	err = dma_map_sgtable(attachment->dev, st, dir, 0);
+>+	if (err)
+> 		goto err_st;
+>-	}
+>
+> 	return st;
+>
+>@@ -46,7 +45,7 @@ static void mock_unmap_dma_buf(struct
+>dma_buf_attachment *attachment,
+> 			       struct sg_table *st,
+> 			       enum dma_data_direction dir)
+> {
+>-	dma_unmap_sg(attachment->dev, st->sgl, st->nents, dir);
+>+	dma_unmap_sgtable(attachment->dev, st, dir, 0);
+> 	sg_free_table(st);
+> 	kfree(st);
+> }
+>--
+>2.17.1
+>
+>_______________________________________________
+>Intel-gfx mailing list
+>Intel-gfx@lists.freedesktop.org
+>https://lists.freedesktop.org/mailman/listinfo/intel-gfx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
