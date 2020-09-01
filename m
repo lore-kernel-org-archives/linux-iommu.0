@@ -2,87 +2,80 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74CCC433E6
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 11:07:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52495C433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 11:33:42 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B4B5E20BED
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 11:07:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4B5E20BED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 05242206EB
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 11:33:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05242206EB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 72F302078C;
-	Tue,  1 Sep 2020 11:07:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6BA4286F7D;
+	Tue,  1 Sep 2020 11:33:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zLBc4xT2-W47; Tue,  1 Sep 2020 11:07:44 +0000 (UTC)
+	with ESMTP id SCW-KnQp-U28; Tue,  1 Sep 2020 11:33:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 811E422E89;
-	Tue,  1 Sep 2020 11:07:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 17C158707C;
+	Tue,  1 Sep 2020 11:33:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 597BEC088B;
-	Tue,  1 Sep 2020 11:07:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5883C0052
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:07:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D84D8C07FF;
+	Tue,  1 Sep 2020 11:33:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9DDECC0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:33:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8074E2078C
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:07:26 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 54E7D8707A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:33:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UfcemgE-2W0M for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 11:07:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 969A527447
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:06:24 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 508E268B05; Tue,  1 Sep 2020 13:06:18 +0200 (CEST)
-Date: Tue, 1 Sep 2020 13:06:17 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH 05/28] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
-Message-ID: <20200901110617.GA13232@lst.de>
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-6-hch@lst.de>
- <CAAFQd5COLxjydDYrfx47ht8tj-aNPiaVnC+WyQA7nvpW4gs=ww@mail.gmail.com>
- <20200819135454.GA17098@lst.de>
- <CAAFQd5BuXP7t3d-Rwft85j=KTyXq7y4s24mQxLr=VoY9krEGZw@mail.gmail.com>
- <20200820044347.GA4533@lst.de> <20200820052004.GA5305@lst.de>
- <CAAFQd5CFiA2WBaaPQ9ezvMjYZfNw37c42UEy9Pk7kJyCi1mLzQ@mail.gmail.com>
- <20200820165407.GD12693@lst.de>
- <CAAFQd5D=NzgjosB51-O_cH27a8V6CPgCfaPSfHHz7nKJPbazgg@mail.gmail.com>
+ with ESMTP id qWLx--4l90xl for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 11:33:36 +0000 (UTC)
+X-Greylist: delayed 00:16:17 by SQLgrey-1.7.6
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C7A248706D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 11:33:35 +0000 (UTC)
+Received: from lhreml722-chm.china.huawei.com (unknown [172.18.7.107])
+ by Forcepoint Email with ESMTP id 3C539C7BD780D3CB7BE4;
+ Tue,  1 Sep 2020 12:17:15 +0100 (IST)
+Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
+ lhreml722-chm.china.huawei.com (10.201.108.73) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.1913.5; Tue, 1 Sep 2020 12:17:13 +0100
+Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
+ dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.1913.007;
+ Tue, 1 Sep 2020 19:17:12 +0800
+From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+To: John Garry <john.garry@huawei.com>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
+Subject: RE: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
+Thread-Topic: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
+Thread-Index: AQHWd8Ms2A2NyKB6nU+JQ9N/rJ8/HalTsKGw
+Date: Tue, 1 Sep 2020 11:17:11 +0000
+Message-ID: <1e2f9669220c4a8d91f08329a46dac00@hisilicon.com>
+References: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.126.202.239]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAAFQd5D=NzgjosB51-O_cH27a8V6CPgCfaPSfHHz7nKJPbazgg@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- nouveau@lists.freedesktop.org, linux-nvme@lists.infradead.org,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
- linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
- Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Tom Lendacky <thomas.lendacky@amd.com>, Pawel Osciak <pawel@osciak.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
- netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
- linux-mips@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>
+X-CFilter-Loop: Reflected
+Cc: "maz@kernel.org" <maz@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linuxarm <linuxarm@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,24 +93,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Aug 20, 2020 at 07:33:48PM +0200, Tomasz Figa wrote:
-> > It wasn't meant to be too insulting, but I found this out when trying
-> > to figure out how to just disable it.  But it also ends up using
-> > the actual dma attr flags for it's own consistency checks, so just
-> > not setting the flag did not turn out to work that easily.
-> >
+
+
+> -----Original Message-----
+> From: linux-kernel-owner@vger.kernel.org
+> [mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of John Garry
+> Sent: Saturday, August 22, 2020 1:54 AM
+> To: will@kernel.org; robin.murphy@arm.com
+> Cc: joro@8bytes.org; linux-arm-kernel@lists.infradead.org;
+> iommu@lists.linux-foundation.org; maz@kernel.org; Linuxarm
+> <linuxarm@huawei.com>; linux-kernel@vger.kernel.org; John Garry
+> <john.garry@huawei.com>
+> Subject: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
 > 
-> Yes, sadly the videobuf2 ended up becoming quite counterintuitive
-> after growing for the long years and that is reflected in the design
-> of this feature as well. I think we need to do something about it.
+> As mentioned in [0], the CPU may consume many cycles processing
+> arm_smmu_cmdq_issue_cmdlist(). One issue we find is the cmpxchg() loop to
+> get space on the queue takes a lot of time once we start getting many CPUs
+> contending - from experiment, for 64 CPUs contending the cmdq, success rate
+> is ~ 1 in 12, which is poor, but not totally awful.
+> 
+> This series removes that cmpxchg() and replaces with an atomic_add, same as
+> how the actual cmdq deals with maintaining the prod pointer.
+> 
+> For my NVMe test with 3x NVMe SSDs, I'm getting a ~24% throughput
+> increase:
+> Before: 1250K IOPs
+> After: 1550K IOPs
+> 
+> I also have a test harness to check the rate of DMA map+unmaps we can
+> achieve:
+> 
+> CPU count	8	16	32	64
+> Before:		282K	115K	36K	11K
+> After:		302K	193K	80K	30K
+> 
+> (unit is map+unmaps per CPU per second)
 
-So I'm about to respin the series and wonder how we should proceed.
-I've failed to come up with a clean patch to keep the flag and make
-it a no-op.  Can you or your team give it a spin?
+I have seen performance improvement on hns3 network by sending UDP with 1-32 threads:
 
-Also I wonder if the flag should be renamed from NON_CONSISTENT
-to NON_COHERENT - the consistent thing is a weird wart from the times
-the old PCI DMA API that is mostly gone now.
+Threads number        1        4           8         16       32
+Before patch(TX Mbps)  7636.05  16444.36  21694.48  25746.40   25295.93
+After  patch(TX Mbps)  7711.60  16478.98  26561.06  32628.75   33764.56
+
+As you can see, for 8,16,32 threads, network TX throughput improve much. For 1 and 4 threads,
+Tx throughput is almost seem before and after patch. This should be sensible as this patch
+is mainly for decreasing the lock contention.
+
+> 
+> [0]
+> https://lore.kernel.org/linux-iommu/B926444035E5E2439431908E3842AFD2
+> 4B86DB@DGGEMI525-MBS.china.huawei.com/T/#ma02e301c38c3e94b7725e
+> 685757c27e39c7cbde3
+> 
+> Differences to v1:
+> - Simplify by dropping patch to always issue a CMD_SYNC
+> - Use 64b atomic add, keeping prod in a separate 32b field
+> 
+> John Garry (2):
+>   iommu/arm-smmu-v3: Calculate max commands per batch
+>   iommu/arm-smmu-v3: Remove cmpxchg() in
+> arm_smmu_cmdq_issue_cmdlist()
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 166
+> ++++++++++++++------
+>  1 file changed, 114 insertions(+), 52 deletions(-)
+> 
+> --
+> 2.26.2
+
+Thanks
+Barry
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
