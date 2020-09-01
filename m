@@ -2,140 +2,85 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	CHARSET_FARAWAY_HEADER,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20263C433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 09:06:16 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BAEC433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 09:13:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D12392071B
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 09:06:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QTp0drHk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D12392071B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 55049206A5
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 09:13:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55049206A5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=zhaoxin.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7B10986EA4;
-	Tue,  1 Sep 2020 09:06:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 165C087074;
+	Tue,  1 Sep 2020 09:13:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id devUW6Rrtl3Q; Tue,  1 Sep 2020 09:06:14 +0000 (UTC)
+	with ESMTP id 2bwu+IZQEaqA; Tue,  1 Sep 2020 09:13:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B391686E9D;
-	Tue,  1 Sep 2020 09:06:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BB4148706D;
+	Tue,  1 Sep 2020 09:13:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CAB6C07FF;
-	Tue,  1 Sep 2020 09:06:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8CC0C07FF;
+	Tue,  1 Sep 2020 09:13:11 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7440EC0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:06:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0E8AC0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:13:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 62EB086361
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:06:12 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B7B6387072
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:13:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id f+KHT25q4EnC for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 09:06:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f193.google.com (mail-qt1-f193.google.com
- [209.85.160.193])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E508C85BA1
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:06:10 +0000 (UTC)
-Received: by mail-qt1-f193.google.com with SMTP id e7so323847qtj.11
- for <iommu@lists.linux-foundation.org>; Tue, 01 Sep 2020 02:06:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=D1PJjxl04vIbaOs4ebAEDi29TuKqnfLhXms4e4vAfJA=;
- b=QTp0drHkzoxPRdICP28IjclRm08/ZlHuAEtqzP1QG+vFQRN0wCHglbA4imGiRgaqQO
- vks9z3Oso2USraYzRybz8FI/N6N3pWRsUsc5mUvct+cAoZvC9nP8Q150X3oE+lVOh+uI
- cc5eAaKJppdn4BQl1wpeaony/BfyeOocoxpuZh716y4jvk1A8r/m/WkOXkLisljNgvJB
- BC+UzYfw2mq6UumWvrmF6vC9yUvrTEUAWTzGbkL+CrArI1Hh4guazMfegiUJHg1JaONv
- tjMS9UnBxWu3DcNoGgnvuzvZzihXwkA3A7lzQaDpeLmVP2VDewI206ZixijmZreELJ2C
- A1lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=D1PJjxl04vIbaOs4ebAEDi29TuKqnfLhXms4e4vAfJA=;
- b=JrEdrpskYLvms1XIZSKhwY892nBgXeRczHCa4O+gRvxDFEO2yJwkGoHtzpV83gd4U3
- nWLBZgSU1Sd8R7miB08RSna7Z2r6qdWSfEZMWSHHTXrAXNyH5mQ+i1Us5am+uX/FBaSz
- lemjeXLRxdlKvTEbxSPEpGeBrvIEMXDHWJet7cbGCifZA/pkv9au8xCoTr7bBWbpAuxq
- knPtSVVn+xNNwIohwCBgrJCfK4lnqr4kmids/Z9wNWf10ZAJvSC+sdpIVgxZ+ruDJyuG
- wGlCFulBg70o9vLWb0096q7Lkyw+fU7GQkSMUR09HVLqs1yFa8h5LXULKzq8WJkpNAqB
- Ds9g==
-X-Gm-Message-State: AOAM532IGUvnHMZYhpG7D4LqeDeTtQ9kbJYOQUQM+Re5wr2x1cbFKUB/
- U+Y1Iv8jgZHF1VjnhEV42VI=
-X-Google-Smtp-Source: ABdhPJxt3ZrWQoEsnnEytmhabGXMOaQWqtDOIGFcf7SKiVbdrdYBFa/qMAesxlpKByq3CmY3wYvUtw==
-X-Received: by 2002:aed:2c06:: with SMTP id f6mr732113qtd.362.1598951169970;
- Tue, 01 Sep 2020 02:06:09 -0700 (PDT)
-Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com.
- [66.111.4.228])
- by smtp.gmail.com with ESMTPSA id 16sm821427qks.102.2020.09.01.02.06.07
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Tue, 01 Sep 2020 02:06:08 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailauth.nyi.internal (Postfix) with ESMTP id A373327C0054;
- Tue,  1 Sep 2020 05:06:06 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
- by compute3.internal (MEProxy); Tue, 01 Sep 2020 05:06:06 -0400
-X-ME-Sender: <xms:_Q5OXyPVVGbcpSw2EztgFitqADIXh0znK6ysN4qTLzqv55nU0M0zsA>
- <xme:_Q5OXw9O1ucVg3XzURv5aBq9MWR-ujm1IY0XBjjrSQuPefDtuFYRg4XAcGDZcBkMp
- tcXR3XAdGe7v1BMaA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudefjedgudefucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeeuohhquhhn
- ucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrfgrth
- htvghrnhepveeijedthfeijeefudehhedvveegudegteehgffgtddvuedtveegtedvvdef
- gedtnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphephedvrdduheehrdduud
- durdejudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
- pegsohhquhhnodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtd
- eigedqudejjeekheehhedvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehf
- ihigmhgvrdhnrghmvg
-X-ME-Proxy: <xmx:_Q5OX5QOlS9hptseCXLPkG7f68kHMQUlI3i-jPDbOGRzKYLyASdR7Q>
- <xmx:_Q5OXyuZ4zrB-ZbtoRa-Rpu_UoWQUIzoHuQrRiWd91wlsnAL9BcM1g>
- <xmx:_Q5OX6edbEi7U5puDhdDP9GBqTCRDrm3ddwWE59ZoxpGMHZzP9Qovg>
- <xmx:_g5OX2_-nLoht5YCspRL8HNcVmpA0wZmAAc-P8oKxThtmQZ08oqIImQ4auc>
-Received: from localhost (unknown [52.155.111.71])
- by mail.messagingengine.com (Postfix) with ESMTPA id 897A630600A9;
- Tue,  1 Sep 2020 05:06:04 -0400 (EDT)
-Date: Tue, 1 Sep 2020 17:06:03 +0800
-From: Boqun Feng <boqun.feng@gmail.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V2 00/46] x86, PCI, XEN, genirq ...: Prepare for device MSI
-Message-ID: <20200901090603.GA110903@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
-References: <20200826111628.794979401@linutronix.de>
+ with ESMTP id I1SQts9NcJ78 for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 09:13:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from ZXSHCAS2.zhaoxin.com (unknown [203.148.12.82])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9A3B18706D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 09:13:07 +0000 (UTC)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
+ (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 1 Sep 2020
+ 17:13:02 +0800
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 1 Sep 2020
+ 17:13:01 +0800
+Received: from zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416]) by
+ zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416%16]) with mapi id
+ 15.01.1979.003; Tue, 1 Sep 2020 17:13:01 +0800
+From: FelixCui-oc <FelixCui-oc@zhaoxin.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "David
+ Woodhouse" <dwmw2@infradead.org>, Dan Carpenter <dan.carpenter@oracle.com>,
+ "kbuild@lists.01.org" <kbuild@lists.01.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIHYzIDIvMl0gaW9tbXUvdnQtZDpBZGQgc3VwcG9ydCBm?=
+ =?gb2312?Q?or_probing_ACPI_device_in_RMRR?=
+Thread-Topic: [PATCH v3 2/2] iommu/vt-d:Add support for probing ACPI device in
+ RMRR
+Thread-Index: AQHWfFkssCqC/uq8zUSrxxRHHTL9PKlSzvUAgAC26n8=
+Date: Tue, 1 Sep 2020 09:13:01 +0000
+Message-ID: <cde22f0f02f94efcae8bf044e2cd9441@zhaoxin.com>
+References: <20200827100217.21324-1-FelixCui-oc@zhaoxin.com>
+ <20200827100217.21324-3-FelixCui-oc@zhaoxin.com>,
+ <e5b1daaf-f073-94c9-714c-832b10d284f4@linux.intel.com>
+In-Reply-To: <e5b1daaf-f073-94c9-714c-832b10d284f4@linux.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.29.8.19]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200826111628.794979401@linutronix.de>
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- Michael Kelley <mikelley@microsoft.com>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org,
- Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>,
+ CobeChen-oc <CobeChen-oc@zhaoxin.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -148,56 +93,406 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0016849542623995408=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Thomas,
+--===============0016849542623995408==
+Content-Language: zh-CN
+Content-Type: multipart/alternative;
+	boundary="_000_cde22f0f02f94efcae8bf044e2cd9441zhaoxincom_"
 
-On Wed, Aug 26, 2020 at 01:16:28PM +0200, Thomas Gleixner wrote:
-[...]
-> 
-> The whole lot is also available from git:
-> 
->    git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git device-msi
-> 
-> This has been tested on Intel/AMD/KVM but lacks testing on:
-> 
->     - HYPERV (-ENODEV)
+--_000_cde22f0f02f94efcae8bf044e2cd9441zhaoxincom_
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-FWIW, I did a build and boot test in a hyperv guest with your
-development branch, the latest commit is 71cbf478eb6f ("irqchip: Add
-IMS (Interrupt Message Storm) driver - NOT FOR MERGING"). And everything
-seemed working fine.
+aGkgIGJhb2x1ICwNCg0KICAgICAgICAgICAgICAgICAgIFRoZXNlIEFDUEkgZGV2aWNlcyBjYW4g
+YmUgcmV0cmlldmVkIGZyb20gdGhlIGtlcm5lbCBhbmQgdGhlcmUgaXMgbm8gYm91bmQgZGV2aWNl
+IGRyaXZlciAuDQoNCg0KQmVzdCByZWdhcmRzDQoNCkZlbGl4Y3VpLW9jDQoNCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fDQq3orz+yMs6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5p
+bnRlbC5jb20+DQq3osvNyrG85DogMjAyMMTqOdTCMcjVIDE0OjEyOjM0DQrK1bz+yMs6IEZlbGl4
+Q3VpLW9jOyBKb2VyZyBSb2VkZWw7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBs
+aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBEYXZpZCBXb29kaG91c2U7IERhbiBDYXJwZW50
+ZXI7IGtidWlsZEBsaXN0cy4wMS5vcmcNCrOty806IGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbTsg
+Q29iZUNoZW4tb2M7IFJheW1vbmRQYW5nLW9jOyBUb255IFcgV2FuZy1vYw0K1vfM4jogUmU6IFtQ
+QVRDSCB2MyAyLzJdIGlvbW11L3Z0LWQ6QWRkIHN1cHBvcnQgZm9yIHByb2JpbmcgQUNQSSBkZXZp
+Y2UgaW4gUk1SUg0KDQpIaSBGZWxpeCwNCg0KT24gOC8yNy8yMCA2OjAyIFBNLCBGZWxpeEN1aW9j
+IHdyb3RlOg0KPiBBZnRlciBhY3BpIGRldmljZSBpbiBSTVJSIGlzIGRldGVjdGVkLGl0IGlzIG5l
+Y2Vzc2FyeQ0KPiB0byBlc3RhYmxpc2ggYSBtYXBwaW5nIGZvciB0aGVzZSBkZXZpY2VzLg0KPiBJ
+biBhY3BpX2RldmljZV9jcmVhdGVfZGlyZWN0X21hcHBpbmdzKCksY3JlYXRlIGEgbWFwcGluZw0K
+PiBmb3IgdGhlIGFjcGkgZGV2aWNlIGluIFJNUlIuDQo+IEFkZCBhIGhlbHBlciB0byBhY2hpZXZl
+IHRoZSBhY3BpIG5hbWVzcGFjZSBkZXZpY2UgY2FuDQo+IGFjY2VzcyB0aGUgUk1SUiByZWdpb24u
+DQoNCkFyZSB0aG9zZSBBQ1BJIGRldmljZXMgdmlzaWJsZSB0byBrZXJuZWw/IElmIHNvLCBhbnkg
+ZGV2aWNlIGRyaXZlciBib3VuZA0KZm9yIGl0Pw0KDQpCZXN0IHJlZ2FyZHMsDQpiYW9sdQ0KDQo+
+DQo+IFNpZ25lZC1vZmYtYnk6IEZlbGl4Q3Vpb2MgPEZlbGl4Q3VpLW9jQHpoYW94aW4uY29tPg0K
+PiAtLS0NCj4gICBkcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgfCAyOSArKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKw0KPiAgIGRyaXZlcnMvaW9tbXUvaW9tbXUuYyAgICAgICB8ICA2ICsr
+KysrKw0KPiAgIGluY2x1ZGUvbGludXgvaW9tbXUuaCAgICAgICB8ICAzICsrKw0KPiAgIDMgZmls
+ZXMgY2hhbmdlZCwgMzggaW5zZXJ0aW9ucygrKQ0KPg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+b21tdS9pbnRlbC9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jDQo+IGluZGV4
+IDIwOGE5MTYwNTI4OC4uNTFkN2E1YjE4ZjQxIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11
+L2ludGVsL2lvbW11LmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jDQo+IEBA
+IC00Nzk5LDYgKzQ3OTksMjEgQEAgc3RhdGljIGludCBfX2luaXQgcGxhdGZvcm1fb3B0aW5fZm9y
+Y2VfaW9tbXUodm9pZCkNCj4gICAgICAgIHJldHVybiAxOw0KPiAgIH0NCj4NCj4gK3N0YXRpYyBp
+bnQgYWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncyhzdHJ1Y3QgZGV2aWNlICpwbl9k
+ZXYsIHN0cnVjdCBkZXZpY2UgKmFjcGlfZGV2aWNlKQ0KPiArew0KPiArICAgICBzdHJ1Y3QgaW9t
+bXVfZ3JvdXAgKmdyb3VwOw0KPiArDQo+ICsgICAgIGFjcGlfZGV2aWNlLT5idXMtPmlvbW11X29w
+cyA9ICZpbnRlbF9pb21tdV9vcHM7DQo+ICsgICAgIGdyb3VwID0gaW9tbXVfZ3JvdXBfZ2V0KHBu
+X2Rldik7DQo+ICsgICAgIGlmICghZ3JvdXApIHsNCj4gKyAgICAgICAgICAgICBwcl93YXJuKCJB
+Q1BJIG5hbWUgc3BhY2UgZGV2aWNlcyBjcmVhdGUgZGlyZWN0IG1hcHBpbmdzIHdyb25nIVxuIik7
+DQo+ICsgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7DQo+ICsgICAgIH0NCj4gKyAgICAgX19h
+Y3BpX2RldmljZV9jcmVhdGVfZGlyZWN0X21hcHBpbmdzKGdyb3VwLCBhY3BpX2RldmljZSk7DQo+
+ICsNCj4gKyAgICAgcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gICBzdGF0aWMgaW50IF9faW5pdCBw
+cm9iZV9hY3BpX25hbWVzcGFjZV9kZXZpY2VzKHZvaWQpDQo+ICAgew0KPiAgICAgICAgc3RydWN0
+IGRtYXJfZHJoZF91bml0ICpkcmhkOw0KPiBAQCAtNDgxMyw2ICs0ODI4LDcgQEAgc3RhdGljIGlu
+dCBfX2luaXQgcHJvYmVfYWNwaV9uYW1lc3BhY2VfZGV2aWNlcyh2b2lkKQ0KPiAgICAgICAgICAg
+ICAgICAgICAgICAgIHN0cnVjdCBhY3BpX2RldmljZV9waHlzaWNhbF9ub2RlICpwbjsNCj4gICAg
+ICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwOw0KPiAgICAgICAg
+ICAgICAgICAgICAgICAgIHN0cnVjdCBhY3BpX2RldmljZSAqYWRldjsNCj4gKyAgICAgICAgICAg
+ICAgICAgICAgIHN0cnVjdCBkZXZpY2UgKnBuX2RldiA9IE5VTEw7DQo+DQo+ICAgICAgICAgICAg
+ICAgICAgICAgICAgaWYgKGRldi0+YnVzICE9ICZhY3BpX2J1c190eXBlKQ0KPiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgY29udGludWU7DQo+IEBAIC00ODIzLDYgKzQ4MzksNyBAQCBz
+dGF0aWMgaW50IF9faW5pdCBwcm9iZV9hY3BpX25hbWVzcGFjZV9kZXZpY2VzKHZvaWQpDQo+ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAmYWRldi0+cGh5c2ljYWxf
+bm9kZV9saXN0LCBub2RlKSB7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBncm91
+cCA9IGlvbW11X2dyb3VwX2dldChwbi0+ZGV2KTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIGlmIChncm91cCkgew0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHBuX2RldiA9IHBuLT5kZXY7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIGlvbW11X2dyb3VwX3B1dChncm91cCk7DQo+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGNvbnRpbnVlOw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgfQ0KPiBAQCAtNDgzMSw3ICs0ODQ4LDE5IEBAIHN0YXRpYyBpbnQgX19pbml0IHByb2JlX2Fj
+cGlfbmFtZXNwYWNlX2RldmljZXModm9pZCkNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHJldCA9IGlvbW11X3Byb2JlX2RldmljZShwbi0+ZGV2KTsNCj4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGlmIChyZXQpDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIGJyZWFrOw0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwbl9kZXYg
+PSBwbi0+ZGV2Ow0KPiArICAgICAgICAgICAgICAgICAgICAgfQ0KPiArICAgICAgICAgICAgICAg
+ICAgICAgaWYgKCFwbl9kZXYpIHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGV2
+LT5idXMtPmlvbW11X29wcyA9ICZpbnRlbF9pb21tdV9vcHM7DQo+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHJldCA9IGlvbW11X3Byb2JlX2RldmljZShkZXYpOw0KPiArICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBpZiAocmV0KSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgcHJfZXJyKCJhY3BpX2RldmljZSBwcm9iZSBmYWlsISByZXQ6JWRcbiIs
+IHJldCk7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byB1bmxv
+Y2s7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIH0NCj4gKyAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgZ290byB1bmxvY2s7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgfQ0K
+PiArICAgICAgICAgICAgICAgICAgICAgcmV0ID0gYWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9t
+YXBwaW5ncyhwbl9kZXYsIGRldik7DQo+ICt1bmxvY2s6DQo+ICAgICAgICAgICAgICAgICAgICAg
+ICAgbXV0ZXhfdW5sb2NrKCZhZGV2LT5waHlzaWNhbF9ub2RlX2xvY2spOw0KPg0KPiAgICAgICAg
+ICAgICAgICAgICAgICAgIGlmIChyZXQpDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lv
+bW11LmMgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMNCj4gaW5kZXggNjA5YmQyNWJmMTU0Li40Zjcx
+NGEyZDVlZjcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW9tbXUuYw0KPiArKysgYi9k
+cml2ZXJzL2lvbW11L2lvbW11LmMNCj4gQEAgLTc3OSw2ICs3NzksMTIgQEAgc3RhdGljIGJvb2wg
+aW9tbXVfaXNfYXR0YWNoX2RlZmVycmVkKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwNCj4g
+ICAgICAgIHJldHVybiBmYWxzZTsNCj4gICB9DQo+DQo+ICt2b2lkICBfX2FjcGlfZGV2aWNlX2Ny
+ZWF0ZV9kaXJlY3RfbWFwcGluZ3Moc3RydWN0IGlvbW11X2dyb3VwICpncm91cCwgc3RydWN0IGRl
+dmljZSAqYWNwaV9kZXZpY2UpDQo+ICt7DQo+ICsgICAgIGlvbW11X2NyZWF0ZV9kZXZpY2VfZGly
+ZWN0X21hcHBpbmdzKGdyb3VwLCBhY3BpX2RldmljZSk7DQo+ICt9DQo+ICtFWFBPUlRfU1lNQk9M
+X0dQTChfX2FjcGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MpOw0KPiArDQo+ICAgLyoq
+DQo+ICAgICogaW9tbXVfZ3JvdXBfYWRkX2RldmljZSAtIGFkZCBhIGRldmljZSB0byBhbiBpb21t
+dSBncm91cA0KPiAgICAqIEBncm91cDogdGhlIGdyb3VwIGludG8gd2hpY2ggdG8gYWRkIHRoZSBk
+ZXZpY2UgKHJlZmVyZW5jZSBzaG91bGQgYmUgaGVsZCkNCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+bGludXgvaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW9tbXUuaA0KPiBpbmRleCBmZWUyMDllZmI3
+NTYuLjliZTEzNDc3NTg4NiAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+
+ICsrKyBiL2luY2x1ZGUvbGludXgvaW9tbXUuaA0KPiBAQCAtNTE0LDYgKzUxNCw5IEBAIGV4dGVy
+biB2b2lkIGlvbW11X2RvbWFpbl93aW5kb3dfZGlzYWJsZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpk
+b21haW4sIHUzMiB3bmRfbnIpDQo+ICAgZXh0ZXJuIGludCByZXBvcnRfaW9tbXVfZmF1bHQoc3Ry
+dWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCBzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyBpb3ZhLCBpbnQgZmxhZ3MpOw0KPg0K
+PiArZXh0ZXJuIHZvaWQgX19hY3BpX2RldmljZV9jcmVhdGVfZGlyZWN0X21hcHBpbmdzKHN0cnVj
+dCBpb21tdV9ncm91cCAqZ3JvdXAsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBzdHJ1Y3QgZGV2aWNlICphY3BpX2RldmljZSk7DQo+ICsNCj4gICBzdGF0
+aWMgaW5saW5lIHZvaWQgaW9tbXVfZmx1c2hfdGxiX2FsbChzdHJ1Y3QgaW9tbXVfZG9tYWluICpk
+b21haW4pDQo+ICAgew0KPiAgICAgICAgaWYgKGRvbWFpbi0+b3BzLT5mbHVzaF9pb3RsYl9hbGwp
+DQo+DQo=
 
-If you want me to set/unset a particular CONFIG option or run some
-command for testing purposes, please let me know ;-)
+--_000_cde22f0f02f94efcae8bf044e2cd9441zhaoxincom_
+Content-Type: text/html; charset="gb2312"
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Bqoun
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dgb2312">
+<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
+<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
+ding-left: 4pt; border-left: #800000 2px solid; } --></style>
+</head>
+<body>
+<meta content=3D"text/html; charset=3DUTF-8">
+<style type=3D"text/css" style=3D"">
+<!--
+p
+	{margin-top:0;
+	margin-bottom:0}
+-->
+</style>
+<div dir=3D"ltr">
+<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
+or:#000000; font-family:Calibri,Helvetica,sans-serif">
+<p></p>
+<p style=3D"font-family:Calibri,Helvetica,sans-serif,EmojiFont,&quot;Apple =
+Color Emoji&quot;,&quot;Segoe UI Emoji&quot;,NotoColorEmoji,&quot;Segoe UI =
+Symbol&quot;,&quot;Android Emoji&quot;,EmojiSymbols; font-size:16px">
+hi&nbsp; baolu ,&nbsp;</p>
+<p style=3D"font-family:Calibri,Helvetica,sans-serif,EmojiFont,&quot;Apple =
+Color Emoji&quot;,&quot;Segoe UI Emoji&quot;,NotoColorEmoji,&quot;Segoe UI =
+Symbol&quot;,&quot;Android Emoji&quot;,EmojiSymbols; font-size:16px">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;These =
+ACPI devices can be retrieved from the kernel and there is no bound device =
+driver .</p>
+<br>
+<p></p>
+<p>Best regards</p>
+<p>Felixcui-oc</p>
+</div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
+color=3D"#000000" style=3D"font-size:11pt"><b>=B7=A2=BC=FE=C8=CB:</b> Lu Ba=
+olu &lt;baolu.lu@linux.intel.com&gt;<br>
+<b>=B7=A2=CB=CD=CA=B1=BC=E4:</b> 2020=C4=EA9=D4=C21=C8=D5 14:12:34<br>
+<b>=CA=D5=BC=FE=C8=CB:</b> FelixCui-oc; Joerg Roedel; iommu@lists.linux-fou=
+ndation.org; linux-kernel@vger.kernel.org; David Woodhouse; Dan Carpenter; =
+kbuild@lists.01.org<br>
+<b>=B3=AD=CB=CD:</b> baolu.lu@linux.intel.com; CobeChen-oc; RaymondPang-oc;=
+ Tony W Wang-oc<br>
+<b>=D6=F7=CC=E2:</b> Re: [PATCH v3 2/2] iommu/vt-d:Add support for probing =
+ACPI device in RMRR</font>
+<div>&nbsp;</div>
+</div>
+</div>
+<font size=3D"2"><span style=3D"font-size:10pt;">
+<div class=3D"PlainText">Hi Felix,<br>
+<br>
+On 8/27/20 6:02 PM, FelixCuioc wrote:<br>
+&gt; After acpi device in RMRR is detected,it is necessary<br>
+&gt; to establish a mapping for these devices.<br>
+&gt; In acpi_device_create_direct_mappings(),create a mapping<br>
+&gt; for the acpi device in RMRR.<br>
+&gt; Add a helper to achieve the acpi namespace device can<br>
+&gt; access the RMRR region.<br>
+<br>
+Are those ACPI devices visible to kernel? If so, any device driver bound<br=
+>
+for it?<br>
+<br>
+Best regards,<br>
+baolu<br>
+<br>
+&gt; <br>
+&gt; Signed-off-by: FelixCuioc &lt;FelixCui-oc@zhaoxin.com&gt;<br>
+&gt; ---<br>
+&gt;&nbsp;&nbsp; drivers/iommu/intel/iommu.c | 29 &#43;&#43;&#43;&#43;&#43;=
+&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;=
+&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;<br>
+&gt;&nbsp;&nbsp; drivers/iommu/iommu.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+|&nbsp; 6 &#43;&#43;&#43;&#43;&#43;&#43;<br>
+&gt;&nbsp;&nbsp; include/linux/iommu.h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+|&nbsp; 3 &#43;&#43;&#43;<br>
+&gt;&nbsp;&nbsp; 3 files changed, 38 insertions(&#43;)<br>
+&gt; <br>
+&gt; diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c=
+<br>
+&gt; index 208a91605288..51d7a5b18f41 100644<br>
+&gt; --- a/drivers/iommu/intel/iommu.c<br>
+&gt; &#43;&#43;&#43; b/drivers/iommu/intel/iommu.c<br>
+&gt; @@ -4799,6 &#43;4799,21 @@ static int __init platform_optin_force_iomm=
+u(void)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 1;<br>
+&gt;&nbsp;&nbsp; }<br>
+&gt;&nbsp;&nbsp; <br>
+&gt; &#43;static int acpi_device_create_direct_mappings(struct device *pn_d=
+ev, struct device *acpi_device)<br>
+&gt; &#43;{<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; struct iommu_group *group;<br>
+&gt; &#43;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; acpi_device-&gt;bus-&gt;iommu_ops =3D &a=
+mp;intel_iommu_ops;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; group =3D iommu_group_get(pn_dev);<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; if (!group) {<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp; pr_warn(&quot;ACPI name space devices create direct mappings wrong!=
+\n&quot;);<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp; return -EINVAL;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; __acpi_device_create_direct_mappings(gro=
+up, acpi_device);<br>
+&gt; &#43;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; return 0;<br>
+&gt; &#43;}<br>
+&gt; &#43;<br>
+&gt;&nbsp;&nbsp; static int __init probe_acpi_namespace_devices(void)<br>
+&gt;&nbsp;&nbsp; {<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct dmar_drhd_unit *drhd;=
+<br>
+&gt; @@ -4813,6 &#43;4828,7 @@ static int __init probe_acpi_namespace_devic=
+es(void)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct =
+acpi_device_physical_node *pn;<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct =
+iommu_group *group;<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct =
+acpi_device *adev;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct device *pn_d=
+ev =3D NULL;<br>
+&gt;&nbsp;&nbsp; <br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (dev=
+-&gt;bus !=3D &amp;acpi_bus_type)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; continue;<br>
+&gt; @@ -4823,6 &#43;4839,7 @@ static int __init probe_acpi_namespace_devic=
+es(void)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;adev-&gt;physical_node_list, nod=
+e) {<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; group =3D iommu_group_get(pn-&gt;d=
+ev);<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (group) {<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; pn_dev =3D pn-&gt;dev;<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp; iommu_group_put(group);<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp; continue;<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; @@ -4831,7 &#43;4848,19 @@ static int __init probe_acpi_namespace_devi=
+ces(void)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D iommu_probe_device(pn-&gt;=
+dev);<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp; break;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; pn_dev =3D pn-&gt;dev;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!pn_dev) {<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; dev-&gt;bus-&gt;iommu_ops =3D &amp;intel_iommu=
+_ops;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D iommu_probe_device(dev);<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret) {<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; pr_err(&quot;acpi_device probe fail! ret:%d\n&quot;, ret);<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; goto unlock;<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; goto unlock;<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D acpi_device=
+_create_direct_mappings(pn_dev, dev);<br>
+&gt; &#43;unlock:<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mutex_u=
+nlock(&amp;adev-&gt;physical_node_lock);<br>
+&gt;&nbsp;&nbsp; <br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret=
+)<br>
+&gt; diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c<br>
+&gt; index 609bd25bf154..4f714a2d5ef7 100644<br>
+&gt; --- a/drivers/iommu/iommu.c<br>
+&gt; &#43;&#43;&#43; b/drivers/iommu/iommu.c<br>
+&gt; @@ -779,6 &#43;779,12 @@ static bool iommu_is_attach_deferred(struct i=
+ommu_domain *domain,<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return false;<br>
+&gt;&nbsp;&nbsp; }<br>
+&gt;&nbsp;&nbsp; <br>
+&gt; &#43;void&nbsp; __acpi_device_create_direct_mappings(struct iommu_grou=
+p *group, struct device *acpi_device)<br>
+&gt; &#43;{<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; iommu_create_device_direct_mappings(grou=
+p, acpi_device);<br>
+&gt; &#43;}<br>
+&gt; &#43;EXPORT_SYMBOL_GPL(__acpi_device_create_direct_mappings);<br>
+&gt; &#43;<br>
+&gt;&nbsp;&nbsp; /**<br>
+&gt;&nbsp;&nbsp;&nbsp; * iommu_group_add_device - add a device to an iommu =
+group<br>
+&gt;&nbsp;&nbsp;&nbsp; * @group: the group into which to add the device (re=
+ference should be held)<br>
+&gt; diff --git a/include/linux/iommu.h b/include/linux/iommu.h<br>
+&gt; index fee209efb756..9be134775886 100644<br>
+&gt; --- a/include/linux/iommu.h<br>
+&gt; &#43;&#43;&#43; b/include/linux/iommu.h<br>
+&gt; @@ -514,6 &#43;514,9 @@ extern void iommu_domain_window_disable(struct=
+ iommu_domain *domain, u32 wnd_nr)<br>
+&gt;&nbsp;&nbsp; extern int report_iommu_fault(struct iommu_domain *domain,=
+ struct device *dev,<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned long iova, int flags);<br>
+&gt;&nbsp;&nbsp; <br>
+&gt; &#43;extern void __acpi_device_create_direct_mappings(struct iommu_gro=
+up *group,<br>
+&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct device *acpi_devic=
+e);<br>
+&gt; &#43;<br>
+&gt;&nbsp;&nbsp; static inline void iommu_flush_tlb_all(struct iommu_domain=
+ *domain)<br>
+&gt;&nbsp;&nbsp; {<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (domain-&gt;ops-&gt;flush=
+_iotlb_all)<br>
+&gt; <br>
+</div>
+</span></font>
+</body>
+</html>
 
->     - VMD enabled systems (-ENODEV)
->     - XEN (-ENOCLUE)
->     - IMS (-ENODEV)
-> 
->     - Any non-X86 code which might depend on the broken compose MSI message
->       logic. Marc excpects not much fallout, but agrees that we need to fix
->       it anyway.
-> 
-> #1 - #3 should be applied unconditionally for obvious reasons
-> #4 - #6 are wortwhile cleanups which should be done independent of device MSI
-> 
-> #7 - #8 look promising to cleanup the platform MSI implementation
->      	independent of #8, but I neither had cycles nor the stomach to
->      	tackle that.
-> 
-> #9	is obviously just for the folks interested in IMS
-> 
-> Thanks,
-> 
-> 	tglx
+--_000_cde22f0f02f94efcae8bf044e2cd9441zhaoxincom_--
+
+--===============0016849542623995408==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0016849542623995408==--
