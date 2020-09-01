@@ -7,99 +7,97 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAB7C433E7
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 04:58:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6C4C433E2
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 05:07:01 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 086C9208CA
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 04:58:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 523762087D
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 05:07:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ewhD6ICQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 086C9208CA
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AaDz//Tp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 523762087D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BBC1386FCC;
-	Tue,  1 Sep 2020 04:58:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0EA8D861B2;
+	Tue,  1 Sep 2020 05:07:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ubGQ3_8CWxqz; Tue,  1 Sep 2020 05:07:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D17EF861C5;
+	Tue,  1 Sep 2020 05:06:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDF5BC0052;
+	Tue,  1 Sep 2020 05:06:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16C45C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 05:06:54 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 12E6887064
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 05:06:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MFuFe6jIzeLE; Tue,  1 Sep 2020 04:58:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7372F86FC9;
-	Tue,  1 Sep 2020 04:58:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64172C0052;
-	Tue,  1 Sep 2020 04:58:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E5C7C0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 04:58:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E2CF1853E6
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 04:58:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zmQzZiFYfBS7 for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 04:58:32 +0000 (UTC)
-X-Greylist: delayed 01:06:11 by SQLgrey-1.7.6
-Received: from mail-oo1-f67.google.com (mail-oo1-f67.google.com
- [209.85.161.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id EE8F485465
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 04:58:31 +0000 (UTC)
-Received: by mail-oo1-f67.google.com with SMTP id k63so5274oob.1
- for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 21:58:31 -0700 (PDT)
+ with ESMTP id PozIvTrZJFRD for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 05:06:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
+ [209.85.167.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 34921870FB
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 05:05:05 +0000 (UTC)
+Received: by mail-oi1-f196.google.com with SMTP id 185so48729oie.11
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Aug 2020 22:05:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=KPPzOd4S5Oo6nrlND6IQthNcXuqMvh5LHpQP3YI6R7E=;
- b=ewhD6ICQ1SgoLstQajN77CTLdULS5zqw29h2elkj+FHI9pa8i71+BVMpzhUK55smit
- 3jBeMp15emblXj28HqSsOsSgGW/dxzOMuwE7RPMBpKTjhkkdBrxnRQyC93Bhne39doZA
- eJ2j+2x8Wqy6LhKXTLO2qn/WBg6JlOeq/DRZJ/MfsR6NzpIEGcrXoKgfUzjvf+SHr4+M
- plydV6o9K36XCe68xzcV1cS6mSQdBWqR2/U4OrfBELAOCgRIdLkjnCWkdStBrov03UMm
- Pt3TpFnNv+w4h+ANHqAy/KhOTUvsymm4StXmKv2fEj2XiEJcayiyMzfvji6NcEwpz/6D
- fOsQ==
+ bh=RnDgJkGWhi/Qn1HlxW7EpsCiAIeQ1NnBbVD0tNRH8sg=;
+ b=AaDz//TpVHrTH9z17qkhwu4dYmAKtDEtzZnhx8N0awIVX8INMo5xxwjgXy919WXpoy
+ 3k7ifcSbtEBfnGTrELRjsa8Yc9MY8Td9vP2kkymJVOKnaOeaEp7ZzWvqyc9XXjy69Kj1
+ NXrEcCWAVWJl5I0J9l2jGQ5c3k6mRfzCZ1p5a57b/HnNIic/MIIqJkBEW83zhYdONvYY
+ FPaXJ8ox7n6ObqThrLfmL+ZZMljqrtgOeVeaSplpD2gF/Dk88Dl4hm/f5RFZ8r4eIWoZ
+ c4LfGKi5H5HyJGM20PZxFGICgXAZ20YW5SgE7n+yulx9PvS7xjLafM7hRkBa1UVkco80
+ 2pyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=KPPzOd4S5Oo6nrlND6IQthNcXuqMvh5LHpQP3YI6R7E=;
- b=DMQYzkE93pR5iW4ek0aXeaWnvfiKzQ63zI4vkdQvGIx2SXn3FMX2dbwlt9Rh3ttpx3
- Hw1jPVIrbNABlFXh5P33RNvl8B+8vCg0ztSKahE6jrgBrQ+Yj1EtCsnTXVahtLYF85vM
- NfhKdapgFgioy9lKCs8wD91MMYB420um92KLYPxfz3iHSzCZcQ7Rmr+pOrtQ9GkAvScP
- 0mBcd249Pc2Ey0lcyVwQ/Hgq+LsgtuWl4JVa+aIrNIMOxuscWdLpMYS4C6AXb2jE/8PZ
- 3PKK3gXAeaC4MFkNAWYqJ0TO5sIIADoYZT13sLFpi0odC8FJrP9ybg6mrq0i/13FL+Ux
- T2tw==
-X-Gm-Message-State: AOAM531f6FExMaK/p2Wr5QYTnSUMvCHG63Q3s74G3r84xYgXNGDFeRi0
- 00To2yjlMwwuPq7F/YSD3iKoXQ==
-X-Google-Smtp-Source: ABdhPJxrPBozUfI+nlt0nkFZ4l7dT06KTI3ftv7H/ltBoqgGY1jMGlNRVE8cvXIGCulF5qGLIxFSxw==
-X-Received: by 2002:a4a:9622:: with SMTP id q31mr3138001ooi.78.1598936311137; 
- Mon, 31 Aug 2020 21:58:31 -0700 (PDT)
+ bh=RnDgJkGWhi/Qn1HlxW7EpsCiAIeQ1NnBbVD0tNRH8sg=;
+ b=Hi1zwYBl9j+AnSbG2Fe7rICwsS2rh6XhdQRJR96HtNpURcK3l8wNzl6RHPTJZOCkLY
+ 6o5Ft+BeUyULld+SttJ+yOs0FrOxuB771AlNQAg127wuMmpgTqAaOiNdzB414iyAbo4E
+ Wt/Ftsren/bXBz0IJqTCPXj2v/8NId9Uh2ObZM7jlbAJqDSWjEQnQdW2sYSniR1rJ4oQ
+ BeEuRS7JENkcVUaggNzDYdQhjslMwMt907Ob/TVnpF5HW67m9Hhw4HZKNw3qpstmi+3j
+ jvgGttvVX7fvmXii/XGwnI/8V3EEdCn0b7lAJcgY1vhbR1NpEFsEkbpOOwvJVw+7gimz
+ T12A==
+X-Gm-Message-State: AOAM532BMbAuWtsdJ4wgy+zVeoHQXdXXT1d/gZ6gbY25tvXmKgEBvnhv
+ CPAlsPhJz5QgGnwncQ4ppODKFA==
+X-Google-Smtp-Source: ABdhPJx9S39or4NhgXd4fIuOKNIo6wYcZ/fCimE1WKYwxJcWWoTNj3lvhAhkWcj5Dio5B3+p3XY5Ig==
+X-Received: by 2002:aca:ed42:: with SMTP id l63mr78213oih.178.1598936704280;
+ Mon, 31 Aug 2020 22:05:04 -0700 (PDT)
 Received: from yoga ([2605:6000:e5cb:c100:8898:14ff:fe6d:34e])
- by smtp.gmail.com with ESMTPSA id 126sm31576oof.28.2020.08.31.21.58.29
+ by smtp.gmail.com with ESMTPSA id r189sm2036660oih.51.2020.08.31.22.05.02
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 31 Aug 2020 21:58:30 -0700 (PDT)
-Date: Mon, 31 Aug 2020 23:58:27 -0500
+ Mon, 31 Aug 2020 22:05:03 -0700 (PDT)
+Date: Tue, 1 Sep 2020 00:05:00 -0500
 From: Bjorn Andersson <bjorn.andersson@linaro.org>
 To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH 07/19] drm/msm: set adreno_smmu as gpu's drvdata
-Message-ID: <20200901045827.GP3715@yoga>
+Subject: Re: [PATCH 11/19] drm/msm: Add a context pointer to the submitqueue
+Message-ID: <20200901050500.GS3715@yoga>
 References: <20200810222657.1841322-1-jcrouse@codeaurora.org>
- <20200814024114.1177553-8-robdclark@gmail.com>
+ <20200814024114.1177553-12-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200814024114.1177553-8-robdclark@gmail.com>
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
- Vivek Gautam <vivek.gautam@codeaurora.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>, Will Deacon <will@kernel.org>,
- Rob Clark <robdclark@chromium.org>, Jonathan Marek <jonathan@marek.ca>,
- Sibi Sankar <sibis@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- Sharat Masetty <smasetty@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
- Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
- freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- Shawn Guo <shawn.guo@linaro.org>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20200814024114.1177553-12-robdclark@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>,
+ open list <linux-kernel@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Will Deacon <will@kernel.org>, David Airlie <airlied@linux.ie>,
+ linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ Sean Paul <sean@poorly.run>, iommu@lists.linux-foundation.org,
+ Sibi Sankar <sibis@codeaurora.org>, Vivek Gautam <vivek.gautam@codeaurora.org>,
+ freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,78 +117,163 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Thu 13 Aug 21:41 CDT 2020, Rob Clark wrote:
 
-> From: Rob Clark <robdclark@chromium.org>
+> From: Jordan Crouse <jcrouse@codeaurora.org>
 > 
-> This will be populated by adreno-smmu, to provide a way for coordinating
-> enabling/disabling TTBR0 translation.
+> Each submitqueue is attached to a context. Add a pointer to the
+> context to the submitqueue at create time and refcount it so
+> that it stays around through the life of the queue.
 > 
 
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
+
+> Co-developed-by: Rob Clark <robdclark@chromium.org>
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 > Signed-off-by: Rob Clark <robdclark@chromium.org>
 > ---
->  drivers/gpu/drm/msm/adreno/adreno_device.c | 2 --
->  drivers/gpu/drm/msm/msm_gpu.c              | 2 +-
->  drivers/gpu/drm/msm/msm_gpu.h              | 6 +++++-
->  3 files changed, 6 insertions(+), 4 deletions(-)
+>  drivers/gpu/drm/msm/msm_drv.c         |  3 ++-
+>  drivers/gpu/drm/msm/msm_drv.h         | 20 ++++++++++++++++++++
+>  drivers/gpu/drm/msm/msm_gem.h         |  1 +
+>  drivers/gpu/drm/msm/msm_gem_submit.c  |  6 +++---
+>  drivers/gpu/drm/msm/msm_gpu.h         |  1 +
+>  drivers/gpu/drm/msm/msm_submitqueue.c |  3 +++
+>  6 files changed, 30 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> index 26664e1b30c0..58e03b20e1c7 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> @@ -417,8 +417,6 @@ static int adreno_bind(struct device *dev, struct device *master, void *data)
->  		return PTR_ERR(gpu);
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index 7d641c7e3514..01845a3b8d52 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -594,6 +594,7 @@ static int context_init(struct drm_device *dev, struct drm_file *file)
+>  	if (!ctx)
+>  		return -ENOMEM;
+>  
+> +	kref_init(&ctx->ref);
+>  	msm_submitqueue_init(dev, ctx);
+>  
+>  	ctx->aspace = priv->gpu ? priv->gpu->aspace : NULL;
+> @@ -615,7 +616,7 @@ static int msm_open(struct drm_device *dev, struct drm_file *file)
+>  static void context_close(struct msm_file_private *ctx)
+>  {
+>  	msm_submitqueue_close(ctx);
+> -	kfree(ctx);
+> +	msm_file_private_put(ctx);
+>  }
+>  
+>  static void msm_postclose(struct drm_device *dev, struct drm_file *file)
+> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+> index af259b0573ea..4561bfb5e745 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.h
+> +++ b/drivers/gpu/drm/msm/msm_drv.h
+> @@ -57,6 +57,7 @@ struct msm_file_private {
+>  	struct list_head submitqueues;
+>  	int queueid;
+>  	struct msm_gem_address_space *aspace;
+> +	struct kref ref;
+>  };
+>  
+>  enum msm_mdp_plane_property {
+> @@ -428,6 +429,25 @@ void msm_submitqueue_close(struct msm_file_private *ctx);
+>  
+>  void msm_submitqueue_destroy(struct kref *kref);
+>  
+> +static inline void __msm_file_private_destroy(struct kref *kref)
+> +{
+> +	struct msm_file_private *ctx = container_of(kref,
+> +		struct msm_file_private, ref);
+> +
+> +	kfree(ctx);
+> +}
+> +
+> +static inline void msm_file_private_put(struct msm_file_private *ctx)
+> +{
+> +	kref_put(&ctx->ref, __msm_file_private_destroy);
+> +}
+> +
+> +static inline struct msm_file_private *msm_file_private_get(
+> +	struct msm_file_private *ctx)
+> +{
+> +	kref_get(&ctx->ref);
+> +	return ctx;
+> +}
+>  
+>  #define DBG(fmt, ...) DRM_DEBUG_DRIVER(fmt"\n", ##__VA_ARGS__)
+>  #define VERB(fmt, ...) if (0) DRM_DEBUG_DRIVER(fmt"\n", ##__VA_ARGS__)
+> diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+> index 972490b14ba5..9c573c4269cb 100644
+> --- a/drivers/gpu/drm/msm/msm_gem.h
+> +++ b/drivers/gpu/drm/msm/msm_gem.h
+> @@ -142,6 +142,7 @@ struct msm_gem_submit {
+>  	bool valid;         /* true if no cmdstream patching needed */
+>  	bool in_rb;         /* "sudo" mode, copy cmds into RB */
+>  	struct msm_ringbuffer *ring;
+> +	struct msm_file_private *ctx;
+>  	unsigned int nr_cmds;
+>  	unsigned int nr_bos;
+>  	u32 ident;	   /* A "identifier" for the submit for logging */
+> diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
+> index 8cb9aa15ff90..1464b04d25d3 100644
+> --- a/drivers/gpu/drm/msm/msm_gem_submit.c
+> +++ b/drivers/gpu/drm/msm/msm_gem_submit.c
+> @@ -27,7 +27,7 @@
+>  #define BO_PINNED   0x2000
+>  
+>  static struct msm_gem_submit *submit_create(struct drm_device *dev,
+> -		struct msm_gpu *gpu, struct msm_gem_address_space *aspace,
+> +		struct msm_gpu *gpu,
+>  		struct msm_gpu_submitqueue *queue, uint32_t nr_bos,
+>  		uint32_t nr_cmds)
+>  {
+> @@ -43,7 +43,7 @@ static struct msm_gem_submit *submit_create(struct drm_device *dev,
+>  		return NULL;
+>  
+>  	submit->dev = dev;
+> -	submit->aspace = aspace;
+> +	submit->aspace = queue->ctx->aspace;
+>  	submit->gpu = gpu;
+>  	submit->fence = NULL;
+>  	submit->cmd = (void *)&submit->bos[nr_bos];
+> @@ -677,7 +677,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
+>  		}
 >  	}
 >  
-> -	dev_set_drvdata(dev, gpu);
-> -
->  	return 0;
->  }
->  
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index 6aa9e04e52e7..806eb0957280 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -892,7 +892,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
->  		gpu->gpu_cx = NULL;
->  
->  	gpu->pdev = pdev;
-> -	platform_set_drvdata(pdev, gpu);
-> +	platform_set_drvdata(pdev, &gpu->adreno_smmu);
->  
->  	msm_devfreq_init(gpu);
->  
+> -	submit = submit_create(dev, gpu, ctx->aspace, queue, args->nr_bos,
+> +	submit = submit_create(dev, gpu, queue, args->nr_bos,
+>  		args->nr_cmds);
+>  	if (!submit) {
+>  		ret = -ENOMEM;
 > diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> index 8bda7beaed4b..f91b141add75 100644
+> index f91b141add75..97c527e98391 100644
 > --- a/drivers/gpu/drm/msm/msm_gpu.h
 > +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> @@ -7,6 +7,7 @@
->  #ifndef __MSM_GPU_H__
->  #define __MSM_GPU_H__
+> @@ -190,6 +190,7 @@ struct msm_gpu_submitqueue {
+>  	u32 flags;
+>  	u32 prio;
+>  	int faults;
+> +	struct msm_file_private *ctx;
+>  	struct list_head node;
+>  	struct kref ref;
+>  };
+> diff --git a/drivers/gpu/drm/msm/msm_submitqueue.c b/drivers/gpu/drm/msm/msm_submitqueue.c
+> index 90c9d84e6155..c3d206105d28 100644
+> --- a/drivers/gpu/drm/msm/msm_submitqueue.c
+> +++ b/drivers/gpu/drm/msm/msm_submitqueue.c
+> @@ -12,6 +12,8 @@ void msm_submitqueue_destroy(struct kref *kref)
+>  	struct msm_gpu_submitqueue *queue = container_of(kref,
+>  		struct msm_gpu_submitqueue, ref);
 >  
-> +#include <linux/adreno-smmu-priv.h>
->  #include <linux/clk.h>
->  #include <linux/interconnect.h>
->  #include <linux/pm_opp.h>
-> @@ -73,6 +74,8 @@ struct msm_gpu {
->  	struct platform_device *pdev;
->  	const struct msm_gpu_funcs *funcs;
->  
-> +	struct adreno_smmu_priv adreno_smmu;
+> +	msm_file_private_put(queue->ctx);
 > +
->  	/* performance counters (hw & sw): */
->  	spinlock_t perf_lock;
->  	bool perfcntr_active;
-> @@ -143,7 +146,8 @@ struct msm_gpu {
->  
->  static inline struct msm_gpu *dev_to_gpu(struct device *dev)
->  {
-> -	return dev_get_drvdata(dev);
-> +	struct adreno_smmu_priv *adreno_smmu = dev_get_drvdata(dev);
-> +	return container_of(adreno_smmu, struct msm_gpu, adreno_smmu);
+>  	kfree(queue);
 >  }
 >  
->  /* It turns out that all targets use the same ringbuffer size */
+> @@ -83,6 +85,7 @@ int msm_submitqueue_create(struct drm_device *drm, struct msm_file_private *ctx,
+>  
+>  	write_lock(&ctx->queuelock);
+>  
+> +	queue->ctx = msm_file_private_get(ctx);
+>  	queue->id = ctx->queueid++;
+>  
+>  	if (id)
 > -- 
 > 2.26.2
 > 
