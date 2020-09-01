@@ -2,101 +2,76 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A1FC433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 18:56:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF70C433E6
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:14:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0767C2065F
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 18:56:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tVRoeQwB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0767C2065F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7ED9C20767
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 19:14:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7ED9C20767
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A9246870D0;
-	Tue,  1 Sep 2020 18:56:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4F68386C75;
+	Tue,  1 Sep 2020 19:14:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uYS2koWnlJc6; Tue,  1 Sep 2020 18:56:28 +0000 (UTC)
+	with ESMTP id iE+-O7KZ5BCR; Tue,  1 Sep 2020 19:14:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3699A870B0;
-	Tue,  1 Sep 2020 18:56:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3BE0C86C66;
+	Tue,  1 Sep 2020 19:14:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2361AC0052;
-	Tue,  1 Sep 2020 18:56:28 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E74F6C0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:56:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 203F8C07FF;
+	Tue,  1 Sep 2020 19:14:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 275C3C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:14:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CA5F8204DB
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:56:26 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1991786C6F
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:14:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CofjxRqthj4C for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 18:56:25 +0000 (UTC)
+ with ESMTP id 7dOYBaL2Vth7 for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 19:14:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f66.google.com (mail-lf1-f66.google.com
- [209.85.167.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 69C3120467
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 18:56:25 +0000 (UTC)
-Received: by mail-lf1-f66.google.com with SMTP id y11so1392862lfl.5
- for <iommu@lists.linux-foundation.org>; Tue, 01 Sep 2020 11:56:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:from:to:cc:references:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=G85PUm7a3EZzS/FYnNEVI0eznDTH8pPJcc+osLm7WqY=;
- b=tVRoeQwB/gWeuJVETgIoI6uDSLBu9Oi18EgggfK6uMO6UdxaRljqsV964YZWadqrUD
- gnqR/AUlD1T/UL2fXjhcB4us5pytm/ub02fZv4t79xOsyGD7v2OKOonJB1hxTlohcn/b
- 3SL21pqUtnNXQs4+7+oouQ2Ppzio4eXKbbvGhuujsuUCRBRioI75eRg/okkBcUhbEPXT
- Wb1CQfA3E//DU2JpFZteOvIezkrUmhiGht8sT2mEGv4iAMtCcwm76LuMvZO0fb6Dv1V/
- jScuFD/qzzG4zSH31l/chlaXN3QgEuoeBbsGZBYjbVRN9Hxo17lJ2aY1WoAw1VrY0L6M
- GiBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:from:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=G85PUm7a3EZzS/FYnNEVI0eznDTH8pPJcc+osLm7WqY=;
- b=c/ODlC14tDk/zbVDDvr+ueRMsF4pJipdOC+dTF/Nfp35lCllIv/cly8mR/ll33uuTH
- YoDWG9pW3JsSS9vNr2FoH2zLc97/6FsYJPkLPcGlpCtN0qdJL+fasAj0CakK6vp9KoVO
- b27vxccXyX38Jq7as4oOJOZPYhA51xiai9J2GIOnrKDWUi8tuOQ7goJbisibg2Lmyuuo
- nS9RG/KsEvMUHhYAdX7o3o2GRAsr4AhWV2l4WTwwQrWOc+FQxMvK4iGPcKG7kZ4dmxri
- fI5o16Ggl8v+X0p0sV9xNi7xU7bejKhOEe7KvXfhxVcMyRPCVd3R4/H0pMgUV4wNLjH8
- ax+w==
-X-Gm-Message-State: AOAM532I8tSMEsvhYL/b6Zw802kvhXnt0psHwHpU3l2FGY2rweGdMZgG
- IH7oGgMtmrFew6+FjQ76M+w=
-X-Google-Smtp-Source: ABdhPJytkMxC+QnEFyPCwOzPuvfcWYWQYoBFmyrc6f5aTlvzcgsyU7pjMfTvbqXAGKvX8ZR5PgQIPg==
-X-Received: by 2002:a19:447:: with SMTP id 68mr1387400lfe.26.1598986583325;
- Tue, 01 Sep 2020 11:56:23 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
- [109.252.170.211])
- by smtp.googlemail.com with ESMTPSA id 10sm468433lfq.64.2020.09.01.11.56.22
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 01 Sep 2020 11:56:22 -0700 (PDT)
-Subject: Re: [PATCH v4] iommu/tegra-smmu: Add locking around mapping operations
-From: Dmitry Osipenko <digetx@gmail.com>
-To: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel
- <joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- Krishna Reddy <vdumpa@nvidia.com>
-References: <20200901171305.6929-1-digetx@gmail.com>
-Message-ID: <2d38fcab-bc7a-2986-ff39-9403164914e4@gmail.com>
-Date: Tue, 1 Sep 2020 21:56:21 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8CB3386C66
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 19:14:32 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F21C51FB;
+ Tue,  1 Sep 2020 12:14:31 -0700 (PDT)
+Received: from [10.57.40.122] (unknown [10.57.40.122])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DC4A93F71F;
+ Tue,  1 Sep 2020 12:14:29 -0700 (PDT)
+Subject: Re: [PATCH v9 12/32] drm: msm: fix common struct sg_table related
+ issues
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20200826063316.23486-1-m.szyprowski@samsung.com>
+ <CGME20200826063535eucas1p10cef37d8364216cf57c97e96d3959dd2@eucas1p1.samsung.com>
+ <20200826063316.23486-13-m.szyprowski@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <fe224152-b621-d96e-b432-bf837d320210@arm.com>
+Date: Tue, 1 Sep 2020 20:14:24 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200901171305.6929-1-digetx@gmail.com>
-Content-Language: en-US
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
+In-Reply-To: <20200826063316.23486-13-m.szyprowski@samsung.com>
+Content-Language: en-GB
+Cc: freedreno@lists.freedesktop.org,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
+ Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,23 +84,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MDEuMDkuMjAyMCAyMDoxMywgRG1pdHJ5IE9zaXBlbmtvINC/0LjRiNC10YI6Ci4uLgo+ICsJLyoK
-PiArCSAqIEluIG9yZGVyIHRvIHByZXZlbnQgZXhoYXVzdGlvbiBvZiB0aGUgYXRvbWljIG1lbW9y
-eSBwb29sLCB3ZQo+ICsJICogYWxsb2NhdGUgcGFnZSBpbiBhIHNsZWVwaW5nIGNvbnRleHQgaWYg
-R0ZQIGZsYWdzIHBlcm1pdC4gSGVuY2UKPiArCSAqIHNwaW5sb2NrIG5lZWRzIHRvIGJlIHVubG9j
-a2VkIGFuZCByZS1sb2NrZWQgYWZ0ZXIgYWxsb2NhdGlvbi4KPiArCSAqLwo+ICsJaWYgKCEoZ2Zw
-ICYgR0ZQX05PV0FJVCkpCj4gKwkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmYXMtPmxvY2ssICpm
-bGFncyk7Cj4gKwo+ICsJcGFnZSA9IGFsbG9jX3BhZ2UoZ2ZwIHwgX19HRlBfRE1BIHwgX19HRlBf
-WkVSTyk7Cj4gKwo+ICsJaWYgKCEoZ2ZwICYgR0ZQX05PV0FJVCkpCj4gKwkJc3Bpbl9sb2NrX2ly
-cXNhdmUoJmFzLT5sb2NrLCAqZmxhZ3MpOwoKSSByZWFsaXplZCB0aGF0IEdGUF9OT1dBSVQgaXMg
-YSB3cm9uZyBmbGFnIHRvIGNoZWNrIGhlcmUgb25jZSBJIHNhdwp3YXJuaW5ncyBhYm91dCBzbGVl
-cGluZyBpbiBhdG9taWMgY29udGV4dC4gQXBwYXJlbnRseSBfX0dGUF9BVE9NSUMKc2hvdWxkIGJl
-IHVzZWQgaW5zdGVhZCwgSSdsbCBtYWtlIHY1LgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+On 2020-08-26 07:32, Marek Szyprowski wrote:
+> The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+> returns the number of the created entries in the DMA address space.
+> However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+> dma_unmap_sg must be called with the original number of the entries
+> passed to the dma_map_sg().
+> 
+> struct sg_table is a common structure used for describing a non-contiguous
+> memory buffer, used commonly in the DRM and graphics subsystems. It
+> consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+> as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+> and DMA mapped pages (nents entry).
+> 
+> It turned out that it was a common mistake to misuse nents and orig_nents
+> entries, calling DMA-mapping functions with a wrong number of entries or
+> ignoring the number of mapped entries returned by the dma_map_sg()
+> function.
+> 
+> To avoid such issues, lets use a common dma-mapping wrappers operating
+> directly on the struct sg_table objects and use scatterlist page
+> iterators where possible. This, almost always, hides references to the
+> nents and orig_nents entries, making the code robust, easier to follow
+> and copy/paste safe.
+> 
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Acked-by: Rob Clark <robdclark@gmail.com>
+> ---
+>   drivers/gpu/drm/msm/msm_gem.c    | 13 +++++--------
+>   drivers/gpu/drm/msm/msm_gpummu.c | 14 ++++++--------
+>   drivers/gpu/drm/msm/msm_iommu.c  |  2 +-
+>   3 files changed, 12 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+> index b2f49152b4d4..8c7ae812b813 100644
+> --- a/drivers/gpu/drm/msm/msm_gem.c
+> +++ b/drivers/gpu/drm/msm/msm_gem.c
+> @@ -53,11 +53,10 @@ static void sync_for_device(struct msm_gem_object *msm_obj)
+>   	struct device *dev = msm_obj->base.dev->dev;
+>   
+>   	if (get_dma_ops(dev) && IS_ENABLED(CONFIG_ARM64)) {
+> -		dma_sync_sg_for_device(dev, msm_obj->sgt->sgl,
+> -			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
+> +		dma_sync_sgtable_for_device(dev, msm_obj->sgt,
+> +					    DMA_BIDIRECTIONAL);
+>   	} else {
+> -		dma_map_sg(dev, msm_obj->sgt->sgl,
+> -			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
+> +		dma_map_sgtable(dev, msm_obj->sgt, DMA_BIDIRECTIONAL, 0);
+>   	}
+>   }
+>   
+> @@ -66,11 +65,9 @@ static void sync_for_cpu(struct msm_gem_object *msm_obj)
+>   	struct device *dev = msm_obj->base.dev->dev;
+>   
+>   	if (get_dma_ops(dev) && IS_ENABLED(CONFIG_ARM64)) {
+> -		dma_sync_sg_for_cpu(dev, msm_obj->sgt->sgl,
+> -			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
+> +		dma_sync_sgtable_for_cpu(dev, msm_obj->sgt, DMA_BIDIRECTIONAL);
+>   	} else {
+> -		dma_unmap_sg(dev, msm_obj->sgt->sgl,
+> -			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
+> +		dma_unmap_sgtable(dev, msm_obj->sgt, DMA_BIDIRECTIONAL, 0);
+>   	}
+>   }
+>   
+> diff --git a/drivers/gpu/drm/msm/msm_gpummu.c b/drivers/gpu/drm/msm/msm_gpummu.c
+> index 310a31b05faa..319f06c28235 100644
+> --- a/drivers/gpu/drm/msm/msm_gpummu.c
+> +++ b/drivers/gpu/drm/msm/msm_gpummu.c
+> @@ -30,21 +30,19 @@ static int msm_gpummu_map(struct msm_mmu *mmu, uint64_t iova,
+>   {
+>   	struct msm_gpummu *gpummu = to_msm_gpummu(mmu);
+>   	unsigned idx = (iova - GPUMMU_VA_START) / GPUMMU_PAGE_SIZE;
+> -	struct scatterlist *sg;
+> +	struct sg_dma_page_iter dma_iter;
+>   	unsigned prot_bits = 0;
+> -	unsigned i, j;
+>   
+>   	if (prot & IOMMU_WRITE)
+>   		prot_bits |= 1;
+>   	if (prot & IOMMU_READ)
+>   		prot_bits |= 2;
+>   
+> -	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+> -		dma_addr_t addr = sg->dma_address;
+> -		for (j = 0; j < sg->length / GPUMMU_PAGE_SIZE; j++, idx++) {
+> -			gpummu->table[idx] = addr | prot_bits;
+> -			addr += GPUMMU_PAGE_SIZE;
+> -		}
+> +	for_each_sgtable_dma_page(sgt, &dma_iter, 0) {
+> +		dma_addr_t addr = sg_page_iter_dma_address(&dma_iter);
+> +
+> +		BUILD_BUG_ON(GPUMMU_PAGE_SIZE != PAGE_SIZE);
+> +		gpummu->table[idx++] = addr | prot_bits;
+
+Given that the BUILD_BUG_ON might prevent valid arm64 configs from 
+building, how about a simple tweak like:
+
+		for (i = 0; i < PAGE_SIZE; i += GPUMMU_PAGE_SIZE)
+			gpummu->table[idx++] = i + addr | prot_bits;
+?
+
+Or alternatively perhaps some more aggressive #ifdefs or makefile tweaks 
+to prevent the GPUMMU code building for arm64 at all if it's only 
+relevant to 32-bit platforms (which I believe might be the case).
+
+Robin.
+
+>   	}
+>   
+>   	/* we can improve by deferring flush for multiple map() */
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index 3a381a9674c9..6c31e65834c6 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -36,7 +36,7 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
+>   	struct msm_iommu *iommu = to_msm_iommu(mmu);
+>   	size_t ret;
+>   
+> -	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
+> +	ret = iommu_map_sgtable(iommu->domain, iova, sgt, prot);
+>   	WARN_ON(!ret);
+>   
+>   	return (ret == len) ? 0 : -EINVAL;
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
