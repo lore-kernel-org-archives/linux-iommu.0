@@ -2,173 +2,110 @@ Return-Path: <SRS0=Ln9J=CK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A81C433E2
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E86C433E6
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:46:20 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD36C20767
-	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:42:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 26D372067C
+	for <iommu@archiver.kernel.org>; Tue,  1 Sep 2020 16:46:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="Ub1CAZJY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD36C20767
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gmx.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WQTusZGV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26D372067C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A1BCC86700;
-	Tue,  1 Sep 2020 16:42:14 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id ED19B869D0;
+	Tue,  1 Sep 2020 16:46:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nXExlV2xGrAL; Tue,  1 Sep 2020 16:42:12 +0000 (UTC)
+	with ESMTP id Kd1mzWY1slBr; Tue,  1 Sep 2020 16:46:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 94C6A866DE;
-	Tue,  1 Sep 2020 16:42:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3076D866AF;
+	Tue,  1 Sep 2020 16:46:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 783D8C0052;
-	Tue,  1 Sep 2020 16:42:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F721C0051
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:42:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 22BEEC0052;
+	Tue,  1 Sep 2020 16:46:19 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AEBB4C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:46:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id F228086F3A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:42:10 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id AAC4E86268
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:46:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9BID1kDEM2An for <iommu@lists.linux-foundation.org>;
- Tue,  1 Sep 2020 16:42:09 +0000 (UTC)
+ with ESMTP id MhyMU7MsscDU for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Sep 2020 16:46:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
- by hemlock.osuosl.org (Postfix) with ESMTPS id A483A86F1B
- for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:42:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
- s=badeba3b8450; t=1598978476;
- bh=iS+KmbY1ndEJSpXJ6ApP71r110vbaj/m88hnuZyQwTA=;
- h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
- b=Ub1CAZJYKYLiobVhHR8Et1pUU6d5a0ERsK2MsY7wzhw0HjhUjXhJSc4b4w7JLVY2K
- imx2QUOs2xWvIZbhXholxKb0puJB9y9zCeV2KFD9q6C/NjJJszwTuwNoPvI/AfTNic
- kg6J1s8vPoCo/SATwJopqTMYp2II/N+zrO+5Tf7M=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.187.2]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MqaxO-1kzdF62DEe-00mXqh; Tue, 01
- Sep 2020 18:41:16 +0200
-Subject: Re: [PATCH 07/28] 53c700: improve non-coherent DMA handling
-From: Helge Deller <deller@gmx.de>
-To: James Bottomley <James.Bottomley@HansenPartnership.com>,
- Matthew Wilcox <willy@infradead.org>
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-8-hch@lst.de>
- <1598971960.4238.5.camel@HansenPartnership.com>
- <20200901150554.GN14765@casper.infradead.org>
- <1598973776.4238.11.camel@HansenPartnership.com>
- <3369218e-eea4-14e9-15f1-870269e4649d@gmx.de>
-Autocrypt: addr=deller@gmx.de; keydata=
- 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
- c2TFWAS8k6RLkk41ZUU8ENX8+qZx/Q==
-Message-ID: <77c9b2b6-bedc-d090-8b23-6ac664df1d1f@gmx.de>
-Date: Tue, 1 Sep 2020 18:41:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+ [209.85.210.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8888586234
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Sep 2020 16:46:17 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id w7so1121915pfi.4
+ for <iommu@lists.linux-foundation.org>; Tue, 01 Sep 2020 09:46:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=dkWv+JZKc7IZ2OeQIHfSRV3ZkO+y7Hdco+t4dCvjFQE=;
+ b=WQTusZGVT1mbfmMihfbL3nQV6ROWgGNPlpK2dC/EXyYek7T0psdJ549Ag4vTmqiV/g
+ fxMLWLf3ypIS/uFV6Y7ENXqbQQ1rfVS2HZFswTtbZPcHJdkiv/Yf0f7bate6HVKb2Fa5
+ nEa3l+Cv2YOwj4l9dC23wsw48gqz1SEL29CqA2RciGXFL9sSQmuKGUWe5hXrQYyEqp5e
+ wzW9Mf18F4k3ji4uGjtjiL0XdaBaEhrRS+kPUa3H6xxmEj9dvC7SwlSVPB6KaMAPA9hv
+ dQNmIlihJhryyIvXMWxCunrd6ULGwW+uRPN1Cs3J11qN3LWTJEum+GN2mb+C01YFwEEU
+ HFyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=dkWv+JZKc7IZ2OeQIHfSRV3ZkO+y7Hdco+t4dCvjFQE=;
+ b=cpYLDvzkc0UkKT2vprT2eW0bxxfTgjWauFdzFwtpNisrCcrf/so66t+h5XoSJip5gT
+ DdMeik0S7MHupH6Gbo5vZVDskoYNfWguM8ZJbzrCkPOgz6dej53RhbV0qUc2eP181G+Q
+ LyKAM509QHxX0ZEGmJrLJnOuIT8bEok2vXGhMF+jytrjRxxF28vXBGY+OeshC6RkkIPm
+ 8oKhq0dEE0xdq7GLJSELdfAl4BSenVJ2KsWWV2yrqHQkt8Q8mKNWQTAoaYydnYtvR3Lw
+ wwgP7uPFM+qFDOCullLWr0NLgjnhWsoRPUYbfl4pGxB6igwvJ7e01HsgSO0rKQDsutXA
+ c90Q==
+X-Gm-Message-State: AOAM530/CbwPyS4Yd2czc7EpAk/GEirx4mOYWyPjOaR9nWLnw0mpkAgF
+ mEBX971T/6YANDUjtVZjYek=
+X-Google-Smtp-Source: ABdhPJz08/+SwLdCPmAXxA4hLwtaGWitldC7eL1nux6XxYZAiUPo8M8ilrk8lOP5Wb9QfO2qb9NDww==
+X-Received: by 2002:a63:e747:: with SMTP id j7mr2220130pgk.107.1598978776920; 
+ Tue, 01 Sep 2020 09:46:16 -0700 (PDT)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+ by smtp.gmail.com with ESMTPSA id e127sm2508102pfe.152.2020.09.01.09.46.15
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 01 Sep 2020 09:46:15 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v16 00/20] iommu/arm-smmu + drm/msm: per-process GPU pgtables
+Date: Tue,  1 Sep 2020 09:46:17 -0700
+Message-Id: <20200901164707.2645413-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <3369218e-eea4-14e9-15f1-870269e4649d@gmx.de>
-Content-Language: en-US
-X-Provags-ID: V03:K1:4Y8gxSC3mimemrR4PtvEKNwyw28FqcRZSkoK2gQkqvo/KOoRbTg
- w40kQskhrNaheI6REKgULCG68Fy6MEYc0KsJy9WRPUH71+WKoerrwaE3EISLn47wt9qPakq
- Z9gMZCEqcjMGAkwuPOCtdfBULoqR2MkqoEWEFsPLv/Ad3iHMpMr0z0ACL6exzE1IUZ+o2Jw
- GUtUnwHdeUzKCJ46isMYw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:4lG/PGFS7YQ=:rR2RWvp5WhtvYGYgat1e00
- 0rF5u2mtUMkAk5WSd9Aa85NoBhY1TSBoWKZBCJ4rwtlnRn8wdTBwkngGfwpVVlNUoTFLjSyrV
- dM46jjweSnPFr8XhH+kUbZi8nfv6BYzG7I3YF2PswSg74hJGslsbwd81I/cZ8KPvjSLwgvlMG
- qic+xZolA+MdQVgJGn64EkYW1DlcXV4gMG9LXW4+9553DiKfcM+5/zwWxw0cpO6Jnoe1L7rrA
- kOYQmwe1wTN3lP6q4Xz99dj7FqfZVVuegxF6peou2o6w+ITCPtuLm6egQPtVE3C6amruAZb29
- glICo0l6SpftC4oBEVgkOIRfdQ2jQlwZcG9QmH3rSp9u2BHEwOTXSLJGiNFvzVoeqt4t7uyVj
- eXAkUz9hT0d3IU2KosWY3+BLBxNPncgp0/VCs5JvwdO2SHDAByGYT2FqbPFevV9b4XMT/M5PU
- eh/og76n7UYqpMe+mlzJq5cKbAJVu450dqW7JGEm/PibmF9c0u6QJTppVgX6yAGLFMQI5O9xU
- 2apy5bcA5aU8jWW9cDTNCwuqkNw0U0/2WWfyQEKJTgRxKgJBU0sIEczgDpxOO5RTNcdBtGFBs
- V8jzcgpZ5KsngR5t2lWAZMzdwZVP34TfYH1XK6c0CVgBD47Sw5eX5U1Q0rCy37oNa6YIXTE9a
- Xp6aYP4h3KFkk0s/RoT6Ke1bjKj3Va5B9o5MciBLLx7WvEBlZXYF/EEysP4bV82Xrv5FGgcOg
- oh52J5bfjodQ5wWNdaRK+e38oUkyRhmURb3XRxrW2fDrcBCchtAsE9mGJ6LB5fBtmYoRsJTmf
- cXUesL8SjI8AG1F15nWfDKKjsgJI9i4Nv1rLO7jSenStdlCv9bzYkzFYplFgiJQ7cLqwWvAjc
- 7CPUrsYcLfK4Wbdm0m/VUh6wASK8K0QNytwoXTs/ljGIIK4U52UZJrzgFAKQJhXuVubth+eZY
- AZkmQQLpSFPMuX6IF1nH1Mc2UjtK1Cp2LEUeAnKDI1fCjiem+fClfbf2G10U0l3tob6wDRsRI
- t7OdZsZXe0f7TM/u0vGP4R9Cwsl6Fho63YI7D5w6/u5NL5QGtBDEC95y9+G63wmiXSBcng3A4
- 1UTqryoUHc8aKHXYqF84O5q/rWzFMRztwG8wy1uv0KBlIypD0gFTmCI+GG5eMT7pfTy4hzJ0B
- r5KBGKxghDj+/3MGdhdvMFOuYS5qssBiWkis3r4/O5Ueg/OUyPJBrZmB18VBFEydfdyctQt6r
- mkZNnjtzj1HuFIBiQ
-Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
- linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
- linux-samsung-soc@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>,
- linux-scsi@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>,
- Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
- linux-media@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
- Pawel Osciak <pawel@osciak.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
- netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
- linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Wambui Karuga <wambui.karugax@gmail.com>, Hanna Hawa <hannah@marvell.com>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, Eric Anholt <eric@anholt.net>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ AngeloGioacchino Del Regno <kholk11@gmail.com>,
+ Emil Velikov <emil.velikov@collabora.com>, Rob Clark <robdclark@chromium.org>,
+ Jonathan Marek <jonathan@marek.ca>, Ben Dooks <ben.dooks@codethink.co.uk>,
+ Sibi Sankar <sibis@codeaurora.org>, Brian Masney <masneyb@onstation.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Sharat Masetty <smasetty@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
+ John Stultz <john.stultz@linaro.org>,
+ "open list:DRM DRIVER FOR MSM ADRENO GPU" <freedreno@lists.freedesktop.org>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ open list <linux-kernel@vger.kernel.org>, Sean Paul <seanpaul@chromium.org>,
+ Shawn Guo <shawn.guo@linaro.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -186,58 +123,147 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 01.09.20 18:21, Helge Deller wrote:
-> On 01.09.20 17:22, James Bottomley wrote:
->> On Tue, 2020-09-01 at 16:05 +0100, Matthew Wilcox wrote:
->>> On Tue, Sep 01, 2020 at 07:52:40AM -0700, James Bottomley wrote:
->>>> I think this looks mostly OK, except for one misnamed parameter
->>>> below. Unfortunately, the last non-coherent parisc was the 700
->>>> series and I no longer own a box, so I can't test that part of it
->>>> (I can fire up the C360 to test it on a coherent arch).
->>>
->>> I have a 715/50 that probably hasn't been powered on in 15 years if
->>> you need something that old to test on (I believe the 725/100 uses
->>> the 7100LC and so is coherent).  I'll need to set up a cross-compiler
->>> ...
->>
->> I'm not going to say no to actual testing, but it's going to be a world
->> of pain getting something so old going.  I do have a box of older
->> systems I keep for architectural testing that I need to rummage around
->> in ... I just have a vague memory that my 715 actually caught fire a
->> decade ago and had to be disposed of.
->
-> I still have a zoo of machines running for such testing, including a
-> 715/64 and two 730.
-> I'm going to test this git tree on the 715/64:
-> git://git.infradead.org/users/hch/misc.git dma_alloc_pages
+From: Rob Clark <robdclark@chromium.org>
 
-This tree boots nicely (up to a command prompt with i82596 nic working):
+NOTE: I have re-ordered the series, and propose that we could merge this
+      series in the following order:
 
-53c700: Version 2.8 By James.Bottomley@HansenPartnership.com
-scsi0: 53c710 rev 2
-scsi host0: LASI SCSI 53c700
-scsi 0:0:6:0: Direct-Access     QUANTUM  FIREBALL_TM3200S 300X PQ: 0 ANSI: 2
-scsi target0:0:6: Beginning Domain Validation
-scsi 0:0:6:0: tag#56 Enabling Tag Command Queuing
-scsi target0:0:6: asynchronous
-scsi target0:0:6: FAST-10 SCSI 10.0 MB/s ST (100 ns, offset 8)
-scsi target0:0:6: Domain Validation skipping write tests
-scsi target0:0:6: Ending Domain Validation
-scsi 0:0:6:1: tag#63 Disabling Tag Command Queuing
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-sd 0:0:6:0: Power-on or device reset occurred
-sd 0:0:6:0: Attached scsi generic sg0 type 0
-LASI 82596 driver - Revision: 1.30
-Found i82596 at 0xf0107000, IRQ 17
-eth0: 82596 at 0xf0107000, 08:00:09:c2:9e:60 IRQ 17.
-sd 0:0:6:0: [sda] 6281856 512-byte logical blocks: (3.22 GB/3.00 GiB)
-sd 0:0:6:0: [sda] Write Protect is off
+       1) 01-11 - merge via drm / msm-next
+       2) 12-15 - merge via iommu, no dependency on msm-next pull req
+       3) 16-18 - patch 16 has a dependency on 02 and 04, so it would
+                  need to come post -rc1 or on following cycle, but I
+                  think it would be unlikely to conflict with other
+                  arm-smmu patches (other than Bjorn's smmu handover
+                  series?)
+       4) 19-20 - dt bits should be safe to land in any order without
+                  breaking anything
 
-Christoph, you may add a
-Tested-by: Helge Deller <deller@gmx.de> # parisc
-to the series.
+----
 
-Helge
+This series adds an Adreno SMMU implementation to arm-smmu to allow GPU hardware
+pagetable switching.
+
+The Adreno GPU has built in capabilities to switch the TTBR0 pagetable during
+runtime to allow each individual instance or application to have its own
+pagetable.  In order to take advantage of the HW capabilities there are certain
+requirements needed of the SMMU hardware.
+
+This series adds support for an Adreno specific arm-smmu implementation. The new
+implementation 1) ensures that the GPU domain is always assigned context bank 0,
+2) enables split pagetable support (TTBR1) so that the instance specific
+pagetable can be swapped while the global memory remains in place and 3) shares
+the current pagetable configuration with the GPU driver to allow it to create
+its own io-pgtable instances.
+
+The series then adds the drm/msm code to enable these features. For targets that
+support it allocate new pagetables using the io-pgtable configuration shared by
+the arm-smmu driver and swap them in during runtime.
+
+This version of the series merges the previous patchset(s) [1] and [2]
+with the following improvements:
+
+v16: (Respin by Rob)
+  - Fix indentation
+  - Re-order series to split drm and iommu parts
+v15: (Respin by Rob)
+  - Adjust dt bindings to keep SoC specific compatible (Doug)
+  - Add dts workaround for cheza fw limitation
+  - Add missing 'select IOMMU_IO_PGTABLE' (Guenter)
+v14: (Respin by Rob)
+  - Minor update to 16/20 (only force ASID to zero in one place)
+  - Addition of sc7180 dtsi patch.
+v13: (Respin by Rob)
+  - Switch to a private interface between adreno-smmu and GPU driver,
+    dropping the custom domain attr (Will Deacon)
+  - Rework the SCTLR.HUPCF patch to add new fields in smmu_domain->cfg
+    rather than adding new impl hook (Will Deacon)
+  - Drop for_each_cfg_sme() in favor of plain for() loop (Will Deacon)
+  - Fix context refcnt'ing issue which was causing problems with GPU
+    crash recover stress testing.
+  - Spiff up $debugfs/gem to show process information associated with
+    VMAs
+v12:
+  - Nitpick cleanups in gpu/drm/msm/msm_iommu.c (Rob Clark)
+  - Reorg in gpu/drm/msm/msm_gpu.c (Rob Clark)
+  - Use the default asid for the context bank so that iommu_tlb_flush_all works
+  - Flush the UCHE after a page switch
+  - Add the SCTLR.HUPCF patch at the end of the series
+v11:
+  - Add implementation specific get_attr/set_attr functions (per Rob Clark)
+  - Fix context bank allocation (per Bjorn Andersson)
+v10:
+  - arm-smmu: add implementation hook to allocate context banks
+  - arm-smmu: Match the GPU domain by stream ID instead of compatible string
+  - arm-smmu: Make DOMAIN_ATTR_PGTABLE_CFG bi-directional. The leaf driver
+    queries the configuration to create a pagetable and then sends the newly
+    created configuration back to the smmu-driver to enable TTBR0
+  - drm/msm: Add context reference counting for submissions
+  - drm/msm: Use dummy functions to skip TLB operations on per-instance
+    pagetables
+
+[1] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045653.html
+[2] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045659.html
+
+Jordan Crouse (12):
+  drm/msm: Add a context pointer to the submitqueue
+  drm/msm: Drop context arg to gpu->submit()
+  drm/msm: Set the global virtual address range from the IOMMU domain
+  drm/msm: Add support to create a local pagetable
+  drm/msm: Add support for private address space instances
+  drm/msm/a6xx: Add support for per-instance pagetables
+  iommu/arm-smmu: Pass io-pgtable config to implementation specific
+    function
+  iommu/arm-smmu: Add support for split pagetables
+  iommu/arm-smmu: Prepare for the adreno-smmu implementation
+  iommu/arm-smmu-qcom: Add implementation for the adreno GPU SMMU
+  dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
+  arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
+
+Rob Clark (8):
+  drm/msm: Remove dangling submitqueue references
+  drm/msm: Add private interface for adreno-smmu
+  drm/msm/gpu: Add dev_to_gpu() helper
+  drm/msm: Set adreno_smmu as gpu's drvdata
+  drm/msm: Show process names in gem_describe
+  iommu/arm-smmu: Constify some helpers
+  iommu/arm-smmu: Add a way for implementations to influence SCTLR
+  arm: dts: qcom: sc7180: Set the compatible string for the GPU SMMU
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   9 +-
+ arch/arm64/boot/dts/qcom/sc7180.dtsi          |   2 +-
+ arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |   9 +
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |   2 +-
+ drivers/gpu/drm/msm/Kconfig                   |   1 +
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |  12 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |  68 +++++-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.h         |   1 +
+ drivers/gpu/drm/msm/adreno/adreno_device.c    |  12 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c       |  18 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   3 +-
+ drivers/gpu/drm/msm/msm_drv.c                 |  16 +-
+ drivers/gpu/drm/msm/msm_drv.h                 |  25 +++
+ drivers/gpu/drm/msm/msm_gem.c                 |  25 ++-
+ drivers/gpu/drm/msm/msm_gem.h                 |   6 +
+ drivers/gpu/drm/msm/msm_gem_submit.c          |   8 +-
+ drivers/gpu/drm/msm/msm_gem_vma.c             |  10 +
+ drivers/gpu/drm/msm/msm_gpu.c                 |  41 +++-
+ drivers/gpu/drm/msm/msm_gpu.h                 |  21 +-
+ drivers/gpu/drm/msm/msm_gpummu.c              |   2 +-
+ drivers/gpu/drm/msm/msm_iommu.c               | 206 +++++++++++++++++-
+ drivers/gpu/drm/msm/msm_mmu.h                 |  16 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.h          |   1 +
+ drivers/gpu/drm/msm/msm_submitqueue.c         |   7 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   6 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 155 ++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         | 100 ++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |  87 +++++++-
+ include/linux/adreno-smmu-priv.h              |  36 +++
+ 29 files changed, 771 insertions(+), 134 deletions(-)
+ create mode 100644 include/linux/adreno-smmu-priv.h
+
+-- 
+2.26.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
