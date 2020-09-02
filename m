@@ -2,127 +2,174 @@ Return-Path: <SRS0=BMay=CL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02749C433E2
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:02:59 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A82DC433E7
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:10:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7F942087D
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:02:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 04F47207D3
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:10:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="Z8Lj3Tbq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7F942087D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="L8sV5DSy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04F47207D3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gmx.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 83F8E86955;
-	Wed,  2 Sep 2020 15:02:58 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id BB52B2E1A6;
+	Wed,  2 Sep 2020 15:10:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id raT5ecEb7KZh; Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
+	with ESMTP id xxyAb+6Khpvg; Wed,  2 Sep 2020 15:10:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E900186937;
-	Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7B1412E1E9;
+	Wed,  2 Sep 2020 15:03:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CCD83C0052;
-	Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 51353C0894;
+	Wed,  2 Sep 2020 15:03:47 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CB17DC0051
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8B78C0052
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:03:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B8198871D1
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7A8BE8724C
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:03:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hiuh4zvZ+ukh for <iommu@lists.linux-foundation.org>;
- Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
+ with ESMTP id aaPduCtrm81K for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Sep 2020 15:03:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DF0F7871C1
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:55 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id k15so5596694wrn.10
- for <iommu@lists.linux-foundation.org>; Wed, 02 Sep 2020 08:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=ZGIVv2/nKkKWqHnBVOyDTBWflj7dKm5Z1J/YDjsaUtE=;
- b=Z8Lj3TbqKgnf+Tg9Z0P832A14FJMQdIVQJkvmocdIbwtjttKsmDE4r9Qh2gQGw6NZU
- As25toD2CuCYv9eeG56/UbBx2y5/4HM22wP8iqo6rr8paXM5g8MG1OByan9PYMbZAEKD
- bMSSkhriycK9xJEs3VgMHxfmN359bRlL1LuGc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=ZGIVv2/nKkKWqHnBVOyDTBWflj7dKm5Z1J/YDjsaUtE=;
- b=Hfib+7eh1/g5CAlLXshBoEKu0mv50cmyfSqGKSqwGKW7Bbbai9Puvyq4nSEZeCWayp
- Sg8mN0vKBroBxPeRhSt+It8zSsaAx3tRRPxX8Mah7hX7K/YEHnVNLCpKM3CY20Rh/n0Y
- lCPwYphkicZTmL+JR+MR4flppvKK3ZJxh/ua6NSZGn0uAGyhIMuWgo+Q3mk/tXbATFhs
- UiP6OnlGUe0JIV6aN7YAaNWyTv5nveX1DEuP4WVePaZ4otaT+V3ftB1PIiz/+GvAdOmF
- HqQkgPJJz4Fg83DCKHwtYslaxa3LV6EROpocgjhoYurbVvkPOpvYNCOoTnPwcj7EyYb6
- 3jJA==
-X-Gm-Message-State: AOAM530b9LX9EUgefFrTMoPjQ8DG6FLw6FfU0woQMiqmn4XeIn8EX6Tm
- Cpl3D8s/t8QRTUP2W20ymElV+4433aFNhG1j1aEXMw==
-X-Google-Smtp-Source: ABdhPJwXlN3NHDVCqgynQUFgcYU8keK6MI5X2Io9fYXPD+Fsy3mNkxkFxRkwEAfYalcTpwO0KXeigTJj+lB1MzHkdrU=
-X-Received: by 2002:adf:ba10:: with SMTP id o16mr7576162wrg.100.1599058974152; 
- Wed, 02 Sep 2020 08:02:54 -0700 (PDT)
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 19E408727F
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:03:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+ s=badeba3b8450; t=1599058860;
+ bh=9mONAPviboKjYh84a+hy1GCQTwP3D+gQs9CslXOAS7A=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=L8sV5DSyxZUjMdCJhBHYorScxg6Z4vf+qm5xzt+bAm4G4iOhKeQORYS34kwE/JbdB
+ rSg/pnYjdeGX/vczI3Au4GC/AISEAjmvpla+YBUSsn1+9ZZIThR1CZxpTTFl/pWKKE
+ 2JYJbWOBPJPv1+9uzRxIQ/Bk/261ZOsS/Kx0dlF8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.155.63]) by mail.gmx.com (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MZTmY-1k7SOI0Ure-00WV2u; Wed, 02
+ Sep 2020 17:01:00 +0200
+Subject: Re: [PATCH 07/28] 53c700: improve non-coherent DMA handling
+To: Matthew Wilcox <willy@infradead.org>
+References: <20200819065555.1802761-1-hch@lst.de>
+ <20200819065555.1802761-8-hch@lst.de>
+ <1598971960.4238.5.camel@HansenPartnership.com>
+ <20200901150554.GN14765@casper.infradead.org>
+ <1598973776.4238.11.camel@HansenPartnership.com>
+ <3369218e-eea4-14e9-15f1-870269e4649d@gmx.de>
+ <77c9b2b6-bedc-d090-8b23-6ac664df1d1f@gmx.de>
+ <20200901165311.GS14765@casper.infradead.org>
+From: Helge Deller <deller@gmx.de>
+Autocrypt: addr=deller@gmx.de; keydata=
+ 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
+ c2TFWAS8k6RLkk41ZUU8ENX8+qZx/Q==
+Message-ID: <30bfa844-00ea-1abe-9022-d73cf309e580@gmx.de>
+Date: Wed, 2 Sep 2020 17:00:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200824193036.6033-1-james.quinlan@broadcom.com>
- <20200824193036.6033-8-james.quinlan@broadcom.com>
- <20200901082429.GA1440@lst.de>
-In-Reply-To: <20200901082429.GA1440@lst.de>
-Date: Wed, 2 Sep 2020 11:02:42 -0400
-Message-ID: <CA+-6iNw1rSJOjQDDEYdB3Y1S5KOjOULANbmsDVBM4Mr4Uifomw@mail.gmail.com>
-Subject: Re: [PATCH v11 07/11] device-mapping: Introduce DMA range map,
- supplanting dma_pfn_offset
-To: Christoph Hellwig <hch@lst.de>
-Cc: Rich Felker <dalias@libc.org>,
- "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
- "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
- <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
- "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
- <linux-remoteproc@vger.kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Will Deacon <will@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Yoshinori Sato <ysato@users.sourceforge.jp>,
- "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
- Frank Rowand <frowand.list@gmail.com>,
- "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, Chen-Yu Tsai <wens@csie.org>,
- Ingo Molnar <mingo@redhat.com>,
- "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
- <bcm-kernel-feedback-list@broadcom.com>,
- Alan Stern <stern@rowland.harvard.edu>, Len Brown <lenb@kernel.org>,
- Ohad Ben-Cohen <ohad@wizery.com>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>, Maxime Ripard <mripard@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Borislav Petkov <bp@alien8.de>,
- "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
- Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
+In-Reply-To: <20200901165311.GS14765@casper.infradead.org>
+Content-Language: en-US
+X-Provags-ID: V03:K1:ylKgDqFU+gFaPC2d+WzSCQXxiLQIXKySkLqivXa28qMeQ0h5Pxr
+ tXM5x2Bo4S8TIKWGUWrbkkNuyKUME2NUvg3jtsmf8vkXFe4smPhe14q2DVLmoJE/VrrUvC8
+ 63TbKzPDS66vjFhBhFr+EMjQN0laqJgo2Hk+foHitxLhjyTxAJGMdprDPYH1wX4OBUsoyKp
+ QMsIM54OSGNwhG+Lr3XfQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aS28Gzfeplo=:J9k98LfUdjGOuaDrD12GXy
+ mzSgOO4XwP9o4WwUrfevHPZft60XRYzaydJg0seTLUP9PUMe4SCR8wnt+FqJb2KmNErTSF3Yz
+ mlEuV2ypNQhyeT8Zb7TFH9gIDYr63Tn/49r4uWCsv7KGts2XskLUKRIcTRjTyZ3fFf2AfYibs
+ BzDfzF9v3j4/idusDth0av+x88Bd3jXvRuZ7oJJF2HqnBG4SkKXa0NLw7UkTYhhf//eGiBY6L
+ Tz4eqwGRg7UwwOHV8G+kLUYax69snHYMWRmONRp+4GHeEto3D1SVN2jF+XEdTo8EG6GK7mVkf
+ REE4YOujtqDjHiR6Ot35dAEtJQsFsZG4uNaEY+BHAPdoB2Df8TOc3SqjwTa1Ieccn9gGFcI0v
+ HHi8UTCZoevjnXCWVau4Y/zHGSN/AvvivjSjDJh7E2zIcG2RsvnL1QRgMV2O5i8o0o0mkywRA
+ 7f7mDxGgqyo/OXeuv19tt2n2HqKCUEns1YJ87JOE/tZhZzKHulZvXXB66rnFRt+wNw/tRV1ft
+ 9Hv0ciJkPH32Jjmj3fbLVbhytxvULtITMmRk6+0rf0MLbgyAu89Ax6nNGds65lCXxgsshpdaw
+ 73NW8eCpFbuCSovlK4TWz1l58mYvKCfFcm7x2NeJ0dOieetl4mzs3HcI5qq6WHdSH4o4WvPww
+ lGbsyrOodVY3EiL6Dvj0o+RCTbWMiZaG9cwrWeQzIsjYAFnZ0YNI7k5IOxf8FqZ3FZilscmm4
+ 1aHFf1DqijKWy8YrPe5SLLGm7jipNlbM97JdT8Rky3LFIzh6n4cS92aBdLFDSMG5m8JFPzZyV
+ nSDYrKeU19FFhsekzwqljpEW2mIFGl9Wl07u9Sip7k6aoMhwb74pJUjrtd4RazX00tgfI3Jv5
+ cbyBhn+XCUXDCMbBCHZGsG23/3V32rVakAqts6bEfUkqclD0zAytopG2cvnwsLqpYdubwTIN3
+ kUmpUTgLkIzzdNSz9uF58RQPOyRSV2yH/L/klzgKzaIZC8LHyq6i1S7e2N4ZD+jcidq45xXM7
+ dxde84/84J6CvL4H+9k93kdrMM+as6D+M+klxCE/E51ydob240bTvF6xRBq0aTd9xSQcRJTBm
+ Kb4lpYVFKQfTy9KqWPa1ZEWaqLY8gC2E/gIYnnMq+m49vVWvY/xMJdiGLExTZ7lfIdx9XsKQZ
+ bj3+thm3qGCfuP6o6d33ewaGx84nW8EaWKaRAZZqHK0i4qKqTW7aR2AL4dtU4tMIrbzNV/2DK
+ 7fOan6bBrutQ8vuLD
+Cc: alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
+ linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+ linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+ James Bottomley <James.Bottomley@hansenpartnership.com>, linux-mm@kvack.org,
+ Christoph Hellwig <hch@lst.de>, linux-samsung-soc@vger.kernel.org,
+ Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
+ Kyungmin Park <kyungmin.park@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Matt Porter <mporter@kernel.crashing.org>, linux-media@vger.kernel.org,
+ Tom Lendacky <thomas.lendacky@amd.com>, Pawel Osciak <pawel@osciak.com>,
  Mauro Carvalho Chehab <mchehab@kernel.org>,
- "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
- Felipe Balbi <balbi@kernel.org>, Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- open list <linux-kernel@vger.kernel.org>,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Stefano Stabellini <sstabellini@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- Sudeep Holla <sudeep.holla@arm.com>,
- "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+ linux-arm-kernel@lists.infradead.org,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
+ netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
+ linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,34 +182,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 1, 2020 at 4:24 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> I've applied this to the dma-mapping tree.
->
-> I had to resolve a conflict in drivers/of/address.c with a recent
-> mainline commit.  I also applied the minor tweaks Andy pointed out
-> plus a few more style changes.  A real change is that I changed the
-> prototype for dma_copy_dma_range_map to require less boilerplate code.
->
-> The result is here:
->
->     http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/eef520b232c60e74eb8b33a5a7863ad8f2b4a5c7
->
-> please double check that everyting works as expected.
-Tested-by: Jim Quinlan <james.quinlan@broadcom.com>
+Hi Willy,
 
-Thanks Christoph
-Jim
+On 01.09.20 18:53, Matthew Wilcox wrote:
+> On Tue, Sep 01, 2020 at 06:41:12PM +0200, Helge Deller wrote:
+>>> I still have a zoo of machines running for such testing, including a
+>>> 715/64 and two 730.
+>>> I'm going to test this git tree on the 715/64:
 >
-> I can cut a stable branch with this if you need it for other trees, but
-> I'd like to wait a few days to see if there is any fallout first.
+> The 715/64 is a 7100LC machine though.  I think you need to boot on
+> the 730 to test the non-coherent path.
+
+Just tested the 730, and it works as well.
+
+Helge
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
