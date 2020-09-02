@@ -2,72 +2,127 @@ Return-Path: <SRS0=BMay=CL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CC7C433E7
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 11:31:39 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02749C433E2
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:02:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BED6B2065E
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 11:31:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BED6B2065E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id B7F942087D
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 15:02:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="Z8Lj3Tbq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7F942087D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 22B2B86741;
-	Wed,  2 Sep 2020 11:31:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 83F8E86955;
+	Wed,  2 Sep 2020 15:02:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id azc8L6j5sLNt; Wed,  2 Sep 2020 11:31:37 +0000 (UTC)
+	with ESMTP id raT5ecEb7KZh; Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1A31D8673C;
-	Wed,  2 Sep 2020 11:31:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E900186937;
+	Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C29EC0052;
-	Wed,  2 Sep 2020 11:31:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CCD83C0052;
+	Wed,  2 Sep 2020 15:02:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EDB1AC0051
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 11:31:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CB17DC0051
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DCB6B86F80
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 11:31:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B8198871D1
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H16Fhgnb2DiZ for <iommu@lists.linux-foundation.org>;
- Wed,  2 Sep 2020 11:31:34 +0000 (UTC)
+ with ESMTP id Hiuh4zvZ+ukh for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Sep 2020 15:02:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8D83E86F79
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 11:31:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA1F6D6E;
- Wed,  2 Sep 2020 04:31:33 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0020D3F66F;
- Wed,  2 Sep 2020 04:31:32 -0700 (PDT)
-Subject: Re: [PATCH] iommu: Allocate dev_iommu before accessing priv data
-To: Torsten Hilbrich <torsten.hilbrich@secunet.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>
-References: <e27cd096-a721-db9d-e4ce-7a432ed6cd4c@secunet.com>
- <12935d0b-61ff-d274-b1ee-3b1fba36bdc7@linux.intel.com>
- <1eafacd8-8cdb-d6ae-130c-dca66dbe3598@secunet.com>
- <175fe2a7-922e-1800-298e-1481b648c6d8@linux.intel.com>
- <96717683-70be-7388-3d2f-61131070a96a@secunet.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <0bceb7a0-5765-bfa8-2bcd-f5d98a366a34@arm.com>
-Date: Wed, 2 Sep 2020 12:31:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+ [209.85.221.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DF0F7871C1
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 15:02:55 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id k15so5596694wrn.10
+ for <iommu@lists.linux-foundation.org>; Wed, 02 Sep 2020 08:02:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=ZGIVv2/nKkKWqHnBVOyDTBWflj7dKm5Z1J/YDjsaUtE=;
+ b=Z8Lj3TbqKgnf+Tg9Z0P832A14FJMQdIVQJkvmocdIbwtjttKsmDE4r9Qh2gQGw6NZU
+ As25toD2CuCYv9eeG56/UbBx2y5/4HM22wP8iqo6rr8paXM5g8MG1OByan9PYMbZAEKD
+ bMSSkhriycK9xJEs3VgMHxfmN359bRlL1LuGc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=ZGIVv2/nKkKWqHnBVOyDTBWflj7dKm5Z1J/YDjsaUtE=;
+ b=Hfib+7eh1/g5CAlLXshBoEKu0mv50cmyfSqGKSqwGKW7Bbbai9Puvyq4nSEZeCWayp
+ Sg8mN0vKBroBxPeRhSt+It8zSsaAx3tRRPxX8Mah7hX7K/YEHnVNLCpKM3CY20Rh/n0Y
+ lCPwYphkicZTmL+JR+MR4flppvKK3ZJxh/ua6NSZGn0uAGyhIMuWgo+Q3mk/tXbATFhs
+ UiP6OnlGUe0JIV6aN7YAaNWyTv5nveX1DEuP4WVePaZ4otaT+V3ftB1PIiz/+GvAdOmF
+ HqQkgPJJz4Fg83DCKHwtYslaxa3LV6EROpocgjhoYurbVvkPOpvYNCOoTnPwcj7EyYb6
+ 3jJA==
+X-Gm-Message-State: AOAM530b9LX9EUgefFrTMoPjQ8DG6FLw6FfU0woQMiqmn4XeIn8EX6Tm
+ Cpl3D8s/t8QRTUP2W20ymElV+4433aFNhG1j1aEXMw==
+X-Google-Smtp-Source: ABdhPJwXlN3NHDVCqgynQUFgcYU8keK6MI5X2Io9fYXPD+Fsy3mNkxkFxRkwEAfYalcTpwO0KXeigTJj+lB1MzHkdrU=
+X-Received: by 2002:adf:ba10:: with SMTP id o16mr7576162wrg.100.1599058974152; 
+ Wed, 02 Sep 2020 08:02:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <96717683-70be-7388-3d2f-61131070a96a@secunet.com>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org
+References: <20200824193036.6033-1-james.quinlan@broadcom.com>
+ <20200824193036.6033-8-james.quinlan@broadcom.com>
+ <20200901082429.GA1440@lst.de>
+In-Reply-To: <20200901082429.GA1440@lst.de>
+Date: Wed, 2 Sep 2020 11:02:42 -0400
+Message-ID: <CA+-6iNw1rSJOjQDDEYdB3Y1S5KOjOULANbmsDVBM4Mr4Uifomw@mail.gmail.com>
+Subject: Re: [PATCH v11 07/11] device-mapping: Introduce DMA range map,
+ supplanting dma_pfn_offset
+To: Christoph Hellwig <hch@lst.de>
+Cc: Rich Felker <dalias@libc.org>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
+ "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
+ <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Will Deacon <will@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>,
+ "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>,
+ "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, Chen-Yu Tsai <wens@csie.org>,
+ Ingo Molnar <mingo@redhat.com>,
+ "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
+ <bcm-kernel-feedback-list@broadcom.com>,
+ Alan Stern <stern@rowland.harvard.edu>, Len Brown <lenb@kernel.org>,
+ Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Maxime Ripard <mripard@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Felipe Balbi <balbi@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ open list <linux-kernel@vger.kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Stefano Stabellini <sstabellini@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,155 +135,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-09-02 06:32, Torsten Hilbrich wrote:
-> After updating from v5.8 to v5.9-rc2 I noticed some problems when
-> booting a system with kernel cmdline "intel_iommu=on,igfx_off".
-> 
-> The following stacktrace was produced:
-> 
-> <6>[    0.000000] Command line: BOOT_IMAGE=/isolinux/bzImage console=tty1 intel_iommu=on,igfx_off
-> ...
-> <6>[    3.341682] DMAR: Host address width 39
-> <6>[    3.341684] DMAR: DRHD base: 0x000000fed90000 flags: 0x0
-> <6>[    3.341702] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap 1c0000c40660462 ecap 19e2ff0505e
-> <6>[    3.341705] DMAR: DRHD base: 0x000000fed91000 flags: 0x1
-> <6>[    3.341711] DMAR: dmar1: reg_base_addr fed91000 ver 1:0 cap d2008c40660462 ecap f050da
-> <6>[    3.341713] DMAR: RMRR base: 0x0000009aa9f000 end: 0x0000009aabefff
-> <6>[    3.341716] DMAR: RMRR base: 0x0000009d000000 end: 0x0000009f7fffff
-> <6>[    3.341726] DMAR: No ATSR found
-> <1>[    3.341772] BUG: kernel NULL pointer dereference, address: 0000000000000038
-> <1>[    3.341774] #PF: supervisor write access in kernel mode
-> <1>[    3.341776] #PF: error_code(0x0002) - not-present page
-> <6>[    3.341777] PGD 0 P4D 0
-> <4>[    3.341780] Oops: 0002 [#1] SMP PTI
-> <4>[    3.341783] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.9.0-devel+ #2
-> <4>[    3.341785] Hardware name: LENOVO 20HGS0TW00/20HGS0TW00, BIOS N1WET46S (1.25s ) 03/30/2018
-> <4>[    3.341790] RIP: 0010:intel_iommu_init+0xed0/0x1136
-> <4>[    3.341792] Code: fe e9 61 02 00 00 bb f4 ff ff ff e9 57 02 00 00 48 63 d1 48 c1 e2 04 48 03 50 20 48 8b 12 48 85 d2 74 0b 48 8b 92 d0 02 00 00 <48> 89 7a 38 ff c1 e9 15 f5 ff ff 48 c7 c7 60 99 ac a7 49 c7 c7 a0
-> <4>[    3.341796] RSP: 0000:ffff96d180073dd0 EFLAGS: 00010282
-> <4>[    3.341798] RAX: ffff8c91037a7d20 RBX: 0000000000000000 RCX: 0000000000000000
-> <4>[    3.341800] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffffffffff
-> <4>[    3.341802] RBP: ffff96d180073e90 R08: 0000000000000001 R09: ffff8c91039fe3c0
-> <4>[    3.341804] R10: 0000000000000226 R11: 0000000000000226 R12: 000000000000000b
-> <4>[    3.341806] R13: ffff8c910367c650 R14: ffffffffa8426d60 R15: 0000000000000000
-> <4>[    3.341808] FS:  0000000000000000(0000) GS:ffff8c9107480000(0000) knlGS:0000000000000000
-> <4>[    3.341810] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> <4>[    3.341812] CR2: 0000000000000038 CR3: 00000004b100a001 CR4: 00000000003706e0
-> <4>[    3.341814] Call Trace:
-> <4>[    3.341820]  ? _raw_spin_unlock_irqrestore+0x1f/0x30
-> <4>[    3.341824]  ? call_rcu+0x10e/0x320
-> <4>[    3.341828]  ? trace_hardirqs_on+0x2c/0xd0
-> <4>[    3.341831]  ? rdinit_setup+0x2c/0x2c
-> <4>[    3.341834]  ? e820__memblock_setup+0x8b/0x8b
-> <4>[    3.341836]  pci_iommu_init+0x16/0x3f
-> <4>[    3.341839]  do_one_initcall+0x46/0x1e4
-> <4>[    3.341842]  kernel_init_freeable+0x169/0x1b2
-> <4>[    3.341845]  ? rest_init+0x9f/0x9f
-> <4>[    3.341847]  kernel_init+0xa/0x101
-> <4>[    3.341849]  ret_from_fork+0x22/0x30
-> <4>[    3.341851] Modules linked in:
-> <4>[    3.341854] CR2: 0000000000000038
-> <4>[    3.341860] ---[ end trace 3653722a6f936f18 ]---
-> 
-> I could track the problem down to the dev_iommu_priv_set call in the function
-> init_no_remapping_devices in the path where !dmar_map_gfx. It turned out that
-> the dev->iommu entry is NULL at this time.
-> 
-> Lu Baolu <baolu.lu@linux.intel.com> suggested for dev_iommu_priv_set
-> to automatically allocate the iommu entry by using the function
-> dev_iommu_get to retrieve that pointer. This function allocates the
-> entry if needed.
-> 
-> Fixes: 01b9d4e21148 ("iommu/vt-d: Use dev_iommu_priv_get/set()")
-> Signed-off-by: Torsten Hilbrich <torsten.hilbrich@secunet.com>
-> Tested-by: Torsten Hilbrich <torsten.hilbrich@secunet.com>
-> Link: https://lists.linuxfoundation.org/pipermail/iommu/2020-August/048098.html
-> ---
->   drivers/iommu/iommu.c | 22 ++++++++++++++++++++++
->   include/linux/iommu.h | 11 ++---------
->   2 files changed, 24 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 609bd25bf154..3edca2a31296 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2849,3 +2849,25 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
->   	return ops->sva_get_pasid(handle);
->   }
->   EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
-> +
-> +void *dev_iommu_priv_get(struct device *dev)
-> +{
-> +       struct dev_iommu *param = dev_iommu_get(dev);
-> +
-> +       if (WARN_ON(!param))
-> +               return ERR_PTR(-ENOMEM);
-> +
-> +        return param->priv;
-> +}
-> +EXPORT_SYMBOL_GPL(dev_iommu_priv_get);
+On Tue, Sep 1, 2020 at 4:24 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> I've applied this to the dma-mapping tree.
+>
+> I had to resolve a conflict in drivers/of/address.c with a recent
+> mainline commit.  I also applied the minor tweaks Andy pointed out
+> plus a few more style changes.  A real change is that I changed the
+> prototype for dma_copy_dma_range_map to require less boilerplate code.
+>
+> The result is here:
+>
+>     http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/eef520b232c60e74eb8b33a5a7863ad8f2b4a5c7
+>
+> please double check that everyting works as expected.
+Tested-by: Jim Quinlan <james.quinlan@broadcom.com>
 
-Hmm, I'm not convinced by this - it looks it would only paper over real 
-driver bugs. If the driver's calling dev_iommu_priv_get(), it presumably 
-wants to actually *do* something with its private data - if it somehow 
-manages to make that call before it's processed ->probe_device(), it 
-can't possibly get *meaningful* data, so even if we stop that call from 
-crashing how can it result in correct behaviour?
-
-And if the device isn't managed by that IOMMU driver, then it shouldn't 
-be calling dev_iommu_priv_get() blindly in the first place (and 
-allocating redundant structures would just be a waste).
-
-> +void dev_iommu_priv_set(struct device *dev, void *priv)
-> +{
-> +       struct dev_iommu *param = dev_iommu_get(dev);
-> +
-> +       if (WARN_ON(!param))
-> +               return;
-> +
-> +        param->priv = priv;
-> +}
-> +EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
-
-In this direction it's at least not completely illogical, but it's still 
-indicative of a driver operating very much outside the expected API 
-flow. If a driver has special knowledge of devices it manages before 
-it's seen ->probe_device() for them then fair enough, but it should 
-probably be that driver's responsibility to manage any "out of order" 
-usage of its private data as a special case, rather than pretending that 
-this is expected common behaviour. Again, for most drivers it's more 
-likely to just mask bugs than be genuinely useful.
-
-Robin.
-
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index fee209efb756..e3e725cf64b3 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -609,15 +609,8 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
->   	dev->iommu->fwspec = fwspec;
->   }
->   
-> -static inline void *dev_iommu_priv_get(struct device *dev)
-> -{
-> -	return dev->iommu->priv;
-> -}
-> -
-> -static inline void dev_iommu_priv_set(struct device *dev, void *priv)
-> -{
-> -	dev->iommu->priv = priv;
-> -}
-> +void *dev_iommu_priv_get(struct device *dev);
-> +void dev_iommu_priv_set(struct device *dev, void *priv);
->   
->   int iommu_probe_device(struct device *dev);
->   void iommu_release_device(struct device *dev);
-> 
+Thanks Christoph
+Jim
+>
+> I can cut a stable branch with this if you need it for other trees, but
+> I'd like to wait a few days to see if there is any fallout first.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
