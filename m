@@ -2,87 +2,127 @@ Return-Path: <SRS0=BMay=CL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	CHARSET_FARAWAY_HEADER,HEADER_FROM_DIFFERENT_DOMAINS,HTML_FONT_FACE_BAD,
-	HTML_MESSAGE,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,RCVD_ILLEGAL_IP,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 085B0C433E2
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 03:24:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC17C433E2
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 05:22:49 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AF3E42065E
-	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 03:24:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF3E42065E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=zhaoxin.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8E27C20829
+	for <iommu@archiver.kernel.org>; Wed,  2 Sep 2020 05:22:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="Y7ootEnB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E27C20829
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 61ABD20386;
-	Wed,  2 Sep 2020 03:24:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6B4BB87186;
+	Wed,  2 Sep 2020 05:22:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h-cAYSOdnTlJ; Wed,  2 Sep 2020 03:24:40 +0000 (UTC)
+	with ESMTP id pVvCGZdrZpGr; Wed,  2 Sep 2020 05:22:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 214B020397;
-	Wed,  2 Sep 2020 03:24:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7BE998716A;
+	Wed,  2 Sep 2020 05:22:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B67CC07FF;
-	Wed,  2 Sep 2020 03:24:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 587ABC07FF;
+	Wed,  2 Sep 2020 05:22:48 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 484B8C0051
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 03:24:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40F40C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 05:22:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3E017867F1
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 03:24:38 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 28FAF84EB0
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 05:22:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BB15FrYjg2MV for <iommu@lists.linux-foundation.org>;
- Wed,  2 Sep 2020 03:24:35 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ZXSHCAS1.zhaoxin.com (unknown [203.148.12.81])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C407583204
- for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 03:24:34 +0000 (UTC)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
- (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 2 Sep 2020
- 11:24:27 +0800
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 2 Sep 2020
- 11:24:26 +0800
-Received: from zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416]) by
- zxbjmbx1.zhaoxin.com ([fe80::290a:f538:51e7:1416%16]) with mapi id
- 15.01.1979.003; Wed, 2 Sep 2020 11:24:26 +0800
-From: FelixCui-oc <FelixCui-oc@zhaoxin.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "David
- Woodhouse" <dwmw2@infradead.org>, Dan Carpenter <dan.carpenter@oracle.com>,
- "kbuild@lists.01.org" <kbuild@lists.01.org>
-Subject: =?gb2312?B?tPC4tDogtPC4tDogW1BBVENIIHYzIDIvMl0gaW9tbXUvdnQtZDpBZGQgc3Vw?=
- =?gb2312?Q?port_for_probing_ACPI_device_in_RMRR?=
-Thread-Topic: =?gb2312?B?tPC4tDogW1BBVENIIHYzIDIvMl0gaW9tbXUvdnQtZDpBZGQgc3VwcG9ydCBm?=
- =?gb2312?Q?or_probing_ACPI_device_in_RMRR?=
-Thread-Index: AQHWfFkssCqC/uq8zUSrxxRHHTL9PKlSzvUAgAC26n+AAJ31AIAAkzS7
-Date: Wed, 2 Sep 2020 03:24:26 +0000
-Message-ID: <cfdd29a882d140e5aec2e8c3b77f4968@zhaoxin.com>
-References: <20200827100217.21324-1-FelixCui-oc@zhaoxin.com>
- <20200827100217.21324-3-FelixCui-oc@zhaoxin.com>
- <e5b1daaf-f073-94c9-714c-832b10d284f4@linux.intel.com>
- <cde22f0f02f94efcae8bf044e2cd9441@zhaoxin.com>,
- <7e5f2c33-c6c3-f344-9014-1f6a306c55aa@linux.intel.com>
-In-Reply-To: <7e5f2c33-c6c3-f344-9014-1f6a306c55aa@linux.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.29.8.19]
+ with ESMTP id Ya14rrrSM-JN for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Sep 2020 05:22:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11on2083.outbound.protection.outlook.com [40.107.236.83])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 1144D84E8F
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Sep 2020 05:22:45 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z2TpGrd1bYRxAv5oNJcYJoc+zEUeErEHWhR73kvQuII8hUnijXgh87Htyyt850c7kehZZHXUZ24lHrFanfCmoZnVixgJGH8DTRia9unUhTecj5rebPoom9j16ayRzjoZpDI7texFAhtkaoWktMZF2j9ip4XWBHyt30quIkYUFkpvgKHguQfKASjbFfV1S+wMbN29vMk6cA05HCbu02ls+iG+uk+M4KoBbUyNMCW+Wefvmwpm8BuqkQ27jyXa89mY3oJgwwbL528WcW2Gl7JQ8GGjtJET/C3efKiqCdPQ1cqMbNNn3YY/yfSLxhUz2vTTKFUU/hfX1HLA08IFN+XCGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ulAaKW1IFkd7SNsr8YqwGV8vpEzdEUKPrLb1OtYFhhg=;
+ b=C2vsReu4ktuWns64GzisVlZY+yVcwThswmhc7Io7961Njq6/ib+AV3CTxuYyDxMYeg562Kwst/Q/NPwnY4FTJWIV+cpljfD3chxwq0Xfx66C67D/zj4vcOF7bZCzDOWSN/KjAGEKFkmnHAmCdy1b8Mc6lo2QYEMlsb/egpgE5yV/iMap652CCU4hw0EME8+T8XQXGEryUTXIQtpj5UqHB4rBMWYTfh8iRH5YTIXRPTEK0npRAjddy7F6/mI+xqhQ4NfrsgXGpHEjoEPNvK1l+B+tOq6DSSJ/MmI/pLbQi7PtpVhtRKWcHMRl0A0deEaOMd8uq23/2leU1gO80nluFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ulAaKW1IFkd7SNsr8YqwGV8vpEzdEUKPrLb1OtYFhhg=;
+ b=Y7ootEnBDSpATro2uYdWD+j9Kq5e+CGl63IypgCOgCIlCRi1F2acqnnjdqiuJppuzLFVzgmUIoc0zbFHr1Zwp2JS9J/zjEodZLY7t2c3cSXkVTRJVzz2ul96KLJcnjO9VAM/MATl1G+TiqAEte4c3r2e3HmdszwOu4RaiEvQSPA=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
+ DM6PR12MB2795.namprd12.prod.outlook.com (2603:10b6:5:41::32) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3348.15; Wed, 2 Sep 2020 04:49:50 +0000
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::cc8d:7537:ec56:108e]) by DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::cc8d:7537:ec56:108e%11]) with mapi id 15.20.3326.025; Wed, 2 Sep 2020
+ 04:49:50 +0000
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org
+Subject: [PATCH 2/2] iommu: amd: Use cmpxchg_double() when updating 128-bit
+ IRTE
+Date: Wed,  2 Sep 2020 04:51:10 +0000
+Message-Id: <20200902045110.4679-3-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200902045110.4679-1-suravee.suthikulpanit@amd.com>
+References: <20200902045110.4679-1-suravee.suthikulpanit@amd.com>
+X-ClientProxiedBy: SN1PR12CA0093.namprd12.prod.outlook.com
+ (2603:10b6:802:21::28) To DM5PR12MB1163.namprd12.prod.outlook.com
+ (2603:10b6:3:7a::18)
 MIME-Version: 1.0
-Cc: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>,
- CobeChen-oc <CobeChen-oc@zhaoxin.com>, Ashok Raj <ashok.raj@intel.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from 255.255.255.255 (255.255.255.255) by
+ SN1PR12CA0093.namprd12.prod.outlook.com (2603:10b6:802:21::28) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3326.19 via Frontend Transport; Wed, 2 Sep 2020 04:49:49 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [165.204.78.2]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ad6c3f63-d05d-46d5-0688-08d84efb9fd2
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2795:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB279542FD6ED037F397BC2EF9F32F0@DM6PR12MB2795.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5eNMB+Vzyp6xE1T8iGMl9woaMol6pld/14AbcO2V/d2BvpCF7I9n3303DI6luUlt+B7OuFebesVwYL+PDntCwtp3ZK/ZwGa69kK+PbYcpz6EULoclyoBP9UB+x26nz+CyPBo030k+arc/N5in21nvvx/OYUYurVBhJ7HxAiyS/kDLFFUnPxvDav12p+FT6l43EUtJxtoDyrcvA9Z36dPbgBPjeTP18Pru3yJXiSR5C1zScerPeN6OaSWt+oprXe2ph4OdOHT3vw7fgL2ySlrAEybrPeiwxQnzJZPfKoWOBsoWNF73bJAI190cXke0wwv9KR5Ud4C4B+dss+lZiMl0A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(366004)(39860400002)(376002)(136003)(346002)(83380400001)(4326008)(8936002)(2616005)(956004)(86362001)(478600001)(26005)(16576012)(44832011)(8676002)(2906002)(5660300002)(36756003)(66556008)(316002)(66476007)(66946007)(186003)(6666004)(1076003)(6486002)(52116002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: 5oXmT1IC3Jp15VWr+CU35BA+XSANZk+sgquKflGAWtvt4PxnqDPQzHBR7fvhZXdvLgzhqGlvRqG1NXQN6GsSSl2hjMB/B4NBgJb6s32yobDiAwI58oHSwm9oRiYF41hypPwb5QijpTAJZgc99lRwwTEMhY5V8y3vK1Fx+4dvjiDURt1qvQAdJb4iMDH6sBTxJb1D2Ka6E9OYyUd0QuPReOEeMi+STyOdTOsifMIrdmu+AJ3uWa703ypuAA8divgvl7NjtNbCZdniY7moiwKwQyT/nbEL8NuG6OPMUqwFPSKAxOqRDJ4PB9gI9NM5jiGFbFpJ1hOeKfRuD/RowQzkcsw7xIQ0p5WiK2/Fge8vuS1ycghBKuk39ICoO2xWQQxLyB73lI06cga07PxlV7kZo9vRj07UNh6ShnVhcORxxwafb+MM5aQRxlZ3lWl3vrSJbKDTs99w47vhX8Bco7gL35YI1LL0GfyQTcwJLS4snFnmY6I9qxMpZlmWZ1NvnUNvos23yrlRSGtL/wPEgXhMchw217ohhxJTvwjp8gXvJM9s5QpivSkCM4tvH2nxaNKY2Ag+wuFN7FFSVQ1pDDtNjfPfwTsDtMI829ZKn244iP9e1HoPdegM3tXi2d2mdlFjruN1w2G9Fs5XFv8J0Sq9WA==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad6c3f63-d05d-46d5-0688-08d84efb9fd2
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2020 04:49:49.9953 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Migg7PcHwKESRh53wMsl0/vQMDZNCSNymzNnT9DWpRG3h1FN2jlJJQ4XZwLmMXg1xYrPdCO671cCbocV4qbleg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2795
+Cc: jon.grimm@amd.com, james.puthukattukaran@oracle.com,
+ boris.ostrovsky@oracle.com, joao.m.martins@oracle.com,
+ sean.m.osborne@oracle.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,523 +135,136 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============9102775165268841522=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============9102775165268841522==
-Content-Language: zh-CN
-Content-Type: multipart/alternative;
-	boundary="_000_cfdd29a882d140e5aec2e8c3b77f4968zhaoxincom_"
+When using 128-bit interrupt-remapping table entry (IRTE) (a.k.a GA mode),
+current driver disables interrupt remapping when it updates the IRTE
+so that the upper and lower 64-bit values can be updated safely.
 
---_000_cfdd29a882d140e5aec2e8c3b77f4968zhaoxincom_
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+However, this creates a small window, where the interrupt could
+arrive and result in IO_PAGE_FAULT (for interrupt) as shown below.
 
-aGkgYmFvbHUsDQoNCj4gU28geW91IGhhdmUgYSBoaWRkZW4gZGV2aWNlIChpbnZpc2libGUgdG8g
-aG9zdCBrZXJuZWwpLiBCdXQgeW91IG5lZWQgdG8NCg0KPnNldHVwIHNvbWUgaWRlbnRpdHkgbWFw
-cGluZ3MgZm9yIHRoaXMgZGV2aWNlLCBzbyB0aGF0IHRoZSBmaXJtd2FyZQ0KPmNvdWxkIGtlZXAg
-d29ya2luZywgcmlnaHQ/DQoNCj5UaGUgcGxhdGZvcm0gZGVzaWducyB0aGlzIGJ5IHB1dHRpbmcg
-dGhhdCByYW5nZSBpbiB0aGUgUk1SUiB0YWJsZSBhbmQNCj5leHBlY3RpbmcgdGhlIE9TIGtlcm5l
-bCB0byBzZXR1cCBpZGVudGl0eSBtYXBwaW5ncyBkdXJpbmcgYm9vdC4NCg0KPkRvIEkgdW5kZXJz
-dGFuZCBpdCByaWdodD8NCg0KDQpZZXMuIFdoYXQgeW91IHVuZGVyc3RhbmQgaXMgY29ycmVjdC4N
-Cg0KDQpCZXN0IHJlZ2FyZHMNCg0KRmVsaXhjdWktb2MNCg0KX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18NCreivP7IyzogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4N
-Creiy83KsbzkOiAyMDIwxOo51MIyyNUgMTA6MzI6MzYNCsrVvP7IyzogRmVsaXhDdWktb2M7IEpv
-ZXJnIFJvZWRlbDsgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IGxpbnV4LWtlcm5l
-bEB2Z2VyLmtlcm5lbC5vcmc7IERhdmlkIFdvb2Rob3VzZTsgRGFuIENhcnBlbnRlcjsga2J1aWxk
-QGxpc3RzLjAxLm9yZw0Ks63LzTogYmFvbHUubHVAbGludXguaW50ZWwuY29tOyBDb2JlQ2hlbi1v
-YzsgUmF5bW9uZFBhbmctb2M7IFRvbnkgVyBXYW5nLW9jOyBBc2hvayBSYWoNCtb3zOI6IFJlOiC0
-8Li0OiBbUEFUQ0ggdjMgMi8yXSBpb21tdS92dC1kOkFkZCBzdXBwb3J0IGZvciBwcm9iaW5nIEFD
-UEkgZGV2aWNlIGluIFJNUlINCg0KT24gOS8xLzIwIDU6MTMgUE0sIEZlbGl4Q3VpLW9jIHdyb3Rl
-Og0KPiBoaSAgYmFvbHUgLA0KPg0KPiAgICAgICAgICAgICAgICAgICAgIFRoZXNlIEFDUEkgZGV2
-aWNlcyBjYW4gYmUgcmV0cmlldmVkIGZyb20gdGhlIGtlcm5lbA0KPiBhbmQgdGhlcmUgaXMgbm8g
-Ym91bmQgZGV2aWNlIGRyaXZlciAuDQoNClNvIHlvdSBoYXZlIGEgaGlkZGVuIGRldmljZSAoaW52
-aXNpYmxlIHRvIGhvc3Qga2VybmVsKS4gQnV0IHlvdSBuZWVkIHRvDQpzZXR1cCBzb21lIGlkZW50
-aXR5IG1hcHBpbmdzIGZvciB0aGlzIGRldmljZSwgc28gdGhhdCB0aGUgZmlybXdhcmUNCmNvdWxk
-IGtlZXAgd29ya2luZywgcmlnaHQ/DQoNClRoZSBwbGF0Zm9ybSBkZXNpZ25zIHRoaXMgYnkgcHV0
-dGluZyB0aGF0IHJhbmdlIGluIHRoZSBSTVJSIHRhYmxlIGFuZA0KZXhwZWN0aW5nIHRoZSBPUyBr
-ZXJuZWwgdG8gc2V0dXAgaWRlbnRpdHkgbWFwcGluZ3MgZHVyaW5nIGJvb3QuDQoNCkRvIEkgdW5k
-ZXJzdGFuZCBpdCByaWdodD8NCg0KQmVzdCByZWdhcmRzLA0KYmFvbHUNCg0KPg0KPg0KPiBCZXN0
-IHJlZ2FyZHMNCj4NCj4gRmVsaXhjdWktb2MNCj4NCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ICq3orz+
-yMs6KiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiAqt6LLzcqxvOQ6KiAy
-MDIwxOo51MIxyNUgMTQ6MTI6MzQNCj4gKsrVvP7IyzoqIEZlbGl4Q3VpLW9jOyBKb2VyZyBSb2Vk
-ZWw7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOw0KPiBsaW51eC1rZXJuZWxAdmdl
-ci5rZXJuZWwub3JnOyBEYXZpZCBXb29kaG91c2U7IERhbiBDYXJwZW50ZXI7DQo+IGtidWlsZEBs
-aXN0cy4wMS5vcmcNCj4gKrOty806KiBiYW9sdS5sdUBsaW51eC5pbnRlbC5jb207IENvYmVDaGVu
-LW9jOyBSYXltb25kUGFuZy1vYzsgVG9ueSBXDQo+IFdhbmctb2MNCj4gKtb3zOI6KiBSZTogW1BB
-VENIIHYzIDIvMl0gaW9tbXUvdnQtZDpBZGQgc3VwcG9ydCBmb3IgcHJvYmluZyBBQ1BJDQo+IGRl
-dmljZSBpbiBSTVJSDQo+IEhpIEZlbGl4LA0KPg0KPiBPbiA4LzI3LzIwIDY6MDIgUE0sIEZlbGl4
-Q3Vpb2Mgd3JvdGU6DQo+PiBBZnRlciBhY3BpIGRldmljZSBpbiBSTVJSIGlzIGRldGVjdGVkLGl0
-IGlzIG5lY2Vzc2FyeQ0KPj4gdG8gZXN0YWJsaXNoIGEgbWFwcGluZyBmb3IgdGhlc2UgZGV2aWNl
-cy4NCj4+IEluIGFjcGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MoKSxjcmVhdGUgYSBt
-YXBwaW5nDQo+PiBmb3IgdGhlIGFjcGkgZGV2aWNlIGluIFJNUlIuDQo+PiBBZGQgYSBoZWxwZXIg
-dG8gYWNoaWV2ZSB0aGUgYWNwaSBuYW1lc3BhY2UgZGV2aWNlIGNhbg0KPj4gYWNjZXNzIHRoZSBS
-TVJSIHJlZ2lvbi4NCj4NCj4gQXJlIHRob3NlIEFDUEkgZGV2aWNlcyB2aXNpYmxlIHRvIGtlcm5l
-bD8gSWYgc28sIGFueSBkZXZpY2UgZHJpdmVyIGJvdW5kDQo+IGZvciBpdD8NCj4NCj4gQmVzdCBy
-ZWdhcmRzLA0KPiBiYW9sdQ0KPg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEZlbGl4Q3Vpb2MgPEZl
-bGl4Q3VpLW9jQHpoYW94aW4uY29tPg0KPj4gLS0tDQo+PiAgIGRyaXZlcnMvaW9tbXUvaW50ZWwv
-aW9tbXUuYyB8IDI5ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+PiAgIGRyaXZlcnMv
-aW9tbXUvaW9tbXUuYyAgICAgICB8ICA2ICsrKysrKw0KPj4gICBpbmNsdWRlL2xpbnV4L2lvbW11
-LmggICAgICAgfCAgMyArKysNCj4+ICAgMyBmaWxlcyBjaGFuZ2VkLCAzOCBpbnNlcnRpb25zKCsp
-DQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZl
-cnMvaW9tbXUvaW50ZWwvaW9tbXUuYw0KPj4gaW5kZXggMjA4YTkxNjA1Mjg4Li41MWQ3YTViMThm
-NDEgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMNCj4+ICsrKyBi
-L2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYw0KPj4gQEAgLTQ3OTksNiArNDc5OSwyMSBAQCBz
-dGF0aWMgaW50IF9faW5pdCBwbGF0Zm9ybV9vcHRpbl9mb3JjZV9pb21tdSh2b2lkKQ0KPj4gICAg
-ICAgIHJldHVybiAxOw0KPj4gICB9DQo+Pg0KPj4gK3N0YXRpYyBpbnQgYWNwaV9kZXZpY2VfY3Jl
-YXRlX2RpcmVjdF9tYXBwaW5ncyhzdHJ1Y3QgZGV2aWNlICpwbl9kZXYsIHN0cnVjdCBkZXZpY2Ug
-KmFjcGlfZGV2aWNlKQ0KPj4gK3sNCj4+ICsgICAgIHN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXA7
-DQo+PiArDQo+PiArICAgICBhY3BpX2RldmljZS0+YnVzLT5pb21tdV9vcHMgPSAmaW50ZWxfaW9t
-bXVfb3BzOw0KPj4gKyAgICAgZ3JvdXAgPSBpb21tdV9ncm91cF9nZXQocG5fZGV2KTsNCj4+ICsg
-ICAgIGlmICghZ3JvdXApIHsNCj4+ICsgICAgICAgICAgICAgcHJfd2FybigiQUNQSSBuYW1lIHNw
-YWNlIGRldmljZXMgY3JlYXRlIGRpcmVjdCBtYXBwaW5ncyB3cm9uZyFcbiIpOw0KPj4gKyAgICAg
-ICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4+ICsgICAgIH0NCj4+ICsgICAgIF9fYWNwaV9kZXZp
-Y2VfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncyhncm91cCwgYWNwaV9kZXZpY2UpOw0KPj4gKw0KPj4g
-KyAgICAgcmV0dXJuIDA7DQo+PiArfQ0KPj4gKw0KPj4gICBzdGF0aWMgaW50IF9faW5pdCBwcm9i
-ZV9hY3BpX25hbWVzcGFjZV9kZXZpY2VzKHZvaWQpDQo+PiAgIHsNCj4+ICAgICAgICBzdHJ1Y3Qg
-ZG1hcl9kcmhkX3VuaXQgKmRyaGQ7DQo+PiBAQCAtNDgxMyw2ICs0ODI4LDcgQEAgc3RhdGljIGlu
-dCBfX2luaXQgcHJvYmVfYWNwaV9uYW1lc3BhY2VfZGV2aWNlcyh2b2lkKQ0KPj4gICAgICAgICAg
-ICAgICAgICAgICAgICBzdHJ1Y3QgYWNwaV9kZXZpY2VfcGh5c2ljYWxfbm9kZSAqcG47DQo+PiAg
-ICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXA7DQo+PiAgICAg
-ICAgICAgICAgICAgICAgICAgIHN0cnVjdCBhY3BpX2RldmljZSAqYWRldjsNCj4+ICsgICAgICAg
-ICAgICAgICAgICAgICBzdHJ1Y3QgZGV2aWNlICpwbl9kZXYgPSBOVUxMOw0KPj4NCj4+ICAgICAg
-ICAgICAgICAgICAgICAgICAgaWYgKGRldi0+YnVzICE9ICZhY3BpX2J1c190eXBlKQ0KPj4gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlOw0KPj4gQEAgLTQ4MjMsNiArNDgz
-OSw3IEBAIHN0YXRpYyBpbnQgX19pbml0IHByb2JlX2FjcGlfbmFtZXNwYWNlX2RldmljZXModm9p
-ZCkNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAmYWRldi0+
-cGh5c2ljYWxfbm9kZV9saXN0LCBub2RlKSB7DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgZ3JvdXAgPSBpb21tdV9ncm91cF9nZXQocG4tPmRldik7DQo+PiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgaWYgKGdyb3VwKSB7DQo+PiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHBuX2RldiA9IHBuLT5kZXY7DQo+PiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBpb21tdV9ncm91cF9wdXQoZ3JvdXApOw0KPj4gICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29udGludWU7DQo+PiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgfQ0KPj4gQEAgLTQ4MzEsNyArNDg0OCwxOSBAQCBzdGF0aWMgaW50
-IF9faW5pdCBwcm9iZV9hY3BpX25hbWVzcGFjZV9kZXZpY2VzKHZvaWQpDQo+PiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgcmV0ID0gaW9tbXVfcHJvYmVfZGV2aWNlKHBuLT5kZXYpOw0K
-Pj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmIChyZXQpDQo+PiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBicmVhazsNCj4+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHBuX2RldiA9IHBuLT5kZXY7DQo+PiArICAgICAgICAgICAgICAgICAgICAg
-fQ0KPj4gKyAgICAgICAgICAgICAgICAgICAgIGlmICghcG5fZGV2KSB7DQo+PiArICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBkZXYtPmJ1cy0+aW9tbXVfb3BzID0gJmludGVsX2lvbW11X29w
-czsNCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldCA9IGlvbW11X3Byb2JlX2Rl
-dmljZShkZXYpOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHJldCkgew0K
-Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwcl9lcnIoImFjcGlfZGV2
-aWNlIHByb2JlIGZhaWwhIHJldDolZFxuIiwgcmV0KTsNCj4+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgZ290byB1bmxvY2s7DQo+PiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB9DQo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBnb3RvIHVubG9jazsN
-Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgfQ0KPj4gKyAgICAgICAgICAgICAgICAgICAgIHJl
-dCA9IGFjcGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MocG5fZGV2LCBkZXYpOw0KPj4g
-K3VubG9jazoNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgbXV0ZXhfdW5sb2NrKCZhZGV2LT5w
-aHlzaWNhbF9ub2RlX2xvY2spOw0KPj4NCj4+ICAgICAgICAgICAgICAgICAgICAgICAgaWYgKHJl
-dCkNCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMgYi9kcml2ZXJzL2lvbW11
-L2lvbW11LmMNCj4+IGluZGV4IDYwOWJkMjViZjE1NC4uNGY3MTRhMmQ1ZWY3IDEwMDY0NA0KPj4g
-LS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5jDQo+PiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11
-LmMNCj4+IEBAIC03NzksNiArNzc5LDEyIEBAIHN0YXRpYyBib29sIGlvbW11X2lzX2F0dGFjaF9k
-ZWZlcnJlZChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sDQo+PiAgICAgICAgcmV0dXJuIGZh
-bHNlOw0KPj4gICB9DQo+Pg0KPj4gK3ZvaWQgIF9fYWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9t
-YXBwaW5ncyhzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwLCBzdHJ1Y3QgZGV2aWNlICphY3BpX2Rl
-dmljZSkNCj4+ICt7DQo+PiArICAgICBpb21tdV9jcmVhdGVfZGV2aWNlX2RpcmVjdF9tYXBwaW5n
-cyhncm91cCwgYWNwaV9kZXZpY2UpOw0KPj4gK30NCj4+ICtFWFBPUlRfU1lNQk9MX0dQTChfX2Fj
-cGlfZGV2aWNlX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MpOw0KPj4gKw0KPj4gICAvKioNCj4+ICAg
-ICogaW9tbXVfZ3JvdXBfYWRkX2RldmljZSAtIGFkZCBhIGRldmljZSB0byBhbiBpb21tdSBncm91
-cA0KPj4gICAgKiBAZ3JvdXA6IHRoZSBncm91cCBpbnRvIHdoaWNoIHRvIGFkZCB0aGUgZGV2aWNl
-IChyZWZlcmVuY2Ugc2hvdWxkIGJlIGhlbGQpDQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51
-eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+PiBpbmRleCBmZWUyMDllZmI3NTYu
-LjliZTEzNDc3NTg4NiAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGludXgvaW9tbXUuaA0KPj4g
-KysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+PiBAQCAtNTE0LDYgKzUxNCw5IEBAIGV4dGVy
-biB2b2lkIGlvbW11X2RvbWFpbl93aW5kb3dfZGlzYWJsZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpk
-b21haW4sIHUzMiB3bmRfbnIpDQo+PiAgIGV4dGVybiBpbnQgcmVwb3J0X2lvbW11X2ZhdWx0KHN0
-cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRldmljZSAqZGV2LA0KPj4gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBsb25nIGlvdmEsIGludCBmbGFncyk7DQo+
-Pg0KPj4gK2V4dGVybiB2b2lkIF9fYWNwaV9kZXZpY2VfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncyhz
-dHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwLA0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2UgKmFjcGlfZGV2aWNlKTsNCj4+ICsNCj4+
-ICAgc3RhdGljIGlubGluZSB2b2lkIGlvbW11X2ZsdXNoX3RsYl9hbGwoc3RydWN0IGlvbW11X2Rv
-bWFpbiAqZG9tYWluKQ0KPj4gICB7DQo+PiAgICAgICAgaWYgKGRvbWFpbi0+b3BzLT5mbHVzaF9p
-b3RsYl9hbGwpDQo+Pg0K
+  IOMMU Driver            Device IRQ
+  ============            ===========
+  irte.RemapEn=0
+       ...
+   change IRTE            IRQ from device ==> IO_PAGE_FAULT !!
+       ...
+  irte.RemapEn=1
 
---_000_cfdd29a882d140e5aec2e8c3b77f4968zhaoxincom_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: quoted-printable
+This scenario has been observed when changing irq affinity on a system
+running I/O-intensive workload, in which the destination APIC ID
+in the IRTE is updated.
 
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dgb2312">
-<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
-<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
-ding-left: 4pt; border-left: #800000 2px solid; } --></style>
-</head>
-<body>
-<meta content=3D"text/html; charset=3DUTF-8">
-<style type=3D"text/css" style=3D"">
-<!--
-p
-	{margin-top:0;
-	margin-bottom:0}
--->
-</style>
-<div dir=3D"ltr">
-<div id=3D"x_divtagdefaultwrapper" dir=3D"ltr" style=3D"font-size:12pt; col=
-or:#000000; font-family:Calibri,Helvetica,sans-serif">
-<p>hi baolu,</p>
-<p><span style=3D"font-size:12pt">&gt;&nbsp;</span><span style=3D"color:rgb=
-(33,33,33); font-family:&quot;Microsoft YaHei UI&quot;,&quot;Microsoft YaHe=
-i&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,sans-serif,serif,Emoji=
-Font; font-size:13.3333px">So you have a hidden device (invisible to host k=
-ernel). But you need
- to</span></p>
-<p><span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI=
-&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=
-=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">&gt;setup some iden=
-tity mappings for this device, so that the firmware</span><br style=3D"colo=
-r:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&quot;,&quot;Microsoft=
- YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,sans-serif,serif,=
-EmojiFont; font-size:13.3333px">
-<span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&qu=
-ot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=
-=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">&gt;could keep working=
-, right?</span><br style=3D"color:rgb(33,33,33); font-family:&quot;Microsof=
-t YaHei UI&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSu=
-n,=CB=CE=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">
-<br style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&quot=
-;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,=
-sans-serif,serif,EmojiFont; font-size:13.3333px">
-<span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&qu=
-ot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=
-=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">&gt;The platform desig=
-ns this by putting that range in the RMRR table and</span><br style=3D"colo=
-r:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&quot;,&quot;Microsoft=
- YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,sans-serif,serif,=
-EmojiFont; font-size:13.3333px">
-<span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&qu=
-ot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=
-=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">&gt;expecting the OS k=
-ernel to setup identity mappings during boot.</span><br style=3D"color:rgb(=
-33,33,33); font-family:&quot;Microsoft YaHei UI&quot;,&quot;Microsoft YaHei=
-&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,sans-serif,serif,EmojiF=
-ont; font-size:13.3333px">
-<br style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&quot=
-;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=E5,=
-sans-serif,serif,EmojiFont; font-size:13.3333px">
-<span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI&qu=
-ot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=CC=
-=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">&gt;Do I understand it=
- right?</span></p>
-<p><span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI=
-&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=
-=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px"><br>
-</span></p>
-<p><span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI=
-&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=
-=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">Yes. What you under=
-stand is correct.</span></p>
-<p><span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI=
-&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=
-=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px"><br>
-</span></p>
-<p><span style=3D"color:rgb(33,33,33); font-family:&quot;Microsoft YaHei UI=
-&quot;,&quot;Microsoft YaHei&quot;,=CE=A2=C8=ED=D1=C5=BA=DA,SimSun,=CB=CE=
-=CC=E5,sans-serif,serif,EmojiFont; font-size:13.3333px">Best regards</span>=
-</p>
-<p><font color=3D"#212121" face=3D"Microsoft YaHei UI, Microsoft YaHei, =CE=
-=A2=C8=ED=D1=C5=BA=DA, SimSun, =CB=CE=CC=E5, sans-serif, serif, EmojiFont">=
-<span style=3D"font-size:13.3333px">Felixcui-oc</span></font></p>
-</div>
-<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
-<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
-color=3D"#000000" style=3D"font-size:11pt"><b>=B7=A2=BC=FE=C8=CB:</b> Lu Ba=
-olu &lt;baolu.lu@linux.intel.com&gt;<br>
-<b>=B7=A2=CB=CD=CA=B1=BC=E4:</b> 2020=C4=EA9=D4=C22=C8=D5 10:32:36<br>
-<b>=CA=D5=BC=FE=C8=CB:</b> FelixCui-oc; Joerg Roedel; iommu@lists.linux-fou=
-ndation.org; linux-kernel@vger.kernel.org; David Woodhouse; Dan Carpenter; =
-kbuild@lists.01.org<br>
-<b>=B3=AD=CB=CD:</b> baolu.lu@linux.intel.com; CobeChen-oc; RaymondPang-oc;=
- Tony W Wang-oc; Ashok Raj<br>
-<b>=D6=F7=CC=E2:</b> Re: =B4=F0=B8=B4: [PATCH v3 2/2] iommu/vt-d:Add suppor=
-t for probing ACPI device in RMRR</font>
-<div>&nbsp;</div>
-</div>
-</div>
-<font size=3D"2"><span style=3D"font-size:10pt;">
-<div class=3D"PlainText">On 9/1/20 5:13 PM, FelixCui-oc wrote:<br>
-&gt; hi&nbsp; baolu ,<br>
-&gt; <br>
-&gt;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
-nbsp;These ACPI devices can be retrieved from the kernel <br>
-&gt; and there is no bound device driver .<br>
-<br>
-So you have a hidden device (invisible to host kernel). But you need to<br>
-setup some identity mappings for this device, so that the firmware<br>
-could keep working, right?<br>
-<br>
-The platform designs this by putting that range in the RMRR table and<br>
-expecting the OS kernel to setup identity mappings during boot.<br>
-<br>
-Do I understand it right?<br>
-<br>
-Best regards,<br>
-baolu<br>
-<br>
-&gt; <br>
-&gt; <br>
-&gt; Best regards<br>
-&gt; <br>
-&gt; Felixcui-oc<br>
-&gt; <br>
-&gt; ----------------------------------------------------------------------=
---<br>
-&gt; *=B7=A2=BC=FE=C8=CB:* Lu Baolu &lt;baolu.lu@linux.intel.com&gt;<br>
-&gt; *=B7=A2=CB=CD=CA=B1=BC=E4:* 2020=C4=EA9=D4=C21=C8=D5 14:12:34<br>
-&gt; *=CA=D5=BC=FE=C8=CB:* FelixCui-oc; Joerg Roedel; iommu@lists.linux-fou=
-ndation.org; <br>
-&gt; linux-kernel@vger.kernel.org; David Woodhouse; Dan Carpenter; <br>
-&gt; kbuild@lists.01.org<br>
-&gt; *=B3=AD=CB=CD:* baolu.lu@linux.intel.com; CobeChen-oc; RaymondPang-oc;=
- Tony W <br>
-&gt; Wang-oc<br>
-&gt; *=D6=F7=CC=E2:* Re: [PATCH v3 2/2] iommu/vt-d:Add support for probing =
-ACPI <br>
-&gt; device in RMRR<br>
-&gt; Hi Felix,<br>
-&gt; <br>
-&gt; On 8/27/20 6:02 PM, FelixCuioc wrote:<br>
-&gt;&gt; After acpi device in RMRR is detected,it is necessary<br>
-&gt;&gt; to establish a mapping for these devices.<br>
-&gt;&gt; In acpi_device_create_direct_mappings(),create a mapping<br>
-&gt;&gt; for the acpi device in RMRR.<br>
-&gt;&gt; Add a helper to achieve the acpi namespace device can<br>
-&gt;&gt; access the RMRR region.<br>
-&gt; <br>
-&gt; Are those ACPI devices visible to kernel? If so, any device driver bou=
-nd<br>
-&gt; for it?<br>
-&gt; <br>
-&gt; Best regards,<br>
-&gt; baolu<br>
-&gt; <br>
-&gt;&gt; <br>
-&gt;&gt; Signed-off-by: FelixCuioc &lt;FelixCui-oc@zhaoxin.com&gt;<br>
-&gt;&gt; ---<br>
-&gt;&gt;&nbsp;&nbsp; drivers/iommu/intel/iommu.c | 29 &#43;&#43;&#43;&#43;&=
-#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&=
-#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;<br>
-&gt;&gt;&nbsp;&nbsp; drivers/iommu/iommu.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp; |&nbsp; 6 &#43;&#43;&#43;&#43;&#43;&#43;<br>
-&gt;&gt;&nbsp;&nbsp; include/linux/iommu.h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp; |&nbsp; 3 &#43;&#43;&#43;<br>
-&gt;&gt;&nbsp;&nbsp; 3 files changed, 38 insertions(&#43;)<br>
-&gt;&gt; <br>
-&gt;&gt; diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iom=
-mu.c<br>
-&gt;&gt; index 208a91605288..51d7a5b18f41 100644<br>
-&gt;&gt; --- a/drivers/iommu/intel/iommu.c<br>
-&gt;&gt; &#43;&#43;&#43; b/drivers/iommu/intel/iommu.c<br>
-&gt;&gt; @@ -4799,6 &#43;4799,21 @@ static int __init platform_optin_force_=
-iommu(void)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 1;<br>
-&gt;&gt;&nbsp;&nbsp; }<br>
-&gt;&gt;&nbsp;&nbsp; <br>
-&gt;&gt; &#43;static int acpi_device_create_direct_mappings(struct device *=
-pn_dev, struct device *acpi_device)<br>
-&gt;&gt; &#43;{<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; struct iommu_group *group;<br>
-&gt;&gt; &#43;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; acpi_device-&gt;bus-&gt;iommu_ops =
-=3D &amp;intel_iommu_ops;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; group =3D iommu_group_get(pn_dev);<b=
-r>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; if (!group) {<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp; pr_warn(&quot;ACPI name space devices create direct mappings wr=
-ong!\n&quot;);<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp; return -EINVAL;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; __acpi_device_create_direct_mappings=
-(group, acpi_device);<br>
-&gt;&gt; &#43;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; return 0;<br>
-&gt;&gt; &#43;}<br>
-&gt;&gt; &#43;<br>
-&gt;&gt;&nbsp;&nbsp; static int __init probe_acpi_namespace_devices(void)<b=
-r>
-&gt;&gt;&nbsp;&nbsp; {<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct dmar_drhd_unit *d=
-rhd;<br>
-&gt;&gt; @@ -4813,6 &#43;4828,7 @@ static int __init probe_acpi_namespace_d=
-evices(void)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str=
-uct acpi_device_physical_node *pn;<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str=
-uct iommu_group *group;<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str=
-uct acpi_device *adev;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct device *=
-pn_dev =3D NULL;<br>
-&gt;&gt;&nbsp;&nbsp; <br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if =
-(dev-&gt;bus !=3D &amp;acpi_bus_type)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; continue;<br>
-&gt;&gt; @@ -4823,6 &#43;4839,7 @@ static int __init probe_acpi_namespace_d=
-evices(void)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;adev-&gt;physical_node_list,=
- node) {<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; group =3D iommu_group_get(pn-&=
-gt;dev);<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (group) {<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp; pn_dev =3D pn-&gt;dev;<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp; iommu_group_put(group);<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp; continue;<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-&gt;&gt; @@ -4831,7 &#43;4848,19 @@ static int __init probe_acpi_namespace_=
-devices(void)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D iommu_probe_device(pn-=
-&gt;dev);<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret)<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp; break;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pn_dev =3D pn-&gt;dev;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!pn_dev) {<=
-br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev-&gt;bus-&gt;iommu_ops =3D &amp;intel_i=
-ommu_ops;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D iommu_probe_device(dev);<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret) {<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp; pr_err(&quot;acpi_device probe fail! ret:%d\n&quot;, ret);<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp; goto unlock;<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto unlock;<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<b=
-r>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D acpi_de=
-vice_create_direct_mappings(pn_dev, dev);<br>
-&gt;&gt; &#43;unlock:<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mut=
-ex_unlock(&amp;adev-&gt;physical_node_lock);<br>
-&gt;&gt;&nbsp;&nbsp; <br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if =
-(ret)<br>
-&gt;&gt; diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c<br>
-&gt;&gt; index 609bd25bf154..4f714a2d5ef7 100644<br>
-&gt;&gt; --- a/drivers/iommu/iommu.c<br>
-&gt;&gt; &#43;&#43;&#43; b/drivers/iommu/iommu.c<br>
-&gt;&gt; @@ -779,6 &#43;779,12 @@ static bool iommu_is_attach_deferred(stru=
-ct iommu_domain *domain,<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return false;<br>
-&gt;&gt;&nbsp;&nbsp; }<br>
-&gt;&gt;&nbsp;&nbsp; <br>
-&gt;&gt; &#43;void&nbsp; __acpi_device_create_direct_mappings(struct iommu_=
-group *group, struct device *acpi_device)<br>
-&gt;&gt; &#43;{<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; iommu_create_device_direct_mappings(=
-group, acpi_device);<br>
-&gt;&gt; &#43;}<br>
-&gt;&gt; &#43;EXPORT_SYMBOL_GPL(__acpi_device_create_direct_mappings);<br>
-&gt;&gt; &#43;<br>
-&gt;&gt;&nbsp;&nbsp; /**<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp; * iommu_group_add_device - add a device to an io=
-mmu group<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp; * @group: the group into which to add the device=
- (reference should be held)<br>
-&gt;&gt; diff --git a/include/linux/iommu.h b/include/linux/iommu.h<br>
-&gt;&gt; index fee209efb756..9be134775886 100644<br>
-&gt;&gt; --- a/include/linux/iommu.h<br>
-&gt;&gt; &#43;&#43;&#43; b/include/linux/iommu.h<br>
-&gt;&gt; @@ -514,6 &#43;514,9 @@ extern void iommu_domain_window_disable(st=
-ruct iommu_domain *domain, u32 wnd_nr)<br>
-&gt;&gt;&nbsp;&nbsp; extern int report_iommu_fault(struct iommu_domain *dom=
-ain, struct device *dev,<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned long iova, int flags);<br>
-&gt;&gt;&nbsp;&nbsp; <br>
-&gt;&gt; &#43;extern void __acpi_device_create_direct_mappings(struct iommu=
-_group *group,<br>
-&gt;&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct device *acpi_d=
-evice);<br>
-&gt;&gt; &#43;<br>
-&gt;&gt;&nbsp;&nbsp; static inline void iommu_flush_tlb_all(struct iommu_do=
-main *domain)<br>
-&gt;&gt;&nbsp;&nbsp; {<br>
-&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (domain-&gt;ops-&gt;f=
-lush_iotlb_all)<br>
-&gt;&gt; <br>
-</div>
-</span></font>
-</body>
-</html>
+Instead, use cmpxchg_double() to update the 128-bit IRTE at once without
+disabling the interrupt remapping. However, this means several features,
+which require GA (128-bit IRTE) support will also be affected if cmpxchg16b
+is not supported (which is unprecedented for AMD processors w/ IOMMU).
 
---_000_cfdd29a882d140e5aec2e8c3b77f4968zhaoxincom_--
+Reported-by: Sean Osborne <sean.m.osborne@oracle.com>
+Tested-by: Erik Rockstrom <erik.rockstrom@oracle.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd/Kconfig |  2 +-
+ drivers/iommu/amd/init.c  | 21 +++++++++++++++++++--
+ drivers/iommu/amd/iommu.c | 17 +++++++++++++----
+ 3 files changed, 33 insertions(+), 7 deletions(-)
 
---===============9102775165268841522==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
+index 1f061d91e0b8..626b97d0dd21 100644
+--- a/drivers/iommu/amd/Kconfig
++++ b/drivers/iommu/amd/Kconfig
+@@ -10,7 +10,7 @@ config AMD_IOMMU
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+ 	select IOMMU_DMA
+-	depends on X86_64 && PCI && ACPI
++	depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
+ 	help
+ 	  With this option you can enable support for AMD IOMMU hardware in
+ 	  your system. An IOMMU is a hardware component which provides
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c652f16eb702..ad30467f6930 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1511,7 +1511,14 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
+-		if (((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
++
++		/*
++		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
++		 * GAM also requires GA mode. Therefore, we need to
++		 * check cmbxchg16b support before enabling it.
++		 */
++		if (!boot_cpu_has(X86_FEATURE_CX16) ||
++		    ((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
+ 		break;
+ 	case 0x11:
+@@ -1520,8 +1527,18 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
+-		if (((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0))
++
++		/*
++		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
++		 * XT, GAM also requires GA mode. Therefore, we need to
++		 * check cmbxchg16b support before enabling them.
++		 */
++		if (boot_cpu_has(X86_FEATURE_CX16) ||
++		    ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0)) {
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
++			break;
++		}
++
+ 		/*
+ 		 * Note: Since iommu_update_intcapxt() leverages
+ 		 * the IOMMU MMIO access to MSI capability block registers
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 967f4e96d1eb..a382d7a73eaa 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3292,6 +3292,7 @@ static int alloc_irq_index(u16 devid, int count, bool align,
+ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+ 			  struct amd_ir_data *data)
+ {
++	bool ret;
+ 	struct irq_remap_table *table;
+ 	struct amd_iommu *iommu;
+ 	unsigned long flags;
+@@ -3309,10 +3310,18 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+ 
+ 	entry = (struct irte_ga *)table->table;
+ 	entry = &entry[index];
+-	entry->lo.fields_remap.valid = 0;
+-	entry->hi.val = irte->hi.val;
+-	entry->lo.val = irte->lo.val;
+-	entry->lo.fields_remap.valid = 1;
++
++	ret = cmpxchg_double(&entry->lo.val, &entry->hi.val,
++			     entry->lo.val, entry->hi.val,
++			     irte->lo.val, irte->hi.val);
++	/*
++	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
++	 * and it cannot be updated by the hardware or other processors
++	 * behind us, so the return value of cmpxchg16 should be the
++	 * same as the old value.
++	 */
++	WARN_ON(!ret);
++
+ 	if (data)
+ 		data->ref = entry;
+ 
+-- 
+2.17.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============9102775165268841522==--
