@@ -7,130 +7,131 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB49EC2D0F6
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 13:35:23 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEA0C2D0E4
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 13:35:17 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8DFE2083B
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 13:35:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8669F217BA
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 13:35:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ViBcznyM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8DFE2083B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="uB9foU01"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8669F217BA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 95FE886C92;
-	Fri,  4 Sep 2020 13:35:23 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 723D486DBC;
+	Fri,  4 Sep 2020 13:35:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id v92ZUHFvVerx; Fri,  4 Sep 2020 13:35:21 +0000 (UTC)
+	with ESMTP id hqiMycGSJlXu; Fri,  4 Sep 2020 13:35:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A6D5B86D62;
-	Fri,  4 Sep 2020 13:35:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9EC8E86DE4;
+	Fri,  4 Sep 2020 13:35:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 97E22C0052;
-	Fri,  4 Sep 2020 13:35:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7ACCEC0890;
+	Fri,  4 Sep 2020 13:35:12 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A6A66C0051
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:17 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 777A8C0893
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8941286D46
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:17 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5EAFD86D7B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kaIt12QAFXUW for <iommu@lists.linux-foundation.org>;
- Fri,  4 Sep 2020 13:35:13 +0000 (UTC)
+ with ESMTP id iQMG0o5X6gta for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Sep 2020 13:35:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
- [210.118.77.12])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9175386DD9
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:12 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
- by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200904133511euoutp02e38b7e8d65f207e6f2c107454afb50c3~xmAn1VYwO2890028900euoutp02y
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
- 20200904133511euoutp02e38b7e8d65f207e6f2c107454afb50c3~xmAn1VYwO2890028900euoutp02y
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A4C0886D70
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:04 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200904133502euoutp016ffd44cbcf7977926bcaa24f8a5d44d1~xmAgEWC5j0722007220euoutp01k
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 13:35:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20200904133502euoutp016ffd44cbcf7977926bcaa24f8a5d44d1~xmAgEWC5j0722007220euoutp01k
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1599226511;
- bh=xw6Uqswd7WHaRkaUiL5EjLFx27XSMmDCF+NgXqXXIkE=;
+ s=mail20170921; t=1599226502;
+ bh=8L76JluA1DA+XDINuFmhMyh7/pZztphzaFRThYOm+6g=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=ViBcznyMcYpPhEGvk78/v0XC+FUGq5tpLugyZSv7Eh+bhkbqMJBFLqsetFpfhgjk0
- uSvVwB7AHyTcbSawA8t202gcgs6eqXcmMNMCEUE6eg8lQW+AbaoF++LYaG9j/LXOB9
- ZjmWe6tAB0pQRkHR9JcLLnT/gAJLP/6R7WUgyfds=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20200904133510eucas1p28cb3ab11e0cd8252df9971f2b6538bb0~xmAnisOUN0694006940eucas1p2r;
- Fri,  4 Sep 2020 13:35:10 +0000 (GMT)
+ b=uB9foU016qk8FbvUweGBohpwZ67IKdgcnzAyamJyQDWR2zzz58/gsLqNMgrQa3bPw
+ WXA3p1F1JfsK6W8YjzcHIx4VL4bHsf/bwkhroIjxjUhVLv2dMnXeC+qLvKe0kxAktM
+ VDSBqW5o7etTQhPLw6k3Fkt8WULdZtZ4leRiUuYc=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200904133502eucas1p196b49998aab3c682956fb60b3d67d430~xmAf1G6TK0115901159eucas1p1q;
+ Fri,  4 Sep 2020 13:35:02 +0000 (GMT)
 Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges2new.samsung.com (EUCPMTA) with SMTP id E1.76.05997.E82425F5; Fri,  4
- Sep 2020 14:35:10 +0100 (BST)
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id EF.01.06456.682425F5; Fri,  4
+ Sep 2020 14:35:02 +0100 (BST)
 Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
  eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
- 20200904133510eucas1p1e737f5cbb9b95846806766bd7b813bf9~xmAnJ01ij1156611566eucas1p1N;
- Fri,  4 Sep 2020 13:35:10 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ 20200904133502eucas1p136e346bfdcd361d9e0320923f653d843~xmAfZ3mri2307423074eucas1p1T;
+ Fri,  4 Sep 2020 13:35:02 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
  eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20200904133510eusmtrp211be072e4bd9dc8f560679e64325523b~xmAnJLXC90977009770eusmtrp2Z;
- Fri,  4 Sep 2020 13:35:10 +0000 (GMT)
-X-AuditID: cbfec7f4-677ff7000000176d-7e-5f52428e5c8e
+ 20200904133502eusmtrp2422309161fdf1068ef9cd28c5980cdc3~xmAfZCW100977009770eusmtrp2M;
+ Fri,  4 Sep 2020 13:35:02 +0000 (GMT)
+X-AuditID: cbfec7f2-809ff70000001938-48-5f52428624a8
 Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id 43.B0.06017.E82425F5; Fri,  4
- Sep 2020 14:35:10 +0100 (BST)
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id FF.AE.06314.682425F5; Fri,  4
+ Sep 2020 14:35:02 +0100 (BST)
 Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
  eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20200904133509eusmtip126e2d5705c6ff916666e9063e629bd26~xmAmkb-_D1683216832eusmtip1Z;
- Fri,  4 Sep 2020 13:35:09 +0000 (GMT)
+ 20200904133501eusmtip1619a515147b9ee7852a476c127af4056~xmAe2m8ar2113121131eusmtip1t;
+ Fri,  4 Sep 2020 13:35:01 +0000 (GMT)
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
  linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v10 27/30] rapidio: fix common struct sg_table related issues
-Date: Fri,  4 Sep 2020 15:17:08 +0200
-Message-Id: <20200904131711.12950-28-m.szyprowski@samsung.com>
+Subject: [PATCH v10 14/30] drm: panfrost: fix common struct sg_table related
+ issues
+Date: Fri,  4 Sep 2020 15:16:55 +0200
+Message-Id: <20200904131711.12950-15-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200904131711.12950-1-m.szyprowski@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA0VSe0hTURzu3Lu7XYeT25Q8WSoMeqj4jrygaKnQJXuY/wRF2sqbim7aro+U
- KMtezAdTCZ/ZCsXynelMw9Tlq8wVKmrp0qUJxkzJpRTl2rqz/vvO7/u+833nx8FRYQfmgMdJ
- k2mZVJwg4vI5qv4fGve84IgoL32BL5mreYWQn2omUfJJcSNGGlX5KDn2fZlLPq7tQ0hllz9p
- GNMhZPPcOEaOdpRzyfpeLY+8+3YdJXtW5rEDAqquog5QnWtKDtVequVROfobGNW2NotRM9kD
- CPW08io1tTGHUoWT1YB6/j6TS+W11ABqtdkp3PoUPyCaTohLpWWegWf5sYXGeiwpb9ulaxNa
- LBNUCeXACofEPmjIyubIAR8XEo8A1JZNIWZCSBgA1H0DLLEK4OfBbnTTcS9nGGWJagDfdI1a
- VCbHeJOCY1ZxCW8oX5JzzdiOuAngYK61GaPEVwT2rrqasS1xHFYVT/29lUPsgtmLLBYQgbCh
- fILDpjnD2iY22co0by2ex8xhkHjNgz1dGoQVhULj7TxLPVv4ZaCFx+Kd0Nh+H2ENWab3aOp5
- 7CEHwNHrxYBV+cNpzU9TVdxUzwU2dniaISQOQkX/BRbawMmlrWx/G1igKkLZsQDeuWVZ425Y
- OtDwL7Xn3YilDQX1fTrLfvIBrPy9gCqAc+n/LCUANcCeTmEkMTTjI6XTPBixhEmRxnicT5Q0
- A9OPGtoYMDwDHb/OqQGBA5G1YEtQRJQQE6cy6RI1gDgqshMEDw9FCgXR4vQMWpYYJUtJoBk1
- 2IFzRPYC34eLZ4REjDiZjqfpJFq2ySK4lUMmcIt0CKc8/S8eHhpacWpTrAU06FXLM15Gbgnj
- ta5zWrm8vTWkKEP1QX2yCwkcmQ4NKxKUfIxGlNnGHFWYW4ALGeEuda6O1ce3V/A6y2Tdjmn9
- I/sXrhT6yMsUubl7ZtP8SpQ2R4IcrblK/d6llpd+h1wqTzwI6Tn2ou7o6UZ1p4jDxIq9XVEZ
- I/4DUX+Zmk0DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHIsWRmVeSWpSXmKPExsVy+t/xu7p9TkHxBqvmSFn0njvJZPFo1Q1m
- i40z1rNa/N82kdniytf3bBYrVx9lsliw39riy5WHTBabHl9jtbi8aw6bxdojd9ktpp7/zmxx
- 8MMTVgdejzXz1jB67P22gMVj56y77B49b1pYPbZ/e8Dqcb/7OJPH5iX1Hrf/PWb2mHxjOaPH
- 7psNbB59W1YxenzeJBfAE6VnU5RfWpKqkJFfXGKrFG1oYaRnaGmhZ2RiqWdobB5rZWSqpG9n
- k5Kak1mWWqRvl6CXMfn/WtaCPrGKxut3WRsYlwp1MXJySAiYSMztOcvcxcjFISSwlFHiWNdp
- FoiEjMTJaQ2sELawxJ9rXWwQRZ8YJSZdXQtWxCZgKNH1FiIhItDJKDGt+yM7iMMs8I1JYtLS
- W2wgVcICvhI7vneBjWIRUJXofnmbGcTmFbCTWDfnOtQ6eYnVGw6AxTmB4ltnPAGrFxKwlfgw
- ZzHLBEa+BYwMqxhFUkuLc9Nzi430ihNzi0vz0vWS83M3MQLjZtuxn1t2MHa9Cz7EKMDBqMTD
- y2AfFC/EmlhWXJl7iFGCg1lJhNfp7Ok4Id6UxMqq1KL8+KLSnNTiQ4ymQEdNZJYSTc4HxnRe
- SbyhqaG5haWhubG5sZmFkjhvh8DBGCGB9MSS1OzU1ILUIpg+Jg5OqQbGtujVfkKbjgZeeiWg
- PyF3wYfOSXzNXFEzbcSEu1ziz8Q7XBbmYG2wdEryFSp99PCXxPpP3isyX/Hfcb4q7djrW3Jy
- 8YKU5R5FJguan6Zz/Vh7S2CeudDOU/t1N3BVuV6dEPgv8Ju88x6m6QtDT3XZRa6dN/v8Dsbt
- DjUOiR3uDltXbyg6pZuqxFKckWioxVxUnAgABjvtbLECAAA=
-X-CMS-MailID: 20200904133510eucas1p1e737f5cbb9b95846806766bd7b813bf9
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSfyyUcRzH+95zzw83T3sc8k0/rKuUWmTFnjCV9cez9UeNVGuLjnuGOcfu
+ EKqh1hUiv1ayyqWLOnfoki40v39EHWF2JSujNjVpfi2t0T2e6L/X9/15fb6fz777Eoi4HnUm
+ ohTxrFIhlUswkbC2Y8G8Rx0QGLrXUriNzja/FtBPi6pQeqk2D6EH56Yw+klFu4DWNPrSs4Oj
+ Ato4NoTSA3V3MdrQNoLTSw0mnG7+OY7SOYZ+7BDJ6O/rAWMa0QLm1bxGyBh1GRjzYv4zynzK
+ 6hQwz7SpzPDiGMIUWMoBU/8+DWNyanSAmTFuPm57RuQnY+VRiazSw/+cKLKvtBeNewOTtLfM
+ eBrocsgENgSk9sOMknKEYzH1GMCyNCoTiKw8C2DpRAXGH2YAbP2hQ1c6Cr5MCvlCOYBLw13Y
+ akvhnY5lC6M8YeZkJsaxA3UVwK5sW05CqHEBtPwyWCWCsKeCYUajK+cIqe2wudUg4Jik/GFf
+ XjHGT3OBFdVNy/vZWPPnReModw+kunHY9mBKyEtHoKZ7COfZHn7rrPnHG+HSyxIB33AFwFGz
+ AecPNwAcuFwEeMsXfjT/xriNEMoNVtV58PFh2P6uUcjFkFoLLZN2XIxYMb/2NsLHJLyuFvO2
+ KyzurFwd29zXj/DMwOo/s4B/oDwANa1deC5wKf4/TAOADjixCaqYCFblqWDPu6ukMaoERYR7
+ eGyMEVi/VM9i57QJzPWHtQCKABJbcs3BwFAxKk1UJce0AEggEgcy4G1PiJiUSZNTWGVsqDJB
+ zqpawAZCKHEi95VOnBVTEdJ4Nppl41jlSlVA2DingfR1yqzvascUWpSEX2rPze6+KHsE7k3r
+ b5bJprN6vKrsgG+ItoBwUZxKOHDUGXr6fK3IbTgdt8P32qYTlR/qfYZsXNfnp0Yf260IMqvx
+ nfiU94UAPyRkZouerFQshMtleuKhaaDpZLBXNWPcSvYaTWGOQbUTbnVyb3VejSFdIlRFSj13
+ IUqV9C8azGD4TgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprDIsWRmVeSWpSXmKPExsVy+t/xu7ptTkHxBqc6OS16z51kstg4Yz2r
+ xf9tE5ktrnx9z2axcvVRJosF+60tvlx5yGSx6fE1VovLu+awWaw9cpfd4v+eHewWBz88YbXo
+ W3uJzYHXY828NYweO+4uYfTY+20Bi8emVZ1sHtu/PWD1uN99nMlj85J6j9v/HjN7TL6xnNFj
+ 980GNo++LasYPT5vkgvgidKzKcovLUlVyMgvLrFVija0MNIztLTQMzKx1DM0No+1MjJV0rez
+ SUnNySxLLdK3S9DLuLDoPGvBGYmKJdPOsTcwnhDpYuTkkBAwkZj89C0LiC0ksJRR4vZlIYi4
+ jMTJaQ2sELawxJ9rXWxdjFxANZ8YJWZ/3c8EkmATMJToeguREBHoZJSY1v2RHSTBLPCGSeLS
+ 1QgQW1ggWOJ4z1uwBhYBVYmDh9eC2bwCdhIXJs5ig9ggL7F6wwFmEJsTKL51xhNWiItsJT7M
+ WcwygZFvASPDKkaR1NLi3PTcYkO94sTc4tK8dL3k/NxNjMCY2Xbs5+YdjJc2Bh9iFOBgVOLh
+ ZbAPihdiTSwrrsw9xCjBwawkwut09nScEG9KYmVValF+fFFpTmrxIUZToKMmMkuJJucD4zmv
+ JN7Q1NDcwtLQ3Njc2MxCSZy3Q+BgjJBAemJJanZqakFqEUwfEwenVAOj+x7W9iezA08x5Ezi
+ XP/vTJ28hVAi32SBF2/i0iZ+FmayMfuWw3XZ8elPZy2J/yYKpRG79n8L6vc+dnNF6q39V94z
+ cHEsVpq8c1Jsyo4H7/K5wwsOb1xzZ3P/nzuHyl7+vWaxMub27eSTQgvWme1bqnfcoedeS3SI
+ 9aMDdfnWdh3OUYn2tgvUlFiKMxINtZiLihMBUqF+Ua8CAAA=
+X-CMS-MailID: 20200904133502eucas1p136e346bfdcd361d9e0320923f653d843
 X-Msg-Generator: CA
-X-RootMTR: 20200904133510eucas1p1e737f5cbb9b95846806766bd7b813bf9
+X-RootMTR: 20200904133502eucas1p136e346bfdcd361d9e0320923f653d843
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20200904133510eucas1p1e737f5cbb9b95846806766bd7b813bf9
+X-CMS-RootMailID: 20200904133502eucas1p136e346bfdcd361d9e0320923f653d843
 References: <20200904131711.12950-1-m.szyprowski@samsung.com>
- <CGME20200904133510eucas1p1e737f5cbb9b95846806766bd7b813bf9@eucas1p1.samsung.com>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Alexandre Bounine <alex.bou9@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Matt Porter <mporter@kernel.crashing.org>,
+ <CGME20200904133502eucas1p136e346bfdcd361d9e0320923f653d843@eucas1p1.samsung.com>
+Cc: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -175,52 +176,54 @@ nents and orig_nents entries, making the code robust, easier to follow
 and copy/paste safe.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/rapidio/devices/rio_mport_cdev.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/panfrost/panfrost_gem.c | 4 ++--
+ drivers/gpu/drm/panfrost/panfrost_mmu.c | 7 +++----
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
-index a30342942e26..89eb3d212652 100644
---- a/drivers/rapidio/devices/rio_mport_cdev.c
-+++ b/drivers/rapidio/devices/rio_mport_cdev.c
-@@ -573,8 +573,7 @@ static void dma_req_free(struct kref *ref)
- 			refcount);
- 	struct mport_cdev_priv *priv = req->priv;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
+index 33355dd302f1..1a6cea0e0bd7 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
+@@ -41,8 +41,8 @@ static void panfrost_gem_free_object(struct drm_gem_object *obj)
  
--	dma_unmap_sg(req->dmach->device->dev,
--		     req->sgt.sgl, req->sgt.nents, req->dir);
-+	dma_unmap_sgtable(req->dmach->device->dev, &req->sgt, req->dir, 0);
- 	sg_free_table(&req->sgt);
- 	if (req->page_list) {
- 		unpin_user_pages(req->page_list, req->nr_pages);
-@@ -814,7 +813,6 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
- 	struct mport_dev *md = priv->md;
- 	struct dma_chan *chan;
- 	int ret;
--	int nents;
+ 		for (i = 0; i < n_sgt; i++) {
+ 			if (bo->sgts[i].sgl) {
+-				dma_unmap_sg(pfdev->dev, bo->sgts[i].sgl,
+-					     bo->sgts[i].nents, DMA_BIDIRECTIONAL);
++				dma_unmap_sgtable(pfdev->dev, &bo->sgts[i],
++						  DMA_BIDIRECTIONAL, 0);
+ 				sg_free_table(&bo->sgts[i]);
+ 			}
+ 		}
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index e8f7b11352d2..776448c527ea 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -253,7 +253,7 @@ static int mmu_map_sg(struct panfrost_device *pfdev, struct panfrost_mmu *mmu,
+ 	struct io_pgtable_ops *ops = mmu->pgtbl_ops;
+ 	u64 start_iova = iova;
  
- 	if (xfer->length == 0)
- 		return -EINVAL;
-@@ -930,15 +928,14 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
- 				xfer->offset, xfer->length);
- 	}
+-	for_each_sg(sgt->sgl, sgl, sgt->nents, count) {
++	for_each_sgtable_dma_sg(sgt, sgl, count) {
+ 		unsigned long paddr = sg_dma_address(sgl);
+ 		size_t len = sg_dma_len(sgl);
  
--	nents = dma_map_sg(chan->device->dev,
--			   req->sgt.sgl, req->sgt.nents, dir);
--	if (nents == 0) {
-+	ret = dma_map_sgtable(chan->device->dev, &req->sgt, dir, 0);
-+	if (ret) {
- 		rmcd_error("Failed to map SG list");
- 		ret = -EFAULT;
- 		goto err_pg;
- 	}
+@@ -517,10 +517,9 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
+ 	if (ret)
+ 		goto err_pages;
  
--	ret = do_dma_request(req, xfer, sync, nents);
-+	ret = do_dma_request(req, xfer, sync, req->sgt.nents);
+-	if (!dma_map_sg(pfdev->dev, sgt->sgl, sgt->nents, DMA_BIDIRECTIONAL)) {
+-		ret = -EINVAL;
++	ret = dma_map_sgtable(pfdev->dev, sgt, DMA_BIDIRECTIONAL, 0);
++	if (ret)
+ 		goto err_map;
+-	}
  
- 	if (ret >= 0) {
- 		if (sync == RIO_TRANSFER_ASYNC)
+ 	mmu_map_sg(pfdev, bomapping->mmu, addr,
+ 		   IOMMU_WRITE | IOMMU_READ | IOMMU_NOEXEC, sgt);
 -- 
 2.17.1
 
