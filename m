@@ -2,112 +2,99 @@ Return-Path: <SRS0=mVMG=CN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4160C2BC84
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 16:47:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEBAC433E2
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 19:40:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 75B032064E
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 16:47:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EgsDNr8j"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75B032064E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4D375208CA
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 19:40:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D375208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 162652E1BD;
-	Fri,  4 Sep 2020 16:47:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EFF5E86FD2;
+	Fri,  4 Sep 2020 19:40:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JAoOJm0cULIw; Fri,  4 Sep 2020 16:47:01 +0000 (UTC)
+	with ESMTP id ajviwe3cAeDO; Fri,  4 Sep 2020 19:40:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id AC7F82E0F8;
-	Fri,  4 Sep 2020 16:47:01 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 71DBF86E59;
+	Fri,  4 Sep 2020 19:40:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E481C07FF;
-	Fri,  4 Sep 2020 16:47:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 90765C07FF
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 16:47:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54EE7C0890;
+	Fri,  4 Sep 2020 19:40:12 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53E4DC0052
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 19:40:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8CA0E86EBA
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 16:47:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 48EE487582
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 19:40:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dr52i9aQh0AD for <iommu@lists.linux-foundation.org>;
- Fri,  4 Sep 2020 16:47:00 +0000 (UTC)
+ with ESMTP id ejDIKPrnu2DO for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Sep 2020 19:40:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qv1-f67.google.com (mail-qv1-f67.google.com
- [209.85.219.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D883A86E1C
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 16:46:59 +0000 (UTC)
-Received: by mail-qv1-f67.google.com with SMTP id b13so3328367qvl.2
- for <iommu@lists.linux-foundation.org>; Fri, 04 Sep 2020 09:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=TBpouKohZ4xnNFvQAORhEKmSrdyDNk10oVx1FtC9Bws=;
- b=EgsDNr8jq4DF077DE8FFLRkR59IU61+j8V/Ka9V7oYrWIFPZmMCFtBwfask+T/m7M7
- ABkQRjkqmQNhqKh2VT7i4UJ/Wt90Z38MeTrYGvULyHJ82SQ6PsuQNCiKdiLa9nveFUpl
- R04cMMdDGxXDTRPRVqK11KOxC3g2sVS1/0YvzjlCoZCwTT0+M1Yo/uJWYoNvcaH8IrzS
- D4wFxN5u+Z5lTv8jIxdDc9Kz7W6pwsymzzpENZP0uaCYmJuezDkqwdXmmIDXl+AlvX5a
- XlvvIg2z5oM4vk2ffrT0qm6Rw0F7DcmoUiFJgFt2a2LOiExIWcNVg47MKAjj5MqzSRpP
- R2uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=TBpouKohZ4xnNFvQAORhEKmSrdyDNk10oVx1FtC9Bws=;
- b=mnrGr2AnTW2HNRwWXQJaMp4XRFKm9c65d8QiN+ihuhFJwWnOjfobxvUEuj/CXJrBX2
- Z9DbImJXF/UtfbuWoOO5O41cgVY0BVg56V6fJpf10n0DrxFxMAm915OyROOpAw2xY+ie
- QZjZBwgs8uOauhjYKt+ZVG546ucDG+FPZxTHEA2idLqYaoxZe7J0f/1hz1i7qy2OiWEm
- fAlh4hb+3kgTZxkqT0JyckrCBggQjjEIqur3a2QUQZ0qLemcj9AHFqRqLiOrJC/YPz16
- YN4koNebXib8eN1n0GoMsdrMShsphCd6D4+paf1nRXI2nMxM2oh8aBtlQDsNmxUsZ5CY
- 4JLw==
-X-Gm-Message-State: AOAM531A/9STpcN+1c/gnc6huQ6ipMzumDyIBiKOIOq/Mmx0zyZ1Da8D
- fxjUdnSsaj8eaI2DXsJ5GQIMlP4yh+cyRe9iBQE=
-X-Google-Smtp-Source: ABdhPJwyy/xhHl+JQi8gUbkrBFV9qdIEd42p3ahcLsVYoc0LxBY3nBUW4K/0j87szLhObsiHhZk2WUEKzePSgoAinVs=
-X-Received: by 2002:ad4:4ae9:: with SMTP id cp9mr8657659qvb.96.1599238018778; 
- Fri, 04 Sep 2020 09:46:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200817220238.603465-1-robdclark@gmail.com>
- <20200904091117.GH6714@8bytes.org>
-In-Reply-To: <20200904091117.GH6714@8bytes.org>
-From: Rob Clark <robdclark@gmail.com>
-Date: Fri, 4 Sep 2020 09:47:45 -0700
-Message-ID: <CAF6AEGtFoUQZv3HOpjXckExvXGVsqgPVe-rjq+wLXWM9+pjWkA@mail.gmail.com>
-Subject: Re: [PATCH 00/20] iommu/arm-smmu + drm/msm: per-process GPU pgtables
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3C2748756B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 19:40:10 +0000 (UTC)
+IronPort-SDR: Ue208vvPmsXWyTb/tSr5wCmikM/5+NF0hJVlFzVaYFso0PvunkNCpgiLXTTMKmBoCZTJSFcdaT
+ e4ZBc0NXclOQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="222018786"
+X-IronPort-AV: E=Sophos;i="5.76,391,1592895600"; d="scan'208";a="222018786"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Sep 2020 12:40:09 -0700
+IronPort-SDR: +IPz8MTucQYSMt2jU5UGHgs5Kxg6R2h96QPn1YIpyFbMLg/UcXy3eaWRhTYH9gBOObDb9TfDfi
+ FofMlcYnrL4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,391,1592895600"; d="scan'208";a="339856769"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+ by FMSMGA003.fm.intel.com with ESMTP; 04 Sep 2020 12:40:08 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 4 Sep 2020 12:40:08 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 4 Sep 2020 12:11:07 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.1713.004;
+ Fri, 4 Sep 2020 12:11:07 -0700
+From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Wambui Karuga <wambui.karugax@gmail.com>, Takashi Iwai <tiwai@suse.de>,
- Hanna Hawa <hannah@marvell.com>, Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>, Eric Anholt <eric@anholt.net>,
- Thierry Reding <thierry.reding@gmail.com>,
- Vivek Gautam <vivek.gautam@codeaurora.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>, Will Deacon <will@kernel.org>,
- Emil Velikov <emil.velikov@collabora.com>, Rob Clark <robdclark@chromium.org>,
- Jonathan Marek <jonathan@marek.ca>, Sam Ravnborg <sam@ravnborg.org>,
- Jon Hunter <jonathanh@nvidia.com>, Ben Dooks <ben.dooks@codethink.co.uk>,
- Sibi Sankar <sibis@codeaurora.org>, Thierry Reding <treding@nvidia.com>,
- Brian Masney <masneyb@onstation.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Sharat Masetty <smasetty@codeaurora.org>,
- Pritesh Raithatha <praithatha@nvidia.com>, Stephen Boyd <swboyd@chromium.org>,
- John Stultz <john.stultz@linaro.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- open list <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Shawn Guo <shawn.guo@linaro.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH V6 1/3] iommu: Add support to change default domain of an
+ iommu group
+Thread-Topic: [PATCH V6 1/3] iommu: Add support to change default domain of an
+ iommu group
+Thread-Index: AQHWgpeI539owO3I/k+wFmjHF9kByKlY18mA
+Date: Fri, 4 Sep 2020 19:11:07 +0000
+Message-ID: <d92598a2e54b48eba0c8e30a2c40b937@intel.com>
+References: <cover.1595619936.git.sai.praneeth.prakhya@intel.com>
+ <458786ba5883eaab3aea51ae2fdc7f5dbe71284a.1595619936.git.sai.praneeth.prakhya@intel.com>
+ <20200904083036.GB28508@8bytes.org>
+In-Reply-To: <20200904083036.GB28508@8bytes.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.100]
+MIME-Version: 1.0
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -120,63 +107,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Sep 4, 2020 at 2:11 AM Joerg Roedel <joro@8bytes.org> wrote:
->
-> On Mon, Aug 17, 2020 at 03:01:25PM -0700, Rob Clark wrote:
-> > Jordan Crouse (12):
-> >   iommu/arm-smmu: Pass io-pgtable config to implementation specific
-> >     function
-> >   iommu/arm-smmu: Add support for split pagetables
-> >   iommu/arm-smmu: Prepare for the adreno-smmu implementation
-> >   iommu/arm-smmu-qcom: Add implementation for the adreno GPU SMMU
-> >   dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
-> >   drm/msm: Add a context pointer to the submitqueue
-> >   drm/msm: Drop context arg to gpu->submit()
-> >   drm/msm: Set the global virtual address range from the IOMMU domain
-> >   drm/msm: Add support to create a local pagetable
-> >   drm/msm: Add support for private address space instances
-> >   drm/msm/a6xx: Add support for per-instance pagetables
-> >   arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
-> >
-> > Rob Clark (8):
-> >   drm/msm: remove dangling submitqueue references
-> >   iommu: add private interface for adreno-smmu
-> >   drm/msm/gpu: add dev_to_gpu() helper
-> >   drm/msm: set adreno_smmu as gpu's drvdata
-> >   iommu/arm-smmu: constify some helpers
-> >   arm: dts: qcom: sc7180: Set the compatible string for the GPU SMMU
-> >   iommu/arm-smmu: add a way for implementations to influence SCTLR
-> >   drm/msm: show process names in gem_describe
->
-> Can the DRM parts be merged independently from the IOMMU parts or does
-> this need to be queued together? If it needs to be together I defer the
-> decission to Will through which tree this should go.
->
-
-Hi,
-
-v16 of this series re-ordered the patches and has some notes at the
-top of the cover letter[1] about a potential way to land it.. tl;dr:
-the drm parts can and adreno-smmu-priv.h can go independently of
-iommu.  And the first four iommu patches can go in independently of
-drm.  But the last two iommu patches have a dependency on the drm
-patches.
-
-Note that I'll send one more revision of the series shortly (I have a
-small fixup for one of the drm patches for an issue found in testing,
-and Bjorn had some suggestions about "iommu/arm-smmu: Prepare for the
-adreno-smmu implementation" that I need to look at.
-
-BR,
--R
-
-[1] https://lkml.org/lkml/2020/9/1/1469
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSm9lcmcsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9lcmcg
+Um9lZGVsIDxqb3JvQDhieXRlcy5vcmc+DQo+IFNlbnQ6IEZyaWRheSwgU2VwdGVtYmVyIDQsIDIw
+MjAgMTozMSBBTQ0KPiBUbzogUHJha2h5YSwgU2FpIFByYW5lZXRoIDxzYWkucHJhbmVldGgucHJh
+a2h5YUBpbnRlbC5jb20+DQo+IENjOiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsg
+Q2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+OyBSYWosDQo+IEFzaG9rIDxhc2hvay5yYWpA
+aW50ZWwuY29tPjsgV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+OyBMdSBCYW9sdQ0K
+PiA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPjsgTWVodGEsIFNvaGlsIDxzb2hpbC5tZWh0YUBp
+bnRlbC5jb20+OyBSb2Jpbg0KPiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPjsgSmFjb2Ig
+UGFuIDxqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRD
+SCBWNiAxLzNdIGlvbW11OiBBZGQgc3VwcG9ydCB0byBjaGFuZ2UgZGVmYXVsdCBkb21haW4gb2YN
+Cj4gYW4gaW9tbXUgZ3JvdXANCj4gDQo+IEhpIFNhaSwNCj4gDQo+IE9uIFN1biwgQXVnIDIzLCAy
+MDIwIGF0IDEwOjE3OjI2UE0gLTA3MDAsIFNhaSBQcmFuZWV0aCBQcmFraHlhIHdyb3RlOg0KPiA+
+ICBkcml2ZXJzL2lvbW11L2lvbW11LmMgfCAyMjUNCj4gPiArKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKy0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDIyNCBpbnNlcnRpb25z
+KCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBDYW4geW91IHBsZWFzZSBwb3N0IHRoaXMgYXMgYSBu
+ZXcgYW5kIHNlcGFyYXRlIHRocmVhZCBzbyBJIGNhbiBncmFiIGl0IHdvdGggYjQ/DQoNClN1cmUh
+IEkgd2lsbCBwb3N0IGEgbmV3IHZlcnNpb24uDQoNCkJ1dCBjb3VwbGUgb2YgcXVlc3Rpb25zLi4N
+CjEuIERvIHlvdSB3YW50IG1lIHRvIHBvc3QgdGhlIGVudGlyZSBwYXRjaCBzZXJpZXM/IChpLmUu
+IDMgcGF0Y2hlcykgb3IgZG8geW91IHdhbnQgbWUgdG8gcG9zdCBqdXN0IHRoaXMgcGF0Y2ggaS5l
+LiAxc3QgcGF0Y2ggb25seQ0KMi4gRG8geW91IHdhbnQgbWUgdG8gYnVtcCB0aGUgdmVyc2lvbiBu
+dW1iZXI/IGkuZS4gcG9zdCBpdCBhcyBWNyA/DQozLiBEaWRuJ3QgZ2V0IHdoYXQgeW91IG1lYW50
+IGhlcmUuLiAid290aCBiNCIg4pi5DQoNClJlZ2FyZHMsDQpTYWkNCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
