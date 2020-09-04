@@ -2,96 +2,92 @@ Return-Path: <SRS0=mVMG=CN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B65C43461
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 14:57:24 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF905C433E2
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:30:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5BBB320722
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 14:57:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7BBFC2074D
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:30:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Fztru+Ac"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5BBB320722
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PSgh5u3J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BBFC2074D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 302EE8754F;
-	Fri,  4 Sep 2020 14:57:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4EB3D86DC8;
+	Fri,  4 Sep 2020 15:30:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y3U7hroI4uGu; Fri,  4 Sep 2020 14:57:23 +0000 (UTC)
+	with ESMTP id h8KYMCARwqTX; Fri,  4 Sep 2020 15:30:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AF61487275;
-	Fri,  4 Sep 2020 14:57:23 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 56E2886DCB;
+	Fri,  4 Sep 2020 15:30:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D55AC07FF;
-	Fri,  4 Sep 2020 14:57:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32445C0893;
+	Fri,  4 Sep 2020 15:30:08 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E714C0051
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 14:57:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 32615C0051
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:30:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1A0F08753C
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 14:57:22 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1E9858754D
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:30:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LHQEbL+ywAo0 for <iommu@lists.linux-foundation.org>;
- Fri,  4 Sep 2020 14:57:21 +0000 (UTC)
+ with ESMTP id M8MgilTds8lS for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Sep 2020 15:30:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
- [209.85.167.195])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8839D87275
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 14:57:21 +0000 (UTC)
-Received: by mail-oi1-f195.google.com with SMTP id 185so6733923oie.11
- for <iommu@lists.linux-foundation.org>; Fri, 04 Sep 2020 07:57:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=qwFik1VzdKihmwo9cBFiJu4/LHOZM7jcNFKIFxCkxKI=;
- b=Fztru+AcSdmnH4CC8rxLvREYY+3FnzSn/ADUlvE9QHLdsNufk+8airPBlRopYAXGZi
- WCWOp+fAniCaCE9hnf4aHgTv4nxT3TalwNn/was1jOdR4nMkqkj7JPDUw2oyjJVvVIZF
- OWez32qjH0GG49gsNb2e3JfUKu3s5t/t4LYTcdecijZ5TU/gEN/3Sl3LV7QRzlr+vUO6
- OEQ7lmcX2ZS8UR0zTom9PODEWA5BYGsdR0quvf6xHlRjQeRh0IH8Zv8Da2nW70zXxphz
- DSAnBe7FBH+aaAIXpSkGvQDzUh8cseeGaUhyo4fm0SkedJjh0eAgLE2XLKp3BTcbqdXW
- 0tkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=qwFik1VzdKihmwo9cBFiJu4/LHOZM7jcNFKIFxCkxKI=;
- b=L1rVOITr2dYgH5OBzIhWi4wex114fVAWHEK3XjzLPE0tTRiBSSvL+0FDBK3Nuh/pQK
- BSwljMWxA7WIbtziHEZW8mOvZfcb3NLBtexu7KlIl8qzOLkeelUciyps7E7xz3/3EIYz
- tFwk8+MEfwAO75YJd5ntdRgzKwLtBni8s1Y89jo8IoKNYb4NlY7eFb8Hk4DRK6zS102F
- QMMuxzO7M1QIKzwBbqvi6gGj4w3VrIWq2TCbwrZOs6JuOH1ari/77TnbWV4nB6cjdiIq
- LO8GFAV5Byb0kcp/RqrKl65OdZYGH2/ZMmmL3t8m0o7ol9DITb9hY49Ub9AEp776AC5u
- E12g==
-X-Gm-Message-State: AOAM532dT0Zb3P6f4Eel20A5vIVoZw4ZvcsQiUtmDfixueYjmqIJsfM8
- hduoc75UMDRj6RRNVNnvUa8mwQ==
-X-Google-Smtp-Source: ABdhPJzzr7V6Q+NFlUzi14ObzhGd5ZRKlNLTeyLYhw4G1XLnZ9tYm6XUMbNPBt9t8yqwGyX7v7ttqQ==
-X-Received: by 2002:aca:5e82:: with SMTP id s124mr5266539oib.168.1599231440721; 
- Fri, 04 Sep 2020 07:57:20 -0700 (PDT)
-Received: from yoga ([2605:6000:e5cb:c100:8898:14ff:fe6d:34e])
- by smtp.gmail.com with ESMTPSA id n61sm1227108otn.34.2020.09.04.07.57.19
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 04 Sep 2020 07:57:20 -0700 (PDT)
-Date: Fri, 4 Sep 2020 09:57:17 -0500
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH 1/3] iommu: amd: Fix kerneldoc
-Message-ID: <20200904145717.GG3715@yoga>
-References: <20200728170859.28143-1-krzk@kernel.org>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DE1888755E
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:30:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599233402;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=wRdDsTplpUOo4libxw8O1Q2NtW0tDZkh0RhwSXPBuqI=;
+ b=PSgh5u3JFDWB80luhfaVSp+nVtZW4kZASX+qQNCuJvs+Kg705eIlHIEAKkWV2gTchlMlSA
+ 0TS5gzXH9sRa42td9TtLnF6rE757sndh+S/roIpxMwMLHhVjs/+yYa9JnoNgqFqeXWbObM
+ RiaTbNB8BpkztOAeNIFSXEVnNAoUhyo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-16-ubmidy7jMGOZc6NNGDjlUQ-1; Fri, 04 Sep 2020 11:30:00 -0400
+X-MC-Unique: ubmidy7jMGOZc6NNGDjlUQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C90A01029D25;
+ Fri,  4 Sep 2020 15:29:58 +0000 (UTC)
+Received: from [10.36.112.51] (ovpn-112-51.ams2.redhat.com [10.36.112.51])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id ECD235C1D0;
+ Fri,  4 Sep 2020 15:29:55 +0000 (UTC)
+Subject: Re: [PATCH v3 1/6] iommu/virtio: Move to drivers/iommu/virtio/
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org,
+ virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <20200821131540.2801801-2-jean-philippe@linaro.org>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <894aa803-644b-b6f2-2a28-73c388430ac6@redhat.com>
+Date: Fri, 4 Sep 2020 17:29:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200728170859.28143-1-krzk@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20200821131540.2801801-2-jean-philippe@linaro.org>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Cc: kevin.tian@intel.com, mst@redhat.com, sebastien.boeuf@intel.com,
+ bhelgaas@google.com, jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,46 +105,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue 28 Jul 12:08 CDT 2020, Krzysztof Kozlowski wrote:
+Hi Jean,
 
-> Fix W=1 compile warnings (invalid kerneldoc):
+On 8/21/20 3:15 PM, Jean-Philippe Brucker wrote:
+> Before adding new files to the virtio-iommu driver, move it to its own
+> subfolder, similarly to other IOMMU drivers.
 > 
->     drivers/iommu/amd/init.c:1586: warning: Function parameter or member 'ivrs' not described in 'get_highest_supported_ivhd_type'
->     drivers/iommu/amd/init.c:1938: warning: Function parameter or member 'iommu' not described in 'iommu_update_intcapxt'
-> 
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/iommu/amd/init.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iommu/Makefile                    | 3 +--
+>  drivers/iommu/virtio/Makefile             | 2 ++
+>  drivers/iommu/{ => virtio}/virtio-iommu.c | 0
+>  MAINTAINERS                               | 2 +-
+>  4 files changed, 4 insertions(+), 3 deletions(-)
+>  create mode 100644 drivers/iommu/virtio/Makefile
+>  rename drivers/iommu/{ => virtio}/virtio-iommu.c (100%)
 > 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 958050c213f9..4a37169b1b1b 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -1578,7 +1578,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 11f1771104f3..fc7523042512 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -obj-y += amd/ intel/ arm/
+> +obj-y += amd/ intel/ arm/ virtio/
+>  obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+> @@ -26,4 +26,3 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+>  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+>  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+>  obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+> -obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+> diff --git a/drivers/iommu/virtio/Makefile b/drivers/iommu/virtio/Makefile
+> new file mode 100644
+> index 000000000000..279368fcc074
+> --- /dev/null
+> +++ b/drivers/iommu/virtio/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio/virtio-iommu.c
+> similarity index 100%
+> rename from drivers/iommu/virtio-iommu.c
+> rename to drivers/iommu/virtio/virtio-iommu.c
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index deaafb617361..3602b223c9b2 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -18451,7 +18451,7 @@ VIRTIO IOMMU DRIVER
+>  M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+>  L:	virtualization@lists.linux-foundation.org
+>  S:	Maintained
+> -F:	drivers/iommu/virtio-iommu.c
+> +F:	drivers/iommu/virtio/
+>  F:	include/uapi/linux/virtio_iommu.h
+not related to this patch but you may add an entry for
+Documentation/devicetree/bindings/virtio/iommu.txt
+
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+Thanks
+
+Eric
 >  
->  /**
->   * get_highest_supported_ivhd_type - Look up the appropriate IVHD type
-> - * @ivrs          Pointer to the IVRS header
-> + * @ivrs: Pointer to the IVRS header
->   *
->   * This function search through all IVDB of the maximum supported IVHD
->   */
-> @@ -1929,7 +1929,7 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
->  #define XT_INT_VEC(x)		(((x) & 0xFFULL) << 32)
->  #define XT_INT_DEST_HI(x)	((((x) >> 24) & 0xFFULL) << 56)
->  
-> -/**
-> +/*
->   * Setup the IntCapXT registers with interrupt routing information
->   * based on the PCI MSI capability block registers, accessed via
->   * MMIO MSI address low/hi and MSI data registers.
-> -- 
-> 2.17.1
+>  VIRTIO MEM DRIVER
 > 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
