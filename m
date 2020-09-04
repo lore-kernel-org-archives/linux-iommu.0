@@ -2,62 +2,66 @@ Return-Path: <SRS0=mVMG=CN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65061C43461
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 09:00:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC12C43461
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 09:02:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 274C520748
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 09:00:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 274C520748
+	by mail.kernel.org (Postfix) with ESMTPS id D97C1207EA
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 09:02:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D97C1207EA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C6FBA86E57;
-	Fri,  4 Sep 2020 09:00:46 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GN4l-jGDitQk; Fri,  4 Sep 2020 09:00:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6B58586C43;
-	Fri,  4 Sep 2020 09:00:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 511E1C07FF;
-	Fri,  4 Sep 2020 09:00:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8CBAFC0051
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:00:45 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7BEC886D7F
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:00:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 544F586D94;
+	Fri,  4 Sep 2020 09:02:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xvb2QR5q1Wly; Fri,  4 Sep 2020 09:02:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9C12586D76;
+	Fri,  4 Sep 2020 09:02:04 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 93B66C07FF;
+	Fri,  4 Sep 2020 09:02:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E912C0051
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:02:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id E760E2270C
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:02:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id psdkbYmjyED1 for <iommu@lists.linux-foundation.org>;
- Fri,  4 Sep 2020 09:00:44 +0000 (UTC)
+ with ESMTP id imMetS3LOzEm for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Sep 2020 09:02:01 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4381986D76
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:00:44 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id AE4822012D
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 09:02:01 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id A2C3E3D5; Fri,  4 Sep 2020 11:00:40 +0200 (CEST)
-Date: Fri, 4 Sep 2020 11:00:39 +0200
+ id B0FA43D5; Fri,  4 Sep 2020 11:01:59 +0200 (CEST)
+Date: Fri, 4 Sep 2020 11:01:58 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/3] iommu/tegra-smmu: Reference count fixes
-Message-ID: <20200904090039.GD6714@8bytes.org>
-References: <20200806155404.3936074-1-thierry.reding@gmail.com>
+To: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Sort compatible
+ string in increasing number of the SoC
+Message-ID: <20200904090158.GE6714@8bytes.org>
+References: <20200809193527.19659-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200806155404.3936074-1-thierry.reding@gmail.com>
+In-Reply-To: <20200809193527.19659-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jon Hunter <jonathanh@nvidia.com>
+Cc: devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>,
+ linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Prabhakar <prabhakar.csengg@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,13 +79,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Aug 06, 2020 at 05:54:01PM +0200, Thierry Reding wrote:
-> Thierry Reding (3):
->   iommu/tegra-smmu: Set IOMMU group name
->   iommu/tegra-smmu: Balance IOMMU group reference count
->   iommu/tegra-smmu: Prune IOMMU group when it is released
+On Sun, Aug 09, 2020 at 08:35:27PM +0100, Lad Prabhakar wrote:
+> Sort the items in the compatible string list in increasing number of SoC.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied, thanks.
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
