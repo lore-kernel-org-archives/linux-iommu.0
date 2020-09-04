@@ -7,90 +7,90 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFA4C2BB84
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:55:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E47C433E2
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:55:23 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9837E2074D
-	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:55:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C597E20770
+	for <iommu@archiver.kernel.org>; Fri,  4 Sep 2020 15:55:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CJgMpx43"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9837E2074D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EMAZ1OmD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C597E20770
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7AC5387576;
-	Fri,  4 Sep 2020 15:55:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 977D786E41;
+	Fri,  4 Sep 2020 15:55:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YIwf5vzQ5Jih; Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
+	with ESMTP id G7ex6Jtn3JzL; Fri,  4 Sep 2020 15:55:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DA1B987573;
-	Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0C69786E3C;
+	Fri,  4 Sep 2020 15:55:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8283C0052;
-	Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37C74C0051
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EDFE6C0052;
+	Fri,  4 Sep 2020 15:55:21 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AB23C0051
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 33E3487574
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7A60286EC4
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lqJoiPjPIe7J for <iommu@lists.linux-foundation.org>;
- Fri,  4 Sep 2020 15:55:18 +0000 (UTC)
+ with ESMTP id YkNgLRxyVKou for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f196.google.com (mail-qk1-f196.google.com
- [209.85.222.196])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4D41D87571
- for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:18 +0000 (UTC)
-Received: by mail-qk1-f196.google.com with SMTP id d20so6739127qka.5
- for <iommu@lists.linux-foundation.org>; Fri, 04 Sep 2020 08:55:18 -0700 (PDT)
+Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
+ [209.85.222.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 907ED86EBA
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Sep 2020 15:55:19 +0000 (UTC)
+Received: by mail-qk1-f193.google.com with SMTP id g72so6691396qke.8
+ for <iommu@lists.linux-foundation.org>; Fri, 04 Sep 2020 08:55:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=cqOydC4P7PfDdkAhN3VGNKHPJJ431uRaailmt1kgaeU=;
- b=CJgMpx43qvc9byFhCZEm4/SvL1LvLGr9/CsL3bEH8cddixy5T8h5M48QlyKChSENHN
- 1Mp4gnVrKUsEcY+Zvd2qjlsVZf5YkEaRHfnHyTzeSSLlrwG/PHrSyTzkQQFCpAsQpUHH
- /ga6s7nNWwtc9MCgLx8cJ7JuWU4DbMfgJn9Mcny+8PrcdQyid92MSarw3ah/r+aWD8y9
- Y2C4R/Mwos3AkmPQRDcED2x0vbj5V8mG5GcXZRDagt429AEGnzV4BNtAdc2oyPy/jYtW
- vmK2oXorZkRIx4xxxPzHCfn9x00d/5y08meh8VAM0QgWNkEs3yCi4wO/QgFASYWDo4sO
- fqIg==
+ bh=h5uFJW/6fnBFkfrDyRmkYDvlEgZwoUK08VgApDtVqc4=;
+ b=EMAZ1OmDd9nFxAqWSODUqd6ceL4IsY1y8RrE5+ltjJztLmCsfdK71uf11dSoSWqOnM
+ +Vf02d28fy9I9YsR1nQ7rdmtNQOhU0RUIiz0nUe1mAlTGhDTNejFezB45NW1a4VTvvMD
+ 8WiPfcmusc0d8CXGgs5v/AE3QiD95HlLyMUguYboj2GCrTgwWRVv4m+kMRk80d1YplUY
+ iuW0wy4mPHUz+wbqG4brFkrRDerbs0AGM/WIY+6jerzDQO2wg3Io8Z3JmTbseq4TEXj2
+ PIkwmPlXmcW4PDhpX2okwL9LtgyE5EHxoQlG+xJLoGcSyTuV4kTY00rRMvHJIAl04nWy
+ MC6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=cqOydC4P7PfDdkAhN3VGNKHPJJ431uRaailmt1kgaeU=;
- b=oBX0V3UFe0iii+7y4wvDTzMGyhGnC4zUfyB9twgsJUeNb/okACDH1d5xdTxO2t2nET
- +BmielOftHKwHNTBaxR/SMAIQA85i9QK5hlP10W+4V6oYiT7KXQpfA5jbKkBBJ5Zjwxt
- uB+DT/8fn/Jt4OKBIkgTmCpQ/+ODAZd7r2N2Ma1uzfrNMoihqzC3PuJpQO4E1YgflA5Z
- AfDhmW6iQe745s8FRrTR9EK58/x4R1/RoIoMezInW68kRRMY1cDzYd5rYygwFwSiketU
- TcV3VbhcJ3C4fZyC4XsXGhpXRTYiLKkB1p4Dx3ER1bt3o1pOvo4yakSE3h7kCepoteNN
- qljw==
-X-Gm-Message-State: AOAM531hRdGgG11NfzA8XrcFkrz4S2l3FNSjrQqq7FWo8JOSl/Ibd+eA
- enb0YtAQBtU8FFWMC5fCVXneAg==
-X-Google-Smtp-Source: ABdhPJwHcjVR8gvpVo5cc8Zutt5nJd/mELZ/BVmZZWe+VuF+L6dgLXd87rsYat09jN3kKHXviyEKTA==
-X-Received: by 2002:a05:620a:211c:: with SMTP id
- l28mr8189345qkl.395.1599234917217; 
- Fri, 04 Sep 2020 08:55:17 -0700 (PDT)
+ bh=h5uFJW/6fnBFkfrDyRmkYDvlEgZwoUK08VgApDtVqc4=;
+ b=l1vhaUn0InheLWUFXWJKbW/+6p9/3Q5nEhu0lY+MYBJSzECRJakYXr9uFWG1Mjh4eR
+ 5I2aeFue2iBAAjQBS1HMxaRJTTvH0nq71csAFx+J0J95Mxg07Jl3pAw1foOdiU7GMeiE
+ UIKdQrLEndliou7Ga5ifakAeFBeXdt8gBuIIOF9mCKqFSVDE86yjkiriwRuPw9jpnObu
+ rB4TLRl+P2lnMMDIOf7v3b5uiPjMviT0J84L0e+I3bA6H/4TvbOqDqBVgEo9onqdzkdH
+ YPNhTIfJtS0YmQs8cJ5wWb/xZL2fdvHtl4AYYuL3QbKihatPBd8qUGw7DZtDxjQps7ff
+ Rkbg==
+X-Gm-Message-State: AOAM532HjOMygunR5+yFpH6DDZ0L8a0/siWNUyTHfp4xyaEXloNuPTwo
+ Fxq5WoYjFRLa/0o545nx1WwbaA==
+X-Google-Smtp-Source: ABdhPJxd7USRDl6Yb7MfgkAYxzICxZXDUshL8k4VKasevb5x6VcguJCsqPzZGsq59oyACgW/0jcFqg==
+X-Received: by 2002:a37:e502:: with SMTP id e2mr8513643qkg.141.1599234918474; 
+ Fri, 04 Sep 2020 08:55:18 -0700 (PDT)
 Received: from localhost.localdomain
  (ec2-34-197-84-77.compute-1.amazonaws.com. [34.197.84.77])
- by smtp.gmail.com with ESMTPSA id v18sm4724473qtq.15.2020.09.04.08.55.16
+ by smtp.gmail.com with ESMTPSA id v18sm4724473qtq.15.2020.09.04.08.55.17
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 04 Sep 2020 08:55:16 -0700 (PDT)
+ Fri, 04 Sep 2020 08:55:17 -0700 (PDT)
 From: Bjorn Andersson <bjorn.andersson@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>,
  Bjorn Andersson <bjorn.andersson@linaro.org>,
  Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
  Jordan Crouse <jcrouse@codeaurora.org>, Rob Clark <robdclark@chromium.org>
-Subject: [PATCH v3 2/8] iommu/arm-smmu: Delay modifying domain during init
-Date: Fri,  4 Sep 2020 15:55:07 +0000
-Message-Id: <20200904155513.282067-3-bjorn.andersson@linaro.org>
+Subject: [PATCH v3 3/8] iommu/arm-smmu: Consult context bank allocator for
+ identify domains
+Date: Fri,  4 Sep 2020 15:55:08 +0000
+Message-Id: <20200904155513.282067-4-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200904155513.282067-1-bjorn.andersson@linaro.org>
 References: <20200904155513.282067-1-bjorn.andersson@linaro.org>
@@ -115,134 +115,130 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Delay modifications to the domain during arm_smmu_init_domain_context()
-until we've allocated a context bank. This will allow us to postpone the
-special handling of identity domains until the platform specific context
-bank allocator has been executed, in a later patch.
+For implementations of the ARM SMMU where stream mappings of bypass type
+are prohibited identity domains can be implemented by using context
+banks with translation disabled.
+
+Postpone the decision to skip allocating a context bank until the
+implementation specific context bank allocator has been consulted and if
+it decides to use a context bank for the identity map, don't enable
+translation (i.e. omit ARM_SMMU_SCTLR_M).
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
 
 Changes since v2:
-- New patch to allow us to rely on the impl specific alloc_context_bank().
+- Tie this to alloc_context_bank rather than carrying a Qualcomm specific quirk
+  in the generic code.
 
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 40 +++++++++++++++------------
- 1 file changed, 23 insertions(+), 17 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c |  4 ++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.c      | 23 +++++++++++++++-------
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  3 +++
+ 3 files changed, 23 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 0663d7d26908..229fc8ff8cea 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -94,8 +94,12 @@ static int qcom_adreno_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_doma
+ 					       struct arm_smmu_device *smmu,
+ 					       struct device *dev, int start)
+ {
++	struct iommu_domain *domain = &smmu_domain->domain;
+ 	int count;
+ 
++	if (domain->type == IOMMU_DOMAIN_IDENTITY)
++		return ARM_SMMU_CBNDX_BYPASS;
++
+ 	/*
+ 	 * Assign context bank 0 to the GPU device so the GPU hardware can
+ 	 * switch pagetables
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index e19d7bdc7674..add2e1807e21 100644
+index add2e1807e21..eb5c6ca5c138 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -645,6 +645,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	irqreturn_t (*context_fault)(int irq, void *dev);
-+	struct arm_smmu_cfg new_cfg = *cfg;
-+	enum arm_smmu_domain_stage new_stage = smmu_domain->stage;
-+	const struct iommu_flush_ops *flush_ops;
+@@ -611,7 +611,9 @@ void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
  
- 	mutex_lock(&smmu_domain->init_mutex);
+ 	/* SCTLR */
+ 	reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE | ARM_SMMU_SCTLR_AFE |
+-	      ARM_SMMU_SCTLR_TRE | ARM_SMMU_SCTLR_M;
++	      ARM_SMMU_SCTLR_TRE;
++	if (cfg->m)
++		reg |= ARM_SMMU_SCTLR_M;
+ 	if (stage1)
+ 		reg |= ARM_SMMU_SCTLR_S1_ASIDPNE;
+ 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+@@ -627,9 +629,14 @@ static int arm_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_domain,
+ 				       struct arm_smmu_device *smmu,
+ 				       struct device *dev, unsigned int start)
+ {
++	struct iommu_domain *domain = &smmu_domain->domain;
++
+ 	if (smmu->impl && smmu->impl->alloc_context_bank)
+ 		return smmu->impl->alloc_context_bank(smmu_domain, smmu, dev, start);
+ 
++	if (domain->type == IOMMU_DOMAIN_IDENTITY)
++		return ARM_SMMU_CBNDX_BYPASS;
++
+ 	return __arm_smmu_alloc_bitmap(smmu->context_map, start, smmu->num_context_banks);
+ }
+ 
+@@ -653,12 +660,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
  	if (smmu_domain->smmu)
-@@ -675,9 +678,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	 * Note that you can't actually request stage-2 mappings.
- 	 */
- 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
--		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
-+		new_stage = ARM_SMMU_DOMAIN_S2;
- 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
--		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-+		new_stage = ARM_SMMU_DOMAIN_S1;
- 
- 	/*
- 	 * Choosing a suitable context format is even more fiddly. Until we
-@@ -688,32 +691,32 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	 * support to be a superset of AArch32 support...
- 	 */
- 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
-+		new_cfg.fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
- 	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
- 	    !IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_ARM_LPAE) &&
- 	    (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S) &&
--	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1))
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
--	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
-+	    (new_stage == ARM_SMMU_DOMAIN_S1))
-+		new_cfg.fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
-+	if ((IS_ENABLED(CONFIG_64BIT) || new_cfg.fmt == ARM_SMMU_CTX_FMT_NONE) &&
- 	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
- 			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
- 			       ARM_SMMU_FEAT_FMT_AARCH64_4K)))
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
-+		new_cfg.fmt = ARM_SMMU_CTX_FMT_AARCH64;
- 
--	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
-+	if (new_cfg.fmt == ARM_SMMU_CTX_FMT_NONE) {
- 		ret = -EINVAL;
  		goto out_unlock;
- 	}
  
--	switch (smmu_domain->stage) {
-+	switch (new_stage) {
- 	case ARM_SMMU_DOMAIN_S1:
--		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
-+		new_cfg.cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
- 		start = smmu->num_s2_context_banks;
- 		ias = smmu->va_size;
- 		oas = smmu->ipa_size;
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
-+		if (new_cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64) {
- 			fmt = ARM_64_LPAE_S1;
--		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
-+		} else if (new_cfg.fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
- 			fmt = ARM_32_LPAE_S1;
- 			ias = min(ias, 32UL);
- 			oas = min(oas, 40UL);
-@@ -722,7 +725,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 			ias = min(ias, 32UL);
- 			oas = min(oas, 32UL);
- 		}
--		smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
-+		flush_ops = &arm_smmu_s1_tlb_ops;
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
- 		/*
-@@ -730,11 +733,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		 * involved.
- 		 */
- 	case ARM_SMMU_DOMAIN_S2:
--		cfg->cbar = CBAR_TYPE_S2_TRANS;
-+		new_cfg.cbar = CBAR_TYPE_S2_TRANS;
- 		start = 0;
- 		ias = smmu->ipa_size;
- 		oas = smmu->pa_size;
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
-+		if (new_cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64) {
- 			fmt = ARM_64_LPAE_S2;
- 		} else {
- 			fmt = ARM_32_LPAE_S2;
-@@ -742,9 +745,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 			oas = min(oas, 40UL);
- 		}
- 		if (smmu->version == ARM_SMMU_V2)
--			smmu_domain->flush_ops = &arm_smmu_s2_tlb_ops_v2;
-+			flush_ops = &arm_smmu_s2_tlb_ops_v2;
- 		else
--			smmu_domain->flush_ops = &arm_smmu_s2_tlb_ops_v1;
-+			flush_ops = &arm_smmu_s2_tlb_ops_v1;
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -757,6 +760,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+-	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+-		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+-		smmu_domain->smmu = smmu;
+-		goto out_unlock;
+-	}
+-
+ 	/*
+ 	 * Mapping the requested stage onto what we support is surprisingly
+ 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+@@ -757,6 +758,10 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	ret = arm_smmu_alloc_context_bank(smmu_domain, smmu, dev, start);
+ 	if (ret < 0) {
+ 		goto out_unlock;
++	} else if (ret == ARM_SMMU_CBNDX_BYPASS) {
++		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
++		smmu_domain->smmu = smmu;
++		goto out_unlock;
  	}
  
  	smmu_domain->smmu = smmu;
-+	smmu_domain->cfg = new_cfg;
-+	smmu_domain->stage = new_stage;
-+	smmu_domain->flush_ops = flush_ops;
+@@ -813,6 +818,10 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
  
- 	cfg->cbndx = ret;
- 	if (smmu->version < ARM_SMMU_V2) {
+ 	domain->geometry.force_aperture = true;
+ 
++	/* Enable translation for non-identity context banks */
++	if (domain->type != IOMMU_DOMAIN_IDENTITY)
++		cfg->m = true;
++
+ 	/* Initialise the context bank with our page table cfg */
+ 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+ 	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index ddf2ca4c923d..235d9a3a6ab6 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -243,6 +243,8 @@ enum arm_smmu_cbar_type {
+ #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
+ #define TLB_SPIN_COUNT			10
+ 
++#define ARM_SMMU_CBNDX_BYPASS		0xffff
++
+ /* Shared driver definitions */
+ enum arm_smmu_arch_version {
+ 	ARM_SMMU_V1,
+@@ -346,6 +348,7 @@ struct arm_smmu_cfg {
+ 	u32				sctlr_clr;    /* bits to mask in SCTLR */
+ 	enum arm_smmu_cbar_type		cbar;
+ 	enum arm_smmu_context_fmt	fmt;
++	bool				m;
+ };
+ #define ARM_SMMU_INVALID_IRPTNDX	0xff
+ 
 -- 
 2.28.0
 
