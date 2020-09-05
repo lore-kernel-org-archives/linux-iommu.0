@@ -7,71 +7,70 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F84C433E2
-	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 08:13:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46867C43461
+	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 08:13:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D3892074D
-	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 08:13:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F072521582
+	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 08:13:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="iwrWM31b"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D3892074D
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="nBZzkx4a"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F072521582
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1685786016;
-	Sat,  5 Sep 2020 08:13:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DF9FD875FC;
+	Sat,  5 Sep 2020 08:13:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KKJKeMZ6eIQ9; Sat,  5 Sep 2020 08:13:18 +0000 (UTC)
+	with ESMTP id Dysy3HoGLCeh; Sat,  5 Sep 2020 08:13:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id ED0BB85FC0;
-	Sat,  5 Sep 2020 08:13:18 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3038A8584C;
+	Sat,  5 Sep 2020 08:13:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D18C9C088B;
-	Sat,  5 Sep 2020 08:13:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABA14C0052
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 14DA6C0890;
+	Sat,  5 Sep 2020 08:13:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E087AC0052
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 983A12052E
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:17 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id CFC8F874A7
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Cc09bvJrhwtq for <iommu@lists.linux-foundation.org>;
- Sat,  5 Sep 2020 08:13:16 +0000 (UTC)
+ with ESMTP id g4aERELn+J1c for <iommu@lists.linux-foundation.org>;
+ Sat,  5 Sep 2020 08:13:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by silver.osuosl.org (Postfix) with ESMTP id 838C52052C
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:16 +0000 (UTC)
-X-UUID: 38073dafc12747399c40f46c1441f9d4-20200905
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by hemlock.osuosl.org (Postfix) with ESMTP id E2FC68584C
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 08:13:26 +0000 (UTC)
+X-UUID: 43cf2ef8dfe24453a2b484204e67ff2b-20200905
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=p4EK5vyv0eeNDaeBp35kTExdjLa8HVmmTDPCf9vXFLA=; 
- b=iwrWM31bfE5jmgnnGnmTKv+zH+8J1F/iUphulhTGt3RmCpOOyfblndJbTJ51HQEWf2MW4kiyk8JCpX7QrXjOP5YsgLlJPM6raud7Qo1FcBO98dJ8JVm1uSZVGRBhAM4XVn8PWy6pgHQSm6l8ZWwW0v6BEz/aIXW/6RIiTlWFvTE=;
-X-UUID: 38073dafc12747399c40f46c1441f9d4-20200905
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ bh=Xyql66Axq7r0/zD3VtLzwTuEdmn0pBqUypd/sipGyzI=; 
+ b=nBZzkx4aThrlSW11aIafCoNwIXFiaPnoiIIh6+TwKa91g6V+3TDKYQnxQv4vvofCeG/l1lOX/JPY5gBJKPiWrJSvTzHd4Lg9kcVQ6sHm+oeqiUUxereBpkMYQUJIhzMOoqGTzr2bcC/paGuyHZ6fQqYKPbZo8f/fw/3sgbtgPTc=;
+X-UUID: 43cf2ef8dfe24453a2b484204e67ff2b-20200905
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 2081906385; Sat, 05 Sep 2020 16:13:14 +0800
+ with ESMTP id 289913520; Sat, 05 Sep 2020 16:13:24 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
  mtkmbs08n1.mediatek.inc (172.21.101.55) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 5 Sep 2020 16:13:11 +0800
+ 15.0.1497.2; Sat, 5 Sep 2020 16:13:21 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 5 Sep 2020 16:13:05 +0800
+ Transport; Sat, 5 Sep 2020 16:13:21 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 13/23] iommu/mediatek: Add device link for smi-common and
- m4u
-Date: Sat, 5 Sep 2020 16:09:10 +0800
-Message-ID: <20200905080920.13396-14-yong.wu@mediatek.com>
+Subject: [PATCH v2 14/23] iommu/mediatek: Add power-domain operation
+Date: Sat, 5 Sep 2020 16:09:11 +0800
+Message-ID: <20200905080920.13396-15-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200905080920.13396-1-yong.wu@mediatek.com>
 References: <20200905080920.13396-1-yong.wu@mediatek.com>
@@ -101,119 +100,131 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In the lastest SoC, M4U has its special power domain. thus, If the engine
-begin to work, it should help enable the power for M4U firstly.
-Currently if the engine work, it always enable the power/clocks for
-smi-larbs/smi-common. This patch adds device_link for smi-common and M4U.
-then, if smi-common power is enabled, the M4U power also is powered on
-automatically.
+In the previous SoC, the M4U HW is in the EMI power domain which is
+always on. the latest M4U is in the display power domain which may be
+turned on/off, thus we have to add pm_runtime interface for it.
 
-Normally M4U connect with several smi-larbs and their smi-common always
-are the same, In this patch it get smi-common dev from the first smi-larb
-device(i==0), then add the device_link only while m4u has power-domain.
+When the engine work, the engine always enable the power and clocks for
+smi-larb/smi-common, then the M4U's power will always be powered on
+automatically via the device link with smi-common.
+
+Note: we don't enable the M4U power in iommu_map/unmap for tlb flush.
+If its power already is on, of course it is ok. if the power is off,
+the main tlb will be reset while M4U power on, thus the tlb flush while
+m4u power off is unnecessary, just skip it.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 33 ++++++++++++++++++++++++++++++---
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 31 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 940b7a9191b2..68de59e0d521 100644
+index 68de59e0d521..d22772ec64c8 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -20,6 +20,7 @@
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <asm/barrier.h>
-@@ -681,7 +682,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		return larb_nr;
+@@ -196,6 +196,10 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 	u32 tmp;
  
- 	for (i = 0; i < larb_nr; i++) {
--		struct device_node *larbnode;
-+		struct device_node *larbnode, *smicomm_node;
- 		struct platform_device *plarbdev;
- 		u32 id;
- 
-@@ -707,6 +708,26 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 
- 		component_match_add_release(dev, &match, release_of,
- 					    compare_of, larbnode);
-+		if (!i) {
-+			smicomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-+			if (!smicomm_node)
-+				return -EINVAL;
+ 	for_each_m4u(data) {
++		/* skip tlb flush when pm is not active. */
++		if (!pm_runtime_active(data->dev))
++			continue;
 +
-+			plarbdev = of_find_device_by_node(smicomm_node);
-+			of_node_put(smicomm_node);
-+			data->smicomm_dev = &plarbdev->dev;
+ 		spin_lock_irqsave(&data->tlb_lock, flags);
+ 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+ 			       data->base + data->plat_data->inv_sel_reg);
+@@ -380,6 +384,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	struct device *m4udev = data->dev;
+ 	int ret;
+ 
+ 	if (!data)
+@@ -387,12 +392,18 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	/* Update the pgtable base address register of the M4U HW */
+ 	if (!data->m4u_dom) {
++		ret = pm_runtime_get_sync(m4udev);
++		if (ret < 0)
++			return ret;
+ 		ret = mtk_iommu_hw_init(data);
+-		if (ret)
++		if (ret) {
++			pm_runtime_put(m4udev);
+ 			return ret;
 +		}
-+	}
-+
-+	if (dev->pm_domain) {
-+		struct device_link *link;
-+
-+		link = device_link_add(data->smicomm_dev, dev,
-+				       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
-+		if (!link) {
-+			dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
-+			return -EINVAL;
-+		}
+ 		data->m4u_dom = dom;
+ 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+ 		       data->base + REG_MMU_PT_BASE_ADDR);
++		pm_runtime_put(m4udev);
  	}
  
- 	platform_set_drvdata(pdev, data);
-@@ -714,14 +735,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
- 				     "mtk-iommu.%pa", &ioaddr);
- 	if (ret)
--		return ret;
-+		goto out;
+ 	mtk_iommu_config(data, dev, true);
+@@ -722,10 +733,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (dev->pm_domain) {
+ 		struct device_link *link;
  
- 	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
- 	iommu_device_set_fwnode(&data->iommu, &pdev->dev.of_node->fwnode);
- 
- 	ret = iommu_device_register(&data->iommu);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	spin_lock_init(&data->tlb_lock);
- 	list_add_tail(&data->list, &m4ulist);
-@@ -730,6 +751,10 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
++		pm_runtime_enable(dev);
++
+ 		link = device_link_add(data->smicomm_dev, dev,
+ 				       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+ 		if (!link) {
+ 			dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
++			pm_runtime_disable(dev);
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -752,8 +766,10 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  
  	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
-+out:
-+	if (dev->pm_domain)
-+		device_link_remove(data->smicomm_dev, dev);
-+	return ret;
+ out:
+-	if (dev->pm_domain)
++	if (dev->pm_domain) {
+ 		device_link_remove(data->smicomm_dev, dev);
++		pm_runtime_disable(dev);
++	}
+ 	return ret;
  }
  
- static int mtk_iommu_remove(struct platform_device *pdev)
-@@ -743,6 +768,8 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+@@ -768,8 +784,10 @@ static int mtk_iommu_remove(struct platform_device *pdev)
  		bus_set_iommu(&platform_bus_type, NULL);
  
  	clk_disable_unprepare(data->bclk);
-+	if (pdev->dev.pm_domain)
-+		device_link_remove(data->smicomm_dev, &pdev->dev);
+-	if (pdev->dev.pm_domain)
++	if (pdev->dev.pm_domain) {
+ 		device_link_remove(data->smicomm_dev, &pdev->dev);
++		pm_runtime_disable(&pdev->dev);
++	}
  	devm_free_irq(&pdev->dev, data->irq, data);
  	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
  	return 0;
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index a2e2c844b96e..ae7909815cdb 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -67,6 +67,7 @@ struct mtk_iommu_data {
+@@ -801,6 +819,9 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ 	void __iomem *base = data->base;
+ 	int ret;
  
- 	struct iommu_device		iommu;
- 	const struct mtk_iommu_plat_data *plat_data;
-+	struct device			*smicomm_dev;
++	/* Avoid first resume to affect the default value of registers below. */
++	if (!m4u_dom)
++		return 0;
+ 	ret = clk_prepare_enable(data->bclk);
+ 	if (ret) {
+ 		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
+@@ -814,13 +835,13 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
+ 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+ 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+-	if (m4u_dom)
+-		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+-		       base + REG_MMU_PT_BASE_ADDR);
++	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
++	       base + REG_MMU_PT_BASE_ADDR);
+ 	return 0;
+ }
  
- 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
+ static const struct dev_pm_ops mtk_iommu_pm_ops = {
++	SET_RUNTIME_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume, NULL)
+ 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+ };
  
 -- 
 2.18.0
