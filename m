@@ -2,89 +2,104 @@ Return-Path: <SRS0=R2i3=CO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFE5C43461
-	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 17:55:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F94C43461
+	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 18:31:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 357082078E
-	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 17:55:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 909892074D
+	for <iommu@archiver.kernel.org>; Sat,  5 Sep 2020 18:31:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="A71gB59m"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 357082078E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k5ekDg/2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 909892074D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CE4BF86055;
-	Sat,  5 Sep 2020 17:55:22 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1E19520781;
+	Sat,  5 Sep 2020 18:31:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Kq2M-lpRmkSb; Sat,  5 Sep 2020 18:31:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id E166F203E7;
+	Sat,  5 Sep 2020 18:31:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8C8AC0052;
+	Sat,  5 Sep 2020 18:31:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 008D0C0051
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 18:31:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DCABF85F89
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 18:31:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7nXwPLpzQrmv; Sat,  5 Sep 2020 17:55:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EF37F85FC1;
-	Sat,  5 Sep 2020 17:55:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1A1FC088B;
-	Sat,  5 Sep 2020 17:55:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60CFDC0052
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 17:55:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4644187538
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 17:55:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w8-NznPwTIhq for <iommu@lists.linux-foundation.org>;
- Sat,  5 Sep 2020 17:55:17 +0000 (UTC)
+ with ESMTP id 2PGn7MoF_4dC for <iommu@lists.linux-foundation.org>;
+ Sat,  5 Sep 2020 18:31:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B351E874BC
- for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 17:55:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description;
- bh=jUZ7wVkTOQQmJc8x+4KhnWzCxul2cSsRNxbx56SPfxo=; b=A71gB59mhOADuO2PBRZ+b0N9W3
- gbr1xRbj0gHTU0+Kf1tucuyOehTVwO3UKP8z9tG+rOjoNFAfYYvoZA/RwE4VHKpGFu6ukgjk6SpkJ
- ksVeRt79gOp9LvCMXa6XAmjSPiZ1RJJEHYNeeqtQDOAnNKWCHPsYIDNv4ivXY97uXBSeERqFAJAoL
- qFcLWtRAJux0E8aX0oJzSes/PyyK1ASQuHKnD68zCj0aNHuD2h/9dpdnmKTAM60JZ/IaPe3BBBhP9
- lI71qOXqTCzrn6IWOLi+5j2gLuI2Zc8wi2L+jHiGgcqaq+i7r+TpLNW2F8M7/F02sfqadFXncqGFo
- W+eow98g==;
-Received: from [2601:1c0:6280:3f0::19c2]
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kEcP4-0001qg-LN; Sat, 05 Sep 2020 17:55:06 +0000
-Subject: Re: [PATCH v7 3/9] docs: x86: Add documentation for SVA (Shared
- Virtual Addressing)
-To: Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- H Peter Anvin <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Christoph Hellwig <hch@infradead.org>, Peter Zijlstra
- <peterz@infradead.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Dave Hansen <dave.hansen@intel.com>,
- Tony Luck <tony.luck@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Sohil Mehta <sohil.mehta@intel.com>,
- Ravi V Shankar <ravi.v.shankar@intel.com>
-References: <1598540794-132666-1-git-send-email-fenghua.yu@intel.com>
- <1598540794-132666-4-git-send-email-fenghua.yu@intel.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <626fe21c-1f82-f4f8-e37b-32d91e7d557a@infradead.org>
-Date: Sat, 5 Sep 2020 10:54:59 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8284E85F88
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Sep 2020 18:31:50 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id t10so10664383wrv.1
+ for <iommu@lists.linux-foundation.org>; Sat, 05 Sep 2020 11:31:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=v7rsoN6MaCp+62McHT2xPaACCltEz0sVvL0q+af3xvA=;
+ b=k5ekDg/2n2KPHX6zcuDCtrPS5418RvP2WhZtaWC6IDqepiLCm+SNYs1uEo7WvzUGG8
+ esLRgyNlR/jvIR8SvBJ+xFFbfvBhHCvQjQsfHGjZb9RVzruSqaN3Hn9D9X3/ATTKo6jd
+ 8JvgaIPEwHBJQYBDes8vrI5aXODM08MGcZ0Mwz1LuiaeDwcHdQrwnqk9Rr7Urn+eUUDV
+ 86iNdAmzJkM6GXQdjF4MK8RVc4FsLl9xakfLJpJRUmx4TejKa2fPt9mol7aXZ1u7/0JS
+ ORheXiuZecJLd042Vclh4JzlwcRB0x4BChMPvvCwEUp5XmXvGkljG7u1YkYnereC4qFZ
+ V16A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=v7rsoN6MaCp+62McHT2xPaACCltEz0sVvL0q+af3xvA=;
+ b=s4x3mbwBXc6Y/k9y7kzQsK7VUVw65nXKj2SrfgVflSq8vxkTVraYmSY54sUfTqr/+6
+ vrKD8F3IWK8pwckKaxgiY954BjD3bdSqzcQvDGsXMEdYbxFZWreSEwyLlhX6+Dmwf8N5
+ iYiEZ2J785euGMn2+c/etsL7lXqgGKoDF+i0/VGsEX+4F2rcpLKqRmMDFbcRPnAsulEh
+ qWRz9l54dqJcLx85+4+ZWwN38jSuQhLSDe7JfjFLfT3ht/PY0IdUJH+t2O4C9hTMyhHa
+ tD6efabtweZ9St3Crz3FzvF8PwISx9VWQRGTuEIBTPoSL6PS59f0PXIHLLzwq/yl+0yt
+ 8tHg==
+X-Gm-Message-State: AOAM530mzIojPTZKbZI83aMvV8xr0SwlDvH0O5nJctnW/F5zbThDfR0B
+ ZZIUl/sL9P28o07cm6LbgwUbNhrz4ucPi2W3Abc=
+X-Google-Smtp-Source: ABdhPJx61KkZ3R+ATAyYdnW/HRL5V/1BNVF8qDCqyQ47aJ4r+2Swa0B1JJL+q5XBwgqg6IDZ/82PaF+zTXmudqRlDes=
+X-Received: by 2002:adf:f382:: with SMTP id m2mr12748791wro.327.1599330708634; 
+ Sat, 05 Sep 2020 11:31:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1598540794-132666-4-git-send-email-fenghua.yu@intel.com>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>
+References: <20200901164707.2645413-1-robdclark@gmail.com>
+ <20200901164707.2645413-15-robdclark@gmail.com>
+ <20200904160018.GH3715@yoga>
+In-Reply-To: <20200904160018.GH3715@yoga>
+From: Rob Clark <robdclark@gmail.com>
+Date: Sat, 5 Sep 2020 11:32:43 -0700
+Message-ID: <CAF6AEGv-JyxD_+fpAasm8Zgx+1iPq+x-=k+YbUj5+1dfQ3L-bw@mail.gmail.com>
+Subject: Re: [PATCH v16 14/20] iommu/arm-smmu: Prepare for the adreno-smmu
+ implementation
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Rob Clark <robdclark@chromium.org>,
+ open list <linux-kernel@vger.kernel.org>, Jonathan Marek <jonathan@marek.ca>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Stephen Boyd <swboyd@chromium.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>,
+ Hanna Hawa <hannah@marvell.com>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,256 +117,304 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Fri, Sep 4, 2020 at 9:00 AM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Tue 01 Sep 11:46 CDT 2020, Rob Clark wrote:
+>
+> > From: Jordan Crouse <jcrouse@codeaurora.org>
+> >
+> > Do a bit of prep work to add the upcoming adreno-smmu implementation.
+> >
+> > Add an hook to allow the implementation to choose which context banks
+> > to allocate.
+> >
+> > Move some of the common structs to arm-smmu.h in anticipation of them
+> > being used by the implementations and update some of the existing hooks
+> > to pass more information that the implementation will need.
+> >
+> > These modifications will be used by the upcoming Adreno SMMU
+> > implementation to identify the GPU device and properly configure it
+> > for pagetable switching.
+> >
+> > Co-developed-by: Rob Clark <robdclark@chromium.org>
+> > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+>
+> As I built the handoff support on top of this patch I ended up
+> reworking the alloc_context_bank() prototype to something I found a
+> little bit cleaner.
+>
+> So perhaps you would be interested in squashing
+> https://lore.kernel.org/linux-arm-msm/20200904155513.282067-2-bjorn.andersson@linaro.org/
+> into this patch?
 
-I'll add a few edits other than those that Borislav made.
-(nice review job, BP)
+Yeah, I think this looks nicer, thanks
 
+BR,
+-R
 
-On 8/27/20 8:06 AM, Fenghua Yu wrote:
-> From: Ashok Raj <ashok.raj@intel.com>
-> 
-> ENQCMD and Data Streaming Accelerator (DSA) and all of their associated
-> features are a complicated stack with lots of interconnected pieces.
-> This documentation provides a big picture overview for all of the
-> features.
-> 
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
-> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> ---
-> v7:
-> - Change the doc for updating PASID by IPI and context switch (Andy).
-> 
-> v3:
-> - Replace deprecated intel_svm_bind_mm() by iommu_sva_bind_mm() (Baolu)
-> - Fix a couple of typos (Baolu)
-> 
-> v2:
-> - Fix the doc format and add the doc in toctree (Thomas)
-> - Modify the doc for better description (Thomas, Tony, Dave)
-> 
->  Documentation/x86/index.rst |   1 +
->  Documentation/x86/sva.rst   | 254 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 255 insertions(+)
->  create mode 100644 Documentation/x86/sva.rst
-
-
-> diff --git a/Documentation/x86/sva.rst b/Documentation/x86/sva.rst
-> new file mode 100644
-> index 000000000000..6e7ac565e127
-> --- /dev/null
-> +++ b/Documentation/x86/sva.rst
-> @@ -0,0 +1,254 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +===========================================
-> +Shared Virtual Addressing (SVA) with ENQCMD
-> +===========================================
-> +
-> +Background
-> +==========
-> +
-
-...
-
-> +
-> +Shared Hardware Workqueues
-> +==========================
-> +
-> +Unlike Single Root I/O Virtualization (SRIOV), Scalable IOV (SIOV) permits
-> +the use of Shared Work Queues (SWQ) by both applications and Virtual
-> +Machines (VM's). This allows better hardware utilization vs. hard
-> +partitioning resources that could result in under utilization. In order to
-> +allow the hardware to distinguish the context for which work is being
-> +executed in the hardware by SWQ interface, SIOV uses Process Address Space
-> +ID (PASID), which is a 20bit number defined by the PCIe SIG.
-
-                          20-bit
-
-> +
-> +PASID value is encoded in all transactions from the device. This allows the
-> +IOMMU to track I/O on a per-PASID granularity in addition to using the PCIe
-> +Resource Identifier (RID) which is the Bus/Device/Function.
-> +
-> +
-> +ENQCMD
-> +======
-> +
-
-...
-
-> +
-> +Process Address Space Tagging
-> +=============================
-> +
-
-...
-
-> +
-> +PASID Management
-> +================
-> +
-
-...
-
-> +
-> +Relationships
-> +=============
-> +
-> + * Each process has many threads, but only one PASID
-
-                           (end with)             PASID.
-
-> + * Devices have a limited number (~10's to 1000's) of hardware
-> +   workqueues and each portal maps down to a single workqueue.
-> +   The device driver manages allocating hardware workqueues.
-> + * A single mmap() maps a single hardware workqueue as a "portal"
-
-                         (end with)                                  .
-
-> + * For each device with which a process interacts, there must be
-> +   one or more mmap()'d portals.
-> + * Many threads within a process can share a single portal to access
-> +   a single device.
-> + * Multiple processes can separately mmap() the same portal, in
-> +   which case they still share one device hardware workqueue.
-> + * The single process-wide PASID is used by all threads to interact
-> +   with all devices.  There is not, for instance, a PASID for each
-> +   thread or each thread<->device pair.
-> +
-> +FAQ
-> +===
-> +
-> +* What is SVA/SVM?
-> +
-> +Shared Virtual Addressing (SVA) permits I/O hardware and the processor to
-> +work in the same address space. In short, sharing the address space. Some
-> +call it Shared Virtual Memory (SVM), but Linux community wanted to avoid
-
-                                                            waned to avoid confusing
-
-> +it with Posix Shared Memory and Secure Virtual Machines which were terms
-
-           POSIX
-
-> +already in circulation.
-> +
-> +* What is a PASID?
-> +
-> +A Process Address Space ID (PASID) is a PCIe-defined TLP Prefix. A PASID is
-
-ah, BP already commented about using acronyms to define acronyms.  :)
-
-> +a 20 bit number allocated and managed by the OS. PASID is included in all
-
-     20-bit
-
-> +transactions between the platform and the device.
-> +
-> +* How are shared work queues different?
-> +
-> +Traditionally to allow user space applications interact with hardware,
-> +there is a separate instance required per process. For example, consider
-> +doorbells as a mechanism of informing hardware about work to process. Each
-> +doorbell is required to be spaced 4k (or page-size) apart for process
-> +isolation. This requires hardware to provision that space and reserve in
-
-                                                                 reserve it in
-
-> +MMIO. This doesn't scale as the number of threads becomes quite large. The
-> +hardware also manages the queue depth for Shared Work Queues (SWQ), and
-> +consumers don't need to track queue depth. If there is no space to accept
-> +a command, the device will return an error indicating retry. Also
-> +submitting a command to an MMIO address that can't accept ENQCMD will
-> +return retry in response. In the new DMWr PCIe terminology, devices need to
-
-so how does a submitter know whether a return of "retry" means no_space or
-invalid_for_this_device?
-
-> +support DMWr completer capability. In addition it requires all switch ports
-> +to support DMWr routing and must be enabled by the PCIe subsystem, much
-> +like how PCIe Atomics() are managed for instance.
-> +
-> +SWQ allows hardware to provision just a single address in the device. When
-> +used with ENQCMD to submit work, the device can distinguish the process
-> +submitting the work since it will include the PASID assigned to that
-> +process. This decreases the pressure of hardware requiring to support
-> +hardware to scale to a large number of processes.
-> +
-> +* Is this the same as a user space device driver?
-> +
-> +Communicating with the device via the shared work queue is much simpler
-> +than a full blown user space driver. The kernel driver does all the
-> +initialization of the hardware. User space only needs to worry about
-> +submitting work and processing completions.
-> +
-> +* Is this the same as SR-IOV?
-> +
-> +Single Root I/O Virtualization (SR-IOV) focuses on providing independent
-
-In 2 other places, SR-IOV is just SRIOV. Please be consistent.
-
-> +hardware interfaces for virtualizing hardware. Hence its required to be
-> +almost fully functional interface to software supporting the traditional
-> +BAR's, space for interrupts via MSI-x, its own register layout.
-
-   BARs,                           MSI-X,
-
-> +Virtual Functions (VFs) are assisted by the Physical Function (PF)
-> +driver.
-> +
-> +Scalable I/O Virtualization builds on the PASID concept to create device
-> +instances for virtualization. SIOV requires host software to assist in
-> +creating virtual devices, each virtual device is represented by a PASID
-
-                    devices; each
-
-> +along with the BDF of the device.  This allows device hardware to optimize
-
-what is BDF?  ah, bus/device/function.  still, not nice here.
-
-> +device resource creation and can grow dynamically on demand. SR-IOV creation
-> +and management is very static in nature. Consult references below for more
-> +details.
-> +
-> +* Why not just create a virtual function for each app?
-> +
-> +Creating PCIe SRIOV type virtual functions (VF) are expensive. They create
-
-                                                   is
-
-> +duplicated hardware for PCI config space requirements, Interrupts such as
-
-                                            requirements -- interrupts
-
-> +MSIx for instance. Resources such as interrupts have to be hard partitioned
-
-   MSI-X
-
-> +between VF's at creation time, and cannot scale dynamically on demand. The
-
-           VFs
-
-> +VF's are not completely independent from the Physical function (PF). Most
-
-   VFs
-
-> +VF's require some communication and assistance from the PF driver. SIOV
-
-   VFs
-
-> +creates a software defined device. Where all the configuration and control
-> +aspects are mediated via the slow path. The work submission and completion
-> +happen without any mediation.
-
-...
-
-
--- 
-~Randy
-
+> Otherwise, feel free to add my:
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>
+> Regards,
+> Bjorn
+>
+> > ---
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c |  2 +-
+> >  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 69 ++++++----------------
+> >  drivers/iommu/arm/arm-smmu/arm-smmu.h      | 51 +++++++++++++++-
+> >  3 files changed, 68 insertions(+), 54 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > index a9861dcd0884..88f17cc33023 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> > @@ -69,7 +69,7 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
+> >  }
+> >
+> >  static int cavium_init_context(struct arm_smmu_domain *smmu_domain,
+> > -             struct io_pgtable_cfg *pgtbl_cfg)
+> > +             struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+> >  {
+> >       struct cavium_smmu *cs = container_of(smmu_domain->smmu,
+> >                                             struct cavium_smmu, smmu);
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > index 8e884e58f208..68b7b9e6140e 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > @@ -65,41 +65,10 @@ module_param(disable_bypass, bool, S_IRUGO);
+> >  MODULE_PARM_DESC(disable_bypass,
+> >       "Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+> >
+> > -struct arm_smmu_s2cr {
+> > -     struct iommu_group              *group;
+> > -     int                             count;
+> > -     enum arm_smmu_s2cr_type         type;
+> > -     enum arm_smmu_s2cr_privcfg      privcfg;
+> > -     u8                              cbndx;
+> > -};
+> > -
+> >  #define s2cr_init_val (struct arm_smmu_s2cr){                                \
+> >       .type = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS,    \
+> >  }
+> >
+> > -struct arm_smmu_smr {
+> > -     u16                             mask;
+> > -     u16                             id;
+> > -     bool                            valid;
+> > -};
+> > -
+> > -struct arm_smmu_cb {
+> > -     u64                             ttbr[2];
+> > -     u32                             tcr[2];
+> > -     u32                             mair[2];
+> > -     struct arm_smmu_cfg             *cfg;
+> > -};
+> > -
+> > -struct arm_smmu_master_cfg {
+> > -     struct arm_smmu_device          *smmu;
+> > -     s16                             smendx[];
+> > -};
+> > -#define INVALID_SMENDX                       -1
+> > -#define cfg_smendx(cfg, fw, i) \
+> > -     (i >= fw->num_ids ? INVALID_SMENDX : cfg->smendx[i])
+> > -#define for_each_cfg_sme(cfg, fw, i, idx) \
+> > -     for (i = 0; idx = cfg_smendx(cfg, fw, i), i < fw->num_ids; ++i)
+> > -
+> >  static bool using_legacy_binding, using_generic_binding;
+> >
+> >  static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+> > @@ -234,19 +203,6 @@ static int arm_smmu_register_legacy_master(struct device *dev,
+> >  }
+> >  #endif /* CONFIG_ARM_SMMU_LEGACY_DT_BINDINGS */
+> >
+> > -static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
+> > -{
+> > -     int idx;
+> > -
+> > -     do {
+> > -             idx = find_next_zero_bit(map, end, start);
+> > -             if (idx == end)
+> > -                     return -ENOSPC;
+> > -     } while (test_and_set_bit(idx, map));
+> > -
+> > -     return idx;
+> > -}
+> > -
+> >  static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+> >  {
+> >       clear_bit(idx, map);
+> > @@ -578,7 +534,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+> >       }
+> >  }
+> >
+> > -static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+> > +void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+> >  {
+> >       u32 reg;
+> >       bool stage1;
+> > @@ -665,7 +621,8 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+> >  }
+> >
+> >  static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> > -                                     struct arm_smmu_device *smmu)
+> > +                                     struct arm_smmu_device *smmu,
+> > +                                     struct device *dev)
+> >  {
+> >       int irq, start, ret = 0;
+> >       unsigned long ias, oas;
+> > @@ -780,10 +737,20 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >               ret = -EINVAL;
+> >               goto out_unlock;
+> >       }
+> > -     ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> > +
+> > +     smmu_domain->smmu = smmu;
+> > +
+> > +     if (smmu->impl && smmu->impl->alloc_context_bank)
+> > +             ret = smmu->impl->alloc_context_bank(smmu_domain, dev,
+> > +                             start, smmu->num_context_banks);
+> > +     else
+> > +             ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> >                                     smmu->num_context_banks);
+> > -     if (ret < 0)
+> > +
+> > +     if (ret < 0) {
+> > +             smmu_domain->smmu = NULL;
+> >               goto out_unlock;
+> > +     }
+> >
+> >       cfg->cbndx = ret;
+> >       if (smmu->version < ARM_SMMU_V2) {
+> > @@ -798,8 +765,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >       else
+> >               cfg->asid = cfg->cbndx;
+> >
+> > -     smmu_domain->smmu = smmu;
+> > -
+> >       pgtbl_cfg = (struct io_pgtable_cfg) {
+> >               .pgsize_bitmap  = smmu->pgsize_bitmap,
+> >               .ias            = ias,
+> > @@ -810,7 +775,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >       };
+> >
+> >       if (smmu->impl && smmu->impl->init_context) {
+> > -             ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg);
+> > +             ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg, dev);
+> >               if (ret)
+> >                       goto out_clear_smmu;
+> >       }
+> > @@ -1194,7 +1159,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >               return ret;
+> >
+> >       /* Ensure that the domain is finalised */
+> > -     ret = arm_smmu_init_domain_context(domain, smmu);
+> > +     ret = arm_smmu_init_domain_context(domain, smmu, dev);
+> >       if (ret < 0)
+> >               goto rpm_put;
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > index f3e456893f28..59ff3fc5c6c8 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > @@ -256,6 +256,21 @@ enum arm_smmu_implementation {
+> >       QCOM_SMMUV2,
+> >  };
+> >
+> > +struct arm_smmu_s2cr {
+> > +     struct iommu_group              *group;
+> > +     int                             count;
+> > +     enum arm_smmu_s2cr_type         type;
+> > +     enum arm_smmu_s2cr_privcfg      privcfg;
+> > +     u8                              cbndx;
+> > +};
+> > +
+> > +struct arm_smmu_smr {
+> > +     u16                             mask;
+> > +     u16                             id;
+> > +     bool                            valid;
+> > +     bool                            pinned;
+> > +};
+> > +
+> >  struct arm_smmu_device {
+> >       struct device                   *dev;
+> >
+> > @@ -331,6 +346,13 @@ struct arm_smmu_cfg {
+> >  };
+> >  #define ARM_SMMU_INVALID_IRPTNDX     0xff
+> >
+> > +struct arm_smmu_cb {
+> > +     u64                             ttbr[2];
+> > +     u32                             tcr[2];
+> > +     u32                             mair[2];
+> > +     struct arm_smmu_cfg             *cfg;
+> > +};
+> > +
+> >  enum arm_smmu_domain_stage {
+> >       ARM_SMMU_DOMAIN_S1 = 0,
+> >       ARM_SMMU_DOMAIN_S2,
+> > @@ -350,6 +372,11 @@ struct arm_smmu_domain {
+> >       struct iommu_domain             domain;
+> >  };
+> >
+> > +struct arm_smmu_master_cfg {
+> > +     struct arm_smmu_device          *smmu;
+> > +     s16                             smendx[];
+> > +};
+> > +
+> >  static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
+> >  {
+> >       u32 tcr = FIELD_PREP(ARM_SMMU_TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
+> > @@ -400,14 +427,35 @@ struct arm_smmu_impl {
+> >       int (*cfg_probe)(struct arm_smmu_device *smmu);
+> >       int (*reset)(struct arm_smmu_device *smmu);
+> >       int (*init_context)(struct arm_smmu_domain *smmu_domain,
+> > -                     struct io_pgtable_cfg *cfg);
+> > +                     struct io_pgtable_cfg *cfg, struct device *dev);
+> >       void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+> >                        int status);
+> >       int (*def_domain_type)(struct device *dev);
+> >       irqreturn_t (*global_fault)(int irq, void *dev);
+> >       irqreturn_t (*context_fault)(int irq, void *dev);
+> > +     int (*alloc_context_bank)(struct arm_smmu_domain *smmu_domain,
+> > +                     struct device *dev, int start, int max);
+> >  };
+> >
+> > +#define INVALID_SMENDX                       -1
+> > +#define cfg_smendx(cfg, fw, i) \
+> > +     (i >= fw->num_ids ? INVALID_SMENDX : cfg->smendx[i])
+> > +#define for_each_cfg_sme(cfg, fw, i, idx) \
+> > +     for (i = 0; idx = cfg_smendx(cfg, fw, i), i < fw->num_ids; ++i)
+> > +
+> > +static inline int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
+> > +{
+> > +     int idx;
+> > +
+> > +     do {
+> > +             idx = find_next_zero_bit(map, end, start);
+> > +             if (idx == end)
+> > +                     return -ENOSPC;
+> > +     } while (test_and_set_bit(idx, map));
+> > +
+> > +     return idx;
+> > +}
+> > +
+> >  static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
+> >  {
+> >       return smmu->base + (n << smmu->pgshift);
+> > @@ -472,6 +520,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
+> >  struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
+> >  struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
+> >
+> > +void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx);
+> >  int arm_mmu500_reset(struct arm_smmu_device *smmu);
+> >
+> >  #endif /* _ARM_SMMU_H */
+> > --
+> > 2.26.2
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
