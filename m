@@ -6,81 +6,91 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748CDC43461
-	for <iommu@archiver.kernel.org>; Mon,  7 Sep 2020 19:05:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C972C433E2
+	for <iommu@archiver.kernel.org>; Mon,  7 Sep 2020 20:19:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 056002145D
-	for <iommu@archiver.kernel.org>; Mon,  7 Sep 2020 19:05:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6552321556
+	for <iommu@archiver.kernel.org>; Mon,  7 Sep 2020 20:19:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=connolly.tech header.i=@connolly.tech header.b="S6lWI4z5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 056002145D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=connolly.tech
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="GgswrjSO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6552321556
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 867D286223;
-	Mon,  7 Sep 2020 19:05:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 215AF86FE2;
+	Mon,  7 Sep 2020 20:19:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5Sf56oATTq9W; Mon,  7 Sep 2020 20:19:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id BD98A86FDE;
+	Mon,  7 Sep 2020 20:19:04 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AFB08C0052;
+	Mon,  7 Sep 2020 20:19:04 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B83AC0051
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 20:19:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2A49085168
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 20:19:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id o8ipamnY71sK; Mon,  7 Sep 2020 19:05:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 54F1C8674E;
-	Mon,  7 Sep 2020 19:05:16 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B5D3C0859;
-	Mon,  7 Sep 2020 19:05:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DAAEBC0051
- for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 19:02:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CDF3E2000D
- for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 19:02:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ezggR4ZTy-zs for <iommu@lists.linux-foundation.org>;
- Mon,  7 Sep 2020 19:02:48 +0000 (UTC)
+ with ESMTP id eJiAnNVsSqph for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Sep 2020 20:19:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch
- [185.70.40.134])
- by silver.osuosl.org (Postfix) with ESMTPS id 0C43B22654
- for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 19:02:31 +0000 (UTC)
-Date: Mon, 07 Sep 2020 19:02:24 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
- s=protonmail; t=1599505349;
- bh=VU8upJbsXlgcVevXq9bJo+njrd1Ivb0QGIDsJacy9fk=;
- h=Date:To:From:Cc:Reply-To:Subject:From;
- b=S6lWI4z5rnbnO5rtJNxtHiUAw1N9MAxzKxS62lde4X96nwNKMnkixLJhDo/YVKLKN
- +inrUYy0Us/T98bwXhE5l56c9x2RR3M5FFF4xog5v5XNGJcDjG9jS72nLiw+z9v9ot
- EizvaiiPRnmFv00BpQvQF/zm3KQI4uB+Tla2m0hM=
-To: Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org,
- iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-From: Caleb Connolly <caleb@connolly.tech>
-Subject: Re: [PATCH v16 00/20] iommu/arm-smmu + drm/msm: per-process GPU
- pgtables
-Message-ID: <1eb7f10c-1504-158c-d25c-18a73b9a1607@connolly.tech>
+Received: from mail-io1-f68.google.com (mail-io1-f68.google.com
+ [209.85.166.68])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E2C1F86061
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Sep 2020 20:19:01 +0000 (UTC)
+Received: by mail-io1-f68.google.com with SMTP id z25so14849088iol.10
+ for <iommu@lists.linux-foundation.org>; Mon, 07 Sep 2020 13:19:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=tcd-ie.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=V6SpnhZsf85q4UgRCG3Vo1DStgFyYS4tfVeyEumkN/w=;
+ b=GgswrjSOmPdUZ/BwDCdcWalN4y5WoQPbMec/SdCWEVJcYKNu64D9s8oHItvqe5USmk
+ 9DzBKzjfZOYqkrFvd6uDgVBqFvLBcAp47ZAw2Gj9EBRXq4IYQ8JUK1GLjOo/E7oSVx/O
+ VKNWeMREdjMFPxlkxzHpkQGznhdwAw2yq006+gGaYPeW7M8JmCFrH1Ja3sTOnkVYMYMl
+ oJJ5Hxuz82AiRLoFxOJuRTyoERq0vzrpvKHe4mhB/oAwd4qJyrGo/Ie4XZrMjCFsb+Gz
+ +YX46uxsLhKyjMfnYvlZ7dlL4eBmh2LnQCxNxzzQSAZANFCzqDmoNh71XxL/lx44mEYD
+ XfnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=V6SpnhZsf85q4UgRCG3Vo1DStgFyYS4tfVeyEumkN/w=;
+ b=BIyIbCQf1z0ohKmO0Q5ZzmKNXtgiK+VIhdds0JXR+VikNBpDfDcg7Us5wfyRqXe0xI
+ fPhEWh7EvEQwE1yA7+LY/uva3NBxKTj+vcg3vY2zdl1OS4c2hULlk2Qc5rN5BYY8Pp50
+ YPckgMfKOgntlpGad4Q79AV7u18k8iDDrYeQJgBegjTjdmlVpUMT0RmMlCD3yTmwmh6z
+ 6t0BhOcyszW31LkUt6xAxQusoCJIsxwWOnV5QEyCplVWkMWbpwhEWTuxdz7csiAfew5R
+ ktjW0cG6Pb/gIEJOb/9CVw7fP5HHlRdTw3ETx2xRyg50tNs5JdkpBi8w73YuvOoV5EAR
+ hISQ==
+X-Gm-Message-State: AOAM530wFAwGUP9ba/E07bbZ9+jI6UBKwXzqSePIqlbuf9fjdda3oPN6
+ 9omjkdeEmt0jnUFv3UicbBFMp9QlXVa6QiJCn5q+yw==
+X-Google-Smtp-Source: ABdhPJzwhdIL/3axB52LwFoeoHQzxXf0VSwxulEuEKbcmU9BKXPq4QXupZG6DlbYmrUcNskmfspcKM2Ls6KufI/R4cc=
+X-Received: by 2002:a02:4b07:: with SMTP id q7mr6204438jaa.84.1599509940899;
+ Mon, 07 Sep 2020 13:19:00 -0700 (PDT)
 MIME-Version: 1.0
-X-Mailman-Approved-At: Mon, 07 Sep 2020 19:05:14 +0000
-Cc: Wambui Karuga <wambui.karugax@gmail.com>, Hanna Hawa <hannah@marvell.com>,
- Akhil P Oommen <akhilpo@codeaurora.org>, Eric Anholt <eric@anholt.net>,
- Thierry Reding <thierry.reding@gmail.com>,
- Vivek Gautam <vivek.gautam@codeaurora.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>,
- Emil Velikov <emil.velikov@collabora.com>, Rob Clark <robdclark@chromium.org>,
- Jonathan Marek <jonathan@marek.ca>, Ben Dooks <ben.dooks@codethink.co.uk>,
- Sibi Sankar <sibis@codeaurora.org>, Brian Masney <masneyb@onstation.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>,
- Sharat Masetty <smasetty@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
- John Stultz <john.stultz@linaro.org>,
- "open list:DRM DRIVER FOR MSM ADRENO GPU" <freedreno@lists.freedesktop.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- open list <linux-kernel@vger.kernel.org>, Sean Paul <seanpaul@chromium.org>,
- Shawn Guo <shawn.guo@linaro.org>
+References: <20200903201839.7327-1-murphyt7@tcd.ie>
+ <20200903201839.7327-6-murphyt7@tcd.ie>
+ <20200907070035.GA25114@infradead.org>
+In-Reply-To: <20200907070035.GA25114@infradead.org>
+From: Tom Murphy <murphyt7@tcd.ie>
+Date: Mon, 7 Sep 2020 21:18:50 +0100
+Message-ID: <CALQxJute8_y=JsW4UV1awSccOjxT_1OyPdymq=R_PurVQzENeQ@mail.gmail.com>
+Subject: Re: [PATCH V2 5/5] DO NOT MERGE: iommu: disable list appending in
+ dma-iommu
+To: Christoph Hellwig <hch@infradead.org>
+Cc: intel-gfx@lists.freedesktop.org,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Jani Nikula <jani.nikula@linux.intel.com>, iommu@lists.linux-foundation.org,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,157 +103,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Caleb Connolly <caleb@connolly.tech>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-09-01 17:46, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Mon, 7 Sep 2020 at 08:00, Christoph Hellwig <hch@infradead.org> wrote:
 >
-> NOTE: I have re-ordered the series, and propose that we could merge this
->        series in the following order:
+> On Thu, Sep 03, 2020 at 09:18:37PM +0100, Tom Murphy wrote:
+> > Disable combining sg segments in the dma-iommu api.
+> > Combining the sg segments exposes a bug in the intel i915 driver which
+> > causes visual artifacts and the screen to freeze. This is most likely
+> > because of how the i915 handles the returned list. It probably doesn't
+> > respect the returned value specifying the number of elements in the list
+> > and instead depends on the previous behaviour of the intel iommu driver
+> > which would return the same number of elements in the output list as in
+> > the input list.
 >
->         1) 01-11 - merge via drm / msm-next
->         2) 12-15 - merge via iommu, no dependency on msm-next pull req
->         3) 16-18 - patch 16 has a dependency on 02 and 04, so it would
->                    need to come post -rc1 or on following cycle, but I
->                    think it would be unlikely to conflict with other
->                    arm-smmu patches (other than Bjorn's smmu handover
->                    series?)
->         4) 19-20 - dt bits should be safe to land in any order without
->                    breaking anything
->
-> ----
->
-> This series adds an Adreno SMMU implementation to arm-smmu to allow GPU hardware
-> pagetable switching.
->
-> The Adreno GPU has built in capabilities to switch the TTBR0 pagetable during
-> runtime to allow each individual instance or application to have its own
-> pagetable.  In order to take advantage of the HW capabilities there are certain
-> requirements needed of the SMMU hardware.
->
-> This series adds support for an Adreno specific arm-smmu implementation. The new
-> implementation 1) ensures that the GPU domain is always assigned context bank 0,
-> 2) enables split pagetable support (TTBR1) so that the instance specific
-> pagetable can be swapped while the global memory remains in place and 3) shares
-> the current pagetable configuration with the GPU driver to allow it to create
-> its own io-pgtable instances.
->
-> The series then adds the drm/msm code to enable these features. For targets that
-> support it allocate new pagetables using the io-pgtable configuration shared by
-> the arm-smmu driver and swap them in during runtime.
->
-> This version of the series merges the previous patchset(s) [1] and [2]
-> with the following improvements:
->
-> v16: (Respin by Rob)
->    - Fix indentation
->    - Re-order series to split drm and iommu parts
-> v15: (Respin by Rob)
->    - Adjust dt bindings to keep SoC specific compatible (Doug)
->    - Add dts workaround for cheza fw limitation
->    - Add missing 'select IOMMU_IO_PGTABLE' (Guenter)
-> v14: (Respin by Rob)
->    - Minor update to 16/20 (only force ASID to zero in one place)
->    - Addition of sc7180 dtsi patch.
-> v13: (Respin by Rob)
->    - Switch to a private interface between adreno-smmu and GPU driver,
->      dropping the custom domain attr (Will Deacon)
->    - Rework the SCTLR.HUPCF patch to add new fields in smmu_domain->cfg
->      rather than adding new impl hook (Will Deacon)
->    - Drop for_each_cfg_sme() in favor of plain for() loop (Will Deacon)
->    - Fix context refcnt'ing issue which was causing problems with GPU
->      crash recover stress testing.
->    - Spiff up $debugfs/gem to show process information associated with
->      VMAs
-> v12:
->    - Nitpick cleanups in gpu/drm/msm/msm_iommu.c (Rob Clark)
->    - Reorg in gpu/drm/msm/msm_gpu.c (Rob Clark)
->    - Use the default asid for the context bank so that iommu_tlb_flush_all works
->    - Flush the UCHE after a page switch
->    - Add the SCTLR.HUPCF patch at the end of the series
-> v11:
->    - Add implementation specific get_attr/set_attr functions (per Rob Clark)
->    - Fix context bank allocation (per Bjorn Andersson)
-> v10:
->    - arm-smmu: add implementation hook to allocate context banks
->    - arm-smmu: Match the GPU domain by stream ID instead of compatible string
->    - arm-smmu: Make DOMAIN_ATTR_PGTABLE_CFG bi-directional. The leaf driver
->      queries the configuration to create a pagetable and then sends the newly
->      created configuration back to the smmu-driver to enable TTBR0
->    - drm/msm: Add context reference counting for submissions
->    - drm/msm: Use dummy functions to skip TLB operations on per-instance
->      pagetables
->
-> [1] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045653.html
-> [2] https://lists.linuxfoundation.org/pipermail/iommu/2020-June/045659.html
->
-> Jordan Crouse (12):
->    drm/msm: Add a context pointer to the submitqueue
->    drm/msm: Drop context arg to gpu->submit()
->    drm/msm: Set the global virtual address range from the IOMMU domain
->    drm/msm: Add support to create a local pagetable
->    drm/msm: Add support for private address space instances
->    drm/msm/a6xx: Add support for per-instance pagetables
->    iommu/arm-smmu: Pass io-pgtable config to implementation specific
->      function
->    iommu/arm-smmu: Add support for split pagetables
->    iommu/arm-smmu: Prepare for the adreno-smmu implementation
->    iommu/arm-smmu-qcom: Add implementation for the adreno GPU SMMU
->    dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
->    arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
->
-> Rob Clark (8):
->    drm/msm: Remove dangling submitqueue references
->    drm/msm: Add private interface for adreno-smmu
->    drm/msm/gpu: Add dev_to_gpu() helper
->    drm/msm: Set adreno_smmu as gpu's drvdata
->    drm/msm: Show process names in gem_describe
->    iommu/arm-smmu: Constify some helpers
->    iommu/arm-smmu: Add a way for implementations to influence SCTLR
->    arm: dts: qcom: sc7180: Set the compatible string for the GPU SMMU
->
->   .../devicetree/bindings/iommu/arm,smmu.yaml   |   9 +-
->   arch/arm64/boot/dts/qcom/sc7180.dtsi          |   2 +-
->   arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |   9 +
->   arch/arm64/boot/dts/qcom/sdm845.dtsi          |   2 +-
->   drivers/gpu/drm/msm/Kconfig                   |   1 +
->   drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |  12 +-
->   drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |  68 +++++-
->   drivers/gpu/drm/msm/adreno/a6xx_gpu.h         |   1 +
->   drivers/gpu/drm/msm/adreno/adreno_device.c    |  12 +-
->   drivers/gpu/drm/msm/adreno/adreno_gpu.c       |  18 +-
->   drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   3 +-
->   drivers/gpu/drm/msm/msm_drv.c                 |  16 +-
->   drivers/gpu/drm/msm/msm_drv.h                 |  25 +++
->   drivers/gpu/drm/msm/msm_gem.c                 |  25 ++-
->   drivers/gpu/drm/msm/msm_gem.h                 |   6 +
->   drivers/gpu/drm/msm/msm_gem_submit.c          |   8 +-
->   drivers/gpu/drm/msm/msm_gem_vma.c             |  10 +
->   drivers/gpu/drm/msm/msm_gpu.c                 |  41 +++-
->   drivers/gpu/drm/msm/msm_gpu.h                 |  21 +-
->   drivers/gpu/drm/msm/msm_gpummu.c              |   2 +-
->   drivers/gpu/drm/msm/msm_iommu.c               | 206 +++++++++++++++++-
->   drivers/gpu/drm/msm/msm_mmu.h                 |  16 +-
->   drivers/gpu/drm/msm/msm_ringbuffer.h          |   1 +
->   drivers/gpu/drm/msm/msm_submitqueue.c         |   7 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   6 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 155 ++++++++++++-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c         | 100 ++++-----
->   drivers/iommu/arm/arm-smmu/arm-smmu.h         |  87 +++++++-
->   include/linux/adreno-smmu-priv.h              |  36 +++
->   29 files changed, 771 insertions(+), 134 deletions(-)
->   create mode 100644 include/linux/adreno-smmu-priv.h
->
-Tested in combination with 
-https://lore.kernel.org/linux-arm-msm/20200904155513.282067-1-bjorn.andersson@linaro.org/
+> So what is the state of addressing this properly in i915?  IF we can't
 
-Fixes booting on the OnePlus 6 (SDM845) with the display enabled.
+I think this is the latest on addressing this issue:
+https://patchwork.kernel.org/cover/11306999/
 
+tl;dr: some people seem to be looking at it but I'm not sure if it's
+being actively worked on
 
+> get it done ASAP I wonder if we need a runtime quirk to disable
+> merging instead of blocking this conversion..
+
+Yeah we talked about passing an attr to map_sg to disable merging at
+the following microconfernce:
+https://linuxplumbersconf.org/event/7/contributions/846/
+As far as I can remember everyone seemed happy with that solution. I
+won't be working on this though as I don't have any more time to
+dedicate to this. It seems Lu Baolu will take over this.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
