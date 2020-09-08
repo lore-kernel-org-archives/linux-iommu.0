@@ -4,79 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A07CC43461
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 20:47:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB52BC43461
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:17:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF99F20936
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 20:47:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF99F20936
+	by mail.kernel.org (Postfix) with ESMTPS id 74ADC20936
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:17:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74ADC20936
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 83CC7873A5;
-	Tue,  8 Sep 2020 20:47:40 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pm9Cv2HrJlLe; Tue,  8 Sep 2020 20:47:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 90097871EF;
-	Tue,  8 Sep 2020 20:47:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79C2FC0052;
-	Tue,  8 Sep 2020 20:47:39 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6EC60C0051
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 20:47:37 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 57EC786D61
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 20:47:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 28F9186D80;
+	Tue,  8 Sep 2020 22:17:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tVb4A6OBdtiX; Tue,  8 Sep 2020 22:17:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BE35386D9D;
+	Tue,  8 Sep 2020 22:17:14 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A804FC0052;
+	Tue,  8 Sep 2020 22:17:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD94EC0051
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:17:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id D92CF86852
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:17:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h5jPFy-E27rc for <iommu@lists.linux-foundation.org>;
- Tue,  8 Sep 2020 20:47:36 +0000 (UTC)
+ with ESMTP id QogcUTw2WIfZ for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Sep 2020 22:17:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1E06B86D55
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 20:47:36 +0000 (UTC)
-IronPort-SDR: Oj1WBa41cUw2tDAfmQtQQhtE2z5G/zlt7QM56mVQBT3vApEZ5RpLXlkSD3S/Czwl4f0ZzrAUHy
- tlFo61+Sstzw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9738"; a="219779147"
-X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="219779147"
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 66076853C5
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:17:12 +0000 (UTC)
+IronPort-SDR: 9ZLpOS/ZIXA/ltTV+6rh0YFqu5ss+Y3M2YqtfDZD8llo+CPlV5KnHtnJMOEm/QZb24XXmoeAwn
+ IOLiEv6mA5gw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9738"; a="138278313"
+X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="138278313"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Sep 2020 13:47:35 -0700
-IronPort-SDR: gWP5rAPv3dKAQl4tHCgb5F5s3a4eiksfOFaFKQPjFVpdude3PK71uuAtCMFo5XiAZNw42nnrqx
- /FxwfL7Ltbdg==
-X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="480190202"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Sep 2020 15:17:11 -0700
+IronPort-SDR: wdfv1J+J+QaysLnpOhCWO81wvxM1SV7iRWPHywKC9WXHRhhsGc5OBo9wVFKCccOp7ltS7qufX/
+ dHiIu5NF2L3w==
+X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="304259025"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Sep 2020 13:47:35 -0700
-Date: Tue, 8 Sep 2020 13:49:33 -0700
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Sep 2020 15:17:11 -0700
+Date: Tue, 8 Sep 2020 15:19:08 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 4/9] iommu/ioasid: Add reference couting functions
-Message-ID: <20200908134933.4ff1c7f1@jacob-builder>
-In-Reply-To: <fed6c93b-8538-662c-2273-19ae2f2f7464@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v2 5/9] iommu/ioasid: Introduce ioasid_set private ID
+Message-ID: <20200908151908.37df01f1@jacob-builder>
+In-Reply-To: <20200825102209.GC3252704@myrica>
 References: <1598070918-21321-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1598070918-21321-5-git-send-email-jacob.jun.pan@linux.intel.com>
- <fed6c93b-8538-662c-2273-19ae2f2f7464@redhat.com>
+ <1598070918-21321-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20200825102209.GC3252704@myrica>
 Organization: OTC
 X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: "Tian,
- Kevin" <kevin.tian@intel.com>, Jacob Pan <jacob.pan.linux@gmail.com>,
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Jacob Pan <jacob.pan.linux@gmail.com>,
  Raj Ashok <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
  LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Wu Hao <hao.wu@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, Wu Hao <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,209 +93,177 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 1 Sep 2020 14:13:00 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+On Tue, 25 Aug 2020 12:22:09 +0200
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-> Hi Jacob,
-> 
-> On 8/22/20 6:35 AM, Jacob Pan wrote:
-> > There can be multiple users of an IOASID, each user could have
-> > hardware contexts associated with the IOASID. In order to align
-> > lifecycles, reference counting is introduced in this patch. It is
-> > expected that when an IOASID is being freed, each user will drop a
-> > reference only after its context is cleared.
+> On Fri, Aug 21, 2020 at 09:35:14PM -0700, Jacob Pan wrote:
+> > When an IOASID set is used for guest SVA, each VM will acquire its
+> > ioasid_set for IOASID allocations. IOASIDs within the VM must have a
+> > host/physical IOASID backing, mapping between guest and host IOASIDs can
+> > be non-identical. IOASID set private ID (SPID) is introduced in this
+> > patch to be used as guest IOASID. However, the concept of ioasid_set
+> > specific namespace is generic, thus named SPID.
+> > 
+> > As SPID namespace is within the IOASID set, the IOASID core can provide
+> > lookup services at both directions. SPIDs may not be allocated when its
+> > IOASID is allocated, the mapping between SPID and IOASID is usually
+> > established when a guest page table is bound to a host PASID.
 > > 
 > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > > ---
-> >  drivers/iommu/ioasid.c | 113
-> > +++++++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/ioasid.h |   4 ++ 2 files changed, 117 insertions(+)
+> >  drivers/iommu/ioasid.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  include/linux/ioasid.h | 12 +++++++++++
+> >  2 files changed, 66 insertions(+)
 > > 
 > > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> > index f73b3dbfc37a..5f31d63c75b1 100644
+> > index 5f31d63c75b1..c0aef38a4fde 100644
 > > --- a/drivers/iommu/ioasid.c
 > > +++ b/drivers/iommu/ioasid.c
-> > @@ -717,6 +717,119 @@ int ioasid_set_for_each_ioasid(struct
-> > ioasid_set *set, EXPORT_SYMBOL_GPL(ioasid_set_for_each_ioasid);
+> > @@ -21,6 +21,7 @@ enum ioasid_state {
+> >   * struct ioasid_data - Meta data about ioasid
+> >   *
+> >   * @id:		Unique ID
+> > + * @spid:	Private ID unique within a set
+> >   * @users	Number of active users
+> >   * @state	Track state of the IOASID
+> >   * @set		Meta data of the set this IOASID belongs to
+> > @@ -29,6 +30,7 @@ enum ioasid_state {
+> >   */
+> >  struct ioasid_data {
+> >  	ioasid_t id;
+> > +	ioasid_t spid;
+> >  	struct ioasid_set *set;
+> >  	refcount_t users;
+> >  	enum ioasid_state state;
+> > @@ -326,6 +328,58 @@ int ioasid_attach_data(ioasid_t ioasid, void *data)
+> >  EXPORT_SYMBOL_GPL(ioasid_attach_data);
 > >  
 > >  /**
-> > + * IOASID refcounting rules
-> > + * - ioasid_alloc() set initial refcount to 1
+> > + * ioasid_attach_spid - Attach ioasid_set private ID to an IOASID
 > > + *
-> > + * - ioasid_free() decrement and test refcount.
-> > + *     If refcount is 0, ioasid will be freed. Deleted from the
-> > system-wide
-> > + *     xarray as well as per set xarray. The IOASID will be
-> > returned to the
-> > + *     pool and available for new allocations.
+> > + * @ioasid: the ID to attach
+> > + * @spid:   the ioasid_set private ID of @ioasid
 > > + *
-> > + *     If recount is non-zero, mark IOASID as
-> > IOASID_STATE_FREE_PENDING.  
-> s/recount/refcount
-> > + *     No new reference can be added. The IOASID is not returned
-> > to the pool  
-> can be taken
-will do. and move to doc as Jean suggested.
+> > + * For IOASID that is already allocated, private ID within the set can be
+> > + * attached via this API. Future lookup can be done via ioasid_find.  
+> 
+> via ioasid_find_by_spid()?
+> 
+yes, will update.
 
-> > + *     for reuse.
-> > + *     After free, ioasid_get() will return error but
-> > ioasid_find() and other
-> > + *     non refcount adding APIs will continue to work until the
-> > last reference
-> > + *     is dropped
-> > + *
-> > + * - ioasid_get() get a reference on an active IOASID
-> > + *
-> > + * - ioasid_put() decrement and test refcount of the IOASID.
-> > + *     If refcount is 0, ioasid will be freed. Deleted from the
-> > system-wide
-> > + *     xarray as well as per set xarray. The IOASID will be
-> > returned to the
-> > + *     pool and available for new allocations.
-> > + *     Do nothing if refcount is non-zero.  
-> I would drop this last sentence
-will do.
-
-> > + *
-> > + * - ioasid_find() does not take reference, caller must hold
-> > reference  
-> So can you use ioasid_find() once the state is
-> IOASID_STATE_FREE_PENDING? According to Jean's reply, the "IOASID may
-> be freed once ioasid_find() returns but not the returned data." So
-> holding a ref is not mandated right?
-right, you can still find the private data in FREE_PENDING state. I
-will drop the comment.
-
-> > + *
-> > + * ioasid_free() can be called multiple times without error until
-> > all refs are
-> > + * dropped.
 > > + */
-> > +
-> > +int ioasid_get_locked(struct ioasid_set *set, ioasid_t ioasid)
+> > +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
 > > +{
-> > +	struct ioasid_data *data;
-> > +
-> > +	data = xa_load(&active_allocator->xa, ioasid);
-> > +	if (!data) {
-> > +		pr_err("Trying to get unknown IOASID %u\n",
-> > ioasid);
-> > +		return -EINVAL;
-> > +	}
-> > +	if (data->state == IOASID_STATE_FREE_PENDING) {
-> > +		pr_err("Trying to get IOASID being freed%u\n",
-> > ioasid);
-> > +		return -EBUSY;
-> > +	}
-> > +
-> > +	if (set && data->set != set) {
-> > +		pr_err("Trying to get IOASID not in set%u\n",
-> > ioasid);  
-> maybe try to normalize your traces using always the same formatting
-> for ioasids and ioasid sets. Also we can understand %u is the id of
-> the set.
-it is confusing, this is not the set ID. I will change to:
-pr_err("Trying to get IOASID %u outside the set\n", ioasid);
-
-> > +		/* data found but does not belong to the set */  
-> you can get rid of this comment
-> > +		return -EACCES;
-> > +	}
-> > +	refcount_inc(&data->users);
-> > +
-> > +	return 0;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_get_locked);
-> > +
-> > +/**
-> > + * ioasid_get - Obtain a reference of an ioasid
-> > + * @set
-> > + * @ioasid
-> > + *
-> > + * Check set ownership if @set is non-null.
-> > + */
-> > +int ioasid_get(struct ioasid_set *set, ioasid_t ioasid)
-> > +{
+> > +	struct ioasid_data *ioasid_data;
 > > +	int ret = 0;
 > > +
 > > +	spin_lock(&ioasid_allocator_lock);
-> > +	ret = ioasid_get_locked(set, ioasid);
-> > +	spin_unlock(&ioasid_allocator_lock);
+> > +	ioasid_data = xa_load(&active_allocator->xa, ioasid);
 > > +
+> > +	if (!ioasid_data) {
+> > +		pr_err("No IOASID entry %d to attach SPID %d\n",
+> > +			ioasid, spid);
+> > +		ret = -ENOENT;
+> > +		goto done_unlock;
+> > +	}
+> > +	ioasid_data->spid = spid;
+> > +
+> > +done_unlock:
+> > +	spin_unlock(&ioasid_allocator_lock);
 > > +	return ret;
 > > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_get);
+> > +EXPORT_SYMBOL_GPL(ioasid_attach_spid);
 > > +
-> > +void ioasid_put_locked(struct ioasid_set *set, ioasid_t ioasid)
-> > +{
-> > +	struct ioasid_data *data;
-> > +
-> > +	data = xa_load(&active_allocator->xa, ioasid);
-> > +	if (!data) {
-> > +		pr_err("Trying to put unknown IOASID %u\n",
-> > ioasid);
-> > +		return;
-> > +	}
-> > +
-> > +	if (set && data->set != set) {
-> > +		pr_err("Trying to drop IOASID not in the set
-> > %u\n", ioasid);  
-> was set%u above
-yes, same change below?
-pr_err("Trying to drop IOASID %u outside the set\n", ioasid);
+> > +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t spid)  
+> 
+> Maybe add a bit of documentation as this is public-facing.
+> 
+Good point, I will add
+/**
+ * ioasid_find_by_spid - Find the system-wide IOASID by a set private ID and
+ * its set.
+ *
+ * @set:	the ioasid_set to search within
+ * @spid:	the set private ID
+ *
+ * Given a set private ID and its IOASID set, find the system-wide IOASID. Take
+ * a reference upon finding the matching IOASID. Return INVALID_IOASID if the
+ * IOASID is not found in the set or the set is not valid.
+ */
 
-> > +		return;
-> > +	}
-> > +
-> > +	if (!refcount_dec_and_test(&data->users)) {
-> > +		pr_debug("%s: IOASID %d has %d remainning users\n",
-> > +			__func__, ioasid,
-> > refcount_read(&data->users));
-> > +		return;
-> > +	}
-> > +	ioasid_do_free(data);
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_put_locked);
-> > +
-> > +/**
-> > + * ioasid_put - Drop a reference of an ioasid
-> > + * @set
-> > + * @ioasid
-> > + *
-> > + * Check set ownership if @set is non-null.
-> > + */
-> > +void ioasid_put(struct ioasid_set *set, ioasid_t ioasid)
 > > +{
-> > +	spin_lock(&ioasid_allocator_lock);
-> > +	ioasid_put_locked(set, ioasid);
-> > +	spin_unlock(&ioasid_allocator_lock);
+> > +	struct ioasid_data *entry;
+> > +	unsigned long index;
+> > +
+> > +	if (!xa_load(&ioasid_sets, set->sid)) {
+> > +		pr_warn("Invalid set\n");
+> > +		return INVALID_IOASID;
+> > +	}
+> > +
+> > +	xa_for_each(&set->xa, index, entry) {
+> > +		if (spid == entry->spid) {
+> > +			pr_debug("Found ioasid %lu by spid %u\n", index, spid);
+> > +			refcount_inc(&entry->users);  
+> 
+> Nothing prevents ioasid_free() from concurrently dropping the refcount to
+> zero and calling ioasid_do_free(). The caller will later call ioasid_put()
+> on a stale/reallocated index.
+> 
+right, need to add 	spin_lock(&ioasid_allocator_lock);
+
+> > +			return index;
+> > +		}
+> > +	}
+> > +	return INVALID_IOASID;
 > > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_put);
+> > +EXPORT_SYMBOL_GPL(ioasid_find_by_spid);
 > > +
 > > +/**
-> >   * ioasid_find - Find IOASID data
+> >   * ioasid_alloc - Allocate an IOASID
 > >   * @set: the IOASID set
-> >   * @ioasid: the IOASID to find
+> >   * @min: the minimum ID (inclusive)
 > > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> > index 412d025d440e..310abe4187a3 100644
+> > index 310abe4187a3..d4b3e83672f6 100644
 > > --- a/include/linux/ioasid.h
 > > +++ b/include/linux/ioasid.h
-> > @@ -76,6 +76,10 @@ int ioasid_attach_data(ioasid_t ioasid, void
-> > *data); int ioasid_register_allocator(struct ioasid_allocator_ops
-> > *allocator); void ioasid_unregister_allocator(struct
-> > ioasid_allocator_ops *allocator); void ioasid_is_in_set(struct
-> > ioasid_set *set, ioasid_t ioasid); +int ioasid_get(struct
-> > ioasid_set *set, ioasid_t ioasid); +int ioasid_get_locked(struct
-> > ioasid_set *set, ioasid_t ioasid); +void ioasid_put(struct
-> > ioasid_set *set, ioasid_t ioasid); +void ioasid_put_locked(struct
-> > ioasid_set *set, ioasid_t ioasid); int
-> > ioasid_set_for_each_ioasid(struct ioasid_set *sdata, void
-> > (*fn)(ioasid_t id, void *data), void *data);
+> > @@ -73,6 +73,8 @@ bool ioasid_is_active(ioasid_t ioasid);
+> >  
+> >  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, bool (*getter)(void *));
+> >  int ioasid_attach_data(ioasid_t ioasid, void *data);
+> > +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid);
+> > +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t spid);
+> >  int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+> >  void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+> >  void ioasid_is_in_set(struct ioasid_set *set, ioasid_t ioasid);
+> > @@ -136,5 +138,15 @@ static inline int ioasid_attach_data(ioasid_t ioasid, void *data)
+> >  	return -ENOTSUPP;
+> >  }
+> >  
+> > +staic inline int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
+> > +{
+> > +	return -ENOTSUPP;
+> > +}
+> > +
+> > +static inline ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t spid)
+> > +{
+> > +	return -ENOTSUPP;  
+> 
+> INVALID_IOASID
+> 
+right, will fix.
+
+Thanks!
+
+> Thanks,
+> Jean
+> 
+> > +}
+> > +
+> >  #endif /* CONFIG_IOASID */
+> >  #endif /* __LINUX_IOASID_H */
+> > -- 
+> > 2.7.4
 > >   
-> Thanks
-> 
-> Eric
-> 
 > _______________________________________________
 > iommu mailing list
 > iommu@lists.linux-foundation.org
