@@ -2,96 +2,111 @@ Return-Path: <SRS0=mWlM=CR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50424C433E2
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 09:46:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0330DC433E2
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 09:49:32 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF94D2076C
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 09:46:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 866FD2076C
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 09:49:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cqZrtcD9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF94D2076C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Zz9Xr5hi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 866FD2076C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9372685D6E;
-	Tue,  8 Sep 2020 09:46:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3575887271;
+	Tue,  8 Sep 2020 09:49:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TZ2qs56J0Aok; Tue,  8 Sep 2020 09:46:22 +0000 (UTC)
+	with ESMTP id X77DbvjE9Q4t; Tue,  8 Sep 2020 09:49:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B1E3D8587E;
-	Tue,  8 Sep 2020 09:46:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 21B1287267;
+	Tue,  8 Sep 2020 09:49:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 950E8C0859;
-	Tue,  8 Sep 2020 09:46:22 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D0F9BC0051
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:46:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17BB2C0859;
+	Tue,  8 Sep 2020 09:49:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B779C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:49:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B4EAB8695F
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:46:21 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id EE8BE20433
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:49:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mHoyQ4vucg1s for <iommu@lists.linux-foundation.org>;
- Tue,  8 Sep 2020 09:46:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A18328693F
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:46:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1599558379;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=qpFRYvxB5/oyLlSWmwbvAKnlXaCKfBhqWxw1f+LqQf4=;
- b=cqZrtcD9yPUhjSczqh4FZqUItY8hyvytVHUSvkdCOizJCMc5RYpWODZ9d7GjdMi/TD+mrN
- 7OlUIqr95BJc0nbuJ8/KgWFU/2zEGuvEVN2KNi60NkctiQ8AOC52nywWjAdM6Lc3uM6uuy
- K9KZ/ys6MjsPbghIBP/qLkzPpjwiCoc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-19-suzd7PWYPUKGKe8h7pc-8Q-1; Tue, 08 Sep 2020 05:46:15 -0400
-X-MC-Unique: suzd7PWYPUKGKe8h7pc-8Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 14A1464083;
- Tue,  8 Sep 2020 09:46:13 +0000 (UTC)
-Received: from [10.36.114.107] (ovpn-114-107.ams2.redhat.com [10.36.114.107])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 859FB3A40;
- Tue,  8 Sep 2020 09:46:08 +0000 (UTC)
-Subject: Re: [PATCH RESEND v9 11/13] iommu/arm-smmu-v3: Add SVA device feature
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
- linux-mm@kvack.org
-References: <20200817171558.325917-1-jean-philippe@linaro.org>
- <20200817171558.325917-12-jean-philippe@linaro.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <e77d3f31-020c-d5cf-1af2-d584e62112b2@redhat.com>
-Date: Tue, 8 Sep 2020 11:46:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ with ESMTP id V86KGCRsjA1E for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Sep 2020 09:49:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-io1-f65.google.com (mail-io1-f65.google.com
+ [209.85.166.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 8209F20352
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 09:49:27 +0000 (UTC)
+Received: by mail-io1-f65.google.com with SMTP id d190so16426483iof.3
+ for <iommu@lists.linux-foundation.org>; Tue, 08 Sep 2020 02:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=gAXgXLHr4sZUGmR5wWRvQIZcW8h+Tv26UAX12qfpm58=;
+ b=Zz9Xr5hidITx4JOxvC6dEk1TLY5MJQa1WczmuIckQJWDwNyn9CCC5UcO34yEAC2CMZ
+ CsROkGHodev4SuThtZ4ypLG/0HCKWWCPgpRiWkTTCORBmyh5C7LtbeBOVt+Bns+rjt0R
+ Hgbd1S9JxaIw67qRt0A7Q5rIqtgR0RyNI6Zdo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=gAXgXLHr4sZUGmR5wWRvQIZcW8h+Tv26UAX12qfpm58=;
+ b=m+qnFUEGYWXFyXhWKVf5b3Lf4ooZBvrqbCjxypKfW+CuGKdghA1h2FxfU6wMA9ZbnZ
+ jGxrMOKVHcWBNjg9iz3Q+l6tlneHNF8b3fnux1nDwY+y1qL0H7mcyzqz3DL8shd5qqT2
+ sitlYoDHzYQdEJ8kx3BWeshjQhQNoBU0VVXhwpK1vXSB8fPFPLiEKaGLVhSHO7IWuHye
+ vArtxoPbcWYYNqCM/m9vi1HSFVBQPJla+ckPcBMCBm9p2rEkTd/2+Jueh70RBqT0kf5T
+ FDxD0fvWTm0UpCJployODXbKvfZ4SMx4LuBNs7zLegfKu+QpE1Rtg8KrUzhxVBoM2VNr
+ Y1Jg==
+X-Gm-Message-State: AOAM533piZbFkoNEfxVZCoW8ysOlFSmx1lSssO1/3hA1mV+9AVuf5ryy
+ 6o3XekM+01aEsOY1lvFshtd+fLOKq2e5yg==
+X-Google-Smtp-Source: ABdhPJwVhOc76rwbJkd5OHtBglnnvpvkX7U3Rtfz/l6RNGhVd1u3Zeb/krhr6nKWU19rQgd2Ez1mQA==
+X-Received: by 2002:a6b:bf44:: with SMTP id p65mr4126417iof.126.1599558566879; 
+ Tue, 08 Sep 2020 02:49:26 -0700 (PDT)
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com.
+ [209.85.166.172])
+ by smtp.gmail.com with ESMTPSA id w22sm2768936iob.32.2020.09.08.02.49.26
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 08 Sep 2020 02:49:26 -0700 (PDT)
+Received: by mail-il1-f172.google.com with SMTP id t16so14731378ilf.13
+ for <iommu@lists.linux-foundation.org>; Tue, 08 Sep 2020 02:49:26 -0700 (PDT)
+X-Received: by 2002:a92:6f0a:: with SMTP id k10mr20571863ilc.5.1599558565722; 
+ Tue, 08 Sep 2020 02:49:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200817171558.325917-12-jean-philippe@linaro.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: fenghua.yu@intel.com, will@kernel.org, zhengxiang9@huawei.com,
- catalin.marinas@arm.com, zhangfei.gao@linaro.org, robin.murphy@arm.com
+References: <20200728050140.996974-1-tientzu@chromium.org>
+ <20200728050140.996974-5-tientzu@chromium.org>
+ <20200731205804.GB756942@bogus>
+ <CALiNf2-BGQ+8Lm6A61oM6v+6N1zRTJYvod7LQLsCmK-ADsrMaw@mail.gmail.com>
+ <CAAFQd5Cm+ZGx9ia2sAdvHQC6zC1U=+9AWs7iW7o-qE4g7wZgsw@mail.gmail.com>
+ <CAAFQd5AfbN0V3sGCs8vhmeD-MNn3bTvfWBCaT-OY3hgjBUs-LQ@mail.gmail.com>
+ <CAAFQd5B_LAb0uU3J9umGWBhaVSKT3N9SynnvTxw_PVEwHu4Cww@mail.gmail.com>
+In-Reply-To: <CAAFQd5B_LAb0uU3J9umGWBhaVSKT3N9SynnvTxw_PVEwHu4Cww@mail.gmail.com>
+From: Claire Chang <tientzu@chromium.org>
+Date: Tue, 8 Sep 2020 17:49:14 +0800
+X-Gmail-Original-Message-ID: <CALiNf28w-NZhkeAEeUGJEbzsGzQKeA=O3FR3nG+SEk+CiDhzKg@mail.gmail.com>
+Message-ID: <CALiNf28w-NZhkeAEeUGJEbzsGzQKeA=O3FR3nG+SEk+CiDhzKg@mail.gmail.com>
+Subject: Re: [RFC v2 4/5] dt-bindings: of: Add plumbing for restricted DMA pool
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Rob Herring <robh@kernel.org>, heikki.krogerus@linux.intel.com,
+ Saravana Kannan <saravanak@google.com>, suzuki.poulose@arm.com,
+ Frank Rowand <frowand.list@gmail.com>, lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+ linux-devicetree <devicetree@vger.kernel.org>,
+ Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
+ dan.j.williams@intel.com, Thierry Reding <treding@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,258 +124,196 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
+On Tue, Aug 25, 2020 at 1:30 AM Tomasz Figa <tfiga@chromium.org> wrote:
+>
+> On Tue, Aug 11, 2020 at 11:15 AM Tomasz Figa <tfiga@chromium.org> wrote:
+> >
+> > On Mon, Aug 3, 2020 at 5:15 PM Tomasz Figa <tfiga@chromium.org> wrote:
+> > >
+> > > Hi Claire and Rob,
+> > >
+> > > On Mon, Aug 3, 2020 at 4:26 PM Claire Chang <tientzu@chromium.org> wrote:
+> > > >
+> > > > On Sat, Aug 1, 2020 at 4:58 AM Rob Herring <robh@kernel.org> wrote:
+> > > > >
+> > > > > On Tue, Jul 28, 2020 at 01:01:39PM +0800, Claire Chang wrote:
+> > > > > > Introduce the new compatible string, device-swiotlb-pool, for restricted
+> > > > > > DMA. One can specify the address and length of the device swiotlb memory
+> > > > > > region by device-swiotlb-pool in the device tree.
+> > > > > >
+> > > > > > Signed-off-by: Claire Chang <tientzu@chromium.org>
+> > > > > > ---
+> > > > > >  .../reserved-memory/reserved-memory.txt       | 35 +++++++++++++++++++
+> > > > > >  1 file changed, 35 insertions(+)
+> > > > > >
+> > > > > > diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> > > > > > index 4dd20de6977f..78850896e1d0 100644
+> > > > > > --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> > > > > > +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> > > > > > @@ -51,6 +51,24 @@ compatible (optional) - standard definition
+> > > > > >            used as a shared pool of DMA buffers for a set of devices. It can
+> > > > > >            be used by an operating system to instantiate the necessary pool
+> > > > > >            management subsystem if necessary.
+> > > > > > +        - device-swiotlb-pool: This indicates a region of memory meant to be
+> > > > >
+> > > > > swiotlb is a Linux thing. The binding should be independent.
+> > > > Got it. Thanks for pointing this out.
+> > > >
+> > > > >
+> > > > > > +          used as a pool of device swiotlb buffers for a given device. When
+> > > > > > +          using this, the no-map and reusable properties must not be set, so the
+> > > > > > +          operating system can create a virtual mapping that will be used for
+> > > > > > +          synchronization. Also, there must be a restricted-dma property in the
+> > > > > > +          device node to specify the indexes of reserved-memory nodes. One can
+> > > > > > +          specify two reserved-memory nodes in the device tree. One with
+> > > > > > +          shared-dma-pool to handle the coherent DMA buffer allocation, and
+> > > > > > +          another one with device-swiotlb-pool for regular DMA to/from system
+> > > > > > +          memory, which would be subject to bouncing. The main purpose for
+> > > > > > +          restricted DMA is to mitigate the lack of DMA access control on
+> > > > > > +          systems without an IOMMU, which could result in the DMA accessing the
+> > > > > > +          system memory at unexpected times and/or unexpected addresses,
+> > > > > > +          possibly leading to data leakage or corruption. The feature on its own
+> > > > > > +          provides a basic level of protection against the DMA overwriting buffer
+> > > > > > +          contents at unexpected times. However, to protect against general data
+> > > > > > +          leakage and system memory corruption, the system needs to provide a
+> > > > > > +          way to restrict the DMA to a predefined memory region.
+> > > > >
+> > > > > I'm pretty sure we already support per device carveouts and I don't
+> > > > > understand how this is different.
+> > > > We use this to bounce streaming DMA in and out of a specially allocated region.
+> > > > I'll try to merge this with the existing one (i.e., shared-dma-pool)
+> > > > to see if that
+> > > > makes things clearer.
+> > > >
+> > >
+> > > Indeed, from the firmware point of view, this is just a carveout, for
+> > > which we have the "shared-dma-pool" compatible string defined already.
+> > >
+> > > However, depending on the device and firmware setup, the way the
+> > > carevout is used may change. I can see the following scenarios:
+> > >
+> > > 1) coherent DMA (dma_alloc_*) within a reserved pool and no
+> > > non-coherent DMA (dma_map_*).
+> > >
+> > > This is how the "memory-region" property is handled today in Linux for
+> > > devices which can only DMA from/to the given memory region. However,
+> > > I'm not sure if no non-coherent DMA is actually enforced in any way by
+> > > the DMA subsystem.
+> > >
+> > > 2) coherent DMA from a reserved pool and non-coherent DMA from system memory
+> > >
+> > > This is the case for the systems which have some dedicated part of
+> > > memory which is guaranteed to be coherent with the DMA, but still can
+> > > do non-coherent DMA to any part of the system memory. Linux handles it
+> > > the same way as 1), which is what made me believe that 1) might not
+> > > actually be handled correctly.
+> > >
+> > > 3) coherent DMA and bounced non-coherent DMA within a reserved pool
+> > > 4) coherent DMA within one pool and bounced non-coherent within another pool
+> > >
+> > > These are the two cases we're interested in. Basically they make it
+> > > possible for non-coherent DMA from arbitrary system memory to be
+> > > bounced through a reserved pool, which the device has access to. The
+> > > current series implements 4), but I'd argue that it:
+> > >
+> > > - is problematic from the firmware point of view, because on most of
+> > > the systems, both pools would be just some carveouts and the fact that
+> > > Linux would use one for coherent and the other for non-coherent DMA
+> > > would be an OS implementation detail,
+> > > - suffers from the static memory split between coherent and
+> > > non-coherent DMA, which could either result in some wasted memory or
+> > > the DMA stopped working after a kernel update if the driver changes
+> > > its allocation pattern,
+> > >
+> > > and so we should rather go with 3).
+> > >
+> > > Now, from the firmware point of view, it doesn't matter how the OS
+> > > uses the carveout, but I think it's still necessary to tell the OS
+> > > about the device DMA capability. Right now we use "memory-region" for
+> > > any kind of reserved memory, but looking at the above scenarios, there
+> > > are 2 cases:
+> > >
+> > > a) the memory region is preferred for the device, e.g. it enables
+> > > coherency, but the device can still DMA across the rest of the system
+> > > memory. This is the case in scenario 2) and is kind of assumed in the
+> > > Linux DMA subsystem, although it's certainly not the case for a lot of
+> > > hardware, even if they use the "memory-region" binding.
+> > >
+> > > b) the memory region is the only region that the device can access.
+> > > This is the case in scenarios 1), 3) and 4).
+> > >
+> > > For this, I'd like to propose a "restricted-dma-region" (feel free to
+> > > suggest a better name) binding, which is explicitly specified to be
+> > > the only DMA-able memory for this device and make Linux use the given
+> > > pool for coherent DMA allocations and bouncing non-coherent DMA.
+> > >
+> > > What do you think?
+> >
+> > Rob, Robin, we'd appreciate your feedback on this when you have a
+> > chance to take a look again. Thanks!
+>
+> Gentle ping.
 
-On 8/17/20 7:15 PM, Jean-Philippe Brucker wrote:
-> Implement the IOMMU device feature callbacks to support the SVA feature.
-> At the moment dev_has_feat() returns false since I/O Page Faults isn't
-> yet implemented.
-and because we don't advertise BTM, isn't it?
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 26 ++++++
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 49 ++++++++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 79 +++++++++++++++++++
->  3 files changed, 154 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 7b14b48a26c7..ba34914813ff 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -646,6 +646,8 @@ struct arm_smmu_master {
->  	u32				*sids;
->  	unsigned int			num_sids;
->  	bool				ats_enabled;
-> +	bool				sva_enabled;
-> +	struct list_head		bonds;
->  	unsigned int			ssid_bits;
->  };
->  
-> @@ -687,10 +689,34 @@ bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
->  
->  #ifdef CONFIG_ARM_SMMU_V3_SVA
->  bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
-> +bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
-> +bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
-> +int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
-> +int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
->  #else /* CONFIG_ARM_SMMU_V3_SVA */
->  static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->  {
->  	return false;
->  }
-> +
-> +static inline bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
-> +{
-> +	return -ENODEV;
-> +}
->  #endif /* CONFIG_ARM_SMMU_V3_SVA */
->  #endif /* _ARM_SMMU_V3_H */
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index bf81d91ce71e..28027620cf2e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -10,6 +10,8 @@
->  #include "arm-smmu-v3.h"
->  #include "../../io-pgtable-arm.h"
->  
-> +static DEFINE_MUTEX(sva_lock);
-> +
->  /*
->   * Try to reserve this ASID in the SMMU. If it is in use, try to steal it from
->   * the private entry. Careful here, we may be modifying the context tables of
-> @@ -196,3 +198,50 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->  
->  	return true;
->  }
-> +
-> +static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
-> +{
-> +	return false;
-> +}
-> +
-> +bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
-> +{
-> +	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
-> +		return false;
-> +
-> +	/* SSID and IOPF support are mandatory for the moment */
-> +	return master->ssid_bits && arm_smmu_iopf_supported(master);
-> +}
-> +
-> +bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
-> +{
-> +	bool enabled;
-> +
-> +	mutex_lock(&sva_lock);
-> +	enabled = master->sva_enabled;
-> +	mutex_unlock(&sva_lock);
-> +	return enabled;
-> +}
-> +
-> +int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
-> +{
-> +	mutex_lock(&sva_lock);
-> +	master->sva_enabled = true;
-> +	mutex_unlock(&sva_lock);
-> +
-> +	return 0;
-> +}
-> +
-> +int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
-> +{
-> +	mutex_lock(&sva_lock);
-> +	if (!list_empty(&master->bonds)) {
-> +		dev_err(master->dev, "cannot disable SVA, device is bound\n");
-> +		mutex_unlock(&sva_lock);
-> +		return -EBUSY;
-> +	}
-> +	master->sva_enabled = false;
-> +	mutex_unlock(&sva_lock);
-> +
-> +	return 0;
-> +}
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 15cb3d9c1a5d..5ed5bb42298f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2163,6 +2163,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	master = dev_iommu_priv_get(dev);
->  	smmu = master->smmu;
->  
-> +	/*
-> +	 * Checking that SVA is disabled ensures that this device isn't bound to
-> +	 * any mm, and can be safely detached from its old domain. Bonds cannot
-> +	 * be removed concurrently since we're holding the group mutex.
-> +	 */
-> +	if (arm_smmu_master_sva_enabled(master)) {
-> +		dev_err(dev, "cannot attach - SVA enabled\n");
-> +		return -EBUSY;
-> +	}
-> +
->  	arm_smmu_detach_dev(master);
->  
->  	mutex_lock(&smmu_domain->init_mutex);
-> @@ -2310,6 +2320,7 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
->  	master->smmu = smmu;
->  	master->sids = fwspec->ids;
->  	master->num_sids = fwspec->num_ids;
-> +	INIT_LIST_HEAD(&master->bonds);
->  	dev_iommu_priv_set(dev, master);
->  
->  	/* Check the SIDs are in range of the SMMU and our stream table */
-> @@ -2362,6 +2373,7 @@ static void arm_smmu_release_device(struct device *dev)
->  		return;
->  
->  	master = dev_iommu_priv_get(dev);
-> +	WARN_ON(arm_smmu_master_sva_enabled(master));
->  	arm_smmu_detach_dev(master);
->  	arm_smmu_disable_pasid(master);
->  	kfree(master);
-> @@ -2479,6 +2491,69 @@ static void arm_smmu_get_resv_regions(struct device *dev,
->  	iommu_dma_get_resv_regions(dev, head);
->  }
->  
-> +static bool arm_smmu_dev_has_feature(struct device *dev,
-> +				     enum iommu_dev_features feat)
-> +{
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +
-> +	if (!master)
-> +		return false;
-> +
-> +	switch (feat) {
-> +	case IOMMU_DEV_FEAT_SVA:
-> +		return arm_smmu_master_sva_supported(master);
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool arm_smmu_dev_feature_enabled(struct device *dev,
-> +					 enum iommu_dev_features feat)
-> +{
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +
-> +	if (!master)
-> +		return false;
-> +
-> +	switch (feat) {
-> +	case IOMMU_DEV_FEAT_SVA:
-> +		return arm_smmu_master_sva_enabled(master);
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static int arm_smmu_dev_enable_feature(struct device *dev,
-> +				       enum iommu_dev_features feat)
-> +{
-> +	if (!arm_smmu_dev_has_feature(dev, feat))
-> +		return -ENODEV;
-> +
-> +	if (arm_smmu_dev_feature_enabled(dev, feat))
-> +		return -EBUSY;
-> +
-> +	switch (feat) {
-> +	case IOMMU_DEV_FEAT_SVA:
-> +		return arm_smmu_master_enable_sva(dev_iommu_priv_get(dev));
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int arm_smmu_dev_disable_feature(struct device *dev,
-> +					enum iommu_dev_features feat)
-> +{
-> +	if (!arm_smmu_dev_feature_enabled(dev, feat))
-> +		return -EINVAL;
-> +
-> +	switch (feat) {
-> +	case IOMMU_DEV_FEAT_SVA:
-> +		return arm_smmu_master_disable_sva(dev_iommu_priv_get(dev));
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
->  static struct iommu_ops arm_smmu_ops = {
->  	.capable		= arm_smmu_capable,
->  	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -2497,6 +2572,10 @@ static struct iommu_ops arm_smmu_ops = {
->  	.of_xlate		= arm_smmu_of_xlate,
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= generic_iommu_put_resv_regions,
-> +	.dev_has_feat		= arm_smmu_dev_has_feature,
-> +	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
-> +	.dev_enable_feat	= arm_smmu_dev_enable_feature,
-> +	.dev_disable_feat	= arm_smmu_dev_disable_feature,
->  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->  };
->  
-> 
-Besides
+The "restricted-dma-region" idea sounds good to me and I'm happy to
+submit a new version implementing it.
+Rob, Robin, please kindly let us know if you have any concerns about
+it. Thanks!
 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Best regards,
+Claire
 
-Eric
-
+>
+> >
+> > Best regards,
+> > Tomasz
+> >
+> > >
+> > > Best regards,
+> > > Tomasz
+> > >
+> > > > >
+> > > > > What is the last sentence supposed to imply? You need an IOMMU?
+> > > > The main purpose is to mitigate the lack of DMA access control on
+> > > > systems without an IOMMU.
+> > > > For example, we plan to use this plus a MPU for our PCIe WiFi which is
+> > > > not behind an IOMMU.
+> > > >
+> > > > >
+> > > > > >          - vendor specific string in the form <vendor>,[<device>-]<usage>
+> > > > > >  no-map (optional) - empty property
+> > > > > >      - Indicates the operating system must not create a virtual mapping
+> > > > > > @@ -117,6 +135,16 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+> > > > > >                       compatible = "acme,multimedia-memory";
+> > > > > >                       reg = <0x77000000 0x4000000>;
+> > > > > >               };
+> > > > > > +
+> > > > > > +             wifi_coherent_mem_region: wifi_coherent_mem_region {
+> > > > > > +                     compatible = "shared-dma-pool";
+> > > > > > +                     reg = <0x50000000 0x400000>;
+> > > > > > +             };
+> > > > > > +
+> > > > > > +             wifi_device_swiotlb_region: wifi_device_swiotlb_region {
+> > > > > > +                     compatible = "device-swiotlb-pool";
+> > > > > > +                     reg = <0x50400000 0x4000000>;
+> > > > > > +             };
+> > > > > >       };
+> > > > > >
+> > > > > >       /* ... */
+> > > > > > @@ -135,4 +163,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+> > > > > >               memory-region = <&multimedia_reserved>;
+> > > > > >               /* ... */
+> > > > > >       };
+> > > > > > +
+> > > > > > +     pcie_wifi: pcie_wifi@0,0 {
+> > > > > > +             memory-region = <&wifi_coherent_mem_region>,
+> > > > > > +                      <&wifi_device_swiotlb_region>;
+> > > > > > +             restricted-dma = <0>, <1>;
+> > > > > > +             /* ... */
+> > > > > > +     };
+> > > > > >  };
+> > > > > > --
+> > > > > > 2.28.0.rc0.142.g3c755180ce-goog
+> > > > > >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
