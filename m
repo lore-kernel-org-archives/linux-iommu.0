@@ -2,81 +2,118 @@ Return-Path: <SRS0=mWlM=CR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C483C43461
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA30CC43461
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:43:38 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDABD20757
-	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:38:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDABD20757
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6869C207DE
+	for <iommu@archiver.kernel.org>; Tue,  8 Sep 2020 22:43:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="cMCk0lKz"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6869C207DE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 88F20272A1;
-	Tue,  8 Sep 2020 22:38:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2F0902D63B;
+	Tue,  8 Sep 2020 22:43:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lXMSzK9wjcsm; Tue,  8 Sep 2020 22:38:33 +0000 (UTC)
+	with ESMTP id xUvqecQRfyBD; Tue,  8 Sep 2020 22:43:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5377C204A1;
-	Tue,  8 Sep 2020 22:38:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 68366204F1;
+	Tue,  8 Sep 2020 22:43:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3903AC0052;
-	Tue,  8 Sep 2020 22:38:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 92FC9C0051
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:38:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FCA6C089E;
+	Tue,  8 Sep 2020 22:43:34 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D8DEC0052
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:43:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 89C258726C
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:38:32 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4C4AE85184
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:43:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XPsYdb7wvn8O for <iommu@lists.linux-foundation.org>;
- Tue,  8 Sep 2020 22:38:31 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8B88287267
- for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:38:31 +0000 (UTC)
-IronPort-SDR: +Fa0N0wg7Z1RuqxPM5AzE3ouIu6ELukFq4KPozjLbZ2hwTzYY8MBgKZ8DU14I5BUJ0N3KrMW3A
- IButqsKA0lHQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9738"; a="138280197"
-X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="138280197"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Sep 2020 15:38:31 -0700
-IronPort-SDR: EXbna6K539fSGhwY4i7HUSEKvHAbnLBaGp+NlajOVbjBbB2b1zZiXoBoI2SL6vgpSZ/TdFOEFl
- bN3NCBaz0Efw==
-X-IronPort-AV: E=Sophos;i="5.76,407,1592895600"; d="scan'208";a="448970957"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Sep 2020 15:38:30 -0700
-Date: Tue, 8 Sep 2020 15:40:28 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v2 5/9] iommu/ioasid: Introduce ioasid_set private ID
-Message-ID: <20200908154028.0ec5abba@jacob-builder>
-In-Reply-To: <8fe449f7-606e-e90a-28d5-9c29cac5a9c3@redhat.com>
-References: <1598070918-21321-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1598070918-21321-6-git-send-email-jacob.jun.pan@linux.intel.com>
- <8fe449f7-606e-e90a-28d5-9c29cac5a9c3@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+ with ESMTP id d8VktzVZkAOO for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Sep 2020 22:43:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-il1-f193.google.com (mail-il1-f193.google.com
+ [209.85.166.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 236D684E9A
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Sep 2020 22:43:30 +0000 (UTC)
+Received: by mail-il1-f193.google.com with SMTP id q6so465699ild.12
+ for <iommu@lists.linux-foundation.org>; Tue, 08 Sep 2020 15:43:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=tcd-ie.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=kP3fRBjvfm91Lgym+an8BHFQ2PuoWlJ3si63rQdbN8c=;
+ b=cMCk0lKzNfxAMTO2UkKJ0lXqynPZojKcMVW8pVBD0mlICjkRQgjWFrGN9QLlhQkHwT
+ /1hBT7NZs2Gr3ljH38g6Vgva0RGAIwKBL2lof8SnGTM7KVvDmeSc64CAB5ZYI51ye64A
+ myig/VRQXeaoQ2s/61egtsT7H1YfnYF00beULBHNwfkxORoyxD3tpyeCI6Vv4fXW9aiB
+ GZnJVGUOtP0w4hIktrh22UQPPwcXtPBeUim5uFhP4e860zMBj/sx+nCWMoR6wglWGBae
+ T9aUpzVxoJnsq7orTcIcavPOpRMVeH9o5ow658uO6j6bws7ZRAzwVfQXC+uLjcXt9vgh
+ eYDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=kP3fRBjvfm91Lgym+an8BHFQ2PuoWlJ3si63rQdbN8c=;
+ b=lRGv3ttn0pAOuJBUYyUmJ30EPHQbMvGhrwlnnvUuyFokVD6GdZao4JgesFnXiiCo75
+ VuxRuRDGj3ucWAVz2DO7XD4YDLetYDs6TicL96wRPy/jQzna0l7VXC9omJRT6102y2eV
+ pRAx4YgQuNM9L4VziYCMTMPsJGvkNBlHKrFHa+AAqLpZ3thDqTOWYx//WF8zys8KkEE3
+ ZE7GF93XQhdnbT79Mn2hjknJ0jkyeE65kaYIleSKBtWoMWbhCJy5yL+CFvmQiMEDCFXx
+ 70H7VfutiajTTJoMUYUNweT8nzEOGaJV87IEWoh/xrtzttkk7fHtz3ONXWrVwXG7Tg+T
+ BcHQ==
+X-Gm-Message-State: AOAM530QITZwmvMHVbj9VBSVKuCuxlCh7tl6cNnWIueyVjaiQq4lVums
+ bvT9+kos19xmjMeqjj2Cra8w87Fut4UVK/WRqRjnxA==
+X-Google-Smtp-Source: ABdhPJy2euDOe9gR5D2dH2jq/gUSw+Ds2//IpXgtG+LSuaTtkhuhiIiGtc0UENWkqIWHIiGMHapySfCTPJbwaFtJHWw=
+X-Received: by 2002:a92:9408:: with SMTP id c8mr928626ili.61.1599605010111;
+ Tue, 08 Sep 2020 15:43:30 -0700 (PDT)
 MIME-Version: 1.0
-Cc: "Tian,
- Kevin" <kevin.tian@intel.com>, Jacob Pan <jacob.pan.linux@gmail.com>,
- Raj Ashok <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Wu Hao <hao.wu@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20191221150402.13868-1-murphyt7@tcd.ie>
+ <465815ae-9292-f37a-59b9-03949cb68460@deltatee.com>
+ <20200529124523.GA11817@infradead.org>
+ <CGME20200529190523eucas1p2c086133e707257c0cdc002f502d4f51d@eucas1p2.samsung.com>
+ <33137cfb-603c-86e8-1091-f36117ecfaf3@deltatee.com>
+ <ef2150d5-7b6a-df25-c10d-e43316fe7812@samsung.com>
+ <b9140772-0370-a858-578c-af503a06d8e9@deltatee.com>
+ <CALQxJuutRaeX89k2o4ffTKYRMizmMu0XbRnzpFuSSrkQR02jKg@mail.gmail.com>
+ <766525c3-4da9-6db7-cd90-fb4b82cd8083@deltatee.com>
+ <60a82319-cbee-4cd1-0d5e-3c407cc51330@linux.intel.com>
+ <e598fb31-ef7a-c2ee-8a54-bf62d50c480c@deltatee.com>
+ <b27cae1f-07ff-bef2-f125-a5f0d968016d@linux.intel.com>
+In-Reply-To: <b27cae1f-07ff-bef2-f125-a5f0d968016d@linux.intel.com>
+From: Tom Murphy <murphyt7@tcd.ie>
+Date: Tue, 8 Sep 2020 23:43:19 +0100
+Message-ID: <CALQxJut5c=cWdi+SVkN3JnbkhPSYmLkOyRUhduL-UJ9gyKn9Ow@mail.gmail.com>
+Subject: Re: [Intel-gfx] [PATCH 0/8] Convert the intel iommu driver to the
+ dma-iommu api
+To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc: kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ dri-devel@lists.freedesktop.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ Julien Grall <julien.grall@arm.com>, Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-samsung-soc@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, linux-rockchip@lists.infradead.org,
+ Andy Gross <agross@kernel.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+ linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ intel-gfx@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>,
+ virtualization@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
+ Logan Gunthorpe <logang@deltatee.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,173 +131,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 1 Sep 2020 17:38:44 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+On Tue, 8 Sep 2020 at 16:56, Tvrtko Ursulin
+<tvrtko.ursulin@linux.intel.com> wrote:
+>
+>
+> On 08/09/2020 16:44, Logan Gunthorpe wrote:
+> > On 2020-09-08 9:28 a.m., Tvrtko Ursulin wrote:
+> >>>
+> >>> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>> b/drivers/gpu/drm/i915/i915
+> >>> index b7b59328cb76..9367ac801f0c 100644
+> >>> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>> @@ -27,13 +27,19 @@ static __always_inline struct sgt_iter {
+> >>>    } __sgt_iter(struct scatterlist *sgl, bool dma) {
+> >>>           struct sgt_iter s = { .sgp = sgl };
+> >>>
+> >>> +       if (sgl && !sg_dma_len(s.sgp))
+> >>
+> >> I'd extend the condition to be, just to be safe:
+> >>      if (dma && sgl && !sg_dma_len(s.sgp))
+> >>
+> >
+> > Right, good catch, that's definitely necessary.
+> >
+> >>> +               s.sgp = NULL;
+> >>> +
+> >>>           if (s.sgp) {
+> >>>                   s.max = s.curr = s.sgp->offset;
+> >>> -               s.max += s.sgp->length;
+> >>> -               if (dma)
+> >>> +
+> >>> +               if (dma) {
+> >>> +                       s.max += sg_dma_len(s.sgp);
+> >>>                           s.dma = sg_dma_address(s.sgp);
+> >>> -               else
+> >>> +               } else {
+> >>> +                       s.max += s.sgp->length;
+> >>>                           s.pfn = page_to_pfn(sg_page(s.sgp));
+> >>> +               }
+> >>
+> >> Otherwise has this been tested or alternatively how to test it? (How to
+> >> repro the issue.)
+> >
+> > It has not been tested. To test it, you need Tom's patch set without the
+> > last "DO NOT MERGE" patch:
+> >
+> > https://lkml.kernel.org/lkml/20200907070035.GA25114@infradead.org/T/
+>
+> Tom, do you have a branch somewhere I could pull from? (Just being lazy
+> about downloading a bunch of messages from the archives.)
 
-> Hi Jacob,
-> On 8/22/20 6:35 AM, Jacob Pan wrote:
-> > When an IOASID set is used for guest SVA, each VM will acquire its
-> > ioasid_set for IOASID allocations. IOASIDs within the VM must have a
-> > host/physical IOASID backing, mapping between guest and host
-> > IOASIDs can be non-identical. IOASID set private ID (SPID) is
-> > introduced in this patch to be used as guest IOASID. However, the
-> > concept of ioasid_set specific namespace is generic, thus named
-> > SPID.
-> > 
-> > As SPID namespace is within the IOASID set, the IOASID core can
-> > provide lookup services at both directions. SPIDs may not be
-> > allocated when its IOASID is allocated, the mapping between SPID
-> > and IOASID is usually established when a guest page table is bound
-> > to a host PASID.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/ioasid.c | 54
-> > ++++++++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/ioasid.h | 12 +++++++++++ 2 files changed, 66
-> > insertions(+)
-> > 
-> > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> > index 5f31d63c75b1..c0aef38a4fde 100644
-> > --- a/drivers/iommu/ioasid.c
-> > +++ b/drivers/iommu/ioasid.c
-> > @@ -21,6 +21,7 @@ enum ioasid_state {
-> >   * struct ioasid_data - Meta data about ioasid
-> >   *
-> >   * @id:		Unique ID
-> > + * @spid:	Private ID unique within a set
-> >   * @users	Number of active users
-> >   * @state	Track state of the IOASID
-> >   * @set		Meta data of the set this IOASID belongs to
-> > @@ -29,6 +30,7 @@ enum ioasid_state {
-> >   */
-> >  struct ioasid_data {
-> >  	ioasid_t id;
-> > +	ioasid_t spid;
-> >  	struct ioasid_set *set;
-> >  	refcount_t users;
-> >  	enum ioasid_state state;
-> > @@ -326,6 +328,58 @@ int ioasid_attach_data(ioasid_t ioasid, void
-> > *data) EXPORT_SYMBOL_GPL(ioasid_attach_data);
-> >  
-> >  /**
-> > + * ioasid_attach_spid - Attach ioasid_set private ID to an IOASID
-> > + *
-> > + * @ioasid: the ID to attach
-> > + * @spid:   the ioasid_set private ID of @ioasid
-> > + *
-> > + * For IOASID that is already allocated, private ID within the set
-> > can be
-> > + * attached via this API. Future lookup can be done via
-> > ioasid_find.  
-> I would remove "For IOASID that is already allocated, private ID
-> within the set can be attached via this API"
-I guess it is implied. Will remove.
+I don't unfortunately. I'm working locally with poor internet.
 
-> > + */
-> > +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
-> > +{
-> > +	struct ioasid_data *ioasid_data;
-> > +	int ret = 0;
-> > +
-> > +	spin_lock(&ioasid_allocator_lock);  
-> We keep on saying the SPID is local to an IOASID set but we don't
-> check any IOASID set contains this ioasid. It looks a bit weird to me.
-We store ioasid_set inside ioasid_data when an IOASID is allocated, so
-we don't need to search all the ioasid_sets. Perhaps I missed your
-point?
+>
+> What GPU is in your Lenovo x1 carbon 5th generation and what
+> graphical/desktop setup I need to repro?
 
-> > +	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-> > +
-> > +	if (!ioasid_data) {
-> > +		pr_err("No IOASID entry %d to attach SPID %d\n",
-> > +			ioasid, spid);
-> > +		ret = -ENOENT;
-> > +		goto done_unlock;
-> > +	}
-> > +	ioasid_data->spid = spid;  
-> is there any way/need to remove an spid binding?
-For guest SVA, we attach SPID as a guest PASID during bind guest page
-table. Unbind does the opposite, ioasid_attach_spid() with
-spid=INVALID_IOASID clears the binding.
 
-Perhaps add more symmetric functions? i.e.
-ioasid_detach_spid(ioasid_t ioasid)
-ioasid_attach_spid(struct ioasid_set *set, ioasid_t ioasid)
+Is this enough info?:
 
-> > +
-> > +done_unlock:
-> > +	spin_unlock(&ioasid_allocator_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_attach_spid);
-> > +
-> > +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t spid)
-> > +{
-> > +	struct ioasid_data *entry;
-> > +	unsigned long index;
-> > +
-> > +	if (!xa_load(&ioasid_sets, set->sid)) {
-> > +		pr_warn("Invalid set\n");
-> > +		return INVALID_IOASID;
-> > +	}
-> > +
-> > +	xa_for_each(&set->xa, index, entry) {
-> > +		if (spid == entry->spid) {
-> > +			pr_debug("Found ioasid %lu by spid %u\n",
-> > index, spid);
-> > +			refcount_inc(&entry->users);
-> > +			return index;
-> > +		}
-> > +	}
-> > +	return INVALID_IOASID;
-> > +}
-> > +EXPORT_SYMBOL_GPL(ioasid_find_by_spid);
-> > +
-> > +/**
-> >   * ioasid_alloc - Allocate an IOASID
-> >   * @set: the IOASID set
-> >   * @min: the minimum ID (inclusive)
-> > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> > index 310abe4187a3..d4b3e83672f6 100644
-> > --- a/include/linux/ioasid.h
-> > +++ b/include/linux/ioasid.h
-> > @@ -73,6 +73,8 @@ bool ioasid_is_active(ioasid_t ioasid);
-> >  
-> >  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, bool
-> > (*getter)(void *)); int ioasid_attach_data(ioasid_t ioasid, void
-> > *data); +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid);
-> > +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t
-> > spid); int ioasid_register_allocator(struct ioasid_allocator_ops
-> > *allocator); void ioasid_unregister_allocator(struct
-> > ioasid_allocator_ops *allocator); void ioasid_is_in_set(struct
-> > ioasid_set *set, ioasid_t ioasid); @@ -136,5 +138,15 @@ static
-> > inline int ioasid_attach_data(ioasid_t ioasid, void *data) return
-> > -ENOTSUPP; }
-> >  
-> > +staic inline int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
-> > +{
-> > +	return -ENOTSUPP;
-> > +}
-> > +
-> > +static inline ioasid_t ioasid_find_by_spid(struct ioasid_set *set,
-> > ioasid_t spid) +{
-> > +	return -ENOTSUPP;
-> > +}
-> > +
-> >  #endif /* CONFIG_IOASID */
-> >  #endif /* __LINUX_IOASID_H */
-> >   
-> Thanks
-> 
-> Eric
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+$ lspci -vnn | grep VGA -A 12
+00:02.0 VGA compatible controller [0300]: Intel Corporation HD
+Graphics 620 [8086:5916] (rev 02) (prog-if 00 [VGA controller])
+    Subsystem: Lenovo ThinkPad X1 Carbon 5th Gen [17aa:224f]
+    Flags: bus master, fast devsel, latency 0, IRQ 148
+    Memory at eb000000 (64-bit, non-prefetchable) [size=16M]
+    Memory at 60000000 (64-bit, prefetchable) [size=256M]
+    I/O ports at e000 [size=64]
+    [virtual] Expansion ROM at 000c0000 [disabled] [size=128K]
+    Capabilities: [40] Vendor Specific Information: Len=0c <?>
+    Capabilities: [70] Express Root Complex Integrated Endpoint, MSI 00
+    Capabilities: [ac] MSI: Enable+ Count=1/1 Maskable- 64bit-
+    Capabilities: [d0] Power Management version 2
+    Capabilities: [100] Process Address Space ID (PASID)
+    Capabilities: [200] Address Translation Service (ATS)
 
-[Jacob Pan]
+
+>
+> Regards,
+>
+> Tvrtko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
