@@ -2,103 +2,71 @@ Return-Path: <SRS0=bsOk=CS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0CDC43461
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 11:46:54 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B41C433E2
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 12:06:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31E4520C09
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 11:46:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ymg+boXS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31E4520C09
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id D80AC2087C
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 12:05:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D80AC2087C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D53FC2E174;
-	Wed,  9 Sep 2020 11:46:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F34mckkRovQn; Wed,  9 Sep 2020 11:46:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C375E2D268;
-	Wed,  9 Sep 2020 11:46:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B51CDC0859;
-	Wed,  9 Sep 2020 11:46:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7173CC0051
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 11:46:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 60173871DA
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 11:46:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 65BA586B50;
+	Wed,  9 Sep 2020 12:05:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RcclfRgo6ur2; Wed,  9 Sep 2020 12:05:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8D34E87211;
+	Wed,  9 Sep 2020 12:05:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D909C0859;
+	Wed,  9 Sep 2020 12:05:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C199C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 12:05:56 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0778A874A0
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 12:05:56 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VrAiRG2m6e6P for <iommu@lists.linux-foundation.org>;
- Wed,  9 Sep 2020 11:46:47 +0000 (UTC)
+ with ESMTP id Zgutu10QPA42 for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Sep 2020 12:05:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8B9A7871D3
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 11:46:47 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
- by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 089BhxnJ147470;
- Wed, 9 Sep 2020 11:46:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=tcZedx0yuWMLiD6V/QGIdkFT/KHg+esjT8634Ezn7JI=;
- b=ymg+boXSl/aD0vu6TvymAY7kF9D4iOa5IteWPGqTRViVtwQ9dYpEMYNzJI+CS9mumPoD
- YQcOO8K48XqGUQGOOxyTcga0Y/ItI5xbkmRrw9FZUWOttBOOAbDJtwnul1Hp1d3HpvVf
- 4e+BDWJgCzs59tdFkmjm6E0iKWli/EBEzd59UIxd3Df7l7wcCAC+vs5ekpQogbJ8uYFe
- 1kSq7GRNgTgjsAHeWdXJTIOueckjgfSzv+GdjfX4+CDm91myNGAeycDNVYKIrj+kRpdN
- UJqt9wg1Aspg1Uwa/qH/2OYrO6iA06N4ODlSsWKu6AIyMturQwEHHHusjRX5YgZ8NbcF WA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by userp2120.oracle.com with ESMTP id 33c3an12by-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Wed, 09 Sep 2020 11:46:45 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 089BjTQU166858;
- Wed, 9 Sep 2020 11:46:45 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by userp3020.oracle.com with ESMTP id 33cmesqhj5-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 09 Sep 2020 11:46:45 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 089BkiYj024495;
- Wed, 9 Sep 2020 11:46:44 GMT
-Received: from mwanda (/41.57.98.10) by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Wed, 09 Sep 2020 04:46:43 -0700
-Date: Wed, 9 Sep 2020 14:46:38 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: suravee.suthikulpanit@amd.com
-Subject: [bug report] iommu/amd: Restore IRTE.RemapEn bit after programming
- IRTE
-Message-ID: <20200909114638.GA17539@mwanda>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 172E787487
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 12:05:55 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86F7C31B;
+ Wed,  9 Sep 2020 05:05:54 -0700 (PDT)
+Received: from [10.57.40.122] (unknown [10.57.40.122])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8A4743F68F;
+ Wed,  9 Sep 2020 05:05:52 -0700 (PDT)
+Subject: Re: [PATCH] iommu/dma: Fix IOVA reserve dma ranges
+To: Srinath Mannam <srinath.mannam@broadcom.com>,
+ Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi
+ <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ poza@codeaurora.org
+References: <20200909053234.17027-1-srinath.mannam@broadcom.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <1996b772-774c-3475-05cc-77ae87176c3f@arm.com>
+Date: Wed, 9 Sep 2020 13:05:49 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- suspectscore=3 adultscore=0
- bulkscore=0 phishscore=0 malwarescore=0 mlxlogscore=601 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009090105
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- priorityscore=1501
- clxscore=1011 bulkscore=0 malwarescore=0 lowpriorityscore=0
- mlxlogscore=629 suspectscore=3 adultscore=0 mlxscore=0 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009090105
-Cc: iommu@lists.linux-foundation.org
+In-Reply-To: <20200909053234.17027-1-srinath.mannam@broadcom.com>
+Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org, bcm-kernel-feedback-list@broadcom.com,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,39 +79,82 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello Suravee Suthikulpanit,
+On 2020-09-09 06:32, Srinath Mannam wrote:
+> Fix IOVA reserve failure for memory regions listed in dma-ranges in the
+> following cases.
+> 
+> - start address of memory region is 0x0.
 
-This is a semi-automatic email about new static checker warnings.
+That's fair enough, and in fact generalises to the case of zero-sized 
+gaps between regions, which is indeed an oversight.
 
-The patch 26e495f34107: "iommu/amd: Restore IRTE.RemapEn bit after
-programming IRTE" from Sep 3, 2020, leads to the following Smatch
-complaint:
+> - end address of a memory region is equal to start address of next memory
+>    region.
 
-    drivers/iommu/amd/iommu.c:3870 amd_iommu_deactivate_guest_mode()
-    warn: variable dereferenced before check 'entry' (see line 3867)
+This part doesn't make much sense, however - if the regions described in 
+bridge->dma_ranges overlap, that's a bug in whoever created a malformed 
+list to begin with. Possibly it's just poor wording, and you're using 
+"memory regions" to refer to any or all of the dma_ranges, the reserved 
+IOVA ranges, and what "start" and "end" in this function represent which 
+isn't quite either of those.
 
-drivers/iommu/amd/iommu.c
-  3866		struct irq_cfg *cfg = ir_data->cfg;
-  3867		u64 valid = entry->lo.fields_remap.valid;
-                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The patch adds a new dereference
+> Fixes: aadad097cd46f ("iommu/dma: Reserve IOVA for PCIe inaccessible DMA address")
+> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> ---
+>   drivers/iommu/dma-iommu.c | 15 +++++++++++----
+>   1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 5141d49a046b..0a3f67a4f9ae 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -213,14 +213,21 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
+>   	resource_list_for_each_entry(window, &bridge->dma_ranges) {
+>   		end = window->res->start - window->offset;
+>   resv_iova:
+> +		if (end < start) {
+> +			/* dma_ranges list should be sorted */
+> +			dev_err(&dev->dev, "Failed to reserve IOVA\n");
+> +			return -EINVAL;
+> +		}
+> +		/*
+> +		 * Skip the cases when start address of first memory region is
+> +		 * 0x0 and end address of one memory region and start address
+> +		 * of next memory region are equal. Reserve IOVA for rest of
+> +		 * addresses fall in between given memory ranges.
+> +		 */
+>   		if (end > start) {
+>   			lo = iova_pfn(iovad, start);
+>   			hi = iova_pfn(iovad, end);
+>   			reserve_iova(iovad, lo, hi);
+> -		} else {
 
-  3868	
-  3869		if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
-  3870		    !entry || !entry->lo.fields_vapic.guest_mode)
-                    ^^^^^^
-before "entry" has been checked for NULL.
+Surely this only needs to be a one-liner?
 
-  3871			return 0;
-  3872	
+-		} else {
++		} else if (end < start) {
 
-regards,
-dan carpenter
+(or possibly "end != start"; I can't quite decide which expresses the 
+semantic intent better)
+
+The rest just looks like unnecessary churn - I don't think it needs 
+commenting that a sorted list may simply not have gaps between entries, 
+and as above I think the wording of that comment is actively misleading.
+
+Robin.
+
+> -			/* dma_ranges list should be sorted */
+> -			dev_err(&dev->dev, "Failed to reserve IOVA\n");
+> -			return -EINVAL;
+>   		}
+>   
+>   		start = window->res->end - window->offset + 1;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
