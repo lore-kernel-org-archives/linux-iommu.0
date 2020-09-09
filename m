@@ -2,89 +2,87 @@ Return-Path: <SRS0=bsOk=CS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690BFC433E2
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 07:06:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC59C433E2
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 08:35:01 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD9C821532
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 07:06:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BB26A215A4
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 08:35:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="QWCA9gPZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD9C821532
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Z0xdh5G0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB26A215A4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C33052E11D;
-	Wed,  9 Sep 2020 07:06:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5B18486E8F;
+	Wed,  9 Sep 2020 08:35:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HpZcbYkzhu9w; Wed,  9 Sep 2020 08:34:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 661B88543A;
+	Wed,  9 Sep 2020 08:34:59 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CC7CC0052;
+	Wed,  9 Sep 2020 08:34:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 06B8FC0051
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 08:34:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id ABA872E164
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 08:34:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eQ38X0tlQG6t; Wed,  9 Sep 2020 07:06:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 44ED5204B5;
-	Wed,  9 Sep 2020 07:06:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 30BA3C0052;
-	Wed,  9 Sep 2020 07:06:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25F2CC0051
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 07:06:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1FEA986DAE
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 07:06:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cVAQoUQDTenF for <iommu@lists.linux-foundation.org>;
- Wed,  9 Sep 2020 07:06:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 2F1DF86D9C
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 07:06:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=hCw8xGdlNdOCLWn3JTGudEyCmE42OPi648sQ0UReuL4=; b=QWCA9gPZCZ3wzIlKZV6poclcFq
- LzfIY4lmnE8VjlKQlNvIxOZhHe41lSL2CEaz90i97YxxVXfVK2X9ipiCtBI5MxDA/GrklQLLksV9N
- A+Npi3L42x5yATBqMul+YVCITK1IZThjOn0EUXnndO9qp7cPI0FFjw4jGkioLYG7yo+OIXJ90SVhh
- p828BaX8dZFZEzYrjLX+PcMmEzTQ4QaFDIf9VTMHiOulzyKvRLp4LgQRkKE6IWheY0Qo2AZRcG4t/
- E31RYqm6VXEyf9QSWC6uKFR7sdjlY3BZMedrpiAOMTsUbtVtomspvCxcQvlyn4mr8HghIktPWnf/d
- Z5aMpAyA==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat
- Linux)) id 1kFuBQ-0007rM-HR; Wed, 09 Sep 2020 07:06:20 +0000
-Date: Wed, 9 Sep 2020 08:06:20 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH V2 5/5] DO NOT MERGE: iommu: disable list appending in
- dma-iommu
-Message-ID: <20200909070620.GB28245@infradead.org>
-References: <20200903201839.7327-1-murphyt7@tcd.ie>
- <20200903201839.7327-6-murphyt7@tcd.ie>
- <20200907070035.GA25114@infradead.org>
- <CALQxJute8_y=JsW4UV1awSccOjxT_1OyPdymq=R_PurVQzENeQ@mail.gmail.com>
- <20200908053619.GA15418@infradead.org>
- <20200908055510.GA19078@infradead.org>
- <9655fdc9-6ea0-e4c1-e104-a9a8981ecb1e@linux.intel.com>
- <20200908062326.GB20774@infradead.org>
- <a10026ea-6de5-b7b1-80af-8000dfd4601b@linux.intel.com>
+ with ESMTP id KC4YJOeP+mAP for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Sep 2020 08:34:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3545420363
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 08:34:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599640494;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=pQkZFjFYaSMWuy1euxemi9N3xZazaBJbMNo8OCGEPv8=;
+ b=Z0xdh5G0DTxuhwbTO4r/qkqg083jeO6ACeUAJgsboc9kA08cimXrHTsjaBQcLXLNeo4rqz
+ 8+xy4t94ZZg+oN/vlpyQuH3cV6i/TcWtXkrMeIcHmzEdhi10JW426aNR+WS3f2EYl25MsT
+ am8zGXvrC0gEQxALjrIUv1Y6E4IOU4U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-534-BbmXKeMKNK-Ie1nQ57nZIA-1; Wed, 09 Sep 2020 04:34:51 -0400
+X-MC-Unique: BbmXKeMKNK-Ie1nQ57nZIA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB81018BE160;
+ Wed,  9 Sep 2020 08:34:47 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com
+ (ovpn-12-24.pek2.redhat.com [10.72.12.24])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 654E278380;
+ Wed,  9 Sep 2020 08:34:34 +0000 (UTC)
+From: Jason Wang <jasowang@redhat.com>
+To: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] intel-iommu: don't disable ATS for device without page
+ aligned request
+Date: Wed,  9 Sep 2020 16:34:32 +0800
+Message-Id: <20200909083432.9464-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <a10026ea-6de5-b7b1-80af-8000dfd4601b@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: intel-gfx@lists.freedesktop.org,
- Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Jani Nikula <jani.nikula@linux.intel.com>,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Tom Murphy <murphyt7@tcd.ie>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
- David Woodhouse <dwmw2@infradead.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: Ashok Raj <ashok.raj@intel.com>, mst@redhat.com,
+ Jason Wang <jasowang@redhat.com>, stable@vger.kernel.org,
+ Keith Busch <keith.busch@intel.com>, eperezma@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,39 +100,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 09, 2020 at 09:43:09AM +0800, Lu Baolu wrote:
-> +       /*
-> +        * The Intel graphic device driver is used to assume that the
-> returned
-> +        * sg list is not combound. This blocks the efforts of converting
-> the
+Commit 61363c1474b1 ("iommu/vt-d: Enable ATS only if the device uses
+page aligned address.") disables ATS for device that can do unaligned
+page request.
 
-This adds pointless overly long lines.
+This looks wrong, since the commit log said it's because the page
+request descriptor doesn't support reporting unaligned request.
 
-> +        * Intel IOMMU driver to dma-iommu api's. Add this quirk to make the
-> +        * device driver work and should be removed once it's fixed in i915
-> +        * driver.
-> +        */
-> +       if (dev_is_pci(dev) &&
-> +           to_pci_dev(dev)->vendor == PCI_VENDOR_ID_INTEL &&
-> +           (to_pci_dev(dev)->class >> 16) == PCI_BASE_CLASS_DISPLAY) {
-> +               for_each_sg(sg, s, nents, i) {
-> +                       unsigned int s_iova_off = sg_dma_address(s);
-> +                       unsigned int s_length = sg_dma_len(s);
-> +                       unsigned int s_iova_len = s->length;
-> +
-> +                       s->offset += s_iova_off;
-> +                       s->length = s_length;
-> +                       sg_dma_address(s) = dma_addr + s_iova_off;
-> +                       sg_dma_len(s) = s_length;
-> +                       dma_addr += s_iova_len;
-> +               }
-> +
-> +               return nents;
-> +       }
+A victim is Qemu's virtio-pci which doesn't advertise the page aligned
+address. Fixing by disable PRI instead of ATS if device doesn't have
+page aligned request.
 
-This wants an IS_ENABLED() check.  And probably a pr_once reminding
-of the workaround.
+Cc: stable@vger.kernel.org
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Keith Busch <keith.busch@intel.com>
+Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/iommu/intel/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index e9864e52b0e9..ef5214a8a4dd 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1440,10 +1440,11 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 
+ 	if (info->pri_supported &&
+ 	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)  &&
++	    pci_ats_page_aligned(pdev) &&
+ 	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
+ 		info->pri_enabled = 1;
+ #endif
+-	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
++	if (info->ats_supported &&
+ 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+ 		info->ats_enabled = 1;
+ 		domain_update_iotlb(info->domain);
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
