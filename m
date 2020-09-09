@@ -2,129 +2,79 @@ Return-Path: <SRS0=bsOk=CS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB47C43461
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 16:20:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9B6C43461
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 17:11:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 83A7421D94
-	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 16:20:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="Tkve2/t5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 83A7421D94
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	by mail.kernel.org (Postfix) with ESMTPS id 474032087C
+	for <iommu@archiver.kernel.org>; Wed,  9 Sep 2020 17:11:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 474032087C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F404286E10;
-	Wed,  9 Sep 2020 16:20:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D6A1C868D4;
+	Wed,  9 Sep 2020 17:10:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R1tDhJV53y-B; Wed,  9 Sep 2020 16:20:55 +0000 (UTC)
+	with ESMTP id ADC1BMXNn7aZ; Wed,  9 Sep 2020 17:10:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 75F32869F5;
-	Wed,  9 Sep 2020 16:20:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BAA898689D;
+	Wed,  9 Sep 2020 17:10:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E467C0052;
-	Wed,  9 Sep 2020 16:20:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A96C7C0859;
+	Wed,  9 Sep 2020 17:10:58 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 568CCC0051
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 16:20:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27357C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 17:10:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3E95786DE9
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 16:20:54 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 12FA18501A
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 17:10:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JTg6fYWUu280 for <iommu@lists.linux-foundation.org>;
- Wed,  9 Sep 2020 16:20:53 +0000 (UTC)
+ with ESMTP id JkjXjpEa83De for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Sep 2020 17:10:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com
- (mail-db8eur05on2054.outbound.protection.outlook.com [40.107.20.54])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 13C03869F5
- for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 16:20:53 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dm36+6QfwIWiXyn+7xHcGvEFRvhJjOSLI8VLQ42gA0yvfDXAsp9TFgEzy8/1v+ySAWjp+6woEDg3pCQcOaFgqS+7v1abYvHJAhgNrJWab8ZB+ZEupy0MSn/w32okkyHF2MTdxI3PGfEiEYQUrtusqO7bvSW9F0ykQRt4wxjWrBs+566e+RAZan2gIWZyP91C/WnS1bUMglnkxR2UIH5Tgb7/sD2v4TLAV/LJNpL1paNcmqPtsKulwWsappCwURMQNaKV4bo2uT5264U+pWszyn0UEoNI1Bz97xiEmxfzmT/R19LPrBcj2s3g6/wtsVq3meAixMMR5zHlEnQBl5aoiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I/PMyM0lVODWMLqPg64kWdN8rSO+9ozQ2/X2Z1qeeQM=;
- b=aPB0ek9sXx/HDFqbz/gG9uzJCetr5XbdgxHD3DyiFZTHjTyPmM/v6P+8xlUvVnIn5O1iLrcE7MDiuSXA7/q7lP9f3swMQFsR3gkD1+qnyeXVDFoNVBpBCf/wmv45wiBtb17qjEFMZXW8MX0FIsUc5PVM33luFb9I6rz7fgxY9ccbiI93k4s/nMQkB+mF1rtlwU5S1MWPnQeOLg9k2668NRfsQDYPCdPO6f7oQ8Ivz3cmqTEA7y0/5CNApPNujuUlCwkHwI2V8gL0XjvlOqIW/iI4AtbOF5fSdYL/j2Dyp/3LFBcJEFdhgjM2iI11cW2hOG+ePBo1jobXHQrPwOL6lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I/PMyM0lVODWMLqPg64kWdN8rSO+9ozQ2/X2Z1qeeQM=;
- b=Tkve2/t5Tun5CSfFe4LkNazNdwTV9yxBqSySJBwmiUXYHuy3xm3rivoDLig1yLeSojagg4JE1W5AyzhjgSkDrljxFs4kde7kTnuyML/javQltDmCPbul33c12PYhH/8eyq58e8K2s8Bfv574pRmBTt1raVhAQjMkuKrHbvNeV+M=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com (2603:10a6:803:3::26)
- by VI1PR04MB4239.eurprd04.prod.outlook.com (2603:10a6:803:48::18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Wed, 9 Sep
- 2020 14:46:49 +0000
-Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com
- ([fe80::f960:c16d:16a5:6e7b]) by VI1PR0402MB3405.eurprd04.prod.outlook.com
- ([fe80::f960:c16d:16a5:6e7b%7]) with mapi id 15.20.3348.019; Wed, 9 Sep 2020
- 14:46:49 +0000
-Subject: Re: [PATCH v3 0/8] iommu/arm-smmu: Support maintaining bootloader
- mappings
-To: Bjorn Andersson <bjorn.andersson@linaro.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Jordan Crouse <jcrouse@codeaurora.org>, Rob Clark <robdclark@chromium.org>
-References: <20200904155513.282067-1-bjorn.andersson@linaro.org>
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Message-ID: <e0a34fde-83f4-7698-0be2-4da1a9f30ee4@nxp.com>
-Date: Wed, 9 Sep 2020 17:46:45 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-In-Reply-To: <20200904155513.282067-1-bjorn.andersson@linaro.org>
-Content-Language: en-US
-X-ClientProxiedBy: AM4PR07CA0005.eurprd07.prod.outlook.com
- (2603:10a6:205:1::18) To VI1PR0402MB3405.eurprd04.prod.outlook.com
- (2603:10a6:803:3::26)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6DD3F857F8
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Sep 2020 17:10:57 +0000 (UTC)
+IronPort-SDR: upM71HxAsJBSTPfeG9y3h69Oa/bkjPc2HW6uyWWlllHgp8Q2AS000Y0NFhIyPHmgDDiQwAbLJM
+ sE/QWF5Wd1jQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="155842244"
+X-IronPort-AV: E=Sophos;i="5.76,409,1592895600"; d="scan'208";a="155842244"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Sep 2020 10:10:56 -0700
+IronPort-SDR: 5qT68Jsn0cJQAktVnxQeDCfV8fH0mpJfxEtiS+SvivGmWwong8TxccfnMWaV91WoWzHQrBbXr3
+ ET5pqWXNskJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,409,1592895600"; d="scan'208";a="333886837"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by orsmga008.jf.intel.com with ESMTP; 09 Sep 2020 10:10:56 -0700
+Date: Wed, 9 Sep 2020 10:10:56 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH] intel-iommu: don't disable ATS for device without page
+ aligned request
+Message-ID: <20200909171056.GF104641@otc-nc-03>
+References: <20200909083432.9464-1-jasowang@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.107] (188.25.99.125) by
- AM4PR07CA0005.eurprd07.prod.outlook.com (2603:10a6:205:1::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3391.5 via Frontend Transport; Wed, 9 Sep 2020 14:46:47 +0000
-X-Originating-IP: [188.25.99.125]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 77ac3f64-d8f0-409f-95d6-08d854cf2e9d
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4239:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4239A437541BD321BA58C78EEC260@VI1PR04MB4239.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fbDClgQtOGGvI9YInoT4bpMnOTX7UueDsq7RL3CP0ldMgvCV1pvSPsmo+p0vbwyeQ5gnt+uf6Mfq9EaaeXLi/RF8cvfTq6qsnOTKHqGUMDGVAevB5AifJGRT82ujpOJb3C6OzsJSI7qYXJeHfLDjWw9k14pjSXeBHx9JRgMTM5rdWjY85y1Hd7RpG8aKu3xt1dXXUibpNxU1hlMgTJLh6+v6HlXuvGMzM/PkS64oMnbB9t4/NXeCYqbK/qxlF0P8T1B04a223pnuRfrtgOF/pVmyOC2Vo7RffbGAQk2x9MKt4R3GmxNiYMQ2fjrV8rYd1JDSfquLu7/hNPzzFbXp2Lr9MQn+7IbF02xiHc4TcAbksXzv4puqVF2uiZtILiyBb+9+uLOuxbcIkCJ5Kwmx/Kr4i21GTuAOh+8vb3m5KTlpw0apD7IYfmsDC1234aPdOcM0GRvOK1fIDu8n8mNLgg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:VI1PR0402MB3405.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(376002)(39860400002)(366004)(136003)(396003)(8676002)(4744005)(31696002)(66556008)(66946007)(66476007)(5660300002)(53546011)(2906002)(16576012)(16526019)(4326008)(52116002)(186003)(8936002)(966005)(110136005)(83380400001)(26005)(44832011)(478600001)(7416002)(2616005)(956004)(316002)(6486002)(36756003)(86362001)(31686004)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: XPK3h1TLfNSsRh2D48N5Fm8BkoseSlRrEB/EvW0egY2I5+rllgsZ7Lk+4ToEbwqGbXmEtX3lGuCj4wQoTpMsi5xt/W7IRo5lB52I0qz75ZLR9Ev4+Oaf5JhxM9uMhL+K+XsMjdAXXVJ4+mA7igVg84XAJNehHQaQTgXftWsUckXoIPYfTpbRjRK1d2lxbC6dZ0EmK1Pe4JOgcUFczhs0ARJkVHSJv/DK673OtRriUiQ7CW766uUqAHcQvOp2K5Ts2mLnwdSjKiX8NQDKJbGH8XyQAbWgtEODvDvvpcweB82sIqDFiTxZICmfdtGM/17N+RIbX/b4h5FE7DZJh5C/dQ+Le8Sn8Umo0YP0tO5xRZXUeRaq9vO3twWRyLeoX6la8h2GR23P2bEJ+6NEimXkLnTJKBZ/qy2oLIDVz3E29lCRwdi1XBpX1UoWFsmUwiVLWPrf1k5Tt5VltcxOlR7pd1Qys1CsCuoDtXIhh2pl9GQiYB8mrItERtVnDKyA6nz0URk6H3yZAz0ynJT1AWfZjCyRF0DMQZPIba3B8HpuF3brNzL/Y4a/TMNBjObSTwNzIRWoAxCGYJHOUD62ONez/PyMtjIDULKraBI01yIBbQCfGB03EJEysprAEXC7M4vvLPHWKrPYQIz8MQEYVeNHkw==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77ac3f64-d8f0-409f-95d6-08d854cf2e9d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3405.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2020 14:46:49.3056 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dmIMyoAc0wagaG7jlarOAGqrnyl4RsKlf8Nvj5iFUCQWZ4oHm2nBxL7Iy5zO6nlBF39wXCPsxKGY4dxJCM574g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4239
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- Sibi Sankar <sibis@codeaurora.org>, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20200909083432.9464-1-jasowang@redhat.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Ashok Raj <ashok.raj@intel.com>, mst@redhat.com,
+ linux-kernel@vger.kernel.org, Keith Busch <keith.busch@intel.com>,
+ eperezma@redhat.com, iommu@lists.linux-foundation.org, stable@vger.kernel.org,
+ dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -142,22 +92,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Bjorn,
+Hi Jason
 
-On 9/4/2020 6:55 PM, Bjorn Andersson wrote:
-> Based on previous attempts and discussions this is the latest attempt at
-> inheriting stream mappings set up by the bootloader, for e.g. boot splash or
-> efifb.
+On Wed, Sep 09, 2020 at 04:34:32PM +0800, Jason Wang wrote:
+> Commit 61363c1474b1 ("iommu/vt-d: Enable ATS only if the device uses
+> page aligned address.") disables ATS for device that can do unaligned
+> page request.
+
+Did you take a look at the PCI specification?
+Page Aligned Request is in the ATS capability Register.
+
+ATS Capability Register (Offset 0x04h)
+
+bit (5):
+Page Aligned Request - If Set, indicates the Untranslated address is always
+aligned to 4096 byte boundary. Setting this field is recommended. This
+field permits software to distinguish between implemntations compatible
+with this specification and those compatible with an earlier version of
+this specification in which a Requester was permitted to supply anything in
+bits [11:2].
+
 > 
-> Per Will's request this builds on the work by Jordan and Rob for the Adreno
-> SMMU support. It applies cleanly ontop of v16 of their series, which can be
-> found at
-> https://lore.kernel.org/linux-arm-msm/20200901164707.2645413-1-robdclark@gmail.com/
+> This looks wrong, since the commit log said it's because the page
+> request descriptor doesn't support reporting unaligned request.
 
-Is there a git repo available with all the patches put together?
+I don't think you can change the definition from ATS to PRI. Both are
+orthogonal feature.
 
----
-Thanks & Best Regards, Laurentiu
+> 
+> A victim is Qemu's virtio-pci which doesn't advertise the page aligned
+> address. Fixing by disable PRI instead of ATS if device doesn't have
+> page aligned request.
+
+This is a requirement for the Intel IOMMU's.
+
+You say virtio, so is it all emulated device or you talking about some
+hardware that implemented virtio-pci compliant hw? If you are sure the
+device actually does comply with the requirement, but just not enumerating
+the capability, you can maybe work a quirk to overcome that?
+
+Now PRI also has an alignment requirement, and Intel IOMMU's requires that
+as well. If your device supports SRIOV as well, PASID and PRI are
+enumerated just on the PF and not the VF. You might want to pay attension
+to that. We are still working on a solution for that problem.
+
+I don't think this is the right fix for your problem. 
+
+> 
+> Cc: stable@vger.kernel.org
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Keith Busch <keith.busch@intel.com>
+> Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
