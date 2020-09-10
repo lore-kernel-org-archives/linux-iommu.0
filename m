@@ -2,73 +2,93 @@ Return-Path: <SRS0=7VEr=CT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59264C43461
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:14:04 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DCDC433E2
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:17:53 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69F7A207DE
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:14:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69F7A207DE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 0320920809
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:17:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xs4all.nl header.i=@xs4all.nl header.b="nxL6ixWo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0320920809
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xs4all.nl
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BB8CA875A0;
-	Thu, 10 Sep 2020 09:14:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HaqCqCrW7BD3; Thu, 10 Sep 2020 09:14:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B6C1D87594;
-	Thu, 10 Sep 2020 09:14:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F98EC0859;
-	Thu, 10 Sep 2020 09:14:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 44112C0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:14:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2646A204C3
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:14:00 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 812CE204E1;
+	Thu, 10 Sep 2020 09:17:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kb8WrN90-efD; Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 6A692204D9;
+	Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E116C0052;
+	Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C891C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8661787594
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a9vFKDjliM2a for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 09:13:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id CFD73204D9
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:13:56 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 7F59E6736F; Thu, 10 Sep 2020 11:13:51 +0200 (CEST)
-Date: Thu, 10 Sep 2020 11:13:51 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 3/3] dma-mapping: introduce DMA range map, supplanting
- dma_pfn_offset
-Message-ID: <20200910091351.GA25883@lst.de>
-References: <20200910054038.324517-1-hch@lst.de>
- <20200910054038.324517-4-hch@lst.de> <20200910075351.GA1092435@kroah.com>
+ with ESMTP id Ao9vlqkUlXyb for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 09:17:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from lb2-smtp-cloud8.xs4all.net (lb2-smtp-cloud8.xs4all.net
+ [194.109.24.25])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0798287599
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:45 +0000 (UTC)
+Received: from cust-b5b5937f ([IPv6:fc0c:c16d:66b8:757f:c639:739b:9d66:799d])
+ by smtp-cloud8.xs4all.net with ESMTPA
+ id GIi0kYt1SPTBMGIi1kQaZv; Thu, 10 Sep 2020 11:17:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xs4all.nl; s=s1;
+ t=1599729464; bh=SOB+0wexHska1Ivgxq6US3wAQZn9sVTIazfeIH88yQ0=;
+ h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type:From:
+ Subject;
+ b=nxL6ixWoWEXEiGQapeNSq7XtIn4mWLlyNNtzPUmmqSYGrKJJS0YIgPyIqa792QHnw
+ XdBL9VWo9A4Us3G7+ZDYRMmbT2KwgtQGM69loIGxJWEwXMFvZ1SuE/dN6XeLPERSqB
+ 3Ok/dq1tb7uPjmRWzTEPo1WZR/y7nHxU4ketZpjOtFFyqyhnCCkgHxqf9MvjoVPh9S
+ QVBx59SDczngil2/NopypYqzD9lLTuQKNRzEGUQKKRCaTV3Uzgi9YSMtIj6eHMDSzD
+ wr7r+CY6Xj7xx3TDMyC+HGsMp2AGGaRXh3W1GsJqRe4e7FKaU7vaQiUhGjTR7Wit8W
+ v9M36n3FB0Flg==
+Subject: Re: [PATCH v10 30/30] videobuf2: use sgtable-based scatterlist
+ wrappers
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20200904131711.12950-1-m.szyprowski@samsung.com>
+ <CGME20200904133512eucas1p204efa4e252ceb5fb50715239705f9965@eucas1p2.samsung.com>
+ <20200904131711.12950-31-m.szyprowski@samsung.com>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+Message-ID: <e1070a0d-2772-b5e2-7067-9f53ade19aae@xs4all.nl>
+Date: Thu, 10 Sep 2020 11:17:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200910075351.GA1092435@kroah.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: devicetree@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
- linux-sh@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- linux-usb@vger.kernel.org, linux-pci@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, Jim Quinlan <james.quinlan@broadcom.com>,
- Santosh Shilimkar <ssantosh@kernel.org>,
- Nathan Chancellor <natechancellor@gmail.com>,
+In-Reply-To: <20200904131711.12950-31-m.szyprowski@samsung.com>
+Content-Language: en-US
+X-CMAE-Envelope: MS4wfOyym1s3hFy/wAnDsU5HmkCZJYyTj0QxaN6e/uK7k12aGGra4yqVYNAI11oZgPFnkurAxOfrqhRtT3UeKSK+3Y6xUMlkjhbpk5SqXaBWLGvAC8bcL20U
+ SQl3FQ6ug7sKPMxbQ9nPZ9abpjMmfbsdeKC4HHQE2YYcaNMQ7qict2h/6JShk+yTvN4XM0ZES+Lyb1vnILB077gRCSygCrFB5sCcwJNVbP4AdxQa3VpctLPs
+ WcOQXh/YE2Xw/tNcQ2Ny2bGrLZq++NZwUbCvGVe8FPIvQ7C/7Pc2p+A0wWGkoSUZNDbW92sPKFyYIGBxsCVG0S9K548oSNYUYgniCx159VuyK0gVspmpTJ8e
+ ZzjeqWfrVDuNrKdeM8Nne0gfhl7mX0+5Ep8CvtWuusUWROjdbImIgoaeuN0i813xBDrU5iobK+2ZL9DhtnwI+ZWGC5qwHiRTBnMgeH7WGjIrUcenbPsQW+Cl
+ eCBIEzwASMN9RMaEEwbzJcaZcrLcXPUzNUBrFUdeN3e/GwGG9vWNlGWRvREsKFAuTJkc2/zA1b1zVFwohmjpejqRVae1H7XgwmNR9MKKwe76cNRdWr1d5Bu5
+ 40cz/MOmAYDbV1eddNggEFio1GVwEJwmIBafyh/8UhvK4c/57KpZ0H9DnTdBFNB9ec1H8PypAO7yjhsVDzKvcSBCKBD3ot0N/yuc4hJ9uQUr6D6MEY/WIVfb
+ Po0zpkjQXuKHrpA+HijgkLX/elJC8p10Gfa2xlVh5MprizQIMePbnw==
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+ linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,103 +106,274 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 10, 2020 at 09:53:51AM +0200, Greg KH wrote:
-> >  		/*
-> >  		 * Please refer to usb_alloc_dev() to see why we set
-> > -		 * dma_mask and dma_pfn_offset.
-> > +		 * dma_mask and dma_range_map.
-> >  		 */
-> >  		intf->dev.dma_mask = dev->dev.dma_mask;
-> > -		intf->dev.dma_pfn_offset = dev->dev.dma_pfn_offset;
-> > +		if (dma_direct_copy_range_map(&intf->dev, &dev->dev))
-> > +			dev_err(&dev->dev, "failed to copy DMA map\n");
+On 04/09/2020 15:17, Marek Szyprowski wrote:
+> Use recently introduced common wrappers operating directly on the struct
+> sg_table objects and scatterlist page iterators to make the code a bit
+> more compact, robust, easier to follow and copy/paste safe.
 > 
-> We tell the user, but then just keep on running?  Is there anything that
-> we can do here?
+> No functional change, because the code already properly did all the
+> scatterlist related calls.
 > 
-> If not, why not have dma_direct_copy_range_map() print out the error?
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-At least for USB I'm pretty sure this isn't required at all.  I've been
-running with the patch below on my desktop for two days now trying all
-the usb toys I have (in addition to grepping for obvious abuses in
-the drivers).  remoteproc is a different story, but the DMA handling
-seems there is sketchy to start with..
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
----
-From 8bae3e6833f2ca431dcfcbc8f9cced7d5e972a01 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 9 Sep 2020 08:28:59 +0200
-Subject: usb: don't inherity DMA properties for USB devices
+Note that I agree with Marek to keep returning -EIO. If we want to propagate
+low-level errors, then that should be done in a separate patch. But I think EIO
+is fine.
 
-As the comment in usb_alloc_dev correctly states, drivers can't use
-the DMA API on usb device, and at least calling dma_set_mask on them
-is highly dangerous.  Unlike what the comment states upper level drivers
-also can't really use the presence of a dma mask to check for DMA
-support, as the dma_mask is set by default for most busses.
+Regards,
 
-Remove the copying over of DMA information, and remove the now unused
-dma_direct_copy_range_map export.
+	Hans
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/usb/core/message.c |  7 -------
- drivers/usb/core/usb.c     | 13 -------------
- kernel/dma/direct.c        |  1 -
- 3 files changed, 21 deletions(-)
-
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-index 935ee98e049f65..9e45732dc1d1d1 100644
---- a/drivers/usb/core/message.c
-+++ b/drivers/usb/core/message.c
-@@ -1954,13 +1954,6 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
- 		intf->dev.bus = &usb_bus_type;
- 		intf->dev.type = &usb_if_device_type;
- 		intf->dev.groups = usb_interface_groups;
--		/*
--		 * Please refer to usb_alloc_dev() to see why we set
--		 * dma_mask and dma_range_map.
--		 */
--		intf->dev.dma_mask = dev->dev.dma_mask;
--		if (dma_direct_copy_range_map(&intf->dev, &dev->dev))
--			dev_err(&dev->dev, "failed to copy DMA map\n");
- 		INIT_WORK(&intf->reset_ws, __usb_queue_reset_device);
- 		intf->minor = -1;
- 		device_initialize(&intf->dev);
-diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
-index 23d451f6894d70..9b4ac4415f1a47 100644
---- a/drivers/usb/core/usb.c
-+++ b/drivers/usb/core/usb.c
-@@ -599,19 +599,6 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
- 	dev->dev.bus = &usb_bus_type;
- 	dev->dev.type = &usb_device_type;
- 	dev->dev.groups = usb_device_groups;
--	/*
--	 * Fake a dma_mask/offset for the USB device:
--	 * We cannot really use the dma-mapping API (dma_alloc_* and
--	 * dma_map_*) for USB devices but instead need to use
--	 * usb_alloc_coherent and pass data in 'urb's, but some subsystems
--	 * manually look into the mask/offset pair to determine whether
--	 * they need bounce buffers.
--	 * Note: calling dma_set_mask() on a USB device would set the
--	 * mask for the entire HCD, so don't do that.
--	 */
--	dev->dev.dma_mask = bus->sysdev->dma_mask;
--	if (dma_direct_copy_range_map(&dev->dev, bus->sysdev))
--		dev_err(&dev->dev, "failed to copy DMA map\n");
- 	set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
- 	dev->state = USB_STATE_ATTACHED;
- 	dev->lpm_disable_count = 1;
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index fc815f7375e282..3af257571a3b42 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -552,4 +552,3 @@ int dma_direct_copy_range_map(struct device *to, struct device *from)
- 	to->dma_range_map = new_map;
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(dma_direct_copy_range_map);
--- 
-2.28.0
+> ---
+>  .../common/videobuf2/videobuf2-dma-contig.c   | 34 ++++++++-----------
+>  .../media/common/videobuf2/videobuf2-dma-sg.c | 32 +++++++----------
+>  .../common/videobuf2/videobuf2-vmalloc.c      | 12 +++----
+>  3 files changed, 31 insertions(+), 47 deletions(-)
+> 
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> index ec3446cc45b8..1b242d844dde 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> @@ -58,10 +58,10 @@ static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
+>  	unsigned int i;
+>  	unsigned long size = 0;
+>  
+> -	for_each_sg(sgt->sgl, s, sgt->nents, i) {
+> +	for_each_sgtable_dma_sg(sgt, s, i) {
+>  		if (sg_dma_address(s) != expected)
+>  			break;
+> -		expected = sg_dma_address(s) + sg_dma_len(s);
+> +		expected += sg_dma_len(s);
+>  		size += sg_dma_len(s);
+>  	}
+>  	return size;
+> @@ -103,8 +103,7 @@ static void vb2_dc_prepare(void *buf_priv)
+>  	if (!sgt)
+>  		return;
+>  
+> -	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
+> -			       buf->dma_dir);
+> +	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
+>  }
+>  
+>  static void vb2_dc_finish(void *buf_priv)
+> @@ -115,7 +114,7 @@ static void vb2_dc_finish(void *buf_priv)
+>  	if (!sgt)
+>  		return;
+>  
+> -	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
+> +	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
+>  }
+>  
+>  /*********************************************/
+> @@ -275,8 +274,8 @@ static void vb2_dc_dmabuf_ops_detach(struct dma_buf *dbuf,
+>  		 * memory locations do not require any explicit cache
+>  		 * maintenance prior or after being used by the device.
+>  		 */
+> -		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
+> +				  DMA_ATTR_SKIP_CPU_SYNC);
+>  	sg_free_table(sgt);
+>  	kfree(attach);
+>  	db_attach->priv = NULL;
+> @@ -301,8 +300,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> -		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
+> +				  DMA_ATTR_SKIP_CPU_SYNC);
+>  		attach->dma_dir = DMA_NONE;
+>  	}
+>  
+> @@ -310,9 +309,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+>  	 * mapping to the client with new direction, no cache sync
+>  	 * required see comment in vb2_dc_dmabuf_ops_detach()
+>  	 */
+> -	sgt->nents = dma_map_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -				      dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> -	if (!sgt->nents) {
+> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
+> +			    DMA_ATTR_SKIP_CPU_SYNC)) {
+>  		pr_err("failed to map scatterlist\n");
+>  		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+> @@ -455,8 +453,8 @@ static void vb2_dc_put_userptr(void *buf_priv)
+>  		 * No need to sync to CPU, it's already synced to the CPU
+>  		 * since the finish() memop will have been called before this.
+>  		 */
+> -		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
+> +				  DMA_ATTR_SKIP_CPU_SYNC);
+>  		pages = frame_vector_pages(buf->vec);
+>  		/* sgt should exist only if vector contains pages... */
+>  		BUG_ON(IS_ERR(pages));
+> @@ -553,9 +551,8 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  	 * No need to sync to the device, this will happen later when the
+>  	 * prepare() memop is called.
+>  	 */
+> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> -	if (sgt->nents <= 0) {
+> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
+> +			    DMA_ATTR_SKIP_CPU_SYNC)) {
+>  		pr_err("failed to map scatterlist\n");
+>  		ret = -EIO;
+>  		goto fail_sgt_init;
+> @@ -577,8 +574,7 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  	return buf;
+>  
+>  fail_map_sg:
+> -	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -			   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+>  
+>  fail_sgt_init:
+>  	sg_free_table(sgt);
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> index 0a40e00f0d7e..0dd3b19025e0 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> @@ -148,9 +148,8 @@ static void *vb2_dma_sg_alloc(struct device *dev, unsigned long dma_attrs,
+>  	 * No need to sync to the device, this will happen later when the
+>  	 * prepare() memop is called.
+>  	 */
+> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> -	if (!sgt->nents)
+> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
+> +			    DMA_ATTR_SKIP_CPU_SYNC))
+>  		goto fail_map;
+>  
+>  	buf->handler.refcount = &buf->refcount;
+> @@ -186,8 +185,8 @@ static void vb2_dma_sg_put(void *buf_priv)
+>  	if (refcount_dec_and_test(&buf->refcount)) {
+>  		dprintk(1, "%s: Freeing buffer of %d pages\n", __func__,
+>  			buf->num_pages);
+> -		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
+> +				  DMA_ATTR_SKIP_CPU_SYNC);
+>  		if (buf->vaddr)
+>  			vm_unmap_ram(buf->vaddr, buf->num_pages);
+>  		sg_free_table(buf->dma_sgt);
+> @@ -204,8 +203,7 @@ static void vb2_dma_sg_prepare(void *buf_priv)
+>  	struct vb2_dma_sg_buf *buf = buf_priv;
+>  	struct sg_table *sgt = buf->dma_sgt;
+>  
+> -	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
+> -			       buf->dma_dir);
+> +	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
+>  }
+>  
+>  static void vb2_dma_sg_finish(void *buf_priv)
+> @@ -213,7 +211,7 @@ static void vb2_dma_sg_finish(void *buf_priv)
+>  	struct vb2_dma_sg_buf *buf = buf_priv;
+>  	struct sg_table *sgt = buf->dma_sgt;
+>  
+> -	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
+> +	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
+>  }
+>  
+>  static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
+> @@ -256,9 +254,8 @@ static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
+>  	 * No need to sync to the device, this will happen later when the
+>  	 * prepare() memop is called.
+>  	 */
+> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> -	if (!sgt->nents)
+> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
+> +			    DMA_ATTR_SKIP_CPU_SYNC))
+>  		goto userptr_fail_map;
+>  
+>  	return buf;
+> @@ -284,8 +281,7 @@ static void vb2_dma_sg_put_userptr(void *buf_priv)
+>  
+>  	dprintk(1, "%s: Releasing userspace buffer of %d pages\n",
+>  	       __func__, buf->num_pages);
+> -	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir,
+> -			   DMA_ATTR_SKIP_CPU_SYNC);
+> +	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+>  	if (buf->vaddr)
+>  		vm_unmap_ram(buf->vaddr, buf->num_pages);
+>  	sg_free_table(buf->dma_sgt);
+> @@ -408,8 +404,7 @@ static void vb2_dma_sg_dmabuf_ops_detach(struct dma_buf *dbuf,
+>  
+>  	/* release the scatterlist cache */
+>  	if (attach->dma_dir != DMA_NONE)
+> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -			attach->dma_dir);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+>  	sg_free_table(sgt);
+>  	kfree(attach);
+>  	db_attach->priv = NULL;
+> @@ -434,15 +429,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -			attach->dma_dir);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+>  		attach->dma_dir = DMA_NONE;
+>  	}
+>  
+>  	/* mapping to the client with new direction */
+> -	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -				dma_dir);
+> -	if (!sgt->nents) {
+> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+>  		pr_err("failed to map scatterlist\n");
+>  		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+> diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> index c66fda4a65e4..bf5ac63a5742 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+> @@ -229,7 +229,7 @@ static int vb2_vmalloc_dmabuf_ops_attach(struct dma_buf *dbuf,
+>  		kfree(attach);
+>  		return ret;
+>  	}
+> -	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
+> +	for_each_sgtable_sg(sgt, sg, i) {
+>  		struct page *page = vmalloc_to_page(vaddr);
+>  
+>  		if (!page) {
+> @@ -259,8 +259,7 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
+>  
+>  	/* release the scatterlist cache */
+>  	if (attach->dma_dir != DMA_NONE)
+> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -			attach->dma_dir);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+>  	sg_free_table(sgt);
+>  	kfree(attach);
+>  	db_attach->priv = NULL;
+> @@ -285,15 +284,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+>  
+>  	/* release any previous cache */
+>  	if (attach->dma_dir != DMA_NONE) {
+> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -			attach->dma_dir);
+> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+>  		attach->dma_dir = DMA_NONE;
+>  	}
+>  
+>  	/* mapping to the client with new direction */
+> -	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+> -				dma_dir);
+> -	if (!sgt->nents) {
+> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+>  		pr_err("failed to map scatterlist\n");
+>  		mutex_unlock(lock);
+>  		return ERR_PTR(-EIO);
+> 
 
 _______________________________________________
 iommu mailing list
