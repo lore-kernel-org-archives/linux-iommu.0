@@ -5,90 +5,91 @@ X-Spam-Level:
 X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DCDC433E2
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:17:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799C6C2BB84
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:18:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0320920809
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:17:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E797420809
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 09:18:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xs4all.nl header.i=@xs4all.nl header.b="nxL6ixWo"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0320920809
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xs4all.nl
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hGref4sp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E797420809
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 812CE204E1;
-	Thu, 10 Sep 2020 09:17:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7112086F27;
+	Thu, 10 Sep 2020 09:18:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I2bvi4JXA69J; Thu, 10 Sep 2020 09:18:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BA29286EDB;
+	Thu, 10 Sep 2020 09:18:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96A08C0052;
+	Thu, 10 Sep 2020 09:18:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8EC60C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:18:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 5AFB0204E1
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:18:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kb8WrN90-efD; Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6A692204D9;
-	Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E116C0052;
-	Thu, 10 Sep 2020 09:17:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8C891C0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8661787594
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ao9vlqkUlXyb for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 09:17:46 +0000 (UTC)
+ with ESMTP id bRJwIPZO89dv for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 09:18:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from lb2-smtp-cloud8.xs4all.net (lb2-smtp-cloud8.xs4all.net
- [194.109.24.25])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0798287599
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:17:45 +0000 (UTC)
-Received: from cust-b5b5937f ([IPv6:fc0c:c16d:66b8:757f:c639:739b:9d66:799d])
- by smtp-cloud8.xs4all.net with ESMTPA
- id GIi0kYt1SPTBMGIi1kQaZv; Thu, 10 Sep 2020 11:17:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xs4all.nl; s=s1;
- t=1599729464; bh=SOB+0wexHska1Ivgxq6US3wAQZn9sVTIazfeIH88yQ0=;
- h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type:From:
- Subject;
- b=nxL6ixWoWEXEiGQapeNSq7XtIn4mWLlyNNtzPUmmqSYGrKJJS0YIgPyIqa792QHnw
- XdBL9VWo9A4Us3G7+ZDYRMmbT2KwgtQGM69loIGxJWEwXMFvZ1SuE/dN6XeLPERSqB
- 3Ok/dq1tb7uPjmRWzTEPo1WZR/y7nHxU4ketZpjOtFFyqyhnCCkgHxqf9MvjoVPh9S
- QVBx59SDczngil2/NopypYqzD9lLTuQKNRzEGUQKKRCaTV3Uzgi9YSMtIj6eHMDSzD
- wr7r+CY6Xj7xx3TDMyC+HGsMp2AGGaRXh3W1GsJqRe4e7FKaU7vaQiUhGjTR7Wit8W
- v9M36n3FB0Flg==
-Subject: Re: [PATCH v10 30/30] videobuf2: use sgtable-based scatterlist
- wrappers
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-References: <20200904131711.12950-1-m.szyprowski@samsung.com>
- <CGME20200904133512eucas1p204efa4e252ceb5fb50715239705f9965@eucas1p2.samsung.com>
- <20200904131711.12950-31-m.szyprowski@samsung.com>
-From: Hans Verkuil <hverkuil@xs4all.nl>
-Message-ID: <e1070a0d-2772-b5e2-7067-9f53ade19aae@xs4all.nl>
-Date: Thu, 10 Sep 2020 11:17:36 +0200
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [207.211.31.81])
+ by silver.osuosl.org (Postfix) with ESMTPS id AB0FC204A2
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 09:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599729492;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=AOppjnY/TkNT2HJAR4QFixKH1JP0LhFrzUHTQEiS0B4=;
+ b=hGref4sp1sQA49Ghc8kesEQUCf/LRbE7mDIoo9rpysU4jZJRpMM3G4D8YJvPANEdrs6Cnn
+ idsHilckNWxxqVNtDiI+cuqe8DqFcJcHrwzph2h6urnmJMCYfUiFa5Wg5t4wvR9jvjXZA5
+ S9Y47ztOGinnk11VGORyXJsquvhOskk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-189-5cmR57_EPKeusGoAAuSYDQ-1; Thu, 10 Sep 2020 05:18:08 -0400
+X-MC-Unique: 5cmR57_EPKeusGoAAuSYDQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BE1161017DC4;
+ Thu, 10 Sep 2020 09:18:06 +0000 (UTC)
+Received: from [10.36.112.212] (ovpn-112-212.ams2.redhat.com [10.36.112.212])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 3EF177E8EC;
+ Thu, 10 Sep 2020 09:18:04 +0000 (UTC)
+Subject: Re: [PATCH v2 5/9] iommu/ioasid: Introduce ioasid_set private ID
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1598070918-21321-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1598070918-21321-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <8fe449f7-606e-e90a-28d5-9c29cac5a9c3@redhat.com>
+ <20200908154028.0ec5abba@jacob-builder>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <bc955e7d-e9be-bae4-02fd-66bc81d26f39@redhat.com>
+Date: Thu, 10 Sep 2020 11:18:02 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200904131711.12950-31-m.szyprowski@samsung.com>
+In-Reply-To: <20200908154028.0ec5abba@jacob-builder>
 Content-Language: en-US
-X-CMAE-Envelope: MS4wfOyym1s3hFy/wAnDsU5HmkCZJYyTj0QxaN6e/uK7k12aGGra4yqVYNAI11oZgPFnkurAxOfrqhRtT3UeKSK+3Y6xUMlkjhbpk5SqXaBWLGvAC8bcL20U
- SQl3FQ6ug7sKPMxbQ9nPZ9abpjMmfbsdeKC4HHQE2YYcaNMQ7qict2h/6JShk+yTvN4XM0ZES+Lyb1vnILB077gRCSygCrFB5sCcwJNVbP4AdxQa3VpctLPs
- WcOQXh/YE2Xw/tNcQ2Ny2bGrLZq++NZwUbCvGVe8FPIvQ7C/7Pc2p+A0wWGkoSUZNDbW92sPKFyYIGBxsCVG0S9K548oSNYUYgniCx159VuyK0gVspmpTJ8e
- ZzjeqWfrVDuNrKdeM8Nne0gfhl7mX0+5Ep8CvtWuusUWROjdbImIgoaeuN0i813xBDrU5iobK+2ZL9DhtnwI+ZWGC5qwHiRTBnMgeH7WGjIrUcenbPsQW+Cl
- eCBIEzwASMN9RMaEEwbzJcaZcrLcXPUzNUBrFUdeN3e/GwGG9vWNlGWRvREsKFAuTJkc2/zA1b1zVFwohmjpejqRVae1H7XgwmNR9MKKwe76cNRdWr1d5Bu5
- 40cz/MOmAYDbV1eddNggEFio1GVwEJwmIBafyh/8UhvK4c/57KpZ0H9DnTdBFNB9ec1H8PypAO7yjhsVDzKvcSBCKBD3ot0N/yuc4hJ9uQUr6D6MEY/WIVfb
- Po0zpkjQXuKHrpA+HijgkLX/elJC8p10Gfa2xlVh5MprizQIMePbnw==
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Jacob Pan <jacob.pan.linux@gmail.com>,
+ Raj Ashok <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Wu Hao <hao.wu@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,273 +107,182 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 04/09/2020 15:17, Marek Szyprowski wrote:
-> Use recently introduced common wrappers operating directly on the struct
-> sg_table objects and scatterlist page iterators to make the code a bit
-> more compact, robust, easier to follow and copy/paste safe.
+Hi Jacob,
+
+On 9/9/20 12:40 AM, Jacob Pan wrote:
+> On Tue, 1 Sep 2020 17:38:44 +0200
+> Auger Eric <eric.auger@redhat.com> wrote:
 > 
-> No functional change, because the code already properly did all the
-> scatterlist related calls.
+>> Hi Jacob,
+>> On 8/22/20 6:35 AM, Jacob Pan wrote:
+>>> When an IOASID set is used for guest SVA, each VM will acquire its
+>>> ioasid_set for IOASID allocations. IOASIDs within the VM must have a
+>>> host/physical IOASID backing, mapping between guest and host
+>>> IOASIDs can be non-identical. IOASID set private ID (SPID) is
+>>> introduced in this patch to be used as guest IOASID. However, the
+>>> concept of ioasid_set specific namespace is generic, thus named
+>>> SPID.
+>>>
+>>> As SPID namespace is within the IOASID set, the IOASID core can
+>>> provide lookup services at both directions. SPIDs may not be
+>>> allocated when its IOASID is allocated, the mapping between SPID
+>>> and IOASID is usually established when a guest page table is bound
+>>> to a host PASID.
+>>>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>> ---
+>>>  drivers/iommu/ioasid.c | 54
+>>> ++++++++++++++++++++++++++++++++++++++++++++++++++
+>>> include/linux/ioasid.h | 12 +++++++++++ 2 files changed, 66
+>>> insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+>>> index 5f31d63c75b1..c0aef38a4fde 100644
+>>> --- a/drivers/iommu/ioasid.c
+>>> +++ b/drivers/iommu/ioasid.c
+>>> @@ -21,6 +21,7 @@ enum ioasid_state {
+>>>   * struct ioasid_data - Meta data about ioasid
+>>>   *
+>>>   * @id:		Unique ID
+>>> + * @spid:	Private ID unique within a set
+>>>   * @users	Number of active users
+>>>   * @state	Track state of the IOASID
+>>>   * @set		Meta data of the set this IOASID belongs to
+>>> @@ -29,6 +30,7 @@ enum ioasid_state {
+>>>   */
+>>>  struct ioasid_data {
+>>>  	ioasid_t id;
+>>> +	ioasid_t spid;
+>>>  	struct ioasid_set *set;
+>>>  	refcount_t users;
+>>>  	enum ioasid_state state;
+>>> @@ -326,6 +328,58 @@ int ioasid_attach_data(ioasid_t ioasid, void
+>>> *data) EXPORT_SYMBOL_GPL(ioasid_attach_data);
+>>>  
+>>>  /**
+>>> + * ioasid_attach_spid - Attach ioasid_set private ID to an IOASID
+>>> + *
+>>> + * @ioasid: the ID to attach
+>>> + * @spid:   the ioasid_set private ID of @ioasid
+>>> + *
+>>> + * For IOASID that is already allocated, private ID within the set
+>>> can be
+>>> + * attached via this API. Future lookup can be done via
+>>> ioasid_find.  
+>> I would remove "For IOASID that is already allocated, private ID
+>> within the set can be attached via this API"
+> I guess it is implied. Will remove.
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-
-Note that I agree with Marek to keep returning -EIO. If we want to propagate
-low-level errors, then that should be done in a separate patch. But I think EIO
-is fine.
-
-Regards,
-
-	Hans
-
-> ---
->  .../common/videobuf2/videobuf2-dma-contig.c   | 34 ++++++++-----------
->  .../media/common/videobuf2/videobuf2-dma-sg.c | 32 +++++++----------
->  .../common/videobuf2/videobuf2-vmalloc.c      | 12 +++----
->  3 files changed, 31 insertions(+), 47 deletions(-)
+>>> + */
+>>> +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
+>>> +{
+>>> +	struct ioasid_data *ioasid_data;
+>>> +	int ret = 0;
+>>> +
+>>> +	spin_lock(&ioasid_allocator_lock);  
+>> We keep on saying the SPID is local to an IOASID set but we don't
+>> check any IOASID set contains this ioasid. It looks a bit weird to me.
+> We store ioasid_set inside ioasid_data when an IOASID is allocated, so
+> we don't need to search all the ioasid_sets. Perhaps I missed your
+> point?
+No I think it became clearer ;-)
 > 
-> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> index ec3446cc45b8..1b242d844dde 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> @@ -58,10 +58,10 @@ static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
->  	unsigned int i;
->  	unsigned long size = 0;
->  
-> -	for_each_sg(sgt->sgl, s, sgt->nents, i) {
-> +	for_each_sgtable_dma_sg(sgt, s, i) {
->  		if (sg_dma_address(s) != expected)
->  			break;
-> -		expected = sg_dma_address(s) + sg_dma_len(s);
-> +		expected += sg_dma_len(s);
->  		size += sg_dma_len(s);
->  	}
->  	return size;
-> @@ -103,8 +103,7 @@ static void vb2_dc_prepare(void *buf_priv)
->  	if (!sgt)
->  		return;
->  
-> -	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
-> -			       buf->dma_dir);
-> +	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
->  }
->  
->  static void vb2_dc_finish(void *buf_priv)
-> @@ -115,7 +114,7 @@ static void vb2_dc_finish(void *buf_priv)
->  	if (!sgt)
->  		return;
->  
-> -	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
-> +	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
->  }
->  
->  /*********************************************/
-> @@ -275,8 +274,8 @@ static void vb2_dc_dmabuf_ops_detach(struct dma_buf *dbuf,
->  		 * memory locations do not require any explicit cache
->  		 * maintenance prior or after being used by the device.
->  		 */
-> -		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
-> +				  DMA_ATTR_SKIP_CPU_SYNC);
->  	sg_free_table(sgt);
->  	kfree(attach);
->  	db_attach->priv = NULL;
-> @@ -301,8 +300,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
->  
->  	/* release any previous cache */
->  	if (attach->dma_dir != DMA_NONE) {
-> -		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
-> +				  DMA_ATTR_SKIP_CPU_SYNC);
->  		attach->dma_dir = DMA_NONE;
->  	}
->  
-> @@ -310,9 +309,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
->  	 * mapping to the client with new direction, no cache sync
->  	 * required see comment in vb2_dc_dmabuf_ops_detach()
->  	 */
-> -	sgt->nents = dma_map_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -				      dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> -	if (!sgt->nents) {
-> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
-> +			    DMA_ATTR_SKIP_CPU_SYNC)) {
->  		pr_err("failed to map scatterlist\n");
->  		mutex_unlock(lock);
->  		return ERR_PTR(-EIO);
-> @@ -455,8 +453,8 @@ static void vb2_dc_put_userptr(void *buf_priv)
->  		 * No need to sync to CPU, it's already synced to the CPU
->  		 * since the finish() memop will have been called before this.
->  		 */
-> -		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
-> +				  DMA_ATTR_SKIP_CPU_SYNC);
->  		pages = frame_vector_pages(buf->vec);
->  		/* sgt should exist only if vector contains pages... */
->  		BUG_ON(IS_ERR(pages));
-> @@ -553,9 +551,8 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
->  	 * No need to sync to the device, this will happen later when the
->  	 * prepare() memop is called.
->  	 */
-> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> -	if (sgt->nents <= 0) {
-> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
-> +			    DMA_ATTR_SKIP_CPU_SYNC)) {
->  		pr_err("failed to map scatterlist\n");
->  		ret = -EIO;
->  		goto fail_sgt_init;
-> @@ -577,8 +574,7 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
->  	return buf;
->  
->  fail_map_sg:
-> -	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -			   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
->  
->  fail_sgt_init:
->  	sg_free_table(sgt);
-> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-> index 0a40e00f0d7e..0dd3b19025e0 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-> @@ -148,9 +148,8 @@ static void *vb2_dma_sg_alloc(struct device *dev, unsigned long dma_attrs,
->  	 * No need to sync to the device, this will happen later when the
->  	 * prepare() memop is called.
->  	 */
-> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> -	if (!sgt->nents)
-> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
-> +			    DMA_ATTR_SKIP_CPU_SYNC))
->  		goto fail_map;
->  
->  	buf->handler.refcount = &buf->refcount;
-> @@ -186,8 +185,8 @@ static void vb2_dma_sg_put(void *buf_priv)
->  	if (refcount_dec_and_test(&buf->refcount)) {
->  		dprintk(1, "%s: Freeing buffer of %d pages\n", __func__,
->  			buf->num_pages);
-> -		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
-> +				  DMA_ATTR_SKIP_CPU_SYNC);
->  		if (buf->vaddr)
->  			vm_unmap_ram(buf->vaddr, buf->num_pages);
->  		sg_free_table(buf->dma_sgt);
-> @@ -204,8 +203,7 @@ static void vb2_dma_sg_prepare(void *buf_priv)
->  	struct vb2_dma_sg_buf *buf = buf_priv;
->  	struct sg_table *sgt = buf->dma_sgt;
->  
-> -	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
-> -			       buf->dma_dir);
-> +	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
->  }
->  
->  static void vb2_dma_sg_finish(void *buf_priv)
-> @@ -213,7 +211,7 @@ static void vb2_dma_sg_finish(void *buf_priv)
->  	struct vb2_dma_sg_buf *buf = buf_priv;
->  	struct sg_table *sgt = buf->dma_sgt;
->  
-> -	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
-> +	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
->  }
->  
->  static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
-> @@ -256,9 +254,8 @@ static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
->  	 * No need to sync to the device, this will happen later when the
->  	 * prepare() memop is called.
->  	 */
-> -	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
-> -				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> -	if (!sgt->nents)
-> +	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
-> +			    DMA_ATTR_SKIP_CPU_SYNC))
->  		goto userptr_fail_map;
->  
->  	return buf;
-> @@ -284,8 +281,7 @@ static void vb2_dma_sg_put_userptr(void *buf_priv)
->  
->  	dprintk(1, "%s: Releasing userspace buffer of %d pages\n",
->  	       __func__, buf->num_pages);
-> -	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir,
-> -			   DMA_ATTR_SKIP_CPU_SYNC);
-> +	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
->  	if (buf->vaddr)
->  		vm_unmap_ram(buf->vaddr, buf->num_pages);
->  	sg_free_table(buf->dma_sgt);
-> @@ -408,8 +404,7 @@ static void vb2_dma_sg_dmabuf_ops_detach(struct dma_buf *dbuf,
->  
->  	/* release the scatterlist cache */
->  	if (attach->dma_dir != DMA_NONE)
-> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -			attach->dma_dir);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
->  	sg_free_table(sgt);
->  	kfree(attach);
->  	db_attach->priv = NULL;
-> @@ -434,15 +429,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
->  
->  	/* release any previous cache */
->  	if (attach->dma_dir != DMA_NONE) {
-> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -			attach->dma_dir);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
->  		attach->dma_dir = DMA_NONE;
->  	}
->  
->  	/* mapping to the client with new direction */
-> -	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -				dma_dir);
-> -	if (!sgt->nents) {
-> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
->  		pr_err("failed to map scatterlist\n");
->  		mutex_unlock(lock);
->  		return ERR_PTR(-EIO);
-> diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-> index c66fda4a65e4..bf5ac63a5742 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-> @@ -229,7 +229,7 @@ static int vb2_vmalloc_dmabuf_ops_attach(struct dma_buf *dbuf,
->  		kfree(attach);
->  		return ret;
->  	}
-> -	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-> +	for_each_sgtable_sg(sgt, sg, i) {
->  		struct page *page = vmalloc_to_page(vaddr);
->  
->  		if (!page) {
-> @@ -259,8 +259,7 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
->  
->  	/* release the scatterlist cache */
->  	if (attach->dma_dir != DMA_NONE)
-> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -			attach->dma_dir);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
->  	sg_free_table(sgt);
->  	kfree(attach);
->  	db_attach->priv = NULL;
-> @@ -285,15 +284,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
->  
->  	/* release any previous cache */
->  	if (attach->dma_dir != DMA_NONE) {
-> -		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -			attach->dma_dir);
-> +		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
->  		attach->dma_dir = DMA_NONE;
->  	}
->  
->  	/* mapping to the client with new direction */
-> -	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
-> -				dma_dir);
-> -	if (!sgt->nents) {
-> +	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
->  		pr_err("failed to map scatterlist\n");
->  		mutex_unlock(lock);
->  		return ERR_PTR(-EIO);
+>>> +	ioasid_data = xa_load(&active_allocator->xa, ioasid);
+>>> +
+>>> +	if (!ioasid_data) {
+>>> +		pr_err("No IOASID entry %d to attach SPID %d\n",
+>>> +			ioasid, spid);
+>>> +		ret = -ENOENT;
+>>> +		goto done_unlock;
+>>> +	}
+>>> +	ioasid_data->spid = spid;  
+>> is there any way/need to remove an spid binding?
+> For guest SVA, we attach SPID as a guest PASID during bind guest page
+> table. Unbind does the opposite, ioasid_attach_spid() with
+> spid=INVALID_IOASID clears the binding.
+> 
+> Perhaps add more symmetric functions? i.e.
+> ioasid_detach_spid(ioasid_t ioasid)
+> ioasid_attach_spid(struct ioasid_set *set, ioasid_t ioasid)
+yep make sense
+
+Thanks
+
+Eric
+> 
+>>> +
+>>> +done_unlock:
+>>> +	spin_unlock(&ioasid_allocator_lock);
+>>> +	return ret;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(ioasid_attach_spid);
+>>> +
+>>> +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t spid)
+>>> +{
+>>> +	struct ioasid_data *entry;
+>>> +	unsigned long index;
+>>> +
+>>> +	if (!xa_load(&ioasid_sets, set->sid)) {
+>>> +		pr_warn("Invalid set\n");
+>>> +		return INVALID_IOASID;
+>>> +	}
+>>> +
+>>> +	xa_for_each(&set->xa, index, entry) {
+>>> +		if (spid == entry->spid) {
+>>> +			pr_debug("Found ioasid %lu by spid %u\n",
+>>> index, spid);
+>>> +			refcount_inc(&entry->users);
+>>> +			return index;
+>>> +		}
+>>> +	}
+>>> +	return INVALID_IOASID;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(ioasid_find_by_spid);
+>>> +
+>>> +/**
+>>>   * ioasid_alloc - Allocate an IOASID
+>>>   * @set: the IOASID set
+>>>   * @min: the minimum ID (inclusive)
+>>> diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+>>> index 310abe4187a3..d4b3e83672f6 100644
+>>> --- a/include/linux/ioasid.h
+>>> +++ b/include/linux/ioasid.h
+>>> @@ -73,6 +73,8 @@ bool ioasid_is_active(ioasid_t ioasid);
+>>>  
+>>>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid, bool
+>>> (*getter)(void *)); int ioasid_attach_data(ioasid_t ioasid, void
+>>> *data); +int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid);
+>>> +ioasid_t ioasid_find_by_spid(struct ioasid_set *set, ioasid_t
+>>> spid); int ioasid_register_allocator(struct ioasid_allocator_ops
+>>> *allocator); void ioasid_unregister_allocator(struct
+>>> ioasid_allocator_ops *allocator); void ioasid_is_in_set(struct
+>>> ioasid_set *set, ioasid_t ioasid); @@ -136,5 +138,15 @@ static
+>>> inline int ioasid_attach_data(ioasid_t ioasid, void *data) return
+>>> -ENOTSUPP; }
+>>>  
+>>> +staic inline int ioasid_attach_spid(ioasid_t ioasid, ioasid_t spid)
+>>> +{
+>>> +	return -ENOTSUPP;
+>>> +}
+>>> +
+>>> +static inline ioasid_t ioasid_find_by_spid(struct ioasid_set *set,
+>>> ioasid_t spid) +{
+>>> +	return -ENOTSUPP;
+>>> +}
+>>> +
+>>>  #endif /* CONFIG_IOASID */
+>>>  #endif /* __LINUX_IOASID_H */
+>>>   
+>> Thanks
+>>
+>> Eric
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
+> [Jacob Pan]
 > 
 
 _______________________________________________
