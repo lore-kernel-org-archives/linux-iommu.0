@@ -2,122 +2,73 @@ Return-Path: <SRS0=7VEr=CT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AD2C433E2
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:34:00 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64931C43461
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:34:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 27872208E4
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:33:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="fcQ8pRBP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27872208E4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
+	by mail.kernel.org (Postfix) with ESMTPS id CEF1D2087C
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:34:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEF1D2087C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CB505872E2;
-	Thu, 10 Sep 2020 13:33:58 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 35D7420511;
+	Thu, 10 Sep 2020 13:34:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AWxFylGiEa3N; Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
+	with ESMTP id kPj24lsPHavS; Thu, 10 Sep 2020 13:34:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C08148722E;
-	Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 380C52048C;
+	Thu, 10 Sep 2020 13:34:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4AA2C0052;
-	Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1342C0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 248B5C0052;
+	Thu, 10 Sep 2020 13:34:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3EE5C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:34:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CADD686091
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:56 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CC9CC87156
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:34:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 48NDqNbsLieU for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 13:33:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f68.google.com (mail-io1-f68.google.com
- [209.85.166.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 634FD875FF
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:55 +0000 (UTC)
-Received: by mail-io1-f68.google.com with SMTP id h4so7070456ioe.5
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 06:33:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=tcd-ie.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=NA4xq/RvWtw1DoG4R42VuDAYvxbq5gOs0uGkp97do30=;
- b=fcQ8pRBPaEWiThwI4IpJI/6RvrpktlhqIcuTs8ion57IfAcoLZwMinlg018HPs4g0P
- PfERQLGzgxTimYY/S16DcluJPa3UrMAv2VeDrvrD2khzMlgcNU3uG+U66xQTcGI4k/PB
- tyd6Y57erW7Jw7CdoQkzGYnD3z09a+1xAJWCw3ZTA9vq0DdHjCGpzxmBZebxDdyQNZ5o
- a8n4/aQGMi16zmzKxYbuyXtVYNEIktp6No97ibi4qLI+zDV4g/TXIXD87q5g2S3KNUFg
- wjgBbIjqjQrEef6DxEeF173z4nhe4RTeiKBDtbYrCu4PSy+IwGvrlXsJFLKINZmU1V2I
- yoXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=NA4xq/RvWtw1DoG4R42VuDAYvxbq5gOs0uGkp97do30=;
- b=WLKin0qDS642jcxoj89j5SRBb8Re6/mhi5mUMFwtVgxrtuiua1W4f2gY4QKl9V0FQx
- 7cYQ7dwzF3OSu+7x6MSCDxiT9jxMkdDSHJteQQwwyU86B2lZ3RdtS6cZQP4JAOQ/77vI
- SqrlkMR8mWVL0ERNw4HLTbPksmLB7eFIu1Bvd89Q5L05qxJzLIpjy+LaKrYQt2EeL+NA
- 0K0Eao9y3G+KPGKuQZyILA3CTK81lEriz1jiftd7sesQi4U89bTC3wljsDBV5kXXkc5/
- iEXb0rWDTDhbtBTh4088REGyHo61kEiqYEOPMuz8UNUbNSHzWQFDk/b/onHAB/8GZ0zK
- ea+w==
-X-Gm-Message-State: AOAM531pKb3W0zPcfoiLevlpBax759xy4mid0pQZDhj9WqNxB7YYcnyr
- ukjJ2tg2cvHID6RleZb1Y62K8nHlcIe7GyCbOmVj6A==
-X-Google-Smtp-Source: ABdhPJzlID7Qr9FJiMTGq9orpwBT55dMvomyRpqx73nK5lHz5vZjsdxpDDRxLur0/nChDVSeWcISfULGX7CKyavrOhU=
-X-Received: by 2002:a02:834a:: with SMTP id w10mr8873252jag.63.1599744834395; 
- Thu, 10 Sep 2020 06:33:54 -0700 (PDT)
+ with ESMTP id RX50_hhYXUhz for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 13:34:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DF98487152
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:34:21 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D844106F;
+ Thu, 10 Sep 2020 06:34:21 -0700 (PDT)
+Received: from [10.57.40.122] (unknown [10.57.40.122])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 69B3C3F66E;
+ Thu, 10 Sep 2020 06:34:19 -0700 (PDT)
+Subject: Re: [PATCH 11/12] dma-mapping: move dma_common_{mmap, get_sgtable} out
+ of mapping.c
+To: Christoph Hellwig <hch@lst.de>, Tony Luck <tony.luck@intel.com>,
+ Fenghua Yu <fenghua.yu@intel.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ iommu@lists.linux-foundation.org
+References: <20200908164758.3177341-1-hch@lst.de>
+ <20200908164758.3177341-12-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <88bae26e-d5f4-7a00-a88a-b69194d519a4@arm.com>
+Date: Thu, 10 Sep 2020 14:34:18 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20191221150402.13868-1-murphyt7@tcd.ie>
- <465815ae-9292-f37a-59b9-03949cb68460@deltatee.com>
- <20200529124523.GA11817@infradead.org>
- <CGME20200529190523eucas1p2c086133e707257c0cdc002f502d4f51d@eucas1p2.samsung.com>
- <33137cfb-603c-86e8-1091-f36117ecfaf3@deltatee.com>
- <ef2150d5-7b6a-df25-c10d-e43316fe7812@samsung.com>
- <b9140772-0370-a858-578c-af503a06d8e9@deltatee.com>
- <CALQxJuutRaeX89k2o4ffTKYRMizmMu0XbRnzpFuSSrkQR02jKg@mail.gmail.com>
- <766525c3-4da9-6db7-cd90-fb4b82cd8083@deltatee.com>
- <60a82319-cbee-4cd1-0d5e-3c407cc51330@linux.intel.com>
- <e598fb31-ef7a-c2ee-8a54-bf62d50c480c@deltatee.com>
- <b27cae1f-07ff-bef2-f125-a5f0d968016d@linux.intel.com>
- <CALQxJut5c=cWdi+SVkN3JnbkhPSYmLkOyRUhduL-UJ9gyKn9Ow@mail.gmail.com>
- <7106602a-9964-851e-9c4e-d8acf4033b89@linux.intel.com>
- <ea24e077-5aa6-dd8e-69a7-d186b606703f@linux.intel.com>
-In-Reply-To: <ea24e077-5aa6-dd8e-69a7-d186b606703f@linux.intel.com>
-From: Tom Murphy <murphyt7@tcd.ie>
-Date: Thu, 10 Sep 2020 14:33:43 +0100
-Message-ID: <CALQxJus4prs0T6G9Z4bw5BDgwmkaiynBcoknLsYEY45SNZ6Ukg@mail.gmail.com>
-Subject: Re: [Intel-gfx] [PATCH 0/8] Convert the intel iommu driver to the
- dma-iommu api
-To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc: kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
- dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
- Julien Grall <julien.grall@arm.com>, Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, linux-rockchip@lists.infradead.org,
- Andy Gross <agross@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- intel-gfx@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Thomas Gleixner <tglx@linutronix.de>,
- virtualization@lists.linux-foundation.org,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>,
- Cornelia Huck <cohuck@redhat.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20200908164758.3177341-12-hch@lst.de>
+Content-Language: en-GB
+Cc: linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,124 +81,170 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 9 Sep 2020 at 13:56, Tvrtko Ursulin
-<tvrtko.ursulin@linux.intel.com> wrote:
->
->
-> On 09/09/2020 10:16, Tvrtko Ursulin wrote:
-> > On 08/09/2020 23:43, Tom Murphy wrote:
-> >> On Tue, 8 Sep 2020 at 16:56, Tvrtko Ursulin
-> >> <tvrtko.ursulin@linux.intel.com> wrote:
-> >>> On 08/09/2020 16:44, Logan Gunthorpe wrote:
-> >>>> On 2020-09-08 9:28 a.m., Tvrtko Ursulin wrote:
-> >>>>>>
-> >>>>>> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h
-> >>>>>> b/drivers/gpu/drm/i915/i915
-> >>>>>> index b7b59328cb76..9367ac801f0c 100644
-> >>>>>> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
-> >>>>>> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
-> >>>>>> @@ -27,13 +27,19 @@ static __always_inline struct sgt_iter {
-> >>>>>>     } __sgt_iter(struct scatterlist *sgl, bool dma) {
-> >>>>>>            struct sgt_iter s = { .sgp = sgl };
-> >>>>>>
-> >>>>>> +       if (sgl && !sg_dma_len(s.sgp))
-> >>>>>
-> >>>>> I'd extend the condition to be, just to be safe:
-> >>>>>       if (dma && sgl && !sg_dma_len(s.sgp))
-> >>>>>
-> >>>>
-> >>>> Right, good catch, that's definitely necessary.
-> >>>>
-> >>>>>> +               s.sgp = NULL;
-> >>>>>> +
-> >>>>>>            if (s.sgp) {
-> >>>>>>                    s.max = s.curr = s.sgp->offset;
-> >>>>>> -               s.max += s.sgp->length;
-> >>>>>> -               if (dma)
-> >>>>>> +
-> >>>>>> +               if (dma) {
-> >>>>>> +                       s.max += sg_dma_len(s.sgp);
-> >>>>>>                            s.dma = sg_dma_address(s.sgp);
-> >>>>>> -               else
-> >>>>>> +               } else {
-> >>>>>> +                       s.max += s.sgp->length;
-> >>>>>>                            s.pfn = page_to_pfn(sg_page(s.sgp));
-> >>>>>> +               }
-> >>>>>
-> >>>>> Otherwise has this been tested or alternatively how to test it?
-> >>>>> (How to
-> >>>>> repro the issue.)
-> >>>>
-> >>>> It has not been tested. To test it, you need Tom's patch set without
-> >>>> the
-> >>>> last "DO NOT MERGE" patch:
-> >>>>
-> >>>> https://lkml.kernel.org/lkml/20200907070035.GA25114@infradead.org/T/
-> >>>
-> >>> Tom, do you have a branch somewhere I could pull from? (Just being lazy
-> >>> about downloading a bunch of messages from the archives.)
-> >>
-> >> I don't unfortunately. I'm working locally with poor internet.
-> >>
-> >>>
-> >>> What GPU is in your Lenovo x1 carbon 5th generation and what
-> >>> graphical/desktop setup I need to repro?
-> >>
-> >>
-> >> Is this enough info?:
-> >>
-> >> $ lspci -vnn | grep VGA -A 12
-> >> 00:02.0 VGA compatible controller [0300]: Intel Corporation HD
-> >> Graphics 620 [8086:5916] (rev 02) (prog-if 00 [VGA controller])
-> >>      Subsystem: Lenovo ThinkPad X1 Carbon 5th Gen [17aa:224f]
-> >>      Flags: bus master, fast devsel, latency 0, IRQ 148
-> >>      Memory at eb000000 (64-bit, non-prefetchable) [size=16M]
-> >>      Memory at 60000000 (64-bit, prefetchable) [size=256M]
-> >>      I/O ports at e000 [size=64]
-> >>      [virtual] Expansion ROM at 000c0000 [disabled] [size=128K]
-> >>      Capabilities: [40] Vendor Specific Information: Len=0c <?>
-> >>      Capabilities: [70] Express Root Complex Integrated Endpoint, MSI 00
-> >>      Capabilities: [ac] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> >>      Capabilities: [d0] Power Management version 2
-> >>      Capabilities: [100] Process Address Space ID (PASID)
-> >>      Capabilities: [200] Address Translation Service (ATS)
-> >
-> > Works for a start. What about the steps to repro? Any desktop
-> > environment and it is just visual corruption, no hangs/stalls or such?
-> >
-> > I've submitted a series consisting of what I understood are the patches
-> > needed to repro the issue to our automated CI here:
-> >
-> > https://patchwork.freedesktop.org/series/81489/
-> >
-> > So will see if it will catch something, or more targeted testing will be
-> > required. Hopefully it does trip over in which case I can add the patch
-> > suggested by Logan on top and see if that fixes it. Or I'll need to
-> > write a new test case.
-> >
-> > If you could glance over my series to check I identified the patches
-> > correctly it would be appreciated.
->
-> Our CI was more than capable at catching the breakage so I've copied you
-> on a patch (https://patchwork.freedesktop.org/series/81497/) which has a
-> good potential to fix this. (Or improve the robustness of our sg walks,
-> depends how you look at it.)
->
-> Would you be able to test it in your environment by any chance? If it
-> works I understand it unblocks your IOMMU work, right?
+On 2020-09-08 17:47, Christoph Hellwig wrote:
+> Add a new file that contains helpera for misc DMA ops, which is only
 
-I tested your latest patch set ([PATCH 1/2] drm/i915: Fix DMA mapped
-scatterlist walks) and it fixes the issue. great work!
+The Latin plural of the singular "helperum", I guess? :P
 
->
-> Regards,
->
-> Tvrtko
+> built when CONFIG_DMA_OPS is set.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   kernel/dma/Makefile      |  1 +
+>   kernel/dma/mapping.c     | 47 +-----------------------------------
+>   kernel/dma/ops_helpers.c | 51 ++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 53 insertions(+), 46 deletions(-)
+>   create mode 100644 kernel/dma/ops_helpers.c
+> 
+> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+> index 32c7c1942bbd6c..dc755ab68aabf9 100644
+> --- a/kernel/dma/Makefile
+> +++ b/kernel/dma/Makefile
+> @@ -1,6 +1,7 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   
+>   obj-$(CONFIG_HAS_DMA)			+= mapping.o direct.o
+> +obj-$(CONFIG_DMA_OPS)			+= ops_helpers.o
+>   obj-$(CONFIG_DMA_OPS)			+= dummy.o
+>   obj-$(CONFIG_DMA_CMA)			+= contiguous.o
+>   obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 0d129421e75fc8..848c95c27d79ff 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -8,7 +8,7 @@
+>   #include <linux/memblock.h> /* for max_pfn */
+>   #include <linux/acpi.h>
+>   #include <linux/dma-direct.h>
+> -#include <linux/dma-noncoherent.h>
+> +#include <linux/dma-mapping.h>
+>   #include <linux/export.h>
+>   #include <linux/gfp.h>
+>   #include <linux/of_device.h>
+> @@ -295,22 +295,6 @@ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+>   }
+>   EXPORT_SYMBOL(dma_sync_sg_for_device);
+>   
+> -/*
+> - * Create scatter-list for the already allocated DMA buffer.
+> - */
+> -int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
+> -		 void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> -		 unsigned long attrs)
+> -{
+> -	struct page *page = virt_to_page(cpu_addr);
+> -	int ret;
+> -
+> -	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> -	if (!ret)
+> -		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> -	return ret;
+> -}
+> -
+>   /*
+>    * The whole dma_get_sgtable() idea is fundamentally unsafe - it seems
+>    * that the intention is to allow exporting memory allocated via the
+> @@ -358,35 +342,6 @@ pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
+>   }
+>   #endif /* CONFIG_MMU */
+>   
+> -/*
+> - * Create userspace mapping for the DMA-coherent memory.
+> - */
+> -int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> -		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> -		unsigned long attrs)
+> -{
+> -#ifdef CONFIG_MMU
+> -	unsigned long user_count = vma_pages(vma);
+> -	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	unsigned long off = vma->vm_pgoff;
+> -	int ret = -ENXIO;
+> -
+> -	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
+> -
+> -	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+> -		return ret;
+> -
+> -	if (off >= count || user_count > count - off)
+> -		return -ENXIO;
+> -
+> -	return remap_pfn_range(vma, vma->vm_start,
+> -			page_to_pfn(virt_to_page(cpu_addr)) + vma->vm_pgoff,
+> -			user_count << PAGE_SHIFT, vma->vm_page_prot);
+> -#else
+> -	return -ENXIO;
+> -#endif /* CONFIG_MMU */
+> -}
+> -
+>   /**
+>    * dma_can_mmap - check if a given device supports dma_mmap_*
+>    * @dev: device to check
+> diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
+> new file mode 100644
+> index 00000000000000..e443c69be4299f
+> --- /dev/null
+> +++ b/kernel/dma/ops_helpers.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Helpers for DMA ops implementations.  These generally rely on the fact that
+> + * the allocated memory contains normal pages in the direct kernel mapping.
+> + */
+> +#include <linux/dma-noncoherent.h>
+> +
+> +/*
+> + * Create scatter-list for the already allocated DMA buffer.
+> + */
+> +int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
+> +		 void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> +		 unsigned long attrs)
+> +{
+> +	struct page *page = virt_to_page(cpu_addr);
+> +	int ret;
+> +
+> +	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> +	if (!ret)
+> +		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
+> +	return ret;
+> +}
+> +
+> +/*
+> + * Create userspace mapping for the DMA-coherent memory.
+> + */
+> +int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> +		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> +		unsigned long attrs)
+> +{
+> +#ifdef CONFIG_MMU
+> +	unsigned long user_count = vma_pages(vma);
+> +	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	unsigned long off = vma->vm_pgoff;
+> +	int ret = -ENXIO;
+> +
+> +	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
+> +
+> +	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+> +		return ret;
+> +
+> +	if (off >= count || user_count > count - off)
+> +		return -ENXIO;
+> +
+> +	return remap_pfn_range(vma, vma->vm_start,
+> +			page_to_pfn(virt_to_page(cpu_addr)) + vma->vm_pgoff,
+> +			user_count << PAGE_SHIFT, vma->vm_page_prot);
+> +#else
+> +	return -ENXIO;
+> +#endif /* CONFIG_MMU */
+> +}
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
