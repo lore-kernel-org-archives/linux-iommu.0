@@ -7,108 +7,85 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DF2C433E2
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 21:32:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1EFC43461
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 22:06:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 073F0208E4
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 21:32:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F1D0C20BED
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 22:06:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="Kx64mjnI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 073F0208E4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="D3fgLNra"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1D0C20BED
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5D30F20465;
-	Thu, 10 Sep 2020 21:32:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 93A8D87736;
+	Thu, 10 Sep 2020 22:06:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FkES82JIEVoI; Thu, 10 Sep 2020 21:32:32 +0000 (UTC)
+	with ESMTP id m+w4N5ii0UOz; Thu, 10 Sep 2020 22:06:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8DAA71FE32;
-	Thu, 10 Sep 2020 21:32:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C29CD87735;
+	Thu, 10 Sep 2020 22:06:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7109FC0052;
-	Thu, 10 Sep 2020 21:32:32 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 96D0BC0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 21:32:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3B9EC0052;
+	Thu, 10 Sep 2020 22:06:05 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4CC9BC0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 22:06:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 63B9D20426
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 21:32:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3AA728778C
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 22:06:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id atrQZqF-eJcD for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 21:32:28 +0000 (UTC)
+ with ESMTP id k27B8NmEWvqR for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 22:06:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
- [209.85.208.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 3751C1FE32
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 21:32:28 +0000 (UTC)
-Received: by mail-lj1-f196.google.com with SMTP id c2so10064417ljj.12
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 14:32:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=PT5RewSLErP4ScRi2owXD3TsugrP80kcF1hvqbJMudU=;
- b=Kx64mjnIaD20tcXvEM0BQWjIQfETdv9/KX7GdJ3ELP3iJDm15pe1jeA5eGgZ9Sb7C1
- txt4kXnEUJQJ8KBHbuJwPFGoHJ7xGGyBR/BqPa8BYDUHMeYnxoF6NNJ35WK1bH2GWHT/
- OLahqkAc2+JziRsf5CyIuFp0xUUN1U767NCZpa94bcFLsOAix1e9gFIyoJxog1alewph
- OOeynGTzZZ+TaLZ32IoKsWhG76dz03af8zeNoMrNjTC/7i4blbbrxok14hBWBxJlhvx/
- VZNH+EYtd/EC6tWFnFtpVo8MJKN8rFYPL3U7Cc/u3a58WvtbPdXfisyFhAn4LONwDb20
- UgVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=PT5RewSLErP4ScRi2owXD3TsugrP80kcF1hvqbJMudU=;
- b=tWssT5CL3LZaYFaje3xXNnSa0CvuP6EDTaWkZkUKBgi5UEszFqWxec6GHNczxWF4iO
- 7qcgWRVm2uNRDoF1chG2qYaVIU/17+pbcMc6v4KlP3LH3Z7BMLbQeav45n2l8zT7Y+Vl
- M+caOUCpviizMfet/kBLdLk7aBtDjVpxAmTJ8hug+FC9IUftYlMvvu7SgNo6UKrL2Ykd
- f7AtTYuA6yg8C3gAwd1m9YbIqvadxcngbmhKeef3UnNSyxMMBCAfUAp24DIlnRHcEKPe
- tp64UXJXD/20cPbNDk5DbXwSXfFzTtuEo9/fGMDBpDlJBWRy32IVgxRqyU6RO1bWgyLy
- ViOA==
-X-Gm-Message-State: AOAM532zDyJmzfFlHW0pBZczta1LpMk2dBG+bRcpW4du+Dp+kYqd2UBm
- IP+bs2/v44rzIROUnpQYsTHz6Cka4OpP98YL7BqZaA==
-X-Google-Smtp-Source: ABdhPJxKOrQhe9I0H+n3lmdZVu32MqhEB6ra+xjy+Mu67YGel8du2z2t9yktrh5y45ZORSGg8lgEyqEZMK0A5DWMDF0=
-X-Received: by 2002:a2e:98d1:: with SMTP id s17mr5317839ljj.188.1599773545804; 
- Thu, 10 Sep 2020 14:32:25 -0700 (PDT)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [207.211.31.81])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D841D8778D
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 22:06:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599775561;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=RnbUoGq7xwlkckcej6HmOURWq1SLDS1pk1FaTeyjhKo=;
+ b=D3fgLNragIKoJhgUySfTj73gQtOvd7Gu1nVjSpz/88bRbCiYJ+0PWV+ryQzMiUoQkEtnjr
+ au+GyioVAN6+G5u92k3shhYuuemJ4ii3bhjWnVZ2dGlHOLlXFGC1myZoQmuxDs1eHS+SsU
+ P2ZDMSHPXqJ209EB9sWgVsv5WE0Q9kw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-113-xtVDWkvJNJqf0IYWvWalPg-1; Thu, 10 Sep 2020 18:05:57 -0400
+X-MC-Unique: xtVDWkvJNJqf0IYWvWalPg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4123C1084CA2;
+ Thu, 10 Sep 2020 22:05:49 +0000 (UTC)
+Received: from w520.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 02B537512B;
+ Thu, 10 Sep 2020 22:05:47 +0000 (UTC)
+Date: Thu, 10 Sep 2020 16:05:47 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 2/5] iommu: Add iommu_at(de)tach_subdev_group()
+Message-ID: <20200910160547.0a8b9891@w520.home>
+In-Reply-To: <20200901033422.22249-3-baolu.lu@linux.intel.com>
+References: <20200901033422.22249-1-baolu.lu@linux.intel.com>
+ <20200901033422.22249-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-References: <20200714201540.3139140-1-rajatja@google.com>
- <CAA93t1rzHbTVCrXhz3YBExJS1FOHBe=GCnns9=q1Ry9zdWb4VA@mail.gmail.com>
- <CACK8Z6EbWikLjDr3xjRqzDNeyk-6Qwe67sOp3hczWd3xSQL3vQ@mail.gmail.com>
- <CAA93t1qkNDRW_AaYzV-sBJPGgYTnM1YKeNMTjOP9FR7Cf2Q7=w@mail.gmail.com>
-In-Reply-To: <CAA93t1qkNDRW_AaYzV-sBJPGgYTnM1YKeNMTjOP9FR7Cf2Q7=w@mail.gmail.com>
-Date: Thu, 10 Sep 2020 14:31:49 -0700
-Message-ID: <CACK8Z6EdoyK=z71ucGXNeriVSEsUioMO3FCoQh3COwdAtfbtnA@mail.gmail.com>
-Subject: Re: [PATCH v5] PCI/ACS: Enable PCI_ACS_TB and disable only when
- needed for ATS
-To: Rajat Jain <rajatxjain@gmail.com>
-Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
- "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- Saravana Kannan <saravanak@google.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Prashant Malani <pmalani@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Oliver O'Halloran <oohall@gmail.com>,
- Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
- Alex Levin <levinale@google.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,247 +98,242 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Rajat Jain <rajatja@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello Bjorn,
+On Tue,  1 Sep 2020 11:34:19 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
+
+> This adds two new APIs for the use cases like vfio/mdev where subdevices
+> derived from physical devices are created and put in an iommu_group. The
+> new IOMMU API interfaces mimic the vfio_mdev_at(de)tach_domain() directly,
+> testing whether the resulting device supports IOMMU_DEV_FEAT_AUX and using
+> an aux vs non-aux at(de)tach.
+> 
+> By doing this we could
+> 
+> - Set the iommu_group.domain. The iommu_group.domain is private to iommu
+>   core (therefore vfio code cannot set it), but we need it set in order
+>   for iommu_get_domain_for_dev() to work with a group attached to an aux
+>   domain.
+> 
+> - Prefer to use the _attach_group() interfaces while the _attach_device()
+>   interfaces are relegated to special cases.
+> 
+> Link: https://lore.kernel.org/linux-iommu/20200730134658.44c57a67@x1.home/
+> Link: https://lore.kernel.org/linux-iommu/20200730151703.5daf8ad4@x1.home/
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c | 136 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h |  20 +++++++
+>  2 files changed, 156 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 38cdfeb887e1..fb21c2ff4861 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2757,6 +2757,142 @@ int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
+>  
+> +static int __iommu_aux_attach_device(struct iommu_domain *domain,
+> +				     struct device *phys_dev,
+> +				     struct device *sub_dev)
+> +{
+> +	int ret;
+> +
+> +	if (unlikely(!domain->ops->aux_attach_dev))
+> +		return -ENODEV;
+> +
+> +	ret = domain->ops->aux_attach_dev(domain, phys_dev, sub_dev);
+> +	if (!ret)
+> +		trace_attach_device_to_domain(sub_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static void __iommu_aux_detach_device(struct iommu_domain *domain,
+> +				      struct device *phys_dev,
+> +				      struct device *sub_dev)
+> +{
+> +	if (unlikely(!domain->ops->aux_detach_dev))
+> +		return;
+> +
+> +	domain->ops->aux_detach_dev(domain, phys_dev, sub_dev);
+> +	trace_detach_device_from_domain(sub_dev);
+> +}
+> +
+> +static int __iommu_attach_subdev_group(struct iommu_domain *domain,
+> +				       struct iommu_group *group,
+> +				       iommu_device_lookup_t fn)
+> +{
+> +	struct group_device *device;
+> +	struct device *phys_dev;
+> +	int ret = -ENODEV;
+> +
+> +	list_for_each_entry(device, &group->devices, list) {
+> +		phys_dev = fn(device->dev);
+> +		if (!phys_dev) {
+> +			ret = -ENODEV;
+> +			break;
+> +		}
+> +
+> +		if (iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
+> +			ret = __iommu_aux_attach_device(domain, phys_dev,
+> +							device->dev);
+> +		else
+> +			ret = __iommu_attach_device(domain, phys_dev);
+> +
+> +		if (ret)
+> +			break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static void __iommu_detach_subdev_group(struct iommu_domain *domain,
+> +					struct iommu_group *group,
+> +					iommu_device_lookup_t fn)
+> +{
+> +	struct group_device *device;
+> +	struct device *phys_dev;
+> +
+> +	list_for_each_entry(device, &group->devices, list) {
+> +		phys_dev = fn(device->dev);
+> +		if (!phys_dev)
+> +			break;
 
 
-On Mon, Aug 17, 2020 at 3:50 PM Rajat Jain <rajatxjain@gmail.com> wrote:
->
-> Hello Bjorn,
->
->
-> On Sat, Aug 1, 2020 at 5:30 PM Rajat Jain <rajatja@google.com> wrote:
-> >
-> > Hi Bjorn,
-> >
-> >
-> > On Tue, Jul 14, 2020 at 1:24 PM Rajat Jain <rajatxjain@gmail.com> wrote:
-> > >
-> > > On Tue, Jul 14, 2020 at 1:15 PM Rajat Jain <rajatja@google.com> wrote:
-> > > >
-> > > > The ACS "Translation Blocking" bit blocks the translated addresses from
-> > > > the devices. We don't expect such traffic from devices unless ATS is
-> > > > enabled on them. A device sending such traffic without ATS enabled,
-> > > > indicates malicious intent, and thus should be blocked.
-> > > >
-> > > > Enable PCI_ACS_TB by default for all devices, and it stays enabled until
-> > > > atleast one of the devices downstream wants to enable ATS. It gets
-> > > > disabled to enable ATS on a device downstream it, and then gets enabled
-> > > > back on once all the downstream devices don't need ATS.
-> > > >
-> > > > Signed-off-by: Rajat Jain <rajatja@google.com>
-> >
-> > Just checking to see if you got a chance to look at this V5 patch.
->
-> Any feedback on this patch?
+Seems like this should be a continue rather than a break.  On the
+unwind path maybe we're relying on holding the group mutex and
+deterministic behavior from the fn() callback to unwind to the same
+point, but we still have an entirely separate detach interface and I'm
+not sure we couldn't end up with an inconsistent state if we don't
+iterate each group device here.  Thanks,
 
-Gentle reminder?
+Alex
 
-Thanks & Best Regards,
+> +
+> +		if (iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
+> +			__iommu_aux_detach_device(domain, phys_dev, device->dev);
+> +		else
+> +			__iommu_detach_device(domain, phys_dev);
+> +	}
+> +}
+> +
+> +/**
+> + * iommu_attach_subdev_group - attach domain to an iommu_group which
+> + *			       contains subdevices.
+> + *
+> + * @domain: domain
+> + * @group:  iommu_group which contains subdevices
+> + * @fn:     callback for each subdevice in the @iommu_group to retrieve the
+> + *          physical device where the subdevice was created from.
+> + *
+> + * Returns 0 on success, or an error value.
+> + */
+> +int iommu_attach_subdev_group(struct iommu_domain *domain,
+> +			      struct iommu_group *group,
+> +			      iommu_device_lookup_t fn)
+> +{
+> +	int ret = -ENODEV;
+> +
+> +	mutex_lock(&group->mutex);
+> +	if (group->domain) {
+> +		ret = -EBUSY;
+> +		goto unlock_out;
+> +	}
+> +
+> +	ret = __iommu_attach_subdev_group(domain, group, fn);
+> +	if (ret)
+> +		__iommu_detach_subdev_group(domain, group, fn);
+> +	else
+> +		group->domain = domain;
+> +
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_attach_subdev_group);
+> +
+> +/**
+> + * iommu_detach_subdev_group - detach domain from an iommu_group which
+> + *			       contains subdevices
+> + *
+> + * @domain: domain
+> + * @group:  iommu_group which contains subdevices
+> + * @fn:     callback for each subdevice in the @iommu_group to retrieve the
+> + *          physical device where the subdevice was created from.
+> + *
+> + * The domain must have been attached to @group via iommu_attach_subdev_group().
+> + */
+> +void iommu_detach_subdev_group(struct iommu_domain *domain,
+> +			       struct iommu_group *group,
+> +			       iommu_device_lookup_t fn)
+> +{
+> +	mutex_lock(&group->mutex);
+> +	if (!group->domain)
+> +		goto unlock_out;
+> +
+> +	__iommu_detach_subdev_group(domain, group, fn);
+> +	group->domain = NULL;
+> +
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_detach_subdev_group);
+> +
+>  /**
+>   * iommu_sva_bind_device() - Bind a process address space to a device
+>   * @dev: the device
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 871267104915..b9df8b510d4f 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -48,6 +48,7 @@ struct iommu_fault_event;
+>  typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+>  			struct device *, unsigned long, int, void *);
+>  typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault *, void *);
+> +typedef struct device *(*iommu_device_lookup_t)(struct device *);
+>  
+>  struct iommu_domain_geometry {
+>  	dma_addr_t aperture_start; /* First address that can be mapped    */
+> @@ -631,6 +632,12 @@ bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
+>  int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
+>  void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
+>  int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
+> +int iommu_attach_subdev_group(struct iommu_domain *domain,
+> +			      struct iommu_group *group,
+> +			      iommu_device_lookup_t fn);
+> +void iommu_detach_subdev_group(struct iommu_domain *domain,
+> +			       struct iommu_group *group,
+> +			       iommu_device_lookup_t fn);
+>  
+>  struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>  					struct mm_struct *mm,
+> @@ -1019,6 +1026,19 @@ iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+>  	return -ENODEV;
+>  }
+>  
+> +static inline int
+> +iommu_attach_subdev_group(struct iommu_domain *domain, struct iommu_group *group,
+> +			  iommu_device_lookup_t fn)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void
+> +iommu_detach_subdev_group(struct iommu_domain *domain, struct iommu_group *group,
+> +			  iommu_device_lookup_t fn)
+> +{
+> +}
+> +
+>  static inline struct iommu_sva *
+>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
+>  {
 
-Rajat
-
-
->
-> Thanks & Best Regards,
->
-> Rajat
->
-> >
-> > Thanks & Best Regards,
-> >
-> > Rajat
-> >
-> > > > ---
-> > > > Note that I'm ignoring the devices that require quirks to enable or
-> > > > disable ACS, instead of using the standard way for ACS configuration.
-> > > > The reason is that it would require adding yet another quirk table or
-> > > > quirk function pointer, that I don't know how to implement for those
-> > > > devices, and will neither have the devices to test that code.
-> > > >
-> > > > v5: Enable TB and disable ATS for all devices on boot. Disable TB later
-> > > >     only if needed to enable ATS on downstream devices.
-> > > > v4: Add braces to avoid warning from kernel robot
-> > > >     print warning for only external-facing devices.
-> > > > v3: print warning if ACS_TB not supported on external-facing/untrusted ports.
-> > > >     Minor code comments fixes.
-> > > > v2: Commit log change
-> > > >
-> > > >  drivers/pci/ats.c   |  5 ++++
-> > > >  drivers/pci/pci.c   | 57 +++++++++++++++++++++++++++++++++++++++++++++
-> > > >  drivers/pci/pci.h   |  2 ++
-> > > >  drivers/pci/probe.c |  2 +-
-> > > >  include/linux/pci.h |  2 ++
-> > > >  5 files changed, 67 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > > > index b761c1f72f67..e2ea9083f30f 100644
-> > > > --- a/drivers/pci/ats.c
-> > > > +++ b/drivers/pci/ats.c
-> > > > @@ -28,6 +28,9 @@ void pci_ats_init(struct pci_dev *dev)
-> > > >                 return;
-> > > >
-> > > >         dev->ats_cap = pos;
-> > > > +
-> > > > +       dev->ats_enabled = 1; /* To avoid WARN_ON from pci_disable_ats() */
-> > > > +       pci_disable_ats(dev);
-> > > >  }
-> > > >
-> > > >  /**
-> > > > @@ -82,6 +85,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
-> > > >         }
-> > > >         pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> > > >
-> > > > +       pci_disable_acs_trans_blocking(dev);
-> > > >         dev->ats_enabled = 1;
-> > > >         return 0;
-> > > >  }
-> > > > @@ -102,6 +106,7 @@ void pci_disable_ats(struct pci_dev *dev)
-> > > >         ctrl &= ~PCI_ATS_CTRL_ENABLE;
-> > > >         pci_write_config_word(dev, dev->ats_cap + PCI_ATS_CTRL, ctrl);
-> > > >
-> > > > +       pci_enable_acs_trans_blocking(dev);
-> > > >         dev->ats_enabled = 0;
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(pci_disable_ats);
-> > > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > > > index 73a862782214..614e3c1e8c56 100644
-> > > > --- a/drivers/pci/pci.c
-> > > > +++ b/drivers/pci/pci.c
-> > > > @@ -876,6 +876,9 @@ static void pci_std_enable_acs(struct pci_dev *dev)
-> > > >         /* Upstream Forwarding */
-> > > >         ctrl |= (cap & PCI_ACS_UF);
-> > > >
-> > > > +       /* Translation Blocking */
-> > > > +       ctrl |= (cap & PCI_ACS_TB);
-> > > > +
-> > > >         pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> > > >  }
-> > > >
-> > > > @@ -904,6 +907,60 @@ static void pci_enable_acs(struct pci_dev *dev)
-> > > >         pci_disable_acs_redir(dev);
-> > > >  }
-> > > >
-> > > > +void pci_disable_acs_trans_blocking(struct pci_dev *pdev)
-> > > > +{
-> > > > +       u16 cap, ctrl, pos;
-> > > > +       struct pci_dev *dev;
-> > > > +
-> > > > +       if (!pci_acs_enable)
-> > > > +               return;
-> > > > +
-> > > > +       for (dev = pdev; dev; dev = pci_upstream_bridge(pdev)) {
-> > > > +
-> > > > +               pos = dev->acs_cap;
-> > > > +               if (!pos)
-> > > > +                       continue;
-> > > > +
-> > > > +               /*
-> > > > +                * Disable translation blocking when first downstream
-> > > > +                * device that needs it (for ATS) wants to enable ATS
-> > > > +                */
-> > > > +               if (++dev->ats_dependencies == 1) {
-> > >
-> > > I am a little worried about a potential race condition here. I know
-> > > that 2 PCI devices cannot be enumerating at the same time. Do we know
-> > > if multiple pci_enable_ats() and pci_disable_ats() function calls can
-> > > be simultaneously executing (even for different devices)? If so, we
-> > > may need an atomic_t variable for ats_dependencies.
-> > >
-> > > Thanks,
-> > >
-> > > Rajat
-> > >
-> > >
-> > > > +                       pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
-> > > > +                       pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-> > > > +                       ctrl &= ~(cap & PCI_ACS_TB);
-> > > > +                       pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> > > > +               }
-> > > > +       }
-> > > > +}
-> > > > +
-> > > > +void pci_enable_acs_trans_blocking(struct pci_dev *pdev)
-> > > > +{
-> > > > +       u16 cap, ctrl, pos;
-> > > > +       struct pci_dev *dev;
-> > > > +
-> > > > +       if (!pci_acs_enable)
-> > > > +               return;
-> > > > +
-> > > > +       for (dev = pdev; dev; dev = pci_upstream_bridge(pdev)) {
-> > > > +
-> > > > +               pos = dev->acs_cap;
-> > > > +               if (!pos)
-> > > > +                       continue;
-> > > > +
-> > > > +               /*
-> > > > +                * Enable translation blocking when last downstream device
-> > > > +                * that depends on it (for ATS), doesn't need ATS anymore
-> > > > +                */
-> > > > +               if (--dev->ats_dependencies == 0) {
-> > > > +                       pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
-> > > > +                       pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-> > > > +                       ctrl |= (cap & PCI_ACS_TB);
-> > > > +                       pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-> > > > +               }
-> > > > +       }
-> > > > +}
-> > > > +
-> > > >  /**
-> > > >   * pci_restore_bars - restore a device's BAR values (e.g. after wake-up)
-> > > >   * @dev: PCI device to have its BARs restored
-> > > > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> > > > index 12fb79fbe29d..f5d8ecb6ba96 100644
-> > > > --- a/drivers/pci/pci.h
-> > > > +++ b/drivers/pci/pci.h
-> > > > @@ -552,6 +552,8 @@ static inline int pci_dev_specific_disable_acs_redir(struct pci_dev *dev)
-> > > >         return -ENOTTY;
-> > > >  }
-> > > >  #endif
-> > > > +void pci_disable_acs_trans_blocking(struct pci_dev *dev);
-> > > > +void pci_enable_acs_trans_blocking(struct pci_dev *dev);
-> > > >
-> > > >  /* PCI error reporting and recovery */
-> > > >  pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
-> > > > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> > > > index 8c40c00413e7..e2ff3a94e621 100644
-> > > > --- a/drivers/pci/probe.c
-> > > > +++ b/drivers/pci/probe.c
-> > > > @@ -2387,10 +2387,10 @@ static void pci_init_capabilities(struct pci_dev *dev)
-> > > >         pci_vpd_init(dev);              /* Vital Product Data */
-> > > >         pci_configure_ari(dev);         /* Alternative Routing-ID Forwarding */
-> > > >         pci_iov_init(dev);              /* Single Root I/O Virtualization */
-> > > > +       pci_acs_init(dev);              /* Access Control Services */
-> > > >         pci_ats_init(dev);              /* Address Translation Services */
-> > > >         pci_pri_init(dev);              /* Page Request Interface */
-> > > >         pci_pasid_init(dev);            /* Process Address Space ID */
-> > > > -       pci_acs_init(dev);              /* Access Control Services */
-> > > >         pci_ptm_init(dev);              /* Precision Time Measurement */
-> > > >         pci_aer_init(dev);              /* Advanced Error Reporting */
-> > > >         pci_dpc_init(dev);              /* Downstream Port Containment */
-> > > > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > > > index 7a40cd5caed0..31da4355f0fd 100644
-> > > > --- a/include/linux/pci.h
-> > > > +++ b/include/linux/pci.h
-> > > > @@ -480,6 +480,8 @@ struct pci_dev {
-> > > >         u16             ats_cap;        /* ATS Capability offset */
-> > > >         u8              ats_stu;        /* ATS Smallest Translation Unit */
-> > > >  #endif
-> > > > +       /* Total number of downstream devices below a bridge that need ATS */
-> > > > +       u8              ats_dependencies;
-> > > >  #ifdef CONFIG_PCI_PRI
-> > > >         u16             pri_cap;        /* PRI Capability offset */
-> > > >         u32             pri_reqs_alloc; /* Number of PRI requests allocated */
-> > > > --
-> > > > 2.27.0.389.gc38d7665816-goog
-> > > >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
