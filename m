@@ -2,175 +2,89 @@ Return-Path: <SRS0=7VEr=CT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7081EC43461
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 08:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE94C2BB84
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 08:26:26 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A18E620708
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 08:24:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 86F4A2076D
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 08:26:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="SUAPDFV5";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microchiptechnology.onmicrosoft.com header.i=@microchiptechnology.onmicrosoft.com header.b="nHI74pvW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A18E620708
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="YFX3C21Z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86F4A2076D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3801487655;
-	Thu, 10 Sep 2020 08:24:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 14BF887655;
+	Thu, 10 Sep 2020 08:26:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9sLt28EpCNUm; Thu, 10 Sep 2020 08:24:30 +0000 (UTC)
+	with ESMTP id 2Ul-95oF-uba; Thu, 10 Sep 2020 08:26:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D53FB8765A;
-	Thu, 10 Sep 2020 08:24:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 680848764C;
+	Thu, 10 Sep 2020 08:26:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A2229C0859;
-	Thu, 10 Sep 2020 08:24:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CFE76C0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:24:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43F21C0859;
+	Thu, 10 Sep 2020 08:26:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49033C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:26:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B662E87655
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:24:29 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 30A4A86EE8
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:26:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uOiJFbP3hYFh for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 08:24:28 +0000 (UTC)
+ with ESMTP id 5WTNEYxH1kY2 for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 08:26:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from esa3.microchip.iphmx.com (esa3.microchip.iphmx.com
- [68.232.153.233])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 61BCF8764C
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:24:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
- d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
- t=1599726268; x=1631262268;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-id:content-transfer-encoding: mime-version;
- bh=Yyq2EDCS2vKZmH5eLOYYicNPIXcRgkd+H8Ca+7FcXOc=;
- b=SUAPDFV5ASsFEzXJF1eTPi5PsYxzQ7jOjIX7SnhZWbxAUdKqHM7F5O9A
- l13t6smXl127ygazfDaAZPXsXQKfww6MGMMQDFfTBJLXyqs6h/ucJgvay
- hNgGXqgYfdW0GQ8RmVIH7riQN3nv0G9v/auwa0TDCNz2FtgMtb5XePdSu
- 5SccTV32hI1U6nnzMaAbU/TkHZHWtKe7Eaksi5iJxWv6Z2y73klTcNThn
- Fd+FblWe0yro2fTCB9je5t1DLaMJvWOHlE6XpOohex7w3dGlJpB5Ij/4D
- Ei/W1VYk4ak+0RVLQ4COye4x4MX6FpVktWvJpUNClI6xIHQ9O8Je9rNxX g==;
-IronPort-SDR: ftLnKVJWWVARs6xE60k80lvcWvEF9LnNReTXi2pIeHcFd1pOvCbq5YtWKyNQKbgntoF3PJrEzZ
- yGkW+CSPkTanXwFzN+yaXQvli7N+J9TDXD7EYbxy0puKvjPuscpCKfJznonLOJ1RssHzyGXWld
- FEmXkljrjgcGdATyyJ52ywdn6YOedSeAiw39Unb2/iAlFSlX4xOSaPEQ1oDzJo6jB0orKUYHob
- 8TPZOmriiXyQ/YsxyXR92KLsMxoOl9I7rBMGKN1j5VU4WXWSblm45hfVc18o3BtgyAUNaPQFAh
- yGo=
-X-IronPort-AV: E=Sophos;i="5.76,412,1592895600"; d="scan'208";a="91279822"
-Received: from smtpout.microchip.com (HELO email.microchip.com)
- ([198.175.253.82])
- by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256;
- 10 Sep 2020 01:24:26 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Sep 2020 01:24:22 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
- via Frontend Transport; Thu, 10 Sep 2020 01:24:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=itElKv30dbsNhtpfiKLkCOXYopTjtkZ9zEAzRioxDAmgifjIhq6QVV/lc6kfk0TIuSPX1OZAUrSDWVumK4tLXffHjOu4WRZugnRrQRvvAAgpCE7V1+zJn3PyPC0j6/G2aAtgoGzj2pGQVkq35HD5i3ZvkV68QA+ILQVSTYqBA+q+9/IrmOIYHSq5T7WknjE5tqhKpcoEPyxu0LHlp9MR91+nL0ffI8mb6UZ8R19c1Z8LDep20pLw6r6tPamTWrMJ0hAxNX35wsV6GMNcE6JFgdV5g0JfNl3CssuMyPR0eMKE/T9DeShiio5DN/5SR2TytdQ7bAPBSy6lDzF4x9zLmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/BE3UD6DmJgxUoBN4fm1O92DvDQlokRm7L2E5H8tZ/w=;
- b=aw+E7ncriQCfdGAUGrQZUE/X01NpnQkPaMKg98SJOA6wY+Umt71j+ZM3yJT4X2e4Z3a1Nf1QLyhCWVWM5woSGiSrFRCtJ7Y+axoK5muAMFzy8K/q5zDKA+XhU43kGZTFp6nun78Bc4vdtny2nuHntBDykocQKzISfMU5cKF8KWDvMYiCfneJuxF9RID1NNZC8H0s/Flemt9H/8te0Tc5X4Wgyt0zHH2qftbjcUtGDix9JdV3FbJj+OP489jnkeYYjXBTFPWiX1axHsYPxivLdaeMUWo+d8svoqnPmKjaFYR7H+Czrws9kPnJiEDFXxT1EnrZJjVbs3wTlpHvyWTwVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/BE3UD6DmJgxUoBN4fm1O92DvDQlokRm7L2E5H8tZ/w=;
- b=nHI74pvWX9voKu6qjF0Kfqy5Sc0AGs+NSCuuZ7eJDs13Cd2LSPaaZXvb/ZjcOfT09uuWHM6p5pmozbJumZzu3LweHgExn3n4A3SazKZjxpV5HJ3Rfd1IYhfQ1vrLcAgTG/9j9wdLhYAt6RaeZr3RJVUTfyzdVhJVMpRZmeQD3Xk=
-Received: from BYAPR11MB3477.namprd11.prod.outlook.com (2603:10b6:a03:7c::28)
- by BY5PR11MB4307.namprd11.prod.outlook.com (2603:10b6:a03:1bd::27)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Thu, 10 Sep
- 2020 08:24:22 +0000
-Received: from BYAPR11MB3477.namprd11.prod.outlook.com
- ([fe80::d1dd:de76:4e99:7c85]) by BYAPR11MB3477.namprd11.prod.outlook.com
- ([fe80::d1dd:de76:4e99:7c85%7]) with mapi id 15.20.3348.019; Thu, 10 Sep 2020
- 08:24:21 +0000
-To: <joe@perches.com>, <linux-kernel@vger.kernel.org>, <trivial@kernel.org>
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-Thread-Topic: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-Thread-Index: AQHWh0vIy44IYF5A+kuaVLhVJ6ZdVw==
-Date: Thu, 10 Sep 2020 08:24:21 +0000
-Message-ID: <c2929349-ca60-486d-3cad-a83321587c5f@microchip.com>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-authentication-results: perches.com; dkim=none (message not signed)
- header.d=none;perches.com; dmarc=none action=none header.from=microchip.com;
-x-originating-ip: [2a01:cb1c:8c:b200:d11f:426b:f805:cbe2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e351a690-85b8-47aa-f38f-08d85562eb8c
-x-ms-traffictypediagnostic: BY5PR11MB4307:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR11MB4307E000D4DA0597A74F9A31E0270@BY5PR11MB4307.namprd11.prod.outlook.com>
-x-bypassexternaltag: True
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rwdyTK6oNx+pJXY+VYO8jlUUcB5LsJW3ZQhau0YhpysDI1uZrWJ+5KkXmnJNABVwRpL8mxf24YLlXWyB3yirjaXQ/srQXMAk73DmLRMX7FFSd/uWs59kXpR0gz7YIDZpkdEHXR8Ks47+GSWaldjUxHW1dDgr9Bml1Ile+LfAjDi5j/2WavAN5DcmiJhVV86brSYApECTF1sqFMiIoIfargGWcDiXjLp0xoZy1wTF5cYKXSjd2DGvBQRASj+UAeO1Pg9WFEX+2sgdqqFJ/HgGUzu9uaOU20bpHBTTwQw7yoVGql5DTXE+Xr30INsHw1gSuTyHpcI3KtFhJi6QDKEIl6ZhO0EwhNcia52tqGsvyefiqtKNAZSsmZhN9N/OPaNO
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BYAPR11MB3477.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(136003)(376002)(346002)(396003)(366004)(39860400002)(36756003)(6506007)(4744005)(53546011)(31686004)(4326008)(8676002)(31696002)(6512007)(186003)(478600001)(2616005)(107886003)(83380400001)(54906003)(110136005)(5660300002)(316002)(2906002)(6486002)(76116006)(71200400001)(91956017)(66476007)(66556008)(8936002)(66446008)(66946007)(64756008)(7416002)(7406005)(86362001)(43740500002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: CK3jnFjP+DaxTGoKSfijNwQSDSi+zYRAANKGWEe0w6BHoCBr3jeo8QFCPrdi+OpT1qz3lmVs3mCRxOmBtUGK5WN0AxOt0wvA3bBJRUyjBicAE+lDMsP7vy1cft0wcXBrEZgdgqF7VD1sQj+khtUTD5EsNnntahNSIGqwN+VZCKQ1QzjPtAbjR2oPP/LrPDKYk//qfKAomMDI7R2fpR0tTUzDMz48DEh+PQCCmr/krCP8U3KTB6FIGhilgI7TLOfsJcLS9qlGh0PGNeVy7GIerGvFEQfkR4YdlzVLyEKvYmf4EXR5wArGM6eS5MMbLL4vYVjGrhiNaJt+earGuTqyYiFZbc+uujPQG9qCWcGOhC7tSaJvV/BIkb7lV8g/yXvxSbayqkCXQ/s7jX+D9fM+ZWNqgoWbSd/P+uuCP7/8e33PXHOet1lAM1sUIHpLxk8RCyecYucN6ijlgMa8IdFcV7U+ZA3zH97/7OWVEtd6OgF0CR21Hki2raxtlS5sca+cVURYu2gcHFAMLULSgaOruMk5qcKurGsgOTL9NDY1H7Jpn1+7gJ+bMQIt2b5OxDFW2nSizeQSfqlNFoprGc6aS71OSv+MwkoEfhBi640q5sGrdYfhliWNj5HhbdiTLJVy1TBmrhSIzi6KODxmStaMlQzfe8a1Otv3042csYwXaPKEPC9i6WiYuHbWrvEwzSbxIsAABeXwAiTaxYC040N9rw==
-Content-ID: <0B2726412C35D14B94E876CA5EB14904@namprd11.prod.outlook.com>
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+ [209.85.128.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1755286EAA
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 08:26:21 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id a9so4899234wmm.2
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 01:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=jV15et7Yw8A7Imw4OszYwam1pGezadF7ay4AoPCRTlw=;
+ b=YFX3C21ZwVO7s35wZGtviE1XqbE7aCLtO3wFFDiZBQLPyeEj7XL687V0Ka17r+pHow
+ trvRePYr75Vgj+evG/sbfJ5EEYunaBaoAbSvIka3o38lU7/FKTwwJQ7jj74iOjPtp4iL
+ YrUv5JVWK1FJoTvd7t+cUgJAdvv6LvUo9pvjg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=jV15et7Yw8A7Imw4OszYwam1pGezadF7ay4AoPCRTlw=;
+ b=Oje45kW/zU6CxeX4V7URqPBA0PwsWRiriu0gVDXt+KKY16doigV0T1LAR2nglMOw0s
+ uvHjWU7Nu7u1HJOtWJ/iA3/IhMNhxRHU9m2Z4vswEzxU8oGFcl05WKv9ns5/bENKfHYE
+ CKV+oIvjRggrCb0oFU193RtHyXqSiNs0LbZHGsV/XGg0fTQU5yXPNHryaNIfj3rEgxWb
+ 4t/brsSvpH3fqhBwzi+KWvP6IsPOTRG1RNSwWX5KQa5zbar+I8/3K4+8VAE/wzSoK6rU
+ 9MXiH8cHLxxJKd8C06MNC3URTv3//mF6OjGYDvu/kCyZoB3smUps3VSUXIbz58FSR+la
+ KSug==
+X-Gm-Message-State: AOAM532y7wM3nN+sYwHQ+EdR/KXRIZiQxPe3+Xkc/PPJtRTxgYUrHaAQ
+ /rqSTNU0w7tD+Qpn6NnFPgPJTCD4yyaBi/gN7+cUFg==
+X-Google-Smtp-Source: ABdhPJwMw0Wh177JlXOipH/ky7eUTophvRRubdU+aDyAbXNA/Xm+BsW76uAWLWKihoVqdk9x08SGwZLIRGafLV94erc=
+X-Received: by 2002:a7b:c384:: with SMTP id s4mr7073300wmj.138.1599726379101; 
+ Thu, 10 Sep 2020 01:26:19 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3477.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e351a690-85b8-47aa-f38f-08d85562eb8c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2020 08:24:21.4887 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JW3oElxXZwEvl6R2z5GFIVkcX/+UpGKsEW8MKFxofB9W1y9KDMUkM69WnQUZrCOB/0mudh2ADBhfj0C34gWZhgepCXhZk3LC9prwi+CGg3E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4307
-Cc: linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
- oss-drivers@netronome.com, nouveau@lists.freedesktop.org,
- alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org,
- linux-ide@vger.kernel.org, dm-devel@redhat.com, linux-mtd@lists.infradead.org,
- linux-i2c@vger.kernel.org, sparclinux@vger.kernel.org,
- kvmarm@lists.cs.columbia.edu, linux-rtc@vger.kernel.org,
- linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, dccp@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
- linux-afs@lists.infradead.org, Ludovic.Desroches@microchip.com,
- coreteam@netfilter.org, intel-wired-lan@lists.osuosl.org,
- linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
- linux-mmc@vger.kernel.org, kees.cook@canonical.com,
- linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
- intel-gfx@lists.freedesktop.org, linux-sctp@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
- storagedev@microchip.com, ceph-devel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
- linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
- linux-usb@vger.kernel.org, ndesaulniers@google.com, linux-mips@vger.kernel.org,
- iommu@lists.linux-foundation.org, netfilter-devel@vger.kernel.org,
- linux-crypto@vger.kernel.org, Eugen.Hristev@microchip.com, bpf@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+References: <20200909053234.17027-1-srinath.mannam@broadcom.com>
+ <1996b772-774c-3475-05cc-77ae87176c3f@arm.com>
+In-Reply-To: <1996b772-774c-3475-05cc-77ae87176c3f@arm.com>
+Date: Thu, 10 Sep 2020 13:56:07 +0530
+Message-ID: <CABe79T6fAmovPdx6ZzBeR8D9mJoX5qoAOG3=ZOt5TYpeT=LUJQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/dma: Fix IOVA reserve dma ranges
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: poza@codeaurora.org,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org,
+ BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -183,43 +97,106 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Nicolas.Ferre--- via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: Nicolas.Ferre@microchip.com
+From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Joe,
+On Wed, Sep 9, 2020 at 5:35 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+Hi Robin,
+Thanks for review
+> On 2020-09-09 06:32, Srinath Mannam wrote:
+> > Fix IOVA reserve failure for memory regions listed in dma-ranges in the
+> > following cases.
+> >
+> > - start address of memory region is 0x0.
+>
+> That's fair enough, and in fact generalises to the case of zero-sized
+> gaps between regions, which is indeed an oversight.
+Yes this is the main reason for the requirement of this fix.
+>
+> > - end address of a memory region is equal to start address of next memory
+> >    region.
+>
+> This part doesn't make much sense, however - if the regions described in
+> bridge->dma_ranges overlap, that's a bug in whoever created a malformed
+> list to begin with. Possibly it's just poor wording, and you're using
+> "memory regions" to refer to any or all of the dma_ranges, the reserved
+> IOVA ranges, and what "start" and "end" in this function represent which
+> isn't quite either of those.
+You are right, this case is very unlikely that nobody lists regions with zero
+gap, in such a case they will combine both the regions. Reason for highlighting
+this point is, the same fix will handle this case also. Here I used memory
+regions to refer entries of dma-ranges(allowed IOVA addresses range) not
+reserved IOVA ranges. start and end variables in this function refers to
+start and end addresses of reserved IOVA ranges which are derived from
+dma ranges resources start and end values.
+>
+> > Fixes: aadad097cd46f ("iommu/dma: Reserve IOVA for PCIe inaccessible DMA address")
+> > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 15 +++++++++++----
+> >   1 file changed, 11 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 5141d49a046b..0a3f67a4f9ae 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -213,14 +213,21 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
+> >       resource_list_for_each_entry(window, &bridge->dma_ranges) {
+> >               end = window->res->start - window->offset;
+> >   resv_iova:
+> > +             if (end < start) {
+> > +                     /* dma_ranges list should be sorted */
+> > +                     dev_err(&dev->dev, "Failed to reserve IOVA\n");
+> > +                     return -EINVAL;
+> > +             }
+> > +             /*
+> > +              * Skip the cases when start address of first memory region is
+> > +              * 0x0 and end address of one memory region and start address
+> > +              * of next memory region are equal. Reserve IOVA for rest of
+> > +              * addresses fall in between given memory ranges.
+> > +              */
+> >               if (end > start) {
+> >                       lo = iova_pfn(iovad, start);
+> >                       hi = iova_pfn(iovad, end);
+> >                       reserve_iova(iovad, lo, hi);
+> > -             } else {
+>
+> Surely this only needs to be a one-liner?
+Yes I agree with you this one line is sufficient.
+>
+> -               } else {
+> +               } else if (end < start) {
+>
+> (or possibly "end != start"; I can't quite decide which expresses the
+> semantic intent better)
+I think "end < start" is better choice because it tells list is not sorted
+and "!=" contradicts previous condition "end > start".
+>
+> The rest just looks like unnecessary churn - I don't think it needs
+> commenting that a sorted list may simply not have gaps between entries,
+> and as above I think the wording of that comment is actively misleading.
+I agree with you, these lines were added to explain the issue and fix with
+more details.
+I will send a new patch with a single line change as you said.
+" } else if (end < start) {"
 
-Please drop this chunk: it's a successive controller version number 
-which are all backward compatible with "fallthrough" on each case so 
-removing from this last one makes it inconsistent.
-
-In sort: NACK for atmel-mci.
-
-Best regards,
-   Nicolas
-
-
-On 09/09/2020 at 22:06, Joe Perches wrote:
-> diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
-> index 444bd3a0a922..8324312e4f42 100644
-> --- a/drivers/mmc/host/atmel-mci.c
-> +++ b/drivers/mmc/host/atmel-mci.c
-> @@ -2435,7 +2435,7 @@ static void atmci_get_cap(struct atmel_mci *host)
->          case 0x100:
->                  host->caps.has_bad_data_ordering = 0;
->                  host->caps.need_reset_after_xfer = 0;
-> -               fallthrough;
-> +               break;
->          case 0x0:
->                  break;
->          default:
-
-
--- 
-Nicolas Ferre
+Thanks & Regards,
+Srinath.
+>
+> Robin.
+>
+> > -                     /* dma_ranges list should be sorted */
+> > -                     dev_err(&dev->dev, "Failed to reserve IOVA\n");
+> > -                     return -EINVAL;
+> >               }
+> >
+> >               start = window->res->end - window->offset + 1;
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
