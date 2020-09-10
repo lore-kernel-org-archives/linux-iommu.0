@@ -2,72 +2,122 @@ Return-Path: <SRS0=7VEr=CT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B056FC43461
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AD2C433E2
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:34:00 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 159782087C
-	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:30:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 159782087C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 27872208E4
+	for <iommu@archiver.kernel.org>; Thu, 10 Sep 2020 13:33:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="fcQ8pRBP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27872208E4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 682F58700A;
-	Thu, 10 Sep 2020 13:30:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CB505872E2;
+	Thu, 10 Sep 2020 13:33:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xc9-BVY5l55T; Thu, 10 Sep 2020 13:30:26 +0000 (UTC)
+	with ESMTP id AWxFylGiEa3N; Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2AFBA87007;
-	Thu, 10 Sep 2020 13:30:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C08148722E;
+	Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01F9FC0052;
-	Thu, 10 Sep 2020 13:30:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE33CC0051
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:30:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4AA2C0052;
+	Thu, 10 Sep 2020 13:33:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E1342C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A60E48712E
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:30:24 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CADD686091
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MZPHWUVLlMjJ for <iommu@lists.linux-foundation.org>;
- Thu, 10 Sep 2020 13:30:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5731B870F6
- for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:30:23 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7717106F;
- Thu, 10 Sep 2020 06:30:22 -0700 (PDT)
-Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C172A3F66E;
- Thu, 10 Sep 2020 06:30:19 -0700 (PDT)
-Subject: Re: [PATCH 10/12] dma-direct: rename and cleanup __phys_to_dma
-To: Christoph Hellwig <hch@lst.de>, Tony Luck <tony.luck@intel.com>,
- Fenghua Yu <fenghua.yu@intel.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- iommu@lists.linux-foundation.org
-References: <20200908164758.3177341-1-hch@lst.de>
- <20200908164758.3177341-11-hch@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <17c556b8-2c02-7d03-404b-194cffcbebfb@arm.com>
-Date: Thu, 10 Sep 2020 14:30:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ with ESMTP id 48NDqNbsLieU for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Sep 2020 13:33:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-io1-f68.google.com (mail-io1-f68.google.com
+ [209.85.166.68])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 634FD875FF
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 13:33:55 +0000 (UTC)
+Received: by mail-io1-f68.google.com with SMTP id h4so7070456ioe.5
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Sep 2020 06:33:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=tcd-ie.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=NA4xq/RvWtw1DoG4R42VuDAYvxbq5gOs0uGkp97do30=;
+ b=fcQ8pRBPaEWiThwI4IpJI/6RvrpktlhqIcuTs8ion57IfAcoLZwMinlg018HPs4g0P
+ PfERQLGzgxTimYY/S16DcluJPa3UrMAv2VeDrvrD2khzMlgcNU3uG+U66xQTcGI4k/PB
+ tyd6Y57erW7Jw7CdoQkzGYnD3z09a+1xAJWCw3ZTA9vq0DdHjCGpzxmBZebxDdyQNZ5o
+ a8n4/aQGMi16zmzKxYbuyXtVYNEIktp6No97ibi4qLI+zDV4g/TXIXD87q5g2S3KNUFg
+ wjgBbIjqjQrEef6DxEeF173z4nhe4RTeiKBDtbYrCu4PSy+IwGvrlXsJFLKINZmU1V2I
+ yoXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=NA4xq/RvWtw1DoG4R42VuDAYvxbq5gOs0uGkp97do30=;
+ b=WLKin0qDS642jcxoj89j5SRBb8Re6/mhi5mUMFwtVgxrtuiua1W4f2gY4QKl9V0FQx
+ 7cYQ7dwzF3OSu+7x6MSCDxiT9jxMkdDSHJteQQwwyU86B2lZ3RdtS6cZQP4JAOQ/77vI
+ SqrlkMR8mWVL0ERNw4HLTbPksmLB7eFIu1Bvd89Q5L05qxJzLIpjy+LaKrYQt2EeL+NA
+ 0K0Eao9y3G+KPGKuQZyILA3CTK81lEriz1jiftd7sesQi4U89bTC3wljsDBV5kXXkc5/
+ iEXb0rWDTDhbtBTh4088REGyHo61kEiqYEOPMuz8UNUbNSHzWQFDk/b/onHAB/8GZ0zK
+ ea+w==
+X-Gm-Message-State: AOAM531pKb3W0zPcfoiLevlpBax759xy4mid0pQZDhj9WqNxB7YYcnyr
+ ukjJ2tg2cvHID6RleZb1Y62K8nHlcIe7GyCbOmVj6A==
+X-Google-Smtp-Source: ABdhPJzlID7Qr9FJiMTGq9orpwBT55dMvomyRpqx73nK5lHz5vZjsdxpDDRxLur0/nChDVSeWcISfULGX7CKyavrOhU=
+X-Received: by 2002:a02:834a:: with SMTP id w10mr8873252jag.63.1599744834395; 
+ Thu, 10 Sep 2020 06:33:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200908164758.3177341-11-hch@lst.de>
-Content-Language: en-GB
-Cc: linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191221150402.13868-1-murphyt7@tcd.ie>
+ <465815ae-9292-f37a-59b9-03949cb68460@deltatee.com>
+ <20200529124523.GA11817@infradead.org>
+ <CGME20200529190523eucas1p2c086133e707257c0cdc002f502d4f51d@eucas1p2.samsung.com>
+ <33137cfb-603c-86e8-1091-f36117ecfaf3@deltatee.com>
+ <ef2150d5-7b6a-df25-c10d-e43316fe7812@samsung.com>
+ <b9140772-0370-a858-578c-af503a06d8e9@deltatee.com>
+ <CALQxJuutRaeX89k2o4ffTKYRMizmMu0XbRnzpFuSSrkQR02jKg@mail.gmail.com>
+ <766525c3-4da9-6db7-cd90-fb4b82cd8083@deltatee.com>
+ <60a82319-cbee-4cd1-0d5e-3c407cc51330@linux.intel.com>
+ <e598fb31-ef7a-c2ee-8a54-bf62d50c480c@deltatee.com>
+ <b27cae1f-07ff-bef2-f125-a5f0d968016d@linux.intel.com>
+ <CALQxJut5c=cWdi+SVkN3JnbkhPSYmLkOyRUhduL-UJ9gyKn9Ow@mail.gmail.com>
+ <7106602a-9964-851e-9c4e-d8acf4033b89@linux.intel.com>
+ <ea24e077-5aa6-dd8e-69a7-d186b606703f@linux.intel.com>
+In-Reply-To: <ea24e077-5aa6-dd8e-69a7-d186b606703f@linux.intel.com>
+From: Tom Murphy <murphyt7@tcd.ie>
+Date: Thu, 10 Sep 2020 14:33:43 +0100
+Message-ID: <CALQxJus4prs0T6G9Z4bw5BDgwmkaiynBcoknLsYEY45SNZ6Ukg@mail.gmail.com>
+Subject: Re: [Intel-gfx] [PATCH 0/8] Convert the intel iommu driver to the
+ dma-iommu api
+To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc: kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+ Julien Grall <julien.grall@arm.com>, Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-samsung-soc@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, linux-rockchip@lists.infradead.org,
+ Andy Gross <agross@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ intel-gfx@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ virtualization@lists.linux-foundation.org,
+ Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+ Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,298 +130,124 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-09-08 17:47, Christoph Hellwig wrote:
-> The __phys_to_dma vs phys_to_dma distinction isn't exactly obvious.  Try
-> to improve the situation by renaming __phys_to_dma to
-> phys_to_dma_unencryped, and not forcing architectures that want to
-> override phys_to_dma to actually provide __phys_to_dma.
+On Wed, 9 Sep 2020 at 13:56, Tvrtko Ursulin
+<tvrtko.ursulin@linux.intel.com> wrote:
+>
+>
+> On 09/09/2020 10:16, Tvrtko Ursulin wrote:
+> > On 08/09/2020 23:43, Tom Murphy wrote:
+> >> On Tue, 8 Sep 2020 at 16:56, Tvrtko Ursulin
+> >> <tvrtko.ursulin@linux.intel.com> wrote:
+> >>> On 08/09/2020 16:44, Logan Gunthorpe wrote:
+> >>>> On 2020-09-08 9:28 a.m., Tvrtko Ursulin wrote:
+> >>>>>>
+> >>>>>> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>>>>> b/drivers/gpu/drm/i915/i915
+> >>>>>> index b7b59328cb76..9367ac801f0c 100644
+> >>>>>> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>>>>> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+> >>>>>> @@ -27,13 +27,19 @@ static __always_inline struct sgt_iter {
+> >>>>>>     } __sgt_iter(struct scatterlist *sgl, bool dma) {
+> >>>>>>            struct sgt_iter s = { .sgp = sgl };
+> >>>>>>
+> >>>>>> +       if (sgl && !sg_dma_len(s.sgp))
+> >>>>>
+> >>>>> I'd extend the condition to be, just to be safe:
+> >>>>>       if (dma && sgl && !sg_dma_len(s.sgp))
+> >>>>>
+> >>>>
+> >>>> Right, good catch, that's definitely necessary.
+> >>>>
+> >>>>>> +               s.sgp = NULL;
+> >>>>>> +
+> >>>>>>            if (s.sgp) {
+> >>>>>>                    s.max = s.curr = s.sgp->offset;
+> >>>>>> -               s.max += s.sgp->length;
+> >>>>>> -               if (dma)
+> >>>>>> +
+> >>>>>> +               if (dma) {
+> >>>>>> +                       s.max += sg_dma_len(s.sgp);
+> >>>>>>                            s.dma = sg_dma_address(s.sgp);
+> >>>>>> -               else
+> >>>>>> +               } else {
+> >>>>>> +                       s.max += s.sgp->length;
+> >>>>>>                            s.pfn = page_to_pfn(sg_page(s.sgp));
+> >>>>>> +               }
+> >>>>>
+> >>>>> Otherwise has this been tested or alternatively how to test it?
+> >>>>> (How to
+> >>>>> repro the issue.)
+> >>>>
+> >>>> It has not been tested. To test it, you need Tom's patch set without
+> >>>> the
+> >>>> last "DO NOT MERGE" patch:
+> >>>>
+> >>>> https://lkml.kernel.org/lkml/20200907070035.GA25114@infradead.org/T/
+> >>>
+> >>> Tom, do you have a branch somewhere I could pull from? (Just being lazy
+> >>> about downloading a bunch of messages from the archives.)
+> >>
+> >> I don't unfortunately. I'm working locally with poor internet.
+> >>
+> >>>
+> >>> What GPU is in your Lenovo x1 carbon 5th generation and what
+> >>> graphical/desktop setup I need to repro?
+> >>
+> >>
+> >> Is this enough info?:
+> >>
+> >> $ lspci -vnn | grep VGA -A 12
+> >> 00:02.0 VGA compatible controller [0300]: Intel Corporation HD
+> >> Graphics 620 [8086:5916] (rev 02) (prog-if 00 [VGA controller])
+> >>      Subsystem: Lenovo ThinkPad X1 Carbon 5th Gen [17aa:224f]
+> >>      Flags: bus master, fast devsel, latency 0, IRQ 148
+> >>      Memory at eb000000 (64-bit, non-prefetchable) [size=16M]
+> >>      Memory at 60000000 (64-bit, prefetchable) [size=256M]
+> >>      I/O ports at e000 [size=64]
+> >>      [virtual] Expansion ROM at 000c0000 [disabled] [size=128K]
+> >>      Capabilities: [40] Vendor Specific Information: Len=0c <?>
+> >>      Capabilities: [70] Express Root Complex Integrated Endpoint, MSI 00
+> >>      Capabilities: [ac] MSI: Enable+ Count=1/1 Maskable- 64bit-
+> >>      Capabilities: [d0] Power Management version 2
+> >>      Capabilities: [100] Process Address Space ID (PASID)
+> >>      Capabilities: [200] Address Translation Service (ATS)
+> >
+> > Works for a start. What about the steps to repro? Any desktop
+> > environment and it is just visual corruption, no hangs/stalls or such?
+> >
+> > I've submitted a series consisting of what I understood are the patches
+> > needed to repro the issue to our automated CI here:
+> >
+> > https://patchwork.freedesktop.org/series/81489/
+> >
+> > So will see if it will catch something, or more targeted testing will be
+> > required. Hopefully it does trip over in which case I can add the patch
+> > suggested by Logan on top and see if that fixes it. Or I'll need to
+> > write a new test case.
+> >
+> > If you could glance over my series to check I identified the patches
+> > correctly it would be appreciated.
+>
+> Our CI was more than capable at catching the breakage so I've copied you
+> on a patch (https://patchwork.freedesktop.org/series/81497/) which has a
+> good potential to fix this. (Or improve the robustness of our sg walks,
+> depends how you look at it.)
+>
+> Would you be able to test it in your environment by any chance? If it
+> works I understand it unblocks your IOMMU work, right?
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+I tested your latest patch set ([PATCH 1/2] drm/i915: Fix DMA mapped
+scatterlist walks) and it fixes the issue. great work!
 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm/include/asm/dma-direct.h      |  2 +-
->   arch/mips/bmips/dma.c                  |  2 +-
->   arch/mips/cavium-octeon/dma-octeon.c   |  2 +-
->   arch/mips/include/asm/dma-direct.h     |  2 +-
->   arch/mips/loongson2ef/fuloong-2e/dma.c |  2 +-
->   arch/mips/loongson2ef/lemote-2f/dma.c  |  2 +-
->   arch/mips/loongson64/dma.c             |  2 +-
->   arch/mips/pci/pci-ar2315.c             |  2 +-
->   arch/mips/pci/pci-xtalk-bridge.c       |  2 +-
->   arch/mips/sgi-ip32/ip32-dma.c          |  2 +-
->   arch/powerpc/include/asm/dma-direct.h  |  2 +-
->   drivers/iommu/intel/iommu.c            |  2 +-
->   include/linux/dma-direct.h             | 28 +++++++++++++++-----------
->   kernel/dma/direct.c                    |  8 ++++----
->   kernel/dma/swiotlb.c                   |  4 ++--
->   15 files changed, 34 insertions(+), 30 deletions(-)
-> 
-> diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
-> index a8cee87a93e8ab..bca0de56753439 100644
-> --- a/arch/arm/include/asm/dma-direct.h
-> +++ b/arch/arm/include/asm/dma-direct.h
-> @@ -2,7 +2,7 @@
->   #ifndef ASM_ARM_DMA_DIRECT_H
->   #define ASM_ARM_DMA_DIRECT_H 1
->   
-> -static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	unsigned int offset = paddr & ~PAGE_MASK;
->   	return pfn_to_dma(dev, __phys_to_pfn(paddr)) + offset;
-> diff --git a/arch/mips/bmips/dma.c b/arch/mips/bmips/dma.c
-> index ba2a5d33dfd3fa..49061b870680b9 100644
-> --- a/arch/mips/bmips/dma.c
-> +++ b/arch/mips/bmips/dma.c
-> @@ -40,7 +40,7 @@ static struct bmips_dma_range *bmips_dma_ranges;
->   
->   #define FLUSH_RAC		0x100
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t pa)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t pa)
->   {
->   	struct bmips_dma_range *r;
->   
-> diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-> index 388b13ba2558c2..232fa1017b1ec9 100644
-> --- a/arch/mips/cavium-octeon/dma-octeon.c
-> +++ b/arch/mips/cavium-octeon/dma-octeon.c
-> @@ -168,7 +168,7 @@ void __init octeon_pci_dma_init(void)
->   }
->   #endif /* CONFIG_PCI */
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   #ifdef CONFIG_PCI
->   	if (dev && dev_is_pci(dev))
-> diff --git a/arch/mips/include/asm/dma-direct.h b/arch/mips/include/asm/dma-direct.h
-> index 8e178651c638c2..9a640118316c9d 100644
-> --- a/arch/mips/include/asm/dma-direct.h
-> +++ b/arch/mips/include/asm/dma-direct.h
-> @@ -2,7 +2,7 @@
->   #ifndef _MIPS_DMA_DIRECT_H
->   #define _MIPS_DMA_DIRECT_H 1
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
->   phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr);
->   
->   #endif /* _MIPS_DMA_DIRECT_H */
-> diff --git a/arch/mips/loongson2ef/fuloong-2e/dma.c b/arch/mips/loongson2ef/fuloong-2e/dma.c
-> index 83fadeb3fd7d56..cea167d8aba8db 100644
-> --- a/arch/mips/loongson2ef/fuloong-2e/dma.c
-> +++ b/arch/mips/loongson2ef/fuloong-2e/dma.c
-> @@ -1,7 +1,7 @@
->   // SPDX-License-Identifier: GPL-2.0
->   #include <linux/dma-direct.h>
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	return paddr | 0x80000000;
->   }
-> diff --git a/arch/mips/loongson2ef/lemote-2f/dma.c b/arch/mips/loongson2ef/lemote-2f/dma.c
-> index 302b43a14eee74..3c9e994563578c 100644
-> --- a/arch/mips/loongson2ef/lemote-2f/dma.c
-> +++ b/arch/mips/loongson2ef/lemote-2f/dma.c
-> @@ -1,7 +1,7 @@
->   // SPDX-License-Identifier: GPL-2.0
->   #include <linux/dma-direct.h>
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	return paddr | 0x80000000;
->   }
-> diff --git a/arch/mips/loongson64/dma.c b/arch/mips/loongson64/dma.c
-> index b3dc5d0bd2b113..364f2f27c8723f 100644
-> --- a/arch/mips/loongson64/dma.c
-> +++ b/arch/mips/loongson64/dma.c
-> @@ -4,7 +4,7 @@
->   #include <linux/swiotlb.h>
->   #include <boot_param.h>
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	/* We extract 2bit node id (bit 44~47, only bit 44~45 used now) from
->   	 * Loongson-3's 48bit address space and embed it into 40bit */
-> diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-> index d88395684f487d..cef4a47ab06311 100644
-> --- a/arch/mips/pci/pci-ar2315.c
-> +++ b/arch/mips/pci/pci-ar2315.c
-> @@ -170,7 +170,7 @@ static inline dma_addr_t ar2315_dev_offset(struct device *dev)
->   	return 0;
->   }
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	return paddr + ar2315_dev_offset(dev);
->   }
-> diff --git a/arch/mips/pci/pci-xtalk-bridge.c b/arch/mips/pci/pci-xtalk-bridge.c
-> index f1b37f32b55395..50f7d42cca5a78 100644
-> --- a/arch/mips/pci/pci-xtalk-bridge.c
-> +++ b/arch/mips/pci/pci-xtalk-bridge.c
-> @@ -25,7 +25,7 @@
->   /*
->    * Common phys<->dma mapping for platforms using pci xtalk bridge
->    */
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	struct pci_dev *pdev = to_pci_dev(dev);
->   	struct bridge_controller *bc = BRIDGE_CONTROLLER(pdev->bus);
-> diff --git a/arch/mips/sgi-ip32/ip32-dma.c b/arch/mips/sgi-ip32/ip32-dma.c
-> index 160317294d97a9..20c6da9d76bc5e 100644
-> --- a/arch/mips/sgi-ip32/ip32-dma.c
-> +++ b/arch/mips/sgi-ip32/ip32-dma.c
-> @@ -18,7 +18,7 @@
->   
->   #define RAM_OFFSET_MASK 0x3fffffffUL
->   
-> -dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	dma_addr_t dma_addr = paddr & RAM_OFFSET_MASK;
->   
-> diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
-> index 95b09313d2a4cf..128304cbee1d87 100644
-> --- a/arch/powerpc/include/asm/dma-direct.h
-> +++ b/arch/powerpc/include/asm/dma-direct.h
-> @@ -2,7 +2,7 @@
->   #ifndef ASM_POWERPC_DMA_DIRECT_H
->   #define ASM_POWERPC_DMA_DIRECT_H 1
->   
-> -static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->   {
->   	return paddr + dev->archdata.dma_offset;
->   }
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index f8177c59d229a6..7983c13b9eef7d 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3736,7 +3736,7 @@ bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
->   	 */
->   	if (!IS_ALIGNED(paddr | size, VTD_PAGE_SIZE)) {
->   		tlb_addr = swiotlb_tbl_map_single(dev,
-> -				__phys_to_dma(dev, io_tlb_start),
-> +				phys_to_dma_unencrypted(dev, io_tlb_start),
->   				paddr, size, aligned_size, dir, attrs);
->   		if (tlb_addr == DMA_MAPPING_ERROR) {
->   			goto swiotlb_error;
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index f00e262ab6b154..805010ea5346f9 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -16,14 +16,29 @@ extern unsigned int zone_dma_bits;
->   
->   #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
->   #include <asm/dma-direct.h>
-> +#ifndef phys_to_dma_unencrypted
-> +#define phys_to_dma_unencrypted		phys_to_dma
-> +#endif
->   #else
-> -static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +static inline dma_addr_t phys_to_dma_unencrypted(struct device *dev,
-> +		phys_addr_t paddr)
->   {
->   	dma_addr_t dev_addr = (dma_addr_t)paddr;
->   
->   	return dev_addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
->   }
->   
-> +/*
-> + * If memory encryption is supported, phys_to_dma will set the memory encryption
-> + * bit in the DMA address, and dma_to_phys will clear it.
-> + * phys_to_dma_unencrypted is for use on special unencrypted memory like swiotlb
-> + * buffers.
-> + */
-> +static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
-> +{
-> +	return __sme_set(phys_to_dma_unencrypted(dev, paddr));
-> +}
-> +
->   static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
->   {
->   	phys_addr_t paddr = (phys_addr_t)dev_addr +
-> @@ -42,17 +57,6 @@ static inline bool force_dma_unencrypted(struct device *dev)
->   }
->   #endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
->   
-> -/*
-> - * If memory encryption is supported, phys_to_dma will set the memory encryption
-> - * bit in the DMA address, and dma_to_phys will clear it.  The raw __phys_to_dma
-> - * version should only be used on non-encrypted memory for
-> - * special occasions like DMA coherent buffers.
-> - */
-> -static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
-> -{
-> -	return __sme_set(__phys_to_dma(dev, paddr));
-> -}
-> -
->   static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->   		bool is_ram)
->   {
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index bfb479c8a370fa..54db9cfdaecc6d 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -25,7 +25,7 @@ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
->   		phys_addr_t phys)
->   {
->   	if (force_dma_unencrypted(dev))
-> -		return __phys_to_dma(dev, phys);
-> +		return phys_to_dma_unencrypted(dev, phys);
->   	return phys_to_dma(dev, phys);
->   }
->   
-> @@ -438,13 +438,13 @@ int dma_direct_supported(struct device *dev, u64 mask)
->   		return 1;
->   
->   	/*
-> -	 * This check needs to be against the actual bit mask value, so
-> -	 * use __phys_to_dma() here so that the SME encryption mask isn't
-> +	 * This check needs to be against the actual bit mask value, so use
-> +	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
->   	 * part of the check.
->   	 */
->   	if (IS_ENABLED(CONFIG_ZONE_DMA))
->   		min_mask = min_t(u64, min_mask, DMA_BIT_MASK(zone_dma_bits));
-> -	return mask >= __phys_to_dma(dev, min_mask);
-> +	return mask >= phys_to_dma_unencrypted(dev, min_mask);
->   }
->   
->   size_t dma_direct_max_mapping_size(struct device *dev)
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c19379fabd200e..4ea72d145cd27d 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -670,13 +670,13 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
->   			      swiotlb_force);
->   
->   	swiotlb_addr = swiotlb_tbl_map_single(dev,
-> -			__phys_to_dma(dev, io_tlb_start),
-> +			phys_to_dma_unencrypted(dev, io_tlb_start),
->   			paddr, size, size, dir, attrs);
->   	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
->   		return DMA_MAPPING_ERROR;
->   
->   	/* Ensure that the address returned is DMA'ble */
-> -	dma_addr = __phys_to_dma(dev, swiotlb_addr);
-> +	dma_addr = phys_to_dma_unencrypted(dev, swiotlb_addr);
->   	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
->   		swiotlb_tbl_unmap_single(dev, swiotlb_addr, size, size, dir,
->   			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-> 
+>
+> Regards,
+>
+> Tvrtko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
