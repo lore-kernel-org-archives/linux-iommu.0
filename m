@@ -6,57 +6,58 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19549C43461
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 07:14:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C215C433E2
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 07:15:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E2C4221F0
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 07:14:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E2C4221F0
+	by mail.kernel.org (Postfix) with ESMTPS id 99B3F221F0
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 07:15:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99B3F221F0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 297AF86DD6;
-	Fri, 11 Sep 2020 07:14:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3F48487740;
+	Fri, 11 Sep 2020 07:15:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HhNC2IJNzH9W; Fri, 11 Sep 2020 07:14:36 +0000 (UTC)
+	with ESMTP id GU64Ssi8QBJO; Fri, 11 Sep 2020 07:15:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A8EBB86DA1;
-	Fri, 11 Sep 2020 07:14:36 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CCF1587739;
+	Fri, 11 Sep 2020 07:15:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D84DC0052;
-	Fri, 11 Sep 2020 07:14:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C6C8FC0052;
+	Fri, 11 Sep 2020 07:15:24 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3518BC0051
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:14:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37578C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:15:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3050C8773D
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:14:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 257E08773D
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:15:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Qb9Er6hWE+Le for <iommu@lists.linux-foundation.org>;
- Fri, 11 Sep 2020 07:14:33 +0000 (UTC)
+ with ESMTP id dfpC25-bq5d6 for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Sep 2020 07:15:23 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9CE3287739
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:14:33 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 835D187739
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 07:15:23 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 016DC68BFE; Fri, 11 Sep 2020 09:14:29 +0200 (CEST)
-Date: Fri, 11 Sep 2020 09:14:29 +0200
+ id 263C168BFE; Fri, 11 Sep 2020 09:15:20 +0200 (CEST)
+Date: Fri, 11 Sep 2020 09:15:19 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 09/12] dma-direct: remove __dma_to_phys
-Message-ID: <20200911071429.GE22394@lst.de>
+Subject: Re: [PATCH 11/12] dma-mapping: move dma_common_{mmap,get_sgtable}
+ out of mapping.c
+Message-ID: <20200911071519.GF22394@lst.de>
 References: <20200908164758.3177341-1-hch@lst.de>
- <20200908164758.3177341-10-hch@lst.de>
- <5d797c06-401d-62b1-f144-ea6e9a5144dd@arm.com>
+ <20200908164758.3177341-12-hch@lst.de>
+ <88bae26e-d5f4-7a00-a88a-b69194d519a4@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <5d797c06-401d-62b1-f144-ea6e9a5144dd@arm.com>
+In-Reply-To: <88bae26e-d5f4-7a00-a88a-b69194d519a4@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
  linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org,
@@ -80,23 +81,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 10, 2020 at 02:26:03PM +0100, Robin Murphy wrote:
+On Thu, Sep 10, 2020 at 02:34:18PM +0100, Robin Murphy wrote:
 > On 2020-09-08 17:47, Christoph Hellwig wrote:
->> There is no harm in just always clearing the SME encryption bit, while
->> significantly simplifying the interface.
+>> Add a new file that contains helpera for misc DMA ops, which is only
 >
-> After a 10-minute diversion into "but hang on, force_dma_unencrypted() is 
-> meaningful on PPC and S390 too..." before realising that it all does just 
-> come back to __sme_clr(), which is indeed a no-op for everyone other than 
-> AMD, any simplification of this mess is indeed welcome :)
->
-> Unless I've massively misunderstood how SME is supposed to work,
+> The Latin plural of the singular "helperum", I guess? :P
 
-Exactly.  This weird encryption bit in AMD SME causes all kinds of harm,
-and I'm glad no one picked it up.  I've also been wondering if we
-should change the interface to explicit set/clear the bit, but I'll
-leave that for another pass as fixing up the SME interfaces would turn
-into a massive disgression.
+I've switched it to helpers, that might be easier to understand :)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
