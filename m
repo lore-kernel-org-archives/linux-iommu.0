@@ -2,102 +2,90 @@ Return-Path: <SRS0=FRM4=CU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 982FFC43461
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 21:56:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD13C433E2
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 22:04:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 475FA22207
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 21:56:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 611E622207
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 22:04:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i7pPQY0j"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 475FA22207
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Yc3gh5Zv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 611E622207
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 23C732E2D8;
-	Fri, 11 Sep 2020 21:56:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E186487577;
+	Fri, 11 Sep 2020 22:04:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YEE+nA6yxULd; Fri, 11 Sep 2020 21:56:29 +0000 (UTC)
+	with ESMTP id PB158h_WIBnM; Fri, 11 Sep 2020 22:04:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1B7172E292;
-	Fri, 11 Sep 2020 21:56:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BD80D87582;
+	Fri, 11 Sep 2020 22:04:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10468C0859;
-	Fri, 11 Sep 2020 21:56:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4BADEC0051
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 21:56:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2576C0859;
+	Fri, 11 Sep 2020 22:04:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A9FCC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 22:04:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 237162E29E
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 21:56:27 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6322F878F7
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 22:04:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3ntcuIvQnITI for <iommu@lists.linux-foundation.org>;
- Fri, 11 Sep 2020 21:56:14 +0000 (UTC)
+ with ESMTP id tkELVbg7-Tok for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Sep 2020 22:04:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
- [209.85.214.194])
- by silver.osuosl.org (Postfix) with ESMTPS id F42092E292
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 21:56:13 +0000 (UTC)
-Received: by mail-pl1-f194.google.com with SMTP id u9so1505501plk.4
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 14:56:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=5Pl/gShAZb0/E2JovcDPP84JLbx5P6bNZYeVPmDHvck=;
- b=i7pPQY0jtjKJTcc/OuDuFhHMBCE3sRV5VJIu2MaGoKr1TmsQvGeb9H3/O3stpt7Fnd
- Ijg2gRvWBJD8UjwLSxr5nyeFuofJbTRTTXvzh7HORUNldUTdRwqBAlF9X4N8j1wA0q9s
- vF9ttApGNCTspepiLhO1rTCnczsxgzPnA/+O/C3fI4lnG3pDlKPL/2zrtSjO/Q2/45ZR
- mTikhc95Euc7diMjG7qp3+PijhAYjO2BbV5ABEs8DbNtnQ+xOPFjseo90Yyc+2uIHyv5
- oZdqeNceBE4y+sQ0dAFXUjFXo8vxsoyvMKmYor5ejtHLpTk5CFksSDDcLOy9RO7yFfLV
- C7rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=5Pl/gShAZb0/E2JovcDPP84JLbx5P6bNZYeVPmDHvck=;
- b=FpxKu2jvrpxRF1tVs0xxmzFHFZBbdMnTkjSSSR01bEGznkAMfOKSL24n0Wc3vRBOxa
- cJLf/u2XhJsAXFkC5/4VhLmjHtz4cXURyrxOYswe7nxRubJDgRnEXsjmzx30I61CD02F
- cUDWu/HytL7ReGJFSA7lNqrfBW3TFTLjuXZPBrVfIl4Yu495AnJHsweKAdDAJmHTvJ/o
- mEtmVX+YMkPn+BSLVE2eUtxnnf5Od9ypdUEZTK+izHLvfQughdYpZwVNdHQnGmH10Lbs
- DdwFyAtZB0xuysnihRNaNTr7CZsaEBQXHS9loBa38A+xYdTDKTWJGEgu9qilFKRkXyiC
- EF0w==
-X-Gm-Message-State: AOAM531aww0hoJevE6AykTfvIvejMeylV8xjzwWi3LR628n0E118+W23
- NTVyeJ6HoFfgOQepqFIBugwHo4VToS0=
-X-Google-Smtp-Source: ABdhPJxtRg1LBlIJ3RKQKCxPW6RM2HYuemEu/oCOEwCIZgX2Ci9ugRBxrCfIxg6W87GE5c/sjXtvnw==
-X-Received: by 2002:a17:90a:62c5:: with SMTP id
- k5mr4017233pjs.100.1599861373214; 
- Fri, 11 Sep 2020 14:56:13 -0700 (PDT)
-Received: from jacob-builder.jf.intel.com (jfdmzpr04-ext.jf.intel.com.
- [134.134.137.73])
- by smtp.gmail.com with ESMTPSA id e62sm3171586pfh.76.2020.09.11.14.56.12
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 11 Sep 2020 14:56:12 -0700 (PDT)
-From: Jacob Pan <jacob.pan.linux@gmail.com>
-X-Google-Original-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- "Lu Baolu" <baolu.lu@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v9 6/7] iommu/uapi: Handle data and argsz filled by users
-Date: Fri, 11 Sep 2020 14:57:55 -0700
-Message-Id: <1599861476-53416-7-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1599861476-53416-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1599861476-53416-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Yi Sun <yi.y.sun@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Wu Hao <hao.wu@intel.com>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4B4F887904
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 22:04:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599861844;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=1sLtNEYorKOZmJZ5wcBLTn+9A+638ncpxvvFx3ToTgA=;
+ b=Yc3gh5ZvXbsWgN40JzJb+U2rlAG5e6XnKgkg3ff5voG8MqaI31QabTht1K6+O8QYAqv18C
+ PhEfZSs+0ZRAXb4WAmTUUJ7P5Hn0S1k2XO+PNwEUInTUMBrB9GkQSxKCoSO9BHZgkaGw0h
+ xceeXvgYX2XNL/sIO+C2G4AlLkH1sWc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-524-XF5QLMacPUi4HzJmMODNQw-1; Fri, 11 Sep 2020 18:04:00 -0400
+X-MC-Unique: XF5QLMacPUi4HzJmMODNQw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 30EB081CAFF;
+ Fri, 11 Sep 2020 22:03:58 +0000 (UTC)
+Received: from w520.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 1AC255C22A;
+ Fri, 11 Sep 2020 22:03:51 +0000 (UTC)
+Date: Fri, 11 Sep 2020 16:03:50 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [PATCH v7 10/16] vfio/type1: Support binding guest page tables
+ to PASID
+Message-ID: <20200911160350.240869b2@w520.home>
+In-Reply-To: <1599734733-6431-11-git-send-email-yi.l.liu@intel.com>
+References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
+ <1599734733-6431-11-git-send-email-yi.l.liu@intel.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, jasowang@redhat.com, stefanha@gmail.com,
+ iommu@lists.linux-foundation.org, yi.y.sun@intel.com, hao.wu@intel.com,
+ jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,328 +98,423 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-IOMMU user APIs are responsible for processing user data. This patch
-changes the interface such that user pointers can be passed into IOMMU
-code directly. Separate kernel APIs without user pointers are introduced
-for in-kernel users of the UAPI functionality.
+On Thu, 10 Sep 2020 03:45:27 -0700
+Liu Yi L <yi.l.liu@intel.com> wrote:
 
-IOMMU UAPI data has a user filled argsz field which indicates the data
-length of the structure. User data is not trusted, argsz must be
-validated based on the current kernel data size, mandatory data size,
-and feature flags.
+> Nesting translation allows two-levels/stages page tables, with 1st level
+> for guest translations (e.g. GVA->GPA), 2nd level for host translations
+> (e.g. GPA->HPA). This patch adds interface for binding guest page tables
+> to a PASID. This PASID must have been allocated by the userspace before
+> the binding request.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v6 -> v7:
+> *) introduced @user in struct domain_capsule to simplify the code per Eric's
+>    suggestion.
+> *) introduced VFIO_IOMMU_NESTING_OP_NUM for sanitizing op from userspace.
+> *) corrected the @argsz value of unbind_data in vfio_group_unbind_gpasid_fn().
+> 
+> v5 -> v6:
+> *) dropped vfio_find_nesting_group() and add vfio_get_nesting_domain_capsule().
+>    per comment from Eric.
+> *) use iommu_uapi_sva_bind/unbind_gpasid() and iommu_sva_unbind_gpasid() in
+>    linux/iommu.h for userspace operation and in-kernel operation.
+> 
+> v3 -> v4:
+> *) address comments from Alex on v3
+> 
+> v2 -> v3:
+> *) use __iommu_sva_unbind_gpasid() for unbind call issued by VFIO
+>    https://lore.kernel.org/linux-iommu/1592931837-58223-6-git-send-email-jacob.jun.pan@linux.intel.com/
+> 
+> v1 -> v2:
+> *) rename subject from "vfio/type1: Bind guest page tables to host"
+> *) remove VFIO_IOMMU_BIND, introduce VFIO_IOMMU_NESTING_OP to support bind/
+>    unbind guet page table
+> *) replaced vfio_iommu_for_each_dev() with a group level loop since this
+>    series enforces one group per container w/ nesting type as start.
+> *) rename vfio_bind/unbind_gpasid_fn() to vfio_dev_bind/unbind_gpasid_fn()
+> *) vfio_dev_unbind_gpasid() always successful
+> *) use vfio_mm->pasid_lock to avoid race between PASID free and page table
+>    bind/unbind
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 163 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/vfio/vfio_pasid.c       |  26 +++++++
+>  include/linux/vfio.h            |  20 +++++
+>  include/uapi/linux/vfio.h       |  36 +++++++++
+>  4 files changed, 245 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index bd4b668..11f1156 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -149,6 +149,39 @@ struct vfio_regions {
+>  #define DIRTY_BITMAP_PAGES_MAX	 ((u64)INT_MAX)
+>  #define DIRTY_BITMAP_SIZE_MAX	 DIRTY_BITMAP_BYTES(DIRTY_BITMAP_PAGES_MAX)
+>  
+> +struct domain_capsule {
+> +	struct vfio_group	*group;
+> +	struct iommu_domain	*domain;
+> +	/* set if @data contains a user pointer*/
+> +	bool			user;
+> +	void			*data;
+> +};
 
-User data may also be extended, resulting in possible argsz increase.
-Backward compatibility is ensured based on size and flags (or
-the functional equivalent fields) checking.
+Put the hole in the structure at the end, but I suspect we might lose
+the user field when the internal api drops the unnecessary structure
+for unbind anyway.
 
-This patch adds sanity checks in the IOMMU layer. In addition to argsz,
-reserved/unused fields in padding, flags, and version are also checked.
-Details are documented in Documentation/userspace-api/iommu.rst
+> +
+> +/* iommu->lock must be held */
+> +static int vfio_prepare_nesting_domain_capsule(struct vfio_iommu *iommu,
+> +					       struct domain_capsule *dc)
+> +{
+> +	struct vfio_domain *domain = NULL;
+> +	struct vfio_group *group = NULL;
 
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/iommu.c | 199 ++++++++++++++++++++++++++++++++++++++++++++++++--
- include/linux/iommu.h |  28 ++++---
- 2 files changed, 211 insertions(+), 16 deletions(-)
+Unnecessary initialization.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4ae02291ccc2..5c1b7ae48aae 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1961,34 +1961,219 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device);
- 
-+/*
-+ * Check flags and other user provided data for valid combinations. We also
-+ * make sure no reserved fields or unused flags are set. This is to ensure
-+ * not breaking userspace in the future when these fields or flags are used.
-+ */
-+static int iommu_check_cache_invl_data(struct iommu_cache_invalidate_info *info)
-+{
-+	u32 mask;
-+	int i;
-+
-+	if (info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-+		return -EINVAL;
-+
-+	mask = (1 << IOMMU_CACHE_INV_TYPE_NR) - 1;
-+	if (info->cache & ~mask)
-+		return -EINVAL;
-+
-+	if (info->granularity >= IOMMU_INV_GRANU_NR)
-+		return -EINVAL;
-+
-+	switch (info->granularity) {
-+	case IOMMU_INV_GRANU_ADDR:
-+		if (info->cache & IOMMU_CACHE_INV_TYPE_PASID)
-+			return -EINVAL;
-+
-+		mask = IOMMU_INV_ADDR_FLAGS_PASID |
-+			IOMMU_INV_ADDR_FLAGS_ARCHID |
-+			IOMMU_INV_ADDR_FLAGS_LEAF;
-+
-+		if (info->granu.addr_info.flags & ~mask)
-+			return -EINVAL;
-+		break;
-+	case IOMMU_INV_GRANU_PASID:
-+		mask = IOMMU_INV_PASID_FLAGS_PASID |
-+			IOMMU_INV_PASID_FLAGS_ARCHID;
-+		if (info->granu.pasid_info.flags & ~mask)
-+			return -EINVAL;
-+
-+		break;
-+	case IOMMU_INV_GRANU_DOMAIN:
-+		if (info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB)
-+			return -EINVAL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* Check reserved padding fields */
-+	for (i = 0; i < sizeof(info->padding); i++) {
-+		if (info->padding[i])
-+			return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- int iommu_uapi_cache_invalidate(struct iommu_domain *domain, struct device *dev,
--				struct iommu_cache_invalidate_info *inv_info)
-+				void __user *uinfo)
- {
-+	struct iommu_cache_invalidate_info inv_info = { 0 };
-+	u32 minsz;
-+	int ret = 0;
-+
- 	if (unlikely(!domain->ops->cache_invalidate))
- 		return -ENODEV;
- 
--	return domain->ops->cache_invalidate(domain, dev, inv_info);
-+	/*
-+	 * No new spaces can be added before the variable sized union, the
-+	 * minimum size is the offset to the union.
-+	 */
-+	minsz = offsetof(struct iommu_cache_invalidate_info, granu);
-+
-+	/* Copy minsz from user to get flags and argsz */
-+	if (copy_from_user(&inv_info, uinfo, minsz))
-+		return -EFAULT;
-+
-+	/* Fields before variable size union is mandatory */
-+	if (inv_info.argsz < minsz)
-+		return -EINVAL;
-+
-+	/* PASID and address granu require additional info beyond minsz */
-+	if (inv_info.argsz == minsz &&
-+	    ((inv_info.granularity == IOMMU_INV_GRANU_PASID) ||
-+		    (inv_info.granularity == IOMMU_INV_GRANU_ADDR)))
-+		return -EINVAL;
-+
-+	if (inv_info.granularity == IOMMU_INV_GRANU_PASID &&
-+	    inv_info.argsz < offsetofend(struct iommu_cache_invalidate_info, granu.pasid_info))
-+		return -EINVAL;
-+
-+	if (inv_info.granularity == IOMMU_INV_GRANU_ADDR &&
-+	    inv_info.argsz < offsetofend(struct iommu_cache_invalidate_info, granu.addr_info))
-+		return -EINVAL;
-+
-+	/*
-+	 * User might be using a newer UAPI header which has a larger data
-+	 * size, we shall support the existing flags within the current
-+	 * size. Copy the remaining user data _after_ minsz but not more
-+	 * than the current kernel supported size.
-+	 */
-+	if (copy_from_user((void *)&inv_info + minsz, uinfo + minsz,
-+			   min_t(u32, inv_info.argsz, sizeof(inv_info)) - minsz))
-+		return -EFAULT;
-+
-+	/* Now the argsz is validated, check the content */
-+	ret = iommu_check_cache_invl_data(&inv_info);
-+	if (ret)
-+		return ret;
-+
-+	return domain->ops->cache_invalidate(domain, dev, &inv_info);
- }
- EXPORT_SYMBOL_GPL(iommu_uapi_cache_invalidate);
- 
--int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
--			       struct device *dev, struct iommu_gpasid_bind_data *data)
-+static int iommu_check_bind_data(struct iommu_gpasid_bind_data *data)
-+{
-+	u32 mask;
-+	int i;
-+
-+	if (data->version != IOMMU_GPASID_BIND_VERSION_1)
-+		return -EINVAL;
-+
-+	/* Check the range of supported formats */
-+	if (data->format >= IOMMU_PASID_FORMAT_LAST)
-+		return -EINVAL;
-+
-+	/* Check all flags */
-+	mask = IOMMU_SVA_GPASID_VAL;
-+	if (data->flags & ~mask)
-+		return -EINVAL;
-+
-+	/* Check reserved padding fields */
-+	for (i = 0; i < sizeof(data->padding); i++) {
-+		if (data->padding[i])
-+			return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int iommu_sva_prepare_bind_data(void __user *udata,
-+				       struct iommu_gpasid_bind_data *data)
- {
-+	u32 minsz;
-+
-+	/*
-+	 * No new spaces can be added before the variable sized union, the
-+	 * minimum size is the offset to the union.
-+	 */
-+	minsz = offsetof(struct iommu_gpasid_bind_data, vendor);
-+
-+	/* Copy minsz from user to get flags and argsz */
-+	if (copy_from_user(data, udata, minsz))
-+		return -EFAULT;
-+
-+	/* Fields before variable size union is mandatory */
-+	if (data->argsz < minsz)
-+		return -EINVAL;
-+	/*
-+	 * User might be using a newer UAPI header, we shall let IOMMU vendor
-+	 * driver decide on what size it needs. Since the guest PASID bind data
-+	 * can be vendor specific, larger argsz could be the result of extension
-+	 * for one vendor but it should not affect another vendor.
-+	 * Copy the remaining user data _after_ minsz
-+	 */
-+	if (copy_from_user((void *)data + minsz, udata + minsz,
-+			   min_t(u32, data->argsz, sizeof(*data)) - minsz))
-+		return -EFAULT;
-+
-+	return iommu_check_bind_data(data);
-+}
-+
-+int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
-+			       void __user *udata)
-+{
-+	struct iommu_gpasid_bind_data data = { 0 };
-+	int ret;
-+
- 	if (unlikely(!domain->ops->sva_bind_gpasid))
- 		return -ENODEV;
- 
--	return domain->ops->sva_bind_gpasid(domain, dev, data);
-+	ret = iommu_sva_prepare_bind_data(udata, &data);
-+	if (ret)
-+		return ret;
-+
-+	return domain->ops->sva_bind_gpasid(domain, dev, &data);
- }
- EXPORT_SYMBOL_GPL(iommu_uapi_sva_bind_gpasid);
- 
--int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
--				 ioasid_t pasid)
-+int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-+			     ioasid_t pasid)
- {
- 	if (unlikely(!domain->ops->sva_unbind_gpasid))
- 		return -ENODEV;
- 
- 	return domain->ops->sva_unbind_gpasid(dev, pasid);
- }
-+EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
-+
-+int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-+				 void __user *udata)
-+{
-+	struct iommu_gpasid_bind_data data = { 0 };
-+	int ret;
-+
-+	if (unlikely(!domain->ops->sva_bind_gpasid))
-+		return -ENODEV;
-+
-+	ret = iommu_sva_prepare_bind_data(udata, &data);
-+	if (ret)
-+		return ret;
-+
-+	return iommu_sva_unbind_gpasid(domain, dev, data.hpasid);
-+}
- EXPORT_SYMBOL_GPL(iommu_uapi_sva_unbind_gpasid);
- 
- static void __iommu_detach_device(struct iommu_domain *domain,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 710d5d2691eb..3ca3a40fc80f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -426,11 +426,14 @@ extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
- extern int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
- 				       struct device *dev,
--				       struct iommu_cache_invalidate_info *inv_info);
-+				       void __user *uinfo);
-+
- extern int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
--				      struct device *dev, struct iommu_gpasid_bind_data *data);
-+				      struct device *dev, void __user *udata);
- extern int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
--					struct device *dev, ioasid_t pasid);
-+					struct device *dev, void __user *udata);
-+extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-+				   struct device *dev, ioasid_t pasid);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -1032,22 +1035,29 @@ static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
- 	return IOMMU_PASID_INVALID;
- }
- 
--static inline int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
--					      struct device *dev,
--					      struct iommu_cache_invalidate_info *inv_info)
-+static inline int
-+iommu_uapi_cache_invalidate(struct iommu_domain *domain,
-+			    struct device *dev,
-+			    struct iommu_cache_invalidate_info *inv_info)
- {
- 	return -ENODEV;
- }
- 
- static inline int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
--					     struct device *dev,
--					     struct iommu_gpasid_bind_data *data)
-+					     struct device *dev, void __user *udata)
- {
- 	return -ENODEV;
- }
- 
- static inline int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
--					       struct device *dev, int pasid)
-+					       struct device *dev, void __user *udata)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-+					  struct device *dev,
-+					  ioasid_t pasid)
- {
- 	return -ENODEV;
- }
--- 
-2.7.4
+> +
+> +	if (!iommu->nesting_info)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * Only support singleton container with nesting type. If
+> +	 * nesting_info is non-NULL, the container is non-empty.
+> +	 * Also domain is non-empty.
+> +	 */
+> +	domain = list_first_entry(&iommu->domain_list,
+> +				  struct vfio_domain, next);
+> +	group = list_first_entry(&domain->group_list,
+> +				 struct vfio_group, next);
+> +	dc->group = group;
+> +	dc->domain = domain->domain;
+> +	dc->user = true;
+> +	return 0;
+> +}
+> +
+>  static int put_pfn(unsigned long pfn, int prot);
+>  
+>  static struct vfio_group *vfio_iommu_find_iommu_group(struct vfio_iommu *iommu,
+> @@ -2405,6 +2438,49 @@ static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
+>  	return ret;
+>  }
+>  
+> +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
+> +{
+> +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> +	unsigned long arg = *(unsigned long *)dc->data;
+> +
+> +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev,
+> +					  (void __user *)arg);
+> +}
+> +
+> +static int vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
+> +{
+> +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> +
+> +	if (dc->user) {
+> +		unsigned long arg = *(unsigned long *)dc->data;
+> +
+> +		iommu_uapi_sva_unbind_gpasid(dc->domain,
+> +					     dev, (void __user *)arg);
+> +	} else {
+> +		struct iommu_gpasid_bind_data *unbind_data =
+> +				(struct iommu_gpasid_bind_data *)dc->data;
+> +
+> +		iommu_sva_unbind_gpasid(dc->domain, dev, unbind_data);
+> +	}
+> +	return 0;
+> +}
+> +
+> +static void vfio_group_unbind_gpasid_fn(ioasid_t pasid, void *data)
+> +{
+> +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> +	struct iommu_gpasid_bind_data unbind_data;
+> +
+> +	unbind_data.argsz = sizeof(struct iommu_gpasid_bind_data);
+> +	unbind_data.flags = 0;
+> +	unbind_data.hpasid = pasid;
+
+
+As in thread with Jacob, this all seems a little excessive for an
+internal api callback that requires one arg.
+
+
+> +
+> +	dc->user = false;
+> +	dc->data = &unbind_data;
+> +
+> +	iommu_group_for_each_dev(dc->group->iommu_group,
+> +				 dc, vfio_dev_unbind_gpasid_fn);
+> +}
+> +
+>  static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  					  struct iommu_group *iommu_group)
+>  {
+> @@ -2448,6 +2524,20 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  		if (!group)
+>  			continue;
+>  
+> +		if (iommu->vmm && (iommu->nesting_info->features &
+> +					IOMMU_NESTING_FEAT_BIND_PGTBL)) {
+> +			struct domain_capsule dc = { .group = group,
+> +						     .domain = domain->domain,
+> +						     .data = NULL };
+> +
+> +			/*
+> +			 * Unbind page tables bound with system wide PASIDs
+> +			 * which are allocated to userspace.
+> +			 */
+> +			vfio_mm_for_each_pasid(iommu->vmm, &dc,
+> +					       vfio_group_unbind_gpasid_fn);
+> +		}
+> +
+>  		vfio_iommu_detach_group(domain, group);
+>  		update_dirty_scope = !group->pinned_page_dirty_scope;
+>  		list_del(&group->next);
+> @@ -2982,6 +3072,77 @@ static int vfio_iommu_type1_pasid_request(struct vfio_iommu *iommu,
+>  	return ret;
+>  }
+>  
+> +static long vfio_iommu_handle_pgtbl_op(struct vfio_iommu *iommu,
+> +				       bool is_bind, unsigned long arg)
+> +{
+> +	struct domain_capsule dc = { .data = &arg };
+> +	struct iommu_nesting_info *info;
+> +	int ret;
+> +
+> +	mutex_lock(&iommu->lock);
+> +
+> +	info = iommu->nesting_info;
+> +	if (!info || !(info->features & IOMMU_NESTING_FEAT_BIND_PGTBL)) {
+> +		ret = -EOPNOTSUPP;
+> +		goto out_unlock;
+> +	}
+> +
+> +	if (!iommu->vmm) {
+> +		ret = -EINVAL;
+> +		goto out_unlock;
+> +	}
+> +
+> +	ret = vfio_prepare_nesting_domain_capsule(iommu, &dc);
+> +	if (ret)
+> +		goto out_unlock;
+> +
+> +	/* Avoid race with other containers within the same process */
+> +	vfio_mm_pasid_lock(iommu->vmm);
+> +
+> +	if (is_bind)
+> +		ret = iommu_group_for_each_dev(dc.group->iommu_group, &dc,
+> +					       vfio_dev_bind_gpasid_fn);
+> +	if (ret || !is_bind)
+> +		iommu_group_for_each_dev(dc.group->iommu_group,
+> +					 &dc, vfio_dev_unbind_gpasid_fn);
+> +
+> +	vfio_mm_pasid_unlock(iommu->vmm);
+> +out_unlock:
+> +	mutex_unlock(&iommu->lock);
+> +	return ret;
+> +}
+> +
+> +static long vfio_iommu_type1_nesting_op(struct vfio_iommu *iommu,
+> +					unsigned long arg)
+> +{
+> +	struct vfio_iommu_type1_nesting_op hdr;
+> +	unsigned int minsz;
+> +	int ret;
+> +
+> +	minsz = offsetofend(struct vfio_iommu_type1_nesting_op, flags);
+> +
+> +	if (copy_from_user(&hdr, (void __user *)arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (hdr.argsz < minsz ||
+> +	    hdr.flags & ~VFIO_NESTING_OP_MASK ||
+> +	    (hdr.flags & VFIO_NESTING_OP_MASK) >= VFIO_IOMMU_NESTING_OP_NUM)
+
+
+Isn't this redundant to the default switch case?
+
+
+> +		return -EINVAL;
+> +
+> +	switch (hdr.flags & VFIO_NESTING_OP_MASK) {
+> +	case VFIO_IOMMU_NESTING_OP_BIND_PGTBL:
+> +		ret = vfio_iommu_handle_pgtbl_op(iommu, true, arg + minsz);
+> +		break;
+> +	case VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL:
+> +		ret = vfio_iommu_handle_pgtbl_op(iommu, false, arg + minsz);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  				   unsigned int cmd, unsigned long arg)
+>  {
+> @@ -3000,6 +3161,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  		return vfio_iommu_type1_dirty_pages(iommu, arg);
+>  	case VFIO_IOMMU_PASID_REQUEST:
+>  		return vfio_iommu_type1_pasid_request(iommu, arg);
+> +	case VFIO_IOMMU_NESTING_OP:
+> +		return vfio_iommu_type1_nesting_op(iommu, arg);
+>  	default:
+>  		return -ENOTTY;
+>  	}
+> diff --git a/drivers/vfio/vfio_pasid.c b/drivers/vfio/vfio_pasid.c
+> index 0ec4660..9e2e4b0 100644
+> --- a/drivers/vfio/vfio_pasid.c
+> +++ b/drivers/vfio/vfio_pasid.c
+> @@ -220,6 +220,8 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
+>  	 * IOASID core will notify PASID users (e.g. IOMMU driver) to
+>  	 * teardown necessary structures depending on the to-be-freed
+>  	 * PASID.
+> +	 * Hold pasid_lock also avoids race with PASID usages like bind/
+> +	 * unbind page tables to requested PASID.
+>  	 */
+>  	mutex_lock(&vmm->pasid_lock);
+>  	while ((vid = vfio_find_pasid(vmm, min, max)) != NULL)
+> @@ -228,6 +230,30 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
+>  }
+>  EXPORT_SYMBOL_GPL(vfio_pasid_free_range);
+>  
+> +int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> +			   void (*fn)(ioasid_t id, void *data))
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&vmm->pasid_lock);
+> +	ret = ioasid_set_for_each_ioasid(vmm->ioasid_set, fn, data);
+> +	mutex_unlock(&vmm->pasid_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(vfio_mm_for_each_pasid);
+> +
+> +void vfio_mm_pasid_lock(struct vfio_mm *vmm)
+> +{
+> +	mutex_lock(&vmm->pasid_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(vfio_mm_pasid_lock);
+> +
+> +void vfio_mm_pasid_unlock(struct vfio_mm *vmm)
+> +{
+> +	mutex_unlock(&vmm->pasid_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(vfio_mm_pasid_unlock);
+> +
+>  static int __init vfio_pasid_init(void)
+>  {
+>  	mutex_init(&vfio_mm_lock);
+> diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+> index 5c3d7a8..6a999c3 100644
+> --- a/include/linux/vfio.h
+> +++ b/include/linux/vfio.h
+> @@ -105,6 +105,11 @@ extern struct ioasid_set *vfio_mm_ioasid_set(struct vfio_mm *vmm);
+>  extern int vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max);
+>  extern void vfio_pasid_free_range(struct vfio_mm *vmm,
+>  				  ioasid_t min, ioasid_t max);
+> +extern int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> +				  void (*fn)(ioasid_t id, void *data));
+> +extern void vfio_mm_pasid_lock(struct vfio_mm *vmm);
+> +extern void vfio_mm_pasid_unlock(struct vfio_mm *vmm);
+> +
+>  #else
+>  static inline struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task)
+>  {
+> @@ -129,6 +134,21 @@ static inline void vfio_pasid_free_range(struct vfio_mm *vmm,
+>  					  ioasid_t min, ioasid_t max)
+>  {
+>  }
+> +
+> +static inline int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> +					 void (*fn)(ioasid_t id, void *data))
+> +{
+> +	return -ENOTTY;
+> +}
+> +
+> +static inline void vfio_mm_pasid_lock(struct vfio_mm *vmm)
+> +{
+> +}
+> +
+> +static inline void vfio_mm_pasid_unlock(struct vfio_mm *vmm)
+> +{
+> +}
+> +
+>  #endif /* CONFIG_VFIO_PASID */
+>  
+>  /*
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index a4bc42e..a99bd71 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -1215,6 +1215,42 @@ struct vfio_iommu_type1_pasid_request {
+>  
+>  #define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 18)
+>  
+> +/**
+> + * VFIO_IOMMU_NESTING_OP - _IOW(VFIO_TYPE, VFIO_BASE + 19,
+> + *				struct vfio_iommu_type1_nesting_op)
+> + *
+> + * This interface allows userspace to utilize the nesting IOMMU
+> + * capabilities as reported in VFIO_IOMMU_TYPE1_INFO_CAP_NESTING
+> + * cap through VFIO_IOMMU_GET_INFO. For platforms which require
+> + * system wide PASID, PASID will be allocated by VFIO_IOMMU_PASID
+> + * _REQUEST.
+> + *
+> + * @data[] types defined for each op:
+> + * +=================+===============================================+
+> + * | NESTING OP      |      @data[]                                  |
+> + * +=================+===============================================+
+> + * | BIND_PGTBL      |      struct iommu_gpasid_bind_data            |
+> + * +-----------------+-----------------------------------------------+
+> + * | UNBIND_PGTBL    |      struct iommu_gpasid_bind_data            |
+> + * +-----------------+-----------------------------------------------+
+> + *
+> + * returns: 0 on success, -errno on failure.
+> + */
+> +struct vfio_iommu_type1_nesting_op {
+> +	__u32	argsz;
+> +	__u32	flags;
+> +#define VFIO_NESTING_OP_MASK	(0xffff) /* lower 16-bits for op */
+> +	__u8	data[];
+> +};
+> +
+> +enum {
+> +	VFIO_IOMMU_NESTING_OP_BIND_PGTBL,
+> +	VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL,
+> +	VFIO_IOMMU_NESTING_OP_NUM,
+> +};
+
+"VFIO_IOMMU_NESTING_NUM_OPS" would be more consistent with the vfio
+uapi.  Thanks,
+
+Alex
+
+> +
+> +#define VFIO_IOMMU_NESTING_OP		_IO(VFIO_TYPE, VFIO_BASE + 19)
+> +
+>  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+>  
+>  /*
 
 _______________________________________________
 iommu mailing list
