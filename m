@@ -7,65 +7,65 @@ X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DEBC433E2
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 17:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADCAC433E2
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 17:29:39 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 49D73221EB
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 17:13:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49D73221EB
+	by mail.kernel.org (Postfix) with ESMTPS id 56514221E7
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 17:29:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56514221E7
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 954742E29C;
-	Fri, 11 Sep 2020 17:13:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DBD492E2AB;
+	Fri, 11 Sep 2020 17:29:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mVK1BjJRSfl4; Fri, 11 Sep 2020 17:13:13 +0000 (UTC)
+	with ESMTP id 8tnc2kwaoJ92; Fri, 11 Sep 2020 17:29:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D580C2E298;
-	Fri, 11 Sep 2020 17:13:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id BD5002E28C;
+	Fri, 11 Sep 2020 17:29:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEEABC0859;
-	Fri, 11 Sep 2020 17:13:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E3C9C0859;
+	Fri, 11 Sep 2020 17:29:35 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 70050C0051
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:13:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E2559C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:29:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5FA7F87AB2
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:13:12 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CACBF87AE2
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:29:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rQXnzS1SqUsL for <iommu@lists.linux-foundation.org>;
- Fri, 11 Sep 2020 17:13:11 +0000 (UTC)
+ with ESMTP id 0n5KkCdgtOP7 for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Sep 2020 17:29:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5DD0987AA9
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:13:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B697887ADB
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 17:29:33 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 80D80106F;
- Fri, 11 Sep 2020 10:13:10 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F213E106F;
+ Fri, 11 Sep 2020 10:29:32 -0700 (PDT)
 Received: from [10.57.40.122] (unknown [10.57.40.122])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C6733F68F;
- Fri, 11 Sep 2020 10:13:06 -0700 (PDT)
-Subject: Re: [PATCH v3 6/8] iommu/arm-smmu: Add impl hook for inherit boot
- mappings
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E66493F68F;
+ Fri, 11 Sep 2020 10:29:27 -0700 (PDT)
+Subject: Re: [PATCH v3 8/8] iommu/arm-smmu-qcom: Setup identity domain for
+ boot mappings
 To: Bjorn Andersson <bjorn.andersson@linaro.org>,
  Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
  Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
  Jordan Crouse <jcrouse@codeaurora.org>, Rob Clark <robdclark@chromium.org>
 References: <20200904155513.282067-1-bjorn.andersson@linaro.org>
- <20200904155513.282067-7-bjorn.andersson@linaro.org>
+ <20200904155513.282067-9-bjorn.andersson@linaro.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <0bfcc8f7-d054-616b-834b-319461b1ecb9@arm.com>
-Date: Fri, 11 Sep 2020 18:13:01 +0100
+Message-ID: <34b1f9ea-fb16-faac-c288-627b51066968@arm.com>
+Date: Fri, 11 Sep 2020 18:29:23 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200904155513.282067-7-bjorn.andersson@linaro.org>
+In-Reply-To: <20200904155513.282067-9-bjorn.andersson@linaro.org>
 Content-Language: en-GB
 Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
  Sibi Sankar <sibis@codeaurora.org>, linux-arm-kernel@lists.infradead.org,
@@ -88,83 +88,97 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2020-09-04 16:55, Bjorn Andersson wrote:
-> Add a new operation to allow platform implementations to inherit any
-> stream mappings from the boot loader.
-
-Is there a reason we need an explicit step for this? The aim of the 
-cfg_probe hook is that the SMMU software state should all be set up by 
-then, and you can mess about with it however you like before 
-arm_smmu_reset() actually commits anything to hardware. I would have 
-thought you could permanently steal a context bank, configure it as your 
-bypass hole, read out the previous SME configuration and tweak 
-smmu->smrs and smmu->s2crs appropriately all together "invisibly" at 
-that point. If that can't work, I'm very curious as to what I've overlooked.
-
-Robin.
-
+> With many Qualcomm platforms not having functional S2CR BYPASS a
+> temporary IOMMU domain, without translation, needs to be allocated in
+> order to allow these memory transactions.
+> 
+> Unfortunately the boot loader uses the first few context banks, so
+> rather than overwriting a active bank the last context bank is used and
+> streams are diverted here during initialization.
+> 
+> This also performs the readback of SMR registers for the Qualcomm
+> platform, to trigger the mechanism.
+> 
+> This is based on prior work by Thierry Reding and Laurentiu Tudor.
+> 
 > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > ---
 > 
 > Changes since v2:
-> - New patch/interface
+> - Combined from pieces spread between the Qualcomm impl and generic code in v2.
+> - Moved to use the newly introduced inherit_mapping op.
 > 
->   drivers/iommu/arm/arm-smmu/arm-smmu.c | 11 ++++++-----
->   drivers/iommu/arm/arm-smmu/arm-smmu.h |  6 ++++++
->   2 files changed, 12 insertions(+), 5 deletions(-)
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 33 ++++++++++++++++++++++
+>   1 file changed, 33 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index eb5c6ca5c138..4c4d302cd747 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -85,11 +85,6 @@ static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
->   		pm_runtime_put_autosuspend(smmu->dev);
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 70a1eaa52e14..a54302190932 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -12,6 +12,7 @@
+>   struct qcom_smmu {
+>   	struct arm_smmu_device smmu;
+>   	bool bypass_broken;
+> +	struct iommu_domain *identity;
+>   };
+>   
+>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+> @@ -228,6 +229,37 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+>   	return 0;
 >   }
 >   
-> -static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> -{
-> -	return container_of(dom, struct arm_smmu_domain, domain);
-> -}
-> -
->   static struct platform_driver arm_smmu_driver;
->   static struct iommu_ops arm_smmu_ops;
->   
-> @@ -2188,6 +2183,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->   	if (err)
->   		return err;
->   
-> +	if (smmu->impl->inherit_mappings) {
-> +		err = smmu->impl->inherit_mappings(smmu);
-> +		if (err)
-> +			return err;
+> +static int qcom_smmu_inherit_mappings(struct arm_smmu_device *smmu)
+> +{
+> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+> +	int cbndx;
+> +	u32 smr;
+> +	int i;
+> +
+> +	qsmmu->identity = arm_smmu_alloc_identity_domain(smmu);
+> +	if (IS_ERR(qsmmu->identity))
+> +		return PTR_ERR(qsmmu->identity);
+> +
+> +	cbndx = to_smmu_domain(qsmmu->identity)->cfg.cbndx;
+
+I don't really get the point of going through the dance of allocating a 
+whole iommu_domain() just to get a context. If you don't want to simply 
+statically reserve a context at probe time, then just allocate from 
+smmu->context_map here (where AFAICS "here" should be in cfg_probe 
+anyway). This is entirely driver-internal, so there shouldn't be any 
+need for IOMMU-API-level stuff to be involved.
+
+Robin.
+
+> +
+> +	for (i = 0; i < smmu->num_mapping_groups; i++) {
+> +		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
+> +
+> +		if (FIELD_GET(ARM_SMMU_SMR_VALID, smr)) {
+> +			smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
+> +			smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
+> +			smmu->smrs[i].valid = true;
+> +
+> +			smmu->s2crs[i].type = S2CR_TYPE_TRANS;
+> +			smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
+> +			smmu->s2crs[i].cbndx = cbndx;
+> +			smmu->s2crs[i].count++;
+> +		}
 > +	}
 > +
->   	if (smmu->version == ARM_SMMU_V2) {
->   		if (smmu->num_context_banks > smmu->num_context_irqs) {
->   			dev_err(dev,
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> index 235d9a3a6ab6..f58164976e74 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -378,6 +378,11 @@ struct arm_smmu_domain {
->   	struct iommu_domain		domain;
->   };
->   
-> +static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> +{
-> +	return container_of(dom, struct arm_smmu_domain, domain);
+> +	return 0;
 > +}
 > +
->   struct arm_smmu_master_cfg {
->   	struct arm_smmu_device		*smmu;
->   	s16				smendx[];
-> @@ -442,6 +447,7 @@ struct arm_smmu_impl {
->   	int (*alloc_context_bank)(struct arm_smmu_domain *smmu_domain,
->   				  struct arm_smmu_device *smmu,
->   				  struct device *dev, int start);
-> +	int (*inherit_mappings)(struct arm_smmu_device *smmu);
+>   static int qcom_smmu_def_domain_type(struct device *dev)
+>   {
+>   	const struct of_device_id *match =
+> @@ -270,6 +302,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
+>   	.cfg_probe = qcom_smmu_cfg_probe,
+>   	.def_domain_type = qcom_smmu_def_domain_type,
+>   	.reset = qcom_smmu500_reset,
+> +	.inherit_mappings = qcom_smmu_inherit_mappings,
 >   };
 >   
->   #define INVALID_SMENDX			-1
+>   static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
 > 
 _______________________________________________
 iommu mailing list
