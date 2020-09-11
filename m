@@ -2,122 +2,89 @@ Return-Path: <SRS0=FRM4=CU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE52AC43461
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 18:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED27BC2BC11
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 19:39:11 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 49BFC22209
-	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 18:17:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6ED65214F1
+	for <iommu@archiver.kernel.org>; Fri, 11 Sep 2020 19:39:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="p3td48Cv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49BFC22209
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dx0vpN/l"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6ED65214F1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CF2C9874CF;
-	Fri, 11 Sep 2020 18:17:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 228428793A;
+	Fri, 11 Sep 2020 19:39:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F5ApMO-8U+XX; Fri, 11 Sep 2020 18:17:00 +0000 (UTC)
+	with ESMTP id bu2MVPG2-xTI; Fri, 11 Sep 2020 19:39:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 14B2087471;
-	Fri, 11 Sep 2020 18:17:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 624B987935;
+	Fri, 11 Sep 2020 19:39:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ECD6FC0052;
-	Fri, 11 Sep 2020 18:16:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 003D0C0051
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 18:01:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3BBD7C0859;
+	Fri, 11 Sep 2020 19:39:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A70C1C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 19:39:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DC26387B39
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 18:01:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8EAFE8761D
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 19:39:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RKTCU3DIp3C9 for <iommu@lists.linux-foundation.org>;
- Fri, 11 Sep 2020 18:01:28 +0000 (UTC)
+ with ESMTP id q9ZnqUIREYa1 for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Sep 2020 19:39:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 494D887B3E
- for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 18:01:28 +0000 (UTC)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
- by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BHxNun136182;
- Fri, 11 Sep 2020 18:01:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=K/lrGLKQLzPCde1LBeenvfV12lSqYozwSEeErGwFLx0=;
- b=p3td48CvzFQw8bp+qotx7y2XNGDz349JG2L68Ognkw/J+TLmf6hry58o/0azGGJDmM3n
- T2x07sp/D5YQGaD0JXWu/RuYc0P2QPMQfmCfhhZgy4tNbp7XB0MLpDIgzjNviZisFdwJ
- tVRbf1BuYXl9BQ68SiM4IlLykbmhWv8/LD46cuyF6W3vMasF3dL496+iLWpZHe8/PWM7
- 1CZZGbudcuqz2D48aVZZQx0LmiwLjLBM9yeRroGmg9ku5x9sA7JKbKkITdsE+m2iaNNh
- dM+YXKKldp/6uh38YsMh0M8sBrZhq8oX68S7iURwWht61uYrEshzXXCL4PiUKt28MJ4p Xw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
- by userp2130.oracle.com with ESMTP id 33c23rfrhy-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Fri, 11 Sep 2020 18:01:00 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
- by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BHximb049957;
- Fri, 11 Sep 2020 18:00:59 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by aserp3030.oracle.com with ESMTP id 33dacqayvf-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 11 Sep 2020 18:00:59 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08BI0t3G026796;
- Fri, 11 Sep 2020 18:00:55 GMT
-Received: from [10.74.108.237] (/10.74.108.237)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Fri, 11 Sep 2020 11:00:55 -0700
-Subject: Re: [PATCH 2/3] ARM/keystone: move the DMA offset handling under
- ifdef CONFIG_ARM_LPAE
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>,
- Christoph Hellwig <hch@lst.de>
-References: <20200910054038.324517-1-hch@lst.de>
- <20200910054038.324517-3-hch@lst.de>
- <20200911111551.GG1551@shell.armlinux.org.uk>
-From: santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <f13c72b9-9efa-7b9d-6c23-19f87b151bc4@oracle.com>
-Date: Fri, 11 Sep 2020 11:00:52 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 95A4187614
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Sep 2020 19:39:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1599853146;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=XkONE/g0FLpiBamkrJndr/ZIJkzwsHn+tlSk2RJm3GY=;
+ b=dx0vpN/lMZvssfUSPlJBWlQ4paQwJThQX+5rRkbkY19DSbr108vS7KKBqev9tqoUMd2Frl
+ Fs7D+QCnAfjLAu9j2zMvxTkJee1v1zr3drQF1EM/asH3dQQll8oXf5CD+WX563cHwuV+vg
+ 8GbvmPMbZ+PT9SL2ugDZ+3S5Ds5ArnY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-39-ArsGl1IMO6KvtIClzxqg5A-1; Fri, 11 Sep 2020 15:39:04 -0400
+X-MC-Unique: ArsGl1IMO6KvtIClzxqg5A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A81181CAFF;
+ Fri, 11 Sep 2020 19:39:02 +0000 (UTC)
+Received: from w520.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 3F79E60C04;
+ Fri, 11 Sep 2020 19:38:55 +0000 (UTC)
+Date: Fri, 11 Sep 2020 13:38:54 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [PATCH v7 01/16] iommu: Report domain nesting info
+Message-ID: <20200911133854.0e6a919c@w520.home>
+In-Reply-To: <1599734733-6431-2-git-send-email-yi.l.liu@intel.com>
+References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
+ <1599734733-6431-2-git-send-email-yi.l.liu@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200911111551.GG1551@shell.armlinux.org.uk>
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999
- malwarescore=0
- bulkscore=0 phishscore=0 adultscore=0 suspectscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009110145
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- priorityscore=1501
- mlxlogscore=999 mlxscore=0 bulkscore=0 suspectscore=0 spamscore=0
- malwarescore=0 phishscore=0 lowpriorityscore=0 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009110145
-X-Mailman-Approved-At: Fri, 11 Sep 2020 18:16:58 +0000
-Cc: devicetree@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
- linux-sh@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- linux-usb@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- Jim Quinlan <james.quinlan@broadcom.com>,
- Santosh Shilimkar <ssantosh@kernel.org>,
- Nathan Chancellor <natechancellor@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, jasowang@redhat.com, stefanha@gmail.com,
+ iommu@lists.linux-foundation.org, yi.y.sun@intel.com, hao.wu@intel.com,
+ jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,30 +97,156 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/11/20 4:15 AM, Russell King - ARM Linux admin wrote:
-> On Thu, Sep 10, 2020 at 07:40:37AM +0200, Christoph Hellwig wrote:
->> The DMA offset notifier can only be used if PHYS_OFFSET is at least
->> KEYSTONE_HIGH_PHYS_START, which can't be represented by a 32-bit
->> phys_addr_t.  Currently the code compiles fine despite that, a pending
->> change to the DMA offset handling would create a compiler warning for
->> this case.  Add an ifdef to not compile the code except for LPAE
->> configs.
-> 
-> However, to have use of the high physical offset, LPAE needs to be
-> enabled, which ensures that phys_addr_t is 64-bit.
-> 
-> I believe that DMA is non-coherent on this platform unless the high
-> physical address is used. Or something like that.
-> 
-Exactly. Higher address ranges needs to be used for DMA coherency.
+On Thu, 10 Sep 2020 03:45:18 -0700
+Liu Yi L <yi.l.liu@intel.com> wrote:
 
-Regards,
-Santosh
+> IOMMUs that support nesting translation needs report the capability info
+> to userspace. It gives information about requirements the userspace needs
+> to implement plus other features characterizing the physical implementation.
+> 
+> This patch introduces a new IOMMU UAPI struct that gives information about
+> the nesting capabilities and features. This struct is supposed to be returned
+> by iommu_domain_get_attr() with DOMAIN_ATTR_NESTING attribute parameter, with
+> one domain whose type has been set to DOMAIN_ATTR_NESTING.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v6 -> v7:
+> *) rephrase the commit message, replace the @data[] field in struct
+>    iommu_nesting_info with union per comments from Eric Auger.
+> 
+> v5 -> v6:
+> *) rephrase the feature notes per comments from Eric Auger.
+> *) rename @size of struct iommu_nesting_info to @argsz.
+> 
+> v4 -> v5:
+> *) address comments from Eric Auger.
+> 
+> v3 -> v4:
+> *) split the SMMU driver changes to be a separate patch
+> *) move the @addr_width and @pasid_bits from vendor specific
+>    part to generic part.
+> *) tweak the description for the @features field of struct
+>    iommu_nesting_info.
+> *) add description on the @data[] field of struct iommu_nesting_info
+> 
+> v2 -> v3:
+> *) remvoe cap/ecap_mask in iommu_nesting_info.
+> *) reuse DOMAIN_ATTR_NESTING to get nesting info.
+> *) return an empty iommu_nesting_info for SMMU drivers per Jean'
+>    suggestion.
+> ---
+>  include/uapi/linux/iommu.h | 76 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 76 insertions(+)
+> 
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 1ebc23d..ff987e4 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -341,4 +341,80 @@ struct iommu_gpasid_bind_data {
+>  	} vendor;
+>  };
+>  
+> +/*
+> + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info.
+> + *
+> + * @flags:	VT-d specific flags. Currently reserved for future
+> + *		extension. must be set to 0.
+> + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
+> + *		register.
+> + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
+> + *		extended capability register.
+> + */
+> +struct iommu_nesting_info_vtd {
+> +	__u32	flags;
+> +	__u64	cap_reg;
+> +	__u64	ecap_reg;
+> +};
+
+
+The vendor union has 8-byte alignment, so flags here will be 8-byte
+aligned, followed by a compiler dependent gap before the 8-byte fields.
+We should fill that gap with padding to make it deterministic for
+userspace.  Thanks,
+
+Alex
+
+> +
+> +/*
+> + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+> + *			       userspace should check it before using
+> + *			       nesting capability.
+> + *
+> + * @argsz:	size of the whole structure.
+> + * @flags:	currently reserved for future extension. must set to 0.
+> + * @format:	PASID table entry format, the same definition as struct
+> + *		iommu_gpasid_bind_data @format.
+> + * @features:	supported nesting features.
+> + * @addr_width:	The output addr width of first level/stage translation
+> + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
+> + *		support.
+> + * @vendor:	vendor specific data, structure type can be deduced from
+> + *		@format field.
+> + *
+> + * +===============+======================================================+
+> + * | feature       |  Notes                                               |
+> + * +===============+======================================================+
+> + * | SYSWIDE_PASID |  IOMMU vendor driver sets it to mandate userspace    |
+> + * |               |  to allocate PASID from kernel. All PASID allocation |
+> + * |               |  free must be mediated through the IOMMU UAPI.       |
+> + * +---------------+------------------------------------------------------+
+> + * | BIND_PGTBL    |  IOMMU vendor driver sets it to mandate userspace to |
+> + * |               |  bind the first level/stage page table to associated |
+> + * |               |  PASID (either the one specified in bind request or  |
+> + * |               |  the default PASID of iommu domain), through IOMMU   |
+> + * |               |  UAPI.                                               |
+> + * +---------------+------------------------------------------------------+
+> + * | CACHE_INVLD   |  IOMMU vendor driver sets it to mandate userspace to |
+> + * |               |  explicitly invalidate the IOMMU cache through IOMMU |
+> + * |               |  UAPI according to vendor-specific requirement when  |
+> + * |               |  changing the 1st level/stage page table.            |
+> + * +---------------+------------------------------------------------------+
+> + *
+> + * data struct types defined for @format:
+> + * +================================+=====================================+
+> + * | @format                        | data struct                         |
+> + * +================================+=====================================+
+> + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
+> + * +--------------------------------+-------------------------------------+
+> + *
+> + */
+> +struct iommu_nesting_info {
+> +	__u32	argsz;
+> +	__u32	flags;
+> +	__u32	format;
+> +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
+> +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
+> +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
+> +	__u32	features;
+> +	__u16	addr_width;
+> +	__u16	pasid_bits;
+> +	__u8	padding[12];
+> +	/* Vendor specific data */
+> +	union {
+> +		struct iommu_nesting_info_vtd vtd;
+> +	} vendor;
+> +};
+> +
+>  #endif /* _UAPI_IOMMU_H */
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
