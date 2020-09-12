@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C395EC10DAA
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A574FC2D0E1
+	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 59451221E7
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59451221E7
+	by mail.kernel.org (Postfix) with ESMTPS id 677A4221ED
+	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 677A4221ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E60F42034B;
-	Sat, 12 Sep 2020 03:28:18 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 09C0B878C4;
+	Sat, 12 Sep 2020 03:28:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tfJkrn2lr35j; Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
+	with ESMTP id Z8P3rJo-nsnB; Sat, 12 Sep 2020 03:28:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B1CAB20468;
-	Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CDB11878BD;
+	Sat, 12 Sep 2020 03:28:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E975C0859;
-	Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C565BC0859;
+	Sat, 12 Sep 2020 03:28:19 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E4362C0051
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 777E1C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CCFCE20468
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:15 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6585420468
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e+m+P+6AMxNH for <iommu@lists.linux-foundation.org>;
+ with ESMTP id TLbQy7iJzBft for <iommu@lists.linux-foundation.org>;
  Sat, 12 Sep 2020 03:28:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by silver.osuosl.org (Postfix) with ESMTPS id 6179720464
+ by silver.osuosl.org (Postfix) with ESMTPS id 9BE5B20476
  for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:13 +0000 (UTC)
-IronPort-SDR: h+o3O6cRXh8QWA4A2aaJUQ+bpuBqsNs46xFVtDsAC6eBT/cQGmSFuM6LAIdiI7m8C4+2rO1kLx
- iJL/TxvNiX1w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="159826807"
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="159826807"
+IronPort-SDR: 0/CfeBKbHzq+LPSDrI/UDUyIzK5F5fW5QYm3qEPiscRwUpYyMtMXPLdfpjEa4i60qbU0SjgpZB
+ L9F6TkHlmh6w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="159826804"
+X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="159826804"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Sep 2020 20:28:13 -0700
-IronPort-SDR: lef0v+QCekDhqfdMiRck6tJidoLuDv+5TRh/0TSl6O5c3kHYFVjclcSqorlys+Cb/AcY2EI3sQ
- t4ULR7HabTfQ==
+ 11 Sep 2020 20:28:08 -0700
+IronPort-SDR: xNAE87tAbhnUc0sPSWwvHmsNmjXPjCwtXN2eJaBvM8oIzBSsjL5IUUNc6J98KjY8ryWcCyePV2
+ 5EuUMoqnrUeg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="408321414"
+X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="408321397"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 11 Sep 2020 20:28:10 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 11 Sep 2020 20:28:06 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Tom Murphy <murphyt7@tcd.ie>,
  David Woodhouse <dwmw2@infradead.org>,
  Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH v3 4/6] iommu: Add quirk for Intel graphic devices in map_sg
-Date: Sat, 12 Sep 2020 11:21:58 +0800
-Message-Id: <20200912032200.11489-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 2/6] iommu: Add iommu_dma_free_cpu_cached_iovas()
+Date: Sat, 12 Sep 2020 11:21:56 +0800
+Message-Id: <20200912032200.11489-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200912032200.11489-1-baolu.lu@linux.intel.com>
 References: <20200912032200.11489-1-baolu.lu@linux.intel.com>
@@ -91,58 +91,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Combining the sg segments exposes a bug in the Intel i915 driver which
-causes visual artifacts and the screen to freeze. This is most likely
-because of how the i915 handles the returned list. It probably doesn't
-respect the returned value specifying the number of elements in the list
-and instead depends on the previous behaviour of the Intel iommu driver
-which would return the same number of elements in the output list as in
-the input list.
+From: Tom Murphy <murphyt7@tcd.ie>
+
+Add a iommu_dma_free_cpu_cached_iovas function to allow drivers which
+use the dma-iommu ops to free cached cpu iovas.
 
 Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/dma-iommu.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iommu/dma-iommu.c | 9 +++++++++
+ include/linux/dma-iommu.h | 8 ++++++++
+ 2 files changed, 17 insertions(+)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1a1da22e5a5e..fc19f1fb9413 100644
+index 82c071b2d5c8..d06411bd5e08 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -880,6 +880,33 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	unsigned int cur_len = 0, max_len = dma_get_max_seg_size(dev);
- 	int i, count = 0;
+@@ -50,6 +50,15 @@ struct iommu_dma_cookie {
+ 	struct iommu_domain		*fq_domain;
+ };
  
-+	/*
-+	 * The Intel graphic driver is used to assume that the returned
-+	 * sg list is not combound. This blocks the efforts of converting
-+	 * Intel IOMMU driver to dma-iommu api's. Add this quirk to make the
-+	 * device driver work and should be removed once it's fixed in i915
-+	 * driver.
-+	 */
-+	if (IS_ENABLED(CONFIG_DRM_I915) && dev_is_pci(dev) &&
-+	    to_pci_dev(dev)->vendor == PCI_VENDOR_ID_INTEL &&
-+	    (to_pci_dev(dev)->class >> 16) == PCI_BASE_CLASS_DISPLAY) {
-+		for_each_sg(sg, s, nents, i) {
-+			unsigned int s_iova_off = sg_dma_address(s);
-+			unsigned int s_length = sg_dma_len(s);
-+			unsigned int s_iova_len = s->length;
++void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
++		struct iommu_domain *domain)
++{
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
 +
-+			s->offset += s_iova_off;
-+			s->length = s_length;
-+			sg_dma_address(s) = dma_addr + s_iova_off;
-+			sg_dma_len(s) = s_length;
-+			dma_addr += s_iova_len;
++	free_cpu_cached_iovas(cpu, iovad);
++}
 +
-+			pr_info_once("sg combining disabled due to i915 driver\n");
-+		}
+ static void iommu_dma_entry_dtor(unsigned long data)
+ {
+ 	struct page *freelist = (struct page *)data;
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 2112f21f73d8..706b68d1359b 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -37,6 +37,9 @@ void iommu_dma_compose_msi_msg(struct msi_desc *desc,
+ 
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
++void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
++		struct iommu_domain *domain);
 +
-+		return nents;
-+	}
+ #else /* CONFIG_IOMMU_DMA */
+ 
+ struct iommu_domain;
+@@ -78,5 +81,10 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
+ {
+ }
+ 
++static inline void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
++		struct iommu_domain *domain)
++{
++}
 +
- 	for_each_sg(sg, s, nents, i) {
- 		/* Restore this segment's original unaligned fields first */
- 		unsigned int s_iova_off = sg_dma_address(s);
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 2.17.1
 
