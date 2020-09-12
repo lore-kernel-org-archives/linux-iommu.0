@@ -2,77 +2,162 @@ Return-Path: <SRS0=7x6w=CV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36774C2D0E1
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA1FC43461
+	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 06:02:36 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CC0E4221EB
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 03:28:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC0E4221EB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7CA5120855
+	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 06:02:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="XWPgqOBZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7CA5120855
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AB135878BD;
-	Sat, 12 Sep 2020 03:28:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2D06687302;
+	Sat, 12 Sep 2020 06:02:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9KbPsfaP+Pyv; Sat, 12 Sep 2020 03:28:24 +0000 (UTC)
+	with ESMTP id cH1ceNYwfN-x; Sat, 12 Sep 2020 06:02:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C13A8878CB;
-	Sat, 12 Sep 2020 03:28:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EB10D8738F;
+	Sat, 12 Sep 2020 06:02:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BB3CEC0859;
-	Sat, 12 Sep 2020 03:28:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2E04C0051
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C73D2C0052;
+	Sat, 12 Sep 2020 06:02:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E70B8C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 06:02:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E088E203A7
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D01A18738F
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 06:02:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ji9g1rYSIY+k for <iommu@lists.linux-foundation.org>;
- Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
+ with ESMTP id lHAugPJ5u-sl for <iommu@lists.linux-foundation.org>;
+ Sat, 12 Sep 2020 06:02:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by silver.osuosl.org (Postfix) with ESMTPS id 2DAA620464
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 03:28:16 +0000 (UTC)
-IronPort-SDR: HJv+e1Vk84xDW3C3gnJhEKz+zJjKjL4jgPtt48UEAg0tFCB1YyUljUz4glph73dWbY3o5v/TJ/
- OGYxQaDkg5kg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="159826808"
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="159826808"
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3524987302
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 06:02:30 +0000 (UTC)
+IronPort-SDR: 214sKafEtUs25hBkeJgjauhKxgwX1SQ4eAPHOA8pdqJFqO66FcxXlSNyeBXxFb5hVlYQK21ozY
+ 3OyAHaSGS2KQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="223080172"
+X-IronPort-AV: E=Sophos;i="5.76,419,1592895600"; d="scan'208";a="223080172"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Sep 2020 20:28:15 -0700
-IronPort-SDR: UY6X141YKCaCLgu8AfvBKPiztcdD5dmZ1HrN7U3BiP4YJ/d6FSWNbJF6V/kmdlEli2CZ1MPe4m
- Vn75r09aURvg==
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 Sep 2020 23:02:29 -0700
+IronPort-SDR: 2F74R0g5+fr2QEFW+ej0XLql9d6k2cgRwU6IOBUUgWx9Qg+0WoJF/u1mkhicUi1nvniA/fnk8N
+ HjYmTZbpDD7g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; d="scan'208";a="408321427"
-Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 11 Sep 2020 20:28:13 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Tom Murphy <murphyt7@tcd.ie>,
- David Woodhouse <dwmw2@infradead.org>,
- Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH v3 5/6] iommu/vt-d: Convert intel iommu driver to the iommu ops
-Date: Sat, 12 Sep 2020 11:21:59 +0800
-Message-Id: <20200912032200.11489-6-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200912032200.11489-1-baolu.lu@linux.intel.com>
-References: <20200912032200.11489-1-baolu.lu@linux.intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Intel-gfx@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+X-IronPort-AV: E=Sophos;i="5.76,419,1592895600"; d="scan'208";a="408340745"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+ by fmsmga001.fm.intel.com with ESMTP; 11 Sep 2020 23:02:28 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 11 Sep 2020 23:02:28 -0700
+Received: from fmsmsx102.amr.corp.intel.com (10.18.124.200) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 11 Sep 2020 23:02:28 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ FMSMSX102.amr.corp.intel.com (10.18.124.200) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 11 Sep 2020 23:02:27 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Fri, 11 Sep 2020 23:02:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oSuhZGI6NKs6z5JUxc+N5EZLcEUc8wSeWqj2LqtfQ3Yb+u4TLlKbKWOB84FNjYwtBEK3ovsAHv0ydyf6RQtmj/yS7MpVwLRyr7ihTg6l37CeS/gsfNAPM6eOA3MvYLj9fL9jyFfvc2sKrRD2dqPDPTDQ33GhYcZYe+4uL+r5O/Wuzy4KCH9EX4ER+v1gDUpyCV/fEpPRS+xj+oOJT2VZjLWyKKuZ4M6zo3lpze76nuwmF0o4FgMWe/79Uh6bnbJZZukegV4owTsK+2W7gIc55arvIddizgUS3UgrzNlC3g6HsWznDp5ASudZIzIEOpR+Fl/SjzfJQhc11KRs34iTTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Cc+HW0Mv1dLqrXYLqRcTHBQxwdTvD5kLnbh8eLwdcag=;
+ b=KYO0zhElHA49Xy5LBx3NQhXQWUfFYWniSiiLwPX9Kz1yJgP85fXAjbGIlxksoxPj2qH/On5AJyhxUoPOLoaCPcA1/LNFujQw4CZ/iZDeN6nMc7hFunW3VSsmRYRofcgr95nlWyi8QDYJvLRi6dlni8GCiJKcp66aJMUH8AssuqVPDtWfLXm+4chNBYtMofCZL1r25lf8he/IdYjC0o3LZguazPOa9OnrWTZooXPYynff1ZBhBR4bP0UGV5fEi5G/40G4QGgnYf0MCwsqoIFWJ97KBOEfHLATLKlIeOhTyjI3hZpKI50WqAVTYkHAzTubaLjCmwCSGT3Yf/nuub928A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Cc+HW0Mv1dLqrXYLqRcTHBQxwdTvD5kLnbh8eLwdcag=;
+ b=XWPgqOBZawgUrhG5I8TUkdAO/VFwMlchjPc/ti68OcLu5JlonLISJ8mPBRufDrJRtgfBV5qk6KdQHfMCdXCDzQDE/eNpXX828J6pE8beJiLTh8Ub8G2PDCTuapqlrySi0qpHMB5g/MmlVg2EU2CcKS6QpoM5T1X1i/hyD8EM2yI=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB3292.namprd11.prod.outlook.com (2603:10b6:5:5a::21) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3370.16; Sat, 12 Sep 2020 06:02:26 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::7053:1185:558b:bc54]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::7053:1185:558b:bc54%9]) with mapi id 15.20.3370.017; Sat, 12 Sep 2020
+ 06:02:26 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v7 10/16] vfio/type1: Support binding guest page tables to
+ PASID
+Thread-Topic: [PATCH v7 10/16] vfio/type1: Support binding guest page tables
+ to PASID
+Thread-Index: AQHWh18/Pt2w22JPoUCprMI2O8WM4alkAB0AgACBGUA=
+Date: Sat, 12 Sep 2020 06:02:25 +0000
+Message-ID: <DM5PR11MB1435786F302CEFEC0263DE79C3250@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
+ <1599734733-6431-11-git-send-email-yi.l.liu@intel.com>
+ <20200911160350.240869b2@w520.home>
+In-Reply-To: <20200911160350.240869b2@w520.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [114.244.141.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3e143898-4630-48e2-5e51-08d856e16c7b
+x-ms-traffictypediagnostic: DM6PR11MB3292:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB32922748E0D5AFECBB4A9147C3250@DM6PR11MB3292.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +JDHydKz1sFgD+jwYda6jwhgCEh/EKMBp4mVypCZCcVA0+ndVo654vprmTOXj80IRXHq2YXME6aat4DM1ddaVzXNiADY50iWFCjVwa9aBTPjx+GZJb8XMdVidyUk0Wvpfsyik2EOF01HF8Q2ejLKUMVYQL6p2hgpeO2ExShjrlY0W0pJBUCnfQGm4UOSOyiMXCZ1zFCOYaBJ/yOXEevLDzsT/UmFGxJiO2PtvO/SuqmWNw6sYbB3OR+HwXU/QM2WObMrYwKNqrphFKB5eSXsQAP5S5CwDe8rG6XaeUCV9bpKc5o0MKb6ZlnM8Z1yQBgP66otrJDc+Swy8oh05jIQGjILmujwK8YGU/SpZr0s4jusaHFkl9v2+k+j+i2f98somyjDL9VtGR8GpijT5uAMkg==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(346002)(366004)(396003)(39860400002)(136003)(9686003)(966005)(66946007)(26005)(186003)(83380400001)(6506007)(6916009)(76116006)(64756008)(66556008)(66476007)(66446008)(5660300002)(7416002)(54906003)(86362001)(55016002)(52536014)(30864003)(7696005)(71200400001)(8936002)(8676002)(2906002)(33656002)(478600001)(316002)(4326008);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: iNl4RtHBPQ2Jwy2KoGb6Qk8JCIurqXQfzWvvMKiyiPxuJHY+H7SgbxRc68PyCQW8oh4iODX2DOJDW//gZcm6oNUixC0po3cGSg3cR3U6XEeU8VmppYQUb0HynhoASiSiqaXFy15pjUpNkeYv6pGiIF8j9NBwDIORsv+Ru0m+R2wup46zOAWJNvHnBAjkrgOpNiuOhYoIqe2V4FT5hrDd8SLkirTp/W3u98DZwMgbJerfvSGz7i/HJpArguFLQWCEeTu25nZq4lQzdatrbSyehzuWI3LgcdxkD9IeGaBp/tsvGneDpCIx3pjtQ/cUyagAKOE2O9Ksn/rYFge7rq4EVfS2PkhFWCaWxapCt8TtR9WXH8t+gS3+xEfQJeeWWYOzC96lxvQX+yOhOiVK9AMws6thPL2ET2RCaElbnzmCSErisje5ySeQwaN4qYGnrVfFfo8YPubIvtcQgo5VwyTo3fMsd72yYtoqn49MosTtZ9pwFk3IRwNquLG9/GJw75jsbs4JHmpf41D87FwHFFyb0O7511aG7i8eBiq3ci9PZjFUFAJubBe146hUNEN5LQSfLZzu0Ht5jdnIpMQpTcj5idCOo4PwgdP2GD7tb7o/nhqNZn9ZQ/vx+xDcjz/mDs1RnsiYrCa7xmmaTiLBZPHzWg==
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e143898-4630-48e2-5e51-08d856e16c7b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2020 06:02:25.8151 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xRTsZlMeTsGZpDbG6B0iJBsZ7QVFOyvYg7gAtp1IFESkUwX9MQEBUh9EvIwVSBt+MvQB5jaJxK6g6YWJG+uf9A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3292
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "stefanha@gmail.com" <stefanha@gmail.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,930 +170,447 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tom Murphy <murphyt7@tcd.ie>
+Hi Alex,
 
-Convert the intel iommu driver to the dma-iommu api. Remove the iova
-handling and reserve region code from the intel iommu driver.
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Saturday, September 12, 2020 6:04 AM
+> 
+> On Thu, 10 Sep 2020 03:45:27 -0700
+> Liu Yi L <yi.l.liu@intel.com> wrote:
+> 
+> > Nesting translation allows two-levels/stages page tables, with 1st
+> > level for guest translations (e.g. GVA->GPA), 2nd level for host
+> > translations (e.g. GPA->HPA). This patch adds interface for binding
+> > guest page tables to a PASID. This PASID must have been allocated by
+> > the userspace before the binding request.
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> > v6 -> v7:
+> > *) introduced @user in struct domain_capsule to simplify the code per Eric's
+> >    suggestion.
+> > *) introduced VFIO_IOMMU_NESTING_OP_NUM for sanitizing op from userspace.
+> > *) corrected the @argsz value of unbind_data in vfio_group_unbind_gpasid_fn().
+> >
+> > v5 -> v6:
+> > *) dropped vfio_find_nesting_group() and add vfio_get_nesting_domain_capsule().
+> >    per comment from Eric.
+> > *) use iommu_uapi_sva_bind/unbind_gpasid() and iommu_sva_unbind_gpasid() in
+> >    linux/iommu.h for userspace operation and in-kernel operation.
+> >
+> > v3 -> v4:
+> > *) address comments from Alex on v3
+> >
+> > v2 -> v3:
+> > *) use __iommu_sva_unbind_gpasid() for unbind call issued by VFIO
+> >
+> > https://lore.kernel.org/linux-iommu/1592931837-58223-6-git-send-email-
+> > jacob.jun.pan@linux.intel.com/
+> >
+> > v1 -> v2:
+> > *) rename subject from "vfio/type1: Bind guest page tables to host"
+> > *) remove VFIO_IOMMU_BIND, introduce VFIO_IOMMU_NESTING_OP to support
+> bind/
+> >    unbind guet page table
+> > *) replaced vfio_iommu_for_each_dev() with a group level loop since this
+> >    series enforces one group per container w/ nesting type as start.
+> > *) rename vfio_bind/unbind_gpasid_fn() to
+> > vfio_dev_bind/unbind_gpasid_fn()
+> > *) vfio_dev_unbind_gpasid() always successful
+> > *) use vfio_mm->pasid_lock to avoid race between PASID free and page table
+> >    bind/unbind
+> > ---
+> >  drivers/vfio/vfio_iommu_type1.c | 163
+> ++++++++++++++++++++++++++++++++++++++++
+> >  drivers/vfio/vfio_pasid.c       |  26 +++++++
+> >  include/linux/vfio.h            |  20 +++++
+> >  include/uapi/linux/vfio.h       |  36 +++++++++
+> >  4 files changed, 245 insertions(+)
+> >
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c index bd4b668..11f1156 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -149,6 +149,39 @@ struct vfio_regions {
+> >  #define DIRTY_BITMAP_PAGES_MAX	 ((u64)INT_MAX)
+> >  #define DIRTY_BITMAP_SIZE_MAX
+> DIRTY_BITMAP_BYTES(DIRTY_BITMAP_PAGES_MAX)
+> >
+> > +struct domain_capsule {
+> > +	struct vfio_group	*group;
+> > +	struct iommu_domain	*domain;
+> > +	/* set if @data contains a user pointer*/
+> > +	bool			user;
+> > +	void			*data;
+> > +};
+> 
+> Put the hole in the structure at the end, but I suspect we might lose the user field
+> when the internal api drops the unnecessary structure for unbind anyway.
 
-Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/Kconfig |   1 +
- drivers/iommu/intel/iommu.c | 742 ++----------------------------------
- 2 files changed, 43 insertions(+), 700 deletions(-)
+I see. will move @user and its comment to the end of this struct. As it's
+used to imply the @data field user pointer or not, I guess it's still useful
+to keep it. The difference would be the @data is a pasid not a bind_data
+struct.
 
-diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-index 5337ee1584b0..28a3d1596c76 100644
---- a/drivers/iommu/intel/Kconfig
-+++ b/drivers/iommu/intel/Kconfig
-@@ -13,6 +13,7 @@ config INTEL_IOMMU
- 	select DMAR_TABLE
- 	select SWIOTLB
- 	select IOASID
-+	select IOMMU_DMA
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
- 	  translations for Direct Memory Access (DMA) from devices.
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 63ee30c689a7..adc231790e0a 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -31,6 +31,7 @@
- #include <linux/io.h>
- #include <linux/iova.h>
- #include <linux/iommu.h>
-+#include <linux/dma-iommu.h>
- #include <linux/intel-iommu.h>
- #include <linux/syscore_ops.h>
- #include <linux/tboot.h>
-@@ -41,7 +42,6 @@
- #include <linux/dma-direct.h>
- #include <linux/crash_dump.h>
- #include <linux/numa.h>
--#include <linux/swiotlb.h>
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-@@ -382,9 +382,6 @@ struct device_domain_info *get_domain_info(struct device *dev)
- DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
- 
--#define device_needs_bounce(d) (!intel_no_bounce && dev_is_pci(d) &&	\
--				to_pci_dev(d)->untrusted)
--
- /*
-  * Iterate over elements in device_domain_list and call the specified
-  * callback @fn against each element.
-@@ -1242,13 +1239,6 @@ static void dma_free_pagelist(struct page *freelist)
- 	}
- }
- 
--static void iova_entry_free(unsigned long data)
--{
--	struct page *freelist = (struct page *)data;
--
--	dma_free_pagelist(freelist);
--}
--
- /* iommu handling */
- static int iommu_alloc_root_entry(struct intel_iommu *iommu)
- {
-@@ -1613,19 +1603,17 @@ static inline void __mapping_notify_one(struct intel_iommu *iommu,
- 		iommu_flush_write_buffer(iommu);
- }
- 
--static void iommu_flush_iova(struct iova_domain *iovad)
-+static void intel_flush_iotlb_all(struct iommu_domain *domain)
- {
--	struct dmar_domain *domain;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	int idx;
- 
--	domain = container_of(iovad, struct dmar_domain, iovad);
--
--	for_each_domain_iommu(idx, domain) {
-+	for_each_domain_iommu(idx, dmar_domain) {
- 		struct intel_iommu *iommu = g_iommus[idx];
--		u16 did = domain->iommu_did[iommu->seq_id];
-+		u16 did = dmar_domain->iommu_did[iommu->seq_id];
- 
--		if (domain_use_first_level(domain))
--			domain_flush_piotlb(iommu, domain, 0, -1, 0);
-+		if (domain_use_first_level(dmar_domain))
-+			domain_flush_piotlb(iommu, dmar_domain, 0, -1, 0);
- 		else
- 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
- 						 DMA_TLB_DSI_FLUSH);
-@@ -1907,48 +1895,6 @@ static int domain_detach_iommu(struct dmar_domain *domain,
- 	return count;
- }
- 
--static struct iova_domain reserved_iova_list;
--static struct lock_class_key reserved_rbtree_key;
--
--static int dmar_init_reserved_ranges(void)
--{
--	struct pci_dev *pdev = NULL;
--	struct iova *iova;
--	int i;
--
--	init_iova_domain(&reserved_iova_list, VTD_PAGE_SIZE, IOVA_START_PFN);
--
--	lockdep_set_class(&reserved_iova_list.iova_rbtree_lock,
--		&reserved_rbtree_key);
--
--	/* IOAPIC ranges shouldn't be accessed by DMA */
--	iova = reserve_iova(&reserved_iova_list, IOVA_PFN(IOAPIC_RANGE_START),
--		IOVA_PFN(IOAPIC_RANGE_END));
--	if (!iova) {
--		pr_err("Reserve IOAPIC range failed\n");
--		return -ENODEV;
--	}
--
--	/* Reserve all PCI MMIO to avoid peer-to-peer access */
--	for_each_pci_dev(pdev) {
--		struct resource *r;
--
--		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
--			r = &pdev->resource[i];
--			if (!r->flags || !(r->flags & IORESOURCE_MEM))
--				continue;
--			iova = reserve_iova(&reserved_iova_list,
--					    IOVA_PFN(r->start),
--					    IOVA_PFN(r->end));
--			if (!iova) {
--				pci_err(pdev, "Reserve iova for %pR failed\n", r);
--				return -ENODEV;
--			}
--		}
--	}
--	return 0;
--}
--
- static inline int guestwidth_to_adjustwidth(int gaw)
- {
- 	int agaw;
-@@ -1971,7 +1917,7 @@ static void domain_exit(struct dmar_domain *domain)
- 
- 	/* destroy iovas */
- 	if (domain->domain.type == IOMMU_DOMAIN_DMA)
--		put_iova_domain(&domain->iovad);
-+		iommu_put_dma_cookie(&domain->domain);
- 
- 	if (domain->pgd) {
- 		struct page *freelist;
-@@ -2502,16 +2448,6 @@ struct dmar_domain *find_domain(struct device *dev)
- 	return NULL;
- }
- 
--static void do_deferred_attach(struct device *dev)
--{
--	struct iommu_domain *domain;
--
--	dev_iommu_priv_set(dev, NULL);
--	domain = iommu_get_domain_for_dev(dev);
--	if (domain)
--		intel_iommu_attach_device(domain, dev);
--}
--
- static inline struct device_domain_info *
- dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
- {
-@@ -3384,591 +3320,6 @@ static int __init init_dmars(void)
- 	return ret;
- }
- 
--/* This takes a number of _MM_ pages, not VTD pages */
--static unsigned long intel_alloc_iova(struct device *dev,
--				     struct dmar_domain *domain,
--				     unsigned long nrpages, uint64_t dma_mask)
--{
--	unsigned long iova_pfn;
--
--	/*
--	 * Restrict dma_mask to the width that the iommu can handle.
--	 * First-level translation restricts the input-address to a
--	 * canonical address (i.e., address bits 63:N have the same
--	 * value as address bit [N-1], where N is 48-bits with 4-level
--	 * paging and 57-bits with 5-level paging). Hence, skip bit
--	 * [N-1].
--	 */
--	if (domain_use_first_level(domain))
--		dma_mask = min_t(uint64_t, DOMAIN_MAX_ADDR(domain->gaw - 1),
--				 dma_mask);
--	else
--		dma_mask = min_t(uint64_t, DOMAIN_MAX_ADDR(domain->gaw),
--				 dma_mask);
--
--	/* Ensure we reserve the whole size-aligned region */
--	nrpages = __roundup_pow_of_two(nrpages);
--
--	if (!dmar_forcedac && dma_mask > DMA_BIT_MASK(32)) {
--		/*
--		 * First try to allocate an io virtual address in
--		 * DMA_BIT_MASK(32) and if that fails then try allocating
--		 * from higher range
--		 */
--		iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
--					   IOVA_PFN(DMA_BIT_MASK(32)), false);
--		if (iova_pfn)
--			return iova_pfn;
--	}
--	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
--				   IOVA_PFN(dma_mask), true);
--	if (unlikely(!iova_pfn)) {
--		dev_err_once(dev, "Allocating %ld-page iova failed\n",
--			     nrpages);
--		return 0;
--	}
--
--	return iova_pfn;
--}
--
--static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
--				     size_t size, int dir, u64 dma_mask)
--{
--	struct dmar_domain *domain;
--	phys_addr_t start_paddr;
--	unsigned long iova_pfn;
--	int prot = 0;
--	int ret;
--	struct intel_iommu *iommu;
--	unsigned long paddr_pfn = paddr >> PAGE_SHIFT;
--
--	BUG_ON(dir == DMA_NONE);
--
--	if (unlikely(attach_deferred(dev)))
--		do_deferred_attach(dev);
--
--	domain = find_domain(dev);
--	if (!domain)
--		return DMA_MAPPING_ERROR;
--
--	iommu = domain_get_iommu(domain);
--	size = aligned_nrpages(paddr, size);
--
--	iova_pfn = intel_alloc_iova(dev, domain, dma_to_mm_pfn(size), dma_mask);
--	if (!iova_pfn)
--		goto error;
--
--	/*
--	 * Check if DMAR supports zero-length reads on write only
--	 * mappings..
--	 */
--	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL || \
--			!cap_zlr(iommu->cap))
--		prot |= DMA_PTE_READ;
--	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
--		prot |= DMA_PTE_WRITE;
--	/*
--	 * paddr - (paddr + size) might be partial page, we should map the whole
--	 * page.  Note: if two part of one page are separately mapped, we
--	 * might have two guest_addr mapping to the same host paddr, but this
--	 * is not a big problem
--	 */
--	ret = domain_pfn_mapping(domain, mm_to_dma_pfn(iova_pfn),
--				 mm_to_dma_pfn(paddr_pfn), size, prot);
--	if (ret)
--		goto error;
--
--	start_paddr = (phys_addr_t)iova_pfn << PAGE_SHIFT;
--	start_paddr += paddr & ~PAGE_MASK;
--
--	trace_map_single(dev, start_paddr, paddr, size << VTD_PAGE_SHIFT);
--
--	return start_paddr;
--
--error:
--	if (iova_pfn)
--		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(size));
--	dev_err(dev, "Device request: %zx@%llx dir %d --- failed\n",
--		size, (unsigned long long)paddr, dir);
--	return DMA_MAPPING_ERROR;
--}
--
--static dma_addr_t intel_map_page(struct device *dev, struct page *page,
--				 unsigned long offset, size_t size,
--				 enum dma_data_direction dir,
--				 unsigned long attrs)
--{
--	return __intel_map_single(dev, page_to_phys(page) + offset,
--				  size, dir, *dev->dma_mask);
--}
--
--static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
--				     size_t size, enum dma_data_direction dir,
--				     unsigned long attrs)
--{
--	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
--}
--
--static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
--{
--	struct dmar_domain *domain;
--	unsigned long start_pfn, last_pfn;
--	unsigned long nrpages;
--	unsigned long iova_pfn;
--	struct intel_iommu *iommu;
--	struct page *freelist;
--	struct pci_dev *pdev = NULL;
--
--	domain = find_domain(dev);
--	BUG_ON(!domain);
--
--	iommu = domain_get_iommu(domain);
--
--	iova_pfn = IOVA_PFN(dev_addr);
--
--	nrpages = aligned_nrpages(dev_addr, size);
--	start_pfn = mm_to_dma_pfn(iova_pfn);
--	last_pfn = start_pfn + nrpages - 1;
--
--	if (dev_is_pci(dev))
--		pdev = to_pci_dev(dev);
--
--	freelist = domain_unmap(domain, start_pfn, last_pfn, NULL);
--	if (intel_iommu_strict || (pdev && pdev->untrusted) ||
--			!has_iova_flush_queue(&domain->iovad)) {
--		iommu_flush_iotlb_psi(iommu, domain, start_pfn,
--				      nrpages, !freelist, 0);
--		/* free iova */
--		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
--		dma_free_pagelist(freelist);
--	} else {
--		queue_iova(&domain->iovad, iova_pfn, nrpages,
--			   (unsigned long)freelist);
--		/*
--		 * queue up the release of the unmap to save the 1/6th of the
--		 * cpu used up by the iotlb flush operation...
--		 */
--	}
--
--	trace_unmap_single(dev, dev_addr, size);
--}
--
--static void intel_unmap_page(struct device *dev, dma_addr_t dev_addr,
--			     size_t size, enum dma_data_direction dir,
--			     unsigned long attrs)
--{
--	intel_unmap(dev, dev_addr, size);
--}
--
--static void intel_unmap_resource(struct device *dev, dma_addr_t dev_addr,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
--{
--	intel_unmap(dev, dev_addr, size);
--}
--
--static void *intel_alloc_coherent(struct device *dev, size_t size,
--				  dma_addr_t *dma_handle, gfp_t flags,
--				  unsigned long attrs)
--{
--	struct page *page = NULL;
--	int order;
--
--	if (unlikely(attach_deferred(dev)))
--		do_deferred_attach(dev);
--
--	size = PAGE_ALIGN(size);
--	order = get_order(size);
--
--	if (gfpflags_allow_blocking(flags)) {
--		unsigned int count = size >> PAGE_SHIFT;
--
--		page = dma_alloc_from_contiguous(dev, count, order,
--						 flags & __GFP_NOWARN);
--	}
--
--	if (!page)
--		page = alloc_pages(flags, order);
--	if (!page)
--		return NULL;
--	memset(page_address(page), 0, size);
--
--	*dma_handle = __intel_map_single(dev, page_to_phys(page), size,
--					 DMA_BIDIRECTIONAL,
--					 dev->coherent_dma_mask);
--	if (*dma_handle != DMA_MAPPING_ERROR)
--		return page_address(page);
--	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
--		__free_pages(page, order);
--
--	return NULL;
--}
--
--static void intel_free_coherent(struct device *dev, size_t size, void *vaddr,
--				dma_addr_t dma_handle, unsigned long attrs)
--{
--	int order;
--	struct page *page = virt_to_page(vaddr);
--
--	size = PAGE_ALIGN(size);
--	order = get_order(size);
--
--	intel_unmap(dev, dma_handle, size);
--	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
--		__free_pages(page, order);
--}
--
--static void intel_unmap_sg(struct device *dev, struct scatterlist *sglist,
--			   int nelems, enum dma_data_direction dir,
--			   unsigned long attrs)
--{
--	dma_addr_t startaddr = sg_dma_address(sglist) & PAGE_MASK;
--	unsigned long nrpages = 0;
--	struct scatterlist *sg;
--	int i;
--
--	for_each_sg(sglist, sg, nelems, i) {
--		nrpages += aligned_nrpages(sg_dma_address(sg), sg_dma_len(sg));
--	}
--
--	intel_unmap(dev, startaddr, nrpages << VTD_PAGE_SHIFT);
--
--	trace_unmap_sg(dev, startaddr, nrpages << VTD_PAGE_SHIFT);
--}
--
--static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nelems,
--			enum dma_data_direction dir, unsigned long attrs)
--{
--	int i;
--	struct dmar_domain *domain;
--	size_t size = 0;
--	int prot = 0;
--	unsigned long iova_pfn;
--	int ret;
--	struct scatterlist *sg;
--	unsigned long start_vpfn;
--	struct intel_iommu *iommu;
--
--	BUG_ON(dir == DMA_NONE);
--
--	if (unlikely(attach_deferred(dev)))
--		do_deferred_attach(dev);
--
--	domain = find_domain(dev);
--	if (!domain)
--		return 0;
--
--	iommu = domain_get_iommu(domain);
--
--	for_each_sg(sglist, sg, nelems, i)
--		size += aligned_nrpages(sg->offset, sg->length);
--
--	iova_pfn = intel_alloc_iova(dev, domain, dma_to_mm_pfn(size),
--				*dev->dma_mask);
--	if (!iova_pfn) {
--		sglist->dma_length = 0;
--		return 0;
--	}
--
--	/*
--	 * Check if DMAR supports zero-length reads on write only
--	 * mappings..
--	 */
--	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL || \
--			!cap_zlr(iommu->cap))
--		prot |= DMA_PTE_READ;
--	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
--		prot |= DMA_PTE_WRITE;
--
--	start_vpfn = mm_to_dma_pfn(iova_pfn);
--
--	ret = domain_sg_mapping(domain, start_vpfn, sglist, size, prot);
--	if (unlikely(ret)) {
--		dma_pte_free_pagetable(domain, start_vpfn,
--				       start_vpfn + size - 1,
--				       agaw_to_level(domain->agaw) + 1);
--		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(size));
--		return 0;
--	}
--
--	for_each_sg(sglist, sg, nelems, i)
--		trace_map_sg(dev, i + 1, nelems, sg);
--
--	return nelems;
--}
--
--static u64 intel_get_required_mask(struct device *dev)
--{
--	return DMA_BIT_MASK(32);
--}
--
--static const struct dma_map_ops intel_dma_ops = {
--	.alloc = intel_alloc_coherent,
--	.free = intel_free_coherent,
--	.map_sg = intel_map_sg,
--	.unmap_sg = intel_unmap_sg,
--	.map_page = intel_map_page,
--	.unmap_page = intel_unmap_page,
--	.map_resource = intel_map_resource,
--	.unmap_resource = intel_unmap_resource,
--	.dma_supported = dma_direct_supported,
--	.mmap = dma_common_mmap,
--	.get_sgtable = dma_common_get_sgtable,
--	.get_required_mask = intel_get_required_mask,
--};
--
--static void
--bounce_sync_single(struct device *dev, dma_addr_t addr, size_t size,
--		   enum dma_data_direction dir, enum dma_sync_target target)
--{
--	struct dmar_domain *domain;
--	phys_addr_t tlb_addr;
--
--	domain = find_domain(dev);
--	if (WARN_ON(!domain))
--		return;
--
--	tlb_addr = intel_iommu_iova_to_phys(&domain->domain, addr);
--	if (is_swiotlb_buffer(tlb_addr))
--		swiotlb_tbl_sync_single(dev, tlb_addr, size, dir, target);
--}
--
--static dma_addr_t
--bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
--		  enum dma_data_direction dir, unsigned long attrs,
--		  u64 dma_mask)
--{
--	size_t aligned_size = ALIGN(size, VTD_PAGE_SIZE);
--	struct dmar_domain *domain;
--	struct intel_iommu *iommu;
--	unsigned long iova_pfn;
--	unsigned long nrpages;
--	phys_addr_t tlb_addr;
--	int prot = 0;
--	int ret;
--
--	if (unlikely(attach_deferred(dev)))
--		do_deferred_attach(dev);
--
--	domain = find_domain(dev);
--
--	if (WARN_ON(dir == DMA_NONE || !domain))
--		return DMA_MAPPING_ERROR;
--
--	iommu = domain_get_iommu(domain);
--	if (WARN_ON(!iommu))
--		return DMA_MAPPING_ERROR;
--
--	nrpages = aligned_nrpages(0, size);
--	iova_pfn = intel_alloc_iova(dev, domain,
--				    dma_to_mm_pfn(nrpages), dma_mask);
--	if (!iova_pfn)
--		return DMA_MAPPING_ERROR;
--
--	/*
--	 * Check if DMAR supports zero-length reads on write only
--	 * mappings..
--	 */
--	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL ||
--			!cap_zlr(iommu->cap))
--		prot |= DMA_PTE_READ;
--	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
--		prot |= DMA_PTE_WRITE;
--
--	/*
--	 * If both the physical buffer start address and size are
--	 * page aligned, we don't need to use a bounce page.
--	 */
--	if (!IS_ALIGNED(paddr | size, VTD_PAGE_SIZE)) {
--		tlb_addr = swiotlb_tbl_map_single(dev,
--				__phys_to_dma(dev, io_tlb_start),
--				paddr, size, aligned_size, dir, attrs);
--		if (tlb_addr == DMA_MAPPING_ERROR) {
--			goto swiotlb_error;
--		} else {
--			/* Cleanup the padding area. */
--			void *padding_start = phys_to_virt(tlb_addr);
--			size_t padding_size = aligned_size;
--
--			if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--			    (dir == DMA_TO_DEVICE ||
--			     dir == DMA_BIDIRECTIONAL)) {
--				padding_start += size;
--				padding_size -= size;
--			}
--
--			memset(padding_start, 0, padding_size);
--		}
--	} else {
--		tlb_addr = paddr;
--	}
--
--	ret = domain_pfn_mapping(domain, mm_to_dma_pfn(iova_pfn),
--				 tlb_addr >> VTD_PAGE_SHIFT, nrpages, prot);
--	if (ret)
--		goto mapping_error;
--
--	trace_bounce_map_single(dev, iova_pfn << PAGE_SHIFT, paddr, size);
--
--	return (phys_addr_t)iova_pfn << PAGE_SHIFT;
--
--mapping_error:
--	if (is_swiotlb_buffer(tlb_addr))
--		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
--					 aligned_size, dir, attrs);
--swiotlb_error:
--	free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(nrpages));
--	dev_err(dev, "Device bounce map: %zx@%llx dir %d --- failed\n",
--		size, (unsigned long long)paddr, dir);
--
--	return DMA_MAPPING_ERROR;
--}
--
--static void
--bounce_unmap_single(struct device *dev, dma_addr_t dev_addr, size_t size,
--		    enum dma_data_direction dir, unsigned long attrs)
--{
--	size_t aligned_size = ALIGN(size, VTD_PAGE_SIZE);
--	struct dmar_domain *domain;
--	phys_addr_t tlb_addr;
--
--	domain = find_domain(dev);
--	if (WARN_ON(!domain))
--		return;
--
--	tlb_addr = intel_iommu_iova_to_phys(&domain->domain, dev_addr);
--	if (WARN_ON(!tlb_addr))
--		return;
--
--	intel_unmap(dev, dev_addr, size);
--	if (is_swiotlb_buffer(tlb_addr))
--		swiotlb_tbl_unmap_single(dev, tlb_addr, size,
--					 aligned_size, dir, attrs);
--
--	trace_bounce_unmap_single(dev, dev_addr, size);
--}
--
--static dma_addr_t
--bounce_map_page(struct device *dev, struct page *page, unsigned long offset,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
--{
--	return bounce_map_single(dev, page_to_phys(page) + offset,
--				 size, dir, attrs, *dev->dma_mask);
--}
--
--static dma_addr_t
--bounce_map_resource(struct device *dev, phys_addr_t phys_addr, size_t size,
--		    enum dma_data_direction dir, unsigned long attrs)
--{
--	return bounce_map_single(dev, phys_addr, size,
--				 dir, attrs, *dev->dma_mask);
--}
--
--static void
--bounce_unmap_page(struct device *dev, dma_addr_t dev_addr, size_t size,
--		  enum dma_data_direction dir, unsigned long attrs)
--{
--	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
--}
--
--static void
--bounce_unmap_resource(struct device *dev, dma_addr_t dev_addr, size_t size,
--		      enum dma_data_direction dir, unsigned long attrs)
--{
--	bounce_unmap_single(dev, dev_addr, size, dir, attrs);
--}
--
--static void
--bounce_unmap_sg(struct device *dev, struct scatterlist *sglist, int nelems,
--		enum dma_data_direction dir, unsigned long attrs)
--{
--	struct scatterlist *sg;
--	int i;
--
--	for_each_sg(sglist, sg, nelems, i)
--		bounce_unmap_page(dev, sg->dma_address,
--				  sg_dma_len(sg), dir, attrs);
--}
--
--static int
--bounce_map_sg(struct device *dev, struct scatterlist *sglist, int nelems,
--	      enum dma_data_direction dir, unsigned long attrs)
--{
--	int i;
--	struct scatterlist *sg;
--
--	for_each_sg(sglist, sg, nelems, i) {
--		sg->dma_address = bounce_map_page(dev, sg_page(sg),
--						  sg->offset, sg->length,
--						  dir, attrs);
--		if (sg->dma_address == DMA_MAPPING_ERROR)
--			goto out_unmap;
--		sg_dma_len(sg) = sg->length;
--	}
--
--	for_each_sg(sglist, sg, nelems, i)
--		trace_bounce_map_sg(dev, i + 1, nelems, sg);
--
--	return nelems;
--
--out_unmap:
--	bounce_unmap_sg(dev, sglist, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
--	return 0;
--}
--
--static void
--bounce_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
--			   size_t size, enum dma_data_direction dir)
--{
--	bounce_sync_single(dev, addr, size, dir, SYNC_FOR_CPU);
--}
--
--static void
--bounce_sync_single_for_device(struct device *dev, dma_addr_t addr,
--			      size_t size, enum dma_data_direction dir)
--{
--	bounce_sync_single(dev, addr, size, dir, SYNC_FOR_DEVICE);
--}
--
--static void
--bounce_sync_sg_for_cpu(struct device *dev, struct scatterlist *sglist,
--		       int nelems, enum dma_data_direction dir)
--{
--	struct scatterlist *sg;
--	int i;
--
--	for_each_sg(sglist, sg, nelems, i)
--		bounce_sync_single(dev, sg_dma_address(sg),
--				   sg_dma_len(sg), dir, SYNC_FOR_CPU);
--}
--
--static void
--bounce_sync_sg_for_device(struct device *dev, struct scatterlist *sglist,
--			  int nelems, enum dma_data_direction dir)
--{
--	struct scatterlist *sg;
--	int i;
--
--	for_each_sg(sglist, sg, nelems, i)
--		bounce_sync_single(dev, sg_dma_address(sg),
--				   sg_dma_len(sg), dir, SYNC_FOR_DEVICE);
--}
--
--static const struct dma_map_ops bounce_dma_ops = {
--	.alloc			= intel_alloc_coherent,
--	.free			= intel_free_coherent,
--	.map_sg			= bounce_map_sg,
--	.unmap_sg		= bounce_unmap_sg,
--	.map_page		= bounce_map_page,
--	.unmap_page		= bounce_unmap_page,
--	.sync_single_for_cpu	= bounce_sync_single_for_cpu,
--	.sync_single_for_device	= bounce_sync_single_for_device,
--	.sync_sg_for_cpu	= bounce_sync_sg_for_cpu,
--	.sync_sg_for_device	= bounce_sync_sg_for_device,
--	.map_resource		= bounce_map_resource,
--	.unmap_resource		= bounce_unmap_resource,
--	.dma_supported		= dma_direct_supported,
--};
--
- static inline int iommu_domain_cache_init(void)
- {
- 	int ret = 0;
-@@ -4636,7 +3987,7 @@ static void free_all_cpu_cached_iovas(unsigned int cpu)
- 			if (!domain || domain->domain.type != IOMMU_DOMAIN_DMA)
- 				continue;
- 
--			free_cpu_cached_iovas(cpu, &domain->iovad);
-+			iommu_dma_free_cpu_cached_iovas(cpu, &domain->domain);
- 		}
- 	}
- }
-@@ -4908,12 +4259,6 @@ int __init intel_iommu_init(void)
- 	if (list_empty(&dmar_atsr_units))
- 		pr_info("No ATSR found\n");
- 
--	if (dmar_init_reserved_ranges()) {
--		if (force_on)
--			panic("tboot: Failed to reserve iommu ranges\n");
--		goto out_free_reserved_range;
--	}
--
- 	if (dmar_map_gfx)
- 		intel_iommu_gfx_mapped = 1;
- 
-@@ -4924,7 +4269,7 @@ int __init intel_iommu_init(void)
- 		if (force_on)
- 			panic("tboot: Failed to initialize DMARs\n");
- 		pr_err("Initialization failed\n");
--		goto out_free_reserved_range;
-+		goto out_free_dmar;
- 	}
- 	up_write(&dmar_global_lock);
- 
-@@ -4965,8 +4310,6 @@ int __init intel_iommu_init(void)
- 
- 	return 0;
- 
--out_free_reserved_range:
--	put_iova_domain(&reserved_iova_list);
- out_free_dmar:
- 	intel_iommu_free_dmars();
- 	up_write(&dmar_global_lock);
-@@ -5064,17 +4407,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	return 0;
- }
- 
--static void intel_init_iova_domain(struct dmar_domain *dmar_domain)
--{
--	init_iova_domain(&dmar_domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
--	copy_reserved_iova(&reserved_iova_list, &dmar_domain->iovad);
--
--	if (!intel_iommu_strict &&
--	    init_iova_flush_queue(&dmar_domain->iovad,
--				  iommu_flush_iova, iova_entry_free))
--		pr_info("iova flush queue initialization failed\n");
--}
--
- static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- {
- 	struct dmar_domain *dmar_domain;
-@@ -5094,8 +4426,9 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 			return NULL;
- 		}
- 
--		if (type == IOMMU_DOMAIN_DMA)
--			intel_init_iova_domain(dmar_domain);
-+		if (type == IOMMU_DOMAIN_DMA &&
-+		    iommu_get_dma_cookie(&dmar_domain->domain))
-+			return NULL;
- 
- 		domain_update_iommu_cap(dmar_domain);
- 
-@@ -5727,13 +5060,13 @@ static void intel_iommu_release_device(struct device *dev)
- 
- static void intel_iommu_probe_finalize(struct device *dev)
- {
--	struct iommu_domain *domain;
-+	dma_addr_t base = IOVA_START_PFN << VTD_PAGE_SHIFT;
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 
--	domain = iommu_get_domain_for_dev(dev);
--	if (device_needs_bounce(dev))
--		set_dma_ops(dev, &bounce_dma_ops);
--	else if (domain && domain->type == IOMMU_DOMAIN_DMA)
--		set_dma_ops(dev, &intel_dma_ops);
-+	if (domain && domain->type == IOMMU_DOMAIN_DMA)
-+		iommu_setup_dma_ops(dev, base,
-+				    __DOMAIN_MAX_ADDR(dmar_domain->gaw) - base);
- 	else
- 		set_dma_ops(dev, NULL);
- }
-@@ -5846,19 +5179,6 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
- 	return ret;
- }
- 
--static void intel_iommu_apply_resv_region(struct device *dev,
--					  struct iommu_domain *domain,
--					  struct iommu_resv_region *region)
--{
--	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	unsigned long start, end;
--
--	start = IOVA_PFN(region->start);
--	end   = IOVA_PFN(region->start + region->length - 1);
--
--	WARN_ON_ONCE(!reserve_iova(&dmar_domain->iovad, start, end));
--}
--
- static struct iommu_group *intel_iommu_device_group(struct device *dev)
- {
- 	if (dev_is_pci(dev))
-@@ -6047,6 +5367,27 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
- 	return ret;
- }
- 
-+static int
-+intel_iommu_domain_get_attr(struct iommu_domain *domain,
-+			    enum iommu_attr attr, void *data)
-+{
-+	switch (domain->type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		return -ENODEV;
-+	case IOMMU_DOMAIN_DMA:
-+		switch (attr) {
-+		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-+			*(int *)data = !intel_iommu_strict;
-+			return 0;
-+		default:
-+			return -ENODEV;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- /*
-  * Check that the device does not live on an external facing PCI port that is
-  * marked as untrusted. Such devices should not be able to apply quirks and
-@@ -6076,14 +5417,15 @@ const struct iommu_ops intel_iommu_ops = {
- 	.aux_get_pasid		= intel_iommu_aux_get_pasid,
- 	.map			= intel_iommu_map,
- 	.unmap			= intel_iommu_unmap,
-+	.flush_iotlb_all        = intel_flush_iotlb_all,
- 	.iotlb_sync		= intel_iommu_tlb_sync,
- 	.iova_to_phys		= intel_iommu_iova_to_phys,
- 	.probe_device		= intel_iommu_probe_device,
- 	.probe_finalize		= intel_iommu_probe_finalize,
- 	.release_device		= intel_iommu_release_device,
-+	.domain_get_attr        = intel_iommu_domain_get_attr,
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
--	.apply_resv_region	= intel_iommu_apply_resv_region,
- 	.device_group		= intel_iommu_device_group,
- 	.dev_has_feat		= intel_iommu_dev_has_feat,
- 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
--- 
-2.17.1
+> > +
+> > +/* iommu->lock must be held */
+> > +static int vfio_prepare_nesting_domain_capsule(struct vfio_iommu *iommu,
+> > +					       struct domain_capsule *dc) {
+> > +	struct vfio_domain *domain = NULL;
+> > +	struct vfio_group *group = NULL;
+> 
+> Unnecessary initialization.
+
+will remove them. :-)
+
+> > +
+> > +	if (!iommu->nesting_info)
+> > +		return -EINVAL;
+> > +
+> > +	/*
+> > +	 * Only support singleton container with nesting type. If
+> > +	 * nesting_info is non-NULL, the container is non-empty.
+> > +	 * Also domain is non-empty.
+> > +	 */
+> > +	domain = list_first_entry(&iommu->domain_list,
+> > +				  struct vfio_domain, next);
+> > +	group = list_first_entry(&domain->group_list,
+> > +				 struct vfio_group, next);
+> > +	dc->group = group;
+> > +	dc->domain = domain->domain;
+> > +	dc->user = true;
+> > +	return 0;
+> > +}
+> > +
+> >  static int put_pfn(unsigned long pfn, int prot);
+> >
+> >  static struct vfio_group *vfio_iommu_find_iommu_group(struct
+> > vfio_iommu *iommu, @@ -2405,6 +2438,49 @@ static int
+> vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
+> >  	return ret;
+> >  }
+> >
+> > +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data) {
+> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> > +	unsigned long arg = *(unsigned long *)dc->data;
+> > +
+> > +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev,
+> > +					  (void __user *)arg);
+> > +}
+> > +
+> > +static int vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
+> > +{
+> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> > +
+> > +	if (dc->user) {
+> > +		unsigned long arg = *(unsigned long *)dc->data;
+> > +
+> > +		iommu_uapi_sva_unbind_gpasid(dc->domain,
+> > +					     dev, (void __user *)arg);
+> > +	} else {
+> > +		struct iommu_gpasid_bind_data *unbind_data =
+> > +				(struct iommu_gpasid_bind_data *)dc->data;
+> > +
+> > +		iommu_sva_unbind_gpasid(dc->domain, dev, unbind_data);
+> > +	}
+> > +	return 0;
+> > +}
+> > +
+> > +static void vfio_group_unbind_gpasid_fn(ioasid_t pasid, void *data) {
+> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> > +	struct iommu_gpasid_bind_data unbind_data;
+> > +
+> > +	unbind_data.argsz = sizeof(struct iommu_gpasid_bind_data);
+> > +	unbind_data.flags = 0;
+> > +	unbind_data.hpasid = pasid;
+> 
+> 
+> As in thread with Jacob, this all seems a little excessive for an internal api callback
+> that requires one arg.
+
+yep, Jacob informed me about that change.
+
+> 
+> > +
+> > +	dc->user = false;
+> > +	dc->data = &unbind_data;
+> > +
+> > +	iommu_group_for_each_dev(dc->group->iommu_group,
+> > +				 dc, vfio_dev_unbind_gpasid_fn);
+> > +}
+> > +
+> >  static void vfio_iommu_type1_detach_group(void *iommu_data,
+> >  					  struct iommu_group *iommu_group)
+> { @@ -2448,6 +2524,20 @@
+> > static void vfio_iommu_type1_detach_group(void *iommu_data,
+> >  		if (!group)
+> >  			continue;
+> >
+> > +		if (iommu->vmm && (iommu->nesting_info->features &
+> > +					IOMMU_NESTING_FEAT_BIND_PGTBL)) {
+> > +			struct domain_capsule dc = { .group = group,
+> > +						     .domain = domain->domain,
+> > +						     .data = NULL };
+> > +
+> > +			/*
+> > +			 * Unbind page tables bound with system wide PASIDs
+> > +			 * which are allocated to userspace.
+> > +			 */
+> > +			vfio_mm_for_each_pasid(iommu->vmm, &dc,
+> > +					       vfio_group_unbind_gpasid_fn);
+> > +		}
+> > +
+> >  		vfio_iommu_detach_group(domain, group);
+> >  		update_dirty_scope = !group->pinned_page_dirty_scope;
+> >  		list_del(&group->next);
+> > @@ -2982,6 +3072,77 @@ static int vfio_iommu_type1_pasid_request(struct
+> vfio_iommu *iommu,
+> >  	return ret;
+> >  }
+> >
+> > +static long vfio_iommu_handle_pgtbl_op(struct vfio_iommu *iommu,
+> > +				       bool is_bind, unsigned long arg) {
+> > +	struct domain_capsule dc = { .data = &arg };
+> > +	struct iommu_nesting_info *info;
+> > +	int ret;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +
+> > +	info = iommu->nesting_info;
+> > +	if (!info || !(info->features & IOMMU_NESTING_FEAT_BIND_PGTBL)) {
+> > +		ret = -EOPNOTSUPP;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	if (!iommu->vmm) {
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	ret = vfio_prepare_nesting_domain_capsule(iommu, &dc);
+> > +	if (ret)
+> > +		goto out_unlock;
+> > +
+> > +	/* Avoid race with other containers within the same process */
+> > +	vfio_mm_pasid_lock(iommu->vmm);
+> > +
+> > +	if (is_bind)
+> > +		ret = iommu_group_for_each_dev(dc.group->iommu_group, &dc,
+> > +					       vfio_dev_bind_gpasid_fn);
+> > +	if (ret || !is_bind)
+> > +		iommu_group_for_each_dev(dc.group->iommu_group,
+> > +					 &dc, vfio_dev_unbind_gpasid_fn);
+> > +
+> > +	vfio_mm_pasid_unlock(iommu->vmm);
+> > +out_unlock:
+> > +	mutex_unlock(&iommu->lock);
+> > +	return ret;
+> > +}
+> > +
+> > +static long vfio_iommu_type1_nesting_op(struct vfio_iommu *iommu,
+> > +					unsigned long arg)
+> > +{
+> > +	struct vfio_iommu_type1_nesting_op hdr;
+> > +	unsigned int minsz;
+> > +	int ret;
+> > +
+> > +	minsz = offsetofend(struct vfio_iommu_type1_nesting_op, flags);
+> > +
+> > +	if (copy_from_user(&hdr, (void __user *)arg, minsz))
+> > +		return -EFAULT;
+> > +
+> > +	if (hdr.argsz < minsz ||
+> > +	    hdr.flags & ~VFIO_NESTING_OP_MASK ||
+> > +	    (hdr.flags & VFIO_NESTING_OP_MASK) >=
+> VFIO_IOMMU_NESTING_OP_NUM)
+> 
+> 
+> Isn't this redundant to the default switch case?
+
+oh, yes. From sanity chek p.o.v, it looks to be necessary to put
+the flags check here. but it also makes the default switch case
+to be a dead code. perhaps, I could remove the check against the
+OP_NUM and keep the switch case. how about your opinion?
+
+> 
+> > +		return -EINVAL;
+> > +
+> > +	switch (hdr.flags & VFIO_NESTING_OP_MASK) {
+> > +	case VFIO_IOMMU_NESTING_OP_BIND_PGTBL:
+> > +		ret = vfio_iommu_handle_pgtbl_op(iommu, true, arg + minsz);
+> > +		break;
+> > +	case VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL:
+> > +		ret = vfio_iommu_handle_pgtbl_op(iommu, false, arg + minsz);
+> > +		break;
+> > +	default:
+> > +		ret = -EINVAL;
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >  				   unsigned int cmd, unsigned long arg)  { @@ -
+> 3000,6 +3161,8 @@
+> > static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >  		return vfio_iommu_type1_dirty_pages(iommu, arg);
+> >  	case VFIO_IOMMU_PASID_REQUEST:
+> >  		return vfio_iommu_type1_pasid_request(iommu, arg);
+> > +	case VFIO_IOMMU_NESTING_OP:
+> > +		return vfio_iommu_type1_nesting_op(iommu, arg);
+> >  	default:
+> >  		return -ENOTTY;
+> >  	}
+> > diff --git a/drivers/vfio/vfio_pasid.c b/drivers/vfio/vfio_pasid.c
+> > index 0ec4660..9e2e4b0 100644
+> > --- a/drivers/vfio/vfio_pasid.c
+> > +++ b/drivers/vfio/vfio_pasid.c
+> > @@ -220,6 +220,8 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,
+> >  	 * IOASID core will notify PASID users (e.g. IOMMU driver) to
+> >  	 * teardown necessary structures depending on the to-be-freed
+> >  	 * PASID.
+> > +	 * Hold pasid_lock also avoids race with PASID usages like bind/
+> > +	 * unbind page tables to requested PASID.
+> >  	 */
+> >  	mutex_lock(&vmm->pasid_lock);
+> >  	while ((vid = vfio_find_pasid(vmm, min, max)) != NULL) @@ -228,6
+> > +230,30 @@ void vfio_pasid_free_range(struct vfio_mm *vmm,  }
+> > EXPORT_SYMBOL_GPL(vfio_pasid_free_range);
+> >
+> > +int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> > +			   void (*fn)(ioasid_t id, void *data)) {
+> > +	int ret;
+> > +
+> > +	mutex_lock(&vmm->pasid_lock);
+> > +	ret = ioasid_set_for_each_ioasid(vmm->ioasid_set, fn, data);
+> > +	mutex_unlock(&vmm->pasid_lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_for_each_pasid);
+> > +
+> > +void vfio_mm_pasid_lock(struct vfio_mm *vmm) {
+> > +	mutex_lock(&vmm->pasid_lock);
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_lock);
+> > +
+> > +void vfio_mm_pasid_unlock(struct vfio_mm *vmm) {
+> > +	mutex_unlock(&vmm->pasid_lock);
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_unlock);
+> > +
+> >  static int __init vfio_pasid_init(void)  {
+> >  	mutex_init(&vfio_mm_lock);
+> > diff --git a/include/linux/vfio.h b/include/linux/vfio.h index
+> > 5c3d7a8..6a999c3 100644
+> > --- a/include/linux/vfio.h
+> > +++ b/include/linux/vfio.h
+> > @@ -105,6 +105,11 @@ extern struct ioasid_set
+> > *vfio_mm_ioasid_set(struct vfio_mm *vmm);  extern int
+> > vfio_pasid_alloc(struct vfio_mm *vmm, int min, int max);  extern void
+> vfio_pasid_free_range(struct vfio_mm *vmm,
+> >  				  ioasid_t min, ioasid_t max);
+> > +extern int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> > +				  void (*fn)(ioasid_t id, void *data)); extern void
+> > +vfio_mm_pasid_lock(struct vfio_mm *vmm); extern void
+> > +vfio_mm_pasid_unlock(struct vfio_mm *vmm);
+> > +
+> >  #else
+> >  static inline struct vfio_mm *vfio_mm_get_from_task(struct
+> > task_struct *task)  { @@ -129,6 +134,21 @@ static inline void
+> > vfio_pasid_free_range(struct vfio_mm *vmm,
+> >  					  ioasid_t min, ioasid_t max)
+> >  {
+> >  }
+> > +
+> > +static inline int vfio_mm_for_each_pasid(struct vfio_mm *vmm, void *data,
+> > +					 void (*fn)(ioasid_t id, void *data)) {
+> > +	return -ENOTTY;
+> > +}
+> > +
+> > +static inline void vfio_mm_pasid_lock(struct vfio_mm *vmm) { }
+> > +
+> > +static inline void vfio_mm_pasid_unlock(struct vfio_mm *vmm) { }
+> > +
+> >  #endif /* CONFIG_VFIO_PASID */
+> >
+> >  /*
+> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > index a4bc42e..a99bd71 100644
+> > --- a/include/uapi/linux/vfio.h
+> > +++ b/include/uapi/linux/vfio.h
+> > @@ -1215,6 +1215,42 @@ struct vfio_iommu_type1_pasid_request {
+> >
+> >  #define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 18)
+> >
+> > +/**
+> > + * VFIO_IOMMU_NESTING_OP - _IOW(VFIO_TYPE, VFIO_BASE + 19,
+> > + *				struct vfio_iommu_type1_nesting_op)
+> > + *
+> > + * This interface allows userspace to utilize the nesting IOMMU
+> > + * capabilities as reported in VFIO_IOMMU_TYPE1_INFO_CAP_NESTING
+> > + * cap through VFIO_IOMMU_GET_INFO. For platforms which require
+> > + * system wide PASID, PASID will be allocated by VFIO_IOMMU_PASID
+> > + * _REQUEST.
+> > + *
+> > + * @data[] types defined for each op:
+> > + *
+> +=================+===============================================+
+> > + * | NESTING OP      |      @data[]                                  |
+> > + *
+> +=================+===============================================+
+> > + * | BIND_PGTBL      |      struct iommu_gpasid_bind_data            |
+> > + * +-----------------+-----------------------------------------------+
+> > + * | UNBIND_PGTBL    |      struct iommu_gpasid_bind_data            |
+> > + *
+> > ++-----------------+-----------------------------------------------+
+> > + *
+> > + * returns: 0 on success, -errno on failure.
+> > + */
+> > +struct vfio_iommu_type1_nesting_op {
+> > +	__u32	argsz;
+> > +	__u32	flags;
+> > +#define VFIO_NESTING_OP_MASK	(0xffff) /* lower 16-bits for op */
+> > +	__u8	data[];
+> > +};
+> > +
+> > +enum {
+> > +	VFIO_IOMMU_NESTING_OP_BIND_PGTBL,
+> > +	VFIO_IOMMU_NESTING_OP_UNBIND_PGTBL,
+> > +	VFIO_IOMMU_NESTING_OP_NUM,
+> > +};
+> 
+> "VFIO_IOMMU_NESTING_NUM_OPS" would be more consistent with the vfio uapi.
+
+I see. will rename it if we decide to keep it.
+
+Regards,
+Yi Liu
+
+> Thanks,
+> 
+> Alex
+> 
+> > +
+> > +#define VFIO_IOMMU_NESTING_OP		_IO(VFIO_TYPE, VFIO_BASE + 19)
+> > +
+> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU
+> > -------- */
+> >
+> >  /*
 
 _______________________________________________
 iommu mailing list
