@@ -1,160 +1,101 @@
-Return-Path: <SRS0=7x6w=CV=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ut7E=CW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFE8C43461
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 08:24:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C66C433E2
+	for <iommu@archiver.kernel.org>; Sun, 13 Sep 2020 03:26:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E2E3214D8
-	for <iommu@archiver.kernel.org>; Sat, 12 Sep 2020 08:24:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8EE7C207EA
+	for <iommu@archiver.kernel.org>; Sun, 13 Sep 2020 03:26:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="m78uPMgK"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E2E3214D8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yyrNCTgA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EE7C207EA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DAB9E8785F;
-	Sat, 12 Sep 2020 08:24:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yZlogseolDlM; Sat, 12 Sep 2020 08:24:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 16FBC86F80;
-	Sat, 12 Sep 2020 08:24:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE84EC0859;
-	Sat, 12 Sep 2020 08:24:31 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E117CC0051
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 08:24:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D601C876AB
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 08:24:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 266F587098;
+	Sun, 13 Sep 2020 03:26:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oz14dRJCVe0M; Sun, 13 Sep 2020 03:26:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5F9F28707F;
+	Sun, 13 Sep 2020 03:26:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4329DC0859;
+	Sun, 13 Sep 2020 03:26:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29141C0051
+ for <iommu@lists.linux-foundation.org>; Sun, 13 Sep 2020 03:26:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0DFE786C80
+ for <iommu@lists.linux-foundation.org>; Sun, 13 Sep 2020 03:26:06 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xYnFXgkhRsTl for <iommu@lists.linux-foundation.org>;
- Sat, 12 Sep 2020 08:24:29 +0000 (UTC)
+ with ESMTP id tOeXYkSzXYRI for <iommu@lists.linux-foundation.org>;
+ Sun, 13 Sep 2020 03:26:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 70DC48765B
- for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 08:24:29 +0000 (UTC)
-IronPort-SDR: Kh8kGuA1gfH7p+8USLrlVDqSaxoqtjvx2fljzw022JXe4eO2xDNjX2W3WPFnKaPavMWIU0W+kW
- GVmqMXCcY8nQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="138411485"
-X-IronPort-AV: E=Sophos;i="5.76,419,1592895600"; d="scan'208";a="138411485"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 Sep 2020 01:24:28 -0700
-IronPort-SDR: iTSGA3CCWR9rwIv7C7rP8MClxnjGNDif8l6MPO9Kn41yhq77OwclxNpzMy5i15Vmsd+qlyXm8s
- Dy4hd27Pl/yg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,419,1592895600"; d="scan'208";a="287114658"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
- by fmsmga008.fm.intel.com with ESMTP; 12 Sep 2020 01:24:28 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 12 Sep 2020 01:24:28 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Sat, 12 Sep 2020 01:24:27 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Sat, 12 Sep 2020 01:24:27 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QhWp8hAlWE/fh5vUpW58bwK88gZnlNqHF8qDnp3F9K70kyz9DeV8v3SjFbinQ9Pz9AYvFACAfJyTo5sOHyIBRdvTzrS5onNKg9QVpT+FKobMEPsmq7yzvO9JqD6hnOzbM4osj4nnaYQ4WneBgQE1gP+6Ax9vKrY3UXTpUOyZ/FYFieo21M/YpFPKTgXU1n5b/vrEABJvL+7rjoBgfwuLk2iiMTPI+6BrheMB61Yxh8vnlQNhIyc5Z+GXGKyxFx5blJgSSNXYgQTo4ccZCwM4mw9FOcqQlqzGCB5CEcTKqxsC2XwYqQUodeZ4XCUtNyx/yfMIeWEQnNcqlEgusSEEcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ur08jo8aoKVgdgMVjBMu2R+KykKSS9L9XFX7btN6H3Y=;
- b=Pv8+8U4/GjfqsV6tNvYvtRxiQM0vxyl+dCIFH9j0W8JASikWFOAoEhtKKO0XX0zt1nFFRCwuA0YJ2LX/hwko6lEe1Xjx4pHNd9xJJoLQycU0xt5XK/uriAMNvQOIgWPUy9SPfdB2dlTHvSg9mZiCI46zt1y4i8NEzVE5oNmIUdYjRhBIm0WOFpJy9wsepm6XiUM+vrmCiss7H9hIFCgTrUo6DOwHZjrzBs/uKB4cEjQliyfP+hCBukMgF/30x9dox8n74rOdnrL4Km+hpXAup0/AEn/qTPxYpcwQDw8sZwPSnilL2+8Xn7rnQCvP5wu3/749AHkVcFfH9HE8BelCaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ur08jo8aoKVgdgMVjBMu2R+KykKSS9L9XFX7btN6H3Y=;
- b=m78uPMgKkG320gozQ1rnZxYGBwFAP7FN35hQj6IoDXreqEucvxfo4EHs8rS6dhuIZgjuCz14QZRSYKYsm9OSDjCjqH/qJb1mx31H5kfQCeugqshboUmZHHtUJBSHHEg2LsO+l1NCmfd4plT5N/mzLts0LOzUZMVaXYRXmZvuf3k=
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
- DM6PR11MB3193.namprd11.prod.outlook.com (2603:10b6:5:57::21) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3370.17; Sat, 12 Sep 2020 08:24:26 +0000
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::7053:1185:558b:bc54]) by DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::7053:1185:558b:bc54%9]) with mapi id 15.20.3370.017; Sat, 12 Sep 2020
- 08:24:26 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH v7 03/16] vfio/type1: Report iommu nesting info to
- userspace
-Thread-Topic: [PATCH v7 03/16] vfio/type1: Report iommu nesting info to
- userspace
-Thread-Index: AQHWh19Ad2500LZ7hk+RwTlSasj5uqlj4i2AgADKKhA=
-Date: Sat, 12 Sep 2020 08:24:26 +0000
-Message-ID: <DM5PR11MB14358D15B31136332DDBD068C3250@DM5PR11MB1435.namprd11.prod.outlook.com>
-References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
- <1599734733-6431-4-git-send-email-yi.l.liu@intel.com>
- <20200911141641.6f77f4d3@w520.home>
-In-Reply-To: <20200911141641.6f77f4d3@w520.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [114.244.141.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3b3964c9-12a1-4389-7fe5-08d856f542f0
-x-ms-traffictypediagnostic: DM6PR11MB3193:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB31931DFACAE77E4A7E514253C3250@DM6PR11MB3193.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nSgqEicMnmZB8fYfFoTn1EiGB3KEpslfd1B9meeATIDEm4jzqnhkGNDmw8F48QG+1KjNl/Ae8id7Jix+dvgenZtFI8At76Dxp51nqwidjy0+W+1eIpDb6TU3M+1/xvHji58mLXqI5V9WMpEfUDSJmljk9MvfyTDENmpem8LhIAaLKJqukWvHIHysltOlFCYvFMgPjC6Jvda9jAiuIy1Dpnt7HGXU/XPBhlraFj9AmDz7dEcbRaer2s9KnPo9tyDEU1C8suSNHHUyqlV6adKzfxPqTV9yisDOw9fGzPQQ4IKziplhDGi9l3gB3mtBIc6W6HU1MIsl8y0zz/MUwUnXLBWRqaDb33knDv1wrdVWiPSNtNx2paTHbAWykK2lAVlFwjnjrLttszp/iTcGXReCDg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(39860400002)(376002)(136003)(366004)(396003)(7416002)(2906002)(83380400001)(86362001)(26005)(66446008)(64756008)(66556008)(66476007)(66946007)(76116006)(186003)(6916009)(54906003)(6506007)(7696005)(966005)(8936002)(4326008)(8676002)(55016002)(9686003)(71200400001)(316002)(33656002)(478600001)(5660300002)(52536014)(30864003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: JQTQLw0HWkIopPOXtcFqb+VA3tCD6F5G91eIK/W/LI0uBp3NyWYOfY0P0Kf54WoaI/2FDld/vFMr/heMOcJd5LV9WytgHBYy+j2/h89hl9VhQ6ljKvJEbacLV4jZu7Ual3Zk+r46Dsiv1mZXhxPZCqc1Y1Tu0/gN2DUkXGePXurucS0O9FX6PlaZ+bXv93pZCuY6UhXjIodPup7R2OlQLz06nUxFsa+TmlYu7ctPopvMV5zKK5/yo7jo84At9sVexk9a3ZXjLMTjNh4flO2oBcxxbtdfSvC9+6/ry9IvKDdQxDD8T7CduVNS2chCNHiuvqCJcMkFLW12zUnmzmAj/gOz2XlVwoqUHuD9htYjluVElnVF9lakDKNeuczZ/Ww3nXNJrS2Mhk4sc4LUCPwo0NKX9SOBwI1FYkskBtw0eFBymbbl+MJ82QKe9vsLmBhkPNjDZyiimDqEVK/AN6KpO67qJ/Mq7RrOoWu4MwHcmsxwktmUXjKyZ4lwQrWJu69lECCxm5SFbR3HBhqm0Ine1e8ncZUytbHTJxW4NteOS6yvqpePo5U9ItV/MPvl0x/1pIoR3+eovHyMFye6cMf67d/JQPTrXbqxKCiVtWHaM5CroBfVn3hNu1UvKjUcAJKi4S8ijT1X36uv4/iLWi428A==
+Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
+ [209.85.167.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EB8D986CB4
+ for <iommu@lists.linux-foundation.org>; Sun, 13 Sep 2020 03:26:03 +0000 (UTC)
+Received: by mail-oi1-f196.google.com with SMTP id y6so13897849oie.5
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Sep 2020 20:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Ke7lMIRXust3VuSv0nKgJkbwsX5Y5U3wXBvizA4PXrY=;
+ b=yyrNCTgAFp3sCepk225S6NTSjOCGVhzw4iRmePIaTzvjnZwKHF3PuOcLpxPadQ3vvq
+ OkgdzrIYnZ4nWcncJEqM+FHOgG094D0K/+BioANbWip4mn832eoNK+dWcSxVvlYu2JYQ
+ ZBoR0LJ5Lc+YxYqe8zvagnENnOCCUX+VMuZ3EJ/Wv0nOellILxqC31ZzAxjdYWLYyuxY
+ FJY1jRg0jdevnILWK2NMHL1mgpgBv5HhDm1IJVSqYdh8oZlnDefvYn1k9H/ZY4rmCLvR
+ 7kvI70mV4GYFUNiKigTpeSQCuhslkDyJfMhaJt0gQS/lx8H2tZDbm5I6KJbn9wj11oxS
+ 8CWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Ke7lMIRXust3VuSv0nKgJkbwsX5Y5U3wXBvizA4PXrY=;
+ b=LO84mvDIHX6OD8IIzkmM/E/Nsy0AVFaJoXwhAHJ8HGT3ES1ejWIDp0y+kAVyx0VEdU
+ P1+kwRU9zAcRy55oP2D5vcc8BOI/JfvhZ2aEyTbnwNrhEXbZLfiHWswx9JWOKgYw468L
+ rdeEGJrREyMXHCl1zexJcKMz8Y6/QcuGj0HIcGUV1tnP9arvopRqb6F1cMPnhtWgqKPN
+ jtm5hM7XxmnRodHO+6/N05ttlzW+jNuVFRZZZEB1L/PYJqnxOM+ZG/jyNDNYKC38ePww
+ s2NqWV/lnsYwqgcD8pdtRYd525P+j+4wXPBJMpjkL5neffTcCQnsBbDJpb1IfF0seJEm
+ DOpA==
+X-Gm-Message-State: AOAM531XaRiwohXAwJdug8SdR8inF7tHez7FtC2z92xqMP5JINTSyooo
+ fr9GbYJDlneC76TyDu0DB4OXBg==
+X-Google-Smtp-Source: ABdhPJxuAIm2+/oMuWoP3Xg/emHDDPJVX7MIdtBknMrXrH/r4UieHbwSGIT61sNebSjEFvwanaMmUg==
+X-Received: by 2002:aca:1006:: with SMTP id 6mr5092573oiq.2.1599967562993;
+ Sat, 12 Sep 2020 20:26:02 -0700 (PDT)
+Received: from yoga ([2605:6000:e5cb:c100:8898:14ff:fe6d:34e])
+ by smtp.gmail.com with ESMTPSA id 9sm1207669ois.10.2020.09.12.20.26.01
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 12 Sep 2020 20:26:02 -0700 (PDT)
+Date: Sat, 12 Sep 2020 22:25:59 -0500
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 6/8] iommu/arm-smmu: Add impl hook for inherit boot
+ mappings
+Message-ID: <20200913032559.GT3715@yoga>
+References: <20200904155513.282067-1-bjorn.andersson@linaro.org>
+ <20200904155513.282067-7-bjorn.andersson@linaro.org>
+ <0bfcc8f7-d054-616b-834b-319461b1ecb9@arm.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b3964c9-12a1-4389-7fe5-08d856f542f0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2020 08:24:26.0650 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /PuBxguinYN5czQOBrMQ40IpdoghN5XFow224kNw197Ux8jrvqL07nNJA58X+EzfqPIMg0DI/akqZobN/+ppgw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3193
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "stefanha@gmail.com" <stefanha@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>
+Content-Disposition: inline
+In-Reply-To: <0bfcc8f7-d054-616b-834b-319461b1ecb9@arm.com>
+Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Sibi Sankar <sibis@codeaurora.org>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -172,324 +113,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
+On Fri 11 Sep 12:13 CDT 2020, Robin Murphy wrote:
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Saturday, September 12, 2020 4:17 AM
+> On 2020-09-04 16:55, Bjorn Andersson wrote:
+> > Add a new operation to allow platform implementations to inherit any
+> > stream mappings from the boot loader.
 > 
-> On Thu, 10 Sep 2020 03:45:20 -0700
-> Liu Yi L <yi.l.liu@intel.com> wrote:
+> Is there a reason we need an explicit step for this? The aim of the
+> cfg_probe hook is that the SMMU software state should all be set up by then,
+> and you can mess about with it however you like before arm_smmu_reset()
+> actually commits anything to hardware. I would have thought you could
+> permanently steal a context bank, configure it as your bypass hole, read out
+> the previous SME configuration and tweak smmu->smrs and smmu->s2crs
+> appropriately all together "invisibly" at that point.
+
+I did this because as of 6a79a5a3842b ("iommu/arm-smmu: Call
+configuration impl hook before consuming features") we no longer have
+setup pgsize_bitmap as we hit cfg_probe, which means that I need to
+replicate this logic to set up the iommu_domain.
+
+If I avoid setting up an iommu_domain for the identity context, as you
+request in patch 8, this shouldn't be needed anymore.
+
+> If that can't work, I'm very curious as to what I've overlooked.
 > 
-> > This patch exports iommu nesting capability info to user space through
-> > VFIO. Userspace is expected to check this info for supported uAPIs (e.g.
-> > PASID alloc/free, bind page table, and cache invalidation) and the
-> > vendor specific format information for first level/stage page table
-> > that will be bound to.
-> >
-> > The nesting info is available only after container set to be NESTED type.
-> > Current implementation imposes one limitation - one nesting container
-> > should include at most one iommu group. The philosophy of vfio
-> > container is having all groups/devices within the container share the
-> > same IOMMU context. When vSVA is enabled, one IOMMU context could
-> > include one 2nd- level address space and multiple 1st-level address
-> > spaces. While the 2nd-level address space is reasonably sharable by
-> > multiple groups, blindly sharing 1st-level address spaces across all
-> > groups within the container might instead break the guest expectation.
-> > In the future sub/super container concept might be introduced to allow
-> > partial address space sharing within an IOMMU context. But for now
-> > let's go with this restriction by requiring singleton container for
-> > using nesting iommu features. Below link has the related discussion about this
-> decision.
-> >
-> > https://lore.kernel.org/kvm/20200515115924.37e6996d@w520.home/
-> >
-> > This patch also changes the NESTING type container behaviour.
-> > Something that would have succeeded before will now fail: Before this
-> > series, if user asked for a VFIO_IOMMU_TYPE1_NESTING, it would have
-> > succeeded even if the SMMU didn't support stage-2, as the driver would
-> > have silently fallen back on stage-1 mappings (which work exactly the
-> > same as stage-2 only since there was no nesting supported). After the
-> > series, we do check for DOMAIN_ATTR_NESTING so if user asks for
-> > VFIO_IOMMU_TYPE1_NESTING and the SMMU doesn't support stage-2, the
-> > ioctl fails. But it should be a good fix and completely harmless. Detail can be found
-> in below link as well.
-> >
-> > https://lore.kernel.org/kvm/20200717090900.GC4850@myrica/
-> >
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > Cc: Eric Auger <eric.auger@redhat.com>
-> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+
+I believe that will work, I will rework the patches and try it out.
+
+Thanks,
+Bjorn
+
+> Robin.
+> 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > > ---
-> > v6 -> v7:
-> > *) using vfio_info_add_capability() for adding nesting cap per suggestion
-> >    from Eric.
-> >
-> > v5 -> v6:
-> > *) address comments against v5 from Eric Auger.
-> > *) don't report nesting cap to userspace if the nesting_info->format is
-> >    invalid.
-> >
-> > v4 -> v5:
-> > *) address comments from Eric Auger.
-> > *) return struct iommu_nesting_info for
-> VFIO_IOMMU_TYPE1_INFO_CAP_NESTING as
-> >    cap is much "cheap", if needs extension in future, just define another cap.
-> >    https://lore.kernel.org/kvm/20200708132947.5b7ee954@x1.home/
-> >
-> > v3 -> v4:
-> > *) address comments against v3.
-> >
-> > v1 -> v2:
-> > *) added in v2
-> > ---
-> >  drivers/vfio/vfio_iommu_type1.c | 92 +++++++++++++++++++++++++++++++++++-
-> -----
-> >  include/uapi/linux/vfio.h       | 19 +++++++++
-> >  2 files changed, 99 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c
-> > b/drivers/vfio/vfio_iommu_type1.c index c992973..3c0048b 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -62,18 +62,20 @@ MODULE_PARM_DESC(dma_entry_limit,
-> >  		 "Maximum number of user DMA mappings per container (65535).");
-> >
-> >  struct vfio_iommu {
-> > -	struct list_head	domain_list;
-> > -	struct list_head	iova_list;
-> > -	struct vfio_domain	*external_domain; /* domain for external user */
-> > -	struct mutex		lock;
-> > -	struct rb_root		dma_list;
-> > -	struct blocking_notifier_head notifier;
-> > -	unsigned int		dma_avail;
-> > -	uint64_t		pgsize_bitmap;
-> > -	bool			v2;
-> > -	bool			nesting;
-> > -	bool			dirty_page_tracking;
-> > -	bool			pinned_page_dirty_scope;
-> > +	struct list_head		domain_list;
-> > +	struct list_head		iova_list;
-> > +	/* domain for external user */
-> > +	struct vfio_domain		*external_domain;
-> > +	struct mutex			lock;
-> > +	struct rb_root			dma_list;
-> > +	struct blocking_notifier_head	notifier;
-> > +	unsigned int			dma_avail;
-> > +	uint64_t			pgsize_bitmap;
-> > +	bool				v2;
-> > +	bool				nesting;
-> > +	bool				dirty_page_tracking;
-> > +	bool				pinned_page_dirty_scope;
-> > +	struct iommu_nesting_info	*nesting_info;
-> 
-> Nit, not as important as the previous alignment, but might as well move this up with
-> the uint64_t pgsize_bitmap with the bools at the end of the structure to avoid adding
-> new gaps.
-
-got it. :-)
-
-> 
-> >  };
-> >
-> >  struct vfio_domain {
-> > @@ -130,6 +132,9 @@ struct vfio_regions {
-> >  #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
-> >  					(!list_empty(&iommu->domain_list))
-> >
-> > +#define CONTAINER_HAS_DOMAIN(iommu)	(((iommu)->external_domain) || \
-> > +					 (!list_empty(&(iommu)->domain_list)))
+> > 
+> > Changes since v2:
+> > - New patch/interface
+> > 
+> >   drivers/iommu/arm/arm-smmu/arm-smmu.c | 11 ++++++-----
+> >   drivers/iommu/arm/arm-smmu/arm-smmu.h |  6 ++++++
+> >   2 files changed, 12 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > index eb5c6ca5c138..4c4d302cd747 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > @@ -85,11 +85,6 @@ static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
+> >   		pm_runtime_put_autosuspend(smmu->dev);
+> >   }
+> > -static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+> > -{
+> > -	return container_of(dom, struct arm_smmu_domain, domain);
+> > -}
+> > -
+> >   static struct platform_driver arm_smmu_driver;
+> >   static struct iommu_ops arm_smmu_ops;
+> > @@ -2188,6 +2183,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   	if (err)
+> >   		return err;
+> > +	if (smmu->impl->inherit_mappings) {
+> > +		err = smmu->impl->inherit_mappings(smmu);
+> > +		if (err)
+> > +			return err;
+> > +	}
 > > +
-> >  #define DIRTY_BITMAP_BYTES(n)	(ALIGN(n, BITS_PER_TYPE(u64)) /
-> BITS_PER_BYTE)
-> >
-> >  /*
-> > @@ -1992,6 +1997,13 @@ static void vfio_iommu_iova_insert_copy(struct
-> > vfio_iommu *iommu,
-> >
-> >  	list_splice_tail(iova_copy, iova);
-> >  }
-> > +
-> > +static void vfio_iommu_release_nesting_info(struct vfio_iommu *iommu)
+> >   	if (smmu->version == ARM_SMMU_V2) {
+> >   		if (smmu->num_context_banks > smmu->num_context_irqs) {
+> >   			dev_err(dev,
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > index 235d9a3a6ab6..f58164976e74 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> > @@ -378,6 +378,11 @@ struct arm_smmu_domain {
+> >   	struct iommu_domain		domain;
+> >   };
+> > +static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
 > > +{
-> > +	kfree(iommu->nesting_info);
-> > +	iommu->nesting_info = NULL;
+> > +	return container_of(dom, struct arm_smmu_domain, domain);
 > > +}
 > > +
-> >  static int vfio_iommu_type1_attach_group(void *iommu_data,
-> >  					 struct iommu_group *iommu_group)
-> { @@ -2022,6 +2034,12 @@
-> > static int vfio_iommu_type1_attach_group(void *iommu_data,
-> >  		}
-> >  	}
-> >
-> > +	/* Nesting type container can include only one group */
-> > +	if (iommu->nesting && CONTAINER_HAS_DOMAIN(iommu)) {
-> > +		mutex_unlock(&iommu->lock);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> >  	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> >  	if (!group || !domain) {
-> > @@ -2092,6 +2110,25 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
-> >  	if (ret)
-> >  		goto out_domain;
-> >
-> > +	/* Nesting cap info is available only after attaching */
-> > +	if (iommu->nesting) {
-> > +		int size = sizeof(struct iommu_nesting_info);
-> > +
-> > +		iommu->nesting_info = kzalloc(size, GFP_KERNEL);
-> > +		if (!iommu->nesting_info) {
-> > +			ret = -ENOMEM;
-> > +			goto out_detach;
-> > +		}
-> > +
-> > +		/* Now get the nesting info */
-> > +		iommu->nesting_info->argsz = size;
-> > +		ret = iommu_domain_get_attr(domain->domain,
-> > +					    DOMAIN_ATTR_NESTING,
-> > +					    iommu->nesting_info);
-> > +		if (ret)
-> > +			goto out_detach;
-> > +	}
-> > +
-> >  	/* Get aperture info */
-> >  	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
-> &geo);
-> >
-> > @@ -2201,6 +2238,7 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
-> >  	return 0;
-> >
-> >  out_detach:
-> > +	vfio_iommu_release_nesting_info(iommu);
-> >  	vfio_iommu_detach_group(domain, group);
-> >  out_domain:
-> >  	iommu_domain_free(domain->domain);
-> > @@ -2401,6 +2439,8 @@ static void vfio_iommu_type1_detach_group(void
-> *iommu_data,
-> >  					vfio_iommu_unmap_unpin_all(iommu);
-> >  				else
-> >
-> 	vfio_iommu_unmap_unpin_reaccount(iommu);
-> > +
-> > +				vfio_iommu_release_nesting_info(iommu);
-> >  			}
-> >  			iommu_domain_free(domain->domain);
-> >  			list_del(&domain->next);
-> > @@ -2609,6 +2649,32 @@ static int vfio_iommu_migration_build_caps(struct
-> vfio_iommu *iommu,
-> >  	return vfio_info_add_capability(caps, &cap_mig.header,
-> > sizeof(cap_mig));  }
-> >
-> > +static int vfio_iommu_add_nesting_cap(struct vfio_iommu *iommu,
-> > +				      struct vfio_info_cap *caps) {
-> > +	struct vfio_iommu_type1_info_cap_nesting nesting_cap;
-> > +	size_t size;
-> > +
-> > +	/* when nesting_info is null, no need to go further */
-> > +	if (!iommu->nesting_info)
-> > +		return 0;
-> > +
-> > +	/* when @format of nesting_info is 0, fail the call */
-> > +	if (iommu->nesting_info->format == 0)
-> > +		return -ENOENT;
-> 
-> 
-> Should we fail this in the attach_group?  Seems the user would be in a bad situation
-> here if they successfully created a nesting container but can't get info.  Is there
-> backwards compatibility we're trying to maintain with this?
-
-agreed. fail it in attach_group would be better.
-
-> > +
-> > +	size = offsetof(struct vfio_iommu_type1_info_cap_nesting, info) +
-> > +	       iommu->nesting_info->argsz;
-> > +
-> > +	nesting_cap.header.id = VFIO_IOMMU_TYPE1_INFO_CAP_NESTING;
-> > +	nesting_cap.header.version = 1;
-> > +
-> > +	memcpy(&nesting_cap.info, iommu->nesting_info,
-> > +	       iommu->nesting_info->argsz);
-> > +
-> > +	return vfio_info_add_capability(caps, &nesting_cap.header, size); }
-> > +
-> >  static int vfio_iommu_type1_get_info(struct vfio_iommu *iommu,
-> >  				     unsigned long arg)
-> >  {
-> > @@ -2644,6 +2710,8 @@ static int vfio_iommu_type1_get_info(struct
-> vfio_iommu *iommu,
-> >  	if (!ret)
-> >  		ret = vfio_iommu_iova_build_caps(iommu, &caps);
-> >
-> > +	ret = vfio_iommu_add_nesting_cap(iommu, &caps);
-> 
-> Why don't we follow either the naming scheme or the error handling scheme of the
-> previous caps?  Seems like this should be:
-> 
-> if (!ret)
-> 	ret = vfio_iommu_nesting_build_caps(...);
-
-got it. should follow the error handling scheme and also the naming. will
-do it.
-
-Regards,
-Yi Liu
-
-> Thanks,
-> 
-> Alex
-> 
-> 
-> > +
-> >  	mutex_unlock(&iommu->lock);
-> >
-> >  	if (ret)
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 9204705..ff40f9e 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -14,6 +14,7 @@
-> >
-> >  #include <linux/types.h>
-> >  #include <linux/ioctl.h>
-> > +#include <linux/iommu.h>
-> >
-> >  #define VFIO_API_VERSION	0
-> >
-> > @@ -1039,6 +1040,24 @@ struct vfio_iommu_type1_info_cap_migration {
-> >  	__u64	max_dirty_bitmap_size;		/* in bytes */
-> >  };
-> >
-> > +/*
-> > + * The nesting capability allows to report the related capability
-> > + * and info for nesting iommu type.
-> > + *
-> > + * The structures below define version 1 of this capability.
-> > + *
-> > + * Nested capabilities should be checked by the userspace after
-> > + * setting VFIO_TYPE1_NESTING_IOMMU.
-> > + *
-> > + * @info: the nesting info provided by IOMMU driver.
-> > + */
-> > +#define VFIO_IOMMU_TYPE1_INFO_CAP_NESTING  3
-> > +
-> > +struct vfio_iommu_type1_info_cap_nesting {
-> > +	struct	vfio_info_cap_header header;
-> > +	struct	iommu_nesting_info info;
-> > +};
-> > +
-> >  #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
-> >
-> >  /**
-
+> >   struct arm_smmu_master_cfg {
+> >   	struct arm_smmu_device		*smmu;
+> >   	s16				smendx[];
+> > @@ -442,6 +447,7 @@ struct arm_smmu_impl {
+> >   	int (*alloc_context_bank)(struct arm_smmu_domain *smmu_domain,
+> >   				  struct arm_smmu_device *smmu,
+> >   				  struct device *dev, int start);
+> > +	int (*inherit_mappings)(struct arm_smmu_device *smmu);
+> >   };
+> >   #define INVALID_SMENDX			-1
+> > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
