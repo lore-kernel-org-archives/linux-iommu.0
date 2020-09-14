@@ -2,126 +2,90 @@ Return-Path: <SRS0=C6HT=CX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BE7C2D0E1
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F962C43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:04:41 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0025A216C4
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:04:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3573520732
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:04:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="rcWIPxZG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0025A216C4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="s2+O7HbR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3573520732
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 926158722E;
-	Mon, 14 Sep 2020 15:04:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E0DA08722E;
+	Mon, 14 Sep 2020 15:04:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id leuH2r8ANNKm; Mon, 14 Sep 2020 15:04:01 +0000 (UTC)
+	with ESMTP id wCkSOBYA5dlY; Mon, 14 Sep 2020 15:04:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E1F6887223;
-	Mon, 14 Sep 2020 15:04:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2F24287223;
+	Mon, 14 Sep 2020 15:04:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3F41C088B;
-	Mon, 14 Sep 2020 15:04:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 14E5DC0859
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:04:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 27B96C088B;
+	Mon, 14 Sep 2020 15:04:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0202BC0859
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:04:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0CB6A86930
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:04:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DA5AE87225
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:04:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nuJSQdeWMV4w for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 15:03:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 45BC18696B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:03:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Io/U18kkPk1t4n8POIgcmQESxrpMEZyO/qwLZXCYWQB78TE8mFY8xRLdtsB0861QbBxDIjeK8yRxuu86z5VVCzQmNh11RIhsbhS8MBMV5EuaW1h6GZ2vGFQF9L6mZwf20POXZjmO+HngyGhIrVavuvf0dTDheJLwkhu8Ktg8Blb/omc+OvzBfXPQ30fLr0donpy8AFjFmEjO0CiP8DsD0CygxuEvaxEB5UCXcM4yVWtj1vsXLJGn2NvWX/Ek1IQ0vjHBkpHzUWvMWr53n79KaZEJPcgpoqUcPZbi4UQHM5M4kpa1mMmO3z2iXuNOIMFAAlJJkT8v1mRzRdqJ+ewjNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4mAgIvc/FRAq5a6T3X6+Jarex/MhTvjvJq3+6efIDqc=;
- b=SzSekG1RLOqExNvyVqpX/8rxpmjJ01wAJlLdx2gpnHHRSD50PxgBp5EQhNhC0u9n3OZxBrKWn4roclbybXHsoj6O/7q7YjtFyS2BFKHsZXg9mHG+9so7cTTPVeruCgxBqfZo19NUTNijpwSeR5qkWtwSRi+5Hk0aQykOqPC3WPUlFWn+4v3BXn43CMUXFR27LfnmhkwNfa4IjMeqoyRk3+Ti2ZCE/nbJttjrfWIqnE+Pg4ZIwidBRF31M1RLQzws/G73QfpJVW3h+nIXbEHtv7cP3iMdcNmYQQznk32nEFy1lJa3tUn/8HL7ur03kP9gkgLd/3CLoCYP1M+QtXQpdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4mAgIvc/FRAq5a6T3X6+Jarex/MhTvjvJq3+6efIDqc=;
- b=rcWIPxZGjrpu4KXkpyerjhrB30fYPCDqnOHm2MTKZ3OHl86cBDCixkI+2/asJr18DiEaMf1fU2roOHiRM+McArnkwjgwG+Veo1yw5c68r2zGFQK9T8AfjEj2jUyMXNR/8eSL6Zb2clfvAo+4fdaoWzO7GtX0FhHGRqcuYexqZRY=
-Authentication-Results: 8bytes.org; dkim=none (message not signed)
- header.d=none;8bytes.org; dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
- DM6PR12MB3273.namprd12.prod.outlook.com (2603:10b6:5:188::17) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3370.19; Mon, 14 Sep 2020 14:48:56 +0000
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e]) by DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e%5]) with mapi id 15.20.3370.019; Mon, 14 Sep 2020
- 14:48:56 +0000
-Subject: Re: [PATCH] iommu/amd: fix interrupt remapping for avic
-To: Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org
-References: <20200913124211.6419-1-mlevitsk@redhat.com>
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Message-ID: <60856c61-062b-8d92-e565-38bd00855228@amd.com>
-Date: Mon, 14 Sep 2020 21:48:46 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-In-Reply-To: <20200913124211.6419-1-mlevitsk@redhat.com>
-Content-Language: en-US
-X-ClientProxiedBy: KL1PR0601CA0021.apcprd06.prod.outlook.com
- (2603:1096:802:1::31) To DM5PR12MB1163.namprd12.prod.outlook.com
- (2603:10b6:3:7a::18)
+ with ESMTP id 0LqApKiGlujV for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 15:04:38 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id F12CB87223
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:04:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+ References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-Type:Content-ID:Content-Description;
+ bh=I03vZyMCQXixsKgB+vAi29QqwSDPgVkGV9+ViaS1CMg=; b=s2+O7HbRaaMGrNRetpOniwlx5p
+ 4zrt8B58bME1ofMoXH7Bu9HYSWDUmdmcRgtceEr3NgHfL3XugiyB2tqRvEfFRwg27Lt0NYX9qh7P/
+ 0FfTh+Xxrd4rzkb7xmi89hmk+KzUg4UvLAGmV2YAv6yTLygrJ/K8XL3YOzs+bEp3rmhADdd2weYNo
+ HHdR9RQfuZrvLOwnfbM7kdAvrnB+v5trSodoIhNTg6ZIEdjTqirpBGnMwcJur9gkuPCb0BBGS0TQP
+ WKw6O4lbPPpAxWpm0XDzc3CqrgG22CYBXJwRxiHYzL48GpVzTVwp/++JkQ2X5YyOCSA58sk9iA7eh
+ UEvO26Tg==;
+Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
+ helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kHq1i-0002aX-Sy; Mon, 14 Sep 2020 15:04:19 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Joonyoung Shim <jy0922.shim@samsung.com>,
+ Seung-Woo Kim <sw0312.kim@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Tomasz Figa <tfiga@chromium.org>,
+ Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
+Subject: [PATCH 08/17] dma-mapping: add a new dma_alloc_noncoherent API
+Date: Mon, 14 Sep 2020 16:44:24 +0200
+Message-Id: <20200914144433.1622958-9-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
+References: <20200914144433.1622958-1-hch@lst.de>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.252.73.101] (165.204.80.7) by
- KL1PR0601CA0021.apcprd06.prod.outlook.com (2603:1096:802:1::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend
- Transport; Mon, 14 Sep 2020 14:48:54 +0000
-X-Originating-IP: [165.204.80.7]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8d5fc6c0-5372-40a3-af67-08d858bd4e5e
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3273:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB32736CB48CFA4E166711B456F3230@DM6PR12MB3273.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eFnf8NMDGW3aXy2YrSqiybCjn74yyWtwFFPonT2f4d79+26tlMy09IgSUI5Rf/s7+e7qqSnRCCwgKYb7+BDttCYLEL+SZSjfGVCUNtWekrZ4zuKWLQeZ6vx7Q/horRCj7QBaXU2osta+IK7Lgcv/5qvtIlJdoGwbdCuprH9JJ7sWHHHCJPxAzARYwnlp4ON65CAsyljRornjM4tZZBjXBSV6utEDR9TVlkxAJfHDpCqpuc0W46IV5QlpT+RoKUkOmODm5LR4oJejnc8/ElbEyluT2OaNbd1a0MV21qTdZRrj7TFnHeQHHjNxV2cHXVL5UocfkASP0lSm66tvl/e3/pYN3DIIE34mrHZS9n4+G5WwNowZUj5GyRnERLnLFZx2
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39860400002)(366004)(376002)(396003)(346002)(136003)(31696002)(6486002)(16526019)(5660300002)(186003)(26005)(478600001)(956004)(16576012)(316002)(2616005)(52116002)(44832011)(53546011)(54906003)(83380400001)(2906002)(4326008)(8676002)(6666004)(31686004)(8936002)(36756003)(86362001)(66946007)(66556008)(66476007)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: wuEZ2RY/us6xRzOQGw53WsrykcfFV/bHugTc1XC0nygZXAM4P6VBVWb/mro8n7C3LdcVPVCj7sk9nQA/BS9YPHXrsHz+6gzZnDqFYmAaonz47g1r+hOZQ4uCtkhuAJ4KhO8AZatNbR740DKgBTyYkmvEkZQar9yGf5MY2aj94nwUR6sUJqmsPb7au4hnP2NC671JBAcKykBz3op3Bvxlnujp9ZAqTBJXsBBV1stnISqHfhLZIXlmSknv6au8UzwO8RR5tF688jxnoadxVIb2ripa8r8+bIba7TqfIQ8A00OIOt97cj/rKmEBeepKkweLkUmn0B4XJyKIIWuSvlDgyJgAjYw9fXFfTBEzAT6DdrrvbfrqBwuBdaPmOfIvUJvo77foJcSUji8KSZD6bFtQlacWgRl6Zy5KjXijX5y7zxqMt1ecTc5L03UuoIynqXatXHvqHrX+42NAeB8ePn+ewoJQnNvv4aaBdMb4MqlVZnfo+HszkYYgVr77XjzMOjwytjydwvHD5HUqvf0gK9dTCTor/NvehlivvJRxSZwbqanejAT0LvXYj5HOBMBaJAGR064Z3iPkwavpAWK6EnU/QaDsrCIRRiIIQe1RTXxq1y2VDagmrTtcu3AcJG1fZ+GEtQCo4BhuIYF6ruaYqfC2sg==
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d5fc6c0-5372-40a3-af67-08d858bd4e5e
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2020 14:48:56.1995 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZIZ8/LY531MW61ePPP0jEGpF9lKyqnIkItAeWomiq0WnZzrjSynfZRBUBj8Z2yB0/e6GpMc3ct1ZQfd/PIZJGA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3273
-Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Joao Martins <joao.m.martins@oracle.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ Stefan Richter <stefanr@s5r6.in-berlin.de>, netdev@vger.kernel.org,
+ linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org,
+ linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,85 +98,163 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Maxim,
+Add a new API to allocate and free memory that is guaranteed to be
+addressable by a device, but which potentially is not cache coherent
+for DMA.
 
-On 9/13/2020 7:42 PM, Maxim Levitsky wrote:
-> Commit e52d58d54a32 ("iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE")
-> accidentally removed an assumption that modify_irte_ga always set the valid bit
-> and amd_iommu_activate_guest_mode relied on that.
-> 
-> Side effect of this is that on my machine, VFIO based VMs with AVIC enabled
-> would eventually crash and show IOMMU errors like that:
-> 
-> AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0055 address=0xfffffffdf8000000 flags=0x0008]
-> 
-> Fixes: e52d58d54a321 ("iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE")
-> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> ---
->   drivers/iommu/amd/iommu.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 07ae8b93887e5..aff4cc1869356 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3853,6 +3853,7 @@ int amd_iommu_activate_guest_mode(void *data)
->   	entry->hi.fields.ga_root_ptr       = ir_data->ga_root_ptr;
->   	entry->hi.fields.vector            = ir_data->ga_vector;
->   	entry->lo.fields_vapic.ga_tag      = ir_data->ga_tag;
-> +	entry->lo.fields_remap.valid = 1;
->   
->   	return modify_irte_ga(ir_data->irq_2_irte.devid,
->   			      ir_data->irq_2_irte.index, entry, ir_data);
-> 
+To transfer ownership to and from the device, the existing streaming
+DMA API calls dma_sync_single_for_device and dma_sync_single_for_cpu
+must be used.
 
-Could you please try with the following patch instead?
+For now the new calls are implemented on top of dma_alloc_attrs just
+like the old-noncoherent API, but once all drivers are switched to
+the new API it will be replaced with a better working implementation
+that is available on all architectures.
 
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3840,14 +3840,18 @@ int amd_iommu_activate_guest_mode(void *data)
-  {
-         struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
-         struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
-+       u64 valid;
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ Documentation/core-api/dma-api.rst | 75 ++++++++++++++----------------
+ include/linux/dma-mapping.h        | 12 +++++
+ 2 files changed, 48 insertions(+), 39 deletions(-)
 
-         if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
-             !entry || entry->lo.fields_vapic.guest_mode)
-                 return 0;
-
-+       valid = entry->lo.fields_vapic.valid;
+diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+index 90239348b30f6f..ea0413276ddb70 100644
+--- a/Documentation/core-api/dma-api.rst
++++ b/Documentation/core-api/dma-api.rst
+@@ -516,48 +516,56 @@ routines, e.g.:::
+ 	}
+ 
+ 
+-Part II - Advanced dma usage
+-----------------------------
++Part II - Non-coherent DMA allocations
++--------------------------------------
+ 
+-Warning: These pieces of the DMA API should not be used in the
+-majority of cases, since they cater for unlikely corner cases that
+-don't belong in usual drivers.
++These APIs allow to allocate pages in the kernel direct mapping that are
++guaranteed to be DMA addressable.  This means that unlike dma_alloc_coherent,
++virt_to_page can be called on the resulting address, and the resulting
++struct page can be used for everything a struct page is suitable for.
+ 
+-If you don't understand how cache line coherency works between a
+-processor and an I/O device, you should not be using this part of the
+-API at all.
++If you don't understand how cache line coherency works between a processor and
++an I/O device, you should not be using this part of the API.
+ 
+ ::
+ 
+ 	void *
+-	dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+-			gfp_t flag, unsigned long attrs)
++	dma_alloc_noncoherent(struct device *dev, size_t size,
++			dma_addr_t *dma_handle, enum dma_data_direction dir,
++			gfp_t gfp)
+ 
+-Identical to dma_alloc_coherent() except that when the
+-DMA_ATTR_NON_CONSISTENT flags is passed in the attrs argument, the
+-platform will choose to return either consistent or non-consistent memory
+-as it sees fit.  By using this API, you are guaranteeing to the platform
+-that you have all the correct and necessary sync points for this memory
+-in the driver should it choose to return non-consistent memory.
++This routine allocates a region of <size> bytes of consistent memory.  It
++returns a pointer to the allocated region (in the processor's virtual address
++space) or NULL if the allocation failed.  The returned memory may or may not
++be in the kernels direct mapping.  Drivers must not call virt_to_page on
++the returned memory region.
+ 
+-Note: where the platform can return consistent memory, it will
+-guarantee that the sync points become nops.
++It also returns a <dma_handle> which may be cast to an unsigned integer the
++same width as the bus and given to the device as the DMA address base of
++the region.
+ 
+-Warning:  Handling non-consistent memory is a real pain.  You should
+-only use this API if you positively know your driver will be
+-required to work on one of the rare (usually non-PCI) architectures
+-that simply cannot make consistent memory.
++The dir parameter specified if data is read and/or written by the device,
++see dma_map_single() for details.
 +
-         entry->lo.val = 0;
-         entry->hi.val = 0;
-
-+       entry->lo.fields_vapic.valid       = valid;
-         entry->lo.fields_vapic.guest_mode  = 1;
-         entry->lo.fields_vapic.ga_log_intr = 1;
-         entry->hi.fields.ga_root_ptr       = ir_data->ga_root_ptr;
-@@ -3864,12 +3868,14 @@ int amd_iommu_deactivate_guest_mode(void *data)
-         struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
-         struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
-         struct irq_cfg *cfg = ir_data->cfg;
--       u64 valid = entry->lo.fields_remap.valid;
-+       u64 valid;
-
-         if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
-             !entry || !entry->lo.fields_vapic.guest_mode)
-                 return 0;
-
-+       valid = entry->lo.fields_remap.valid;
++The gfp parameter allows the caller to specify the ``GFP_`` flags (see
++kmalloc()) for the allocation, but rejects flags used to specify a memory
++zone such as GFP_DMA or GFP_HIGHMEM.
 +
-         entry->lo.val = 0;
-         entry->hi.val = 0;
---
++Before giving the memory to the device, dma_sync_single_for_device() needs
++to be called, and before reading memory written by the device,
++dma_sync_single_for_cpu(), just like for streaming DMA mappings that are
++reused.
+ 
+ ::
+ 
+ 	void
+-	dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+-		       dma_addr_t dma_handle, unsigned long attrs)
++	dma_free_noncoherent(struct device *dev, size_t size, void *cpu_addr,
++			dma_addr_t dma_handle, enum dma_data_direction dir)
+ 
+-Free memory allocated by the dma_alloc_attrs().  All common
+-parameters must be identical to those otherwise passed to dma_free_coherent,
+-and the attrs argument must be identical to the attrs passed to
+-dma_alloc_attrs().
++Free a region of memory previously allocated using dma_alloc_noncoherent().
++dev, size and dma_handle and dir must all be the same as those passed into
++dma_alloc_noncoherent().  cpu_addr must be the virtual address returned by
++the dma_alloc_noncoherent().
+ 
+ ::
+ 
+@@ -575,17 +583,6 @@ memory or doing partial flushes.
+ 	into the width returned by this call.  It will also always be a power
+ 	of two for easy alignment.
+ 
+-::
+-
+-	void
+-	dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+-		       enum dma_data_direction direction)
+-
+-Do a partial sync of memory that was allocated by dma_alloc_attrs() with
+-the DMA_ATTR_NON_CONSISTENT flag starting at virtual address vaddr and
+-continuing on for size.  Again, you *must* observe the cache line
+-boundaries when doing this.
+-
+ 
+ Part III - Debug drivers use of the DMA-API
+ -------------------------------------------
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index df0bff2ea750e0..4e1de194b45cbf 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -389,6 +389,18 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
+ }
+ #endif /* CONFIG_HAS_DMA */
+ 
++static inline void *dma_alloc_noncoherent(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
++{
++	return dma_alloc_attrs(dev, size, dma_handle, gfp,
++			DMA_ATTR_NON_CONSISTENT);
++}
++static inline void dma_free_noncoherent(struct device *dev, size_t size,
++		void *vaddr, dma_addr_t dma_handle, enum dma_data_direction dir)
++{
++	dma_free_attrs(dev, size, vaddr, dma_handle, DMA_ATTR_NON_CONSISTENT);
++}
++
+ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+-- 
+2.28.0
 
-Thanks,
-Suravee
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
