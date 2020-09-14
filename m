@@ -2,85 +2,79 @@ Return-Path: <SRS0=C6HT=CX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D746DC433E2
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 08:05:47 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB37C43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 08:46:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3766020665
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 08:05:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="l6FCLiA7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3766020665
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6956F206DC
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 08:46:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6956F206DC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 822B41FEAE;
-	Mon, 14 Sep 2020 08:05:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F0FCB86DDB;
+	Mon, 14 Sep 2020 08:46:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jjzucm+luZ6q; Mon, 14 Sep 2020 08:46:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 617E886DAD;
+	Mon, 14 Sep 2020 08:46:35 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5179FC0864;
+	Mon, 14 Sep 2020 08:46:35 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87BAFC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:46:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 6102320418
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:46:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LvZvOqT79lPB; Mon, 14 Sep 2020 08:05:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D7919203D8;
-	Mon, 14 Sep 2020 08:05:36 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3550C088B;
-	Mon, 14 Sep 2020 08:05:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55972C0859
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:05:35 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4030E8694B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:05:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HFnx9vNADXfS for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 08:05:32 +0000 (UTC)
+ with ESMTP id RxfQnSF2By3j for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 08:46:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 22C76868FE
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:05:31 +0000 (UTC)
-X-UUID: bebf9c19301442118425eecf8e76361d-20200914
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=o4+81MO/aJXsuzsrMQotH3ExSOvHSioLCD4f6dFJz2w=; 
- b=l6FCLiA7CJi3pAqSW4Cxm/8GBgjW4L6Ft2+GXzUAVTo5Y51qYZWyjZPjj+vUJqg7T/QEgu2STC017M8xWY2DUtZLSqt6psW2BkyPoq7AK/pReqqWCYd5BgAEl3EiVl7uzo/4tXOEiWnCvy13/3lk3DmBtYZU3midJqY7LytMqpc=;
-X-UUID: bebf9c19301442118425eecf8e76361d-20200914
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
- ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 49461636; Mon, 14 Sep 2020 16:05:26 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by mtkmbs08n2.mediatek.inc
- (172.21.101.56) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Mon, 14 Sep 2020 16:05:24 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Sep 2020 16:05:21 +0800
-Message-ID: <1600070601.27773.14.camel@mhfsdcap03>
-Subject: Re: [PATCH v4 3/3] iommu/mediatek: add support for MT8167
-From: Yong Wu <yong.wu@mediatek.com>
-To: Fabien Parent <fparent@baylibre.com>
-Date: Mon, 14 Sep 2020 16:03:21 +0800
-In-Reply-To: <20200907101649.1573134-3-fparent@baylibre.com>
-References: <20200907101649.1573134-1-fparent@baylibre.com>
- <20200907101649.1573134-3-fparent@baylibre.com>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9079E20023
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 08:46:31 +0000 (UTC)
+Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.106])
+ by Forcepoint Email with ESMTP id E1553BC8B82C58024CAD;
+ Mon, 14 Sep 2020 09:46:26 +0100 (IST)
+Received: from [127.0.0.1] (10.47.10.249) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 14 Sep
+ 2020 09:46:26 +0100
+Subject: Re: [PATCH 2/2] iommu/iova: Free global iova rcache on iova alloc
+ failure
+To: Vijayanand Jitta <vjitta@codeaurora.org>, Joerg Roedel <joro@8bytes.org>
+References: <1593785835-27250-1-git-send-email-vjitta@codeaurora.org>
+ <1593785835-27250-2-git-send-email-vjitta@codeaurora.org>
+ <29f44540-44f8-570d-886f-2090596a3b8e@codeaurora.org>
+ <20200812151608.GG3721@8bytes.org>
+ <b6c7eb2b-d1f5-058f-943c-1b7c14fe1f7c@codeaurora.org>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <8f3cbf23-eedc-d734-e4b3-41e8baabca15@huawei.com>
+Date: Mon, 14 Sep 2020 09:43:43 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 2B396821207B0DA67FA40430B531D336757789FCC3ACCCB9E04E67630009AD4F2000:8
-X-MTK: N
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org,
- linux-mediatek@lists.infradead.org, miles.chen@mediatek.com,
- matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <b6c7eb2b-d1f5-058f-943c-1b7c14fe1f7c@codeaurora.org>
+Content-Language: en-US
+X-Originating-IP: [10.47.10.249]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Robin Murphy <robin.murphy@arm.com>, vinmenon@codeaurora.org,
+ kernel-team@android.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,71 +87,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2020-09-07 at 12:16 +0200, Fabien Parent wrote:
-> Add support for the IOMMU on MT8167
+On 13/08/2020 06:36, Vijayanand Jitta wrote:
 > 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> 
+> On 8/12/2020 8:46 PM, Joerg Roedel wrote:
+>> On Mon, Aug 03, 2020 at 03:30:48PM +0530, Vijayanand Jitta wrote:
+>>> ping?
+>>
+>> Please repost when v5.9-rc1 is released and add
+>>
+>> 	Robin Murphy <robin.murphy@arm.com>
+>>
+>> on your Cc list.
+>>
+>> Thanks,
+>>
+>> 	Joerg
+>>
+> 
+> Sure, will do.
+> 
+> Thanks,
+> Vijay
+> 
 
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+And a cover letter would be useful also, to at least us know what 
+changes have been made per version.
 
-> ---
-> 
-> V4;
-> 	* Removed HAS_4GB_MODE flag since this SoC does not seem to support it
-> V3:
-> 	* use LEGACY_IVRP_PADDR flag instead of using a platform data member
-> V2:
-> 	* removed if based on m4u_plat, and using instead the new
-> 	  has_legacy_ivrp_paddr member that was introduced in patch 2.
-> 
-> ---
->  drivers/iommu/mtk_iommu.c | 8 ++++++++
->  drivers/iommu/mtk_iommu.h | 1 +
->  2 files changed, 9 insertions(+)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index b1f85a7e9346..4ff071eb5279 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -817,6 +817,13 @@ static const struct mtk_iommu_plat_data mt6779_data = {
->  	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
->  };
->  
-> +static const struct mtk_iommu_plat_data mt8167_data = {
-> +	.m4u_plat     = M4U_MT8167,
-> +	.flags        = RESET_AXI | HAS_LEGACY_IVRP_PADDR,
-> +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
-> +	.larbid_remap = {{0}, {1}, {2}}, /* Linear mapping. */
-> +};
-> +
->  static const struct mtk_iommu_plat_data mt8173_data = {
->  	.m4u_plat     = M4U_MT8173,
->  	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
-> @@ -835,6 +842,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
->  static const struct of_device_id mtk_iommu_of_ids[] = {
->  	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
->  	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-> +	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
->  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
->  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
->  	{}
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index 122925dbe547..df32b3e3408b 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -39,6 +39,7 @@ enum mtk_iommu_plat {
->  	M4U_MT2701,
->  	M4U_MT2712,
->  	M4U_MT6779,
-> +	M4U_MT8167,
->  	M4U_MT8173,
->  	M4U_MT8183,
->  };
+ >
+ > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+ > index 4e77116..5836c87 100644
+ > --- a/drivers/iommu/iova.c
+ > +++ b/drivers/iommu/iova.c
+ > @@ -442,6 +442,7 @@ struct iova *find_iova(struct iova_domain *iovad, 
+unsigned long pfn)
+ >   		flush_rcache = false;
+ >   		for_each_online_cpu(cpu)
+ >   			free_cpu_cached_iovas(cpu, iovad);
+ > +		free_global_cached_iovas(iovad);
+
+Have you seen an issue where this is needed?
+
+If we have filled the IOVA space, then as a measure we flush all the CPU 
+rcaches, and then there should be free IOVA space and we can make 
+progress. And it may be useful to still have the global depots to use 
+straightaway then to swap into empty CPU rcaches.
+
+ >   		goto retry;
+ >   	}
+ >
+ > @@ -1055,5 +1056,27 @@ void free_cpu_cached_iovas(unsigned int cpu, 
+struct iova_domain *iovad)
+ >   	}
+ >   }
+ >
+ > +/*
+ > + * free all the IOVA ranges of global cache
+ > + */
+ > +void free_global_cached_iovas(struct iova_domain *iovad)
+ > +{
+ > +	struct iova_rcache *rcache;
+ > +	unsigned long flags;
+ > +	int i, j;
+ > +
+ > +	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+ > +		rcache = &iovad->rcaches[i];
+ > +		spin_lock_irqsave(&rcache->lock, flags);
+ > +		for (j = 0; j < rcache->depot_size; ++j) {
+ > +			iova_magazine_free_pfns(rcache->depot[j], iovad);
+ > +			iova_magazine_free(rcache->depot[j]);
+ > +			rcache->depot[j] = NULL;
+ > +		}
+ > +		rcache->depot_size = 0;
+ > +		spin_unlock_irqrestore(&rcache->lock, flags);
+ > +	}
+ > +}
+ > +
+ >   MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
+ >   MODULE_LICENSE("GPL");
+ > diff --git a/include/linux/iova.h b/include/linux/iova.h
+ > index a0637ab..a905726 100644
+ > --- a/include/linux/iova.h
+ > +++ b/include/linux/iova.h
+
+why is this in the iova.h, when it is only used internally in iova.c?
+
+ > @@ -163,6 +163,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ >   struct iova *split_and_remove_iova(struct iova_domain *iovad,
+ >   	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
+ >   void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain 
+*iovad);
+ > +void free_global_cached_iovas(struct iova_domain *iovad);
+ >   #else
+ >   static inline int iova_cache_get(void)
+ >   {
+ > @@ -270,6 +271,11 @@ static inline void 
+free_cpu_cached_iovas(unsigned int cpu,
+ >   					 struct iova_domain *iovad)
+ >   {
+ >   }
+ > +
+ > +static inline void free_global_cached_iovas(struct iova_domain *iovad)
+ > +{
+ > +}
+ > +
+ >   #endif
+ >
+ >   #endif
+
 
 _______________________________________________
 iommu mailing list
