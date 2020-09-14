@@ -2,102 +2,87 @@ Return-Path: <SRS0=C6HT=CX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960D0C2BBD1
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 21:04:39 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 324DAC2BBD1
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 22:08:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2836C215A4
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 21:04:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QIZLLxWu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2836C215A4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id A06B32193E
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 22:08:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A06B32193E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A6967864B2;
-	Mon, 14 Sep 2020 21:04:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3C212203F0;
+	Mon, 14 Sep 2020 22:08:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w-sO-LGp4+zx; Mon, 14 Sep 2020 21:04:37 +0000 (UTC)
+	with ESMTP id 5yJL6P2w65U9; Mon, 14 Sep 2020 22:08:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D227786489;
-	Mon, 14 Sep 2020 21:04:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5AF7A2001E;
+	Mon, 14 Sep 2020 22:08:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99833C0864;
-	Mon, 14 Sep 2020 21:04:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3467BC0864;
+	Mon, 14 Sep 2020 22:08:34 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9FD94C0051
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 21:04:36 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7DCD2C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 22:08:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8D12A864A0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 21:04:36 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7A0F58628A
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 22:08:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c6ozTIwUfrra for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 21:04:35 +0000 (UTC)
+ with ESMTP id 9-t2ReAFYy+7 for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 22:08:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
- [209.85.214.196])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BD66786489
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 21:04:35 +0000 (UTC)
-Received: by mail-pl1-f196.google.com with SMTP id j7so122844plk.11
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 14:04:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=B+yZcshbsoNrjw9/GyoZ6sfB8u3DeY+uiG54+fPG2CA=;
- b=QIZLLxWuhPfcEVva2nJ767qbObasCjM9V8Jb31/dgJYJjdusHNi8YJsv5gLnNFQ7Yc
- rLHu37Wddk1sIpLHa0uP3I2h9zA71vHPOqj0TBgvBDuJtNcIpUFN3mpmixq4QM8rTCJd
- 5RQ6lPaeIlVGNC4K+e1WheYhHnFTvAshW+15lTv/zvbez9g3zYXzhh8MmXmOP/82L8EE
- Kf9PqYHd0cb8gb3Y/GDOZ4tGCV6XOqLSlkPmMblYk+Rl4KQkPGqxbCFqXTzaLci5PVLj
- WJx4XXmmmHz8fepTSyu12BiVF7duEd/kPijfysMl56mAUi9m8XaYBKLjFDMSCx0duFR3
- 9e9A==
+Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
+ [209.85.166.66])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D9DD186225
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 22:08:32 +0000 (UTC)
+Received: by mail-io1-f66.google.com with SMTP id y13so1874778iow.4
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:08:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=B+yZcshbsoNrjw9/GyoZ6sfB8u3DeY+uiG54+fPG2CA=;
- b=P+9/NjOAyrAU2cM/Ha4zRNqdFmd2rGck6EVpe//tFJskjmrYQWZlQ521wY+FXKtn0/
- ghTOy1iq1WfpuBVmaCAZBj6YhE0dIqMl47oJ9vTgS/YNns0Zf+iwHmbQ0/eOHzO0Ijg4
- aA24SgFqrAhRze0Nh2LC97DapyNoX78Y5I9EzzwPamfPlMW8SujvCaigDW7RKoiOIii2
- pyJkN8SA7bkmQDSOlvDKS6Tu/h628xBrL9SNxfIdPiURxY3f5yPkogmXm7wPW6DvZhnp
- 8rvPoSdDxzLPt4Ylpoq1xsmIh84ALSFRbboh+DxZgLPW9Gs6Ed2QHio7qvbev2YQMn2G
- CGdQ==
-X-Gm-Message-State: AOAM5303dTWjnXOZi461iGkFTrZU9RVHUybJKj92JzkX7S2TRX+zIdKC
- yMHsqWlVLDD90BA5IBH9lLfnnw==
-X-Google-Smtp-Source: ABdhPJw4meDLhT1GWDTqYGlWuh5s5sZygb+syXL21fk3JYEchsaLbg8+bnuLLk7x6vlu2XvHtk24cQ==
-X-Received: by 2002:a17:90a:e513:: with SMTP id
- t19mr1080297pjy.137.1600117475340; 
- Mon, 14 Sep 2020 14:04:35 -0700 (PDT)
-Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
- by smtp.gmail.com with ESMTPSA id
- n9sm11222480pfu.163.2020.09.14.14.04.33
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=HfVeQ81fFlvBzyeQzVxZZpi/9tbQOUKFJsP3PWI05Uc=;
+ b=Wa1MAMbBvjgkeJJJ2hjee2PVxQLUNpS++zz2EKBspNSbJuIBcy5d0JmLSSknZ++a8v
+ NsiAX+pOvkQHWEEl+WF9JtrtggWdk9QnKRTinl67ySF9nXBNBIPnBxXZm/04uEafUhcm
+ sRpuVi9aEBr68QzmNugsj5PKsGwtBpoZKJBxt0GZavCNBv1IVv9l8DYQlUww7sXu8wVR
+ MJ3JIA6iINr0Xl9vCO5KuVGYYy0AuP/KtucgryRiPUpa/IqUOVuHSz0Qf2YhN2pbXWIF
+ NrBn6W1N9PZtOVutqBkKGvYYbkoc8xnNTUlg60OX0lkEzJytIYDBr3xhDcI6lvzj9uYR
+ vK6g==
+X-Gm-Message-State: AOAM531XsMGQ3oF8ZHPKww0QsNAE/F7fM1AAtRIX2P2I60LWVyiegM+D
+ x6Nj9oeAql19TwCZovMoIQ==
+X-Google-Smtp-Source: ABdhPJzOEWAxnZG+kDpP3Y4L1MtUa0ni/O8Jr2Ub5j+QdhNiZ4nS4jkbiRz6otnEmg9u4/zC1QacmQ==
+X-Received: by 2002:a05:6602:15c5:: with SMTP id
+ f5mr11938387iow.42.1600121312167; 
+ Mon, 14 Sep 2020 15:08:32 -0700 (PDT)
+Received: from xps15 ([64.188.179.253])
+ by smtp.gmail.com with ESMTPSA id m15sm7558130ild.8.2020.09.14.15.08.30
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 14 Sep 2020 14:04:34 -0700 (PDT)
-From: John Stultz <john.stultz@linaro.org>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH] irqchip/qcom-pdc: Allow QCOM_PDC to be loadable as a
- permanent module
-Date: Mon, 14 Sep 2020 21:04:23 +0000
-Message-Id: <20200914210423.67579-1-john.stultz@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200912125148.1271481-7-maz@kernel.org>
-References: <20200912125148.1271481-7-maz@kernel.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
- linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
+ Mon, 14 Sep 2020 15:08:31 -0700 (PDT)
+Received: (nullmailer pid 346892 invoked by uid 1000);
+ Mon, 14 Sep 2020 22:08:29 -0000
+Date: Mon, 14 Sep 2020 16:08:29 -0600
+From: Rob Herring <robh@kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: reserved-memory: Document "active"
+ property
+Message-ID: <20200914220829.GA330122@bogus>
+References: <20200904130000.691933-1-thierry.reding@gmail.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20200904130000.691933-1-thierry.reding@gmail.com>
+Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,66 +95,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allows qcom-pdc driver to be loaded as a permanent module.
+On Fri, Sep 04, 2020 at 02:59:57PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+> 
+> Reserved memory regions can be marked as "active" if hardware is
+> expected to access the regions during boot and before the operating
+> system can take control. One example where this is useful is for the
+> operating system to infer whether the region needs to be identity-
+> mapped through an IOMMU.
 
-An earlier version of this patch was merged in a larger patchset
-but was reverted entirely when issues were found with other
-drivers, so now that Marc has provided a better solution in his
-Hybrid probing patch set, I wanted to re-submit this change.
+I like simple solutions, but this hardly seems adequate to solve the 
+problem of passing IOMMU setup from bootloader/firmware to the OS. Like 
+what is the IOVA that's supposed to be used if identity mapping is not 
+used?
 
-Cc: Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
-Cc: Lina Iyer <ilina@codeaurora.org>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-msm@vger.kernel.org
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-gpio@vger.kernel.org
-Signed-off-by: John Stultz <john.stultz@linaro.org>
----
- drivers/irqchip/Kconfig    | 2 +-
- drivers/irqchip/qcom-pdc.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+If you know enough about the regions to assume identity mapping, then 
+can't you know if active or not?
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index bfc9719dbcdc..bb70b7177f94 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -425,7 +425,7 @@ config GOLDFISH_PIC
-          for Goldfish based virtual platforms.
- 
- config QCOM_PDC
--	bool "QCOM PDC"
-+	tristate "QCOM PDC"
- 	depends on ARCH_QCOM
- 	select IRQ_DOMAIN_HIERARCHY
- 	help
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 8543fa23da10..59eb3c8473b0 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -433,3 +433,5 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
- IRQCHIP_HYBRID_DRIVER_BEGIN(qcom_pdc)
- IRQCHIP_MATCH("qcom,pdc", qcom_pdc_init)
- IRQCHIP_HYBRID_DRIVER_END(qcom_pdc)
-+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
-+MODULE_LICENSE("GPL v2");
--- 
-2.17.1
-
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> ---
+>  .../bindings/reserved-memory/reserved-memory.txt           | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> index 4dd20de6977f..163d2927e4fc 100644
+> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> @@ -63,6 +63,13 @@ reusable (optional) - empty property
+>        able to reclaim it back. Typically that means that the operating
+>        system can use that region to store volatile or cached data that
+>        can be otherwise regenerated or migrated elsewhere.
+> +active (optional) - empty property
+> +    - If this property is set for a reserved memory region, it indicates
+> +      that some piece of hardware may be actively accessing this region.
+> +      Should the operating system want to enable IOMMU protection for a
+> +      device, all active memory regions must have been identity-mapped
+> +      in order to ensure that non-quiescent hardware during boot can
+> +      continue to access the memory.
+>  
+>  Linux implementation note:
+>  - If a "linux,cma-default" property is present, then Linux will use the
+> -- 
+> 2.28.0
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
