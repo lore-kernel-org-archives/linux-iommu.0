@@ -2,84 +2,95 @@ Return-Path: <SRS0=C6HT=CX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF2EC2BC11
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:19:56 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A3DC433E2
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:20:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70FE320639
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:19:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1582E2193E
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:20:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JY/8kYp/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70FE320639
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="MwCEKT1C";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="MwCEKT1C"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1582E2193E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=HansenPartnership.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2DCA885932;
-	Mon, 14 Sep 2020 15:19:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C40278722B;
+	Mon, 14 Sep 2020 15:20:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id v7u53aZ1yuy3; Mon, 14 Sep 2020 15:20:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id ACA2C87226;
+	Mon, 14 Sep 2020 15:20:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99C57C088B;
+	Mon, 14 Sep 2020 15:20:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A2A4EC0859
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:20:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8BE3F85A82
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:20:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N985ZlIfNEtq; Mon, 14 Sep 2020 15:19:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7C6B585A82;
-	Mon, 14 Sep 2020 15:19:55 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 66197C088B;
-	Mon, 14 Sep 2020 15:19:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6480AC0859
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:19:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 513BF85CE2
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:19:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SnOiTDcQNm40 for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 15:19:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8126E85C88
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:19:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=1/bEcy21h9dr4Lop81Jp+A+3tsDr/+YN8bI8sHR6ers=; b=JY/8kYp/POQkPS9/pbiO0kzzh+
- mOyOphuwGiSxozJvdBmQbVXdpG38y4zvNPvDTEyqS70PZWHyQ+nUIMv9lzq4a5ypYPc9tvDK+CIM0
- 7lPCr4+YDj0yPFSArV9+fF62o2ujujYy0fqhRY7vll4u9LQmtZw2tTKPsUgNC0K4460oEdMJDxZH8
- sQX9U2nH0JZQmQSYjbvSg5j0AR5nK0avIw2Pm4jETjZ3wR7Ck3smxO0QE/zAC0srKZ0vyTkUngfv0
- wWOHZXVky9pTxXktOYz6Qkry3FEB9cbV2JlxroMdit4cUgD9HF00poCUnC+JhWxxk6qSXNvtOcUpC
- Re7j27kQ==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
- helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kHqGY-0003zk-8d; Mon, 14 Sep 2020 15:19:38 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Mauro Carvalho Chehab <mchehab@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Joonyoung Shim <jy0922.shim@samsung.com>,
- Seung-Woo Kim <sw0312.kim@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Tomasz Figa <tfiga@chromium.org>,
- Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 15/17] dma-mapping: add new {alloc,
- free}_noncoherent dma_map_ops methods
-Date: Mon, 14 Sep 2020 16:44:31 +0200
-Message-Id: <20200914144433.1622958-16-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
+ with ESMTP id 6xbMsPqWL6pq for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 15:20:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com
+ [66.63.167.143])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 67F7885932
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:20:22 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by bedivere.hansenpartnership.com (Postfix) with ESMTP id D94B18EE188;
+ Mon, 14 Sep 2020 08:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+ s=20151216; t=1600096820;
+ bh=GKXYjllCOYoz9s1DCxjF5LhZlRPIv8wDG6prJomb0DU=;
+ h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+ b=MwCEKT1C51gNQI4k2c/TW5TFLSyvCL+DaM8jG72BtMupIn9VJeN1dkJcyAJV4JkG0
+ n6sSw+D1WaOUFen3nc5d+f9REcdFZ8Klept06jhzp/Us0zXjri6r0Pype5gmTqA+88
+ YuaiMKfDE+athYdKXtMltIVOrUi9whs+u8kR+5FU=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+ by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new,
+ port 10024)
+ with ESMTP id d819rpRvd1Od; Mon, 14 Sep 2020 08:20:20 -0700 (PDT)
+Received: from [153.66.254.174] (c-73-35-198-56.hsd1.wa.comcast.net
+ [73.35.198.56])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 4E7098EE111;
+ Mon, 14 Sep 2020 08:20:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+ s=20151216; t=1600096820;
+ bh=GKXYjllCOYoz9s1DCxjF5LhZlRPIv8wDG6prJomb0DU=;
+ h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+ b=MwCEKT1C51gNQI4k2c/TW5TFLSyvCL+DaM8jG72BtMupIn9VJeN1dkJcyAJV4JkG0
+ n6sSw+D1WaOUFen3nc5d+f9REcdFZ8Klept06jhzp/Us0zXjri6r0Pype5gmTqA+88
+ YuaiMKfDE+athYdKXtMltIVOrUi9whs+u8kR+5FU=
+Message-ID: <1600096818.4061.7.camel@HansenPartnership.com>
+Subject: Re: [PATCH 07/17] 53c700: improve non-coherent DMA handling
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>,  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Joonyoung Shim <jy0922.shim@samsung.com>, Seung-Woo Kim
+ <sw0312.kim@samsung.com>, Ben Skeggs <bskeggs@redhat.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Tomasz Figa <tfiga@chromium.org>, Matt Porter
+ <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
+Date: Mon, 14 Sep 2020 08:20:18 -0700
+In-Reply-To: <20200914144433.1622958-8-hch@lst.de>
 References: <20200914144433.1622958-1-hch@lst.de>
-MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
+ <20200914144433.1622958-8-hch@lst.de>
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
 Cc: alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
  linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
  linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
@@ -104,84 +115,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This will allow IOMMU drivers to allocate non-contigous memory and
-return a vmapped virtual address.
+On Mon, 2020-09-14 at 16:44 +0200, Christoph Hellwig wrote:
+> @@ -429,7 +430,7 @@ struct NCR_700_Host_Parameters {
+>  	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32));
+> i++) { \
+>  		__u32 val =
+> bS_to_cpu((script)[A_##symbol##_used[i]]) + da; \
+>  		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+> -		dma_cache_sync((dev),
+> &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
+> +		dma_sync_to_dev((dev),
+> &(script)[A_##symbol##_used[i]], 4); \
+>  		DEBUG((" script, patching %s at %d to %pad\n", \
+>  		       #symbol, A_##symbol##_used[i], &da)); \
+>  	} \
+> @@ -441,7 +442,7 @@ struct NCR_700_Host_Parameters {
+>  	dma_addr_t da = value; \
+>  	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32));
+> i++) { \
+>  		(script)[A_##symbol##_used[i]] = bS_to_host(da); \
+> -		dma_cache_sync((dev),
+> &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
+> +		dma_sync_to_dev((dev),
+> &(script)[A_##symbol##_used[i]], 4); \
+>  		DEBUG((" script, patching %s at %d to %pad\n", \
+>  		       #symbol, A_##symbol##_used[i], &da)); \
+>  	} \
+> @@ -456,7 +457,7 @@ struct NCR_700_Host_Parameters {
+>  		val &= 0xff00ffff; \
+>  		val |= ((value) & 0xff) << 16; \
+>  		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+> -		dma_cache_sync((dev),
+> &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
+> +		dma_sync_to_dev((dev),
+> &(script)[A_##symbol##_used[i]], 4); \
+>  		DEBUG((" script, patching ID field %s at %d to
+> 0x%x\n", \
+>  		       #symbol, A_##symbol##_used[i], val)); \
+>  	} \
+> @@ -470,7 +471,7 @@ struct NCR_700_Host_Parameters {
+>  		val &= 0xffff0000; \
+>  		val |= ((value) & 0xffff); \
+>  		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+> -		dma_cache_sync((dev),
+> &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
+> +		dma_sync_to_dev((dev),
+> &(script)[A_##symbol##_used[i]], 4); \
+>  		DEBUG((" script, patching short field %s at %d to
+> 0x%x\n", \
+>  		       #symbol, A_##symbol##_used[i], val)); \
+>  	} \
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/dma-mapping.h |  5 +++++
- kernel/dma/mapping.c        | 33 +++++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+If you're going to change the macros from taking a device to taking a
+hostdata structure then the descriptive argument name needs to change
+... it can't be dev anymore.  I'm happy with it simply becoming 'h' if
+hostdata is too long.
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index bf592cf0db4acb..b4b5d75260d6dc 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -80,6 +80,11 @@ struct dma_map_ops {
- 			gfp_t gfp);
- 	void (*free_pages)(struct device *dev, size_t size, struct page *vaddr,
- 			dma_addr_t dma_handle, enum dma_data_direction dir);
-+	void* (*alloc_noncoherent)(struct device *dev, size_t size,
-+			dma_addr_t *dma_handle, enum dma_data_direction dir,
-+			gfp_t gfp);
-+	void (*free_noncoherent)(struct device *dev, size_t size, void *vaddr,
-+			dma_addr_t dma_handle, enum dma_data_direction dir);
- 	int (*mmap)(struct device *, struct vm_area_struct *,
- 			  void *, dma_addr_t, size_t,
- 			  unsigned long attrs);
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 6f86c925b8251d..8614d7d2ee59a9 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -502,19 +502,40 @@ EXPORT_SYMBOL_GPL(dma_free_pages);
- void *dma_alloc_noncoherent(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
- {
--	struct page *page;
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	void *vaddr;
- 
--	page = dma_alloc_pages(dev, size, dma_handle, dir, gfp);
--	if (!page)
--		return NULL;
--	return page_address(page);
-+	if (!ops || !ops->alloc_noncoherent) {
-+		struct page *page;
-+
-+		page = dma_alloc_pages(dev, size, dma_handle, dir, gfp);
-+		if (!page)
-+			return NULL;
-+		return page_address(page);
-+	}
-+
-+	size = PAGE_ALIGN(size);
-+	vaddr = ops->alloc_noncoherent(dev, size, dma_handle, dir, gfp);
-+	if (vaddr)
-+		debug_dma_map_page(dev, virt_to_page(vaddr), 0, size, dir,
-+				   *dma_handle);
-+	return vaddr;
- }
- EXPORT_SYMBOL_GPL(dma_alloc_noncoherent);
- 
- void dma_free_noncoherent(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_handle, enum dma_data_direction dir)
- {
--	dma_free_pages(dev, size, virt_to_page(vaddr), dma_handle, dir);
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	if (!ops || !ops->free_noncoherent) {
-+		dma_free_pages(dev, size, virt_to_page(vaddr), dma_handle, dir);
-+		return;
-+	}
-+
-+	size = PAGE_ALIGN(size);
-+	debug_dma_unmap_page(dev, dma_handle, size, dir);
-+	ops->free_noncoherent(dev, size, vaddr, dma_handle, dir);
- }
- EXPORT_SYMBOL_GPL(dma_free_noncoherent);
- 
--- 
-2.28.0
+I already asked for this on the first go around:
+
+https://lore.kernel.org/alsa-devel/1598971960.4238.5.camel@HansenPartnership.com/
+
+James
 
 _______________________________________________
 iommu mailing list
