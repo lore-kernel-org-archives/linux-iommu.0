@@ -7,72 +7,72 @@ X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB99DC43461
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 02:54:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56657C43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 03:08:26 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 35F3A2168B
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 02:54:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35F3A2168B
+	by mail.kernel.org (Postfix) with ESMTPS id E5876208FE
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 03:08:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5876208FE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DC12885EC4;
-	Mon, 14 Sep 2020 02:54:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6CFD7204FD;
+	Mon, 14 Sep 2020 03:08:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iKkNag-fXyBH; Mon, 14 Sep 2020 02:54:20 +0000 (UTC)
+	with ESMTP id 9tU2t1+H8yOi; Mon, 14 Sep 2020 03:08:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A7D9A85EC6;
-	Mon, 14 Sep 2020 02:54:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0B87C20426;
+	Mon, 14 Sep 2020 03:08:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 910F0C0864;
-	Mon, 14 Sep 2020 02:54:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D36B1C0051
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 02:54:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D07CBC088B;
+	Mon, 14 Sep 2020 03:08:22 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C1669C0859
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 03:08:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C2868868B8
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 02:54:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BC27987119
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 03:08:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v4DOdqHi9LH2 for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 02:54:19 +0000 (UTC)
+ with ESMTP id Nhp81knGpSuD for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 03:08:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DAF02868B5
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 02:54:18 +0000 (UTC)
-IronPort-SDR: HGBs8vL0D0Eo85s6L1EL/8QTLY3rIXb239R7W+QjJY4RIwhL5xS/pVRAZM5gc55rtKEF/o8IUK
- PL6UT9mpETgg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9743"; a="220570990"
-X-IronPort-AV: E=Sophos;i="5.76,424,1592895600"; d="scan'208";a="220570990"
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D885F87093
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 03:08:20 +0000 (UTC)
+IronPort-SDR: gDqZCaI/+ITeExxspeQ9eArLeVv0b3VR6h/HdvSHLbaFVmc9jYqfjfa1wBmfBHBNT+KaLNmr1E
+ qfkeFo03GPGA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9743"; a="146711886"
+X-IronPort-AV: E=Sophos;i="5.76,424,1592895600"; d="scan'208";a="146711886"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Sep 2020 19:54:18 -0700
-IronPort-SDR: EUrWQSqR6DHIOtg57kl2UCCXbO8hD9KwPWBYBWU5YxQ96nHRSGCzaV976NQWsaCex9uFh+hCYc
- +65O6cEVTxoQ==
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Sep 2020 20:08:20 -0700
+IronPort-SDR: MM5/sFSifKGqGPPL5Uqo4zu6Mz4fdHmevk1+AaGj0Csw64JOdeOSEMSWn24AFq1rwcg9CWswTx
+ e8b1YEkqRZ8w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,424,1592895600"; d="scan'208";a="408728300"
+X-IronPort-AV: E=Sophos;i="5.76,424,1592895600"; d="scan'208";a="408731471"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
  ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 13 Sep 2020 19:54:14 -0700
-Subject: Re: [PATCH v4 1/5] iommu: Add optional subdev in aux_at(de)tach ops
+ by fmsmga001.fm.intel.com with ESMTP; 13 Sep 2020 20:08:16 -0700
+Subject: Re: [PATCH v4 2/5] iommu: Add iommu_at(de)tach_subdev_group()
 To: Alex Williamson <alex.williamson@redhat.com>
 References: <20200901033422.22249-1-baolu.lu@linux.intel.com>
- <20200901033422.22249-2-baolu.lu@linux.intel.com>
- <20200910160549.2b176ac5@w520.home>
+ <20200901033422.22249-3-baolu.lu@linux.intel.com>
+ <20200910160547.0a8b9891@w520.home>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <2ed8c946-328a-e2aa-5747-8164b53af40c@linux.intel.com>
-Date: Mon, 14 Sep 2020 10:48:22 +0800
+Message-ID: <01d80e65-c372-4944-753f-454a190a8cd0@linux.intel.com>
+Date: Mon, 14 Sep 2020 11:02:24 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200910160549.2b176ac5@w520.home>
+In-Reply-To: <20200910160547.0a8b9891@w520.home>
 Content-Language: en-US
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
@@ -99,137 +99,242 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 Hi Alex,
 
 On 9/11/20 6:05 AM, Alex Williamson wrote:
-> On Tue,  1 Sep 2020 11:34:18 +0800
+> On Tue,  1 Sep 2020 11:34:19 +0800
 > Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > 
->> In the vfio/mdev use case of aux-domain, the subdevices are created from
->> the physical devices with IOMMU_DEV_FEAT_AUX enabled and the aux-domains
->> are attached to the subdevices through the iommu_ops.aux_attach_dev()
->> interface.
+>> This adds two new APIs for the use cases like vfio/mdev where subdevices
+>> derived from physical devices are created and put in an iommu_group. The
+>> new IOMMU API interfaces mimic the vfio_mdev_at(de)tach_domain() directly,
+>> testing whether the resulting device supports IOMMU_DEV_FEAT_AUX and using
+>> an aux vs non-aux at(de)tach.
 >>
->> Current iommu_ops.aux_at(de)tach_dev() design only takes the aux-domain
->> and the physical device as the parameters, this is insufficient if we
->> want the vendor iommu drivers to learn the knowledge about relationships
->> between the aux-domains and the subdevices. Add a @subdev parameter to
->> iommu_ops.aux_at(de)tach_dev() interfaces so that a subdevice could be
->> opt-in.
+>> By doing this we could
 >>
+>> - Set the iommu_group.domain. The iommu_group.domain is private to iommu
+>>    core (therefore vfio code cannot set it), but we need it set in order
+>>    for iommu_get_domain_for_dev() to work with a group attached to an aux
+>>    domain.
+>>
+>> - Prefer to use the _attach_group() interfaces while the _attach_device()
+>>    interfaces are relegated to special cases.
+>>
+>> Link: https://lore.kernel.org/linux-iommu/20200730134658.44c57a67@x1.home/
+>> Link: https://lore.kernel.org/linux-iommu/20200730151703.5daf8ad4@x1.home/
 >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 >> ---
->>   drivers/iommu/intel/iommu.c | 10 ++++++----
->>   drivers/iommu/iommu.c       |  4 ++--
->>   include/linux/iommu.h       |  6 ++++--
->>   3 files changed, 12 insertions(+), 8 deletions(-)
+>>   drivers/iommu/iommu.c | 136 ++++++++++++++++++++++++++++++++++++++++++
+>>   include/linux/iommu.h |  20 +++++++
+>>   2 files changed, 156 insertions(+)
 >>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index bce158468abf..3c12fd06856c 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -5338,8 +5338,9 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->>   	return domain_add_dev_info(to_dmar_domain(domain), dev);
->>   }
->>   
->> -static int intel_iommu_aux_attach_device(struct iommu_domain *domain,
->> -					 struct device *dev)
->> +static int
->> +intel_iommu_aux_attach_device(struct iommu_domain *domain,
->> +			      struct device *dev, struct device *subdev)
->>   {
->>   	int ret;
->>   
->> @@ -5359,8 +5360,9 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
->>   	dmar_remove_one_dev_info(dev);
->>   }
->>   
->> -static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
->> -					  struct device *dev)
->> +static void
->> +intel_iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev,
->> +			      struct device *subdev)
->>   {
->>   	aux_domain_remove_dev(to_dmar_domain(domain), dev);
->>   }
 >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 609bd25bf154..38cdfeb887e1 100644
+>> index 38cdfeb887e1..fb21c2ff4861 100644
 >> --- a/drivers/iommu/iommu.c
 >> +++ b/drivers/iommu/iommu.c
->> @@ -2728,7 +2728,7 @@ int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
->>   	int ret = -ENODEV;
->>   
->>   	if (domain->ops->aux_attach_dev)
->> -		ret = domain->ops->aux_attach_dev(domain, dev);
->> +		ret = domain->ops->aux_attach_dev(domain, dev, NULL);
->>   
->>   	if (!ret)
->>   		trace_attach_device_to_domain(dev);
->> @@ -2740,7 +2740,7 @@ EXPORT_SYMBOL_GPL(iommu_aux_attach_device);
->>   void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
->>   {
->>   	if (domain->ops->aux_detach_dev) {
->> -		domain->ops->aux_detach_dev(domain, dev);
->> +		domain->ops->aux_detach_dev(domain, dev, NULL);
->>   		trace_detach_device_from_domain(dev);
->>   	}
+>> @@ -2757,6 +2757,142 @@ int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
 >>   }
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index fee209efb756..871267104915 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -279,8 +279,10 @@ struct iommu_ops {
->>   	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
+>>   EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
 >>   
->>   	/* Aux-domain specific attach/detach entries */
->> -	int (*aux_attach_dev)(struct iommu_domain *domain, struct device *dev);
->> -	void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev);
->> +	int (*aux_attach_dev)(struct iommu_domain *domain, struct device *dev,
->> +			      struct device *subdev);
->> +	void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev,
->> +			       struct device *subdev);
->>   	int (*aux_get_pasid)(struct iommu_domain *domain, struct device *dev);
->>   
->>   	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
+>> +static int __iommu_aux_attach_device(struct iommu_domain *domain,
+>> +				     struct device *phys_dev,
+>> +				     struct device *sub_dev)
+>> +{
+>> +	int ret;
+>> +
+>> +	if (unlikely(!domain->ops->aux_attach_dev))
+>> +		return -ENODEV;
+>> +
+>> +	ret = domain->ops->aux_attach_dev(domain, phys_dev, sub_dev);
+>> +	if (!ret)
+>> +		trace_attach_device_to_domain(sub_dev);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void __iommu_aux_detach_device(struct iommu_domain *domain,
+>> +				      struct device *phys_dev,
+>> +				      struct device *sub_dev)
+>> +{
+>> +	if (unlikely(!domain->ops->aux_detach_dev))
+>> +		return;
+>> +
+>> +	domain->ops->aux_detach_dev(domain, phys_dev, sub_dev);
+>> +	trace_detach_device_from_domain(sub_dev);
+>> +}
+>> +
+>> +static int __iommu_attach_subdev_group(struct iommu_domain *domain,
+>> +				       struct iommu_group *group,
+>> +				       iommu_device_lookup_t fn)
+>> +{
+>> +	struct group_device *device;
+>> +	struct device *phys_dev;
+>> +	int ret = -ENODEV;
+>> +
+>> +	list_for_each_entry(device, &group->devices, list) {
+>> +		phys_dev = fn(device->dev);
+>> +		if (!phys_dev) {
+>> +			ret = -ENODEV;
+>> +			break;
+>> +		}
+>> +
+>> +		if (iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
+>> +			ret = __iommu_aux_attach_device(domain, phys_dev,
+>> +							device->dev);
+>> +		else
+>> +			ret = __iommu_attach_device(domain, phys_dev);
+>> +
+>> +		if (ret)
+>> +			break;
+>> +	}
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void __iommu_detach_subdev_group(struct iommu_domain *domain,
+>> +					struct iommu_group *group,
+>> +					iommu_device_lookup_t fn)
+>> +{
+>> +	struct group_device *device;
+>> +	struct device *phys_dev;
+>> +
+>> +	list_for_each_entry(device, &group->devices, list) {
+>> +		phys_dev = fn(device->dev);
+>> +		if (!phys_dev)
+>> +			break;
 > 
-> Would this be a good spot in the code to provide comments more formally
-> defining this subdevice concept?  For example, what exactly is the
-> relationship between the device and the subdevice and which device do
-> we use for the remaining aux domain functions, ex. aux_get_pasid().
+> 
+> Seems like this should be a continue rather than a break.  On the
+> unwind path maybe we're relying on holding the group mutex and
+> deterministic behavior from the fn() callback to unwind to the same
+> point, but we still have an entirely separate detach interface and I'm
+> not sure we couldn't end up with an inconsistent state if we don't
+> iterate each group device here.  Thanks,
 
-Yes. Agreed. I will add below comments and adjust the function
-parameters according to the naming rule.
-
-/*
-- * Aux-domain specific attach/detach.
-+ * Aux-domain specific interfaces.
-   *
-   * Only works if iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX) 
-returns
-   * true. Also, as long as domains are attached to a device through this
-@@ -2722,6 +2722,14 @@ EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
-   * (iommu_detach_device() can't fail, so we fail when trying to 
-re-attach).
-   * This should make us safe against a device being attached to a guest 
-as a
-   * whole while there are still pasid users on it (aux and sva).
-+ *
-+ * Some physical devices can be configured to generate several subdevices.
-+ * The modern IOMMUs support the identification and isolation of these
-+ * subdevices. Hence they could be passed through to users space. VFIO/mdev
-+ * provides a generic framework for subdevice passthrough. Below interfaces
-+ * are extended to support such use case. Generally, among the 
-parameters of
-+ * the following aux-domain specific functions, @physdev represents a 
-physical
-+ * device and @subdev represents a subdevice.
-   */
-
-Please help to review.
+Yes, agreed.
 
 Best regards,
 baolu
 
-> Thanks,
 > 
 > Alex
+> 
+>> +
+>> +		if (iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
+>> +			__iommu_aux_detach_device(domain, phys_dev, device->dev);
+>> +		else
+>> +			__iommu_detach_device(domain, phys_dev);
+>> +	}
+>> +}
+>> +
+>> +/**
+>> + * iommu_attach_subdev_group - attach domain to an iommu_group which
+>> + *			       contains subdevices.
+>> + *
+>> + * @domain: domain
+>> + * @group:  iommu_group which contains subdevices
+>> + * @fn:     callback for each subdevice in the @iommu_group to retrieve the
+>> + *          physical device where the subdevice was created from.
+>> + *
+>> + * Returns 0 on success, or an error value.
+>> + */
+>> +int iommu_attach_subdev_group(struct iommu_domain *domain,
+>> +			      struct iommu_group *group,
+>> +			      iommu_device_lookup_t fn)
+>> +{
+>> +	int ret = -ENODEV;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	if (group->domain) {
+>> +		ret = -EBUSY;
+>> +		goto unlock_out;
+>> +	}
+>> +
+>> +	ret = __iommu_attach_subdev_group(domain, group, fn);
+>> +	if (ret)
+>> +		__iommu_detach_subdev_group(domain, group, fn);
+>> +	else
+>> +		group->domain = domain;
+>> +
+>> +unlock_out:
+>> +	mutex_unlock(&group->mutex);
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_attach_subdev_group);
+>> +
+>> +/**
+>> + * iommu_detach_subdev_group - detach domain from an iommu_group which
+>> + *			       contains subdevices
+>> + *
+>> + * @domain: domain
+>> + * @group:  iommu_group which contains subdevices
+>> + * @fn:     callback for each subdevice in the @iommu_group to retrieve the
+>> + *          physical device where the subdevice was created from.
+>> + *
+>> + * The domain must have been attached to @group via iommu_attach_subdev_group().
+>> + */
+>> +void iommu_detach_subdev_group(struct iommu_domain *domain,
+>> +			       struct iommu_group *group,
+>> +			       iommu_device_lookup_t fn)
+>> +{
+>> +	mutex_lock(&group->mutex);
+>> +	if (!group->domain)
+>> +		goto unlock_out;
+>> +
+>> +	__iommu_detach_subdev_group(domain, group, fn);
+>> +	group->domain = NULL;
+>> +
+>> +unlock_out:
+>> +	mutex_unlock(&group->mutex);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_detach_subdev_group);
+>> +
+>>   /**
+>>    * iommu_sva_bind_device() - Bind a process address space to a device
+>>    * @dev: the device
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 871267104915..b9df8b510d4f 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -48,6 +48,7 @@ struct iommu_fault_event;
+>>   typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+>>   			struct device *, unsigned long, int, void *);
+>>   typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault *, void *);
+>> +typedef struct device *(*iommu_device_lookup_t)(struct device *);
+>>   
+>>   struct iommu_domain_geometry {
+>>   	dma_addr_t aperture_start; /* First address that can be mapped    */
+>> @@ -631,6 +632,12 @@ bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
+>>   int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
+>>   void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
+>>   int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
+>> +int iommu_attach_subdev_group(struct iommu_domain *domain,
+>> +			      struct iommu_group *group,
+>> +			      iommu_device_lookup_t fn);
+>> +void iommu_detach_subdev_group(struct iommu_domain *domain,
+>> +			       struct iommu_group *group,
+>> +			       iommu_device_lookup_t fn);
+>>   
+>>   struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>>   					struct mm_struct *mm,
+>> @@ -1019,6 +1026,19 @@ iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+>>   	return -ENODEV;
+>>   }
+>>   
+>> +static inline int
+>> +iommu_attach_subdev_group(struct iommu_domain *domain, struct iommu_group *group,
+>> +			  iommu_device_lookup_t fn)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline void
+>> +iommu_detach_subdev_group(struct iommu_domain *domain, struct iommu_group *group,
+>> +			  iommu_device_lookup_t fn)
+>> +{
+>> +}
+>> +
+>>   static inline struct iommu_sva *
+>>   iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
+>>   {
 > 
 _______________________________________________
 iommu mailing list
