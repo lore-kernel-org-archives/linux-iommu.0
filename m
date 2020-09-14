@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF78FC43461
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 14:58:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34146C43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:00:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3428820732
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 14:58:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A84A720732
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 15:00:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jKw8RqKu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3428820732
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="HIz6wke9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A84A720732
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1810F860D2;
-	Mon, 14 Sep 2020 14:58:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4385286918;
+	Mon, 14 Sep 2020 15:00:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gcUFEpvqCIN8; Mon, 14 Sep 2020 14:58:07 +0000 (UTC)
+	with ESMTP id 4eF3HsSBfbVs; Mon, 14 Sep 2020 15:00:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9C1D585ABE;
-	Mon, 14 Sep 2020 14:58:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1D1AF86852;
+	Mon, 14 Sep 2020 15:00:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 925F7C0859;
-	Mon, 14 Sep 2020 14:58:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0133EC0859;
+	Mon, 14 Sep 2020 15:00:20 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B061C0051
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 14:58:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 141D6C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:00:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1A79687228
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 14:58:06 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EDD3387228
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:00:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id doRP+O-kQUJV for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 14:58:05 +0000 (UTC)
+ with ESMTP id 9EUfLYvvwmDa for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 15:00:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3531687227
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 14:58:05 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DA9A08715F
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 15:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=5I0Wekw7PGkNV3dZaIEsA8c8Eplwzl97xo8vYosQxdI=; b=jKw8RqKuJ++oQ1SuLItg20t5TM
- m+tQOTB1YJulvaPmWR9W2ftI6DOR4X1yaVUwJmeeH2dkVth5Xu644krytFCPwhsgvlfLbRV664WHp
- 77xXf9YegU0pIUXzWHOmpFJpKtGGsbPXNvPXoSd/dKLY/pOsq8jeFeiR94UCcY+8ZOQCaFr2gUKLa
- 2U0tm2OMKgcLKJdgX3t5I1pqOpwZyNHwZZnPGKBlKRwbY4KpmBVnEkvtM0LdVmzxiakDhHhAknAf0
- Tyh5ZEgG0X79MNLFtpN3VbcWaBqxePH/TV3qtXdqKxvw8EOUMV2DzB+LhDFoQND29BAXMvHObrhYe
- Tr7br70Q==;
+ bh=jNO1brRzt5ng659lhtl+4oBfakGzrKMS1ATQw8TQgTw=; b=HIz6wke9iAtfdEQkH5SQhbb1rq
+ opMCl+x82958lVnA4aljn7W8oe8/QbpwparD4iR6fOZ4E09Lz3gw3Bk23dcQwy/A30gZ/ffXlkvah
+ ZZev3bmBXqnvgch/BNMDycqeM1ZgF3l5e8xXDRnlcCz3zJhv+bWNymmhPAlj/EsYUXA0D+hQB1bjG
+ 4nVKJlBloB2GU7OtCGerGV41obO1J/rX7+Eii6eZNuOtmJ8KZ0SlifDHc7kyPnylID6vSSpRqbdnf
+ MHykLbz/arJkucLZ4kMBJiByeb0ep6XpXe6KVUgvXftPdto4HDHQzIbI1R4HjyOhmEGtoBheeQp0D
+ 9TXJ2Muw==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
  helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kHpvN-00023B-Gu; Mon, 14 Sep 2020 14:57:45 +0000
+ id 1kHpxU-0002Br-IH; Mon, 14 Sep 2020 14:59:56 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,10 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Tomasz Figa <tfiga@chromium.org>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 05/17] net/au1000-eth: stop using DMA_ATTR_NON_CONSISTENT
-Date: Mon, 14 Sep 2020 16:44:21 +0200
-Message-Id: <20200914144433.1622958-6-hch@lst.de>
+Subject: [PATCH 06/17] lib82596: move DMA allocation into the callers of
+ i82596_probe
+Date: Mon, 14 Sep 2020 16:44:22 +0200
+Message-Id: <20200914144433.1622958-7-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
 References: <20200914144433.1622958-1-hch@lst.de>
@@ -103,57 +104,187 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The au1000-eth driver contains none of the manual cache synchronization
-required for using DMA_ATTR_NON_CONSISTENT.  From what I can tell it
-can be used on both dma coherent and non-coherent DMA platforms, but
-I suspect it has been buggy on the non-coherent platforms all along.
+This allows us to get rid of the LIB82596_DMA_ATTR defined and prepare
+for untangling the coherent vs non-coherent DMA allocation API.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/net/ethernet/amd/au1000_eth.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/i825xx/lasi_82596.c | 24 ++++++++++------
+ drivers/net/ethernet/i825xx/lib82596.c   | 36 ++++++++----------------
+ drivers/net/ethernet/i825xx/sni_82596.c  | 19 +++++++++----
+ 3 files changed, 40 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
-index 75dbd221dc594b..19e195420e2434 100644
---- a/drivers/net/ethernet/amd/au1000_eth.c
-+++ b/drivers/net/ethernet/amd/au1000_eth.c
-@@ -1131,10 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
- 	/* Allocate the data buffers
- 	 * Snooping works fine with eth on all au1xxx
- 	 */
--	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
-+	aup->vaddr = (u32)dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
- 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
--					  &aup->dma_addr, 0,
--					  DMA_ATTR_NON_CONSISTENT);
-+					  &aup->dma_addr, 0);
- 	if (!aup->vaddr) {
- 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
- 		err = -ENOMEM;
-@@ -1310,9 +1309,8 @@ static int au1000_probe(struct platform_device *pdev)
- err_remap2:
- 	iounmap(aup->mac);
- err_remap1:
--	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
--			(void *)aup->vaddr, aup->dma_addr,
--			DMA_ATTR_NON_CONSISTENT);
-+	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
-+			(void *)aup->vaddr, aup->dma_addr);
- err_vaddr:
- 	free_netdev(dev);
- err_alloc:
-@@ -1344,9 +1342,8 @@ static int au1000_remove(struct platform_device *pdev)
- 		if (aup->tx_db_inuse[i])
- 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
+diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
+index aec7e98bcc853a..a12218e940a2fa 100644
+--- a/drivers/net/ethernet/i825xx/lasi_82596.c
++++ b/drivers/net/ethernet/i825xx/lasi_82596.c
+@@ -96,8 +96,6 @@
  
--	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
--			(void *)aup->vaddr, aup->dma_addr,
--			DMA_ATTR_NON_CONSISTENT);
-+	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
-+			(void *)aup->vaddr, aup->dma_addr);
+ #define OPT_SWAP_PORT	0x0001	/* Need to wordswp on the MPU port */
  
- 	iounmap(aup->macdma);
- 	iounmap(aup->mac);
+-#define LIB82596_DMA_ATTR	DMA_ATTR_NON_CONSISTENT
+-
+ #define DMA_WBACK(ndev, addr, len) \
+ 	do { dma_cache_sync((ndev)->dev.parent, (void *)addr, len, DMA_TO_DEVICE); } while (0)
+ 
+@@ -155,7 +153,7 @@ lan_init_chip(struct parisc_device *dev)
+ {
+ 	struct	net_device *netdevice;
+ 	struct i596_private *lp;
+-	int	retval;
++	int retval = -ENOMEM;
+ 	int i;
+ 
+ 	if (!dev->irq) {
+@@ -186,12 +184,22 @@ lan_init_chip(struct parisc_device *dev)
+ 
+ 	lp = netdev_priv(netdevice);
+ 	lp->options = dev->id.sversion == 0x72 ? OPT_SWAP_PORT : 0;
++	lp->dma = dma_alloc_attrs(&dev->dev, sizeof(struct i596_dma),
++			      &lp->dma_addr, GFP_KERNEL,
++			      DMA_ATTR_NON_CONSISTENT);
++	if (!lp->dma)
++		goto out_free_netdev;
+ 
+ 	retval = i82596_probe(netdevice);
+-	if (retval) {
+-		free_netdev(netdevice);
+-		return -ENODEV;
+-	}
++	if (retval)
++		goto out_free_dma;
++	return 0;
++
++out_free_dma:
++	dma_free_attrs(&dev->dev, sizeof(struct i596_dma), lp->dma,
++			lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
++out_free_netdev:
++	free_netdev(netdevice);
+ 	return retval;
+ }
+ 
+@@ -202,7 +210,7 @@ static int __exit lan_remove_chip(struct parisc_device *pdev)
+ 
+ 	unregister_netdev (dev);
+ 	dma_free_attrs(&pdev->dev, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, LIB82596_DMA_ATTR);
++		       lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
+ 	free_netdev (dev);
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/i825xx/lib82596.c b/drivers/net/ethernet/i825xx/lib82596.c
+index b03757e169e475..b4e4b3eb5758b5 100644
+--- a/drivers/net/ethernet/i825xx/lib82596.c
++++ b/drivers/net/ethernet/i825xx/lib82596.c
+@@ -1047,9 +1047,8 @@ static const struct net_device_ops i596_netdev_ops = {
+ 
+ static int i82596_probe(struct net_device *dev)
+ {
+-	int i;
+ 	struct i596_private *lp = netdev_priv(dev);
+-	struct i596_dma *dma;
++	int ret;
+ 
+ 	/* This lot is ensure things have been cache line aligned. */
+ 	BUILD_BUG_ON(sizeof(struct i596_rfd) != 32);
+@@ -1063,41 +1062,28 @@ static int i82596_probe(struct net_device *dev)
+ 	if (!dev->base_addr || !dev->irq)
+ 		return -ENODEV;
+ 
+-	dma = dma_alloc_attrs(dev->dev.parent, sizeof(struct i596_dma),
+-			      &lp->dma_addr, GFP_KERNEL,
+-			      LIB82596_DMA_ATTR);
+-	if (!dma) {
+-		printk(KERN_ERR "%s: Couldn't get shared memory\n", __FILE__);
+-		return -ENOMEM;
+-	}
+-
+ 	dev->netdev_ops = &i596_netdev_ops;
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+ 
+-	memset(dma, 0, sizeof(struct i596_dma));
+-	lp->dma = dma;
+-
+-	dma->scb.command = 0;
+-	dma->scb.cmd = I596_NULL;
+-	dma->scb.rfd = I596_NULL;
++	memset(lp->dma, 0, sizeof(struct i596_dma));
++	lp->dma->scb.command = 0;
++	lp->dma->scb.cmd = I596_NULL;
++	lp->dma->scb.rfd = I596_NULL;
+ 	spin_lock_init(&lp->lock);
+ 
+-	DMA_WBACK_INV(dev, dma, sizeof(struct i596_dma));
++	DMA_WBACK_INV(dev, lp->dma, sizeof(struct i596_dma));
+ 
+-	i = register_netdev(dev);
+-	if (i) {
+-		dma_free_attrs(dev->dev.parent, sizeof(struct i596_dma),
+-			       dma, lp->dma_addr, LIB82596_DMA_ATTR);
+-		return i;
+-	}
++	ret = register_netdev(dev);
++	if (ret)
++		return ret;
+ 
+ 	DEB(DEB_PROBE, printk(KERN_INFO "%s: 82596 at %#3lx, %pM IRQ %d.\n",
+ 			      dev->name, dev->base_addr, dev->dev_addr,
+ 			      dev->irq));
+ 	DEB(DEB_INIT, printk(KERN_INFO
+ 			     "%s: dma at 0x%p (%d bytes), lp->scb at 0x%p\n",
+-			     dev->name, dma, (int)sizeof(struct i596_dma),
+-			     &dma->scb));
++			     dev->name, lp->dma, (int)sizeof(struct i596_dma),
++			     &lp->dma->scb));
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/i825xx/sni_82596.c b/drivers/net/ethernet/i825xx/sni_82596.c
+index 22f5887578b2bd..4b9ac0c6557731 100644
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -24,8 +24,6 @@
+ 
+ static const char sni_82596_string[] = "snirm_82596";
+ 
+-#define LIB82596_DMA_ATTR	0
+-
+ #define DMA_WBACK(priv, addr, len)     do { } while (0)
+ #define DMA_INV(priv, addr, len)       do { } while (0)
+ #define DMA_WBACK_INV(priv, addr, len) do { } while (0)
+@@ -134,10 +132,19 @@ static int sni_82596_probe(struct platform_device *dev)
+ 	lp->ca = ca_addr;
+ 	lp->mpu_port = mpu_addr;
+ 
++	lp->dma = dma_alloc_coherent(&dev->dev, sizeof(struct i596_dma),
++				     &lp->dma_addr, GFP_KERNEL);
++	if (!lp->dma)
++		goto probe_failed;
++
+ 	retval = i82596_probe(netdevice);
+-	if (retval == 0)
+-		return 0;
++	if (retval)
++		goto probe_failed_free_dma;
++	return 0;
+ 
++probe_failed_free_dma:
++	dma_free_coherent(&dev->dev, sizeof(struct i596_dma), lp->dma,
++			  lp->dma_addr);
+ probe_failed:
+ 	free_netdev(netdevice);
+ probe_failed_free_ca:
+@@ -153,8 +160,8 @@ static int sni_82596_driver_remove(struct platform_device *pdev)
+ 	struct i596_private *lp = netdev_priv(dev);
+ 
+ 	unregister_netdev(dev);
+-	dma_free_attrs(dev->dev.parent, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, LIB82596_DMA_ATTR);
++	dma_free_coherent(&pdev->dev, sizeof(struct i596_private), lp->dma,
++			  lp->dma_addr);
+ 	iounmap(lp->ca);
+ 	iounmap(lp->mpu_port);
+ 	free_netdev (dev);
 -- 
 2.28.0
 
