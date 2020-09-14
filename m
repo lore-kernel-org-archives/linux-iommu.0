@@ -3,164 +3,95 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09599C433E2
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 16:34:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF848C43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 16:59:21 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 90A2A214F1
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 16:34:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3735420719
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 16:59:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="rd1wi7PT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90A2A214F1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DFyjJX9g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3735420719
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4B1D587241;
-	Mon, 14 Sep 2020 16:34:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C602220401;
+	Mon, 14 Sep 2020 16:59:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lOCfMv5+P4JY; Mon, 14 Sep 2020 16:34:03 +0000 (UTC)
+	with ESMTP id uIyjzpTC+Xmg; Mon, 14 Sep 2020 16:59:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9061D8721A;
-	Mon, 14 Sep 2020 16:34:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E2E5A203B8;
+	Mon, 14 Sep 2020 16:59:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 854BAC0859;
-	Mon, 14 Sep 2020 16:34:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C5DCAC0859;
+	Mon, 14 Sep 2020 16:59:18 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CEB0EC0051
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:34:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AFFB5C0859
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:59:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B516486850
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:34:01 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7C600866ED
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:59:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r6xb+P5x0hyU for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 16:34:01 +0000 (UTC)
+ with ESMTP id m5RtvRIKCv3z for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 16:59:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
- [216.228.121.143])
- by whitealder.osuosl.org (Postfix) with ESMTPS id EFAD28689A
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:34:00 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5f5f9aec0000>; Mon, 14 Sep 2020 09:31:40 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Mon, 14 Sep 2020 09:34:00 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Mon, 14 Sep 2020 09:34:00 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 14 Sep
- 2020 16:33:57 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.172)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 14 Sep 2020 16:33:57 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BNfmd4ZRcJhtQajjjlZbE6+ZHvuSS+c0be//Ke0xxPDdyHHMSEZfU9tk4NtFOT5sTbe+ZdGgz3o3fN+2gIDLs1jjWMFQVIQBUaO9s6przY9IOVe1ndsuychqmHOX9Zytwb1CbgLwtel/lb62XxaNy00KhLOcorD+ajOHgYQyCSVbq79HoJof9/1RkvNOk5tFZKTPlmYDlXCb/eLIlNjYZvpzB0g+OlZeFd8Q8byIXx7IJfHRviMHC9odF5vPTH/8l+royB/65XA1UUcy+LTtnB0vz3WHH3z4ePD0q7sb1bEAsDLuOnzDdv8m1N3/gDpR/U6r3Yv1e2Eqt5df2Ibctg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xxT0JhxX2EfaG7S0KLgbJ3a9RTwYWT6f5EGhpsvO4M0=;
- b=gE4XfNEhzW7D3tA4hsBFb3b9DiKmLcw2hDnQH1HVSzgchMI3qI8f4TL/3GbJ+sMRDRaoo/Kafp2j5SxXpcP7L+vJYl0JQhKAWvPboJQbVh9xxl/bNHAyehdHNi/Au5DIxbF4kE4MJULTZmsswl3AsRQ71bDWQtM2LP4kY6eo9Ro0t60tMJun7/bVJ8Tux3DV9/iJYy6de9lTWeZ1uXFu32Pny2NqTlZ0LBpFfbl3X79u4EhWoy8JP2Wdvsdwk/tvE2THpPPtqndopZxqRwNxXNOGfUEPMFLkMQAmo2xPzwKdyuw8kPW47h7pR1gle8bzS2i5KIPTJjwVoWzToFSDcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3929.namprd12.prod.outlook.com (2603:10b6:5:148::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Mon, 14 Sep
- 2020 16:33:56 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3370.019; Mon, 14 Sep 2020
- 16:33:56 +0000
-Date: Mon, 14 Sep 2020 13:33:54 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Raj, Ashok" <ashok.raj@intel.com>
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D08D7866E9
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 16:59:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1600102753;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=1tkEtnAMzbXyUWN1Kd3VSWr/ao1qWSMw1ylDPJkGR9o=;
+ b=DFyjJX9g8K2+69VCXRnTpZbSOK4zRai1vPVgY56QrsWCO44ymo0DLK44ju1xwHC/WaW2iV
+ qKg/n8+52YcxWPfFNjp4sjm8Z1ejL2+uzPRhvBgrFlgEFgwTWtn6v2rxI4Rv2e3+qwrU6X
+ EvXy6dX3921XFB6GF3XWgdK4NmsuJtQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-574-Vbaak6A8P1mJweCqqa3Yjg-1; Mon, 14 Sep 2020 12:59:11 -0400
+X-MC-Unique: Vbaak6A8P1mJweCqqa3Yjg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F0F5107466B;
+ Mon, 14 Sep 2020 16:59:09 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 14D5627C21;
+ Mon, 14 Sep 2020 16:58:58 +0000 (UTC)
+Date: Mon, 14 Sep 2020 10:58:57 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
  to VMs
-Message-ID: <20200914163354.GG904879@nvidia.com>
+Message-ID: <20200914105857.3f88a271@x1.home>
+In-Reply-To: <20200914163354.GG904879@nvidia.com>
 References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
  <411c81c0-f13c-37cc-6c26-cafb42b46b15@redhat.com>
- <20200914133113.GB1375106@myrica> <20200914134738.GX904879@nvidia.com>
+ <20200914133113.GB1375106@myrica>
+ <20200914134738.GX904879@nvidia.com>
  <20200914162247.GA63399@otc-nc-03>
-Content-Disposition: inline
-In-Reply-To: <20200914162247.GA63399@otc-nc-03>
-X-ClientProxiedBy: CH2PR18CA0024.namprd18.prod.outlook.com
- (2603:10b6:610:4f::34) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ <20200914163354.GG904879@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by
- CH2PR18CA0024.namprd18.prod.outlook.com (2603:10b6:610:4f::34) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3370.16 via Frontend Transport; Mon, 14 Sep 2020 16:33:55 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1kHrQQ-006ATd-Ck; Mon, 14 Sep 2020 13:33:54 -0300
-X-Originating-IP: [206.223.160.26]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1615a421-9e75-4087-3d86-08d858cbf932
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3929:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3929673BE18DCF6E58FE48B8C2230@DM6PR12MB3929.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bTwimc9wl/T82fV936SYM/bKZcS0yyPmKMAT6CaRYPPSgmunn8AG5ALBEBEItOSmPFXyfhWTajEZ1MBEEfHFM2PVhVYU7sZH/16+sazPtkoLqRRrAke9z4xITyI+GtRLcCKzZ7qxmUHAL7v7eJqr94hJTLzyPz8gkZpGVlA8hBnug41ZpO9BQLAYax8N3yGlb/gBUhOXp/+iqprgNiY9EyzEvsBeRMpsYdGZ3sgMBtXauT17t77+6Ntn0Z5WnxE0Fi17uzsH1UPUZpCaP4ptLUQuqwndaWEgvMzvu/wJhQY3e0qBiHkYLnRnNVV0dj5zcN+0wCqzhWK5WHznVnGMb4jR66uzgp+7OKKDOAxE86YLfdcPKixVUTCvjHYZKhgj
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(66476007)(66556008)(26005)(5660300002)(316002)(186003)(83380400001)(8676002)(478600001)(9746002)(8936002)(426003)(9786002)(33656002)(6916009)(86362001)(2906002)(4326008)(7416002)(54906003)(2616005)(36756003)(1076003)(66946007)(27376004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: USEMpZXahXJ7fjjxZnqVdX7tSoitVrud9ceDcWtRfgCTgq3VB2yDtiF/LnchnLvszGleD0Wh+g2/blptsMSgLMiGU9dTOuWH/9v02uw8t43bfa4eZyAVhB0/gLW9Lrzt66KSH6Itk0tVuL+cm4eUAeiBYu3ACCTSFzDdggvmK5tIA8znvrq3Dwv4KAltpHRKJS/tcSJFhgwCDQElMoO/B4h8CYGd0sG2X/oevPUX4ieoqxJ6S1nohRW/pZ7qzA23vGolm9EuyncQy80OiQhfboms9FpkOy56WnSjh1lKCJwICFUNIZGSAsMf8a2YiUYOQLO+Gzzgrvx9LU7X9WYULyd8fQx3nl7PBUIiNhafpdFCiqaQaCC+TZVuNQmO+AGzBoeKZb7nUjX5juxlhyFFxwV6F6cwjGYEduLVbvq1WhYY8RjQouugElOzTMzNmHTyUKUr3IHN7kZKFIv0NL6cfEgep9lXpQUwuQUJBmV9FkjUQFIeiYTZvMxDG+d1F8Z6V3RJmhL43EzQ2DrtT47gKxfrmBdwphl5Nrkr9nAyZyYJqo4g8QauKcfbt9AnknpXmRfy6J3qvrAy9ZD/pICrVF7BzJKC9JRO8XjTtXr+spRLyDdQt2xqb2b1VtmAPm1MVS+hvXV0QtX2n/YO7Ut1JA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1615a421-9e75-4087-3d86-08d858cbf932
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2020 16:33:55.9247 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XKj0OBY8dQ+r+4aiRzyD7MO/lcqXm4xN9d0rTtc3d983GwN0Wt/zdypDTZgzLl0B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3929
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1600101100; bh=xxT0JhxX2EfaG7S0KLgbJ3a9RTwYWT6f5EGhpsvO4M0=;
- h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
- ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
- Subject:Message-ID:References:Content-Type:Content-Disposition:
- In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
- X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
- X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
- X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
- X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
- X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
- X-MS-Exchange-CrossTenant-Network-Message-Id:
- X-MS-Exchange-CrossTenant-AuthSource:
- X-MS-Exchange-CrossTenant-AuthAs:
- X-MS-Exchange-CrossTenant-OriginalArrivalTime:
- X-MS-Exchange-CrossTenant-FromEntityHeader:
- X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
- X-MS-Exchange-CrossTenant-UserPrincipalName:
- X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
- b=rd1wi7PTZ9E6NeAZH33oG2qHes2D5BMxXT/AuRatF3CAbH1AN1Di1ptq2jQa4DpG0
- aP0V6EWLAL4HiAOz6lzYbLY2wyqNn/CUD487FfKaNv8XuaQz/6YSj/2KMsm9MQCAKg
- xoEevWBy5ZhMc04e4vX5JRqtk9rNuuWC6vMLCIH4G4N484y9hXtqJ9YpUXlHblh2xj
- 5pCg/y4bxvp7PLVt9oX3E2iFXL6HNWAArtyF9AyG4b/wUYx4d4GOYJ9upFj6lcOrN3
- gvEOg8BvkMXb2zbJi1mNMlt5N/qzgleBUAzZNS3vQS9Yh8R9s4ndcbsnFMj8Ec4gJo
- R02OjKNL2tgWA==
-Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- kevin.tian@intel.com, kvm@vger.kernel.org, iommu@lists.linux-foundation.org,
- stefanha@gmail.com, Jason Wang <jasowang@redhat.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, jun.j.tian@intel.com,
- alex.williamson@redhat.com, hao.wu@intel.com
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
+ "Raj, Ashok" <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, stefanha@gmail.com,
+ Jason Wang <jasowang@redhat.com>, "Michael S.
+ Tsirkin" <mst@redhat.com>, jun.j.tian@intel.com, yi.y.sun@intel.com,
+ hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -178,57 +109,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Sep 14, 2020 at 09:22:47AM -0700, Raj, Ashok wrote:
-> Hi Jason,
-> 
-> On Mon, Sep 14, 2020 at 10:47:38AM -0300, Jason Gunthorpe wrote:
-> > On Mon, Sep 14, 2020 at 03:31:13PM +0200, Jean-Philippe Brucker wrote:
+On Mon, 14 Sep 2020 13:33:54 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Mon, Sep 14, 2020 at 09:22:47AM -0700, Raj, Ashok wrote:
+> > Hi Jason,
 > > 
-> > > > Jason suggest something like /dev/sva. There will be a lot of other
-> > > > subsystems that could benefit from this (e.g vDPA).
+> > On Mon, Sep 14, 2020 at 10:47:38AM -0300, Jason Gunthorpe wrote:  
+> > > On Mon, Sep 14, 2020 at 03:31:13PM +0200, Jean-Philippe Brucker wrote:
+> > >   
+> > > > > Jason suggest something like /dev/sva. There will be a lot of other
+> > > > > subsystems that could benefit from this (e.g vDPA).  
+> > > > 
+> > > > Do you have a more precise idea of the interface /dev/sva would provide,
+> > > > how it would interact with VFIO and others?  vDPA could transport the
+> > > > generic iommu.h structures via its own uAPI, and call the IOMMU API
+> > > > directly without going through an intermediate /dev/sva handle.  
 > > > 
-> > > Do you have a more precise idea of the interface /dev/sva would provide,
-> > > how it would interact with VFIO and others?  vDPA could transport the
-> > > generic iommu.h structures via its own uAPI, and call the IOMMU API
-> > > directly without going through an intermediate /dev/sva handle.
+> > > Prior to PASID IOMMU really only makes sense as part of vfio-pci
+> > > because the iommu can only key on the BDF. That can't work unless the
+> > > whole PCI function can be assigned. It is hard to see how a shared PCI
+> > > device can work with IOMMU like this, so may as well use vfio.
+> > > 
+> > > SVA and various vIOMMU models change this, a shared PCI driver can
+> > > absoultely work with a PASID that is assigned to a VM safely, and
+> > > actually don't need to know if their PASID maps a mm_struct or
+> > > something else.  
 > > 
-> > Prior to PASID IOMMU really only makes sense as part of vfio-pci
-> > because the iommu can only key on the BDF. That can't work unless the
-> > whole PCI function can be assigned. It is hard to see how a shared PCI
-> > device can work with IOMMU like this, so may as well use vfio.
+> > Well, IOMMU does care if its a native mm_struct or something that belongs
+> > to guest. Because you need ability to forward page-requests and pickup
+> > page-responses from guest. Since there is just one PRQ on the IOMMU and
+> > responses can't be sent directly. You have to depend on vIOMMU type
+> > interface in guest to make all of this magic work right?  
+> 
+> Yes, IOMMU cares, but not the PCI Driver. It just knows it has a
+> PASID. Details on how page faultings is handled or how the mapping is
+> setup is abstracted by the PASID.
+> 
+> > > This new PASID allocator would match the guest memory layout and  
 > > 
-> > SVA and various vIOMMU models change this, a shared PCI driver can
-> > absoultely work with a PASID that is assigned to a VM safely, and
-> > actually don't need to know if their PASID maps a mm_struct or
-> > something else.
+> > Not sure what you mean by "match guest memory layout"? 
+> > Probably, meaning first level is gVA or gIOVA?   
 > 
-> Well, IOMMU does care if its a native mm_struct or something that belongs
-> to guest. Because you need ability to forward page-requests and pickup
-> page-responses from guest. Since there is just one PRQ on the IOMMU and
-> responses can't be sent directly. You have to depend on vIOMMU type
-> interface in guest to make all of this magic work right?
-
-Yes, IOMMU cares, but not the PCI Driver. It just knows it has a
-PASID. Details on how page faultings is handled or how the mapping is
-setup is abstracted by the PASID.
-
-> > This new PASID allocator would match the guest memory layout and
+> It means whatever the qemu/viommu/guest/etc needs across all the
+> IOMMU/arch implementations.
 > 
-> Not sure what you mean by "match guest memory layout"? 
-> Probably, meaning first level is gVA or gIOVA? 
+> Basically, there should only be two ways to get a PASID
+>  - From mm_struct that mirrors the creating process
+>  - Via '/dev/sva' which has an complete interface to create and
+>    control a PASID suitable for virtualization and more
+> 
+> VFIO should not have its own special way to get a PASID.
 
-It means whatever the qemu/viommu/guest/etc needs across all the
-IOMMU/arch implementations.
+"its own special way" is arguable, VFIO is just making use of what's
+being proposed as the uapi via its existing IOMMU interface.  PASIDs
+are also a system resource, so we require some degree of access control
+and quotas for management of PASIDs.  Does libvirt now get involved to
+know whether an assigned device requires PASIDs such that access to
+this dev file is provided to QEMU?  How does the kernel validate usage
+or implement quotas when disconnected from device ownership?  PASIDs
+would be an obvious DoS path if any user can create arbitrary
+allocations.  If we can move code out of VFIO, I'm all for it, but I
+think it needs to be better defined than "implement magic universal sva
+uapi interface" before we can really consider it.  Thanks,
 
-Basically, there should only be two ways to get a PASID
- - From mm_struct that mirrors the creating process
- - Via '/dev/sva' which has an complete interface to create and
-   control a PASID suitable for virtualization and more
+Alex
 
-VFIO should not have its own special way to get a PASID.
-
-Jason
- 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
