@@ -7,68 +7,67 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCC9C433E2
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 07:44:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE4DC43461
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 07:46:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D2BDE2192A
-	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 07:44:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0902D21D80
+	for <iommu@archiver.kernel.org>; Mon, 14 Sep 2020 07:46:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="t4keXE5T"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D2BDE2192A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="iYglZJwL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0902D21D80
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5D152203D8;
-	Mon, 14 Sep 2020 07:44:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a5QH2Y6Yad+S; Mon, 14 Sep 2020 07:44:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E291320343;
-	Mon, 14 Sep 2020 07:44:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D4CBEC088B;
-	Mon, 14 Sep 2020 07:44:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A5DFC0859
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:44:41 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 487AB870A3
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:44:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8C952870BF;
+	Mon, 14 Sep 2020 07:46:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id K2Wpe48PtSJO; Mon, 14 Sep 2020 07:46:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0FFC787043;
+	Mon, 14 Sep 2020 07:46:54 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09E06C088B;
+	Mon, 14 Sep 2020 07:46:54 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AFDF6C0859
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:46:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 9A8E2203B4
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:46:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZgtqApUKkSMJ for <iommu@lists.linux-foundation.org>;
- Mon, 14 Sep 2020 07:44:40 +0000 (UTC)
+ with ESMTP id 3pkTA-vDOZRA for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Sep 2020 07:46:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9505487098
- for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:44:40 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 997C420343
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Sep 2020 07:46:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=rZz7WEucbLzmcSBpKZVSsyybm+o08I+OYE053DvRjjM=; b=t4keXE5TDnxAHF6g8hogs4VgZL
- ULo2k/B8+ruC5jsQr27s/sQblW82iX+G9AIpOhhy6JQY5XjSgIU2JThFVtAqqJOprPd9Y1mcTxzFJ
- 7xexc8gEJwRKQ68VQSDLyUs1lCl/V0ZwaUXP7JJpJhCHRS7vhIr1gvV2PwcjkInHgO6yQUAvm/Qi0
- L9HoU2awqpjY9vMbIUOhixXqveqkDZy0oProfsCjI+Yzty2QtJxZmUDWg4i0FDGXer1pmo6yH1+6/
- sda/7CKX4v4tUq/CEuOgohNyWCKUA6LPDJuza3QFbgZSg55jsHqgvpUvIsbRnDSKiqAu4+j++J2ey
- YPPprpGA==;
+ bh=cPqBYq5povPLhzEYOyx5GvOLRCGW66TTAZJ+daEl52w=; b=iYglZJwLzk6QChePoSrmhAvdyb
+ l78kJNSRO4PN+2+9URpPa8neGWWEj7PxXZ/bHrsB+MsIqClcOch1s/2XUgxIGUtH5LvyKkrFwDUEP
+ +0sFvvHDKcLTp5piUcWx6pOtDO23awiYO28M27zgm9fpp5ooxb6sqXJQ0YpXVMfu23lBBXBDLZSzz
+ mdGXvTHW146h81v/e/y2f0jZ3u2B6l2Kkvwni1Ib51JpQuUL5o4ERZ1jFtaF6HPLhhVnR7bbySC2K
+ 3Ach0o1ngE2FF91LbR/lApduf2NtE5av39CaFEMyb0KdHTNoL6OYRuQq0zSxAv3N5oVDl2sMf+pxq
+ GVApXDgg==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
  helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kHjAE-0000Rh-Gw; Mon, 14 Sep 2020 07:44:38 +0000
+ id 1kHjCL-0000c0-Hb; Mon, 14 Sep 2020 07:46:49 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
  Santosh Shilimkar <ssantosh@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4/6] ARM/keystone: move the DMA offset handling under ifdef
- CONFIG_ARM_LPAE
-Date: Mon, 14 Sep 2020 09:33:41 +0200
-Message-Id: <20200914073343.1579578-5-hch@lst.de>
+Subject: [PATCH 5/6] usb: don't inherity DMA properties for USB devices
+Date: Mon, 14 Sep 2020 09:33:42 +0200
+Message-Id: <20200914073343.1579578-6-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200914073343.1579578-1-hch@lst.de>
 References: <20200914073343.1579578-1-hch@lst.de>
@@ -100,49 +99,70 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The DMA offset notifier can only be used if PHYS_OFFSET is at least
-KEYSTONE_HIGH_PHYS_START, which can't be represented by a 32-bit
-phys_addr_t.  Currently the code compiles fine despite that, a pending
-change to the DMA offset handling would create a compiler warning for
-this case.  Add an ifdef to not compile the code except for LPAE
-configs.
+As the comment in usb_alloc_dev correctly states, drivers can't use
+the DMA API on usb device, and at least calling dma_set_mask on them
+is highly dangerous.  Unlike what the comment states upper level drivers
+also can't really use the presence of a dma mask to check for DMA
+support, as the dma_mask is set by default for most busses.
+
+Setting the dma_mask comes from "[PATCH] usbcore dma updates (and doc)"
+in BitKeeper times, as it seems like it was primarily for setting the
+NETIF_F_HIGHDMA flag in USB drivers, something that has long been
+fixed up since.
+
+Setting the dma_pfn_offset comes from commit b44bbc46a8bb
+("usb: core: setup dma_pfn_offset for USB devices and, interfaces"),
+which worked around the fact that the scsi_calculate_bounce_limits
+functions wasn't going through the proper driver interface to query
+DMA information, but that function was removed in commit 21e07dba9fb1
+("scsi: reduce use of block bounce buffers") years ago.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm/mach-keystone/keystone.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/usb/core/message.c |  6 ------
+ drivers/usb/core/usb.c     | 12 ------------
+ 2 files changed, 18 deletions(-)
 
-diff --git a/arch/arm/mach-keystone/keystone.c b/arch/arm/mach-keystone/keystone.c
-index 638808c4e12247..dcd031ba84c2e0 100644
---- a/arch/arm/mach-keystone/keystone.c
-+++ b/arch/arm/mach-keystone/keystone.c
-@@ -24,6 +24,7 @@
- 
- #include "keystone.h"
- 
-+#ifdef CONFIG_ARM_LPAE
- static unsigned long keystone_dma_pfn_offset __read_mostly;
- 
- static int keystone_platform_notifier(struct notifier_block *nb,
-@@ -48,14 +49,17 @@ static int keystone_platform_notifier(struct notifier_block *nb,
- static struct notifier_block platform_nb = {
- 	.notifier_call = keystone_platform_notifier,
- };
-+#endif /* CONFIG_ARM_LPAE */
- 
- static void __init keystone_init(void)
- {
-+#ifdef CONFIG_ARM_LPAE
- 	if (PHYS_OFFSET >= KEYSTONE_HIGH_PHYS_START) {
- 		keystone_dma_pfn_offset = PFN_DOWN(KEYSTONE_HIGH_PHYS_START -
- 						   KEYSTONE_LOW_PHYS_START);
- 		bus_register_notifier(&platform_bus_type, &platform_nb);
- 	}
-+#endif
- 	keystone_pm_runtime_init();
- }
- 
+diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+index 6197938dcc2d8f..9e45732dc1d1d1 100644
+--- a/drivers/usb/core/message.c
++++ b/drivers/usb/core/message.c
+@@ -1954,12 +1954,6 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
+ 		intf->dev.bus = &usb_bus_type;
+ 		intf->dev.type = &usb_if_device_type;
+ 		intf->dev.groups = usb_interface_groups;
+-		/*
+-		 * Please refer to usb_alloc_dev() to see why we set
+-		 * dma_mask and dma_pfn_offset.
+-		 */
+-		intf->dev.dma_mask = dev->dev.dma_mask;
+-		intf->dev.dma_pfn_offset = dev->dev.dma_pfn_offset;
+ 		INIT_WORK(&intf->reset_ws, __usb_queue_reset_device);
+ 		intf->minor = -1;
+ 		device_initialize(&intf->dev);
+diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
+index bafc113f2b3ef3..9b4ac4415f1a47 100644
+--- a/drivers/usb/core/usb.c
++++ b/drivers/usb/core/usb.c
+@@ -599,18 +599,6 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
+ 	dev->dev.bus = &usb_bus_type;
+ 	dev->dev.type = &usb_device_type;
+ 	dev->dev.groups = usb_device_groups;
+-	/*
+-	 * Fake a dma_mask/offset for the USB device:
+-	 * We cannot really use the dma-mapping API (dma_alloc_* and
+-	 * dma_map_*) for USB devices but instead need to use
+-	 * usb_alloc_coherent and pass data in 'urb's, but some subsystems
+-	 * manually look into the mask/offset pair to determine whether
+-	 * they need bounce buffers.
+-	 * Note: calling dma_set_mask() on a USB device would set the
+-	 * mask for the entire HCD, so don't do that.
+-	 */
+-	dev->dev.dma_mask = bus->sysdev->dma_mask;
+-	dev->dev.dma_pfn_offset = bus->sysdev->dma_pfn_offset;
+ 	set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
+ 	dev->state = USB_STATE_ATTACHED;
+ 	dev->lpm_disable_count = 1;
 -- 
 2.28.0
 
