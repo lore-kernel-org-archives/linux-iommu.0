@@ -2,69 +2,169 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6224CC2D0E3
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 23:51:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89882C43461
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 23:51:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0FA9E20735
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 23:51:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0FA9E20735
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3FF9620756
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 23:51:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="b2a5TP+y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FF9620756
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A673D229D4;
-	Tue, 15 Sep 2020 23:51:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dDyN+jgcWUCz; Tue, 15 Sep 2020 23:51:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7209122D22;
-	Tue, 15 Sep 2020 23:51:27 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59E2EC0864;
-	Tue, 15 Sep 2020 23:51:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D841C0864
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:25 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 299F48689B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:25 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 296E585EAF;
+	Tue, 15 Sep 2020 23:51:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id babUZ10BrJi4; Tue, 15 Sep 2020 23:51:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A3F1C8688A;
+	Tue, 15 Sep 2020 23:51:34 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91B1CC0864;
+	Tue, 15 Sep 2020 23:51:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D037C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1A09486C71
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yWOypXytIJ4A for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 23:51:24 +0000 (UTC)
+ with ESMTP id NtTg6hnXqitQ for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 23:51:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1999085F59
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ADB9F1045;
- Tue, 15 Sep 2020 16:51:23 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1C8D33F68F;
- Tue, 15 Sep 2020 16:51:22 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org, robh@kernel.org, tomeu.vizoso@collabora.com,
- steven.price@arm.com, alyssa.rosenzweig@collabora.com,
- khilman@baylibre.com, narmstrong@baylibre.com, jbrunet@baylibre.com
-Subject: [PATCH 3/3] arm64: dts: meson: Describe G12b GPU as coherent
-Date: Wed, 16 Sep 2020 00:51:07 +0100
-Message-Id: <ba61c76654349d3dfcd14c1e24c5aed39ebe3cf7.1600213517.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
-In-Reply-To: <cover.1600213517.git.robin.murphy@arm.com>
-References: <cover.1600213517.git.robin.murphy@arm.com>
+Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
+ [216.228.121.143])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 72CFD86C70
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 23:51:33 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5f6152f70000>; Tue, 15 Sep 2020 16:49:11 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Tue, 15 Sep 2020 16:51:32 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Tue, 15 Sep 2020 16:51:32 -0700
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 15 Sep
+ 2020 23:51:29 +0000
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.57) by
+ HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server
+ (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 15 Sep 2020 23:51:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f9CBFnwMWKEkFQOUJ+a8TZyHlaTfUKaSLjmgU0hDfkuBC9tWwL8HUfxjKIcBCu5pWL0a7qB0G4OhMB4/gEfISay+ox032qZMJO8uDoEcJEKrRgAGJ9H8SqdAP797VDnmOCEb4T64BLObokc9CvRZcOZB0CbwNwado0sGmV/kHs4ObRwdYp7scPMFMzL9raNDMIXacnKx06c2SQVsUBFrmtdGXJdCKwQy6G7iRpaQ06OtulQaWCReEwN+RLTmgt8lPBMmjPIJLlfNIyCznn2nIcNoXuJZQrCB1oXh6zCC6digVJXnvN6+QIXVHxIqf2bNqbhOhbXvhtNM0K/4BEFv2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NxvWNy/DDwUk8ziyWv8dqcmfApz5MRhSmLKBZQWIQEc=;
+ b=LxFljlkrPDnSP5zX88QFy0r7Z+eO3PEIHPTitE7RSkmJvuPgchtibTgXAYtZ0xEgVPfGW+lrMbRgBnjZ7wAdzjB4+h1V86vGCwMiGXZ948u1GOidBxZnxhOwxut2anajo80Bx9M7tH2eDXoe0ownmxeVfi3sjFr5s0qYVXs/5mUfANQmSD13tG0RLdWdrNqjohwa0sQNfQkVyWTYXZTcjZ4E+zQtdr7ab5WIp6elbk5x8dDnxvgpYr13TT21/GgEDYILDLWwTo/bLjallgnQAAI/53AncA2lj9YxPNwbFenvvlxuutQ/U7BeCzuDRRmkPAxnYOErG71zrkyf2XaM+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: linux.intel.com; dkim=none (message not signed)
+ header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4402.namprd12.prod.outlook.com (2603:10b6:5:2a5::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Tue, 15 Sep
+ 2020 23:51:28 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3391.011; Tue, 15 Sep 2020
+ 23:51:28 +0000
+Date: Tue, 15 Sep 2020 20:51:26 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
+ to VMs
+Message-ID: <20200915235126.GK1573713@nvidia.com>
+References: <20200914163354.GG904879@nvidia.com>
+ <20200914105857.3f88a271@x1.home> <20200914174121.GI904879@nvidia.com>
+ <20200914122328.0a262a7b@x1.home> <20200914190057.GM904879@nvidia.com>
+ <20200914224438.GA65940@otc-nc-03> <20200915113341.GW904879@nvidia.com>
+ <20200915181154.GA70770@otc-nc-03> <20200915184510.GB1573713@nvidia.com>
+ <20200915150851.76436ca1@jacob-builder>
+Content-Disposition: inline
+In-Reply-To: <20200915150851.76436ca1@jacob-builder>
+X-ClientProxiedBy: CH2PR12CA0003.namprd12.prod.outlook.com
+ (2603:10b6:610:57::13) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Cc: linux-amlogic@lists.infradead.org, iommu@lists.linux-foundation.org,
- dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by
+ CH2PR12CA0003.namprd12.prod.outlook.com (2603:10b6:610:57::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3391.13 via Frontend Transport; Tue, 15 Sep 2020 23:51:27 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1kIKjO-006jNp-P3; Tue, 15 Sep 2020 20:51:26 -0300
+X-Originating-IP: [206.223.160.26]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d6e76f74-541d-4d41-856b-08d859d2433c
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4402:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4402FF8D5C976C2E1FD6B8DDC2200@DM6PR12MB4402.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HLxkLj5LIKYQfDK7zW+/crehvuQqmbDyX/Inva5UYH4yyZFIA4C0HThBohe9vBTy4JkHnWjBM1+p4CaL1BFQXDk9Hohy4al2XYa3B1ItIQ0Ula5t+2t2L3kQDUouCof70AvPBI+4tRqGtBzXjJAohJRN8GZ/fgAkYHVkXbbSDYj5HtEN3OQ2MYuD+ldHvP4KlRMDGaNck6o6qjdJCjN+xmbn0WEd80/2HdfYSmd5sSNKbp+399SBxn5syeoAwLfftPh0uO3t/VltD1PR2pSwS0YeuYCmZ3D08Ch18N760n+MYTQSK+QjjwSKqior83suj4rmXcO+skupS4KU7MGDMw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(396003)(376002)(39860400002)(136003)(346002)(8676002)(86362001)(478600001)(5660300002)(7416002)(26005)(316002)(6916009)(186003)(36756003)(54906003)(66556008)(66476007)(426003)(9786002)(9746002)(2616005)(4326008)(2906002)(1076003)(66946007)(33656002)(8936002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: NmPVn+iE7coaX9lotEDIcvg3hXvx3Vf75e3vAFGN7i8cRwT3z7RlzMh5TtsKUmiO8PS66SkkdEIrw2GhyiXWU5FqQaVSAinu3ILeR5ud+hAjnoVZoY1LeDLD8tE5MoU83vtcc1wcXoqKgMLNgbGAFpv1HCDODR6kbakyjj5ZF0F6T2E0JPqwXfpzvzaxexMhuJoFnZti+J3BNWwzie1HE0tzF/CnxPO+pzLGHKs33Fusy8vGLT9Te3NGTaIxiiuDsGkix4xV4Rg4qi3YG+Smkl2JPFv3n+/c7SR8KhubShUiH3VAOcbxNewSNbX5hZsDPgcqsl2PRJpcoTdcpc1hrr2Yp5Op+It798So3buTghbjlwOzMG2w/9lUUVsiHBq8Q+iPuVLJ7vqTbOAO234a/lcJP4CaJRku6yV48d4PH1qC/Mho0xBHS7IOlOCwSvpyIc24iht/cJh1MvHLWkTm9y9CtSZ/LdjKNVjREpBTXiu8wnEjYhOt5MABBUUb+f8NZty+GjFvDoZV4wT9N8wDv5uq0JaQ+kkUVYMBSQC92T4gVDMpa0Fy4xAI+B91LMQzvLe+ihyZFO9yTbyGjrAyM3mp/0keK7ldfrJSWr4Xl5KKk+qMw5KW1pAkRX2oKPxOhz7kWN56npBNHstbS/wmxg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6e76f74-541d-4d41-856b-08d859d2433c
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2020 23:51:28.0718 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +TqA7BNH6STEjUcTRIn4Z7gc6s3/SdKc+ATleZdPxUTYMcNEJEvqpuX/Vr12f8+g
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4402
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1600213751; bh=NxvWNy/DDwUk8ziyWv8dqcmfApz5MRhSmLKBZQWIQEc=;
+ h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+ ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
+ Subject:Message-ID:References:Content-Type:Content-Disposition:
+ In-Reply-To:X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
+ X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+ X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
+ X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
+ X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+ X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
+ X-MS-Exchange-CrossTenant-Network-Message-Id:
+ X-MS-Exchange-CrossTenant-AuthSource:
+ X-MS-Exchange-CrossTenant-AuthAs:
+ X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+ X-MS-Exchange-CrossTenant-FromEntityHeader:
+ X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+ X-MS-Exchange-CrossTenant-UserPrincipalName:
+ X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+ b=b2a5TP+y/OYDlZUI+mJCS6GNlmv3iXhE2HKcPR3ot3ZlI8g3ZxYjfn9TuROLMpyYV
+ dPj6DaUWM3xBJ78JLOI269S1v5mnaQi5cjxsiRkmfYVzlUFiiZHm0MI6JM9DVDNI51
+ 5pRRebUqZHU4lB5oIVbBS76iMpmLVyt4yiZJgDXqpaX1pOKJDSAvUiN8JLFRbvXFr9
+ x0zcZKdtWB+4tIxpGNh3kbPr34oXPv+7twEo2QwnlzkoNyr84QC6iZMxzik24lQQCO
+ Q29W1K51oEbonwUlw/ZFz5IW9sjow8gFX6bzKP9mKo80xyFxKqujTS1YQkYKspydo8
+ KkVkjWujQrkhw==
+Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ kevin.tian@intel.com, "Raj, Ashok" <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, stefanha@gmail.com,
+ Jason Wang <jasowang@redhat.com>, jun.j.tian@intel.com,
+ Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
+ Jacon Jun Pan <jacob.jun.pan@intel.com>, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,33 +182,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-According to a downstream commit I found in the Khadas vendor kernel,
-the GPU on G12b is wired up for ACE-lite, so (now that Panfrost knows
-how to handle this properly) we should describe it as such. Otherwise
-the mismatch leads to all manner of fun with mismatched attributes and
-inadvertently snooping stale data from caches, which would account for
-at least some of the brokenness observed on this platform.
+On Tue, Sep 15, 2020 at 03:08:51PM -0700, Jacob Pan wrote:
+> > A PASID vIOMMU solution sharable with VDPA and VFIO, based on a PASID
+> > control char dev (eg /dev/sva, or maybe /dev/iommu) seems like a
+> > reasonable starting point for discussion.
+> 
+> I am not sure what can really be consolidated in /dev/sva. 
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- arch/arm64/boot/dts/amlogic/meson-g12b.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+More or less, everything in this patch. All the manipulations of PASID
+that are required for vIOMMU use case/etc. Basically all PASID control
+that is not just a 1:1 mapping of the mm_struct.
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
-index 9b8548e5f6e5..ee8fcae9f9f0 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
-@@ -135,3 +135,7 @@ map1 {
- 		};
- 	};
- };
-+
-+&mali {
-+	dma-coherent;
-+};
--- 
-2.28.0.dirty
+> will have their own kerne-user interfaces anyway for their usage models.
+> They are just providing the specific transport while sharing generic IOMMU
+> UAPIs and IOASID management.
 
+> As I mentioned PASID management is already consolidated in the IOASID layer,
+> so for VDPA or other users, it just matter of create its own ioasid_set,
+> doing allocation.
+
+Creating the PASID is not the problem, managing what the PASID maps to
+is the issue. That is all uAPI that we don't really have today.
+
+> IOASID is also available to the in-kernel users which does not
+> need /dev/sva AFAICT. For bare metal SVA, I don't see a need to create this
+> 'floating' state of the PASID when created by /dev/sva. PASID allocation
+> could happen behind the scene when users need to bind page tables to a
+> device DMA stream.
+
+My point is I would like to see one set of uAPI ioctls to bind page
+tables. I don't want to have VFIO, VDPA, etc, etc uAPIs to do the exact
+same things only slightly differently.
+
+If user space wants to bind page tables, create the PASID with
+/dev/sva, use ioctls there to setup the page table the way it wants,
+then pass the now configured PASID to a driver that can use it. 
+
+Driver does not do page table binding. Do not duplicate all the
+control plane uAPI in every driver.
+
+PASID managment and binding is seperated from the driver(s) that are
+using the PASID.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
