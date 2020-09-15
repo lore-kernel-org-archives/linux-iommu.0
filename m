@@ -2,114 +2,90 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36173C43461
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 20:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2375FC433E2
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 22:06:55 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B0C6F20809
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 20:46:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="jO71LRkJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B0C6F20809
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9B19120809
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 22:06:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B19120809
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 838A586B15;
-	Tue, 15 Sep 2020 20:46:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 489E786B7B;
+	Tue, 15 Sep 2020 22:06:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RVtxCogXKNEn; Tue, 15 Sep 2020 20:46:31 +0000 (UTC)
+	with ESMTP id KcQXjbageEkw; Tue, 15 Sep 2020 22:06:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E69C086B1C;
-	Tue, 15 Sep 2020 20:46:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8081F86B83;
+	Tue, 15 Sep 2020 22:06:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C2E17C0859;
-	Tue, 15 Sep 2020 20:46:31 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6EF21C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 20:46:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DC2FC0859;
+	Tue, 15 Sep 2020 22:06:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C151BC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 22:06:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 57B80843EE
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 20:46:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id ABBA186B7F
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 22:06:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ruieYYgwZA6F for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 20:46:29 +0000 (UTC)
+ with ESMTP id qu-9N4ciUq93 for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 22:06:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BF01F86440
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 20:46:29 +0000 (UTC)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
- by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08FKdbd2086901;
- Tue, 15 Sep 2020 20:46:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=FmTz2fljRnoXwjllRl7fwASoDuhxx7pfhTKjMnx4SHY=;
- b=jO71LRkJPcAd11zSY1cRJVgUOCkoRNU82iNNWVF9pU6g0CAytZIab8/VDMxp+tis2DdM
- qMzCi8O/YwLIuRHgf0qjVz9sIHoNiSq5DmfkBoPYYBNKX22uzTTEWXEP9WsXzxvXce5S
- kChgRldBjUStVy1cVX3KcWl1BpOx1XssKqyVrx/+hYuw49hMrXgskrSXnebgXoJzRy/7
- C0apyML7V6f+5vYWuyICyHY7m68rYtGQUm+OgvmVWmFDMP0HcIrBliqzU6tp4laz+9nn
- uCC1CyhSuEt4lwQZH4ipGq1KyNNGXsaBB8sEprnBQo0OdlwaTxxp1A/d6qBu5ZbvW30o vA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by userp2130.oracle.com with ESMTP id 33gnrqyj1v-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 15 Sep 2020 20:46:24 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08FKjpkX008110;
- Tue, 15 Sep 2020 20:46:24 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
- by userp3020.oracle.com with ESMTP id 33hm318bdx-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 15 Sep 2020 20:46:24 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
- by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08FKkIIj019081;
- Tue, 15 Sep 2020 20:46:18 GMT
-Received: from [192.168.0.14] (/108.168.44.57)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Tue, 15 Sep 2020 20:46:18 +0000
-Subject: Re: [PATCH] dma-direct: Fix potential NULL pointer dereference
-To: Christoph Hellwig <hch@lst.de>
-References: <1600178594-22801-1-git-send-email-thomas.tai@oracle.com>
- <20200915140719.GA14831@lst.de>
- <f5cba632-421a-f375-3697-51a182a53a32@oracle.com>
- <20200915142624.GA16005@lst.de>
- <da9ec51d-aab5-695d-e388-5ae7c0bb30ea@oracle.com>
- <20200915150929.GA19770@lst.de>
-From: Thomas Tai <thomas.tai@oracle.com>
-Message-ID: <5136ed8d-d37d-8144-a6f3-c23f272d8926@oracle.com>
-Date: Tue, 15 Sep 2020 16:46:17 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EBE7786AF3
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 22:06:51 +0000 (UTC)
+IronPort-SDR: 1YFn8DxKzdSAIwRaS/G45X+F2tx7igSzGK56Mricr71cFnPJG1Sxsk7KwSTQJpP2Vg5/W0Bvvb
+ 8vxsO1v6vuaw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="156745600"
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; d="scan'208";a="156745600"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Sep 2020 15:06:50 -0700
+IronPort-SDR: EfDWGJzMGmk10dgnAirVuFw17Os1O9V/Z1BF1Y8pAKaT0+yY+JGcISidpqtFqTI4uX9m7sRxzv
+ NzGPvFeRi0Xw==
+X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; d="scan'208";a="302326059"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Sep 2020 15:06:50 -0700
+Date: Tue, 15 Sep 2020 15:08:51 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
+ to VMs
+Message-ID: <20200915150851.76436ca1@jacob-builder>
+In-Reply-To: <20200915184510.GB1573713@nvidia.com>
+References: <20200914134738.GX904879@nvidia.com>
+ <20200914162247.GA63399@otc-nc-03>
+ <20200914163354.GG904879@nvidia.com>
+ <20200914105857.3f88a271@x1.home>
+ <20200914174121.GI904879@nvidia.com>
+ <20200914122328.0a262a7b@x1.home>
+ <20200914190057.GM904879@nvidia.com>
+ <20200914224438.GA65940@otc-nc-03>
+ <20200915113341.GW904879@nvidia.com>
+ <20200915181154.GA70770@otc-nc-03>
+ <20200915184510.GB1573713@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20200915150929.GA19770@lst.de>
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9745
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- bulkscore=0 mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009150163
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9745
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- spamscore=0
- lowpriorityscore=0 malwarescore=0 mlxscore=0 bulkscore=0 suspectscore=0
- clxscore=1015 mlxlogscore=999 adultscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009150162
-Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org, konrad.wilk@oracle.com
+Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ kevin.tian@intel.com, "Raj, Ashok" <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, stefanha@gmail.com,
+ Jason Wang <jasowang@redhat.com>, jun.j.tian@intel.com,
+ Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
+ Jacon Jun Pan <jacob.jun.pan@intel.com>, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -122,68 +98,80 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Jason,
 
+On Tue, 15 Sep 2020 15:45:10 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On 2020-09-15 11:09 a.m., Christoph Hellwig wrote:
-> On Tue, Sep 15, 2020 at 10:40:39AM -0400, Thomas Tai wrote:
->>> +++ b/include/linux/dma-direct.h
->>> @@ -62,9 +62,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->>>    {
->>>    	dma_addr_t end = addr + size - 1;
->>>    -	if (!dev->dma_mask)
->>> -		return false;
->>> -
->>
->> I am concerned that some drivers may rely on this NULL checking. Would you
->> think we can keep this checking and use the following WARN_ON_ONCE()?
+> On Tue, Sep 15, 2020 at 11:11:54AM -0700, Raj, Ashok wrote:
+> > > PASID applies widely to many device and needs to be introduced with a
+> > > wide community agreement so all scenarios will be supportable.  
+> > 
+> > True, reading some of the earlier replies I was clearly confused as I
+> > thought you were talking about mdev again. But now that you stay it, you
+> > have moved past mdev and its the PASID interfaces correct?  
 > 
-> dma_capable is not a helper for drivers, but just for dma-direct
-> and related code.  And this patch adds the checks for the three
-> places how we call into the ->map* methods.
+> Yes, we agreed mdev for IDXD at LPC, didn't talk about PASID.
 > 
+> > For the native user applications have just 1 PASID per
+> > process. There is no need for a quota management.  
+> 
+> Yes, there is. There is a limited pool of HW PASID's. If one user fork
+> bombs it can easially claim an unreasonable number from that pool as
+> each process will claim a PASID. That can DOS the rest of the system.
+> 
+> If PASID DOS is a worry then it must be solved at the IOMMU level for
+> all user applications that might trigger a PASID allocation. VFIO is
+> not special.
+> 
+> > IIUC, you are asking that part of the interface to move to a API
+> > interface that potentially the new /dev/sva and VFIO could share? I
+> > think the API's for PASID management themselves are generic (Jean's
+> > patchset + Jacob's ioasid set management).  
+> 
+> Yes, the in kernel APIs are pretty generic now, and can be used by
+> many types of drivers.
+> 
+Right, IOMMU UAPIs are not VFIO specific, we pass user pointer to the IOMMU
+layer to process.
 
-Hi Christoph,
-I tried out the suggested changes, and it successfully warned the null 
-pointer without panic. I notice that there are some places outside the 
-dma-direct, which calls dma_capable().
+Similarly for PASID management, the IOASID extensions we are proposing
+will handle ioasid_set (groups/pools), quota, permissions, and notifications
+in the IOASID core. There is nothing VFIO specific.
+https://lkml.org/lkml/2020/8/22/12
 
-https://elixir.bootlin.com/linux/v5.9-rc5/source/arch/x86/kernel/amd_gart_64.c#L187
+> As JasonW kicked this off, VDPA will need all this identical stuff
+> too. We already know this, and I think Intel VDPA HW will need it, so
+> it should concern you too :)
+> 
+> A PASID vIOMMU solution sharable with VDPA and VFIO, based on a PASID
+> control char dev (eg /dev/sva, or maybe /dev/iommu) seems like a
+> reasonable starting point for discussion.
+> 
+I am not sure what can really be consolidated in /dev/sva. VFIO and VDPA
+will have their own kerne-user interfaces anyway for their usage models.
+They are just providing the specific transport while sharing generic IOMMU
+UAPIs and IOASID management.
 
-https://elixir.bootlin.com/linux/v5.9-rc5/source/drivers/xen/swiotlb-xen.c#L387
+As I mentioned PASID management is already consolidated in the IOASID layer,
+so for VDPA or other users, it just matter of create its own ioasid_set,
+doing allocation.
 
-Also, if I remove the null checking in dma_capable(), I may run into the 
-risk of a null pointer dereference within the function.
+IOASID is also available to the in-kernel users which does not
+need /dev/sva AFAICT. For bare metal SVA, I don't see a need to create this
+'floating' state of the PASID when created by /dev/sva. PASID allocation
+could happen behind the scene when users need to bind page tables to a
+device DMA stream. Security authorization of the PASID is natively enforced
+when user try to bind page table, there is no need to pass the FD handle of
+the PASID back to the kernel as you suggested earlier.
 
-@@ -62,9 +62,6 @@ static inline bool dma_capable(struct device *dev, 
-dma_addr_t addr, size_t size,
-  {
-  	dma_addr_t end = addr + size - 1;
+Thanks,
 
--	if (!dev->dma_mask)
--		return false;
--
-  	if (is_ram && !IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) &&
-  	    min(addr, end) < phys_to_dma(dev, PFN_PHYS(min_low_pfn)))
-  		return false;
-	
-	return end <= min_not_zero(*dev->dma_mask, dev->bus_dma_limit);
-                                     ^
-                                     |
-                                     ** risk of a null dereference **
-}
-
-
-Given that the WARN_ON_ONCE already did the intended warning, would you 
-be ok that I keep the null checking in dma_capable()?
-
-Thank you,
-Thomas
-
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
