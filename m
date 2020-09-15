@@ -2,127 +2,100 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB902C43461
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 12:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A608C43461
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 12:36:56 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07A2D20731
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 12:30:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C826A20731
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 12:36:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="a9bPpIzJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07A2D20731
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fKJB7Rpv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C826A20731
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 93FD787132;
-	Tue, 15 Sep 2020 12:30:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A1B0787091;
+	Tue, 15 Sep 2020 12:36:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Z2H2J7PXJoO5; Tue, 15 Sep 2020 12:30:51 +0000 (UTC)
+	with ESMTP id hXrpiWUzxmLy; Tue, 15 Sep 2020 12:36:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7DE3987130;
-	Tue, 15 Sep 2020 12:30:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DA2F687028;
+	Tue, 15 Sep 2020 12:36:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA6EC0859;
-	Tue, 15 Sep 2020 12:30:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CCD99C0859;
+	Tue, 15 Sep 2020 12:36:54 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 49452C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:30:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B70E0C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:36:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 31531866B8
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:30:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A9636866B8
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:36:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CO+jRTflhpXH for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 12:30:49 +0000 (UTC)
+ with ESMTP id xBjgr3LMmPEG for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 12:36:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on2075.outbound.protection.outlook.com [40.107.220.75])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0084986693
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:30:48 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YSrd3V2WU5FtKWxQin4XgeoIh0p96YaJGeftzH0v0vk22UEthfp1zqQ+D204ENbqjlkImGJ1Bjqhp9WLh1ynquZx5sJJTn6CbLsy1+30Jm2loPZne1EPvbqSbrfZKK27OETOa8EUgBPKjQWAVD2yeNQrqo9iFyDHxgcWqqSLfSrs6OAYPNWuJqW7heoo96Jy+AjHRu/1CJqlup/KAwMiRJREzvYrW2NmnkH8GIVOKcXDYLGpHRAzu88PFr7Ik3EBD598j1P8/RmZQ0xa8qCrP0PhxhfXnAtPwJEsFp1lKKkyZHw5TVroOLC8k64kCFjaN7Pgl+iRvsWzHanlR+wrrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GPdytxBffdiv8r9DXyTfJK09sMmLbzQISuPSE0oJLGo=;
- b=Jkjfel7YktE83ODNJ7JdmuttOXCvqc4TrdUl94ed41yGf2ch255cnqhrI5RhT7ZCbnmv0GS4OXjS2Bu4fN5lpqvf0EEUl1PHhag57q3JOJl05JkVmNL8I9iAWygZ0jLVE0pQSGVJtuqbBCEALwECX5B7FTM8wTBfI8kckv8yaC2PrL7R+eRJinos76d2Qwnxm6YE05PobIW6bmyuy9Jys8svCVuJ20n0es/C6NBkGKAYuvGYaYy5NVF0Yhd98eKOnihZBkb1Qse0Ewa4P4E3ZEC/CYr78pHQ/OJU3G1adzFDB9eMXaUNJ93pt59Rb+REaZfjIvKjJ0JwV93G9BSWbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GPdytxBffdiv8r9DXyTfJK09sMmLbzQISuPSE0oJLGo=;
- b=a9bPpIzJcVapFaZ430qPK5qJbW1tsJxswvmVMaTIquWNCUZmda1qC+78Sz8PZkOtejSbNykmrYYs9maUf6viHNXBWeNTrNTCG8ICR4rkGloXm2bPCpzKugeJYheMZ6dRJp+PWdOB26ZqFMCpmE35Ci9UbvOyT2kjSJdx7H8CYGI=
-Authentication-Results: amd.com; dkim=none (message not signed)
- header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
- DM6PR12MB4433.namprd12.prod.outlook.com (2603:10b6:5:2a1::20) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3370.17; Tue, 15 Sep 2020 12:30:47 +0000
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e]) by DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e%5]) with mapi id 15.20.3370.019; Tue, 15 Sep 2020
- 12:30:47 +0000
-Subject: Re: [PATCH] iommu/amd: fix interrupt remapping for avic
-To: Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org
-References: <20200913124211.6419-1-mlevitsk@redhat.com>
- <60856c61-062b-8d92-e565-38bd00855228@amd.com>
- <04a8ab5cb1f6662f72bcad856da3415d6d9b2593.camel@redhat.com>
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Message-ID: <dd0b9a98-149a-286c-2793-8ea0e8b60e2e@amd.com>
-Date: Tue, 15 Sep 2020 19:30:38 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
-In-Reply-To: <04a8ab5cb1f6662f72bcad856da3415d6d9b2593.camel@redhat.com>
-Content-Language: en-US
-X-ClientProxiedBy: SG2PR0302CA0017.apcprd03.prod.outlook.com
- (2603:1096:3:2::27) To DM5PR12MB1163.namprd12.prod.outlook.com
- (2603:10b6:3:7a::18)
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
+ [209.85.218.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9674486693
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:36:52 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id r7so4761346ejs.11
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 05:36:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=QMpHViZdWCmsMdl07XVFEUzlf6tpqXDt+wbPmBI/w5E=;
+ b=fKJB7Rpvs15tCZdwop3qOFSTTdal+hWhYT8c3itQLABzVVqBO3fvJ1j7FVFx6ugcMx
+ nKtdwMl97GuhV5nxql1UgudP77EzRJD5gljZS3Zrdx1PP5xtWcKwmBoR6UQkOb+K/Grk
+ EQP04rSJ19Z0+k2BG6WyRktUvDvEfhGCYfLorgwlgDR7KCU00L0fiNgw/Cp7pU/iz/uB
+ X5oqz05HfHpEQxVC1YwDdbGdFZhvZ71IAYlZawHEw0QplWtTviWBRnRr2FBvVEw5YRHy
+ QCY7pS2t6tQrLt6Zaji58/tK+TG4WVZ7gYnsqXPIjB9BXPWxSDw9XZ3LGufbki4ZQLhH
+ aCbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=QMpHViZdWCmsMdl07XVFEUzlf6tpqXDt+wbPmBI/w5E=;
+ b=gZ0uTEG/toQfkY7l/0Wi8azcW4XP5Er82mYiLEVA2lhJHTGzp7a8Ja+BixtnMqFyne
+ yHsnviVy5CeFtvtVqsjy5H8nWSIVlmwa9sDRC3bil5Mc3hPC0XLbjoRkHGUvWXYtMyXi
+ wy5ehM2hlE1FnvwcRnO8KbnTD1fncaSy6wrFAJhFlIQTktCDyCfJ0USSVmz2a2juS+Px
+ vpLlW0HD1No/7rBVQGcoELyFxXvYvdyb+MDydMxi5u5TLcjGBP00h20qpULNcpwIq1gR
+ spxDAhvaXW/FEYvQdFW/u0jlJtXbdhgouqpaHYUlt8Ffq59Eo5jvMg/LTHj+GVPId2Tw
+ 2dHA==
+X-Gm-Message-State: AOAM533Lz7c/sITYHFx84BENzPi4Jvbsrw/xFabRxYGInDbx+qDXRvdx
+ 7oZSaQHHuE6NY1xIP+IU70Q=
+X-Google-Smtp-Source: ABdhPJzeu2PzrU8ZEiZBJ27cD9bDlgE0IOExue7Tqm+piwpRBwWsICa/ReD+KBQ14Mk5ZKs3GvW7xg==
+X-Received: by 2002:a17:906:3e08:: with SMTP id
+ k8mr19458790eji.480.1600173411066; 
+ Tue, 15 Sep 2020 05:36:51 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+ by smtp.gmail.com with ESMTPSA id u9sm10180440eje.119.2020.09.15.05.36.49
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 15 Sep 2020 05:36:49 -0700 (PDT)
+Date: Tue, 15 Sep 2020 14:36:48 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/4] dt-bindings: reserved-memory: Document "active"
+ property
+Message-ID: <20200915123648.GA3496938@ulmo>
+References: <20200904130000.691933-1-thierry.reding@gmail.com>
+ <20200914220829.GA330122@bogus>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from Suravees-MacBook-Pro.local (110.169.70.5) by
- SG2PR0302CA0017.apcprd03.prod.outlook.com (2603:1096:3:2::27) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3391.5 via Frontend Transport; Tue, 15 Sep 2020 12:30:44 +0000
-X-Originating-IP: [110.169.70.5]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 86a6f92c-a739-46fe-48ad-08d859732bff
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4433:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4433D4CCF0C0FEE02E9261C8F3200@DM6PR12MB4433.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: foxILmYQBX77+QcEY/nfAWEn5rtFOKPMYjscCxoxLtvcg9SAte9i/AvWrR7JzZ/X9Eqbz1xoG8+ReJGi+G9nreSzQjL+G0ZDs7hH9+OFNVfHSD60DUyyG8gQQ+EF9NNNTnIZA8GFIT0JmqrUJvuCpueVAVmrlZB2XJ4M/xWW+uoTLGArpHh6cv2viwxg4HiL1QaO6coLO8jTvssiXGu8LAmeOXlJeJXwoPZGlXciZKP1+//a+3GciAQRbaPNR79Yv56yeuzbPdJ3Sz2f50tOL5fhU4OJlJTp5t+3y3zRNuGm3bU8vizh7gzp+T/TbeNDiLCTKmq5wB7Uy/fvA3umYR/dEeMC6Rf+Dzo8p/M3cWgl3z8pOqIzkSauMEhoYYf5/jZBwkSuxB8iutYNeMx6WtE+jHLudC9gZJwweOs9B1gNsuMfP0RYCSiwqLd9iznJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(376002)(39860400002)(396003)(136003)(366004)(36756003)(52116002)(66556008)(66476007)(26005)(6486002)(66946007)(16526019)(186003)(6506007)(86362001)(53546011)(83380400001)(2906002)(31696002)(4326008)(31686004)(478600001)(316002)(8936002)(54906003)(44832011)(8676002)(2616005)(956004)(6512007)(5660300002)(6666004)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: EuXDzseU8UqxQLhC2aBSPvgamjwIreRLToraX+SrEy1GRTEM8EpT4kM3GP6jjOaM1qaS1b1kgTD0f4cXWl240IdaFnjgni+pqEcIN5exkwZXUacU62/CFyqeH8IP1Qux3uBLQlAynn5LyDurYGxxHBqQw02S28RGZ6RNJipzoT89JKbYYfHBpsGFZVMPdvhkEWoUoNrfac8g+IGlbsm1zZ4/hyaMvImIV5tmjjMMyvGaphghlnJYNPhRzPjVgHtklFmT4w0xPxa6T/s9NUWBxRmlx+u6ky4Vso3x4RgJBBPlKAYen8x75fb3tfDvFbg67ejQwZ7iN5rbQw49b5w4ciH/Yjf0ad9oxrNacAnoDIJPNVNiesuigFVMnm/5ymjxmTZpF31ZWKpXRtjzCaA1kray7Ch8HoLbcju66XRcPCnZIXoy8Q6fXpfJWKFOxhRuWQA5CFjDfPdMqqgUxvfXovGvDAFDTbSDFB7L1OKh8/IipCLeBiMoRXzD2apYKqEkV3oK1vE/3cItJ2keY/pQjMpGub5h+BIKOGa40VO8ybPQNTVcIKQfOfEnOCYB2P7j6GHFAgI8OEhFAWrXptmX7sE/R4PBmkpz2yEbHALdEbPVVJ8pNHjWHiXeyCrk7Y4IepWrcT4R6Nak6qM0rSsVjw==
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86a6f92c-a739-46fe-48ad-08d859732bff
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2020 12:30:46.9460 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t+hqZi+QExl2OeNHUX2eV9SpHuzpHsXuMdNvU/ayO8zz3xy1+hKpVk+GhpKWVD5lY49bXBupFOgO7nCipD4OLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4433
-Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>, "Grimm,
- Jon" <jon.grimm@amd.com>, Joao Martins <joao.m.martins@oracle.com>
+In-Reply-To: <20200914220829.GA330122@bogus>
+User-Agent: Mutt/1.14.6 (2020-07-11)
+Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,114 +108,130 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============5312647549777990704=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
+--===============5312647549777990704==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
+Content-Disposition: inline
 
-On 9/15/20 6:25 PM, Maxim Levitsky wrote:
-> On Mon, 2020-09-14 at 21:48 +0700, Suravee Suthikulpanit wrote:
->> Maxim,
->>
->> On 9/13/2020 7:42 PM, Maxim Levitsky wrote:
->>> Commit e52d58d54a32 ("iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE")
->>> accidentally removed an assumption that modify_irte_ga always set the valid bit
->>> and amd_iommu_activate_guest_mode relied on that.
->>>
->>> Side effect of this is that on my machine, VFIO based VMs with AVIC enabled
->>> would eventually crash and show IOMMU errors like that:
->>>
->>> AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0055 address=0xfffffffdf8000000 flags=0x0008]
->>>
->>> Fixes: e52d58d54a321 ("iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE")
->>> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
->>> ---
->>>    drivers/iommu/amd/iommu.c | 1 +
->>>    1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->>> index 07ae8b93887e5..aff4cc1869356 100644
->>> --- a/drivers/iommu/amd/iommu.c
->>> +++ b/drivers/iommu/amd/iommu.c
->>> @@ -3853,6 +3853,7 @@ int amd_iommu_activate_guest_mode(void *data)
->>>    	entry->hi.fields.ga_root_ptr       = ir_data->ga_root_ptr;
->>>    	entry->hi.fields.vector            = ir_data->ga_vector;
->>>    	entry->lo.fields_vapic.ga_tag      = ir_data->ga_tag;
->>> +	entry->lo.fields_remap.valid = 1;
->>>    
->>>    	return modify_irte_ga(ir_data->irq_2_irte.devid,
->>>    			      ir_data->irq_2_irte.index, entry, ir_data);
->>>
->>
->> Could you please try with the following patch instead?
->>
->> --- a/drivers/iommu/amd/iommu.c
->> +++ b/drivers/iommu/amd/iommu.c
->> @@ -3840,14 +3840,18 @@ int amd_iommu_activate_guest_mode(void *data)
->>    {
->>           struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
->>           struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
->> +       u64 valid;
->>
->>           if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
->>               !entry || entry->lo.fields_vapic.guest_mode)
->>                   return 0;
->>
->> +       valid = entry->lo.fields_vapic.valid;
->> +
->>           entry->lo.val = 0;
->>           entry->hi.val = 0;
->>
->> +       entry->lo.fields_vapic.valid       = valid;
->>           entry->lo.fields_vapic.guest_mode  = 1;
->>           entry->lo.fields_vapic.ga_log_intr = 1;
->>           entry->hi.fields.ga_root_ptr       = ir_data->ga_root_ptr;
->> @@ -3864,12 +3868,14 @@ int amd_iommu_deactivate_guest_mode(void *data)
->>           struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
->>           struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
->>           struct irq_cfg *cfg = ir_data->cfg;
->> -       u64 valid = entry->lo.fields_remap.valid;
->> +       u64 valid;
->>
->>           if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
->>               !entry || !entry->lo.fields_vapic.guest_mode)
->>                   return 0;
->>
->> +       valid = entry->lo.fields_remap.valid;
->> +
->>           entry->lo.val = 0;
->>           entry->hi.val = 0;
-> I see. I based my approach on the fact that valid bit was
-> set always to true anyway before, plus that amd_iommu_activate_guest_mode
-> should be really only called when someone activates a valid interrupt remapping
-> entry, but IMHO the approach of preserving the valid bit is safer anyway.
-> 
-> It works on my system (I applied the patch manually, since either your or my email client,
-> seems to mangle the patch)
-> 
-> Thanks,
-> Best regards,
-> 	Maxim Levitsky
-> 
-> 
 
-Sorry for the mangled patch. I'll submit the patch w/ your information. Thanks for your help reporting, debugging, and 
-testing the patch.
+--KsGdsel6WgEHnImy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sincerely,
+On Mon, Sep 14, 2020 at 04:08:29PM -0600, Rob Herring wrote:
+> On Fri, Sep 04, 2020 at 02:59:57PM +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > Reserved memory regions can be marked as "active" if hardware is
+> > expected to access the regions during boot and before the operating
+> > system can take control. One example where this is useful is for the
+> > operating system to infer whether the region needs to be identity-
+> > mapped through an IOMMU.
+>=20
+> I like simple solutions, but this hardly seems adequate to solve the=20
+> problem of passing IOMMU setup from bootloader/firmware to the OS. Like=
+=20
+> what is the IOVA that's supposed to be used if identity mapping is not=20
+> used?
 
-Suravee
->> --
-> 
->>
->> Thanks,
->> Suravee
->>
-> 
-> 
+The assumption here is that if the region is not active there is no need
+for the IOVA to be specified because the kernel will allocate memory and
+assign any IOVA of its choosing.
+
+Also, note that this is not meant as a way of passing IOMMU setup from
+the bootloader or firmware to the OS. The purpose of this is to specify
+that some region of memory is actively being accessed during boot. The
+particular case that I'm looking at is where the bootloader set up a
+splash screen and keeps it on during boot. The bootloader has not set up
+an IOMMU mapping and the identity mapping serves as a way of keeping the
+accesses by the display hardware working during the transitional period
+after the IOMMU translations have been enabled by the kernel but before
+the kernel display driver has had a chance to set up its own IOMMU
+mappings.
+
+> If you know enough about the regions to assume identity mapping, then=20
+> can't you know if active or not?
+
+We could alternatively add some property that describes the region as
+requiring an identity mapping. But note that we can't make any
+assumptions here about the usage of these regions because the IOMMU
+driver simply has no way of knowing what they are being used for.
+
+Some additional information is required in device tree for the IOMMU
+driver to be able to make that decision.
+
+Thierry
+
+>=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> >  .../bindings/reserved-memory/reserved-memory.txt           | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved=
+-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-me=
+mory.txt
+> > index 4dd20de6977f..163d2927e4fc 100644
+> > --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory=
+=2Etxt
+> > +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory=
+=2Etxt
+> > @@ -63,6 +63,13 @@ reusable (optional) - empty property
+> >        able to reclaim it back. Typically that means that the operating
+> >        system can use that region to store volatile or cached data that
+> >        can be otherwise regenerated or migrated elsewhere.
+> > +active (optional) - empty property
+> > +    - If this property is set for a reserved memory region, it indicat=
+es
+> > +      that some piece of hardware may be actively accessing this regio=
+n.
+> > +      Should the operating system want to enable IOMMU protection for a
+> > +      device, all active memory regions must have been identity-mapped
+> > +      in order to ensure that non-quiescent hardware during boot can
+> > +      continue to access the memory.
+> > =20
+> >  Linux implementation note:
+> >  - If a "linux,cma-default" property is present, then Linux will use the
+> > --=20
+> > 2.28.0
+> >=20
+
+--KsGdsel6WgEHnImy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9gtV0ACgkQ3SOs138+
+s6Edvg/8DciSGbTBg9+QDCo01JmHSUcC8htGJTlXuHqgxjs9aS7GagCow3ajODFU
+MSr4b79jqQCwcDGMeVRuklj2fs4GdoPHLLnMggHd82BWo/xaWTHk4onv18igkGTz
+kq9eZkZauKzBCzRt/+XpaWO20MUYFNWcBRIw9veUcTJ4Gt0Tf68BnCW4APxEzlM6
+luZ+dPvzcwWnLM7406Kira+Rsl6GQvUPkqL1qazjV2lfAiFnFfl/PIGszXDmmbzS
+4gL9aAXiEVE9J3JjyKT4USswjMqeSeCYE5nUz9YD/jruzmw8gtgocgINrDvDZ6yJ
+q2eZdqG+EbqMZhfsvcf7zfg+XwptbaDLTWrx0P8wABT3sndwa15uIN6TN9xcPFg3
+0AdTGfv4g5iCHf/DS3ATsDEybX3a6RwVKBRuQeZDZ8/PiL4x1jSTUsqBtuniAKdJ
+lc1rFBHwW8JzbTJQhlMSs9ceINz/RfK3BR0KLUaSWCAbTsLZQ05kX2IkTiCdmOLp
+/mrRvT5/e2rrWOAM8xrrRovwobZQ2bSk0dsc2h5XSkG0kbfxrYHu/UhhVsRIL085
+GjdwI4F9zwhIBnVODvsYXhUvGtHgpgxO3nZE02RMOeh7luKVwIpOt/KZPdcmUCR+
+5C+bzZcbeDY13rs/Gpe2oLjvUjBneMyFI7w+VuJEYWHZkqIeAa4=
+=ehzD
+-----END PGP SIGNATURE-----
+
+--KsGdsel6WgEHnImy--
+
+--===============5312647549777990704==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5312647549777990704==--
