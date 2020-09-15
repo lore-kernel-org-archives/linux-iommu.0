@@ -2,81 +2,86 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03179C433E2
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 01:53:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02203C433E2
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 02:02:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6C77B20756
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 01:53:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C77B20756
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9BC86207EA
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 02:02:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BC86207EA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 18B1187085;
-	Tue, 15 Sep 2020 01:53:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 44C0D86460;
+	Tue, 15 Sep 2020 02:02:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pj25zHOtm2PK; Tue, 15 Sep 2020 01:53:25 +0000 (UTC)
+	with ESMTP id 2TF2WkOqrblV; Tue, 15 Sep 2020 02:02:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0F65A8707F;
-	Tue, 15 Sep 2020 01:53:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2AC0A8642E;
+	Tue, 15 Sep 2020 02:02:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5CB8C0864;
-	Tue, 15 Sep 2020 01:53:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7D6CBC0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 01:53:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A80BC0864;
+	Tue, 15 Sep 2020 02:02:20 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B01C8C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 02:02:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6CD0E85DA5
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 01:53:23 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 747B82043C
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 02:02:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pWHzUkpoorgk for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 01:53:22 +0000 (UTC)
+ with ESMTP id oKO24kJYpjrx for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 02:02:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 5D9FB85D9B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 01:53:22 +0000 (UTC)
-IronPort-SDR: 0MdfEcoCk2rT2caPvKJI1GzoOe49PTzG5Z0nrvfjqshq5kaU8VGYk5WbzWAxhhTEDrXQD+9Czo
- xkWXbMtDsafg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="158471727"
-X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; d="scan'208";a="158471727"
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9B9FE2040F
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 02:02:16 +0000 (UTC)
+IronPort-SDR: e5POSe5rZcLQFaqrpYsk6Cu8Pd7QntKLY+f7sBhkof9RAsLVzUesyJOe84604NkNh6MjDBWFJc
+ RzV7HeM36BNA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="159234268"
+X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; d="scan'208";a="159234268"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Sep 2020 18:53:21 -0700
-IronPort-SDR: Xe0R/W9hHMIDWOmhCaQaggHuGJaKABRv0g/U3QAz43IDpHV8Dap6nBazZBZzy2R8+IlK5B+uk3
- B9igPB/DEzhQ==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Sep 2020 19:02:15 -0700
+IronPort-SDR: N/Yz5aGcM6gsT2R3Poqs+0dJtTuuU+23RLSREefvakHjlB+NAFAaosxh7IeD8BOoc4ThbYgQNg
+ 42zOt3Ujv1Dg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; d="scan'208";a="409037267"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 14 Sep 2020 18:53:17 -0700
-Subject: Re: [PATCH v3 0/6] Convert the intel iommu driver to the dma-iommu api
-To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Tom Murphy <murphyt7@tcd.ie>,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@infradead.org>
-References: <20200912032200.11489-1-baolu.lu@linux.intel.com>
- <51a1baec-48d1-c0ac-181b-1fba92aa428d@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <001f4446-7c43-9832-42d8-55dc4a13c2ae@linux.intel.com>
-Date: Tue, 15 Sep 2020 09:47:24 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; d="scan'208";a="330979588"
+Received: from otcwcpicx6.sc.intel.com ([172.25.55.29])
+ by fmsmga004.fm.intel.com with ESMTP; 14 Sep 2020 19:02:14 -0700
+Date: Tue, 15 Sep 2020 02:02:14 +0000
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v7 3/9] docs: x86: Add documentation for SVA (Shared
+ Virtual Addressing)
+Message-ID: <20200915020214.GA437862@otcwcpicx6.sc.intel.com>
+References: <1598540794-132666-1-git-send-email-fenghua.yu@intel.com>
+ <1598540794-132666-4-git-send-email-fenghua.yu@intel.com>
+ <626fe21c-1f82-f4f8-e37b-32d91e7d557a@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <51a1baec-48d1-c0ac-181b-1fba92aa428d@linux.intel.com>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, Intel-gfx@lists.freedesktop.org,
- Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <626fe21c-1f82-f4f8-e37b-32d91e7d557a@infradead.org>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Ravi V Shankar <ravi.v.shankar@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Peter Zijlstra <peterz@infradead.org>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>, Dave Hansen <dave.hansen@intel.com>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
+ Andy Lutomirski <luto@kernel.org>, H Peter Anvin <hpa@zytor.com>,
+ Thomas Gleixner <tglx@linutronix.de>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,106 +94,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Tvrtko,
+Hi, Randy,
 
-On 9/14/20 4:04 PM, Tvrtko Ursulin wrote:
-> 
+On Sat, Sep 05, 2020 at 10:54:59AM -0700, Randy Dunlap wrote:
 > Hi,
 > 
-> On 12/09/2020 04:21, Lu Baolu wrote:
->> Tom Murphy has almost done all the work. His latest patch series was
->> posted here.
->>
->> https://lore.kernel.org/linux-iommu/20200903201839.7327-1-murphyt7@tcd.ie/
->>
->> Thanks a lot!
->>
->> This series is a follow-up with below changes:
->>
->> 1. Add a quirk for the i915 driver issue described in Tom's cover
->> letter.
+> I'll add a few edits other than those that Borislav made.
+> (nice review job, BP)
 > 
-> Last week I have copied you on an i915 series which appears to remove the need for this quirk. so if we get those i915 patches reviewed and merged, do you still want to pursue this quirk?
+> 
+> On 8/27/20 8:06 AM, Fenghua Yu wrote:
+> > From: Ashok Raj <ashok.raj@intel.com>
+> > 
+> > ENQCMD and Data Streaming Accelerator (DSA) and all of their associated
+> > features are a complicated stack with lots of interconnected pieces.
+> > This documentation provides a big picture overview for all of the
+> > features.
+> > 
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Reviewed-by: Tony Luck <tony.luck@intel.com>
+> > ---
+> > diff --git a/Documentation/x86/sva.rst b/Documentation/x86/sva.rst
+> > new file mode 100644
+> > index 000000000000..6e7ac565e127
+> > --- /dev/null
+> > +++ b/Documentation/x86/sva.rst
+> > @@ -0,0 +1,254 @@
+> > +MMIO. This doesn't scale as the number of threads becomes quite large. The
+> > +hardware also manages the queue depth for Shared Work Queues (SWQ), and
+> > +consumers don't need to track queue depth. If there is no space to accept
+> > +a command, the device will return an error indicating retry. Also
+> > +submitting a command to an MMIO address that can't accept ENQCMD will
+> > +return retry in response. In the new DMWr PCIe terminology, devices need to
+> 
+> so how does a submitter know whether a return of "retry" means no_space or
+> invalid_for_this_device?
 
-It's up to the graphic guys. I don't know the details in i915 driver.
-I don't think my tests could cover all cases.
+I will add "A user should check Deferrable Memory Write (DMWr) capability on
+the device and only submits ENQCMD when the device supports it."
 
-> 
->> 2. Fix several bugs in patch "iommu: Allow the dma-iommu api to use
->> bounce buffers" to make the bounce buffer work for untrusted devices.
->> 3. Several cleanups in iommu/vt-d driver after the conversion.
-> 
-> With the previous version of the series I hit a problem on Ivybridge where apparently the dma engine width is not respected. At least that is my layman interpretation of the errors. From the older thread:
-> 
-> <3> [209.526605] DMAR: intel_iommu_map: iommu width (39) is not sufficient for the mapped address (ffff008000)
-> 
-> Relevant iommu boot related messages are:
-> 
-> <6>[    0.184234] DMAR: Host address width 36
-> <6>[    0.184245] DMAR: DRHD base: 0x000000fed90000 flags: 0x0
-> <6>[    0.184288] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap c0000020e60262 ecap f0101a
-> <6>[    0.184308] DMAR: DRHD base: 0x000000fed91000 flags: 0x1
-> <6>[    0.184337] DMAR: dmar1: reg_base_addr fed91000 ver 1:0 cap c9008020660262 ecap f0105a
-> <6>[    0.184357] DMAR: RMRR base: 0x000000d8d28000 end: 0x000000d8d46fff
-> <6>[    0.184377] DMAR: RMRR base: 0x000000db000000 end: 0x000000df1fffff
-> <6>[    0.184398] DMAR-IR: IOAPIC id 2 under DRHD base  0xfed91000 IOMMU 1
-> <6>[    0.184414] DMAR-IR: HPET id 0 under DRHD base 0xfed91000
-> <6>[    0.184428] DMAR-IR: Queued invalidation will be enabled to support x2apic and Intr-remapping.
-> <6>[    0.185173] DMAR-IR: Enabled IRQ remapping in x2apic mode
-> 
-> <6>[    0.878934] DMAR: No ATSR found
-> <6>[    0.878966] DMAR: dmar0: Using Queued invalidation
-> <6>[    0.879007] DMAR: dmar1: Using Queued invalidation
-> 
-> <6>[    0.915032] DMAR: Intel(R) Virtualization Technology for Directed I/O
-> <6>[    0.915060] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-> <6>[    0.915084] software IO TLB: mapped [mem 0xc80d4000-0xcc0d4000] (64MB)
-> 
-> (Full boot log at https://intel-gfx-ci.01.org/tree/drm-tip/Trybot_7054/fi-ivb-3770/boot0.txt, failures at https://intel-gfx-ci.01.org/tree/drm-tip/Trybot_7054/fi-ivb-3770/igt@i915_selftest@live@blt.html.)
-> 
-> Does this look familiar or at least plausible to you? Is this something your new series has fixed?
+So the user doesn't need to distinguish "no space" and "invalid for this device"
+errors.
 
-This happens during attaching a domain to device. It has nothing to do
-with this patch series. I will look into this issue, but not in this
-email thread context.
+All of your other comments will be addressed in the next version.
 
-Best regards,
-baolu
+Thank you very much for your comments!
 
-> 
-> Regards,
-> 
-> Tvrtko
-> 
->>
->> Please review and test.
->>
->> Best regards,
->> baolu
->>
->> Lu Baolu (2):
->>     iommu: Add quirk for Intel graphic devices in map_sg
->>     iommu/vt-d: Cleanup after converting to dma-iommu ops
->>
->> Tom Murphy (4):
->>     iommu: Handle freelists when using deferred flushing in iommu drivers
->>     iommu: Add iommu_dma_free_cpu_cached_iovas()
->>     iommu: Allow the dma-iommu api to use bounce buffers
->>     iommu/vt-d: Convert intel iommu driver to the iommu ops
->>
->>    .../admin-guide/kernel-parameters.txt         |   5 -
->>    drivers/iommu/dma-iommu.c                     | 229 ++++-
->>    drivers/iommu/intel/Kconfig                   |   1 +
->>    drivers/iommu/intel/iommu.c                   | 885 +++---------------
->>    include/linux/dma-iommu.h                     |   8 +
->>    include/linux/iommu.h                         |   1 +
->>    6 files changed, 323 insertions(+), 806 deletions(-)
->>
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
