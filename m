@@ -2,90 +2,67 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A51C43461
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C604CC43461
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 17:55:38 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 236B220872
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:33:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="n3p/yVJZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 236B220872
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1917E20731
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 17:55:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1917E20731
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D6B52864B5;
-	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C1300854AD;
+	Tue, 15 Sep 2020 17:55:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yG2dNBn4TDY0; Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
+	with ESMTP id mkNRMqYrbuzc; Tue, 15 Sep 2020 17:55:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 556D18645E;
-	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2A6F2863F2;
+	Tue, 15 Sep 2020 17:55:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3ADAAC0859;
-	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 04848C089F;
+	Tue, 15 Sep 2020 17:55:36 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 617B0C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45D4BC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 17:55:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4FFAB86857
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:18 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 414B986A78
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 17:55:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jlnggu3P5kar for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 16:33:17 +0000 (UTC)
+ with ESMTP id uL8myVMLxX5O for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 17:55:33 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 7883586855
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=3uuWATlux5CLwoYUg+NN5gOtHb6T7EXPohKT/lTJKJI=; b=n3p/yVJZRK+wbxyYEp8pkVnF7d
- hOOHcYTdFzo7akNyeet0DZXxccLdgZIoOr6taxspBy/6Nw2HzuudIL5cO3cux/0Ps1kPOPpCaDuiZ
- 71xYegixSYfkkcrW3QjKCgmzELBA6x8wDtzWuiR4saDycE2AC35+V5oi4+daZIEjq2ToSWnv4R9cJ
- boT1A66ZJ9G2igo0eQXvpTU9Ka7B0HiUCVukCMermJx4dV3Bpp33w8WLP0t3lZ8ajE4VQW97wGslQ
- 7cj3CUwUESH+xL2nh4b2897z9ZoRIetEyG0yjYlRcvvUAz2cF1ga1smN8Gnx/99jq8B/YKpwQ7hY/
- 2LJFzrkw==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
- helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kIDt1-0006DO-8d; Tue, 15 Sep 2020 16:32:55 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Mauro Carvalho Chehab <mchehab@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Joonyoung Shim <jy0922.shim@samsung.com>,
- Seung-Woo Kim <sw0312.kim@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Tomasz Figa <tfiga@chromium.org>,
- Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 18/18] firewire-ohci: use dma_alloc_pages
-Date: Tue, 15 Sep 2020 17:51:22 +0200
-Message-Id: <20200915155122.1768241-19-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
-References: <20200915155122.1768241-1-hch@lst.de>
-MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
- Stefan Richter <stefanr@s5r6.in-berlin.de>, netdev@vger.kernel.org,
- linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org,
- linux-media@vger.kernel.org
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
+ [210.160.252.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id CF02386A6D
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 17:55:32 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.76,430,1592838000"; d="scan'208";a="57128563"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+ by relmlie6.idc.renesas.com with ESMTP; 16 Sep 2020 02:55:30 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+ by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2B3D6400753C;
+ Wed, 16 Sep 2020 02:55:28 +0900 (JST)
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Joerg Roedel <joro@8bytes.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iommu: Kconfig: Update help description for IPMMU_VMSA
+ config
+Date: Tue, 15 Sep 2020 18:55:23 +0100
+Message-Id: <20200915175523.1626-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+Cc: linux-renesas-soc@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,79 +75,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Use dma_alloc_pages to allocate DMAable pages instead of hoping that
-the architecture either has GFP_DMA32 or not more than 4G of memory.
+ipmmu-vmsa driver is also used on Renesas RZ/G{1,2} Soc's, update the
+description for the IPMMU_VMSA config symbol to reflect this.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/firewire/ohci.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+v1->v2
+* Updated commit description as suggested by Geert
+* Included RB from Geert
+---
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
-index 020cb15a4d8fcc..9811c40956e54d 100644
---- a/drivers/firewire/ohci.c
-+++ b/drivers/firewire/ohci.c
-@@ -674,17 +674,16 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index bef5d75e306b..d8f71bf31786 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -232,7 +232,7 @@ config IPMMU_VMSA
+ 	select ARM_DMA_USE_IOMMU
+ 	help
+ 	  Support for the Renesas VMSA-compatible IPMMU found in the R-Mobile
+-	  APE6, R-Car Gen2, and R-Car Gen3 SoCs.
++	  APE6, R-Car Gen{2,3} and RZ/G{1,2} SoCs.
  
- static void ar_context_release(struct ar_context *ctx)
- {
-+	struct device *dev = ctx->ohci->card.device;
- 	unsigned int i;
+ 	  If unsure, say N.
  
- 	vunmap(ctx->buffer);
- 
--	for (i = 0; i < AR_BUFFERS; i++)
--		if (ctx->pages[i]) {
--			dma_unmap_page(ctx->ohci->card.device,
--				       ar_buffer_bus(ctx, i),
--				       PAGE_SIZE, DMA_FROM_DEVICE);
--			__free_page(ctx->pages[i]);
--		}
-+	for (i = 0; i < AR_BUFFERS; i++) {
-+		if (ctx->pages[i])
-+			dma_free_pages(dev, PAGE_SIZE, ctx->pages[i],
-+				       ar_buffer_bus(ctx, i), DMA_FROM_DEVICE);
-+	}
- }
- 
- static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
-@@ -970,6 +969,7 @@ static void ar_context_tasklet(unsigned long data)
- static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
- 			   unsigned int descriptors_offset, u32 regs)
- {
-+	struct device *dev = ohci->card.device;
- 	unsigned int i;
- 	dma_addr_t dma_addr;
- 	struct page *pages[AR_BUFFERS + AR_WRAPAROUND_PAGES];
-@@ -980,17 +980,13 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
- 	tasklet_init(&ctx->tasklet, ar_context_tasklet, (unsigned long)ctx);
- 
- 	for (i = 0; i < AR_BUFFERS; i++) {
--		ctx->pages[i] = alloc_page(GFP_KERNEL | GFP_DMA32);
-+		ctx->pages[i] = dma_alloc_pages(dev, PAGE_SIZE, &dma_addr,
-+						DMA_FROM_DEVICE, GFP_KERNEL);
- 		if (!ctx->pages[i])
- 			goto out_of_memory;
--		dma_addr = dma_map_page(ohci->card.device, ctx->pages[i],
--					0, PAGE_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(ohci->card.device, dma_addr)) {
--			__free_page(ctx->pages[i]);
--			ctx->pages[i] = NULL;
--			goto out_of_memory;
--		}
- 		set_page_private(ctx->pages[i], dma_addr);
-+		dma_sync_single_for_device(dev, dma_addr, PAGE_SIZE,
-+					   DMA_FROM_DEVICE);
- 	}
- 
- 	for (i = 0; i < AR_BUFFERS; i++)
 -- 
-2.28.0
+2.17.1
 
 _______________________________________________
 iommu mailing list
