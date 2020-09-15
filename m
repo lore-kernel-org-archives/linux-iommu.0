@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFE1C43461
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:31:03 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A51C43461
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:33:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C0701206BE
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:31:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 236B220872
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 16:33:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="BF8Ybwry"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0701206BE
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="n3p/yVJZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 236B220872
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9AEB78697A;
-	Tue, 15 Sep 2020 16:31:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D6B52864B5;
+	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D860kdyuwArZ; Tue, 15 Sep 2020 16:30:59 +0000 (UTC)
+	with ESMTP id yG2dNBn4TDY0; Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DA09585CCF;
-	Tue, 15 Sep 2020 16:30:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 556D18645E;
+	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0F16C0859;
-	Tue, 15 Sep 2020 16:30:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3ADAAC0859;
+	Tue, 15 Sep 2020 16:33:19 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 45395C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:30:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 617B0C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 33AB086979
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:30:59 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4FFAB86857
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F4DzUO4CH0v1 for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 16:30:58 +0000 (UTC)
+ with ESMTP id Jlnggu3P5kar for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 16:33:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 55BCF85CCF
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:30:58 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7883586855
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 16:33:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=Y4Zt5Q6wslvCqwY7SHiicX4jOFlI8lEV5uqNCn2aPDc=; b=BF8YbwryBXqc7mtPROjOHHMQzI
- aCOvb2dbe8fLen0MFlQ6bZdJO1rQP3g4d4dO9bC7wb3bPnpXsd//7pQm0XAe1CmnocDvI3mNw9x84
- DqMUZtD3QsVy3CT7VDTqkPTc3a5yO5/TZLXDAt220oVQgGJ5BfYy8yaS2AQg9qMpEcy+I3LkNY7il
- JzIkJb66RHJirHSLpWuLrzgjJYckHJ3vo00GUu01LuPsQths42SyDL/0HOTCDVBBkLabE6ifyxjAQ
- ojf3+iDcfdbfdvsdoVmpGVpJvbYCHk+tqW16FLi5PeV0QL06+xx8fYIueiaHF7UduNRuvBDsvbu9C
- G1h7Ntow==;
+ bh=3uuWATlux5CLwoYUg+NN5gOtHb6T7EXPohKT/lTJKJI=; b=n3p/yVJZRK+wbxyYEp8pkVnF7d
+ hOOHcYTdFzo7akNyeet0DZXxccLdgZIoOr6taxspBy/6Nw2HzuudIL5cO3cux/0Ps1kPOPpCaDuiZ
+ 71xYegixSYfkkcrW3QjKCgmzELBA6x8wDtzWuiR4saDycE2AC35+V5oi4+daZIEjq2ToSWnv4R9cJ
+ boT1A66ZJ9G2igo0eQXvpTU9Ka7B0HiUCVukCMermJx4dV3Bpp33w8WLP0t3lZ8ajE4VQW97wGslQ
+ 7cj3CUwUESH+xL2nh4b2897z9ZoRIetEyG0yjYlRcvvUAz2cF1ga1smN8Gnx/99jq8B/YKpwQ7hY/
+ 2LJFzrkw==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
  helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kIDqu-00064n-5h; Tue, 15 Sep 2020 16:30:44 +0000
+ id 1kIDt1-0006DO-8d; Tue, 15 Sep 2020 16:32:55 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -70,9 +70,9 @@ To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Tomasz Figa <tfiga@chromium.org>,
  Matt Porter <mporter@kernel.crashing.org>, iommu@lists.linux-foundation.org
-Subject: [PATCH 17/18] dma-iommu: implement ->alloc_noncoherent
-Date: Tue, 15 Sep 2020 17:51:21 +0200
-Message-Id: <20200915155122.1768241-18-hch@lst.de>
+Subject: [PATCH 18/18] firewire-ohci: use dma_alloc_pages
+Date: Tue, 15 Sep 2020 17:51:22 +0200
+Message-Id: <20200915155122.1768241-19-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
 References: <20200915155122.1768241-1-hch@lst.de>
@@ -103,100 +103,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Implement the alloc_noncoherent method to provide memory that is neither
-coherent not contiguous.
+Use dma_alloc_pages to allocate DMAable pages instead of hoping that
+the architecture either has GFP_DMA32 or not more than 4G of memory.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 41 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 4 deletions(-)
+ drivers/firewire/ohci.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 00a5b49248e334..c12c1dc43d312e 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -572,6 +572,7 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
-  * @size: Size of buffer in bytes
-  * @dma_handle: Out argument for allocated DMA handle
-  * @gfp: Allocation flags
-+ * @prot: pgprot_t to use for the remapped mapping
-  * @attrs: DMA attributes for this allocation
-  *
-  * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
-@@ -580,14 +581,14 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
-  * Return: Mapped virtual address, or NULL on failure.
-  */
- static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-+		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
-+		unsigned long attrs)
+diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
+index 020cb15a4d8fcc..9811c40956e54d 100644
+--- a/drivers/firewire/ohci.c
++++ b/drivers/firewire/ohci.c
+@@ -674,17 +674,16 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
+ 
+ static void ar_context_release(struct ar_context *ctx)
  {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
--	pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
- 	struct page **pages;
- 	struct sg_table sgt;
-@@ -1030,8 +1031,10 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	gfp |= __GFP_ZERO;
++	struct device *dev = ctx->ohci->card.device;
+ 	unsigned int i;
  
- 	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
--	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
--		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
-+	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
-+		return iommu_dma_alloc_remap(dev, size, handle, gfp,
-+				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
+ 	vunmap(ctx->buffer);
+ 
+-	for (i = 0; i < AR_BUFFERS; i++)
+-		if (ctx->pages[i]) {
+-			dma_unmap_page(ctx->ohci->card.device,
+-				       ar_buffer_bus(ctx, i),
+-				       PAGE_SIZE, DMA_FROM_DEVICE);
+-			__free_page(ctx->pages[i]);
+-		}
++	for (i = 0; i < AR_BUFFERS; i++) {
++		if (ctx->pages[i])
++			dma_free_pages(dev, PAGE_SIZE, ctx->pages[i],
++				       ar_buffer_bus(ctx, i), DMA_FROM_DEVICE);
 +	}
- 
- 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
- 	    !gfpflags_allow_blocking(gfp) && !coherent)
-@@ -1052,6 +1055,34 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 	return cpu_addr;
  }
  
-+#ifdef CONFIG_DMA_REMAP
-+static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
-+		dma_addr_t *handle, enum dma_data_direction dir, gfp_t gfp)
-+{
-+	if (!gfpflags_allow_blocking(gfp)) {
-+		struct page *page;
-+
-+		page = dma_common_alloc_pages(dev, size, handle, dir, gfp);
-+		if (!page)
-+			return NULL;
-+		return page_address(page);
-+	}
-+
-+	return iommu_dma_alloc_remap(dev, size, handle, gfp | __GFP_ZERO,
-+				     PAGE_KERNEL, 0);
-+}
-+
-+static void iommu_dma_free_noncoherent(struct device *dev, size_t size,
-+		void *cpu_addr, dma_addr_t handle, enum dma_data_direction dir)
-+{
-+	__iommu_dma_unmap(dev, handle, size);
-+	__iommu_dma_free(dev, size, cpu_addr);
-+}
-+#else
-+#define iommu_dma_alloc_noncoherent		NULL
-+#define iommu_dma_free_noncoherent		NULL
-+#endif /* CONFIG_DMA_REMAP */
-+
- static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs)
-@@ -1122,6 +1153,8 @@ static const struct dma_map_ops iommu_dma_ops = {
- 	.free			= iommu_dma_free,
- 	.alloc_pages		= dma_common_alloc_pages,
- 	.free_pages		= dma_common_free_pages,
-+	.alloc_noncoherent	= iommu_dma_alloc_noncoherent,
-+	.free_noncoherent	= iommu_dma_free_noncoherent,
- 	.mmap			= iommu_dma_mmap,
- 	.get_sgtable		= iommu_dma_get_sgtable,
- 	.map_page		= iommu_dma_map_page,
+ static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
+@@ -970,6 +969,7 @@ static void ar_context_tasklet(unsigned long data)
+ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
+ 			   unsigned int descriptors_offset, u32 regs)
+ {
++	struct device *dev = ohci->card.device;
+ 	unsigned int i;
+ 	dma_addr_t dma_addr;
+ 	struct page *pages[AR_BUFFERS + AR_WRAPAROUND_PAGES];
+@@ -980,17 +980,13 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
+ 	tasklet_init(&ctx->tasklet, ar_context_tasklet, (unsigned long)ctx);
+ 
+ 	for (i = 0; i < AR_BUFFERS; i++) {
+-		ctx->pages[i] = alloc_page(GFP_KERNEL | GFP_DMA32);
++		ctx->pages[i] = dma_alloc_pages(dev, PAGE_SIZE, &dma_addr,
++						DMA_FROM_DEVICE, GFP_KERNEL);
+ 		if (!ctx->pages[i])
+ 			goto out_of_memory;
+-		dma_addr = dma_map_page(ohci->card.device, ctx->pages[i],
+-					0, PAGE_SIZE, DMA_FROM_DEVICE);
+-		if (dma_mapping_error(ohci->card.device, dma_addr)) {
+-			__free_page(ctx->pages[i]);
+-			ctx->pages[i] = NULL;
+-			goto out_of_memory;
+-		}
+ 		set_page_private(ctx->pages[i], dma_addr);
++		dma_sync_single_for_device(dev, dma_addr, PAGE_SIZE,
++					   DMA_FROM_DEVICE);
+ 	}
+ 
+ 	for (i = 0; i < AR_BUFFERS; i++)
 -- 
 2.28.0
 
