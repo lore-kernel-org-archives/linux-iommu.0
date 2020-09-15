@@ -2,89 +2,109 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E24C433E2
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 19:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C495C433E2
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 19:55:09 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D424D20770
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 19:26:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D424D20770
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3792E2078E
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 19:55:07 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vbKyE1eG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3792E2078E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5D807864BD;
-	Tue, 15 Sep 2020 19:26:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A10FA86702;
+	Tue, 15 Sep 2020 19:55:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CvqnQpDmImyz; Tue, 15 Sep 2020 19:26:46 +0000 (UTC)
+	with ESMTP id kdbTSE-9u7Ib; Tue, 15 Sep 2020 19:55:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B8DBA85F92;
-	Tue, 15 Sep 2020 19:26:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 14357866C8;
+	Tue, 15 Sep 2020 19:55:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AB479C0864;
-	Tue, 15 Sep 2020 19:26:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C2150C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:26:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EF6A8C0864;
+	Tue, 15 Sep 2020 19:55:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C9B17C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:55:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9B4842045E
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:26:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B79D486963
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:55:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IPTvDhcrJY+j for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 19:26:43 +0000 (UTC)
+ with ESMTP id UYqYUBsDs-zF for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 19:55:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by silver.osuosl.org (Postfix) with ESMTPS id BBBFC2043A
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:26:43 +0000 (UTC)
-IronPort-SDR: 99lfsOW4sJPMd3XvCeGYL+yjWhcZqqMq6PTc5IUfScYvd0UyP+uUaVgPzeeryTQJa1vLdwLMfo
- VKKzmg/3LDXg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="160266650"
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; d="scan'208";a="160266650"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Sep 2020 12:26:40 -0700
-IronPort-SDR: hhhAAG+hfXZ3oD4WJ5QXwumRC8Gx2W6szlEll9sgaTobnOaC2A5t1sTEB3EUHv1UnJ388HHsRk
- FNP12tMYpCbw==
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; d="scan'208";a="482954094"
-Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Sep 2020 12:26:39 -0700
-Date: Tue, 15 Sep 2020 12:26:32 -0700
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
- to VMs
-Message-ID: <20200915192632.GA71024@otc-nc-03>
-References: <20200914162247.GA63399@otc-nc-03>
- <20200914163354.GG904879@nvidia.com>
- <20200914105857.3f88a271@x1.home>
- <20200914174121.GI904879@nvidia.com>
- <20200914122328.0a262a7b@x1.home>
- <20200914190057.GM904879@nvidia.com>
- <20200914224438.GA65940@otc-nc-03>
- <20200915113341.GW904879@nvidia.com>
- <20200915181154.GA70770@otc-nc-03>
- <20200915184510.GB1573713@nvidia.com>
+Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
+ [209.85.214.194])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0B99D86947
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 19:55:05 +0000 (UTC)
+Received: by mail-pl1-f194.google.com with SMTP id r19so1904056pls.1
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 12:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=ANJOfSdlpRaHSBBO4TQnqknbM6J+0XuYtQl6sOjOU6g=;
+ b=vbKyE1eGXl1ab37xPuCgN3XERmZgx8c72CmccznAaQT/qdPIFWgEvL2g7tdxHUje1+
+ uH3g5E43P/o9/UJXb7GQiTNIYyMi0BTbo9lWzld48up8d8Dpu5ogNRBAKeUa8TQgWld4
+ mXnM7bosw+BwFaU3OdjM3MkSleUZ0pAHWgLipyCpVaQWGWHMKkgE5EtkjCyhdPbfacRb
+ BF4zvVAEvnt46T2LrUiCt+Ej1O5VNJn4gCUeqdOMVp0NP959/LyLVZ2HbrBpysEqZZ7U
+ /glUHqltfoq9EtlZslQ0cG+F+Ocwp8nEhATulLHJinhygWWgTymGqXK7y09zkav+1GU6
+ 8HAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=ANJOfSdlpRaHSBBO4TQnqknbM6J+0XuYtQl6sOjOU6g=;
+ b=riPLq7Dw+IsIiDRWCXMUFEprVjszpyVaQxLEJxwc+yyZfB2HZT+2xr4BpCvfUKMQXf
+ 5KMq10YmjkjAH5CfzjWLQ5J0Zs3sa+d+OQzt41duNObPNQa1jSsVzZ89xnQJIE4Soo7O
+ eT+NSHUl2XSU6ELK5SJH8KbW+R+HEErSou2gOgzLkNOxlyMEUAwwbsbpYmVlEV6hOzU0
+ fg7Q+Ts8N+yQo4Y9zikDdYLa51uQ0OkNLJA5YbKp/hKWah4w+tyAyzvQEPtYJmiJUYV4
+ JI+OKNTHxaqLfEfwGFM+gHQXsTNV+gyfnC2TBjAN5t1mwU0OSYQy2aOFmlAIS+GS5S+e
+ 9C1A==
+X-Gm-Message-State: AOAM532hFSzhaDRY9Kvy6YeE5dTHCj4MGy6i5A5UPR4oXHfZZg0VIi+L
+ DOmwFghqNeCFarBu6Y3T7G6CrA==
+X-Google-Smtp-Source: ABdhPJypvLei95eAIfBf9YhOFqqQKZ1C34DJmEf5yt+0uB+ckb9ORNsADCaKLRMdqq9zVPIXlUuLOA==
+X-Received: by 2002:a17:902:9685:b029:d1:e5e7:be1b with SMTP id
+ n5-20020a1709029685b02900d1e5e7be1bmr3266435plp.78.1600199704611; 
+ Tue, 15 Sep 2020 12:55:04 -0700 (PDT)
+Received: from xps15 (S0106002369de4dac.cg.shawcable.net. [68.147.8.254])
+ by smtp.gmail.com with ESMTPSA id z4sm14594221pfr.197.2020.09.15.12.55.02
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 15 Sep 2020 12:55:04 -0700 (PDT)
+Date: Tue, 15 Sep 2020 13:55:01 -0600
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 6/6] dma-mapping: introduce DMA range map, supplanting
+ dma_pfn_offset
+Message-ID: <20200915195501.GA3666944@xps15>
+References: <20200914073343.1579578-1-hch@lst.de>
+ <20200914073343.1579578-7-hch@lst.de>
+ <20200914230147.GA3251212@xps15> <20200915054122.GA18079@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200915184510.GB1573713@nvidia.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- kevin.tian@intel.com, Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- iommu@lists.linux-foundation.org, stefanha@gmail.com,
- Jason Wang <jasowang@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- jun.j.tian@intel.com, Alex Williamson <alex.williamson@redhat.com>,
- Jacon Jun Pan <jacob.jun.pan@intel.com>, hao.wu@intel.com
+In-Reply-To: <20200915054122.GA18079@lst.de>
+Cc: linux-sh@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Russell King <linux@armlinux.org.uk>,
+ linux-acpi@vger.kernel.org, Ohad Ben-Cohen <ohad@wizery.com>,
+ devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ Santosh Shilimkar <ssantosh@kernel.org>,
+ Nathan Chancellor <natechancellor@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, loic.pallardy.st.com@xps15.osuosl.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
+ arnaud.pouliquen@st.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Jim Quinlan <james.quinlan@broadcom.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,74 +122,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 15, 2020 at 03:45:10PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 15, 2020 at 11:11:54AM -0700, Raj, Ashok wrote:
-> > > PASID applies widely to many device and needs to be introduced with a
-> > > wide community agreement so all scenarios will be supportable.
+On Tue, Sep 15, 2020 at 07:41:22AM +0200, Christoph Hellwig wrote:
+> On Mon, Sep 14, 2020 at 05:01:47PM -0600, Mathieu Poirier wrote:
+> 
+> [700 lines of the fullquote deleted..]
+> 
+> > > +	for (r = map; r->size; r++)
+> > > +		num_ranges++;
+> > > +
+> > > +	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
+> > > +			  GFP_KERNEL);
+> > > +	if (!new_map)
+> > > +		return -ENOMEM;
+> > > +	to->dma_range_map = new_map;
+> > > +	return 0;
+> > > +}
+> > > +
 > > 
-> > True, reading some of the earlier replies I was clearly confused as I
-> > thought you were talking about mdev again. But now that you stay it, you
-> > have moved past mdev and its the PASID interfaces correct?
+> > This patch seemed Ok to me but it broke the stm32 remoteproc implementation.  When
+> > I tested things out function dma_coerce_mask_and_cohenrent() returns -5 and the
+> > rest of the initialisation fails.  I isolated things to function dma_to_pfn()
+> > [2].  In the original implementation __bus_to_pfn() returns 0xfffff and
+> > dev->dma_pfn_offset is equal to 0x38000.  As such the function returns 0x137fff
+> > and dma_supported() a non-zero value[3].
+> > 
+> > With this set function dma_to_pfn() received a face lift.  Function
+> > __bus_to_pfn() still returns 0xfffff but translate_dma_to_phys() returns 0,
+> > which forces dma_supported() to also return 0 and that is where the -5 (-EIO)
+> > comes from.
+> > 
+> > Taking a futher look at translate_dma_to_phy(), @dma_addr never falls within the
+> > bus_dma_region ranges and returns 0.
+> > 
+> > I'm suspecting an initialisation problem and if it occurred here, it will
+> > likely show up elsewhere.
 > 
-> Yes, we agreed mdev for IDXD at LPC, didn't talk about PASID.
+> Can you try this incremental patch?
 > 
-> > For the native user applications have just 1 PASID per
-> > process. There is no need for a quota management.
-> 
-> Yes, there is. There is a limited pool of HW PASID's. If one user fork
-> bombs it can easially claim an unreasonable number from that pool as
-> each process will claim a PASID. That can DOS the rest of the system.
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 088c97181ab146..c6b21acba7a459 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -46,7 +46,7 @@ static inline phys_addr_t translate_dma_to_phys(struct device *dev,
+>  		if (dma_addr >= m->dma_start && dma_addr - m->dma_start < m->size)
+>  			return (phys_addr_t)dma_addr + m->offset;
+>  
+> -	return 0;
+> +	return (phys_addr_t)-1;
 
-Not sure how you had this played out.. For PASID used in ENQCMD today for
-our SVM usages, we *DO* not automatically propagate or allocate new PASIDs. 
+That did the trick - the stm32 platform driver's probe() function completes and
+the remote processor is operatinal. 
 
-The new process needs to bind to get a PASID for its own use. For threads
-of same process the PASID is inherited. For forks(), we do not
-auto-allocate them. Since PASID isn't a sharable resource much like how you
-would not pass mmio mmap's to forked processes that cannot be shared correct?
-Such as your doorbell space for e.g. 
+That being said the value returned by function dma_to_pfn()
+is 0x137fff in the original code and 0xfffff with your patches applied.
 
-> 
-> If PASID DOS is a worry then it must be solved at the IOMMU level for
-> all user applications that might trigger a PASID allocation. VFIO is
-> not special.
+Thanks,
+Mathieu
 
-Feels like you can simply avoid the PASID DOS rather than permit it to
-happen. 
-> 
-> > IIUC, you are asking that part of the interface to move to a API interface
-> > that potentially the new /dev/sva and VFIO could share? I think the API's
-> > for PASID management themselves are generic (Jean's patchset + Jacob's
-> > ioasid set management).
-> 
-> Yes, the in kernel APIs are pretty generic now, and can be used by
-> many types of drivers.
-
-Good, so there is no new requirements here I suppose.
-> 
-> As JasonW kicked this off, VDPA will need all this identical stuff
-> too. We already know this, and I think Intel VDPA HW will need it, so
-> it should concern you too :)
-
-This is one of those things that I would disagree and commit :-).. 
-
-> 
-> A PASID vIOMMU solution sharable with VDPA and VFIO, based on a PASID
-> control char dev (eg /dev/sva, or maybe /dev/iommu) seems like a
-> reasonable starting point for discussion.
-
-Looks like now we are getting closer to what we need. :-)
-
-Given that PASID api's are general purpose today and any driver can use it
-to take advantage. VFIO fortunately or unfortunately has the IOMMU things
-abstracted. I suppose that support is also mostly built on top of the
-generic iommu* api abstractions in a vendor neutral way? 
-
-I'm still lost on what is missing that vDPA can't build on top of what is
-available?
-
-Cheers,
-Ashok
+>  }
+>  
+>  #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
