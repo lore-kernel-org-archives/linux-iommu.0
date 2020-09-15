@@ -2,114 +2,103 @@ Return-Path: <SRS0=AdPL=CY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0860C433E2
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 15:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D562C433E2
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 15:45:05 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2DA4620770
-	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 15:14:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8F53120936
+	for <iommu@archiver.kernel.org>; Tue, 15 Sep 2020 15:45:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Ykc5JfKy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DA4620770
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rFHVNAT/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F53120936
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C671484D62;
-	Tue, 15 Sep 2020 15:14:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E703886435;
+	Tue, 15 Sep 2020 15:45:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AK6u1EKv-FKz; Tue, 15 Sep 2020 15:14:35 +0000 (UTC)
+	with ESMTP id bCF7MK2iWvi5; Tue, 15 Sep 2020 15:45:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id ABF0885008;
-	Tue, 15 Sep 2020 15:13:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DFBC2860D2;
+	Tue, 15 Sep 2020 15:45:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9575FC0864;
-	Tue, 15 Sep 2020 15:13:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71149C0051
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:13:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD83BC0864;
+	Tue, 15 Sep 2020 15:45:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 253B7C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:45:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5A7798671F
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:13:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 211568723F
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:45:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CEPnn2bHiFbG for <iommu@lists.linux-foundation.org>;
- Tue, 15 Sep 2020 15:13:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 390B986749
- for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:12:41 +0000 (UTC)
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
- by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08FF4Ntu149991;
- Tue, 15 Sep 2020 15:12:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=OomBHSXo/Y1LDw5jEcMC2p6v5dx4Welq368VU3lWhic=;
- b=Ykc5JfKyNgOplXd5wkSLoaADDe/tMn1SYfFz4YSf7ed6O8hFwndcrvjriyILS/3kg5Ie
- 100v0AJRpvaEAkF217udpkPwP78ZQfwAYlD2aWChql3wpcIoCtMROIzbSci4zq6KcoLt
- LcUaSG81M5YmQ6CBnEDCX8FqFjulaaYAabAr2pvT7esZxX5Gh/UIwOLmTN/J6eS18/KN
- KzBRaTlP829nGzL4vpoI7pyG7Zt0vHl/ZTYZI9IDbGb1c6XeJxOARPaiF/bCOOaz4fHV
- xxSj7vjBTDt9LJzZ06/V7WRxzWLI/7GziCkY92xFuH8Q6UGxYILYYuxt09ogDeGCQvyY dA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by userp2120.oracle.com with ESMTP id 33j91dfa98-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 15 Sep 2020 15:12:29 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08FF4hWO188266;
- Tue, 15 Sep 2020 15:12:29 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by userp3030.oracle.com with ESMTP id 33h88yg466-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 15 Sep 2020 15:12:29 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08FFCRU5009088;
- Tue, 15 Sep 2020 15:12:27 GMT
-Received: from [10.39.253.102] (/10.39.253.102)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Tue, 15 Sep 2020 15:12:27 +0000
-Subject: Re: [PATCH] dma-direct: Fix potential NULL pointer dereference
-To: Christoph Hellwig <hch@lst.de>
-References: <1600178594-22801-1-git-send-email-thomas.tai@oracle.com>
- <20200915140719.GA14831@lst.de>
- <f5cba632-421a-f375-3697-51a182a53a32@oracle.com>
- <20200915142624.GA16005@lst.de>
- <da9ec51d-aab5-695d-e388-5ae7c0bb30ea@oracle.com>
- <20200915150929.GA19770@lst.de>
-From: Thomas Tai <thomas.tai@oracle.com>
-Message-ID: <9a819530-365b-9982-c9c9-ad20d6c8149e@oracle.com>
-Date: Tue, 15 Sep 2020 11:12:28 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ with ESMTP id 2WEvlj7DZkjZ for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Sep 2020 15:44:59 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f196.google.com (mail-qk1-f196.google.com
+ [209.85.222.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 19A748723B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 15:44:59 +0000 (UTC)
+Received: by mail-qk1-f196.google.com with SMTP id o5so4614281qke.12
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Sep 2020 08:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Jr9FyPebxkKqG5Q+7PXT2kwXR4HeYkXnIjay9uV7M3A=;
+ b=rFHVNAT/L/p+uTassh8kWHyPPmM6zU7jhMji4JUNPpHOH6vp7+SknoNXEUaxITlZJo
+ C47l3vrn5M1foQsDyM7MD13TTYbOSoz+k3xxYu2RBF/1DXBmgX5hCizpgqmu7GxO2Qn7
+ t+UA0UhrW0z+v7akhpkjQXmNzcd1NdyF9egZIXmLbC6cB5UgKlerScIbcv3AVVTn3Fsc
+ SIOsbC7nIY+6OOkvdDsfHVxDKHqeJrx5J2v8OoZnq5BvJ7UDU5nXuKIkPxIn3QTCEXTN
+ jo8hO5NeFIqIKE2GyopxS/cZDkUROZKl0oZCNrBm7aRWQrRt7F4pkll8G1GT259vH8V6
+ gV1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Jr9FyPebxkKqG5Q+7PXT2kwXR4HeYkXnIjay9uV7M3A=;
+ b=DCwxZieR2/LNV/n5vxpiK+V1DqCGCSAiwjQXDTBrM3T2AanOLqSRkeRcJul3EbrKWI
+ gTHbhNPJS9iXO35zirsinsqaLL4mplRRTwLJ4KPv4H+NxmW3AoJOvXi3F1Q48VAFsJ4V
+ YbL4caT8caHoYEMuQNuzss+V/UUUIDw1nJFgkwQrv+NMmtelxAtN8SlbUIFlVByujt5w
+ DS23ZdiRaUBJKEPtq/ozX4SGgbwmbQ2NS2RqnoOYxCrvYy4eZhgU6r9KYoYf5h3lNCKg
+ 4YyjhQuzIZNVBT+ZOEDaarCcTmDvhiaBDAcM/1sMgF+uygeFdpBSoAOF9IWikcDnW7Xi
+ j/SA==
+X-Gm-Message-State: AOAM532LXnkxjRik5nYsFYH2zQAUy9kPXLwTuBk7RmGXQD8UzYU84Xso
+ foP+jONwIw+TA85gOyYm1JxMKA==
+X-Google-Smtp-Source: ABdhPJy/FgcqpjL803/QUt6DpehETtocnf+0DIjdU+tNjllUdMmC353O7wtD73sn2n4/M/TjNpyT2Q==
+X-Received: by 2002:a37:a054:: with SMTP id j81mr17048838qke.23.1600184697935; 
+ Tue, 15 Sep 2020 08:44:57 -0700 (PDT)
+Received: from uller (ec2-34-197-84-77.compute-1.amazonaws.com. [34.197.84.77])
+ by smtp.gmail.com with ESMTPSA id n136sm15988518qkn.14.2020.09.15.08.44.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 15 Sep 2020 08:44:57 -0700 (PDT)
+Date: Tue, 15 Sep 2020 15:44:55 +0000
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: John Stultz <john.stultz@linaro.org>
+Subject: Re: [PATCH] irqchip/qcom-pdc: Allow QCOM_PDC to be loadable as a
+ permanent module
+Message-ID: <20200915154455.GG478@uller>
+References: <20200912125148.1271481-7-maz@kernel.org>
+ <20200914210423.67579-1-john.stultz@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20200915150929.GA19770@lst.de>
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9744
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- spamscore=0 adultscore=0
- suspectscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009150127
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9745
- signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- impostorscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 mlxlogscore=999
- clxscore=1015 adultscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009150127
-Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org, konrad.wilk@oracle.com
+Content-Disposition: inline
+In-Reply-To: <20200914210423.67579-1-john.stultz@linaro.org>
+Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
+ Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
+ linux-kernel@vger.kernel.org, Lina Iyer <ilina@codeaurora.org>,
+ linux-gpio@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Andy Gross <agross@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
+ linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -122,36 +111,70 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Mon 14 Sep 21:04 UTC 2020, John Stultz wrote:
 
-
-On 2020-09-15 11:09 a.m., Christoph Hellwig wrote:
-> On Tue, Sep 15, 2020 at 10:40:39AM -0400, Thomas Tai wrote:
->>> +++ b/include/linux/dma-direct.h
->>> @@ -62,9 +62,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->>>    {
->>>    	dma_addr_t end = addr + size - 1;
->>>    -	if (!dev->dma_mask)
->>> -		return false;
->>> -
->>
->> I am concerned that some drivers may rely on this NULL checking. Would you
->> think we can keep this checking and use the following WARN_ON_ONCE()?
+> Allows qcom-pdc driver to be loaded as a permanent module.
 > 
-> dma_capable is not a helper for drivers, but just for dma-direct
-> and related code.  And this patch adds the checks for the three
-> places how we call into the ->map* methods.
+> An earlier version of this patch was merged in a larger patchset
+> but was reverted entirely when issues were found with other
+> drivers, so now that Marc has provided a better solution in his
+> Hybrid probing patch set, I wanted to re-submit this change.
 > 
 
-Ok. That sounds good to me. I will make the suggested changes and run 
-some tests before sending out the V2 patch.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Thank you,
-Thomas
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Jason Cooper <jason@lakedaemon.net>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Maulik Shah <mkshah@codeaurora.org>
+> Cc: Lina Iyer <ilina@codeaurora.org>
+> Cc: Saravana Kannan <saravanak@google.com>
+> Cc: Todd Kjos <tkjos@google.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-gpio@vger.kernel.org
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> ---
+>  drivers/irqchip/Kconfig    | 2 +-
+>  drivers/irqchip/qcom-pdc.c | 2 ++
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index bfc9719dbcdc..bb70b7177f94 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -425,7 +425,7 @@ config GOLDFISH_PIC
+>           for Goldfish based virtual platforms.
+>  
+>  config QCOM_PDC
+> -	bool "QCOM PDC"
+> +	tristate "QCOM PDC"
+>  	depends on ARCH_QCOM
+>  	select IRQ_DOMAIN_HIERARCHY
+>  	help
+> diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+> index 8543fa23da10..59eb3c8473b0 100644
+> --- a/drivers/irqchip/qcom-pdc.c
+> +++ b/drivers/irqchip/qcom-pdc.c
+> @@ -433,3 +433,5 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
+>  IRQCHIP_HYBRID_DRIVER_BEGIN(qcom_pdc)
+>  IRQCHIP_MATCH("qcom,pdc", qcom_pdc_init)
+>  IRQCHIP_HYBRID_DRIVER_END(qcom_pdc)
+> +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.17.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
