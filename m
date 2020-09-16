@@ -7,67 +7,68 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B07C2D0A7
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:21:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C599C433E2
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:23:52 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8289B2067C
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:21:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 178EA206A4
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:23:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="wJwNm1s4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8289B2067C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="b6RjMPuX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 178EA206A4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6BC7886A0F;
-	Wed, 16 Sep 2020 06:21:38 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C3EFE86DE5;
+	Wed, 16 Sep 2020 06:23:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id L2w-JtpwzGNe; Wed, 16 Sep 2020 06:21:37 +0000 (UTC)
+	with ESMTP id xeCOc8wg7a6E; Wed, 16 Sep 2020 06:23:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DFBB3869F8;
-	Wed, 16 Sep 2020 06:21:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9983886DE6;
+	Wed, 16 Sep 2020 06:23:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6DC7C0859;
-	Wed, 16 Sep 2020 06:21:37 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7E58C0051
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:21:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7577BC0859;
+	Wed, 16 Sep 2020 06:23:50 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9FC49C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:23:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A6BF786A01
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:21:36 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8D99887236
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:23:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vYUsdOPbgwpj for <iommu@lists.linux-foundation.org>;
- Wed, 16 Sep 2020 06:21:36 +0000 (UTC)
+ with ESMTP id ii8KpQiMrNnZ for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Sep 2020 06:23:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 04D1B869F8
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:21:36 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7411386FEC
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:23:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=m2uI/54b6zhcK5JH2Qkk+DNhltSMOgJF9o6JCspd/6M=; b=wJwNm1s4NfDg7Hh8T37dQdMDQj
- brKzrQj2KU/dtPiZ561mn0r/mCAhu2OsYT45jx4aoyR7wQfRVFGO3gz6UhzFmoXx+Q9765Y806Hlu
- wgCxmVfoCzK1DYkwXqEC2bwIJjb0Rtl7GD31UngOSRnU7fcRTvu+Txb+eUF0ysrXdWnclhwSRH/n2
- PiffbrNZTqSz33y69MzqME3aGqWr/+6TEgO/Mx/SZPcYd26EwkTehLs8u26ktT7JJm+FWof5kHaHF
- jyN4FVUb3G0qo1xXkGaq4lpuqWy8h9qkZWq//9wtpwaxCqp/kksYqX//u4X7GSKDbowpmbT3Ud+tk
- /5nU+Gzw==;
+ bh=BxxgQYY1DeDYvu2hSRXigNNS2r5IsjvTJ3A6Bx2A/Zo=; b=b6RjMPuXBPV1L2xq/9cSN/gZIL
+ pDJ+Ogdkdog3WRMBnL/liSbsVIm+1nFp14fjm5I64vhHz9+kGkq0qLF52sisZUBwipshSOdD0191S
+ VDdtGyd17p1iEYZLfSzwwXKxUhaHHAG+JvnN90NH93XE9E1hMEzKe71YVfkU0Dgg62wMVl8xjEoCf
+ 5+m431sx66nExg52nA9tSj2LwJS3c1e1Xw0Q+eWPX44rHDpNRvMcn6HNNZ0sDFWW7GknRQkxrzcVY
+ Z2Jlrh0MAymYlnYS9SkQSDh9shV3+9w6+Qb0BsQMvh0xi5T5YgBzH+zZViLK00ocpbknb5tvsu620
+ cDacfLGA==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
  helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kIQov-0007AD-GS; Wed, 16 Sep 2020 06:21:33 +0000
+ id 1kIQr2-0007LO-Jc; Wed, 16 Sep 2020 06:23:44 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
  Santosh Shilimkar <ssantosh@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 2/6] ARM/dma-mapping: remove dma_to_virt
-Date: Wed, 16 Sep 2020 08:14:55 +0200
-Message-Id: <20200916061500.1970090-3-hch@lst.de>
+Subject: [PATCH 3/6] ARM/dma-mapping: move various helpers from dma-mapping.h
+ to dma-direct.h
+Date: Wed, 16 Sep 2020 08:14:56 +0200
+Message-Id: <20200916061500.1970090-4-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200916061500.1970090-1-hch@lst.de>
 References: <20200916061500.1970090-1-hch@lst.de>
@@ -99,72 +100,160 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-dma_to_virt is entirely unused, remove it.
+Move the helpers to translate to and from direct mapping DMA addresses
+to dma-direct.h.  This not only is the most logical place, but the new
+placement also avoids dependency loops with pending commits.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm/include/asm/dma-mapping.h        | 18 +-----------------
- arch/arm/mach-omap1/include/mach/memory.h |  4 ----
- 2 files changed, 1 insertion(+), 21 deletions(-)
+ arch/arm/common/dmabounce.c        |  2 +-
+ arch/arm/include/asm/dma-direct.h  | 50 ++++++++++++++++++++++++++++++
+ arch/arm/include/asm/dma-mapping.h | 50 ------------------------------
+ 3 files changed, 51 insertions(+), 51 deletions(-)
 
+diff --git a/arch/arm/common/dmabounce.c b/arch/arm/common/dmabounce.c
+index f4b719bde76367..d3e00ea9208834 100644
+--- a/arch/arm/common/dmabounce.c
++++ b/arch/arm/common/dmabounce.c
+@@ -24,7 +24,7 @@
+ #include <linux/slab.h>
+ #include <linux/page-flags.h>
+ #include <linux/device.h>
+-#include <linux/dma-mapping.h>
++#include <linux/dma-direct.h>
+ #include <linux/dmapool.h>
+ #include <linux/list.h>
+ #include <linux/scatterlist.h>
+diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
+index bca0de56753439..fbcf4367b5cb1a 100644
+--- a/arch/arm/include/asm/dma-direct.h
++++ b/arch/arm/include/asm/dma-direct.h
+@@ -2,6 +2,56 @@
+ #ifndef ASM_ARM_DMA_DIRECT_H
+ #define ASM_ARM_DMA_DIRECT_H 1
+ 
++#include <asm/memory.h>
++
++/*
++ * dma_to_pfn/pfn_to_dma/virt_to_dma are architecture private
++ * functions used internally by the DMA-mapping API to provide DMA
++ * addresses. They must not be used by drivers.
++ */
++#ifndef __arch_pfn_to_dma
++static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
++{
++	if (dev)
++		pfn -= dev->dma_pfn_offset;
++	return (dma_addr_t)__pfn_to_bus(pfn);
++}
++
++static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
++{
++	unsigned long pfn = __bus_to_pfn(addr);
++
++	if (dev)
++		pfn += dev->dma_pfn_offset;
++
++	return pfn;
++}
++
++static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
++{
++	if (dev)
++		return pfn_to_dma(dev, virt_to_pfn(addr));
++
++	return (dma_addr_t)__virt_to_bus((unsigned long)(addr));
++}
++
++#else
++static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
++{
++	return __arch_pfn_to_dma(dev, pfn);
++}
++
++static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
++{
++	return __arch_dma_to_pfn(dev, addr);
++}
++
++static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
++{
++	return __arch_virt_to_dma(dev, addr);
++}
++#endif
++
+ static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+ {
+ 	unsigned int offset = paddr & ~PAGE_MASK;
 diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index 70d95677656044..cf2535fb8891f5 100644
+index cf2535fb8891f5..0a1a536368c3a4 100644
 --- a/arch/arm/include/asm/dma-mapping.h
 +++ b/arch/arm/include/asm/dma-mapping.h
-@@ -24,7 +24,7 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+@@ -8,8 +8,6 @@
+ #include <linux/scatterlist.h>
+ #include <linux/dma-debug.h>
+ 
+-#include <asm/memory.h>
+-
+ #include <xen/xen.h>
+ #include <asm/xen/hypervisor.h>
+ 
+@@ -23,54 +21,6 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ 	return NULL;
  }
  
- /*
-- * dma_to_pfn/pfn_to_dma/dma_to_virt/virt_to_dma are architecture private
-+ * dma_to_pfn/pfn_to_dma/virt_to_dma are architecture private
-  * functions used internally by the DMA-mapping API to provide DMA
-  * addresses. They must not be used by drivers.
-  */
-@@ -46,17 +46,6 @@ static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
- 	return pfn;
- }
- 
--static inline void *dma_to_virt(struct device *dev, dma_addr_t addr)
+-/*
+- * dma_to_pfn/pfn_to_dma/virt_to_dma are architecture private
+- * functions used internally by the DMA-mapping API to provide DMA
+- * addresses. They must not be used by drivers.
+- */
+-#ifndef __arch_pfn_to_dma
+-static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
 -{
--	if (dev) {
--		unsigned long pfn = dma_to_pfn(dev, addr);
--
--		return phys_to_virt(__pfn_to_phys(pfn));
--	}
--
--	return (void *)__bus_to_virt((unsigned long)addr);
+-	if (dev)
+-		pfn -= dev->dma_pfn_offset;
+-	return (dma_addr_t)__pfn_to_bus(pfn);
 -}
 -
- static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
- {
- 	if (dev)
-@@ -76,11 +65,6 @@ static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
- 	return __arch_dma_to_pfn(dev, addr);
- }
- 
--static inline void *dma_to_virt(struct device *dev, dma_addr_t addr)
+-static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
 -{
--	return __arch_dma_to_virt(dev, addr);
+-	unsigned long pfn = __bus_to_pfn(addr);
+-
+-	if (dev)
+-		pfn += dev->dma_pfn_offset;
+-
+-	return pfn;
 -}
 -
- static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
- {
- 	return __arch_virt_to_dma(dev, addr);
-diff --git a/arch/arm/mach-omap1/include/mach/memory.h b/arch/arm/mach-omap1/include/mach/memory.h
-index 1142560e0078f5..e43697c3297bf2 100644
---- a/arch/arm/mach-omap1/include/mach/memory.h
-+++ b/arch/arm/mach-omap1/include/mach/memory.h
-@@ -41,10 +41,6 @@
- 	   __phys_to_pfn(__dma);				\
- 	})
- 
--#define __arch_dma_to_virt(dev, addr)	({ (void *) (is_lbus_device(dev) ? \
--						lbus_to_virt(addr) : \
--						__phys_to_virt(addr)); })
+-static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
+-{
+-	if (dev)
+-		return pfn_to_dma(dev, virt_to_pfn(addr));
 -
- #define __arch_virt_to_dma(dev, addr)	({ unsigned long __addr = (unsigned long)(addr); \
- 					   (dma_addr_t) (is_lbus_device(dev) ? \
- 						virt_to_lbus(__addr) : \
+-	return (dma_addr_t)__virt_to_bus((unsigned long)(addr));
+-}
+-
+-#else
+-static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
+-{
+-	return __arch_pfn_to_dma(dev, pfn);
+-}
+-
+-static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
+-{
+-	return __arch_dma_to_pfn(dev, addr);
+-}
+-
+-static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
+-{
+-	return __arch_virt_to_dma(dev, addr);
+-}
+-#endif
+-
+ /**
+  * arm_dma_alloc - allocate consistent memory for DMA
+  * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
 -- 
 2.28.0
 
