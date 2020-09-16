@@ -2,76 +2,84 @@ Return-Path: <SRS0=cHis=CZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA306C433E2
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:14:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F6BC433E2
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:17:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1BB4B208E4
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:14:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BB4B208E4
+	by mail.kernel.org (Postfix) with ESMTPS id 7940B21D7D
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:17:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="guuG3Pt1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7940B21D7D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C3AE88734F;
-	Wed, 16 Sep 2020 06:14:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4442C86A10;
+	Wed, 16 Sep 2020 06:17:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NzDq6N30SQap; Wed, 16 Sep 2020 06:14:07 +0000 (UTC)
+	with ESMTP id IsuKX_nZ3ek3; Wed, 16 Sep 2020 06:17:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3C0BB8720D;
-	Wed, 16 Sep 2020 06:14:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DE09A86972;
+	Wed, 16 Sep 2020 06:17:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C668C0859;
-	Wed, 16 Sep 2020 06:14:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 233DCC0051
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:14:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2B8DC0859;
+	Wed, 16 Sep 2020 06:17:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3CEC6C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:17:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 11C9D8723B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:14:05 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2BE77869EB
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:17:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HHYVK4GbEyeI for <iommu@lists.linux-foundation.org>;
- Wed, 16 Sep 2020 06:14:04 +0000 (UTC)
+ with ESMTP id 5s18jkjDFoML for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Sep 2020 06:17:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E79C58720D
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:14:03 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 3122868B05; Wed, 16 Sep 2020 08:13:59 +0200 (CEST)
-Date: Wed, 16 Sep 2020 08:13:59 +0200
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 522D086972
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+ Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=s8mnqat7GGupYmev9VBKRE+GEfYSOGcbHcyGgV6dyXw=; b=guuG3Pt1J5nWsCBoJItPym1+vj
+ 0aeWJGDaGySTSVHSbdpYTROMBmteFH+Ivy8Zcc9K2kuDL9q/BHZaVU9P+3UB8GuUEB6nb9cpn3vJs
+ wLOdAxW2P1ebiJKFM5z8soepZFlJ+GavE5MtpF9fqeNPBdaX7D4/P1FTuTOe+Sfh6XVA6A7O/CLXU
+ w3qBYTP9KuYLJA+yOvt9dHDHudjL/zx/juLg4iNzT2TzEiEW1C3fGPvt2j2m3aeCKiwFIG0qemx9K
+ jAsFkAcEn75npyjux686+2kMCFRQyW2+unJYAl4riVuilCbhQu8NYGFcpcfFv6dErBpR6Agd4IqhB
+ RsiUOCTg==;
+Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
+ helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kIQkh-0006mN-CM; Wed, 16 Sep 2020 06:17:11 +0000
 From: Christoph Hellwig <hch@lst.de>
-To: Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: Re: [PATCH 6/6] dma-mapping: introduce DMA range map, supplanting
- dma_pfn_offset
-Message-ID: <20200916061359.GA8424@lst.de>
-References: <20200914073343.1579578-1-hch@lst.de>
- <20200914073343.1579578-7-hch@lst.de> <20200914230147.GA3251212@xps15>
- <20200915054122.GA18079@lst.de> <20200915195501.GA3666944@xps15>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200915195501.GA3666944@xps15>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-sh@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- Christoph Hellwig <hch@lst.de>, Florian Fainelli <f.fainelli@gmail.com>,
- Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org,
- loic.pallardy.st.com@lst.de, Ohad Ben-Cohen <ohad@wizery.com>,
- devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
  Santosh Shilimkar <ssantosh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: support range based offsets in dma-direct v3
+Date: Wed, 16 Sep 2020 08:14:53 +0200
+Message-Id: <20200916061500.1970090-1-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Ohad Ben-Cohen <ohad@wizery.com>, devicetree@vger.kernel.org,
+ Florian Fainelli <f.fainelli@gmail.com>, linux-sh@vger.kernel.org,
+ Frank Rowand <frowand.list@gmail.com>, linux-usb@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-acpi@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, linux-pci@vger.kernel.org,
  Nathan Chancellor <natechancellor@gmail.com>,
- linux-arm-kernel@lists.infradead.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
- arnaud.pouliquen@st.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jim Quinlan <james.quinlan@broadcom.com>,
- Robin Murphy <robin.murphy@arm.com>
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,15 +97,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 15, 2020 at 01:55:01PM -0600, Mathieu Poirier wrote:
-> That did the trick - the stm32 platform driver's probe() function completes and
-> the remote processor is operatinal. 
-> 
-> That being said the value returned by function dma_to_pfn()
-> is 0x137fff in the original code and 0xfffff with your patches applied.
+Hi all,
 
-Yes, that is intentional.  The old code just applied the range and got
-an out of range offset, the new one reports the max offset.
+this series adds range-based offsets to the dma-direct implementation.  The
+guts of the change are a patch from Jim with some modifications from me,
+but to do it nicely we need to ARM patches to prepare for it as well.
+
+Changes since v2:
+ - fix a mismerge
+ - return (phys_addr_t)-1 from translate_dma_to_phys when there is no
+   matching range to fix dma_capable checks
+
+Changes since v1:
+ - rebased on top of the latests dma-mapping for-next tree
+ - add two more trivial ARM cleanups
+ - remove the DMA property inheritance hack in usb
+ - move the remaining copy of the ranges into the remoteproc driver
+   as it should not be seen as a general API, but as a quirk for
+   remoteproc that we need to fix ASAP
+
+Diffstat:
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
