@@ -2,83 +2,168 @@ Return-Path: <SRS0=cHis=CZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66AB2C35257
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:26:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3389C43461
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:45:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ABAF521974
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:26:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 141A820732
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:45:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UFK56x25"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABAF521974
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="iGs9o9KA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 141A820732
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 265512E0F3;
-	Wed, 16 Sep 2020 18:26:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 20143844DA;
+	Wed, 16 Sep 2020 18:38:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cXPs0wgBd6NO; Wed, 16 Sep 2020 18:26:32 +0000 (UTC)
+	with ESMTP id 5C3Lw3CQm7WP; Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id ADE1F2E0EF;
-	Wed, 16 Sep 2020 18:26:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2FB868362D;
+	Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 911B2C0859;
-	Wed, 16 Sep 2020 18:26:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4A14C0051
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:26:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F72EC0859;
+	Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9505C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 98AED8739B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:26:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 52000874E0
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4dtq5l8RM3Lb for <iommu@lists.linux-foundation.org>;
- Wed, 16 Sep 2020 18:26:29 +0000 (UTC)
+ with ESMTP id InVfRXnAoCzG for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Sep 2020 18:38:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 372CF872FD
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:26:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description;
- bh=sqCpPz4g5vRiFZKQb+Es8rUQl0UNoZok2p2alrTJCCM=; b=UFK56x25fYeF4/vRppE/HB4Q8A
- mLODbHfn9oaHQhCbZrEN9k0rtRp22zBgL0tbQBNPe47mjs6YJ/4G9Aha7BlIULvuw5mGA0vIi01z3
- nIOmaB/Q36uZvIbQFks85PqXtcmYKIoyMDLHp3KfjdzvNuiEvU6bC49G31UnhNM1Xrrh505Y4xz4W
- oXa7MlNScX0TaKj95h99EDqBjqXEu2UQsocHU5aYq2CIKAky05vfON6mY100dpe/OdkqnGjo3tEwb
- LiePgEctNb5cUMgQ9m+TB38bxUCwTjSowyK0+OtGy34sOPedEZLRNVXEcmkDtqiau9j7gCWOkIi42
- BQmIbacw==;
-Received: from [2601:1c0:6280:3f0::19c2]
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kIc85-00029q-EC; Wed, 16 Sep 2020 18:26:05 +0000
-Subject: Re: [PATCH v9 1/7] docs: IOMMU user API
-To: Jacob Pan <jacob.pan.linux@gmail.com>, iommu@lists.linux-foundation.org,
- LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>,
- Jonathan Corbet <corbet@lwn.net>
-References: <1599861476-53416-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1599861476-53416-2-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0a96fdf6-e14d-8082-b6ef-5fba83c8d549@infradead.org>
-Date: Wed, 16 Sep 2020 11:26:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A07A0874D6
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:46 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5f625b8b0000>; Wed, 16 Sep 2020 11:38:03 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Wed, 16 Sep 2020 11:38:46 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Wed, 16 Sep 2020 11:38:46 -0700
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Sep
+ 2020 18:38:45 +0000
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 16 Sep 2020 18:38:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l89qDrOQCanALn29CqqL9ZN799Cc0QW3VmoNuRz826TXUCWdqs7hD7s043BtnLBeeVFM0uh69FqvN0Mz0CjQvvIKJbrH0hSIe1aBHEohKqH+Q2LgFMIc+lkHdoFLV3sGozbF8Fg3PDMk6tdRG6/6x4daxG2Dz26IY8JzEd90uvD1MENattyWny7wEBB6gsgot/Agpk1dS26kLTQX5tVynrAu4TJ9BoD1vBQDRvzJLzCP05ThAkB9KPU+MgSgP3Y3gDucgYvz8oqymyGVGtypuzu8yvISg7w2aEDCTW+H7L9/v3JENZ+UylhoEwnHmxWkSX4f9nbp0ds/w2VVvWWNXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mtDVr2z3YVSoZN/JwFf5gcY98bQed7J2EP1JqeVtHB4=;
+ b=iyegTkp0eLadjwYKkgaGjvkOeb8YOkSsNmCA9a+i5RTE5a/j5Ri7OTOKWIC8px5jjhj5WnH3UDw6rUr/Xwop1D9qbszLPkhFWEFqriCv5X/1FmftLxcauHEbTphGX5FVqyhKR5sKugK9HmtcxWOW4gVkGtYSl4onmWWRWPNp+0JgJvluDsd2hqClSiuDbrEqMNTza4ZND23vY8x2QxJrhjbPaqJCftK8cYhQ2B5ZsK5/DpNrNuLcF3yjDN2fATPwvFrddqe6v9MV8XaR4Up6LmPcyzXwsAPO9/RTP5yiVGQ5ra+SdMg6JfO/eyMvixwAqyi9GU+D7zJ5JcNlKPj9mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1756.namprd12.prod.outlook.com (2603:10b6:3:108::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Wed, 16 Sep
+ 2020 18:38:43 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3391.011; Wed, 16 Sep 2020
+ 18:38:43 +0000
+Date: Wed, 16 Sep 2020 15:38:41 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Jacob Pan (Jun)" <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
+ to VMs
+Message-ID: <20200916183841.GI6199@nvidia.com>
+References: <20200915113341.GW904879@nvidia.com>
+ <20200915181154.GA70770@otc-nc-03> <20200915184510.GB1573713@nvidia.com>
+ <20200915150851.76436ca1@jacob-builder> <20200915235126.GK1573713@nvidia.com>
+ <20200915171319.00003f59@linux.intel.com> <20200916150754.GE6199@nvidia.com>
+ <20200916163343.GA76252@otc-nc-03> <20200916170113.GD3699@nvidia.com>
+ <20200916112110.000024ee@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20200916112110.000024ee@intel.com>
+X-ClientProxiedBy: BL0PR05CA0010.namprd05.prod.outlook.com
+ (2603:10b6:208:91::20) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <1599861476-53416-2-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Yi Sun <yi.y.sun@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Wu Hao <hao.wu@intel.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by
+ BL0PR05CA0010.namprd05.prod.outlook.com (2603:10b6:208:91::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3391.11 via Frontend Transport; Wed, 16 Sep 2020 18:38:43 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1kIcKH-000Bfs-J4; Wed, 16 Sep 2020 15:38:41 -0300
+X-Originating-IP: [156.34.48.30]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9520029b-f1ec-4565-5036-08d85a6fbd08
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1756:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1756011DEF544FA1E0CA1AB3C2210@DM5PR12MB1756.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0O96Niuv/djgnRWft+3NuALR4rqRfbRoEFELJLSJgTWZsJgQBlvqG2QojfeCMp8EA6gzKPscyDWvI9OLgo4WVaWDRQZcp/yfGFvwn+YQC8TbkvXidh5A3xZPQgB6iI6BB4zgwSZVTwNVLneGfMOzftE3NcubEwlVVhPIeNTeczWhmv9ZyOc9G1kEAyt/fTO4q8Hun05jUKT4ZLIJJj4V8PF2Fp9vZzSAbiEa+lJmSsDMksynLBTU3IWhKDGmGvxG3nHtDrPE7IShvCmrefs83n3ccRW94dqrnt7Md28n1tQaC6cVGhWJcB3A3/99kCXi+b9JmFvcu3TLfqLJDZ5P1x6vEDeMawf6tLlH/rk8UclpGgR2DtvutZXRdHosHSjm
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(39850400004)(396003)(376002)(346002)(366004)(136003)(426003)(33656002)(54906003)(2616005)(83380400001)(86362001)(1076003)(36756003)(5660300002)(316002)(66476007)(66556008)(6916009)(4326008)(2906002)(186003)(26005)(8676002)(66946007)(9786002)(8936002)(478600001)(7416002)(9746002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: kxAwg1oh+VUj0Kl5H71E9BqLG9ugF3664wldLj2t8Z8sGh8oL1zA3mScJfJR6QOvKWR991fwjZyX8vOZh5fu7BETuFHucCRB1qIIuKy6A2OZk4e2LLP2jmzMx6ZjFvL0gZscu9lznq/KCZp7ZNMpDdgSwnCE/vzT15VwluhsoxkRMY1jQnVQ0Bxr/aN1u7/FGFBIifcTuAkGtMIyflzH6E+cBjC+8SsEfs0uabOjqpUrPjwIADdfHDiiAlH8+3kk7C1NPFVRfSUfQxa5naFCK4sBipja7uNuC/l5/UrRmBdREpD2yA9k8tPJc+Aeazexl+Ykg2a+aGFPwYFpMwm0CGAoIThIRzR6UpLxtxcluUcrvDGlkrHKeK1NXYRDaZoWURTJhw/x3yCQY7rEizTKpp3mPSmwin9cAY+2igLHLa4bqTLU6To9slOpV0qzsMVpD0RvPGxyJOfLiw+wSQY7LxEfSfU3mP7H1EDscf0wvPZQcOJJy2TaVDLdprIFpx7kJ55CAwoHs1s/X2whSDrvg+aZxF54HybbPEnMhNi9m1AA41lc5vktebZmMthj7KwEaaOYeXabPv6dtBr/SLJkLfS1HyzGIuLsVfV+83ivkhF1Etep3FYdyYuefaoHznSAmZZxwEKG2L6h3Px+bVqExw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9520029b-f1ec-4565-5036-08d85a6fbd08
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2020 18:38:43.7130 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z8qGEqNpWM+AqKhtpKG5xk5AfxfU8vjkfMgrU3ucs/VYK3KndyetPudOkjQ/znom
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1756
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1600281483; bh=mtDVr2z3YVSoZN/JwFf5gcY98bQed7J2EP1JqeVtHB4=;
+ h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+ ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
+ Subject:Message-ID:References:Content-Type:Content-Disposition:
+ In-Reply-To:X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
+ X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+ X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
+ X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
+ X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+ X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
+ X-MS-Exchange-CrossTenant-Network-Message-Id:
+ X-MS-Exchange-CrossTenant-AuthSource:
+ X-MS-Exchange-CrossTenant-AuthAs:
+ X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+ X-MS-Exchange-CrossTenant-FromEntityHeader:
+ X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+ X-MS-Exchange-CrossTenant-UserPrincipalName:
+ X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+ b=iGs9o9KAXpTFTR1oueywG4rarko7YT3Y9dTuRNjQzdaz0xoR9CMhE/AvvRLPPe3lI
+ 8kCe8r9HJAwDJU5Anfgh+0HmEe7gvUsq8cf1cTRs9BbnDwp2TiqimhezkuGVIJc3VC
+ RnpF0TkGLk+nd1k0rM6qMX78kgiA+FYTi8lIcxWQYdzD+ecgMAYPuI6p5xbFBJL1e8
+ hEQd3LkxTFZ4WxTSsTRH/hIfVa1HtzNmgvxiZvxsEz+w+5cGvUje03Z6F34w3ULOhZ
+ OSFlkSpu47m4fDnJVzZuMhL0XT8SYX33jSqbjdbqyuQFBegJXdSo3A7FBXWwCmDBrP
+ MwrvsKf0cthng==
+Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ kevin.tian@intel.com, "Raj, Ashok" <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, stefanha@gmail.com,
+ Jason Wang <jasowang@redhat.com>, jun.j.tian@intel.com,
+ Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
+ hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,291 +181,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/11/20 2:57 PM, Jacob Pan wrote:
-> IOMMU UAPI is newly introduced to support communications between guest
-> virtual IOMMU and host IOMMU. There has been lots of discussions on how
-> it should work with VFIO UAPI and userspace in general.
+On Wed, Sep 16, 2020 at 11:21:10AM -0700, Jacob Pan (Jun) wrote:
+> Hi Jason,
+> On Wed, 16 Sep 2020 14:01:13 -0300, Jason Gunthorpe <jgg@nvidia.com>
+> wrote:
 > 
-> This document is intended to clarify the UAPI design and usage. The
-> mechanics of how future extensions should be achieved are also covered
-> in this documentation.
+> > On Wed, Sep 16, 2020 at 09:33:43AM -0700, Raj, Ashok wrote:
+> > > On Wed, Sep 16, 2020 at 12:07:54PM -0300, Jason Gunthorpe wrote:  
+> > > > On Tue, Sep 15, 2020 at 05:22:26PM -0700, Jacob Pan (Jun) wrote:  
+> > > > > > If user space wants to bind page tables, create the PASID with
+> > > > > > /dev/sva, use ioctls there to setup the page table the way it
+> > > > > > wants, then pass the now configured PASID to a driver that
+> > > > > > can use it.   
+> > > > > 
+> > > > > Are we talking about bare metal SVA?   
+> > > > 
+> > > > What a weird term.  
+> > > 
+> > > Glad you noticed it at v7 :-) 
+> > > 
+> > > Any suggestions on something less weird than 
+> > > Shared Virtual Addressing? There is a reason why we moved from SVM
+> > > to SVA.  
+> > 
+> > SVA is fine, what is "bare metal" supposed to mean?
+> > 
+> What I meant here is sharing virtual address between DMA and host
+> process. This requires devices perform DMA request with PASID and use
+> IOMMU first level/stage 1 page tables.
+> This can be further divided into 1) user SVA 2) supervisor SVA (sharing
+> init_mm)
 > 
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  Documentation/userspace-api/iommu.rst | 211 ++++++++++++++++++++++++++++++++++
->  MAINTAINERS                           |   1 +
->  2 files changed, 212 insertions(+)
->  create mode 100644 Documentation/userspace-api/iommu.rst
+> My point is that /dev/sva is not useful here since the driver can
+> perform PASID allocation while doing SVA bind.
 
-Hi,
-I have a few edit changes for you below:
+No, you are thinking too small.
 
+Look at VDPA, it has a SVA uAPI. Some HW might use PASID for the SVA.
 
-> diff --git a/Documentation/userspace-api/iommu.rst b/Documentation/userspace-api/iommu.rst
-> new file mode 100644
-> index 000000000000..1e68e8f05bb3
-> --- /dev/null
-> +++ b/Documentation/userspace-api/iommu.rst
-> @@ -0,0 +1,211 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +.. iommu:
-> +
-> +=====================================
-> +IOMMU Userspace API
-> +=====================================
-> +
-> +IOMMU UAPI is used for virtualization cases where communications are
-> +needed between physical and virtual IOMMU drivers. For baremetal
-> +usage, the IOMMU is a system device which does not need to communicate
-> +with user space directly.
+When VDPA is used by DPDK it makes sense that the PASID will be SVA and
+1:1 with the mm_struct.
 
-        userspace
+When VDPA is used by qemu it makes sense that the PASID will be an
+arbitary IOVA map constructed to be 1:1 with the guest vCPU physical
+map. /dev/sva allows a single uAPI to do this kind of setup, and qemu
+can support it while supporting a range of SVA kernel drivers. VDPA
+and vfio-mdev are obvious initial targets.
 
-for consistency
+*BOTH* are needed.
 
-> +
-> +The primary use cases are guest Shared Virtual Address (SVA) and
-> +guest IO virtual address (IOVA), wherin the vIOMMU implementation
+In general any uAPI for PASID should have the option to use either the
+mm_struct SVA PASID *OR* a PASID from /dev/sva. It costs virtually
+nothing to implement this in the driver as PASID is just a number, and
+gives so much more flexability.
 
-                                    wherein
+> Yi can correct me but this set is is about VFIO-PCI, VFIO-mdev will be
+> introduced later.
 
-> +relies on the physical IOMMU and for this reason requires interactions
-> +with the host driver.
-> +
-> +.. contents:: :local:
-> +
-> +Functionalities
-> +===============
-> +Communications of user and kernel involve both directions. The
-> +supported user-kernel APIs are as follows:
-> +
-> +1. Alloc/Free PASID
-> +2. Bind/Unbind guest PASID (e.g. Intel VT-d)
-> +3. Bind/Unbind guest PASID table (e.g. ARM SMMU)
-> +4. Invalidate IOMMU caches upon guest requests
-> +5. Report errors to the guest and serve page requests
-> +
-> +Requirements
-> +============
-> +The IOMMU UAPIs are generic and extensible to meet the following
-> +requirements:
-> +
-> +1. Emulated and para-virtualised vIOMMUs
-> +2. Multiple vendors (Intel VT-d, ARM SMMU, etc.)
-> +3. Extensions to the UAPI shall not break existing user space
+Last patch is:
 
-                                                      userspace
+  vfio/type1: Add vSVA support for IOMMU-backed mdevs
 
-> +
-> +Interfaces
-> +==========
-> +Although the data structures defined in IOMMU UAPI are self-contained,
-> +there is no user API functions introduced. Instead, IOMMU UAPI is
+So pretty hard to see how this is not about vfio-mdev, at least a
+little..
 
-   there are no
-
-> +designed to work with existing user driver frameworks such as VFIO.
-> +
-> +Extension Rules & Precautions
-> +-----------------------------
-> +When IOMMU UAPI gets extended, the data structures can *only* be
-> +modified in two ways:
-> +
-> +1. Adding new fields by re-purposing the padding[] field. No size change.
-> +2. Adding new union members at the end. May increase the structure sizes.
-> +
-> +No new fields can be added *after* the variable sized union in that it
-> +will break backward compatibility when offset moves. A new flag must
-> +be introduced whenever a change affects the structure using either
-> +method. The IOMMU driver processes the data based on flags which
-> +ensures backward compatibility.
-> +
-> +Version field is only reserved for the unlikely event of UAPI upgrade
-> +at its entirety.
-> +
-> +It's *always* the caller's responsibility to indicate the size of the
-> +structure passed by setting argsz appropriately.
-> +Though at the same time, argsz is user provided data which is not
-> +trusted. The argsz field allows the user app to indicate how much data
-> +it is providing, it's still the kernel's responsibility to validate
-
-         providing;
-
-> +whether it's correct and sufficient for the requested operation.
-> +
-> +Compatibility Checking
-> +----------------------
-> +When IOMMU UAPI extension results in some structure size increase,
-> +IOMMU UAPI code shall handle the following cases:
-> +
-> +1. User and kernel has exact size match
-> +2. An older user with older kernel header (smaller UAPI size) running on a
-> +   newer kernel (larger UAPI size)
-> +3. A newer user with newer kernel header (larger UAPI size) running
-> +   on an older kernel.
-> +4. A malicious/misbehaving user pass illegal/invalid size but within
-
-                                   passing
-
-> +   range. The data may contain garbage.
-> +
-> +Feature Checking
-> +----------------
-> +While launching a guest with vIOMMU, it is strongly advised to check
-> +the compatibility upfront, as some subsequent errors happening during
-> +vIOMMU operation, such as cache invalidation failures cannot be nicely> +escaladated to the guest due to IOMMU specifications. This can lead to
-
-   escalated
-
-> +catastrophic failures for the users.
-> +
-> +User applications such as QEMU are expected to import kernel UAPI
-> +headers. Backward compatibility is supported per feature flags.
-> +For example, an older QEMU (with older kernel header) can run on newer
-> +kernel. Newer QEMU (with new kernel header) may refuse to initialize
-> +on an older kernel if new feature flags are not supported by older
-> +kernel. Simply recompiling existing code with newer kernel header should
-> +not be an issue in that only existing flags are used.
-> +
-> +IOMMU vendor driver should report the below features to IOMMU UAPI
-> +consumers (e.g. via VFIO).
-> +
-> +1. IOMMU_NESTING_FEAT_SYSWIDE_PASID
-> +2. IOMMU_NESTING_FEAT_BIND_PGTBL
-> +3. IOMMU_NESTING_FEAT_BIND_PASID_TABLE
-> +4. IOMMU_NESTING_FEAT_CACHE_INVLD
-> +5. IOMMU_NESTING_FEAT_PAGE_REQUEST
-> +
-> +Take VFIO as example, upon request from VFIO user space (e.g. QEMU),
-
-                                                userspace
-
-> +VFIO kernel code shall query IOMMU vendor driver for the support of
-> +the above features. Query result can then be reported back to the
-> +user-space caller. Details can be found in
-
-   userspace
-
-> +Documentation/driver-api/vfio.rst.
-> +
-> +
-> +Data Passing Example with VFIO
-> +------------------------------
-> +As the ubiquitous userspace driver framework, VFIO is already IOMMU
-> +aware and shares many key concepts such as device model, group, and
-> +protection domain. Other user driver frameworks can also be extended
-> +to support IOMMU UAPI but it is outside the scope of this document.
-> +
-> +In this tight-knit VFIO-IOMMU interface, the ultimate consumer of the
-> +IOMMU UAPI data is the host IOMMU driver. VFIO facilitates user-kernel
-> +transport, capability checking, security, and life cycle management of
-> +process address space ID (PASID).
-> +
-> +VFIO layer conveys the data structures down to the IOMMU driver, it
-
-                                                            driver. It
-
-> +follows the pattern below::
-> +
-> +   struct {
-> +	__u32 argsz;
-> +	__u32 flags;
-> +	__u8  data[];
-> +   };
-> +
-> +Here data[] contains the IOMMU UAPI data structures. VFIO has the
-> +freedom to bundle the data as well as parse data size based on its own flags.
-> +
-> +In order to determine the size and feature set of the user data, argsz
-> +and flags (or the equivalent) are also embedded in the IOMMU UAPI data
-> +structures.
-> +
-> +A "__u32 argsz" field is *always* at the beginning of each structure.
-> +
-> +For example:
-> +::
-> +
-> +   struct iommu_cache_invalidate_info {
-> +	__u32	argsz;
-> +	#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
-> +	__u32	version;
-> +	/* IOMMU paging structure cache */
-> +	#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
-> +	#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
-> +	#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
-> +	#define IOMMU_CACHE_INV_TYPE_NR		(3)
-> +	__u8	cache;
-> +	__u8	granularity;
-> +	__u8	padding[6];
-> +	union {
-> +		struct iommu_inv_pasid_info pasid_info;
-> +		struct iommu_inv_addr_info addr_info;
-> +	} granu;
-> +   };
-> +
-> +VFIO is responsible for checking its own argsz and flags. It then
-> +invokes appropriate IOMMU UAPI functions. The user pointers are passed
-> +to the IOMMU layer for further processing. The responsibilities are
-> +divided as follows:
-> +
-> +- Generic IOMMU layer checks argsz range based on UAPI data in the
-> +  current kernel version
-
-                    version.
-
-> +
-> +- Generic IOMMU layer checks content of the UAPI data for non-zero
-> +  reserved bits in flags, padding fields, and unsupported version.
-> +  This is to ensure not breaking userspace in the future when these
-> +  fields or flags are used.
-> +
-> +- Vendor IOMMU driver checks argsz based on vendor flags, UAPI data
-
-                                                      flags. UAPI data
-
-> +  is consumed based on flags. Vendor driver has access to
-> +  unadulterated argsz value in case of vendor specific future
-> +  extensions. Currently, it does not perform the copy_from_user()
-> +  itself. A __user pointer can be provided in some future scenarios
-> +  where there's vendor data outside of the structure definition.
-> +
-> +IOMMU code treats UAPI data into two categories:
-
-                                in
-
-> +
-> +- structure contains vendor data
-> +  (Example: iommu_uapi_cache_invalidate())
-> +
-> +- structure contains only generic data
-> +  (Example: iommu_uapi_sva_bind_gpasid())
-> +
-> +
-> +
-> +Sharing UAPI with in-kernel users
-> +---------------------------------
-> +For UAPIs that are shared with in-kernel users, a wrapper function is
-> +provided to distinguish the callers. For example,
-> +
-> +Userspace caller ::
-> +
-> +  int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
-> +                                   struct device *dev,
-> +                                   void __user *udata)
-> +
-> +In-kernel caller ::
-> +
-> +  int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> +                                   struct device *dev,
-> +                                   struct iommu_gpasid_bind_data *data)
-
-
-thanks.
--- 
-~Randy
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
