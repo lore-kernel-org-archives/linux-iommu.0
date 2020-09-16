@@ -2,168 +2,78 @@ Return-Path: <SRS0=cHis=CZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3389C43461
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:45:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D90C433E2
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 19:47:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 141A820732
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 18:45:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="iGs9o9KA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 141A820732
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 616E7208E4
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 19:47:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 616E7208E4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 20143844DA;
-	Wed, 16 Sep 2020 18:38:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E57DB874EF;
+	Wed, 16 Sep 2020 19:47:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5C3Lw3CQm7WP; Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
+	with ESMTP id RxiNoY81xBt9; Wed, 16 Sep 2020 19:47:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2FB868362D;
-	Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1A2F7874E4;
+	Wed, 16 Sep 2020 19:47:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F72EC0859;
-	Wed, 16 Sep 2020 18:38:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB6CFC0864;
+	Wed, 16 Sep 2020 19:47:21 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9505C0051
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 862EBC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:14:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 52000874E0
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:47 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 63C0987440
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:14:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id InVfRXnAoCzG for <iommu@lists.linux-foundation.org>;
- Wed, 16 Sep 2020 18:38:46 +0000 (UTC)
+ with ESMTP id K2uB3jFmuJ0S for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Sep 2020 18:14:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
- [216.228.121.64])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A07A0874D6
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:38:46 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5f625b8b0000>; Wed, 16 Sep 2020 11:38:03 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Wed, 16 Sep 2020 11:38:46 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Wed, 16 Sep 2020 11:38:46 -0700
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Sep
- 2020 18:38:45 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
- by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 16 Sep 2020 18:38:45 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l89qDrOQCanALn29CqqL9ZN799Cc0QW3VmoNuRz826TXUCWdqs7hD7s043BtnLBeeVFM0uh69FqvN0Mz0CjQvvIKJbrH0hSIe1aBHEohKqH+Q2LgFMIc+lkHdoFLV3sGozbF8Fg3PDMk6tdRG6/6x4daxG2Dz26IY8JzEd90uvD1MENattyWny7wEBB6gsgot/Agpk1dS26kLTQX5tVynrAu4TJ9BoD1vBQDRvzJLzCP05ThAkB9KPU+MgSgP3Y3gDucgYvz8oqymyGVGtypuzu8yvISg7w2aEDCTW+H7L9/v3JENZ+UylhoEwnHmxWkSX4f9nbp0ds/w2VVvWWNXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mtDVr2z3YVSoZN/JwFf5gcY98bQed7J2EP1JqeVtHB4=;
- b=iyegTkp0eLadjwYKkgaGjvkOeb8YOkSsNmCA9a+i5RTE5a/j5Ri7OTOKWIC8px5jjhj5WnH3UDw6rUr/Xwop1D9qbszLPkhFWEFqriCv5X/1FmftLxcauHEbTphGX5FVqyhKR5sKugK9HmtcxWOW4gVkGtYSl4onmWWRWPNp+0JgJvluDsd2hqClSiuDbrEqMNTza4ZND23vY8x2QxJrhjbPaqJCftK8cYhQ2B5ZsK5/DpNrNuLcF3yjDN2fATPwvFrddqe6v9MV8XaR4Up6LmPcyzXwsAPO9/RTP5yiVGQ5ra+SdMg6JfO/eyMvixwAqyi9GU+D7zJ5JcNlKPj9mQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB1756.namprd12.prod.outlook.com (2603:10b6:3:108::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Wed, 16 Sep
- 2020 18:38:43 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3391.011; Wed, 16 Sep 2020
- 18:38:43 +0000
-Date: Wed, 16 Sep 2020 15:38:41 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Jacob Pan (Jun)" <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing
- to VMs
-Message-ID: <20200916183841.GI6199@nvidia.com>
-References: <20200915113341.GW904879@nvidia.com>
- <20200915181154.GA70770@otc-nc-03> <20200915184510.GB1573713@nvidia.com>
- <20200915150851.76436ca1@jacob-builder> <20200915235126.GK1573713@nvidia.com>
- <20200915171319.00003f59@linux.intel.com> <20200916150754.GE6199@nvidia.com>
- <20200916163343.GA76252@otc-nc-03> <20200916170113.GD3699@nvidia.com>
- <20200916112110.000024ee@intel.com>
-Content-Disposition: inline
-In-Reply-To: <20200916112110.000024ee@intel.com>
-X-ClientProxiedBy: BL0PR05CA0010.namprd05.prod.outlook.com
- (2603:10b6:208:91::20) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 6FB8F87434
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 18:14:11 +0000 (UTC)
+IronPort-SDR: NNrqxa9aS00co/7cwyqTRefshJJks+g/JzGr0QKXByZtNFWwFERHdsilmWrcSrrHISS7hwqo9G
+ ftMkopwPE0pQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9746"; a="158835628"
+X-IronPort-AV: E=Sophos;i="5.76,433,1592895600"; d="scan'208";a="158835628"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 16 Sep 2020 11:14:10 -0700
+IronPort-SDR: hY3TUZpQC1s5bwjiNTqP3MOXakF1WfgPsF+gE6YfCvCTuUWeneC1b/UBTsgMLOUVIv2M0Ei5Vg
+ +tac0t9nOaSw==
+X-IronPort-AV: E=Sophos;i="5.76,433,1592895600"; d="scan'208";a="451957541"
+Received: from scusackx-mobl1.ger.corp.intel.com (HELO localhost)
+ ([10.249.45.87])
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 16 Sep 2020 11:14:08 -0700
+Date: Wed, 16 Sep 2020 21:14:05 +0300
+From: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+To: Ronan Jouchet <ronan.jouchet@gmail.com>, dwmw2@infradead.org
+Subject: Re: intel_iommu=on breaks resume from suspend on several Thinkpad
+ models
+Message-ID: <20200916181405.GI21026@linux.intel.com>
+References: <06299499-45d0-23e7-45da-7dbe71ff7a53@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by
- BL0PR05CA0010.namprd05.prod.outlook.com (2603:10b6:208:91::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3391.11 via Frontend Transport; Wed, 16 Sep 2020 18:38:43 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1kIcKH-000Bfs-J4; Wed, 16 Sep 2020 15:38:41 -0300
-X-Originating-IP: [156.34.48.30]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9520029b-f1ec-4565-5036-08d85a6fbd08
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1756:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1756011DEF544FA1E0CA1AB3C2210@DM5PR12MB1756.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0O96Niuv/djgnRWft+3NuALR4rqRfbRoEFELJLSJgTWZsJgQBlvqG2QojfeCMp8EA6gzKPscyDWvI9OLgo4WVaWDRQZcp/yfGFvwn+YQC8TbkvXidh5A3xZPQgB6iI6BB4zgwSZVTwNVLneGfMOzftE3NcubEwlVVhPIeNTeczWhmv9ZyOc9G1kEAyt/fTO4q8Hun05jUKT4ZLIJJj4V8PF2Fp9vZzSAbiEa+lJmSsDMksynLBTU3IWhKDGmGvxG3nHtDrPE7IShvCmrefs83n3ccRW94dqrnt7Md28n1tQaC6cVGhWJcB3A3/99kCXi+b9JmFvcu3TLfqLJDZ5P1x6vEDeMawf6tLlH/rk8UclpGgR2DtvutZXRdHosHSjm
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39850400004)(396003)(376002)(346002)(366004)(136003)(426003)(33656002)(54906003)(2616005)(83380400001)(86362001)(1076003)(36756003)(5660300002)(316002)(66476007)(66556008)(6916009)(4326008)(2906002)(186003)(26005)(8676002)(66946007)(9786002)(8936002)(478600001)(7416002)(9746002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: kxAwg1oh+VUj0Kl5H71E9BqLG9ugF3664wldLj2t8Z8sGh8oL1zA3mScJfJR6QOvKWR991fwjZyX8vOZh5fu7BETuFHucCRB1qIIuKy6A2OZk4e2LLP2jmzMx6ZjFvL0gZscu9lznq/KCZp7ZNMpDdgSwnCE/vzT15VwluhsoxkRMY1jQnVQ0Bxr/aN1u7/FGFBIifcTuAkGtMIyflzH6E+cBjC+8SsEfs0uabOjqpUrPjwIADdfHDiiAlH8+3kk7C1NPFVRfSUfQxa5naFCK4sBipja7uNuC/l5/UrRmBdREpD2yA9k8tPJc+Aeazexl+Ykg2a+aGFPwYFpMwm0CGAoIThIRzR6UpLxtxcluUcrvDGlkrHKeK1NXYRDaZoWURTJhw/x3yCQY7rEizTKpp3mPSmwin9cAY+2igLHLa4bqTLU6To9slOpV0qzsMVpD0RvPGxyJOfLiw+wSQY7LxEfSfU3mP7H1EDscf0wvPZQcOJJy2TaVDLdprIFpx7kJ55CAwoHs1s/X2whSDrvg+aZxF54HybbPEnMhNi9m1AA41lc5vktebZmMthj7KwEaaOYeXabPv6dtBr/SLJkLfS1HyzGIuLsVfV+83ivkhF1Etep3FYdyYuefaoHznSAmZZxwEKG2L6h3Px+bVqExw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9520029b-f1ec-4565-5036-08d85a6fbd08
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2020 18:38:43.7130 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z8qGEqNpWM+AqKhtpKG5xk5AfxfU8vjkfMgrU3ucs/VYK3KndyetPudOkjQ/znom
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1756
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1600281483; bh=mtDVr2z3YVSoZN/JwFf5gcY98bQed7J2EP1JqeVtHB4=;
- h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
- ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
- Subject:Message-ID:References:Content-Type:Content-Disposition:
- In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
- X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
- X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
- X-MS-Oob-TLC-OOBClassifiers:X-MS-Exchange-SenderADCheck:
- X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
- X-Forefront-Antispam-Report:X-MS-Exchange-AntiSpam-MessageData:
- X-MS-Exchange-CrossTenant-Network-Message-Id:
- X-MS-Exchange-CrossTenant-AuthSource:
- X-MS-Exchange-CrossTenant-AuthAs:
- X-MS-Exchange-CrossTenant-OriginalArrivalTime:
- X-MS-Exchange-CrossTenant-FromEntityHeader:
- X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
- X-MS-Exchange-CrossTenant-UserPrincipalName:
- X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
- b=iGs9o9KAXpTFTR1oueywG4rarko7YT3Y9dTuRNjQzdaz0xoR9CMhE/AvvRLPPe3lI
- 8kCe8r9HJAwDJU5Anfgh+0HmEe7gvUsq8cf1cTRs9BbnDwp2TiqimhezkuGVIJc3VC
- RnpF0TkGLk+nd1k0rM6qMX78kgiA+FYTi8lIcxWQYdzD+ecgMAYPuI6p5xbFBJL1e8
- hEQd3LkxTFZ4WxTSsTRH/hIfVa1HtzNmgvxiZvxsEz+w+5cGvUje03Z6F34w3ULOhZ
- OSFlkSpu47m4fDnJVzZuMhL0XT8SYX33jSqbjdbqyuQFBegJXdSo3A7FBXWwCmDBrP
- MwrvsKf0cthng==
-Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- kevin.tian@intel.com, "Raj, Ashok" <ashok.raj@intel.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, stefanha@gmail.com,
- Jason Wang <jasowang@redhat.com>, jun.j.tian@intel.com,
- Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
- hao.wu@intel.com
+Content-Disposition: inline
+In-Reply-To: <06299499-45d0-23e7-45da-7dbe71ff7a53@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Mailman-Approved-At: Wed, 16 Sep 2020 19:47:21 +0000
+Cc: linux-integrity@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -181,71 +91,1289 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 16, 2020 at 11:21:10AM -0700, Jacob Pan (Jun) wrote:
-> Hi Jason,
-> On Wed, 16 Sep 2020 14:01:13 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> wrote:
+On Sun, Sep 06, 2020 at 11:38:08PM -0400, Ronan Jouchet wrote:
+> Hi. This is a follow-up of [BUG]
+> https://bugzilla.kernel.org/show_bug.cgi?id=197029 ,
+> where Jarkko Sakkinen asks in comment 31 to move discussion here.
 > 
-> > On Wed, Sep 16, 2020 at 09:33:43AM -0700, Raj, Ashok wrote:
-> > > On Wed, Sep 16, 2020 at 12:07:54PM -0300, Jason Gunthorpe wrote:  
-> > > > On Tue, Sep 15, 2020 at 05:22:26PM -0700, Jacob Pan (Jun) wrote:  
-> > > > > > If user space wants to bind page tables, create the PASID with
-> > > > > > /dev/sva, use ioctls there to setup the page table the way it
-> > > > > > wants, then pass the now configured PASID to a driver that
-> > > > > > can use it.   
-> > > > > 
-> > > > > Are we talking about bare metal SVA?   
-> > > > 
-> > > > What a weird term.  
-> > > 
-> > > Glad you noticed it at v7 :-) 
-> > > 
-> > > Any suggestions on something less weird than 
-> > > Shared Virtual Addressing? There is a reason why we moved from SVM
-> > > to SVA.  
-> > 
-> > SVA is fine, what is "bare metal" supposed to mean?
-> > 
-> What I meant here is sharing virtual address between DMA and host
-> process. This requires devices perform DMA request with PASID and use
-> IOMMU first level/stage 1 page tables.
-> This can be further divided into 1) user SVA 2) supervisor SVA (sharing
-> init_mm)
+> [1.] One line summary of the problem:
 > 
-> My point is that /dev/sva is not useful here since the driver can
-> perform PASID allocation while doing SVA bind.
+> intel_iommu=on breaks resume from suspend on several Thinkpad models
+> 
+> [2.] Full description of the problem/report:
+> 
+> With intel_iommu=on, on several Thinkpad models (my personal T560, and
+> the X1 Yoga / Yoga 460 of commenters over at [BUG]), suspend does work,
+> but pressing POWER / Enter / whatever key fails to resume from suspend.
+> 
+> Instead, the machine doesn't do anything: system remains suspended,
+> the glowing LED keeps glowing, and the only option is to force a
+> hard shutdown with a long press on POWER, and start the system again.
+> 
+> [3.] Keywords (i.e., modules, networking, kernel):
+> 
+> suspend, resume, power management, laptop, lenovo, ibm, thinkpad, intel
+> 
+> [4.] Kernel information
+> 
+> [4.1.] Kernel version (from /proc/version):
+> 
+> Linux version 5.8.7-arch1-1 (linux@archlinux)
+>       (gcc (GCC) 10.2.0, GNU ld (GNU Binutils) 2.35) #1 SMP PREEMPT
+>       Sat, 05Sep 2020 12:31:32 +0000
+> 
+> This is the official `linux` package currently in Arch's `core` repo:
+> https://www.archlinux.org/packages/core/x86_64/linux/
+> 
+> [4.2.] Kernel .config file:
+> 
+> https://github.com/archlinux/svntogit-packages/blob/packages/linux/trunk/config
+> 
+> [5.] Most recent kernel version which did not have the bug:
+> 
+> Undetermined.
+> 
+> I witnessed the bug in Linux [ 4.13 , 5.8.7 ] but the bug predates 4.13.
+> I first noticed it in 4.13 because it's the first version where Arch
+> shipped a kernel enabling `intel_iommu=on` by default.
+> 
+> Since then, following the Arch Linux sister bug report linked below at
+> [ARCH-BUG], Arch kernel packagers switched back to `intel_iommu=off`.
+> 
+> [X. Other notes and bugzilla bug summary/chronology]
+> 
+> X.1. This is a follow-up to these threads:
+>      - [BUG] https://bugzilla.kernel.org/show_bug.cgi?id=197029
+>      - [ARCH-BBS] https://bbs.archlinux.org/viewtopic.php?pid=1737688
+>      - [ARCH-BUG] https://bugs.archlinux.org/task/55705
+> 
+> X.2. Over at [ARCH-BBS], someone suggested I try `intel_iommu=igfx_off`
+>      rather than full `intel_iommu=off`. It's not enough; even with
+>      `intel_iommu=igfx_off`, resume from suspend is broken.
+> 
+> X.3. The same commenter over at [ARCH-BBS] suggests this bug might be
+>      related to https://bugs.freedesktop.org/show_bug.cgi?id=89360
+> 
+> X.4. Problem was brought to the Linux IOMMU list:
+> 
+> https://lists.linuxfoundation.org/pipermail/iommu/2017-September/024382.html
+> 
+> X.5. Several Reddit commenters confirmed the problem:
+> 
+> https://www.reddit.com/r/archlinux/comments/72z2rv/linux_41331_is_in_core/dnmjaeo/
+> 
+> X.6. On 2017-09-30, buzilla commenter Albert wrote at
+>      https://bugzilla.kernel.org/show_bug.cgi?id=197029#c9 that:
+> 
+>      > I'm seeing this on my X1 Yoga (gen1) as well.
+>      >
+>      > When going to suspend (via systemctl suspend) with the default
+>      > (intel_iommu=on), the power light starts fading/"breathing",
+>      > but the audio mute LED stays on and the machine hangs.
+>      >
+>      > With intel_iommu=off, the power light breathes as well and the
+>      > auto mute LED turns off correctly. I can then resume it normally
+>      > (by pressing the Fn key).
+> 
+> X.7. On 2017-10-16, Lu Baolu from Intel wrote at
+>      https://bugzilla.kernel.org/show_bug.cgi?id=197029#c13 that:
+> 
+>      > This issue has been narrowed down to a hidden ME device which
+>      > is not OS aware. The main symptom is below error log message
+>      > and system fails to resume after being suspended.
+>      >
+>      >     DMAR: DRHD: handling fault status reg 3
+>      >     DMAR: [DMA Read] Request device [00:12.4] fault addr b7fff000
+>      >           [fault reason 02] Present bit in context entry is clear
+>      >
+>      > A quick workaround is make PTP OS aware in BIOS configuration.
+>      > It's likely at "PCH-FW Configuration"->"PTP aware OS".
+> 
+>      However, I couldn't find such an option in my T560's BIOS :-/
+> 
+> X.8. On 2017-11-13, Lu Baolu from Intel wrote at
+>      https://bugzilla.kernel.org/show_bug.cgi?id=197029#c18 that:
+> 
+>      > This bug is still under investigation. We have narrowed it
+>      > as a regression caused by a previous commit.
+>      > The commit owner is now working on a fix.
+> 
+> X.9. On 2020-02-03, to my followup requests, Lu Baolu wrote at
+>      https://bugzilla.kernel.org/show_bug.cgi?id=197029#c21 that:
+> 
+>      > It seems to be caused by below commit:
+>      >
+>      > commit 422eac3f7deae34dbaffd08e03e27f37a5394a56
+>      > Author: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+>      > Date: Tue Apr 19 12:54:18 2016 +0300
+>      >
+>      > tpm_crb: fix mapping of the buffers
+>      >
+>      > On my Lenovo x250 the following situation occurs:
+>      >
+>      > [18697.813871] tpm_crb MSFT0101:00: can't request region for resource
+>      > [mem 0xacdff080-0xacdfffff]
+>      >
+>      > The mapping of the control area overlaps the mapping of the command
+>      > buffer. The control area is mapped over page, which is not right. It
+>      > should mapped over sizeof(struct crb_control_area).
+>      >
+>      > Fixing this issue unmasks another issue. Command and response buffers
+>      > can overlap and they do interleave on this machine. According to the
+> PTP
+>      > specification the overlapping means that they are mapped to the same
+>      > buffer.
+>      >
+>      > The commit has been also on a Haswell NUC where things worked before
+>      > applying this fix so that the both code paths for response buffer
+>      > initialization are tested.
+>      >
+>      > Cc: stable@vger.kernel.org
+>      > Fixes: 1bd047be37d9 ("tpm_crb: Use devm_ioremap_resource")
+>      > Signed-off-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+>      > Reviewed-by: Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
+> 
+> X.10. ... which was inconclusive to me, so to my followup, he replied
+>       at https://bugzilla.kernel.org/show_bug.cgi?id=197029#c23 with:
+> 
+>       > I have no idea about how this commit impacts the suspend/resume.
+>       > The fast way to make it work is to revert this commit,
+>       > or contact the commit author to rework it.
+> 
+> X.11. In the meantime, bugzilla commenter Albert attempted a revert,
+>       but was unsuccessful, as this patch no longer cleanly reverts.
+> 
+> X.12. On 2020-08-27, Alyssa Ross applied a patch functionally
+>       equivalent to reverting 422eac3f7deae34dbaffd08e03e27f37a5394a56 ,
+>       but this did not solve the problem for her, see
+>       https://bugzilla.kernel.org/show_bug.cgi?id=197029#c30
+> 
+> X.13. On 2020-08-28, Jarkko Sakkinen asked to bring the discussion to
+>       this mailing list, and here we are.
+> 
+> [>=8 detailed debug information] =======================================
+> ========================================================================
+> 
+> [8.] Environment
+> 
+> [8.1.] Software (output of the ver_linux script)
+> 
+> Linux t 5.8.7-arch1-1 #1 SMP PREEMPT Sat, 05 Sep 2020 12:31:32 +0000 x86_64
+> GNU/Linux
+> 
+> GNU C                 10.2.0
+> GNU Make              4.3
+> Binutils              2.35
+> Util-linux            2.36
+> Mount                 2.36
+> Module-init-tools     27
+> E2fsprogs             1.45.6
+> Jfsutils              1.1.15
+> Reiserfsprogs         3.6.27
+> Xfsprogs              5.7.0
+> PPP                   2.4.7
+> Bison                 3.6.4
+> Flex                  2.6.4
+> Linux C++ Library     6.0.28
+> Linux C Library       2.32
+> Dynamic linker (ldd)  2.32
+> Procps                3.3.16
+> Net-tools             2.10
+> Kbd                   2.3.0
+> Console-tools         2.3.0
+> Sh-utils              8.32
+> Udev                  246
+> Wireless-tools        30
+> Modules Loaded        ac ac97_bus acpi_call aesni_intel agpgart
+> apple_mfi_fastcharge at24 atkbd battery bluetooth btbcm btintel btrtl btusb
+> cbc ccm cec cfg80211 coretemp crc16 crc32c_generic crc32c_intel crc32_pclmul
+> crct10dif_pclmul cryptd crypto_simd crypto_user dm_crypt dm_mod drm
+> drm_kms_helper e1000e ecc ecdh_generic encrypted_keys evdev ext4 fb_sys_fops
+> fuse ghash_clmulni_intel glue_helper hid hid_generic i2c_algo_bit i2c_dev
+> i2c_i801 i2c_smbus i8042 i915 input_leds intel_cstate intel_gtt
+> intel_pch_thermal intel_pmc_bxt intel_powerclamp intel_rapl_common
+> intel_rapl_msr intel_uncore intel_xhci_usb_role_switch ipheth ip_tables
+> irqbypass iTCO_vendor_support iTCO_wdt iwlmvm iwlwifi jbd2 joydev kvm
+> kvm_intel ledtrig_audio libarc4 libps2 mac80211 mac_hid mbcache mc mei
+> mei_hdcp mei_me mei_wdt mmc_core mousedev nvram pcspkr psmouse rapl rc_core
+> rfkill rmi_core rmi_smbus rng_core roles rtsx_pci rtsx_pci_sdmmc serio
+> serio_raw sg snd snd_compress snd_hda_codec snd_hda_codec_generic
+> snd_hda_codec_hdmi snd_hda_codec_realtek snd_hda_core snd_hda_ext_core
+> snd_hda_intel snd_hwdep snd_intel_dspcfg snd_pcm snd_pcm_dmaengine
+> snd_rawmidi snd_seq_device snd_soc_acpi snd_soc_acpi_intel_match
+> snd_soc_core snd_soc_skl snd_soc_sst_dsp snd_soc_sst_ipc snd_timer
+> snd_usb_audio snd_usbmidi_lib soundcore syscopyarea sysfillrect sysimgblt
+> thinkpad_acpi tpm tpm_crb tpm_tis tpm_tis_core trusted usbhid uvcvideo
+> videobuf2_common videobuf2_memops videobuf2_v4l2 videobuf2_vmalloc videodev
+> wmi wmi_bmof x86_pkg_temp_thermal xhci_hcd xhci_pci xhci_pci_renesas
+> x_tables
+> 
+> [8.2.] Processor information (from /proc/cpuinfo):
+> 
+> 17:08:33 ~ cat /proc/cpuinfo
+> processor : 0
+> vendor_id : GenuineIntel
+> cpu family  : 6
+> model   : 78
+> model name  : Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+> stepping  : 3
+> microcode : 0xdc
+> cpu MHz   : 498.445
+> cache size  : 4096 KB
+> physical id : 0
+> siblings  : 4
+> core id   : 0
+> cpu cores : 2
+> apicid    : 0
+> initial apicid  : 0
+> fpu   : yes
+> fpu_exception : yes
+> cpuid level : 22
+> wp    : yes
+> flags   : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat
+> pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb
+> rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology
+> nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est
+> tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch
+> cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi
+> flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2
+> erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec
+> xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
+> md_clear flush_l1d
+> vmx flags : vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb
+> flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple
+> shadow_vmcs pml
+> bugs    : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds
+> swapgs taa itlb_multihit srbds
+> bogomips  : 5602.18
+> clflush size  : 64
+> cache_alignment : 64
+> address sizes : 39 bits physical, 48 bits virtual
+> power management:
+> 
+> processor : 1
+> vendor_id : GenuineIntel
+> cpu family  : 6
+> model   : 78
+> model name  : Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+> stepping  : 3
+> microcode : 0xdc
+> cpu MHz   : 499.977
+> cache size  : 4096 KB
+> physical id : 0
+> siblings  : 4
+> core id   : 1
+> cpu cores : 2
+> apicid    : 2
+> initial apicid  : 2
+> fpu   : yes
+> fpu_exception : yes
+> cpuid level : 22
+> wp    : yes
+> flags   : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat
+> pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb
+> rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology
+> nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est
+> tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch
+> cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi
+> flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2
+> erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec
+> xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
+> md_clear flush_l1d
+> vmx flags : vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb
+> flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple
+> shadow_vmcs pml
+> bugs    : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds
+> swapgs taa itlb_multihit srbds
+> bogomips  : 5602.18
+> clflush size  : 64
+> cache_alignment : 64
+> address sizes : 39 bits physical, 48 bits virtual
+> power management:
+> 
+> processor : 2
+> vendor_id : GenuineIntel
+> cpu family  : 6
+> model   : 78
+> model name  : Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+> stepping  : 3
+> microcode : 0xdc
+> cpu MHz   : 497.356
+> cache size  : 4096 KB
+> physical id : 0
+> siblings  : 4
+> core id   : 0
+> cpu cores : 2
+> apicid    : 1
+> initial apicid  : 1
+> fpu   : yes
+> fpu_exception : yes
+> cpuid level : 22
+> wp    : yes
+> flags   : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat
+> pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb
+> rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology
+> nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est
+> tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch
+> cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi
+> flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2
+> erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec
+> xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
+> md_clear flush_l1d
+> vmx flags : vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb
+> flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple
+> shadow_vmcs pml
+> bugs    : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds
+> swapgs taa itlb_multihit srbds
+> bogomips  : 5602.18
+> clflush size  : 64
+> cache_alignment : 64
+> address sizes : 39 bits physical, 48 bits virtual
+> power management:
+> 
+> processor : 3
+> vendor_id : GenuineIntel
+> cpu family  : 6
+> model   : 78
+> model name  : Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+> stepping  : 3
+> microcode : 0xdc
+> cpu MHz   : 499.991
+> cache size  : 4096 KB
+> physical id : 0
+> siblings  : 4
+> core id   : 1
+> cpu cores : 2
+> apicid    : 3
+> initial apicid  : 3
+> fpu   : yes
+> fpu_exception : yes
+> cpuid level : 22
+> wp    : yes
+> flags   : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat
+> pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb
+> rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology
+> nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est
+> tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt
+> tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch
+> cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi
+> flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2
+> erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec
+> xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
+> md_clear flush_l1d
+> vmx flags : vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb
+> flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple
+> shadow_vmcs pml
+> bugs    : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds
+> swapgs taa itlb_multihit srbds
+> bogomips  : 5602.18
+> clflush size  : 64
+> cache_alignment : 64
+> address sizes : 39 bits physical, 48 bits virtual
+> power management:
+> 
+> [8.3.] Module information (from /proc/modules):
+> 
+> ccm 20480 6 - Live 0x0000000000000000
+> snd_usb_audio 315392 1 - Live 0x0000000000000000
+> ipheth 16384 0 - Live 0x0000000000000000
+> snd_usbmidi_lib 40960 1 snd_usb_audio, Live 0x0000000000000000
+> snd_rawmidi 45056 1 snd_usbmidi_lib, Live 0x0000000000000000
+> apple_mfi_fastcharge 20480 0 - Live 0x0000000000000000
+> snd_seq_device 16384 1 snd_rawmidi, Live 0x0000000000000000
+> snd_hda_codec_hdmi 73728 1 - Live 0x0000000000000000
+> snd_hda_codec_realtek 139264 1 - Live 0x0000000000000000
+> snd_hda_codec_generic 98304 1 snd_hda_codec_realtek, Live 0x0000000000000000
+> btusb 65536 0 - Live 0x0000000000000000
+> btrtl 24576 1 btusb, Live 0x0000000000000000
+> btbcm 20480 1 btusb, Live 0x0000000000000000
+> btintel 32768 1 btusb, Live 0x0000000000000000
+> uvcvideo 114688 0 - Live 0x0000000000000000
+> bluetooth 720896 5 btusb,btrtl,btbcm,btintel, Live 0x0000000000000000
+> videobuf2_vmalloc 20480 1 uvcvideo, Live 0x0000000000000000
+> videobuf2_memops 20480 1 videobuf2_vmalloc, Live 0x0000000000000000
+> videobuf2_v4l2 28672 1 uvcvideo, Live 0x0000000000000000
+> videobuf2_common 57344 2 uvcvideo,videobuf2_v4l2, Live 0x0000000000000000
+> videodev 274432 3 uvcvideo,videobuf2_v4l2,videobuf2_common, Live
+> 0x0000000000000000
+> ecdh_generic 16384 1 bluetooth, Live 0x0000000000000000
+> mc 61440 5 snd_usb_audio,uvcvideo,videobuf2_v4l2,videobuf2_common,videodev,
+> Live 0x0000000000000000
+> ecc 36864 1 ecdh_generic, Live 0x0000000000000000
+> joydev 28672 0 - Live 0x0000000000000000
+> mousedev 24576 0 - Live 0x0000000000000000
+> rmi_smbus 16384 0 - Live 0x0000000000000000
+> rmi_core 86016 1 rmi_smbus, Live 0x0000000000000000
+> snd_soc_skl 180224 0 - Live 0x0000000000000000
+> iwlmvm 462848 0 - Live 0x0000000000000000
+> snd_soc_sst_ipc 20480 1 snd_soc_skl, Live 0x0000000000000000
+> snd_soc_sst_dsp 40960 1 snd_soc_skl, Live 0x0000000000000000
+> snd_hda_ext_core 36864 1 snd_soc_skl, Live 0x0000000000000000
+> snd_soc_acpi_intel_match 45056 1 snd_soc_skl, Live 0x0000000000000000
+> intel_rapl_msr 20480 0 - Live 0x0000000000000000
+> mac80211 1048576 1 iwlmvm, Live 0x0000000000000000
+> snd_soc_acpi 16384 2 snd_soc_skl,snd_soc_acpi_intel_match, Live
+> 0x0000000000000000
+> intel_rapl_common 32768 1 intel_rapl_msr, Live 0x0000000000000000
+> snd_soc_core 323584 1 snd_soc_skl, Live 0x0000000000000000
+> i915 2641920 33 - Live 0x0000000000000000
+> libarc4 16384 1 mac80211, Live 0x0000000000000000
+> snd_compress 32768 1 snd_soc_core, Live 0x0000000000000000
+> x86_pkg_temp_thermal 20480 0 - Live 0x0000000000000000
+> intel_powerclamp 20480 0 - Live 0x0000000000000000
+> coretemp 20480 0 - Live 0x0000000000000000
+> ac97_bus 16384 1 snd_soc_core, Live 0x0000000000000000
+> iwlwifi 405504 1 iwlmvm, Live 0x0000000000000000
+> snd_pcm_dmaengine 16384 1 snd_soc_core, Live 0x0000000000000000
+> kvm_intel 323584 0 - Live 0x0000000000000000
+> snd_hda_intel 57344 3 - Live 0x0000000000000000
+> mei_hdcp 24576 0 - Live 0x0000000000000000
+> i2c_algo_bit 16384 1 i915, Live 0x0000000000000000
+> mei_wdt 16384 0 - Live 0x0000000000000000
+> iTCO_wdt 16384 0 - Live 0x0000000000000000
+> intel_pmc_bxt 16384 1 iTCO_wdt, Live 0x0000000000000000
+> snd_intel_dspcfg 24576 2 snd_soc_skl,snd_hda_intel, Live 0x0000000000000000
+> iTCO_vendor_support 16384 1 iTCO_wdt, Live 0x0000000000000000
+> at24 24576 0 - Live 0x0000000000000000
+> snd_hda_codec 167936 4
+> snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_hda_intel,
+> Live 0x0000000000000000
+> drm_kms_helper 262144 1 i915, Live 0x0000000000000000
+> kvm 847872 1 kvm_intel, Live 0x0000000000000000
+> wmi_bmof 16384 0 - Live 0x0000000000000000
+> cfg80211 913408 3 iwlmvm,mac80211,iwlwifi, Live 0x0000000000000000
+> snd_hda_core 106496 7 snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_soc_skl,snd_hda_ext_core,snd_hda_intel,snd_hda_codec,
+> Live 0x0000000000000000
+> irqbypass 16384 1 kvm, Live 0x0000000000000000
+> cec 73728 2 i915,drm_kms_helper, Live 0x0000000000000000
+> rapl 16384 0 - Live 0x0000000000000000
+> intel_cstate 16384 0 - Live 0x0000000000000000
+> fuse 139264 7 - Live 0x0000000000000000
+> snd_hwdep 16384 2 snd_usb_audio,snd_hda_codec, Live 0x0000000000000000
+> intel_uncore 163840 0 - Live 0x0000000000000000
+> e1000e 303104 0 - Live 0x0000000000000000
+> psmouse 184320 0 - Live 0x0000000000000000
+> rc_core 61440 1 cec, Live 0x0000000000000000
+> input_leds 16384 0 - Live 0x0000000000000000
+> pcspkr 16384 0 - Live 0x0000000000000000
+> snd_pcm 147456 9 snd_usb_audio,snd_hda_codec_hdmi,snd_soc_skl,snd_soc_core,snd_compress,snd_pcm_dmaengine,snd_hda_intel,snd_hda_codec,snd_hda_core,
+> Live 0x0000000000000000
+> thinkpad_acpi 114688 0 - Live 0x0000000000000000
+> snd_timer 45056 1 snd_pcm, Live 0x0000000000000000
+> mei_me 49152 2 - Live 0x0000000000000000
+> nvram 16384 1 thinkpad_acpi, Live 0x0000000000000000
+> intel_gtt 24576 1 i915, Live 0x0000000000000000
+> i2c_i801 36864 0 - Live 0x0000000000000000
+> ledtrig_audio 16384 3
+> snd_hda_codec_realtek,snd_hda_codec_generic,thinkpad_acpi, Live
+> 0x0000000000000000
+> syscopyarea 16384 1 drm_kms_helper, Live 0x0000000000000000
+> i2c_smbus 20480 1 i2c_i801, Live 0x0000000000000000
+> sysfillrect 16384 1 drm_kms_helper, Live 0x0000000000000000
+> intel_xhci_usb_role_switch 16384 0 - Live 0x0000000000000000
+> rfkill 28672 7 bluetooth,cfg80211,thinkpad_acpi, Live 0x0000000000000000
+> sysimgblt 16384 1 drm_kms_helper, Live 0x0000000000000000
+> snd 114688 23 snd_usb_audio,snd_usbmidi_lib,snd_rawmidi,snd_seq_device,snd_hda_codec_hdmi,snd_hda_codec_realtek,snd_hda_codec_generic,snd_soc_core,snd_compress,snd_hda_intel,snd_hda_codec,snd_hwdep,snd_pcm,thinkpad_acpi,snd_timer,
+> Live 0x0000000000000000
+> roles 16384 1 intel_xhci_usb_role_switch, Live 0x0000000000000000
+> fb_sys_fops 16384 1 drm_kms_helper, Live 0x0000000000000000
+> mei 126976 5 mei_hdcp,mei_wdt,mei_me, Live 0x0000000000000000
+> intel_pch_thermal 16384 0 - Live 0x0000000000000000
+> wmi 36864 1 wmi_bmof, Live 0x0000000000000000
+> ac 16384 0 - Live 0x0000000000000000
+> battery 20480 1 thinkpad_acpi, Live 0x0000000000000000
+> evdev 28672 28 - Live 0x0000000000000000
+> soundcore 16384 1 snd, Live 0x0000000000000000
+> tpm_crb 20480 0 - Live 0x0000000000000000
+> tpm_tis 16384 0 - Live 0x0000000000000000
+> tpm_tis_core 32768 1 tpm_tis, Live 0x0000000000000000
+> mac_hid 16384 0 - Live 0x0000000000000000
+> drm 585728 12 i915,drm_kms_helper, Live 0x0000000000000000
+> i2c_dev 24576 0 - Live 0x0000000000000000
+> sg 40960 0 - Live 0x0000000000000000
+> crypto_user 16384 0 - Live 0x0000000000000000
+> acpi_call 16384 0 - Live 0x0000000000000000 (OE)
+> agpgart 53248 2 intel_gtt,drm, Live 0x0000000000000000
+> ip_tables 36864 0 - Live 0x0000000000000000
+> x_tables 53248 1 ip_tables, Live 0x0000000000000000
+> ext4 802816 2 - Live 0x0000000000000000
+> crc32c_generic 16384 0 - Live 0x0000000000000000
+> crc16 16384 2 bluetooth,ext4, Live 0x0000000000000000
+> mbcache 16384 1 ext4, Live 0x0000000000000000
+> jbd2 139264 1 ext4, Live 0x0000000000000000
+> hid_generic 16384 0 - Live 0x0000000000000000
+> usbhid 65536 0 - Live 0x0000000000000000
+> hid 147456 2 hid_generic,usbhid, Live 0x0000000000000000
+> dm_crypt 53248 1 - Live 0x0000000000000000
+> cbc 16384 0 - Live 0x0000000000000000
+> encrypted_keys 24576 1 dm_crypt, Live 0x0000000000000000
+> dm_mod 163840 3 dm_crypt, Live 0x0000000000000000
+> trusted 32768 1 encrypted_keys, Live 0x0000000000000000
+> tpm 77824 4 tpm_crb,tpm_tis,tpm_tis_core,trusted, Live 0x0000000000000000
+> rng_core 16384 1 tpm, Live 0x0000000000000000
+> rtsx_pci_sdmmc 32768 0 - Live 0x0000000000000000
+> mmc_core 188416 1 rtsx_pci_sdmmc, Live 0x0000000000000000
+> serio_raw 20480 0 - Live 0x0000000000000000
+> atkbd 36864 0 - Live 0x0000000000000000
+> libps2 20480 2 psmouse,atkbd, Live 0x0000000000000000
+> crct10dif_pclmul 16384 1 - Live 0x0000000000000000
+> crc32_pclmul 16384 0 - Live 0x0000000000000000
+> crc32c_intel 24576 4 - Live 0x0000000000000000
+> ghash_clmulni_intel 16384 0 - Live 0x0000000000000000
+> aesni_intel 372736 6 - Live 0x0000000000000000
+> crypto_simd 16384 1 aesni_intel, Live 0x0000000000000000
+> cryptd 24576 3 ghash_clmulni_intel,crypto_simd, Live 0x0000000000000000
+> xhci_pci 20480 0 - Live 0x0000000000000000
+> xhci_pci_renesas 20480 1 xhci_pci, Live 0x0000000000000000
+> glue_helper 16384 1 aesni_intel, Live 0x0000000000000000
+> xhci_hcd 286720 1 xhci_pci, Live 0x0000000000000000
+> rtsx_pci 90112 1 rtsx_pci_sdmmc, Live 0x0000000000000000
+> i8042 32768 0 - Live 0x0000000000000000
+> serio 28672 8 rmi_core,psmouse,serio_raw,atkbd,i8042, Live
+> 0x0000000000000000
+> 
+> [8.4.] Loaded driver and hardware information (/proc/ioports, /proc/iomem)
+> 
+> /proc/ioports:
+> 
+> 0000-0000 : PCI Bus 0000:00
+>   0000-0000 : dma1
+>   0000-0000 : pic1
+>   0000-0000 : timer0
+>   0000-0000 : timer1
+>   0000-0000 : keyboard
+>   0000-0000 : PNP0800:00
+>   0000-0000 : PNP0C09:00
+>     0000-0000 : EC data
+>   0000-0000 : keyboard
+>   0000-0000 : PNP0C09:00
+>     0000-0000 : EC cmd
+>   0000-0000 : rtc0
+>   0000-0000 : dma page reg
+>   0000-0000 : pic2
+>   0000-0000 : dma2
+>   0000-0000 : fpu
+>   0000-0000 : iTCO_wdt
+>     0000-0000 : iTCO_wdt
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+> 0000-0000 : PCI conf1
+> 0000-0000 : PCI Bus 0000:00
+>   0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>     0000-0000 : pnp 00:01
+>   0000-0000 : pnp 00:01
+>     0000-0000 : ACPI PM1a_EVT_BLK
+>     0000-0000 : ACPI PM1a_CNT_BLK
+>     0000-0000 : ACPI PM_TMR
+>     0000-0000 : ACPI CPU throttle
+>     0000-0000 : ACPI PM2_CNT_BLK
+>     0000-0000 : pnp 00:05
+>     0000-0000 : ACPI GPE0_BLK
+>   0000-0000 : 0000:00:02.0
+>   0000-0000 : 0000:00:17.0
+>     0000-0000 : ahci
+>   0000-0000 : 0000:00:17.0
+>     0000-0000 : ahci
+>   0000-0000 : 0000:00:17.0
+>     0000-0000 : ahci
+>   0000-0000 : 0000:00:1f.4
+>     0000-0000 : i801_smbus
+>   0000-0000 : pnp 00:07
+> 
+> /proc/iomem:
+> 
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : System RAM
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : PCI Bus 0000:00
+> 00000000-00000000 : Video ROM
+> 00000000-00000000 : pnp 00:00
+> 00000000-00000000 : pnp 00:00
+> 00000000-00000000 : pnp 00:00
+> 00000000-00000000 : pnp 00:00
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : System ROM
+> 00000000-00000000 : System RAM
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : ACPI Non-volatile Storage
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : ACPI Non-volatile Storage
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : ACPI Non-volatile Storage
+> 00000000-00000000 : ACPI Tables
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : MSFT0101:00
+>     00000000-00000000 : MSFT0101:00
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : Graphics Stolen Memory
+> 00000000-00000000 : PCI Bus 0000:00
+>   00000000-00000000 : 0000:00:02.0
+>   00000000-00000000 : 0000:00:02.0
+>   00000000-00000000 : PCI Bus 0000:04
+>     00000000-00000000 : 0000:04:00.0
+>       00000000-00000000 : iwlwifi
+>   00000000-00000000 : PCI Bus 0000:02
+>     00000000-00000000 : 0000:02:00.0
+>       00000000-00000000 : rtsx_pci
+>   00000000-00000000 : 0000:00:1f.6
+>     00000000-00000000 : e1000e
+>   00000000-00000000 : 0000:00:14.0
+>     00000000-00000000 : xhci-hcd
+>       00000000-00000000 : intel_xhci_usb_sw
+>   00000000-00000000 : 0000:00:1f.3
+>     00000000-00000000 : ICH HD audio
+>   00000000-00000000 : 0000:00:1f.3
+>     00000000-00000000 : ICH HD audio
+>   00000000-00000000 : 0000:00:1f.2
+>   00000000-00000000 : 0000:00:17.0
+>     00000000-00000000 : ahci
+>   00000000-00000000 : 0000:00:08.0
+>   00000000-00000000 : 0000:00:14.2
+>     00000000-00000000 : Intel PCH thermal driver
+>   00000000-00000000 : 0000:00:16.0
+>     00000000-00000000 : mei_me
+>   00000000-00000000 : 0000:00:17.0
+>     00000000-00000000 : ahci
+>   00000000-00000000 : 0000:00:1f.4
+>   00000000-00000000 : 0000:00:17.0
+>     00000000-00000000 : ahci
+>   00000000-00000000 : pnp 00:01
+>   00000000-00000000 : PCI MMCONFIG 0000 [bus 00-3f]
+>     00000000-00000000 : Reserved
+>       00000000-00000000 : pnp 00:01
+>   00000000-00000000 : Reserved
+>     00000000-00000000 : pnp 00:06
+>     00000000-00000000 : pnp 00:06
+>     00000000-00000000 : pnp 00:06
+>       00000000-00000000 : iTCO_wdt
+>         00000000-00000000 : iTCO_wdt iTCO_wdt
+>     00000000-00000000 : pnp 00:06
+>     00000000-00000000 : pnp 00:06
+>     00000000-00000000 : pnp 00:06
+>     00000000-00000000 : pnp 00:06
+>   00000000-00000000 : pnp 00:01
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : IOAPIC 0
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : HPET 0
+>     00000000-00000000 : PNP0103:00
+> 00000000-00000000 : Reserved
+>   00000000-00000000 : pnp 00:01
+>   00000000-00000000 : pnp 00:01
+>   00000000-00000000 : pnp 00:01
+> 00000000-00000000 : pnp 00:01
+> 00000000-00000000 : MSFT0101:00
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : dmar0
+> 00000000-00000000 : dmar1
+> 00000000-00000000 : Local APIC
+>   00000000-00000000 : Reserved
+> 00000000-00000000 : Reserved
+> 00000000-00000000 : System RAM
+>   00000000-00000000 : Kernel code
+>   00000000-00000000 : Kernel rodata
+>   00000000-00000000 : Kernel data
+>   00000000-00000000 : Kernel bss
+> 00000000-00000000 : RAM buffer
+> 
+> [8.5.] PCI information ('lspci -vvv' as root)
+> 
+> 00:00.0 Host bridge: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen
+> Core Processor Host Bridge/DRAM Registers (rev 08)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Capabilities: [e0] Vendor Specific Information: Len=10 <?>
+>   Kernel driver in use: skl_uncore
+> 
+> 00:02.0 VGA compatible controller: Intel Corporation Skylake GT2 [HD
+> Graphics 520] (rev 07) (prog-if 00 [VGA controller])
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 130
+>   Region 0: Memory at e0000000 (64-bit, non-prefetchable) [size=16M]
+>   Region 2: Memory at c0000000 (64-bit, prefetchable) [size=512M]
+>   Region 4: I/O ports at e000 [size=64]
+>   Expansion ROM at 000c0000 [virtual] [disabled] [size=128K]
+>   Capabilities: [40] Vendor Specific Information: Len=0c <?>
+>   Capabilities: [70] Express (v2) Root Complex Integrated Endpoint, MSI 00
+>     DevCap: MaxPayload 128 bytes, PhantFunc 0
+>       ExtTag- RBE+ FLReset+
+>     DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>       RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop- FLReset-
+>       MaxPayload 128 bytes, MaxReadReq 128 bytes
+>     DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr- TransPend-
+>     DevCap2: Completion Timeout: Not Supported, TimeoutDis- NROPrPrP- LTR-
+>       10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
+>       EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>       FRS-
+>       AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+>     DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- OBFF
+> Disabled,
+>       AtomicOpsCtl: ReqEn-
+>   Capabilities: [ac] MSI: Enable+ Count=1/1 Maskable- 64bit-
+>     Address: fee00018  Data: 0000
+>   Capabilities: [d0] Power Management version 2
+>     Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
+> PME(D0-,D1-,D2-,D3hot-,D3cold-)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [100 v1] Process Address Space ID (PASID)
+>     PASIDCap: Exec+ Priv-, Max PASID Width: 14
+>     PASIDCtl: Enable- Exec- Priv-
+>   Capabilities: [200 v1] Address Translation Service (ATS)
+>     ATSCap: Invalidate Queue Depth: 00
+>     ATSCtl: Enable-, Smallest Translation Unit: 00
+>   Capabilities: [300 v1] Page Request Interface (PRI)
+>     PRICtl: Enable- Reset-
+>     PRISta: RF- UPRGI- Stopped-
+>     Page Request Capacity: 00008000, Page Request Allocation: 00000000
+>   Kernel driver in use: i915
+>   Kernel modules: i915
+> 
+> 00:08.0 System peripheral: Intel Corporation Xeon E3-1200 v5/v6 / E3-1500 v5
+> / 6th/7th/8th Gen Core Processor Gaussian Mixture Model
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Interrupt: pin A routed to IRQ 255
+>   Region 0: Memory at e124a000 (64-bit, non-prefetchable) [size=4K]
+>   Capabilities: [90] MSI: Enable- Count=1/1 Maskable- 64bit-
+>     Address: 00000000  Data: 0000
+>   Capabilities: [dc] Power Management version 2
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA
+> PME(D0-,D1-,D2-,D3hot-,D3cold-)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [f0] PCI Advanced Features
+>     AFCap: TP+ FLR+
+>     AFCtrl: FLR-
+>     AFStatus: TP-
+> 
+> 00:14.0 USB controller: Intel Corporation Sunrise Point-LP USB 3.0 xHCI
+> Controller (rev 21) (prog-if 30 [XHCI])
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 126
+>   Region 0: Memory at e1220000 (64-bit, non-prefetchable) [size=64K]
+>   Capabilities: [70] Power Management version 2
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA
+> PME(D0-,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [80] MSI: Enable+ Count=1/8 Maskable- 64bit+
+>     Address: 00000000fee002b8  Data: 0000
+>   Kernel driver in use: xhci_hcd
+>   Kernel modules: xhci_pci
+> 
+> 00:14.2 Signal processing controller: Intel Corporation Sunrise Point-LP
+> Thermal subsystem (rev 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Interrupt: pin C routed to IRQ 18
+>   Region 0: Memory at e124b000 (64-bit, non-prefetchable) [size=4K]
+>   Capabilities: [50] Power Management version 3
+>     Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
+> PME(D0-,D1-,D2-,D3hot-,D3cold-)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [80] MSI: Enable- Count=1/1 Maskable- 64bit-
+>     Address: 00000000  Data: 0000
+>   Kernel driver in use: intel_pch_thermal
+>   Kernel modules: intel_pch_thermal
+> 
+> 00:16.0 Communication controller: Intel Corporation Sunrise Point-LP CSME
+> HECI #1 (rev 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 127
+>   Region 0: Memory at e124c000 (64-bit, non-prefetchable) [size=4K]
+>   Capabilities: [50] Power Management version 3
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA
+> PME(D0-,D1-,D2-,D3hot+,D3cold-)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [8c] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>     Address: 00000000fee002d8  Data: 0000
+>   Kernel driver in use: mei_me
+>   Kernel modules: mei_me
+> 
+> 00:17.0 SATA controller: Intel Corporation Sunrise Point-LP SATA Controller
+> [AHCI mode] (rev 21) (prog-if 01 [AHCI 1.0])
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz+ UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 124
+>   Region 0: Memory at e1248000 (32-bit, non-prefetchable) [size=8K]
+>   Region 1: Memory at e124f000 (32-bit, non-prefetchable) [size=256]
+>   Region 2: I/O ports at e080 [size=8]
+>   Region 3: I/O ports at e088 [size=4]
+>   Region 4: I/O ports at e060 [size=32]
+>   Region 5: Memory at e124d000 (32-bit, non-prefetchable) [size=2K]
+>   Capabilities: [80] MSI: Enable+ Count=1/1 Maskable- 64bit-
+>     Address: fee00278  Data: 0000
+>   Capabilities: [70] Power Management version 3
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA
+> PME(D0-,D1-,D2-,D3hot+,D3cold-)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [a8] SATA HBA v1.0 BAR4 Offset=00000004
+>   Kernel driver in use: ahci
+> 
+> 00:1c.0 PCI bridge: Intel Corporation Sunrise Point-LP PCI Express Root Port
+> #1 (rev f1) (prog-if 00 [Normal decode])
+>   Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 122
+>   Bus: primary=00, secondary=02, subordinate=02, sec-latency=0
+>   I/O behind bridge: 0000f000-00000fff [disabled]
+>   Memory behind bridge: e1100000-e11fffff [size=1M]
+>   Prefetchable memory behind bridge: 00000000fff00000-00000000000fffff
+> [disabled]
+>   Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort+ <SERR- <PERR-
+>   BridgeCtl: Parity- SERR+ NoISA- VGA- VGA16- MAbort- >Reset- FastB2B-
+>     PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+>   Capabilities: [40] Express (v2) Root Port (Slot+), MSI 00
+>     DevCap: MaxPayload 256 bytes, PhantFunc 0
+>       ExtTag- RBE+
+>     DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>       RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+>       MaxPayload 128 bytes, MaxReadReq 128 bytes
+>     DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr+ TransPend-
+>     LnkCap: Port #1, Speed 8GT/s, Width x1, ASPM L1, Exit Latency L1 <16us
+>       ClockPM- Surprise- LLActRep+ BwNot+ ASPMOptComp+
+>     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
+>       ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+>     LnkSta: Speed 2.5GT/s (downgraded), Width x1 (ok)
+>       TrErr- Train- SlotClk+ DLActive+ BWMgmt+ ABWMgmt-
+>     SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug- Surprise-
+>       Slot #0, PowerLimit 10.000W; Interlock- NoCompl+
+>     SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt- HPIrq- LinkChg-
+>       Control: AttnInd Unknown, PwrInd Unknown, Power- Interlock-
+>     SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDet+ Interlock-
+>       Changed: MRL- PresDet- LinkState+
+>     RootCap: CRSVisible-
+>     RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna- CRSVisible-
+>     RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+>     DevCap2: Completion Timeout: Range ABC, TimeoutDis+ NROPrPrP- LTR+
+>       10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
+>       EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>       FRS- LN System CLS Not Supported, TPHComp- ExtTPHComp- ARIFwd+
+>       AtomicOpsCap: Routing- 32bit- 64bit- 128bitCAS-
+>     DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR+ OBFF
+> Disabled, ARIFwd-
+>       AtomicOpsCtl: ReqEn- EgressBlck-
+>     LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer-
+> 2Retimers- DRS-
+>     LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+>       Transmit Margin: Normal Operating Range, EnterModifiedCompliance-
+> ComplianceSOS-
+>       Compliance De-emphasis: -6dB
+>     LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete-
+> EqualizationPhase1-
+>       EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>       Retimer- 2Retimers- CrosslinkRes: unsupported
+>   Capabilities: [80] MSI: Enable+ Count=1/1 Maskable- 64bit-
+>     Address: fee00218  Data: 0000
+>   Capabilities: [90] Subsystem: Lenovo Device 2231
+>   Capabilities: [a0] Power Management version 3
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA
+> PME(D0+,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [100 v1] Advanced Error Reporting
+>     UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt+ RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UESvrt: DLP+ SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF+
+> MalfTLP+ ECRC- UnsupReq- ACSViol-
+>     CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+>     CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     AERCap: First Error Pointer: 00, ECRCGenCap- ECRCGenEn- ECRCChkCap-
+> ECRCChkEn-
+>       MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>     HeaderLog: 00000000 00000000 00000000 00000000
+>     RootCmd: CERptEn- NFERptEn- FERptEn-
+>     RootSta: CERcvd- MultCERcvd- UERcvd- MultUERcvd-
+>       FirstFatal- NonFatalMsg- FatalMsg- IntMsg 0
+>     ErrorSrc: ERR_COR: 0000 ERR_FATAL/NONFATAL: 0000
+>   Capabilities: [140 v1] Access Control Services
+>     ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd-
+> EgressCtrl- DirectTrans-
+>     ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd-
+> EgressCtrl- DirectTrans-
+>   Capabilities: [200 v1] L1 PM Substates
+>     L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+> L1_PM_Substates+
+>        PortCommonModeRestoreTime=40us PortTPowerOnTime=44us
+>     L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+>         T_CommonMode=60us LTR1.2_Threshold=163840ns
+>     L1SubCtl2: T_PwrOn=60us
+>   Capabilities: [220 v1] Secondary PCI Express
+>     LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+>     LaneErrStat: 0
+>   Kernel driver in use: pcieport
+> 
+> 00:1c.2 PCI bridge: Intel Corporation Sunrise Point-LP PCI Express Root Port
+> #3 (rev f1) (prog-if 00 [Normal decode])
+>   Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin C routed to IRQ 123
+>   Bus: primary=00, secondary=04, subordinate=04, sec-latency=0
+>   I/O behind bridge: 0000f000-00000fff [disabled]
+>   Memory behind bridge: e1000000-e10fffff [size=1M]
+>   Prefetchable memory behind bridge: 00000000fff00000-00000000000fffff
+> [disabled]
+>   Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort+ <SERR- <PERR-
+>   BridgeCtl: Parity- SERR+ NoISA- VGA- VGA16- MAbort- >Reset- FastB2B-
+>     PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+>   Capabilities: [40] Express (v2) Root Port (Slot+), MSI 00
+>     DevCap: MaxPayload 256 bytes, PhantFunc 0
+>       ExtTag- RBE+
+>     DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>       RlxdOrd- ExtTag- PhantFunc- AuxPwr- NoSnoop-
+>       MaxPayload 128 bytes, MaxReadReq 128 bytes
+>     DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr+ TransPend-
+>     LnkCap: Port #3, Speed 8GT/s, Width x1, ASPM L0s L1, Exit Latency L0s
+> <1us, L1 <16us
+>       ClockPM- Surprise- LLActRep+ BwNot+ ASPMOptComp+
+>     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
+>       ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+>     LnkSta: Speed 2.5GT/s (downgraded), Width x1 (ok)
+>       TrErr- Train- SlotClk+ DLActive+ BWMgmt+ ABWMgmt-
+>     SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug- Surprise-
+>       Slot #2, PowerLimit 10.000W; Interlock- NoCompl+
+>     SltCtl: Enable: AttnBtn- PwrFlt- MRL- PresDet- CmdCplt- HPIrq- LinkChg-
+>       Control: AttnInd Unknown, PwrInd Unknown, Power- Interlock-
+>     SltSta: Status: AttnBtn- PowerFlt- MRL- CmdCplt- PresDet+ Interlock-
+>       Changed: MRL- PresDet- LinkState+
+>     RootCap: CRSVisible-
+>     RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna- CRSVisible-
+>     RootSta: PME ReqID 0000, PMEStatus- PMEPending-
+>     DevCap2: Completion Timeout: Range ABC, TimeoutDis+ NROPrPrP- LTR+
+>       10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
+>       EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>       FRS- LN System CLS Not Supported, TPHComp- ExtTPHComp- ARIFwd+
+>       AtomicOpsCap: Routing- 32bit- 64bit- 128bitCAS-
+>     DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR+ OBFF
+> Disabled, ARIFwd-
+>       AtomicOpsCtl: ReqEn- EgressBlck-
+>     LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer-
+> 2Retimers- DRS-
+>     LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+>       Transmit Margin: Normal Operating Range, EnterModifiedCompliance-
+> ComplianceSOS-
+>       Compliance De-emphasis: -6dB
+>     LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete-
+> EqualizationPhase1-
+>       EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>       Retimer- 2Retimers- CrosslinkRes: unsupported
+>   Capabilities: [80] MSI: Enable+ Count=1/1 Maskable- 64bit-
+>     Address: fee00258  Data: 0000
+>   Capabilities: [90] Subsystem: Lenovo Device 2231
+>   Capabilities: [a0] Power Management version 3
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA
+> PME(D0+,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [100 v1] Advanced Error Reporting
+>     UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt+ RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UESvrt: DLP+ SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF+
+> MalfTLP+ ECRC- UnsupReq- ACSViol-
+>     CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+>     CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     AERCap: First Error Pointer: 00, ECRCGenCap- ECRCGenEn- ECRCChkCap-
+> ECRCChkEn-
+>       MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>     HeaderLog: 00000000 00000000 00000000 00000000
+>     RootCmd: CERptEn- NFERptEn- FERptEn-
+>     RootSta: CERcvd- MultCERcvd- UERcvd- MultUERcvd-
+>       FirstFatal- NonFatalMsg- FatalMsg- IntMsg 0
+>     ErrorSrc: ERR_COR: 0000 ERR_FATAL/NONFATAL: 0000
+>   Capabilities: [140 v1] Access Control Services
+>     ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd-
+> EgressCtrl- DirectTrans-
+>     ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd-
+> EgressCtrl- DirectTrans-
+>   Capabilities: [200 v1] L1 PM Substates
+>     L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+> L1_PM_Substates+
+>        PortCommonModeRestoreTime=40us PortTPowerOnTime=44us
+>     L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+>         T_CommonMode=40us LTR1.2_Threshold=163840ns
+>     L1SubCtl2: T_PwrOn=44us
+>   Capabilities: [220 v1] Secondary PCI Express
+>     LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+>     LaneErrStat: 0
+>   Kernel driver in use: pcieport
+> 
+> 00:1f.0 ISA bridge: Intel Corporation Sunrise Point-LP LPC Controller (rev
+> 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+> 
+> 00:1f.2 Memory controller: Intel Corporation Sunrise Point-LP PMC (rev 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Region 0: Memory at e1244000 (32-bit, non-prefetchable) [size=16K]
+> 
+> 00:1f.3 Audio device: Intel Corporation Sunrise Point-LP HD Audio (rev 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 64
+>   Interrupt: pin A routed to IRQ 138
+>   Region 0: Memory at e1240000 (64-bit, non-prefetchable) [size=16K]
+>   Region 4: Memory at e1230000 (64-bit, non-prefetchable) [size=64K]
+>   Capabilities: [50] Power Management version 3
+>     Flags: PMEClk- DSI- D1- D2- AuxCurrent=55mA
+> PME(D0-,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [60] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>     Address: 00000000fee00338  Data: 0000
+>   Kernel driver in use: snd_hda_intel
+>   Kernel modules: snd_hda_intel, snd_soc_skl
+> 
+> 00:1f.4 SMBus: Intel Corporation Sunrise Point-LP SMBus (rev 21)
+>   Subsystem: Lenovo Device 2231
+>   Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx-
+>   Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Interrupt: pin A routed to IRQ 16
+>   Region 0: Memory at e124e000 (64-bit, non-prefetchable) [size=256]
+>   Region 4: I/O ports at efa0 [size=32]
+>   Kernel driver in use: i801_smbus
+>   Kernel modules: i2c_i801
+> 
+> 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection I219-LM
+> (rev 21)
+>   Subsystem: Lenovo Device 2233
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 128
+>   Region 0: Memory at e1200000 (32-bit, non-prefetchable) [size=128K]
+>   Capabilities: [c8] Power Management version 3
+>     Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
+> PME(D0+,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=1 PME-
+>   Capabilities: [d0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>     Address: 00000000fee002f8  Data: 0000
+>   Capabilities: [e0] PCI Advanced Features
+>     AFCap: TP+ FLR+
+>     AFCtrl: FLR-
+>     AFStatus: TP-
+>   Kernel driver in use: e1000e
+>   Kernel modules: e1000e
+> 
+> 02:00.0 Unassigned class [ff00]: Realtek Semiconductor Co., Ltd. RTS522A PCI
+> Express Card Reader (rev 01)
+>   Subsystem: Lenovo Device 2233
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 125
+>   Region 0: Memory at e1100000 (32-bit, non-prefetchable) [size=4K]
+>   Capabilities: [40] Power Management version 3
+>     Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA
+> PME(D0-,D1+,D2+,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [50] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>     Address: 00000000fee00298  Data: 0000
+>   Capabilities: [70] Express (v2) Endpoint, MSI 00
+>     DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s unlimited, L1
+> unlimited
+>       ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- SlotPowerLimit 10.000W
+>     DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>       RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+>       MaxPayload 128 bytes, MaxReadReq 512 bytes
+>     DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
+>     LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s
+> unlimited, L1 <64us
+>       ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp+
+>     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
+>       ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+>     LnkSta: Speed 2.5GT/s (ok), Width x1 (ok)
+>       TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+>     DevCap2: Completion Timeout: Not Supported, TimeoutDis+ NROPrPrP- LTR+
+>       10BitTagComp- 10BitTagReq- OBFF Via message/WAKE#, ExtFmt-
+> EETLPPrefix-
+>       EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>       FRS- TPHComp- ExtTPHComp-
+>       AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+>     DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR+ OBFF
+> Disabled,
+>       AtomicOpsCtl: ReqEn-
+>     LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- SpeedDis-
+>       Transmit Margin: Normal Operating Range, EnterModifiedCompliance-
+> ComplianceSOS-
+>       Compliance De-emphasis: -6dB
+>     LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete-
+> EqualizationPhase1-
+>       EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>       Retimer- 2Retimers- CrosslinkRes: unsupported
+>   Capabilities: [100 v2] Advanced Error Reporting
+>     UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+
+> MalfTLP+ ECRC- UnsupReq- ACSViol-
+>     CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     AERCap: First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+
+> ECRCChkEn-
+>       MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>     HeaderLog: 00000000 00000000 00000000 00000000
+>   Capabilities: [140 v1] Device Serial Number 00-00-00-01-00-4c-e0-00
+>   Capabilities: [150 v1] Latency Tolerance Reporting
+>     Max snoop latency: 3145728ns
+>     Max no snoop latency: 3145728ns
+>   Capabilities: [158 v1] L1 PM Substates
+>     L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+> L1_PM_Substates+
+>        PortCommonModeRestoreTime=60us PortTPowerOnTime=60us
+>     L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+>         T_CommonMode=0us LTR1.2_Threshold=163840ns
+>     L1SubCtl2: T_PwrOn=60us
+>   Kernel driver in use: rtsx_pci
+>   Kernel modules: rtsx_pci
+> 
+> 04:00.0 Network controller: Intel Corporation Wireless 8260 (rev 3a)
+>   Subsystem: Intel Corporation Device 1130
+>   Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+> Stepping- SERR- FastB2B- DisINTx+
+>   Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort-
+> <MAbort- >SERR- <PERR- INTx-
+>   Latency: 0
+>   Interrupt: pin A routed to IRQ 129
+>   Region 0: Memory at e1000000 (64-bit, non-prefetchable) [size=8K]
+>   Capabilities: [c8] Power Management version 3
+>     Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA
+> PME(D0+,D1-,D2-,D3hot+,D3cold+)
+>     Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+>   Capabilities: [d0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>     Address: 00000000fee00318  Data: 0000
+>   Capabilities: [40] Express (v2) Endpoint, MSI 00
+>     DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s <512ns, L1
+> unlimited
+>       ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
+>     DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+>       RlxdOrd+ ExtTag- PhantFunc- AuxPwr+ NoSnoop+ FLReset-
+>       MaxPayload 128 bytes, MaxReadReq 128 bytes
+>     DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
+>     LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L1, Exit Latency L1 <8us
+>       ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp+
+>     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
+>       ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+>     LnkSta: Speed 2.5GT/s (ok), Width x1 (ok)
+>       TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+>     DevCap2: Completion Timeout: Range B, TimeoutDis+ NROPrPrP- LTR+
+>       10BitTagComp- 10BitTagReq- OBFF Via WAKE#, ExtFmt- EETLPPrefix-
+>       EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+>       FRS- TPHComp- ExtTPHComp-
+>       AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+>     DevCtl2: Completion Timeout: 16ms to 55ms, TimeoutDis- LTR+ OBFF
+> Disabled,
+>       AtomicOpsCtl: ReqEn-
+>     LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- SpeedDis-
+>       Transmit Margin: Normal Operating Range, EnterModifiedCompliance-
+> ComplianceSOS-
+>       Compliance De-emphasis: -6dB
+>     LnkSta2: Current De-emphasis Level: -3.5dB, EqualizationComplete-
+> EqualizationPhase1-
+>       EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+>       Retimer- 2Retimers- CrosslinkRes: unsupported
+>   Capabilities: [100 v1] Advanced Error Reporting
+>     UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF-
+> MalfTLP- ECRC- UnsupReq- ACSViol-
+>     UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+
+> MalfTLP+ ECRC- UnsupReq- ACSViol-
+>     CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+>     AERCap: First Error Pointer: 00, ECRCGenCap- ECRCGenEn- ECRCChkCap-
+> ECRCChkEn-
+>       MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+>     HeaderLog: 00000000 00000000 00000000 00000000
+>   Capabilities: [140 v1] Device Serial Number 44-85-00-ff-ff-c8-79-d1
+>   Capabilities: [14c v1] Latency Tolerance Reporting
+>     Max snoop latency: 3145728ns
+>     Max no snoop latency: 3145728ns
+>   Capabilities: [154 v1] L1 PM Substates
+>     L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+> L1_PM_Substates+
+>        PortCommonModeRestoreTime=30us PortTPowerOnTime=18us
+>     L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
+>         T_CommonMode=0us LTR1.2_Threshold=163840ns
+>     L1SubCtl2: T_PwrOn=44us
+>   Kernel driver in use: iwlwifi
+>   Kernel modules: iwlwifi
+> 
+> [8.6.] SCSI information (from /proc/scsi/scsi)
+> 
+> Attached devices:
+> Host: scsi1 Channel: 00 Id: 00 Lun: 00
+>   Vendor: ATA      Model: Samsung SSD 850  Rev: 2B6Q
+>   Type:   Direct-Access                    ANSI  SCSI revision: 05
 
-No, you are thinking too small.
+Adding David and and IOMMU list.
 
-Look at VDPA, it has a SVA uAPI. Some HW might use PASID for the SVA.
+This a bit out of my scope albeit concerns TPM.
 
-When VDPA is used by DPDK it makes sense that the PASID will be SVA and
-1:1 with the mm_struct.
-
-When VDPA is used by qemu it makes sense that the PASID will be an
-arbitary IOVA map constructed to be 1:1 with the guest vCPU physical
-map. /dev/sva allows a single uAPI to do this kind of setup, and qemu
-can support it while supporting a range of SVA kernel drivers. VDPA
-and vfio-mdev are obvious initial targets.
-
-*BOTH* are needed.
-
-In general any uAPI for PASID should have the option to use either the
-mm_struct SVA PASID *OR* a PASID from /dev/sva. It costs virtually
-nothing to implement this in the driver as PASID is just a number, and
-gives so much more flexability.
-
-> Yi can correct me but this set is is about VFIO-PCI, VFIO-mdev will be
-> introduced later.
-
-Last patch is:
-
-  vfio/type1: Add vSVA support for IOMMU-backed mdevs
-
-So pretty hard to see how this is not about vfio-mdev, at least a
-little..
-
-Jason
+/Jarkko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
