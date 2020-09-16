@@ -2,86 +2,69 @@ Return-Path: <SRS0=cHis=CZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDB5C433E2
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:19:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6085BC433E2
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:19:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E628A221E5
-	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:19:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="iv+7DX+S"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E628A221E5
+	by mail.kernel.org (Postfix) with ESMTPS id 146982065E
+	for <iommu@archiver.kernel.org>; Wed, 16 Sep 2020 06:19:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 146982065E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AF5D82342E;
-	Wed, 16 Sep 2020 06:19:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E486E86A0F;
+	Wed, 16 Sep 2020 06:19:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FK92xEPcwxF8; Wed, 16 Sep 2020 06:19:27 +0000 (UTC)
+	with ESMTP id vx3EEA7NaV-r; Wed, 16 Sep 2020 06:19:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5692320010;
-	Wed, 16 Sep 2020 06:19:27 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7BAD9869F8;
+	Wed, 16 Sep 2020 06:19:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B362C0859;
-	Wed, 16 Sep 2020 06:19:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A9DFC0051
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 747BDC0859;
+	Wed, 16 Sep 2020 06:19:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BECEDC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 071CD20116
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:26 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id AE19186A01
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C4aiKsr7MLTs for <iommu@lists.linux-foundation.org>;
- Wed, 16 Sep 2020 06:19:25 +0000 (UTC)
+ with ESMTP id g24imHwVrZkq for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Sep 2020 06:19:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 1CE4220010
- for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=OKUyp8qmBFdjgjSYZqN9BFape1Q+ujb81GF9JqUrmy4=; b=iv+7DX+SEc3dNxqeIV8/nkfVbB
- b8Lum5kjOnVL9p18MOyOEipnedUAVsZV998T08r8nDJ02qfiuI/OgxE6TrNC1S/sLldjIpqNBxhiw
- MA3WIZB3Y4Zzb/Hk6uowbpUfXK9eR3CMyPDDGitUJIey9L4b8l93eS6J6bspuTpwC4xJ85gf6KbPf
- bVB8wuuk2DiR3MiZ5+m9zHgRDn6NFKEb9pbvhd9oRnAcmCJDWr66tQ9dczrwhPtFFS2fb/z2L+Etj
- MH01yErQGFs2r2jEivDe8YxNcCLorZwZ3us0tOZdbOVFAw7gUguBFGXYXX0YwNXWa827pKuo7Uftf
- hSyixgbw==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92]
- helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kIQmo-0006uo-Dj; Wed, 16 Sep 2020 06:19:22 +0000
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6F25E869F8
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Sep 2020 06:19:53 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 209C268B05; Wed, 16 Sep 2020 08:19:50 +0200 (CEST)
+Date: Wed, 16 Sep 2020 08:19:49 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
- Santosh Shilimkar <ssantosh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 1/6] ARM/dma-mapping: remove a __arch_page_to_dma #error
-Date: Wed, 16 Sep 2020 08:14:54 +0200
-Message-Id: <20200916061500.1970090-2-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200916061500.1970090-1-hch@lst.de>
-References: <20200916061500.1970090-1-hch@lst.de>
+To: Thomas Tai <thomas.tai@oracle.com>
+Subject: Re: [PATCH] dma-direct: Fix potential NULL pointer dereference
+Message-ID: <20200916061949.GA8599@lst.de>
+References: <1600178594-22801-1-git-send-email-thomas.tai@oracle.com>
+ <20200915140719.GA14831@lst.de>
+ <f5cba632-421a-f375-3697-51a182a53a32@oracle.com>
+ <20200915142624.GA16005@lst.de>
+ <da9ec51d-aab5-695d-e388-5ae7c0bb30ea@oracle.com>
+ <20200915150929.GA19770@lst.de>
+ <5136ed8d-d37d-8144-a6f3-c23f272d8926@oracle.com>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Ohad Ben-Cohen <ohad@wizery.com>, devicetree@vger.kernel.org,
- Florian Fainelli <f.fainelli@gmail.com>, linux-sh@vger.kernel.org,
- Frank Rowand <frowand.list@gmail.com>, linux-usb@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-acpi@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, linux-pci@vger.kernel.org,
- Nathan Chancellor <natechancellor@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <5136ed8d-d37d-8144-a6f3-c23f272d8926@oracle.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: konrad.wilk@oracle.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,31 +82,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The __arch_page_to_dma hook is long gone.
+On Tue, Sep 15, 2020 at 04:46:17PM -0400, Thomas Tai wrote:
+> I tried out the suggested changes, and it successfully warned the null 
+> pointer without panic. I notice that there are some places outside the 
+> dma-direct, which calls dma_capable().
+>
+> https://elixir.bootlin.com/linux/v5.9-rc5/source/arch/x86/kernel/amd_gart_64.c#L187
+>
+> https://elixir.bootlin.com/linux/v5.9-rc5/source/drivers/xen/swiotlb-xen.c#L387
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm/include/asm/dma-mapping.h | 4 ----
- 1 file changed, 4 deletions(-)
+All of these still come in throught the wrappers in kernel/dma/mapping.c.
 
-diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index bdd80ddbca3451..70d95677656044 100644
---- a/arch/arm/include/asm/dma-mapping.h
-+++ b/arch/arm/include/asm/dma-mapping.h
-@@ -23,10 +23,6 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- 	return NULL;
- }
- 
--#ifdef __arch_page_to_dma
--#error Please update to __arch_pfn_to_dma
--#endif
--
- /*
-  * dma_to_pfn/pfn_to_dma/dma_to_virt/virt_to_dma are architecture private
-  * functions used internally by the DMA-mapping API to provide DMA
--- 
-2.28.0
+> Given that the WARN_ON_ONCE already did the intended warning, would you be 
+> ok that I keep the null checking in dma_capable()?
 
+No, the generic dma mapping layer is the right place.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
