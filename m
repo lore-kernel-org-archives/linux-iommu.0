@@ -2,86 +2,71 @@ Return-Path: <SRS0=xf59=C2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E253C43461
-	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 07:53:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CC8C2BBD1
+	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 10:37:28 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 79D0F21D7F
-	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 07:53:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="jahzhXRj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79D0F21D7F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
+	by mail.kernel.org (Postfix) with ESMTPS id 5F52D2072E
+	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 10:37:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F52D2072E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2F1252E16D;
-	Thu, 17 Sep 2020 07:53:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D6C2486FE7;
+	Thu, 17 Sep 2020 10:37:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ig+Gk+2XeoXh; Thu, 17 Sep 2020 07:53:53 +0000 (UTC)
+	with ESMTP id XBx_4jDb5eJZ; Thu, 17 Sep 2020 10:37:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 179531FEDF;
-	Thu, 17 Sep 2020 07:53:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C91A8447F;
+	Thu, 17 Sep 2020 10:37:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD7D0C0859;
-	Thu, 17 Sep 2020 07:53:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F1F5C0864;
+	Thu, 17 Sep 2020 10:37:27 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A05EC0051
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 07:53:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 48A47C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 10:37:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 85A3C86BBD
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 07:53:50 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 39C1986FDE
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 10:37:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VNC7LBhoZqz4 for <iommu@lists.linux-foundation.org>;
- Thu, 17 Sep 2020 07:53:49 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 34F1486BEC
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 07:53:49 +0000 (UTC)
-Received: from zn.tnic (p200300ec2f1053007b81a97eebdb4df7.dip0.t-ipconnect.de
- [IPv6:2003:ec:2f10:5300:7b81:a97e:ebdb:4df7])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F19EE1EC0286;
- Thu, 17 Sep 2020 09:53:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
- t=1600329226;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
- bh=ewrYTBLqmR0WdfUwbHvpOSzEiXe9R9x+7NtUrZAyuck=;
- b=jahzhXRj6VqJO/u8dRJrB6L/MOuZjY9smlFNVagk55dbglzgn9wOm6eYabLOPPJHzddEKe
- iw9Bp6bs5HWH6CcFiM3g9kuEjxizytl3FF/vT+ANglOWtc1wSI/mN0xJGGZcIFfERAJbhE
- 5xkQQU1Cfslq+Fh+Pl2qMf7FlJXmsIQ=
-Date: Thu, 17 Sep 2020 09:53:38 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH v8 3/9] Documentation/x86: Add documentation for SVA
- (Shared Virtual Addressing)
-Message-ID: <20200917075338.GC31960@zn.tnic>
-References: <1600187413-163670-1-git-send-email-fenghua.yu@intel.com>
- <1600187413-163670-4-git-send-email-fenghua.yu@intel.com>
+ with ESMTP id TDLTksPuue4D for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Sep 2020 10:37:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5137E8447F
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 10:37:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6AF6930E;
+ Thu, 17 Sep 2020 03:37:24 -0700 (PDT)
+Received: from [192.168.1.79] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1EE013F68F;
+ Thu, 17 Sep 2020 03:37:22 -0700 (PDT)
+Subject: Re: [PATCH 2/3] drm/panfrost: Support cache-coherent integrations
+To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, robh@kernel.org,
+ tomeu.vizoso@collabora.com, alyssa.rosenzweig@collabora.com,
+ khilman@baylibre.com, narmstrong@baylibre.com, jbrunet@baylibre.com
+References: <cover.1600213517.git.robin.murphy@arm.com>
+ <52dbcdfd15d804f35ba8c984c650144782f762da.1600213517.git.robin.murphy@arm.com>
+From: Steven Price <steven.price@arm.com>
+Message-ID: <03eb19ef-4535-59c8-994c-15adfe3b75ca@arm.com>
+Date: Thu, 17 Sep 2020 11:37:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1600187413-163670-4-git-send-email-fenghua.yu@intel.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Tony Luck <tony.luck@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>, Dave Hansen <dave.hansen@intel.com>,
- iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- H Peter Anvin <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
- David Woodhouse <dwmw2@infradead.org>, x86 <x86@kernel.org>
+In-Reply-To: <52dbcdfd15d804f35ba8c984c650144782f762da.1600213517.git.robin.murphy@arm.com>
+Content-Language: en-GB
+Cc: linux-amlogic@lists.infradead.org, iommu@lists.linux-foundation.org,
+ dri-devel@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,48 +79,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 15, 2020 at 09:30:07AM -0700, Fenghua Yu wrote:
-> +Background
-> +==========
+On 16/09/2020 00:51, Robin Murphy wrote:
+> When the GPU's ACE-Lite interface is fully wired up and capable of
+> snooping CPU caches, it may be described as "dma-coherent" in
+> devicetree, which will already inform the DMA layer not to perform
+> unnecessary cache maintenance. However, we still need to ensure that
+> the GPU uses the appropriate cacheable outer-shareable attributes in
+> order to generate the requisite snoop signals, and that CPU mappings
+> don't create a mismatch by using a non-cacheable type either.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+
+LGTM
+
+Reviewed-by: Steven Price <steven.price@arm.com>
+
+> ---
+>   drivers/gpu/drm/panfrost/panfrost_device.h | 1 +
+>   drivers/gpu/drm/panfrost/panfrost_drv.c    | 2 ++
+>   drivers/gpu/drm/panfrost/panfrost_gem.c    | 2 ++
+>   drivers/gpu/drm/panfrost/panfrost_mmu.c    | 1 +
+>   4 files changed, 6 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
+> index c30c719a8059..b31f45315e96 100644
+> --- a/drivers/gpu/drm/panfrost/panfrost_device.h
+> +++ b/drivers/gpu/drm/panfrost/panfrost_device.h
+> @@ -84,6 +84,7 @@ struct panfrost_device {
+>   	/* pm_domains for devices with more than one. */
+>   	struct device *pm_domain_devs[MAX_PM_DOMAINS];
+>   	struct device_link *pm_domain_links[MAX_PM_DOMAINS];
+> +	bool coherent;
+>   
+>   	struct panfrost_features features;
+>   	const struct panfrost_compatible *comp;
+> diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+> index ada51df9a7a3..2a6f2f716b2f 100644
+> --- a/drivers/gpu/drm/panfrost/panfrost_drv.c
+> +++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+> @@ -588,6 +588,8 @@ static int panfrost_probe(struct platform_device *pdev)
+>   	if (!pfdev->comp)
+>   		return -ENODEV;
+>   
+> +	pfdev->coherent = device_get_dma_attr(&pdev->dev) == DEV_DMA_COHERENT;
 > +
-> +Shared Virtual Addressing (SVA) allows the processor and device to use the
-> +same virtual addresses avoiding the need for software to translate virtual
-> +addresses to physical addresses. SVA is what PCIe calls Shared Virtual
-> +Memory (SVM).
-> +
-> +In addition to the convenience of using application virtual addresses
-> +by the device, it also doesn't require pinning pages for DMA.
-> +PCIe Address Translation Services (ATS) along with Page Request Interface
-> +(PRI) allow devices to function much the same way as the CPU handling
-> +application page-faults. For more information please refer to the PCIe
-> +specification Chapter 10: ATS Specification.
-> +
-> +Use of SVA requires IOMMU support in the platform. IOMMU also is required
-> +to support PCIe features ATS and PRI. ATS allows devices to cache
-> +translations for virtual addresses. The IOMMU driver uses the mmu_notifier()
-> +support to keep the device TLB cache and the CPU cache in sync. PRI allows
-> +the device to request paging the virtual address by using the CPU page tables
-> +before accessing the address.
+>   	/* Allocate and initialze the DRM device. */
+>   	ddev = drm_dev_alloc(&panfrost_drm_driver, &pdev->dev);
+>   	if (IS_ERR(ddev))
+> diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
+> index 33355dd302f1..cdf1a8754eba 100644
+> --- a/drivers/gpu/drm/panfrost/panfrost_gem.c
+> +++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
+> @@ -220,6 +220,7 @@ static const struct drm_gem_object_funcs panfrost_gem_funcs = {
+>    */
+>   struct drm_gem_object *panfrost_gem_create_object(struct drm_device *dev, size_t size)
+>   {
+> +	struct panfrost_device *pfdev = dev->dev_private;
+>   	struct panfrost_gem_object *obj;
+>   
+>   	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
+> @@ -229,6 +230,7 @@ struct drm_gem_object *panfrost_gem_create_object(struct drm_device *dev, size_t
+>   	INIT_LIST_HEAD(&obj->mappings.list);
+>   	mutex_init(&obj->mappings.lock);
+>   	obj->base.base.funcs = &panfrost_gem_funcs;
+> +	obj->base.map_cached = pfdev->coherent;
+>   
+>   	return &obj->base.base;
+>   }
+> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> index e8f7b11352d2..8852fd378f7a 100644
+> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+> @@ -371,6 +371,7 @@ int panfrost_mmu_pgtable_alloc(struct panfrost_file_priv *priv)
+>   		.pgsize_bitmap	= SZ_4K | SZ_2M,
+>   		.ias		= FIELD_GET(0xff, pfdev->features.mmu_features),
+>   		.oas		= FIELD_GET(0xff00, pfdev->features.mmu_features),
+> +		.coherent_walk	= pfdev->coherent,
+>   		.tlb		= &mmu_tlb_ops,
+>   		.iommu_dev	= pfdev->dev,
+>   	};
+> 
 
-That still reads funny, the "the device to request paging the virtual
-address" part. Do you mean that per chance here:
-
-"Before the device can access that address, the device uses the PRI in
-order to request the virtual address to be paged in into the CPU page
-tables."
-
-?
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
