@@ -7,87 +7,86 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1097CC43467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE27C43466
 	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 10:20:19 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B98762075E
-	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 10:20:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 344762075E
+	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 10:20:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="z6QhRtjR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B98762075E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NN3YKWo7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 344762075E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4315887313;
+	by whitealder.osuosl.org (Postfix) with ESMTP id EFAFA876C4;
 	Fri, 18 Sep 2020 10:20:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fs0-h3p55EI0; Fri, 18 Sep 2020 10:20:16 +0000 (UTC)
+	with ESMTP id ozaqZsLLMBfd; Fri, 18 Sep 2020 10:20:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E532E87317;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8E4E2876C7;
 	Fri, 18 Sep 2020 10:20:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1A02C0891;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C9E0C0888;
 	Fri, 18 Sep 2020 10:20:15 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D5EDC0051
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4B879C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 28C80876BB
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:14 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3A316876C3
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QQL3MV7iIGOe for <iommu@lists.linux-foundation.org>;
- Fri, 18 Sep 2020 10:20:12 +0000 (UTC)
+ with ESMTP id NA+4a50oTPqI for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Sep 2020 10:20:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
  [209.85.208.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 324CC876D7
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:12 +0000 (UTC)
-Received: by mail-ed1-f65.google.com with SMTP id i1so5605799edv.2
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 03:20:12 -0700 (PDT)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id AF2BB87692
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 10:20:09 +0000 (UTC)
+Received: by mail-ed1-f65.google.com with SMTP id n13so5493998edo.10
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 03:20:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=muXn6WVG1C2ubiQA6mDNXJM2RPY+26gThmFuxC7YswM=;
- b=z6QhRtjReXVLvxBBg9l9a3K/WfeRHx+GtlK9oaYh4h9MVP1s+aoD8s6BPuhTtRHV87
- 9MZNmo645ux7ODElEGTrA2r1rL+yj8uG3vxeJDEbG1G1agpULrlQS9KON9r6E8C2pEG1
- poYKwk2wUxDRVjzFT7bqbeLGm+vZ6slHSLsuMypAvT3PPN2kQjLY3RrC5YvsH7PoJCxo
- sV3wgQ+vEgUYuERMkMFbCWysZ+gWoxVUQOMQdlh5S8ZGHNeV/IyKWTxBu+xDNMqTh3De
- 6/r8MoC4vqINBzt7epSP0+AOU2EKYrHWVvCbON8Q3rSKCTW9H7tB9JpUyFfvoAanR6GV
- ZZsw==
+ bh=eg7wj6YFIcJZXJ6e8hlFJkbAy4XI85542+kUktisWC0=;
+ b=NN3YKWo7KlOKOcYqp3gJxVVXaBCg4b72hUoRkFq4dnIy3mAoVCOCb8Nflc6zCOSg5T
+ 3lLn2ufJQO3MB4NzCcPFz/OPZ692CdWsLH8qUnnyllurF2migm3fyfbrgCyGd1wHL5ow
+ AX5BKeXz5t4JavRKUAmXblHvBQb+f0CYMikoDSA7LJpI7EJR3JZYD/rxJnVMspwcOJ3i
+ twWq+eX1lLpAogO2KGWT/a1q8Rtsc5xwcmJlgcu9tYu/P2xI9VwWYp1Se1zHqAFd7ItA
+ 36oqWDulumEumvD4QBWIA/0IqvJlzPcvwK3uwgRRE7E4ywEjxP8CUdLPyJ1KtZecrCj0
+ eCcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=muXn6WVG1C2ubiQA6mDNXJM2RPY+26gThmFuxC7YswM=;
- b=o3C1fijMeJfa+1Z4BB/blPrNNam1m8tpNrAk4YlayeCIzuIxV7SUlmiANFZNYSq3vN
- tUxJeA+ynkN9kz5rnriJQgnc2ygZZJYgDk6MxQip9ggOkaoQu/e5L5u5CdgpKiGZ88Lj
- w0TGsWur7GqMnoVdGVL6xlnMJgTFfFM9qMO58H0M6X9KdPwNWWIyclRxMNMDkI2gOmBt
- CZBs1ok8C6QSPCNVhaJcgRK8Mfw3WM8ZNw+RAnIddHhdNq9mSeUIsckRFfMoRlgy1EWL
- cpmeWWin/7+/ymK6le8WZtq6lNXRaaBBh4D4cYYSw5cdeBIMZGIdexjxttyVEJERVeBd
- 4cMQ==
-X-Gm-Message-State: AOAM532jcBAioRdcpquMBaECqP5Rh97MxwgIgJoeckdYhk368FBWmUM4
- Z14ebFcf2NQAbzaegfh2PpgfisfsGqfvzdg0
-X-Google-Smtp-Source: ABdhPJylk7Fx5LG9639WZ6uPxJdz8dzVOx07ZdC6OfUdIQTu055fO/jnjIQef7vM1rIOHEtvW4dHbA==
-X-Received: by 2002:a50:bb65:: with SMTP id y92mr37442553ede.53.1600424410236; 
- Fri, 18 Sep 2020 03:20:10 -0700 (PDT)
+ bh=eg7wj6YFIcJZXJ6e8hlFJkbAy4XI85542+kUktisWC0=;
+ b=dWTlI1DmCLPKLGkINKl9re4AdXVJyqqrfgcmslaoWHfFsGyz3rLAfgbV4nv8MRs7XC
+ ZZYWq5mariyrGgNY3tWLDmK0r1LKDCfLjxEoSpyWtPEA5Ifhnysf0Vajge8qIJfcMtxU
+ WY/4r+5g912UMRTMVBV9Kg3qhlPuFltIyXmFLD9j+5EiKvqITQGXZlxjb+A66mOXs58n
+ tEPXO28SuoFMgJZ71LI97xLbCG6qSaMK6iTIzPWnko1DKQEGsNazZuW3tSZ1GHc02FEs
+ AsaiLabSUhKqbn5Ga+mzxZHqXo2AVM6DNkPNO+qIdBfks4LhmP74A9HpbVPADvkEZk8m
+ qfKQ==
+X-Gm-Message-State: AOAM530ZYFYV5YXFL4tPJ4cowEj3juF+JQ8XDTRGSLEmj5fbwd10QyOn
+ 7uYrebBKUAcoJTLUVcXC2lFzTbGD74jHPXZg
+X-Google-Smtp-Source: ABdhPJyTheVNNu7Zbtw9eQMNbAXnHGefwLCRmhLHQeUXn955I5Vb84eT0KaNKYBPqLiFEvCa50xi7w==
+X-Received: by 2002:aa7:d593:: with SMTP id r19mr19218496edq.331.1600424407714; 
+ Fri, 18 Sep 2020 03:20:07 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id r16sm1940674edc.57.2020.09.18.03.20.09
+ by smtp.gmail.com with ESMTPSA id r16sm1940674edc.57.2020.09.18.03.20.06
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 18 Sep 2020 03:20:09 -0700 (PDT)
+ Fri, 18 Sep 2020 03:20:07 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
  linux-mm@kvack.org
-Subject: [PATCH v10 13/13] iommu/arm-smmu-v3: Hook up ATC invalidation to mm
- ops
-Date: Fri, 18 Sep 2020 12:18:53 +0200
-Message-Id: <20200918101852.582559-14-jean-philippe@linaro.org>
+Subject: [PATCH v10 11/13] iommu/arm-smmu-v3: Add SVA device feature
+Date: Fri, 18 Sep 2020 12:18:51 +0200
+Message-Id: <20200918101852.582559-12-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200918101852.582559-1-jean-philippe@linaro.org>
 References: <20200918101852.582559-1-jean-philippe@linaro.org>
@@ -112,114 +111,247 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The invalidate_range() notifier is called for any change to the address
-space. Perform the required ATC invalidations.
+Implement the IOMMU device feature callbacks to support the SVA feature.
+At the moment dev_has_feat() returns false since I/O Page Faults and BTM
+aren't yet implemented.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h    |  2 ++
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 16 +++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c    | 18 ++++++++++++++++--
- 3 files changed, 33 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 26 ++++++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 49 ++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 79 +++++++++++++++++++
+ 3 files changed, 154 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 6365c81a4614..baa80498ad9f 100644
+index 7b14b48a26c7..ba34914813ff 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -694,6 +694,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 			    struct arm_smmu_ctx_desc *cd);
- void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
- bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
-+int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
-+			    unsigned long iova, size_t size);
+@@ -646,6 +646,8 @@ struct arm_smmu_master {
+ 	u32				*sids;
+ 	unsigned int			num_sids;
+ 	bool				ats_enabled;
++	bool				sva_enabled;
++	struct list_head		bonds;
+ 	unsigned int			ssid_bits;
+ };
+ 
+@@ -687,10 +689,34 @@ bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
  
  #ifdef CONFIG_ARM_SMMU_V3_SVA
  bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index f57c2bde68a4..7af980dbfd6d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -177,6 +177,16 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
- 	}
++bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
++bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
++int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
++int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
+ #else /* CONFIG_ARM_SMMU_V3_SVA */
+ static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ {
+ 	return false;
  }
- 
-+static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
-+					 struct mm_struct *mm,
-+					 unsigned long start, unsigned long end)
-+{
-+	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
 +
-+	arm_smmu_atc_inv_domain(smmu_mn->domain, mm->pasid, start,
-+				end - start + 1);
++static inline bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
++{
++	return false;
 +}
 +
- static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- {
- 	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
-@@ -195,6 +205,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
++static inline bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
++{
++	return false;
++}
++
++static inline int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
++{
++	return -ENODEV;
++}
++
++static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
++{
++	return -ENODEV;
++}
+ #endif /* CONFIG_ARM_SMMU_V3_SVA */
+ #endif /* _ARM_SMMU_V3_H */
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index cb94c0924196..9255c9600fb8 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -10,6 +10,8 @@
+ #include "arm-smmu-v3.h"
+ #include "../../io-pgtable-arm.h"
  
- 	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-+	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
++static DEFINE_MUTEX(sva_lock);
++
+ /*
+  * Check if the CPU ASID is available on the SMMU side. If a private context
+  * descriptor is using it, try to replace it.
+@@ -197,3 +199,50 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
  
- 	smmu_mn->cleared = true;
- 	mutex_unlock(&sva_lock);
-@@ -206,6 +217,7 @@ static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
+ 	return true;
  }
- 
- static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
-+	.invalidate_range	= arm_smmu_mm_invalidate_range,
- 	.release		= arm_smmu_mm_release,
- 	.free_notifier		= arm_smmu_mmu_notifier_free,
- };
-@@ -278,8 +290,10 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
- 	 * If we went through clear(), we've already invalidated, and no
- 	 * new TLB entry can have been formed.
- 	 */
--	if (!smmu_mn->cleared)
-+	if (!smmu_mn->cleared) {
- 		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-+		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
++
++static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
++{
++	return false;
++}
++
++bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
++{
++	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
++		return false;
++
++	/* SSID and IOPF support are mandatory for the moment */
++	return master->ssid_bits && arm_smmu_iopf_supported(master);
++}
++
++bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
++{
++	bool enabled;
++
++	mutex_lock(&sva_lock);
++	enabled = master->sva_enabled;
++	mutex_unlock(&sva_lock);
++	return enabled;
++}
++
++int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
++{
++	mutex_lock(&sva_lock);
++	master->sva_enabled = true;
++	mutex_unlock(&sva_lock);
++
++	return 0;
++}
++
++int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
++{
++	mutex_lock(&sva_lock);
++	if (!list_empty(&master->bonds)) {
++		dev_err(master->dev, "cannot disable SVA, device is bound\n");
++		mutex_unlock(&sva_lock);
++		return -EBUSY;
 +	}
- 
- 	/* Frees smmu_mn */
- 	mmu_notifier_put(&smmu_mn->mn);
++	master->sva_enabled = false;
++	mutex_unlock(&sva_lock);
++
++	return 0;
++}
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b43d874ab2e5..576a16a3e8aa 100644
+index 44c57bcfe112..95f2e36a4f15 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1514,6 +1514,20 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	size_t inval_grain_shift = 12;
- 	unsigned long page_start, page_end;
+@@ -2162,6 +2162,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	master = dev_iommu_priv_get(dev);
+ 	smmu = master->smmu;
  
 +	/*
-+	 * ATS and PASID:
-+	 *
-+	 * If substream_valid is clear, the PCIe TLP is sent without a PASID
-+	 * prefix. In that case all ATC entries within the address range are
-+	 * invalidated, including those that were requested with a PASID! There
-+	 * is no way to invalidate only entries without PASID.
-+	 *
-+	 * When using STRTAB_STE_1_S1DSS_SSID0 (reserving CD 0 for non-PASID
-+	 * traffic), translation requests without PASID create ATC entries
-+	 * without PASID, which must be invalidated with substream_valid clear.
-+	 * This has the unpleasant side-effect of invalidating all PASID-tagged
-+	 * ATC entries within the address range.
++	 * Checking that SVA is disabled ensures that this device isn't bound to
++	 * any mm, and can be safely detached from its old domain. Bonds cannot
++	 * be removed concurrently since we're holding the group mutex.
 +	 */
- 	*cmd = (struct arm_smmu_cmdq_ent) {
- 		.opcode			= CMDQ_OP_ATC_INV,
- 		.substream_valid	= !!ssid,
-@@ -1572,8 +1586,8 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
- 	return arm_smmu_cmdq_issue_sync(master->smmu);
++	if (arm_smmu_master_sva_enabled(master)) {
++		dev_err(dev, "cannot attach - SVA enabled\n");
++		return -EBUSY;
++	}
++
+ 	arm_smmu_detach_dev(master);
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+@@ -2309,6 +2319,7 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+ 	master->smmu = smmu;
+ 	master->sids = fwspec->ids;
+ 	master->num_sids = fwspec->num_ids;
++	INIT_LIST_HEAD(&master->bonds);
+ 	dev_iommu_priv_set(dev, master);
+ 
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+@@ -2361,6 +2372,7 @@ static void arm_smmu_release_device(struct device *dev)
+ 		return;
+ 
+ 	master = dev_iommu_priv_get(dev);
++	WARN_ON(arm_smmu_master_sva_enabled(master));
+ 	arm_smmu_detach_dev(master);
+ 	arm_smmu_disable_pasid(master);
+ 	kfree(master);
+@@ -2478,6 +2490,69 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
  }
  
--static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
--				   int ssid, unsigned long iova, size_t size)
-+int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
-+			    unsigned long iova, size_t size)
- {
- 	int i;
- 	unsigned long flags;
++static bool arm_smmu_dev_has_feature(struct device *dev,
++				     enum iommu_dev_features feat)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	if (!master)
++		return false;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return arm_smmu_master_sva_supported(master);
++	default:
++		return false;
++	}
++}
++
++static bool arm_smmu_dev_feature_enabled(struct device *dev,
++					 enum iommu_dev_features feat)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	if (!master)
++		return false;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return arm_smmu_master_sva_enabled(master);
++	default:
++		return false;
++	}
++}
++
++static int arm_smmu_dev_enable_feature(struct device *dev,
++				       enum iommu_dev_features feat)
++{
++	if (!arm_smmu_dev_has_feature(dev, feat))
++		return -ENODEV;
++
++	if (arm_smmu_dev_feature_enabled(dev, feat))
++		return -EBUSY;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return arm_smmu_master_enable_sva(dev_iommu_priv_get(dev));
++	default:
++		return -EINVAL;
++	}
++}
++
++static int arm_smmu_dev_disable_feature(struct device *dev,
++					enum iommu_dev_features feat)
++{
++	if (!arm_smmu_dev_feature_enabled(dev, feat))
++		return -EINVAL;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return arm_smmu_master_disable_sva(dev_iommu_priv_get(dev));
++	default:
++		return -EINVAL;
++	}
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -2496,6 +2571,10 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
++	.dev_has_feat		= arm_smmu_dev_has_feature,
++	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
++	.dev_enable_feat	= arm_smmu_dev_enable_feature,
++	.dev_disable_feat	= arm_smmu_dev_disable_feature,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
+ 
 -- 
 2.28.0
 
