@@ -2,68 +2,108 @@ Return-Path: <SRS0=+KRR=C3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=1.0 required=3.0 tests=BASE64_LENGTH_79_INF,BAYES_00,
+	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FFAC43465
-	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 05:55:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77584C43464
+	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 07:21:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D8FA52053B
-	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 05:55:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8FA52053B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5FD2820C56
+	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 07:21:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Wsf7D+wR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5FD2820C56
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8A72E87799;
-	Fri, 18 Sep 2020 05:55:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BDFC7872CE;
+	Fri, 18 Sep 2020 07:21:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZWS3z0pM0G+L; Fri, 18 Sep 2020 05:55:28 +0000 (UTC)
+	with ESMTP id iHAB21_iLFY8; Fri, 18 Sep 2020 07:21:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CF41E87776;
-	Fri, 18 Sep 2020 05:55:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D814587034;
+	Fri, 18 Sep 2020 07:21:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C1550C0888;
-	Fri, 18 Sep 2020 05:55:28 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67EEFC0051
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:55:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA35AC0888;
+	Fri, 18 Sep 2020 07:21:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 69AC2C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:04:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5D08187796
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:55:27 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3FF9B204CE
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:04:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QvAvQDWCn7Pb for <iommu@lists.linux-foundation.org>;
- Fri, 18 Sep 2020 05:55:24 +0000 (UTC)
-X-Greylist: delayed 00:06:40 by SQLgrey-1.7.6
-Received: from muru.com (muru.com [72.249.23.125])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8364387776
- for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:55:24 +0000 (UTC)
-Received: from atomide.com (localhost [127.0.0.1])
- by muru.com (Postfix) with ESMTPS id 2880880C2;
- Fri, 18 Sep 2020 05:48:43 +0000 (UTC)
-Date: Fri, 18 Sep 2020 08:49:33 +0300
-From: Tony Lindgren <tony@atomide.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/4] ARM/omap1: switch to use dma_direct_set_offset for
- lbus DMA offsets
-Message-ID: <20200918054933.GK7101@atomide.com>
-References: <20200917173229.3311382-1-hch@lst.de>
- <20200917173229.3311382-2-hch@lst.de>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200917173229.3311382-2-hch@lst.de>
-Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, linux-usb@vger.kernel.org,
- Janusz Krzysztofik <jmkrzyszt@gmail.com>, linux-kernel@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, iommu@lists.linux-foundation.org,
- linux-omap@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+ with ESMTP id 7BaIfqnb95Ki for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Sep 2020 05:04:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id 830B920432
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:04:50 +0000 (UTC)
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+ by mailout4.samsung.com (KnoxPortal) with ESMTP id
+ 20200918050447epoutp0474a0bbec241eb44c948d9c432ebc60d5~1yE-akg1z1672616726epoutp04h
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 05:04:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com
+ 20200918050447epoutp0474a0bbec241eb44c948d9c432ebc60d5~1yE-akg1z1672616726epoutp04h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1600405487;
+ bh=LSBzwKHHOlDaUtihVEtmW2egMH/FU7IM8XnAsD8L9YY=;
+ h=Subject:Reply-To:From:To:CC:Date:References:From;
+ b=Wsf7D+wRJ75hPzNqcrmtHaSQ/4z6oR0shcyfx7BP3G0KvPxzecrS9Xf9NotAJ7y2m
+ WSTOcVrnS9QgU1LDurclSJLYEn6TunCafO0QQvdnMooe3EeL1vjlWXXfuGO5ulKOe7
+ E6vrVLe62Gt8lnkA6qZDrfAqaAwByQIg+FAVPsPQ=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+ epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200918050447epcas5p1f84ffe9550f59e62dc8493aee22761b9~1yE_-lDGx0270802708epcas5p1i;
+ Fri, 18 Sep 2020 05:04:47 +0000 (GMT)
+X-AuditID: b6c32a49-a3fff700000024fb-ef-5f643fefde63
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+ epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+ 95.B0.09467.FEF346F5; Fri, 18 Sep 2020 14:04:47 +0900 (KST)
+Mime-Version: 1.0
+Subject: dma_alloc_coherent not allocating memory from CMA Reserved.
+From: ANKIT SONI <soni.ankit@samsung.com>
+To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20200918045919epcms5p170ffa89ef95533e98706f6bbdd744fc0@epcms5p1>
+Date: Fri, 18 Sep 2020 10:29:19 +0530
+X-CMS-MailID: 20200918045919epcms5p170ffa89ef95533e98706f6bbdd744fc0
+X-Sendblock-Type: REQ_APPROVE
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 105P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFKsWRmVeSWpSXmKPExsWy7bCmlu57+5R4g94PAhYvD2laLNhvbbH1
+ 8gJ2B2aPyTeWM3r0bVnFGMAUxWWTkpqTWZZapG+XwJXxaEdcwdODjBXnJ5xjbWB8tZ+xi5GT
+ Q0LARGLv2UvsXYxcHEICuxklpnX9Yepi5ODgFRCU+LtDGKRGWMBF4uTzJnYQW0hAQWLD9IMs
+ ICXCAtoSv57HgoTZBDQlfr7+wQpiiwh4Ssw/spANxGYW0JD4NfU01CpeiRntT1kgbGmJ7cu3
+ QsVFJW6ufssOY78/Nh8qLiLReu8sM4QtKPHg526ouJTErVerGUFOkBAollj+TgwiXCPxt3sh
+ E4RtLjH33nd2iEd8JXbdLQMJswioSsxs+QF1gYvEqyVHmCGuzJJYdeE2VKusxNRT65hgLm7Y
+ +Jsdnc0swCfR+/sJXM2OeTC2isSa9W+YYK78/fAMlO0hcfntY1ZIAAZKnP8zi2UCo8IsRDDP
+ QnLFLGi4tc6Zyw5hK0pM6X4IZYtL7L/Sxowpri5xas8S5gWM7KsYJVMLinPTU4tNCwzzUsv1
+ ihNzi0vz0vWS83M3MYKTj5bnDsa7Dz7oHWJk4mA8xCjBwawkwttsmxwvxJuSWFmVWpQfX1Sa
+ k1p8iFGag0VJnFfpx5k4IYH0xJLU7NTUgtQimCwTB6dUA1PZUrYef4EMje7+32d6XvteqFH7
+ eObL2spn6sLyLZxfJbqKvbU+Sy08w5S4wWrim7nrZB3sGHgnBxeyyE6syj33PqdTIyfB9dS0
+ CJdvbf0vXzwRvfj23lNrF8dujzbNwt2BuosPirN6fjpocu9eC+uRWK5g0dtstf+srZ9ErVu7
+ fb18wKccqzsqG25qxe4/c9nm1R92RrXARxYBZc+ORb6rTkl8YbbJ5eIWqepu1vnnXp3mVZkS
+ 5PygeSKjtR7f0TopqUO3o+/5Ggap+Lzl2V94saG0/csGLvObZj9OfdmZ3yf72Sn30qkLHp4c
+ Tk29PQdqpGoiDNiUbFM/Ri1QPCWuwvtQfPmJJXHtc5ZNUWIpzkg01GIuKk4EAKg9g9itAwAA
+X-CMS-RootMailID: 20200918045919epcms5p170ffa89ef95533e98706f6bbdd744fc0
+References: <CGME20200918045919epcms5p170ffa89ef95533e98706f6bbdd744fc0@epcms5p1>
+X-Mailman-Approved-At: Fri, 18 Sep 2020 07:21:44 +0000
+Cc: Sathyavathi M <sathya.m@samsung.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,164 +116,160 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: soni.ankit@samsung.com
+Content-Type: multipart/mixed; boundary="===============1200499998443745249=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-* Christoph Hellwig <hch@lst.de> [200917 17:37]:
-> Switch the omap1510 platform ohci device to use dma_direct_set_offset
-> to set the DMA offset instead of using direct hooks into the DMA
-> mapping code and remove the now unused hooks.
+--===============1200499998443745249==
+Content-Type: multipart/related;
+	boundary="----TWEqkD79PGeN6McdOgWBIk7gBlEajVdbOTB8tKhinv2vhhI2=_d7d8b_"
 
-Looks nice to me :) I still can't test this probably for few more weeks
-though but hopefully Aaro or Janusz (Added to Cc) can test it.
+------TWEqkD79PGeN6McdOgWBIk7gBlEajVdbOTB8tKhinv2vhhI2=_d7d8b_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Regards,
+PCFET0NUWVBFIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPG1ldGEgY2xhc3M9ImN1aS1jb250ZW50
+LWRlZmF1bHQiIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1sOyBj
+aGFyc2V0PVVURi04Ij4NCjxzdHlsZSBjbGFzcz0iY3VpLWNvbnRlbnQtZGVmYXVsdCIgZGF0YS1j
+YWZlLWRlZmF1bHQ9InRydWUiPi8qISBjYWZlIG5vdGUgdjIuMi4xOC4xIHwgQ29weXJpZ2h0IDIw
+MTQsIFMtQ29yZSwgSW5jLiBBbGwgUmlnaHQgUmVzZXJ2ZWQuICovDQpAY2hhcnNldCAiVVRGLTgi
+O2JvZHl7ZGlzcGxheTpibG9jazttYXJnaW46MTBweDt9Ym9keSBvbCxib2R5IHVse21hcmdpbjow
+O3BhZGRpbmctbGVmdDo0MHB4O31ib2R5IHAsYm9keSBsaXtsaW5lLWhlaWdodDoxLjk7bWFyZ2lu
+OjAgYXV0bzt9dGFibGUuY3VpLWRpdnt3aWR0aDoxMDAlO2Rpc3BsYXk6YmxvY2s7fXRhYmxlLmN1
+aS1kaXYgPiB0Ym9keXtkaXNwbGF5OmJsb2NrO310YWJsZS5jdWktZGl2ID4gdGJvZHkgPiB0cntk
+aXNwbGF5OmJsb2NrO310YWJsZS5jdWktZGl2ID4gdGJvZHkgPiB0ciA+IHRkLHRhYmxlLmN1aS1k
+aXYgPiB0Ym9keSA+IHRyID4gdGh7ZGlzcGxheTpibG9jazt9dGFibGUuY3VpLXBhc3RlZC10YWJs
+ZSB0aCx0YWJsZS5jdWktcGFzdGVkLXRhYmxlIHRkLHRhYmxlLmN1aS1wYXN0ZWQtdGFibGUgcCx0
+YWJsZS5jdWktcGFzdGVkLXRhYmxlIGgxLHRhYmxlLmN1aS1wYXN0ZWQtdGFibGUgaDIsdGFibGUu
+Y3VpLXBhc3RlZC10YWJsZSBoMyx0YWJsZS5jdWktcGFzdGVkLXRhYmxlIGg0LHRhYmxlLmN1aS1w
+YXN0ZWQtdGFibGUgaDUsdGFibGUuY3VpLXBhc3RlZC10YWJsZSBoNix0YWJsZS5jdWktcGFzdGVk
+LXRhYmxlIGxpe2xpbmUtaGVpZ2h0Om5vcm1hbDt9aW1nW2RhdGEtY3VpLWFsdC1pbWFnZV0sZGl2
+W2RhdGEtY3VpLWFsdC1pbWFnZV17YmFja2dyb3VuZDp1cmwoImRhdGE6aW1hZ2UvcG5nO2Jhc2U2
+NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQllBQUFBVUNBWUFBQUNKZk0wd0FBQUJIMGxFUVZR
+NGpiWFUyNnFFSUJRR1lGK3d0eExNZ2c0UWRHZEJSRVVoRkVGQkJ4L3RuNnNHcGNQZXpUVENBaS8w
+UTExclNRZ2hoREdHSjRQOEFuM2oyMFFJZ1N6THZvb2tTZmF3VWdycnVrSXA5VlZjd2tJSWNNN2gr
+ejY2cm5zR2JwckdlQ3ZmOTUrQjh6dzNZTTc1TS9BNGpuQWNCM3BTOVkzelBLUHYrMHZZS0RmOWpj
+ZHhSSjduYUpyRzJEUk5FOEl3QkdNTVpWa2V3bVFiT253Vnk3SWdpcUwzVFd6YlJ0dTJ4K2dWbktZ
+cFhOZEYyN1pZMXhWeEhPK2F3SFZkRE1NQUthV0puc0ZabGhrbjh6enZ0TU9DSUFDbDFObzhTcW0x
+UzU1U0NrVlIzR3JkSTNRSDEzVjkvN1BSeG1HNVNTbGgyL2JIS0dNTVZWWHRZYzc1YlpSU2F1blgx
+dzkyKzl2VVQ2bWp1M1dmSnVxdnYvemY4Rm1aWHE3L0Jmb0NBMVZSc3ZLNEFmZ0FBQUFBU1VWT1JL
+NUNZSUk9Iikgbm8tcmVwZWF0IGNlbnRlciAjYzFjMWMxO31fOi1tcy1sYW5nKHgpLHRhYmxlIHRy
+Om5vdCg6Zmlyc3QtY2hpbGQpIHRkW2NvbHNwYW5de2JvcmRlci10b3Atc3R5bGU6bm9uZVw5ICFp
+bXBvcnRhbnQ7fV86LW1zLWxhbmcoeCksdGFibGUgdHI6bm90KDpmaXJzdC1jaGlsZCkgdGhbY29s
+c3Bhbl17Ym9yZGVyLXRvcC1zdHlsZTpub25lXDkgIWltcG9ydGFudDt9Xzo6c2VsZWN0aW9uLGJv
+ZHksYm9keSAqe3dvcmQtd3JhcDpicmVhay13b3JkXDA7fTwvc3R5bGU+DQo8c3R5bGUgY2xhc3M9
+ImN1aS1jb250ZW50LWRlZmF1bHQiIGRhdGEtdXNlci1jb25maWc9InRydWUiPmJvZHkge21hcmdp
+bjogMTBweDsgZm9udC1zaXplOiAxMHB0OyBmb250LWZhbWlseTpBcmlhbDsgbGluZS1oZWlnaHQ6
+MS45O30NCmJvZHksYm9keSBwLGJvZHkgbGksYm9keSBoMSxib2R5IGgyLCBib2R5IGgzLGJvZHkg
+aDQsYm9keSBoNSxib2R5IGg2IHtmb250LWZhbWlseTpBcmlhbDsgbGluZS1oZWlnaHQ6MS45O30N
+Cjwvc3R5bGU+PC9oZWFkPg0KPGJvZHk+PHA+SGkgQWxsLDwvcD4NCjxwPiZuYnNwOzwvcD4NCjxw
+PkkgYW0gdHJ5aW5nIHRvIGFsbG9jYXRlIGNvaGVyZW50IG1lbW9yeSBmb3IgMzMgTUIgaW4ga2Vy
+ZW5sIGRyaXZlci4gYW5kIGZvciB0aGF0IGkgaGF2ZSByZXNlcnZlZCBDTUEgb2YgMjAwIE1CLCBi
+dXQgZnJvbSBkbWVzZywgaSBjYW4gc2VlIHRoYXQgYWRkcmVzcyByZXNlcnZlZCBmb3IgY21hIGlz
+IGRpZmZlcmVudCBhbmQgd2hhdCBpIGdldCB3aXRoIGRtYV9hbGxvY19jb2hlcmVudCBpcyBkaWZm
+ZXJlbnQuIE15IHBjIGlzIHg4NiBtYWNoaW5lIGFuZCB0cmllZCBpbiBkaWZmZXJlbnQgbW90aGVy
+Ym9hcmQsIGJ1dCB0aGlzIGlzc3VlIGlzIG9jY3VyaW5nIGluIHNvbWUgc3BlY2lmaWMgUENzLiBw
+bGVhc2UgaGVscCBtZSBpbiBkZWJ1Z2dpbmcgdGhlIGFjdHVhbCBpc3N1ZSwgYmVsb3cgYXJlIGtl
+cm5lbCBsb2dzLi48YnI+YXQgaW5pdCBpIGJvb3QuLi48L3A+DQo8cD48YnI+WyAwLjAxNDM2Ml0g
+Tm8gTlVNQSBjb25maWd1cmF0aW9uIGZvdW5kPGJyPlsgMC4wMTQzNjNdIEZha2luZyBhIG5vZGUg
+YXQgW21lbSAweDAwMDAwMDAwMDAwMDAwMDAtMHgwMDAwMDAwMjFlZGZmZmZmXTxicj5bIDAuMDE0
+Mzc0XSBOT0RFX0RBVEEoMCkgYWxsb2NhdGVkIFttZW0gMHgyMWVkZDUwMDAtMHgyMWVkZmZmZmZd
+PGJyPlsgMC4wMTQ1MzhdIGNtYTogUmVzZXJ2ZWQgNDAwIE1pQiBhdCAweDAwMDAwMDAyMDVjMDAw
+MDA8YnI+WyAwLjAxNDU0MV0gUmVzZXJ2aW5nIDY0ME1CIG9mIG1lbW9yeSBhdCAyNTEyTUIgZm9y
+IGNyYXNoa2VybmVsIChTeXN0ZW0gUkFNOiA4MDQ2TUIpPGJyPlsgMC4wMTQ1NTNdIFpvbmUgcmFu
+Z2VzOjxicj5bIDAuMDE0NTU0XSBETUEgW21lbSAweDAwMDAwMDAwMDAwMDEwMDAtMHgwMDAwMDAw
+MDAwZmZmZmZmXTxicj5bIDAuMDE0NTU0XSBETUEzMiBbbWVtIDB4MDAwMDAwMDAwMTAwMDAwMC0w
+eDAwMDAwMDAwZmZmZmZmZmZdPGJyPlsgMC4wMTQ1NTVdIE5vcm1hbCBbbWVtIDB4MDAwMDAwMDEw
+MDAwMDAwMC0weDAwMDAwMDAyMWVkZmZmZmZdPC9wPg0KPHAgc3R5bGU9InRleHQtYWxpZ246IGxl
+ZnQ7Ij48YnI+YXQgZG1hX2FsbG9jX2NvaGVyZW50IGNhbGw8YnI+WyAyNy44MTYwNjJdIGRldi0m
+Z3Q7ZG1hXzMzTV9hZGRyIGlzIGY4MDAwMDAwPGJyPi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTxicj5hbmQgYmVsb3cgYXJlIHRoZSBsb2dzIGlu
+IHdvcmtpbmcgY2FzZSwgYXQgZHJpdmVyIGRtYV9hbGxvY19jb2hlcmVudCBhcGkgY2FsbCB3ZSBo
+YXZlIGFkZHJlc3Mgd2hpY2ggaXMgaW4gcmFuZ2Ugb2Ygd2hhdCByZXNlcnZlZCBmb3IgY21hLjxi
+cj5hdCBib290IGkgZ2V0Li48YnI+RmFraW5nIGEgbm9kZSBhdCBbbWVtIDB4MDAwMDAwMDAwMDAw
+MDAwMC0weDAwMDAwMDAxOWZkZmZmZmZdPGJyPk5PREVfREFUQSgwKSBhbGxvY2F0ZWQgW21lbSAw
+eDE5ZmRkMzAwMC0weDE5ZmRmZGZmZl08YnI+Y21hOiBSZXNlcnZlZCA4MDAgTWlCIGF0IDB4MDAw
+MDAwMDE2ZGMwMDAwMDxicj5SZXNlcnZpbmcgNjQwTUIgb2YgbWVtb3J5IGF0IDE3OTJNQiBmb3Ig
+Y3Jhc2hrZXJuZWwgKFN5c3RlbSBSQU06IDYwMTZNQik8YnI+Wm9uZSByYW5nZXM6PGJyPkRNQSBb
+bWVtIDB4MDAwMDAwMDAwMDAwMTAwMC0weDAwMDAwMDAwMDBmZmZmZmZdPGJyPkRNQTMyIFttZW0g
+MHgwMDAwMDAwMDAxMDAwMDAwLTB4MDAwMDAwMDBmZmZmZmZmZl08YnI+Tm9ybWFsIFttZW0gMHgw
+MDAwMDAwMTAwMDAwMDAwLTB4MDAwMDAwMDE5ZmRmZmZmZl08YnI+PGJyPmF0IGRtYV9hbGxvY19j
+b2hlcmVudCBjYWxsPGJyPmRldi0mZ3Q7ZG1hXzMzTV9hZGRyIGlzIDE2ZTIwMDAwMDwvcD4NCjxw
+IHN0eWxlPSJ0ZXh0LWFsaWduOiBsZWZ0OyI+Jm5ic3A7PC9wPg0KPHAgc3R5bGU9InRleHQtYWxp
+Z246IGxlZnQ7Ij5QbGVhc2UgaGVscCBtZSBpbiBzb2x2aW5nIHRoaXMgaWlzc3VlLCBvciBjYW4g
+c3VnZ2VzdCBhbnkgYWx0ZXJuYXRpdmUgd2F5IHRvIGFsbG9jYXRlIGJpZyZuYnNwO2NvaGVyZW50
+IG1lbW9yeS48L3A+DQo8cCBzdHlsZT0idGV4dC1hbGlnbjogbGVmdDsiPiZuYnNwOzwvcD4NCjxw
+IHN0eWxlPSJ0ZXh0LWFsaWduOiBsZWZ0OyI+VGhhbmtzIGFuZCBSZWdhcmRzLDwvcD4NCjxwIHN0
+eWxlPSJ0ZXh0LWFsaWduOiBsZWZ0OyI+QW5raXQgU29uaTwvcD4NCjx0YWJsZSBpZD1iYW5uZXJz
+aWduaW1nIGRhdGEtY3VpLWxvY2s9InRydWUiIG5hbW9fbG9jaz48dHI+PHRkPjxkaXYgaWQ9ImNh
+ZmUtbm90ZS1jb250ZW50cyIgc3R5bGU9Im1hcmdpbjoxMHB4O2ZvbnQtZmFtaWx5OkFyaWFsO2Zv
+bnQtc2l6ZToxMHB0OyI+PHA+Jm5ic3A7PC9wPjwvZGl2PjwvdGQ+PC90cj48L3RhYmxlPjx0YWJs
+ZSBpZD1jb25maWRlbnRpYWxzaWduaW1nIGRhdGEtY3VpLWxvY2s9InRydWUiIG5hbW9fbG9jaz48
+dHI+PHRkPjxkaXYgaWQ9ImNhZmUtbm90ZS1jb250ZW50cyIgc3R5bGU9Im1hcmdpbjoxMHB4O2Zv
+bnQtZmFtaWx5OkFyaWFsO2ZvbnQtc2l6ZToxMHB0OyI+PHA+PGltZyB1bnNlbGVjdGFibGU9Im9u
+IiBkYXRhLWN1aS1pbWFnZT0idHJ1ZSIgc3R5bGU9ImRpc3BsYXk6IGlubGluZS1ibG9jazsgYm9y
+ZGVyOiAwcHggc29saWQ7IHdpZHRoOiA1MjBweDsgaGVpZ2h0OiAxNDRweDsiIHNyYz0iY2lkOmNh
+ZmVfaW1hZ2VfMEBzLWNvcmUuY28ua3IiPjxicj48L3A+PC9kaXY+PC90ZD48L3RyPjwvdGFibGU+
+PC9ib2R5Pg0KPC9odG1sPjxpbWcgc3JjPSdodHRwOi8vZXh0LnNhbXN1bmcubmV0L21haWwvZXh0
+L3YxL2V4dGVybmFsL3N0YXR1cy91cGRhdGU/dXNlcmlkPXNvbmkuYW5raXQmZG89YldGcGJFbEVQ
+VEl3TWpBd09URTRNRFExT1RFNVpYQmpiWE0xY0RFM01HWm1ZVGc1WldZNU5UVXpNMlU1T0Rjd05t
+WTJZbUprWkRjME5HWmpNQ1p5WldOcGNHbGxiblJCWkdSeVpYTnpQV2x2YlcxMVFHeHBjM1J6TG14
+cGJuVjRMV1p2ZFc1a1lYUnBiMjR1YjNKbicgYm9yZGVyPTAgd2lkdGg9MCBoZWlnaHQ9MCBzdHls
+ZT0nZGlzcGxheTpub25lJz4=
+------TWEqkD79PGeN6McdOgWBIk7gBlEajVdbOTB8tKhinv2vhhI2=_d7d8b_
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-ID: <cafe_image_0@s-core.co.kr>
 
-Tony
+R0lGODlhCAKQAIQAAAAAAP///8k6OspMTNRiYtt0dOSOjumiovLExPfZ2fvt7f/+/uvr69TU1Lm5uYyMjG9vb0dHRzMzMyoqKgICAv///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAVACwAAAAACAKQAAAI/wAZCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjxkDiBxJsqTJkyhTqlzJsqXLlzBjypxJs6bNmzhz6tzJs6fPnzYFAh1KtKjRo0iTKl3KtGnJBVCjSp1KtarVq1ZVCnXKtavXr2DDih1rE6vZs2iramVAtq3bt3Djyp07Mq3du1lTbg3QwIFfvwwasJUpmK7WBikL41SMkjFLxyIDq+w7uCVkpJJZZo6MWKyDtpdpfl4qFQFWBQnwQk2ggCpqtXorQ4gwgUKECA0ijI6p23DKBw9S9jYJgffuk8NbJh8JPPEE3I+DL0/anKWDCCSvj6XAtUFwk9NLFv93yd3oeJFSB2BFUACtgakFTE9lDxvlXpHaRYZXftw3zvIv7TeSgMj1F0B1J+XHUnMEEoWgSgoGEOFXADL14EsVrpQhUBXaRd9Z6p314VRrlaRgBBBQMAFiDERgW2UBtEgBBdKlOAFbMkbAgAPf8Xhgbd+J1MBsNKaI3Y80xujiigGkmGSTMxbXAJDj2diZSM05GWSTDQzpYnFGIhmclxSM94BtE3z2AJBYormbjEzmyFZvayYJ3AOj4TlSbWCqiNgDKY425QQPoOinki+SBMGZcbqY5KIqOlDbZ1OWKaSKEWwpY5IM8Ildp2Vih+IEYiLKpJYiWZnqoYpGeWCd36X/mCJJwE3qYqxRtijkkUKyKWeTjHY5AaGbBgdBl0SeByVuEEzQp6VQzgolkyNVqmOpP6bZZIoMwLpsXVG1Z8ABAxCQmgIEDGCAuKkl8N4B6b5nwA
+ AFuEuAAQ
+ akBi+9CowoVYnZ8XrbgWAWrKiU3NHGAAQGMzxlqg8wQIGwVzowcQM0dirYxSsWSvCUO5JaqEArLtoidmt2SypzD4AsKUm6WbxxlxQ4IDHFMt98s8U2c4xzzcyh3HBxut08pXfAHTlx0N7duOaB10bm8MCAbmv1gChjxzBfCYvqNHbEZhpAmhJvuTXGwJ6c9sA1C+Szx4C6LLLTc6tMq44ap4z2yNJi/+n0xdyNrDGTVe/pAMYLG0y1jg6fnbBfE99cbc0WsyV4x4wHTjfM0kXs881Po+g2xRjvlt4CBbR3gLgHKJA66qbRN4BpAySQwOwIDKCA6wgoUDvqB/gbFcAjnfiZdktLTJJQFgcgtvJLo60tBd1WGWR+5elW+KIeCyQpW52Bnyb1Eoo6GrWvgswXzH4d2Vvg1uen/Xhpbg8c/bt1z1b0j9sPnMQhC5jzzoe0kjDoeNhJXoV6ox3mPe5V5XtYBFe2qOWxpXnk81gGE4gl6+nve+sbzopEeKUY8aV+33kg2lhWPpGUR3wO2Jq2eoUfyaGNgSgLjgMHKL/jcEdBMOzNDf8JOKAxEQxihZOOmqwXgA5FRT3xWYDsWrM62EmxPb9LzQLU86EotmtcwoMK8fAjMAQ2cUYzIom1HtjENroQWA87ExqvpzT98AiNGaNNxKLFoiWNj4zOw2P+jFWmEsbMfZ8JHB7xhMjqaG+RjnyTHvc3kv5BsnMVLJ757HihA7YQjws04xoHCMHrWAyNujnSg0ZZHuQBsjxynFHEJsnHQKLxOoIcCZxQ+MbhVKg52DNVmkBWoQgB6IHaac4oD2lHkvzwSLs0ZS9z2SuxxZJGD6LTIt2InidaUXZQoU8U6QOvKG7xilCJ4rwIQIDgtYcqY2xhM10pJJLM8IHQw9EPnVX/nOqUMJgD9GeMAtOsGHmHelsbIPm0M5wSKrNb5LNjD9so0B5GUqCR1CVBSUU+5WnvO38KDqCWpklSjo1HW4I
+ gDrlpSDP
+ ek5TATGVkdqTKLb20lRz8JJZAOtAhkSowZ2qRoExawoR+tJej+WVwgmnUz/BTgBICYIyQmcOxpZCHiHSmPJvqS6KqsXzcq2d1lAjB9XEzAKcbJxbD2R61LoA1qzvAObuIgNVR0Z31Ocl95ElKhi51ZS60XML6KSqRHmlYiAGh2ADpxpjdyHmA0iGNDivN0jFMbd1D350oO6D2NXOfc2KkHR9WOsXiiVSlG0kFPWpYHj42U82RGGAB6bG9/6XUk36V0GxXmsEHxrSJfyrO0gjlTMFCtkmFRa4bTbvayYqkfp/CXIzQJ8SaVQd+B1KqPFUItECVhHoAtOYmkxmc3mK1mZWUZ3V51M/ARfdKZLuO+jL1sJcx8LXlxQ9avenWAsh1XcBbwOoSQIDWjGuu74zPAd6DLrzCMzYmKmMLMeai4zTLWdSjTW0QQ2GSuki1w5otQHtzYdSiKWIhxo7FaJMpUM1murRR1v9SzL6JDmthIVbvZ0q84xw3KcS7oTBxO4wYEufYkSlt4LCA1snJitI2QOtsCy/MLTotFWXPWdqahmW2YXFLyNgZ1HO4WWKuTZLGnYoxjJ2VHTTB9v+qncoyra78xhU/Z6kb2jLCXFRkM54JUF7OsGdN+tw0HcnOLR7Wh9PMZuac+MfDStWkTFrmsd2IO2mNXXsIzM725C514iJAAcy1AHbS1XejxlcYFxDPlhzOJF0yUWV2BKOS9AUmt47Mq/FzpVwfyHK82nWCSqgVm/HFQNmBka+japIdXYnWsDYQ+oY9GWIXz9qwxna0KxPrbC+vhJux9ZuELWwJ/dPay04Qro9TOFs/29iN4bC29QpvIfXn3taGtr2zg21f0zo4aHlNVGxXGvksoF+tmQrCzdJq/8xkTWdCtsNf4qWJWxwoa5L4xXHSLf8IRDUgD7nIr8IyjZtk5Cj/T7lUFNA6lbs85BvPiV9iTnOdfBwvrLlLzl9ul52X5uBaDLnPdZ5woSNg
+ 6EM3i8Cn
+ 4vOlzyfoKXc6wxNTa1xXfSwmhxBQKHV1Wyu76waVSdbDrhcOg73sLbk5VN5zFnOmxe08b7vBvXkAuYq87iDHe8g/DXe4X+U9q3b7qg3QTpUD/p1oOYl3CC2TC+lETytZmIZosiGdBC6lBWJfSibUkspHGEKbfElxOK9XBpxO7nfxe9zzbveQ6x0vr1dN7MM196uEyCqqp0ruQX57u5zEk2RpEGNT4nmWFP8mxy/JcghEepw0f/gweWbaTb92egm4XHYnF6kLsM7UjKtc5yoA/7+s2P23ih9froNK+gcer3QSfuDrGoBc7YWvBBQg4flS3fzbf33ut4v/tyNqrfdW6bJ95HJ/b1Uu/lUa7CRXrjN+32cunLZg+kIvBGAa+zJ/8Scv9OIuByd+8mdFqyEv2pcAJfiACIgvtRN/C2Z918cv81IvDCZ+KViCwyMnkkIohtIoicIwL5IbO9YthERc0+JQdbJENVMp7bUiStgrSfIlRbgqfVNWOcRlUlgeqjJSQVYbTJIptqEfZ1JHwGSFxeI8NjInaqIiW9JAjoInreUjA/IqVrgsNMUlfFEcLqY1yAKFgfRiqmUbksKHjKIp1JeARyeBukNgJkgAqKM67/nxOlWELwsgiQp2f/AyiQbgOu1BagsmFe3UYFvUO1GRO62jO7mzO/FxYAR2Tnj3if7lO/0yO6XWOgt4gbczgIVXRSFYi0cXglFxgacoiZSoOvdXf/GhiLlziL1jirXjO7aDO+LyHqsoeG1FjK7TOsL4iJmYO8/YOhJogLeDAPSRjY0oYIhnNZc1NUKDjkQDAUJlMZ6TPjfyMiPzMo7WFyJzLcQSNig2S8ExTNSzJt6hI/SYOXP2RinTPHzjXgH0NPbUWmXSIuXljmJzeSdVOWdDKgqzNbpxNIhTUo7DUNyRSQg5jwyJIgxlRhxpPjkzMQupRpQTOdTjkRH/NVCn04mTWHdsJ1f9pWlb1C5QxB52Zy66g06Se
+ IHsx1bnx
+ IBr52CVKGDvoR51hwCMeEU4CYxVyR6rmJMrd3C6CBV1t5UHthpZ6YwJ+E36BztXWVdsB0YJRjvotDtSFJSj2FY+GUVZRJcfEiJe9IFyxUVYBJRoOTz8o1JmpEAwlTQyBRwgVGTfoVn0U0D2mJKTiRuPZTO5NTZAyDUHSVFXVV3HpZkXgiMalFgJZJqeKUE2s0OL1T9MBEg7xB22sZnpdV2ktCMp+UnAdl4D1BvKo1UW9Zo2SXcDUJzyF3s9iU63F5TmFB8hQh+K2HsfAk6l8U5T+ZalZkVSGTzGSS96/xcfuWOc8WGdA6h9rxMi1wmWrecvyzmYeKdgdqdg3emUcAmd6SJ+IohOydmebrWU6lQuhQeYS3lO/clqx2SYn4RHfYUiECdShHQstjQjg8RJdNZCMYNHMlVSjiKhXcVCnolU03RLTfYcOUVPrsSYvHJCUGZSljRHJTVKaeIszaNVtpkcuWmiLIlIHZpeFrVNM3WTdqcv2TeYblWUvgM75nSBRfkh98J24ZSVa1Wd6klXs1iU2/khu7OWWNov5Ml+qUGd6Slg6/lOy9gaR+pW71lX8ammq4FO2olOSEmgBidOd0k7ZqqX78SXdYWAeCegRoqnhKlPCEpPIUQpgAiIEP8EVCM0VB56VJXJm95zaHXYUCzamRbZRl1FqavEJDi6XByEojX0Ur7ZPzxVUi81G5lCG99VVirkWbwFSMzUm5/xmzzaSKX6o95EYK3hX6tIlUR6l3JVRU95O5ioidVXe7+zgL03l6lhLlQKL2y3nT8JlbcTi7SjL1HZGoX3pOkUpX2qrQOoO864gMLqk2m6iuGoq8BDpX5KRXSplMlJrnbppnraiaAooPI6mGIkXoOaXPZ1PhqZQUnzXDzyKTX5NLblQo5JSlomXKOTTAZbPdlFK6N3qdh1JlAzVUKYHSvDNsZSXh/7oeA1MeaFIhnbkfhVUuYFcRajLB9KUf0EAbn/5TFi82Kxqj
+ 0GCZyINF
+ 9BonalVmCEx05rly6mkZzQSS/J2jvsVHjooi5kuqxzyU6tsaxUyU6Hl06mcYtQIa0H+Dvah5RdW4EN6IlWy4joGawAWp5Wm4DilxpoypO9E7RIKbduGkWmFmr3UjvU+Ktsm7T0irWo1qQ/e7Rtq6+sRmTZVShPVmEm9WEFBUFopmEyFmIO6jc39mN3xGfZgjAU6WVrViEU9mG2yWjc0SKeeyEhVlBo8lirS0nNoWeQliK5sWR9BmkipjWBRjOek1IWC2MTox0rNjBilqPNJCsZMiwTVWm4qn6imABzJ4ppsXBPB5ZUZJ1OKhXOexVaWXt2/7FwJggVpHZw0At0VTG+VSF1qxF00osW5pu9VrG+BBdy63sW61u/5vtg+sYX2Ja/LlFu5fYq/7tvxYMj9dZtx8Zr2UFvK4FvEFIZ1LMbD5wYvUZsyJZuajRvLsG/ZMcZK6EnK6RL9aZG/eGzq4cV8EIuGBind7FqIIcu61KVJRzDMjzDIBcWjldzq6pVOCwak+WyMUHCNDwVUxlO3IsW3+tyJthyQbzETNzEYTFzO4wStxXFonHDMLEXmxFuIgxrYIdSQJHFGGwSfxHCO6HFOsEYfTHGZ8fBEPI/PIGbUFzGYdxsYwcuAwd1TfxWRXcaeMzHVUFwRbx3Kzxyr5F0f/+8O318vomcFXuhIKS3YuAhcbexJj4cFP1kLHzVebehuTsxeim6E8kxG7VxG3P8fD8CaGvcwbsRvJerF5VMHJncEgLZGFsyFfeSx28Ft2gxe+uBeFLRpy8HtVURPAMKcnRKFdcLOyysfu8ygAzXyMH2yTsFEx4zXXXcvymafCgBIO2WE9psE9Nhyp9HfJ1BkjNhowKDeVA1eee8WCbxINg7aricpqu3ary8xLu3wr48FcK8zG56FwNVUrQFK4MyS7LEJT51Hujzat5CJiMVZkSCK0wCJPczm3joItfihVHzRrBaULAieUqiolKSLMsyJCINhol
+ SLVy4h9A
+ ShjMk0An/XYZ5iCgb3USDURi/IiMxmyaSYilb1hkKwiAFpSpsoio6XdJSwicoXdNjoytO2DJzuF/qaQDyEYHOa3d1FRXfKabp4oAg+F9fNIHcB34EqC7u104HYH+g9oHj17QANnAKyJNlfX8PSGoEZtbA451Sizo5SdYPeJzsZH/VR2pWfb7xwi53XYwdSHj1V7Uh6IGTeNd1t39m7S7n9y/QXFJ6g1DH4jg8BF7pVRISczgrIjMYg2J9kTEBuTkCCRylpTUG84Rbws3CtZoyeTRHxI8tSTOexY9N1Dn2pCa6cdtHwzPjXDmJw5kmMzBbk1CpQl+qNTSdwiOPxY9Tskd8VZFq/8LaHbM5lwWQve2Pvx2a+FEcj3VSiOMwdlxqJsh2kFgvfNl6eieVBUaskkisaqUAxuiIs3iNochyrSOOAEaO42Ksv7iMfxlg/lVFneiKf+mNj5jg742JBEhgpShgBXaJE47MtGiXC8iruCOu4Cl/yPiW8JLE/d1O3GiWYpTZA42QOnRBjzMheRY/deRaEENC5NVGyMNhsjnNlXQbG+ZG9lNB9LUyppRVzyRBGgTk9dQtGTo/BHvc0CTjNp2xiEmxh4KYC1VAqhl6EmIbGsbROh56K9LlPG6ZWJJTD1JBFaSaG2vHq4guWAunZarVdiet5ySXueOeuswevmqOS6l3iv84rUdalFVElk1JoPMn6IgMpf6JgRLuk3xOl+9qLgWaHtWLpI2OYFgb6G756fq3lQtGpS1eGY5cVR+6TINWSbMW56DaWIOWNIK049J3oLA0238R2tckWiaJShP1TPlBTw8iR7dhUd8Rzod2JKz0SgrabFsDSmcFTBhKaJLiF1eSPaPBTBtaMxki7MtO5Db1HGwWIfAcTvRSuGg6Lr4832K6tXMNqPQM6GTqrUOZ5925lCPyIcBMYAvoOp8YnsUZpVEEzG6V2JYuguPpk1TxnHbp73let+JInnRFTg5G73V+
+ 6iqt2VfV
+ HEQ445+cHJFl42Q+64pbT7aum1Ml7jqswwL/VTakkh+R+lnl86i5rtKmiezoJdD5cVOvVC3FA1iEihitJJlVbu3SrO0Em5vrU/RpbvNOPiV/IX1Rde7rigAHdvDqUp4R7+5xKu9/Hh+QfraCDu9t6vB1qZ7n9KXch8iEt6WR/u6Auq0Jn6SA/s+nR6dsH5US/yGhrsz6F+gYn58BXUmdYU0dX17GFatBjyPDdCMaM2KQgxjSFflVJX38evOhrcOm5TytGVzB/kkLq/m6pR9R7hcmdm/hfuUYW7P+OltRVjVi86+QdV3BhfQmAUthJn3VLGjHdeuj7+Qk+T6jE1uI4U2K3p/it8ed2OfujuhQFKxpWaRum+BiWq3h/yJXvrqAb721zZrgF8ilB3bo2Br3Bu+T0P+mVYTflA513G+XSAlOFd+MzsqIvjPxcl/9VGoahe83ABFhQgQGAR48CBCAgkGEECZMgECBQQQHDiIkxBjAYQQKCDU+hMDAYsKFASg6eAiRAYOBEAM0oADhYICHI2FybKAw4UyMJTP6dPhwJ4WcBgcSHWnSAc0JIx+kLFiSZ8KUDpNS/FgzY4CkSYNGZHBz4EsKHJdidEABKlmzL1My3Hk0p9WESX8mZDmBwlKYIVtCcCuUqdO1Uj3SLGoQ8FOXDzrOXLDgQIHIkQcoKIBgAQLKkjtXTjCgQIEBkg9YXmCAAAEDlxGIHv8tecBkzZwlryagYEFp0wcG/B6AIDRpzQlwf769+nRp3wUIHBj+/DbpBLsjZzZtHbtt1awvq369QMHq4Au2Uz5wGvRx8wiaS19tuz0C3AYiHxc+wED65LnlYy8tgJW2EimxrbZqwMADM2rAAQMbXDAjiyBEKzEKBXSgILwyjLDDAy/8kMMFRdLwpbM85ErBrUREEaMEMwprRRVTlNHFExlk0cEWK7SxLgtPJLHHHT+0MLHKjkQSyf2SVECzJEGrDsojE4gSyQScfJJJ4
+ SpToMopv
+ YysSd3E2zKyK8fMMs0FqDyyzMjcRFIB9bgEk8wxxXzyyjbR1BM0LJM8TcAShyTatNAO7TI0UUUXZbRRRx+FNFJJM1IztdwqxTRTTTfltFNPPz0AzU9HzVTOBQSdNFUGDku1VVdfhTVWWRutFDpSb8U1V1135bVXQXdNQNRec4XzTU2DzRMBYW9FdlhM/8z0z2YrhRZaZzm1Vs1s05zW026tXNZbUZGtVlNrBSyqwUEVvXHWD9f1MEaMVtqVv2txVW3OAzTjDVPs4hStTm9P+/fafZ/sV9OE7c3y4IStu9fThxvml9OCMbXvyIsjO3hjUOfM7uHSFMg4zYm5uoiBsmYs1Cd3D5yqRUT/6Y245k0vBvBW+XJlOGKPP51YzZxttvnnXoNOEjujOe25sqB3zvLkkRBl1OWXGZ2ZgSN9I6A6zETTbb8BunbvzfQIbk635gzw0jj9rlOtMnspc7sA3dwu2UwC3uY6yr71A3vNvfNOLYH09ib47da6lqw1BMQmgL7yvn6OvufYTm3s6g6X7sjW7Bb8bfOak61rtxlH7wDlIls8ytZa2xrtwDnWHHDQ0fuN8L7FIw10yCXX7Pe9NeuMvwLSNo/1wE83XHPKvvZ998rYptxL3xQPWDUDMO+77+M7w0xj0s2Lu3XPVucP8IwpI80+8zOHHUmUTYoJr4sEvKgBvQAzaSdW/2MqS0H0p5YGPOAsBtQIATPygIg4aH91eYhHIjKBnByEIAmBQAMmEkAB7e9+eNGa3gxHgNS4zz7OKWFornO23aAtNE0qT2WeM57lKEtu6inN8Ua3gBnqUIah6mGownQ8Bcxmh0HUmHv8Q0LVGc5uqvOMbmLjHDlRZntrKs32EpAZ1cmJif5ZmN0KYJ8ZSseIx9siEE8zGet0MTyTaRIT7RY/ji0HbVwi4hmXs5tgMU6EULziFaeYGzYOsooQS98dmSNGMq5RjKHKognNgx7kcBE9eRtAH6kUnNcoAD
+ PC6VoXiZ
+ gZxh0AkwbATA2r6MXbxDFkqNQhc0JpN/pEkY6Vmf/fUxJDQcXQ5AEsQYhhfoKQCCBkAgh5QDH5R8GniGQCC7zgMSdizIpIJJnOZIhM3KIRwECgm4CJwAd/xbGMLac6KvRhaSJXRDntsTcZi9x63kSZh9krh6c5Jwk38xnjzLM9SUQkdPQJNS7icJ875KHh1IMd/tjGk5thDsEep57I2ROgTernQXljvOKIh40RRY0Pu4YdFd4woADd6B4zuaatlZOPWPxnQ9mnGZmeNKXa0UyTxOPRmVpnpeisTSXd8zxR/RQ1/3GPS5X2ODL+aaW24Y1I3WPQ9FUHqgcV6RaLI7WLIMqbNKnIM+cnzJ74T0ACuuZCUKIRj/DSrGtFmf7/6mKSthbQgBdhoEJyojKFFCSZMAphdpw22H8xZz+pC+jcsCSfq8YONcaRzmuA8xnG9rQyQ0uPZH8jVIva5l8FvQ5NT2ObuoE0M5+dKmouu9jONJajt4FNGw1KGuBwxkkLc2fPMLtH1V2sZ/3KoWixKlzX5naPvh3bFCsG3H8SVFnOEaLcCFDYg7ZHt8QDZUkHq9HQhtai6fNnaTwLnOBQV35TE6f+YDK/sZq1rHBxzEAuwkxwUsC+e8HITNJyX4qIkyP3dcBB+IqV+9pXJ+wFoUklsxvdFPGf1gnNksD7zvssdqD0RJJFrTpG+Tz0TRd+cHdT2mFRgdY6nnVSRRdK/1zKxFO27fmXilXb3SvVkrvZyUwRN/xinJrpwbg96WptuqYq6ks9y2lwcLOD4iVjOGR17PGVjLPjnF1GPEp2ricTEDfQFPnEnTGxRP/JGsLxprExTu2LzYxhJrPUvEeaH9UgAhi4joSsJPGfeufnzaYoJSEG0u/9VtKViZylgsR0TFRcdOCsybOWOiykfdjIw5um9IWvcWp1Yplh+4QnnlDdHCY1LWYhVzrUSewsJWGq2CYzWDY4HuqqDSo3SdtnpZuGtY1jA9I
+ 2Pu8ypny
+ 1SW9aaihn8lJL0ttmSAjpntaUoaOl56iHDGxT6rqn9/RMc4W6JAfrLWx7RGo/H43dzP9By4hL2ijdeA1SPX452+yk9siqFGdxJvAsRKGrXvP93oPANZyB2UnKJJJfj+A7rxJRWQEFvipkjiXfay2mRsRJM9YND4vUMQ9u/FY845bOxW8a26UeNhzSyMY5NBXNSivzmtVI8U/guWlzVO5dgzoUN2tccau705rm0WY86Jt1mKb71JDr5qbgcQ5rSLhu3q3GPuNxDpCHXfHwPFk1zvGSasoznFuzOKbQttR0Oz6yoVenPiSE+cW7Xt3QRgdkV2dcfMAcPIsjvTYTE03LIfZz6Xx3OdMVORZh6XTxAF68n6H3inzCmAkUJCgR57cxQSLWstgPJAv0iGNwYhSXTOT/8jOBiUdugl/9PWTigX0TmvA0HzQhO0uGuw+Y+pQlnXLJhmG6/ZS29SaBrR5bAuNW27xUrCf5fvZP2hLxkT/8Tyn/TdnKve+9Bfwj+T73m6mS9NWE0SQhAEvaT/3KqwRsJLkmS86vvrX6BKdtoSivQvozy1YELwnJH0MlehGP4sUieQH2Zi+/lDQpIgNAIaIxwANEwARUwAVkQNWxFqRhQA95ina5mgr0P02JLo6hPi5Jj3BhwA8EwRAUwRE0QO97EpARQQ+pCAtkwQMZEAIxkP5rwRUhFBlsEQ2aQQqcFXkBkRGxv0exwQgJwklZiiFskSEcQh0klPzDix+8GiP0/8FCUcJFiREcHBIo7JAXxCAE48IZfC8UobN6QxGsaEGrkZUw5IrKixA0hBWqiRA3nJSFiBlCmUP32gozFBD+EcLFYJU6zEExdEE+bBkivAgy3Ao9lBBARBEt1Ak49EJFwcNHbJFIfBWX8cOycsRIycREnJVLdD9WIbgFwcNNdApQlMRE2cSX2cRRVMR4KZGIoIijAIwGWIwHWiCtGCD+KaayYIyC2MVieghfNKtfFMYN4p+n
+ CCBYpEX8
+ 4SCZUCCMyCBa5AhENIqOeAmH8CawyMVrdImt+EU8SyC3ioj6GaALQkZWkcb6qcaGWJkMiiCPCDBoLAuUmMa4sMZ54Qhe2v+gC3JGffQgt1DHCHAItHgIa7wgkyiRfXS8+EIJ0tMLXsIrdHzInCBGshgIdFSLiNvGA5ugnNALdnQrqngMgbDGmRhHVjFGe0SIdGSgymNJWLxGDEoQCKjHZRwgCbIvwPhI0LPFisSIi+jHhlyKoNSLIuSIC2KJmADKCrIvgoDJc0SZeOQKU3RB/NuLtMgJpLgI/MI3vCCKp/ClaVKIX3KJiOsIlgCnYDIrg1RLb2KJDMG3YoKJigDKbzIJvPKvatKgrhQQolCvtPDFkAjLYwJMeIkJsZTDxgPLa2KJBoi4Yko4PasLokg4lXGgBLlKp8ygkoA8stBLvYrMkPyrvPr/qq/6t7+SiYmYr18yyxzpCPXSJrmCRrv8N4FYlflair+SQ1bpM91ENLBSGd6ES2NiTbVspsVkJsUUq7gIsMZbq4PQH2yazbe0zL/0y7OkIKwMvca8Cr1MuJFoCpi4zZVITrsKS7P8zbKqTcUsxEJkT26Cz9SsTbj0xQeYy9BskAhYr31zxbvoTjvLCUA7RtnUzYTAipngzNxUS7gQpoUYOB0JULMcqwBdCKxAlJO4H0N8P5nozm1SDEfENzvzM8Q4K/2xiJXsJbZCiwwNMP7RJrWKSOAcOExk0Q09jL8aEHwbsKWwM7/ST7ESUQkRKw59pq/qib2qUAWdn70q0Jhh/9KtzLMhPQzZlAnZFFEyzM5CPIuQLEU8g87Ge4mfKAgHsdGkSFAzNVC6TNP//NG6KAgBaopSJFAohQv1VNKROFCEANC+7CuD0NISldAyxU2VoT8CGRQYXVO8GogbmYquoNM8PTBIbdC1PDB5jKBGpFOdsNC87NChuK+7SlP2sggQrQso/S/7ypB8DM+LNIgCO4zu5AkEzSVkkol6Q1Slc
+ IxPxUdpU
+ ogC87MgHdUCy9RSXUvJJAlfhVSnaEoojZlc/TfDSIpGvZ9+E1ZNLTA1PVX8Ilae2M0EyqC7CEWGQFOlGFcMTdREnRlVVdN+u58gjZkkhQs8vdOt9NWSkNdwPP8mnchV+wJVBvqrIzxU9jJXDUqmG828OntUJU1QBqVUhrVXhfMrtexRPt3UjDDXEa3TnOhQhCXV9iLDudBFHbEImRA9TsRVF5XYGO0LULxViuCJGAyLgfQJiuRROh1VQVM0k9UmPrvDRUvWH9VYZp1SXnJXUK1T9mJXENJUQ5ufj+VEboULgp1RRisglC1XNY1UrL1YDCU0IzXXfgNSOn1XPws0stXTTM1KYnVZczTOkrWJmKDKqvRPFp0QMNWmP3umtYrLBZXUUEVQilxQWcWKYsorYMLUfPuriv1JrT0RlKjPTt3bpLBCkmgI47wfosCKuWwKkfjR+lzRNI3Oxjz/XJ7Qi3VpWQfyXAxCiAHT02eq2IijSX07OMXTIKJVx59sXbONSrF61qP1N7ENJo/8H+GVXcCQw5TJUj/toMToUn21IKo4kcG1z8bjzss916xdK8tk075KuMzNTAYF3AMb25/VXTzNXdjV0sLNV7UC02K6igddxEGpCboFypYwEIfAL8bL2b7V3ccLXLUsvWdSGYH4qvlli7isWYtl3IwIirxl0bgIxk4liZZQNJYg4DQUCMJtiYZ4i8/1s68oCAOOVTE04A/u4D8ri3wdvaWo2ABW1M2zGpQACQ3hSxRuC/KtimfqVozIYfFtuEvNr5RoOBjuoAvuCwvuRhQmWS8lukvTY5AOBuGrvVqmEAjGJQyXSIsM/iW4/WEwvbOljdc/LdsVDoyxoAj9IWCdbLwGRlrr7c95YZEDWUE5/pFGYcIOuZAg2ZCEjONF6cEQoWMx1UEd+bMbURf485A87mMVJZBFDgsKLJD6y8IHWWQGsZDlrBEUIWQVtL87dhFKhpdNppBNRuRARhBDns
+ IdqWQEqW
+ NE/mNJieQmdEH+45A/vluAPcVc7sSe1WVoBNNeVuXOBOZhJuZiVhSHKP9UuTXmZYaUuH1E+2TmCCmgaKbmal5maL7CZLbmbebmbvbmbwZnYmbEcCbncjbnc0bndH5jdWbndnbnd4ZnLxzneKbnerbne8ZnZc7nfebnfvZnb57nfxbogSbognaXgDbohFbohWbo+G3oh4boiFboeZaAjKjoDrloD6nojJaAjrborejokM5oFOFokcaIixZpjw6AkV4Qlj7pjz5plU4IlDbpmbbolMZomS7pkXZpnLZpjCbpA+npmA7pl17pml7pmTZplAZpo05qjQZppHbpo+ZpooZpoKZqnV4UpG7pp77pmt7pq3Zqjv5qn1ZqriaUoh5rmfbqCJlqVGlqozb/655W643+aa+u6rgm6qXW65+e6rdWare+arL267F26sM27LYWaqi+a7VubKkW6pRma8Wma8fG67tu7LXGaZYmbMXGa7BO7Msu7Mxe7L7WaLIG7NEWbL3u7NX27L+W7NSW7a8Wa8AqbcwmbZhmaqbO7dd2bco+a942bd1e7M427tzmabNmbZuObdyO6roO7eMebs4O7tvO66x+bp1m6+tGbuuW672W7qcO79r+bMkebbvuavHOaujObuWO7eRG67jeadBubtG2b0Nt6rAO7e9OauFu7fUGbO5Gb7/2adi+6Y8Ob8I27skOatUecKpObweP7vh+bwSvbQHn7+i+beDu/+3HZm/7lu7xBm/LVm/+fnALz2z4HuzDTm1DEW7mpu0In++3ZkQF9275Lmr9du4huW4R524ez/AQT+z3ZnAIl/Ad5/AE3+8dGW+a1mrepu4Ob2vOhuzI7vHtBm+5rvLpFmsFz/Hfxm4pT3AiB/D4Vm0Qt2oNR3ItpO4od24o9+xHGfAXL3EWd/H8jnECd+wWB3I0j+rSVnIpZ2wTH+rLpvO5xnMkH24wX25Bb/AuX3H1rmy+9vOy/u8f5/H
+ 6FnIPr3T
+ 8LhRMh/MZ33MyT/Q4b+kKb2/lXnTyHuz6tnSP1nFTB3Q1X+9UN/NHnPOc5nNFGXPztnJV5+pQ73MjV/TT9v/1Mm/xyibu7g5uGl+XY8ftQt/tQU/rDG/2ZH90ao/wbd/wvp5tbQ/0++72EU/1Xy9yAG/0Xdd1yy70Th/3VY/2wlb3b+dybYf3Yr/xSnd28qbpcafvEcfybO9vfkdsJn93Vi/4Vz/3KU/407byVt9ze/ftNyf4egdu2FZ1ir927Y74jcd2rD5wGD94fAd4+J5rV2d0VCf2KQ94fZ54Ri/uhpf5bG93da94kOf2e9/w/25wPv94mK/5nff3kVf0E7/5dnftXSfyjSb1Ukd4ktf4Yld6Ukd6ojd1BtCNVxd4kFd5ZDd4rS/5re96lSd7lB/0ro/pkIf5pzd1aEf3cj879Vvnd46Pe3Y3e+u++1bB+JN3e49XeFFf+HWXe1lf86yX6MNH/MSPZ6w/FcV3/MeHfIA2/Min/Mq3/Fz/ZvzL1/zN53xZyfzOB/3QF/1E+Xxfd3KtjnTx3vKYbxF6/3QSz/llh3Sc5/odEYDbFwCMuH3dx33e95DdDwDc7/3gz33bL37i533gR/4OUf6MaP4DEf7od/7oP/5EEX7fP2u2j/suz/h7Z/fYJ/oA9/e8l3mjF5DJl/2XJnER7+/tRu3nhvDT5/mqX3fEpnSkj/VJh/WZTwjgBwgBAgcGCCCw4EGDAhAuVMjwocOIBSdSnJgwYsKMDQcSlMiQY0WLDUNCFElSIceOJy+SlDBRAsyYMCu6LFgzwM2bL0/i1Elzp82QMyn6DNozJtCWMpH+bGo0ac+dRQMwULCAqNGi/zlpLmW6NGnNsDidbiUr9KzNrmKB+tS5FitbsGjhjuUJUePdlHn3YhxpVyJelCpNAmY5uOTKlH5JHryouPFCtU9bmp3clefbynXjQuXsdG7nzVDbcnY5tepVqWxldi5bt+3Q10FJP9UaWi1t
+ t3BpZ/2Z
+ k+lm22QlU9QIsi/fwMoXJzbeMXDxjcz/flRM3S7kiscFn5zaWu71l26FBxdPNLNnukKJn7/8vffY01bVH4XNu+xU/EjvrwZOfjRduokmGmvgveXabeGJ5NhI2zm33HEs8RRhgypJiJxgjylYnYaJebSceAJ2t56AuMW24VH0jYhWftd552JasYW1H0moxf/IGnqT1adfgfjNplmBXIkI4Gj+fXagb7Xd9tWLCl4YXXLToYjXk4RZ+WSVGVqHopbPSQeRa8CVR12TXP41I24Dwifkmd2Z+KOBcFZkI2Y3DlUmimuZBqSOfabZHp68yQajkiu+9qaZHmLYZZaIbRcegwtuOeVjUkKpnYUNhTkXnkJ+Bah7iX6WXmh2fkpZknHGV+N8dbqq4nhBDrpngKSKCRquhlqmY6ibGtoppnpZGSViITU6YYWYXlqssoxNqih2lv6aoJrgvYqqXQgKZx+vJ4rKq7V6VssAAyqaS+Kp/8k44H4zoelVtvGC6q6nd8IaIn2IVmvsYgx2uKW/k2L/KW2l0vVbYYfNXlkpdRcWjC+18hLIHravxvqpe+/aq2an2jY1nmoVLaBAuaWaPOqY565KpsSm4qhvrrvde63F10kY6bLODsuvzsgq3LNH0Sp8rKT/HiyvibbtiSChdS4dccUsxjw1zVgVNXLJLv8Waoin7hho01F/qyvNXIuN7Z/BPvqwzxxS2JzADLfNqJQJ050o22SzXGjaZ4erdctU9w141ShjPTbiiSu+OOONO/445JFLPjnllVve+OGXa7455517/jnooYs+OuSZk3466qmrvjrrrbuOOcmvyz477bXbfjvuKJqeO++9+/478MEjvvuZJ5qGcb0nt+lyoSr7/80mqcFRfHeXQTv+6F9VYl+ds3Y/RPT30jZ89NxOil++3Q5+Of7bbtedqZYlqc+v983uPniqKLPrZ9dQS292u9a1vDHhjz43W1/OEpY3t3GHOwVDGPf0s
+ j0PaShLk
+ MmO+xq1wMLQL27mW9jPeGa97K3vgCKEDgPL17YHFoR4g/qaWFrEInh9TGYfM9KomLavWq0JLNMzofVwtrOcLQyDQqTSQtaWxMM0yzAEseASMWgSogERhE1kDvjklywoMQyFNhNWFQnzLOR08XxBw5kL0UMrwiltN8QpUf7+57WUdU1WKdMYDqNltA6e0WBj1GIVcZYdJTaQggeTIs9AYkIqylrNipdyWCOH5pf6XZGSWizawPhySRUCzYpp3FXzCMQnjoFSRDqUGLBI5DyteUtoktqZF5HlvSN+KX1/JCImLcVCLppxiJt8ZC/ntshDbpFSuGRfMS8YMFjucpP/I2sVDJEEymnChzxBYlqOsjW91lVwkh784isLSSFFRnGL23tgLZfoM3LmEop5G6c3LUnCB7EQQsE8TBZJiJIranJD7aMKNGFlvGimMpqBQ1XSyJbQebkLUX1DJyfhJqzoOKeSJVTn/ArpT4zqspwjzOc8EdhJukEylopC4gYNmdJvgYhL/6ST/jaUnzn26XmlApvi/lM4Zo0UnHDjHi/DJ9R/TrB6e4GiA6cDvnem05VmQiJFM2rSD+JNbmxraVQnCtWCwFSgGQsb/xi6P7CKrWPb1Mo2hwjSiJLxiX6M6oIiGE+lHi1SXuzmSJcq0qIyi5FwLdYy+/lF8o0vhMvK/ygRUbgdOi10W2Q9XgHBRVaCZpNqM4MUFjuKzpX+la/aY6JGmZlIkY42g271KbRMO9XCApZgpNWnEzFrWF+qlbBA66o2M5ZWs8m0XreqKZnOelZ02RGXnG1cPjXYUYkqd4Q9fS50eRrSiTrVqCuMZFw/Ytru3VK6fcWuwnArvPGSt7zmPW/qxIve9bK3ve5974bUC9/50re+9vWdfO+r3/3yt7+ey69/AyzgAROYSzBF3k6V5z/KbM15aGVSHW/1xrIiuI6toSkPx1qbgY7IO2tsj4OJW9xVKoW3KhuS1SAG3CWlVXnA0p
+ iLB/i5A0
+ uNU9d0kXDtJc3/nTjDJhNUWv9i9iKv6TTDgtoxyODUI1Ly7cYJNmWLV4xi9UBWxy0TU5OG7MY8/q0yMtyRgitHrpl9+csHdezKfOWritEopu+qobm0TE0pX9PKa1KznHpjTRXTMY5UPqhUzCznGImyyjS8o9N0tedRpuu3fV7x5cZs4Rf6OMwGhTOt8BzKFG/YxB/+zWy2dugj+RaVAPJR88SVGyY/GrLTAk2WlXIeUjPYWit7NZjRxmZO8bqH0Xv0DiOdNSKV2abPe3ODPaNDGX34ZGvu8U1vJKp0qWrNyPZUtbBspyVxhdZ6C8+UCRhoehG6yxyDjbdtvW1fj1rdkLacpGFIaXenCNyuimHTTpn/W4qtmrLpjkpMEUeaZPMtz1spaLbNtMZFM9RIy9Z1yMJEbmCzDJuXFTWCi63KGQ8b0KcMFMxmJcclb5pwY3txZDET8oYDutqizHOEN8Znyh48YgiXE8IX/kJr2zFpNZdsWCmuv4+LLt5M5la3bn5vmMNZ6EPP07z2VupvTzbG1aRjs5duWY2jWcQCnDcby4Nkc58N1UA3d9fLza5Wcs7of/qqqXwdcEDhnD3a9nqR566uxyq0xNROcJCV7Gc2XibWOWS1gtQYbE7LhuATC7f/Ml3kv18a7l+Tu7Ava+zKvrvDlo5zxQddVhIjPl82Nby9PZzw3gJ+y1EOcdWzvkrUQMvYspUOdpk4Tzm3vz73ODYx2nrv9zrPGu9RZ7mIr+VhuzMf+Fb3LdufX/tE0b7lkPZ966WPSuFbP/MF/j74wy9cfq52fPzmPz/622v09LO//e7n3frfL//50/908a8//vOvf8ndf//+/z8Aogi5DCABFqABHiACJqACLiADNqADPiAERqAETiAFVqAFXiAGZqAGbiAHdqAHfqAGBgQAOw==
 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm/include/asm/dma-direct.h         | 18 -------------
->  arch/arm/mach-omap1/include/mach/memory.h | 31 -----------------------
->  arch/arm/mach-omap1/usb.c                 | 22 ++++++++++++++++
->  3 files changed, 22 insertions(+), 49 deletions(-)
-> 
-> diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
-> index 436544aeb83405..77fcb7ee5ec907 100644
-> --- a/arch/arm/include/asm/dma-direct.h
-> +++ b/arch/arm/include/asm/dma-direct.h
-> @@ -9,7 +9,6 @@
->   * functions used internally by the DMA-mapping API to provide DMA
->   * addresses. They must not be used by drivers.
->   */
-> -#ifndef __arch_pfn_to_dma
->  static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
->  {
->  	if (dev && dev->dma_range_map)
-> @@ -34,23 +33,6 @@ static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
->  	return (dma_addr_t)__virt_to_bus((unsigned long)(addr));
->  }
->  
-> -#else
-> -static inline dma_addr_t pfn_to_dma(struct device *dev, unsigned long pfn)
-> -{
-> -	return __arch_pfn_to_dma(dev, pfn);
-> -}
-> -
-> -static inline unsigned long dma_to_pfn(struct device *dev, dma_addr_t addr)
-> -{
-> -	return __arch_dma_to_pfn(dev, addr);
-> -}
-> -
-> -static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
-> -{
-> -	return __arch_virt_to_dma(dev, addr);
-> -}
-> -#endif
-> -
->  static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
->  {
->  	unsigned int offset = paddr & ~PAGE_MASK;
-> diff --git a/arch/arm/mach-omap1/include/mach/memory.h b/arch/arm/mach-omap1/include/mach/memory.h
-> index 1142560e0078f5..36bc0000cb6ab8 100644
-> --- a/arch/arm/mach-omap1/include/mach/memory.h
-> +++ b/arch/arm/mach-omap1/include/mach/memory.h
-> @@ -14,42 +14,11 @@
->   * OMAP-1510 bus address is translated into a Local Bus address if the
->   * OMAP bus type is lbus. We do the address translation based on the
->   * device overriding the defaults used in the dma-mapping API.
-> - * Note that the is_lbus_device() test is not very efficient on 1510
-> - * because of the strncmp().
->   */
-> -#if defined(CONFIG_ARCH_OMAP15XX) && !defined(__ASSEMBLER__)
->  
->  /*
->   * OMAP-1510 Local Bus address offset
->   */
->  #define OMAP1510_LB_OFFSET	UL(0x30000000)
->  
-> -#define virt_to_lbus(x)		((x) - PAGE_OFFSET + OMAP1510_LB_OFFSET)
-> -#define lbus_to_virt(x)		((x) - OMAP1510_LB_OFFSET + PAGE_OFFSET)
-> -#define is_lbus_device(dev)	(cpu_is_omap15xx() && dev && (strncmp(dev_name(dev), "ohci", 4) == 0))
-> -
-> -#define __arch_pfn_to_dma(dev, pfn)	\
-> -	({ dma_addr_t __dma = __pfn_to_phys(pfn); \
-> -	   if (is_lbus_device(dev)) \
-> -		__dma = __dma - PHYS_OFFSET + OMAP1510_LB_OFFSET; \
-> -	   __dma; })
-> -
-> -#define __arch_dma_to_pfn(dev, addr)	\
-> -	({ dma_addr_t __dma = addr;				\
-> -	   if (is_lbus_device(dev))				\
-> -		__dma += PHYS_OFFSET - OMAP1510_LB_OFFSET;	\
-> -	   __phys_to_pfn(__dma);				\
-> -	})
-> -
-> -#define __arch_dma_to_virt(dev, addr)	({ (void *) (is_lbus_device(dev) ? \
-> -						lbus_to_virt(addr) : \
-> -						__phys_to_virt(addr)); })
-> -
-> -#define __arch_virt_to_dma(dev, addr)	({ unsigned long __addr = (unsigned long)(addr); \
-> -					   (dma_addr_t) (is_lbus_device(dev) ? \
-> -						virt_to_lbus(__addr) : \
-> -						__virt_to_phys(__addr)); })
-> -
-> -#endif	/* CONFIG_ARCH_OMAP15XX */
-> -
->  #endif
-> diff --git a/arch/arm/mach-omap1/usb.c b/arch/arm/mach-omap1/usb.c
-> index d8e9bbda8f7bdd..ba8566204ea9f4 100644
-> --- a/arch/arm/mach-omap1/usb.c
-> +++ b/arch/arm/mach-omap1/usb.c
-> @@ -9,6 +9,7 @@
->  #include <linux/kernel.h>
->  #include <linux/init.h>
->  #include <linux/platform_device.h>
-> +#include <linux/dma-mapping.h>
->  #include <linux/io.h>
->  
->  #include <asm/irq.h>
-> @@ -542,6 +543,25 @@ static u32 __init omap1_usb2_init(unsigned nwires, unsigned alt_pingroup)
->  /* ULPD_APLL_CTRL */
->  #define APLL_NDPLL_SWITCH	(1 << 0)
->  
-> +static int omap_1510_usb_ohci_notifier(struct notifier_block *nb,
-> +		unsigned long event, void *data)
-> +{
-> +	struct device *dev = data;
-> +
-> +	if (event != BUS_NOTIFY_ADD_DEVICE)
-> +		return NOTIFY_DONE;
-> +
-> +	if (strncmp(dev_name(dev), "ohci", 4) == 0 &&
-> +	    dma_direct_set_offset(dev, PHYS_OFFSET, OMAP1510_LB_OFFSET,
-> +			(u64)-1))
-> +		WARN_ONCE(1, "failed to set DMA offset\n");
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static struct notifier_block omap_1510_usb_ohci_nb = {
-> +	.notifier_call		= omap_1510_usb_ohci_notifier,
-> +};
-> +
->  static void __init omap_1510_usb_init(struct omap_usb_config *config)
->  {
->  	unsigned int val;
-> @@ -600,6 +620,8 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
->  	if (config->register_host) {
->  		int status;
->  
-> +		bus_register_notifier(&platform_bus_type,
-> +				      &omap_1510_usb_ohci_nb);
->  		ohci_device.dev.platform_data = config;
->  		status = platform_device_register(&ohci_device);
->  		if (status)
-> -- 
-> 2.28.0
-> 
+
+------TWEqkD79PGeN6McdOgWBIk7gBlEajVdbOTB8tKhinv2vhhI2=_d7d8b_--
+
+--===============1200499998443745249==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1200499998443745249==--
