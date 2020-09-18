@@ -1,86 +1,71 @@
-Return-Path: <SRS0=xf59=C2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=+KRR=C3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81845C43465
-	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 23:53:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68654C43465
+	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 01:28:40 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC49620770
-	for <iommu@archiver.kernel.org>; Thu, 17 Sep 2020 23:53:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC49620770
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0A864208C3
+	for <iommu@archiver.kernel.org>; Fri, 18 Sep 2020 01:28:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A864208C3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 94135204AC;
-	Thu, 17 Sep 2020 23:53:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8A7768147B;
+	Fri, 18 Sep 2020 01:28:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1INzenKWTVMe; Thu, 17 Sep 2020 23:53:25 +0000 (UTC)
+	with ESMTP id prG3US4TXEcY; Fri, 18 Sep 2020 01:28:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 509CF20033;
-	Thu, 17 Sep 2020 23:53:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 82D9E81436;
+	Fri, 18 Sep 2020 01:28:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2061DC0888;
-	Thu, 17 Sep 2020 23:53:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1F00C0859
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 23:53:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78231C0888;
+	Fri, 18 Sep 2020 01:28:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71D55C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 01:12:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D4E7D876F3
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 23:53:23 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5AF5A86FB3
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 01:12:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d42xlXmlGhw2 for <iommu@lists.linux-foundation.org>;
- Thu, 17 Sep 2020 23:53:23 +0000 (UTC)
+ with ESMTP id JfnHTBD2cHpA for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Sep 2020 01:12:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 1A16C876CB
- for <iommu@lists.linux-foundation.org>; Thu, 17 Sep 2020 23:53:23 +0000 (UTC)
-IronPort-SDR: QSJ00c74/y82I+C5xIyQiG3kPffqhHeeM3Rq8KUcdEw4ht+bfKyIWk3nUJ/2KAM8D2A2XpHhwZ
- 4Rj8AMmOF4gg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9747"; a="157203993"
-X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; d="scan'208";a="157203993"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Sep 2020 16:53:19 -0700
-IronPort-SDR: Nr+0mGubviR84swXz/m+U+I6g2bFEXpFYPMqMU7WZWTG1kByWVYLJaKP8s9IKEEkHsHSW/00G0
- uzHsiXwh/nQQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,272,1596524400"; d="scan'208";a="332358452"
-Received: from otcwcpicx6.sc.intel.com ([172.25.55.29])
- by fmsmga004.fm.intel.com with ESMTP; 17 Sep 2020 16:53:18 -0700
-Date: Thu, 17 Sep 2020 23:53:17 +0000
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v8 0/9] x86: tag application address space for devices
-Message-ID: <20200917235317.GA443277@otcwcpicx6.sc.intel.com>
-References: <1600187413-163670-1-git-send-email-fenghua.yu@intel.com>
- <20200916080510.GA32552@8bytes.org>
+Received: from huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5789686FAD
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Sep 2020 01:12:38 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+ by Forcepoint Email with ESMTP id CA5C5D147F08C0996032;
+ Fri, 18 Sep 2020 09:12:34 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Fri, 18 Sep 2020
+ 09:12:24 +0800
+From: Yu Kuai <yukuai3@huawei.com>
+To: <m.szyprowski@samsung.com>, <joro@8bytes.org>, <kgene@kernel.org>,
+ <krzk@kernel.org>
+Subject: [PATCH] iommu/exynos: add missing put_device() call in
+ exynos_iommu_of_xlate()
+Date: Fri, 18 Sep 2020 09:13:35 +0800
+Message-ID: <20200918011335.909141-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200916080510.GA32552@8bytes.org>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, Dave Hansen <dave.hansen@intel.com>,
- H Peter Anvin <hpa@zytor.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, Christoph Hellwig <hch@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, David Woodhouse <dwmw2@infradead.org>
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
+X-Mailman-Approved-At: Fri, 18 Sep 2020 01:28:36 +0000
+Cc: linux-samsung-soc@vger.kernel.org, yi.zhang@huawei.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ yukuai3@huawei.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,33 +83,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Joerg,
+if of_find_device_by_node() succeed, exynos_iommu_of_xlate() doesn't have
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling for this function implementation.
 
-On Wed, Sep 16, 2020 at 10:06:02AM +0200, Joerg Roedel wrote:
-> On Tue, Sep 15, 2020 at 09:30:04AM -0700, Fenghua Yu wrote:
-> > Ashok Raj (1):
-> >   Documentation/x86: Add documentation for SVA (Shared Virtual
-> >     Addressing)
-> > 
-> > Fenghua Yu (7):
-> >   drm, iommu: Change type of pasid to u32
-> >   iommu/vt-d: Change flags type to unsigned int in binding mm
-> >   x86/cpufeatures: Enumerate ENQCMD and ENQCMDS instructions
-> >   x86/msr-index: Define IA32_PASID MSR
-> >   mm: Define pasid in mm
-> >   x86/cpufeatures: Mark ENQCMD as disabled when configured out
-> >   x86/mmu: Allocate/free PASID
-> > 
-> > Yu-cheng Yu (1):
-> >   x86/fpu/xstate: Add supervisor PASID state for ENQCMD feature
-> 
-> For the IOMMU bits:
-> 
-> Acked-by: Joerg Roedel <jroedel@suse.de>
+Fixes: aa759fd376fb ("iommu/exynos: Add callback for initializing devices from device tree")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ drivers/iommu/exynos-iommu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Thank you!
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index bad3c0ce10cb..de324b4eedfe 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1295,13 +1295,17 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ 		return -ENODEV;
+ 
+ 	data = platform_get_drvdata(sysmmu);
+-	if (!data)
++	if (!data) {
++		put_device(&sysmmu->dev);
+ 		return -ENODEV;
++	}
+ 
+ 	if (!owner) {
+ 		owner = kzalloc(sizeof(*owner), GFP_KERNEL);
+-		if (!owner)
++		if (!owner) {
++			put_device(&sysmmu->dev);
+ 			return -ENOMEM;
++		}
+ 
+ 		INIT_LIST_HEAD(&owner->controllers);
+ 		mutex_init(&owner->rpm_lock);
+-- 
+2.25.4
 
--Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
