@@ -2,92 +2,74 @@ Return-Path: <SRS0=nwur=C6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36C4C43466
-	for <iommu@archiver.kernel.org>; Mon, 21 Sep 2020 13:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA204C43469
+	for <iommu@archiver.kernel.org>; Mon, 21 Sep 2020 14:01:10 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2202120B1F
-	for <iommu@archiver.kernel.org>; Mon, 21 Sep 2020 13:45:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fZOBPJFG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2202120B1F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 27E5520756
+	for <iommu@archiver.kernel.org>; Mon, 21 Sep 2020 14:01:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27E5520756
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AE25A8725E;
-	Mon, 21 Sep 2020 13:45:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DFA7B8701E;
+	Mon, 21 Sep 2020 14:01:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cUow7clae8gh; Mon, 21 Sep 2020 13:45:04 +0000 (UTC)
+	with ESMTP id FbKjbDplSvfF; Mon, 21 Sep 2020 14:01:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B6F398725D;
-	Mon, 21 Sep 2020 13:45:04 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8208985472;
+	Mon, 21 Sep 2020 14:01:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AAF82C0889;
-	Mon, 21 Sep 2020 13:45:04 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E219C0051
- for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 13:45:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E63AC0889;
+	Mon, 21 Sep 2020 14:01:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18713C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 14:01:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8CB53867C6
- for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 13:45:03 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D04DF204F9
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 14:01:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 96+iVYpbgR5E for <iommu@lists.linux-foundation.org>;
- Mon, 21 Sep 2020 13:45:01 +0000 (UTC)
+ with ESMTP id 7rwsWTQk633V for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Sep 2020 14:01:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com
- [209.85.210.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 41BBB867BC
- for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 13:45:01 +0000 (UTC)
-Received: by mail-ot1-f65.google.com with SMTP id u25so12373927otq.6
- for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 06:45:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:from:date:message-id:subject:to:cc;
- bh=loKQZgFga7UZqbSbnj4ovLLilrOYK2w/uOEdhWo0QRM=;
- b=fZOBPJFGZDQ87HnVlMCfZuU42PyfoXYYhy/YH28hMXXDbyB9AFgj4nZOQan8qZsDPo
- sOtTW2VV3XXwCWlvHa3UoV6Kqs3466q2oHMuek93tq1hZeb1Ka/dgNOzYTFx37WGTqkv
- sheMW6c7QFDPTPeBwRAIN2AODYs+qMztO6kj/OKqsmyXINatr5YnTvIrPlKBOqkLiSbB
- tsRPsOj6rPFphj4sanhbhcpVcG4FlfcDfOIelGxik8adyyEi2FIL7IvGeax4ywWq0/q7
- d/OoEQmIkjDmHmJeK5o6P83jaUCEdgknRoI353Gp7L/dsj2lkGUvkHkiByIJfuSs28k2
- omKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
- bh=loKQZgFga7UZqbSbnj4ovLLilrOYK2w/uOEdhWo0QRM=;
- b=HuWM/EsX1uEqfIZDD+6ZkoiTYQWX1WzysreX1q0+hpBIissGibyUabkbEHGullCAS5
- pmHBP5/oHhQo6XBmPrXR9LxAagaHe23S6m9UPrpDj3UalAg/eSBGcYX1IxhJKNsQaqro
- xely8P3glG5h328hlgO6Cibd4HurQSiNTRHyHxoCb9No3xLvk7UDI1WHKa703s2ENO6U
- y7bS7fw24fl+vchWRBKcMu0pNNkDRSSMZinSAG/IrlbwLkXgMu+zqLRnQhsr8illtoP7
- pNhGz6HVCrd+EnfQSblwAQupcsB4pKmuhtR7CKv+jDgJ+pLShsr+kxb5gYy0O/9aBDtD
- LwoA==
-X-Gm-Message-State: AOAM5315pV78WxKyVJlWrvU6MM49VqiZxQXhsiFps1I9O/Jmk54s5hfp
- t0uYIyurQJ/eYYe+AJFwXBnODR/yPpFbAl/b3I8iRPV4d0uCI+sp
-X-Google-Smtp-Source: ABdhPJxlUx5DCg2D991fKfj9KERXXc7eyIev4G7HPK7E/F/PYaSBCgo3aCh8ZI58Ivy9YqG4WKa/MRBt88vNEv29zuw=
-X-Received: by 2002:a9f:29c5:: with SMTP id s63mr5102469uas.34.1600694451848; 
- Mon, 21 Sep 2020 06:20:51 -0700 (PDT)
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1D50520012
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Sep 2020 14:01:03 +0000 (UTC)
+Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.106])
+ by Forcepoint Email with ESMTP id C85C03125A0D1D39BC16;
+ Mon, 21 Sep 2020 15:01:00 +0100 (IST)
+Received: from [127.0.0.1] (10.210.166.25) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1913.5; Mon, 21 Sep
+ 2020 15:01:00 +0100
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
+To: Will Deacon <will@kernel.org>
+References: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
+ <20200921134324.GK2139@willie-the-truck>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <b13d0858-e164-4670-a5c6-ab84e81724b7@huawei.com>
+Date: Mon, 21 Sep 2020 14:58:10 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
-Date: Mon, 21 Sep 2020 18:50:40 +0530
-Message-ID: <CA+G9fYvuq58q+GsWnzni0sKSHbubuQz-UaK3TASX26V_a7yBVw@mail.gmail.com>
-Subject: arm-smmu 5000000.iommu: Cannot accommodate DMA offset for IOMMU page
- tables
-To: linux-mtd@lists.infradead.org, open list <linux-kernel@vger.kernel.org>, 
- Linux-Next Mailing List <linux-next@vger.kernel.org>,
- lkft-triage@lists.linaro.org, 
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
-Cc: Poonam Aggrwal <poonam.aggrwal@nxp.com>, robh@kernel.org,
- Joerg Roedel <jroedel@suse.de>, Arnd Bergmann <arnd@arndb.de>,
- Richard Weinberger <richard@nod.at>, Miquel Raynal <miquel.raynal@bootlin.com>,
- Suram Suram <suram@nxp.com>, masonccyang@mxic.com.tw, Zhiqiang.Hou@nxp.com
+In-Reply-To: <20200921134324.GK2139@willie-the-truck>
+Content-Language: en-US
+X-Originating-IP: [10.210.166.25]
+X-ClientProxiedBy: lhreml701-chm.china.huawei.com (10.201.108.50) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: maz@kernel.org, linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,204 +82,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-arm64  Freescale Layerscape 2088A RDB Board boot failed with linux-next
-5.9.0-rc5-next-20200921 kernel tag version. The kernel warning and then
-kernel panic happened.
+On 21/09/2020 14:43, Will Deacon wrote:
+> On Fri, Aug 21, 2020 at 09:54:20PM +0800, John Garry wrote:
+>> As mentioned in [0], the CPU may consume many cycles processing
+>> arm_smmu_cmdq_issue_cmdlist(). One issue we find is the cmpxchg() loop to
+>> get space on the queue takes a lot of time once we start getting many
+>> CPUs contending - from experiment, for 64 CPUs contending the cmdq,
+>> success rate is ~ 1 in 12, which is poor, but not totally awful.
+>>
+>> This series removes that cmpxchg() and replaces with an atomic_add,
+>> same as how the actual cmdq deals with maintaining the prod pointer.
+>  > I'm still not a fan of this.
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+:(
 
-metadata:
-  git branch: master
-  git repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git commit: b10b8ad862118bf42c28a98b0f067619aadcfb23
-  git describe: next-20200921
-  make_kernelversion: 5.9.0-rc5
-  kernel-config:
-https://builds.tuxbuild.com/GxPuM0SSznSoSYYG8deYpQ/kernel.config
+> Could you try to adapt the hacks I sent before,
+> please? I know they weren't quite right (I have no hardware to test on), but
+> the basic idea is to fall back to a spinlock if the cmpxchg() fails. The
+> queueing in the spinlock implementation should avoid the contention.
 
+OK, so if you're asking me to try this again, then I can do that, and 
+see what it gives us.
 
-crash log,
+John
 
-[    1.811830] nand: device found, Manufacturer ID: 0x2c, Chip ID: 0x48
-[    1.818202] nand: Micron MT29F16G08ABACAWP
-[    1.822314] nand: 2048 MiB, SLC, erase size: 512 KiB, page size:
-4096, OOB size: 224
-[    1.830078] ------------[ cut here ]------------
-[    1.834703] Driver must set ecc.strength when using hardware ECC
-[    1.840739] WARNING: CPU: 1 PID: 1 at
-drivers/mtd/nand/raw/nand_base.c:5671 nand_scan_with_ids+0x110c/0x1498
-[    1.850568] Modules linked in:
-[    1.853621] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
-5.9.0-rc5-next-20200921 #1
-[    1.861015] Hardware name: Freescale Layerscape 2088A RDB Board (DT)
-[    1.867368] pstate: 40000005 (nZcv daif -PAN -UAO -TCO BTYPE=--)
-[    1.873373] pc : nand_scan_with_ids+0x110c/0x1498
-[    1.878073] lr : nand_scan_with_ids+0x110c/0x1498
-[    1.882774] sp : ffff80001005ba50
-[    1.886083] x29: ffff80001005ba50 x28: 0000000000000000
-[    1.891395] x27: ffff0082edf98638 x26: 0000000000000048
-[    1.896706] x25: 000000000000002c x24: ffff0082edf98578
-[    1.902018] x23: 0000000000000001 x22: ffff0082ee6b0000
-[    1.907329] x21: ffff0082edf98840 x20: 0000000000000000
-[    1.912640] x19: ffff0082edf98080 x18: 0000000000000010
-[    1.917951] x17: 0000000000000010 x16: 00000000833b5ff2
-[    1.923262] x15: ffff0082ee6b0480 x14: ffffffffffffffff
-[    1.928572] x13: ffff80009005b737 x12: ffff80001005b73f
-[    1.933883] x11: ffff80001005ba50 x10: ffff80001005ba50
-[    1.939194] x9 : ffffdc379157bfbc x8 : 657274732e636365
-[    1.944504] x7 : 2074657320747375 x6 : ffffdc37937ba000
-[    1.949815] x5 : ffffdc37937baa58 x4 : ffff80001005b840
-[    1.955125] x3 : 0000000000000000 x2 : ffff0082ee6b0000
-[    1.960436] x1 : 4732f0d38a403700 x0 : 0000000000000000
-[    1.965748] Call trace:
-[    1.968189]  nand_scan_with_ids+0x110c/0x1498
-[    1.972542]  fsl_ifc_nand_probe+0x474/0x6e0
-[    1.976723]  platform_drv_probe+0x5c/0xb0
-[    1.980729]  really_probe+0xf0/0x4d8
-[    1.984300]  driver_probe_device+0xfc/0x168
-[    1.988480]  device_driver_attach+0x7c/0x88
-[    1.992659]  __driver_attach+0xac/0x178
-[    1.996490]  bus_for_each_dev+0x78/0xc8
-[    2.000321]  driver_attach+0x2c/0x38
-[    2.003893]  bus_add_driver+0x14c/0x230
-[    2.007724]  driver_register+0x6c/0x128
-[    2.011555]  __platform_driver_register+0x50/0x60
-[    2.016258]  fsl_ifc_nand_driver_init+0x24/0x30
-[    2.020786]  do_one_initcall+0x4c/0x2d0
-[    2.024560] ata1: SATA link down (SStatus 0 SControl 300)
-[    2.024618]  kernel_init_freeable+0x214/0x280
-[    2.024624]  kernel_init+0x1c/0x120
-[    2.037849]  ret_from_fork+0x10/0x30
-[    2.041420] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
-5.9.0-rc5-next-20200921 #1
-[    2.048815] Hardware name: Freescale Layerscape 2088A RDB Board (DT)
-[    2.055166] Call trace:
-[    2.057606]  dump_backtrace+0x0/0x1e0
-[    2.061263]  show_stack+0x20/0x30
-[    2.064574]  dump_stack+0xf8/0x168
-[    2.067972]  __warn+0xfc/0x178
-[    2.071023]  report_bug+0xfc/0x170
-[    2.074419]  bug_handler+0x28/0x70
-[    2.077816]  call_break_hook+0x70/0x88
-[    2.080559] ata2: SATA link down (SStatus 0 SControl 300)
-[    2.081560]  brk_handler+0x24/0x68
-[    2.081566]  do_debug_exception+0xb8/0x130
-[    2.094442]  el1_sync_handler+0xd8/0x120
-[    2.098360]  el1_sync+0x80/0x100
-[    2.101583]  nand_scan_with_ids+0x110c/0x1498
-[    2.105935]  fsl_ifc_nand_probe+0x474/0x6e0
-[    2.110115]  platform_drv_probe+0x5c/0xb0
-[    2.114120]  really_probe+0xf0/0x4d8
-[    2.117691]  driver_probe_device+0xfc/0x168
-[    2.121871]  device_driver_attach+0x7c/0x88
-[    2.126050]  __driver_attach+0xac/0x178
-[    2.129882]  bus_for_each_dev+0x78/0xc8
-[    2.133714]  driver_attach+0x2c/0x38
-[    2.137284]  bus_add_driver+0x14c/0x230
-[    2.141116]  driver_register+0x6c/0x128
-[    2.144946]  __platform_driver_register+0x50/0x60
-[    2.149647]  fsl_ifc_nand_driver_init+0x24/0x30
-[    2.154173]  do_one_initcall+0x4c/0x2d0
-[    2.158004]  kernel_init_freeable+0x214/0x280
-[    2.162358]  kernel_init+0x1c/0x120
-[    2.165841]  ret_from_fork+0x10/0x30
-[    2.169415] ---[ end trace d051012f465b08eb ]---
-[    2.174073] fsl,ifc-nand: probe of 530000000.nand failed with error -22
-[    2.181882] spi-nor spi0.0: unrecognized JEDEC id bytes: 1c 38 78 e1 e3 c7
-[    2.189409] spi-nor spi1.0: unrecognized JEDEC id bytes: 00 00 00 00 00 00
-[    2.196301] spi-nor: probe of spi1.0 failed with error -2
-[    2.203202] libphy: Fixed MDIO Bus: probed
-[    2.208607] thunder_xcv, ver 1.0
-[    2.211860] thunder_bgx, ver 1.0
-[    2.215114] nicpf, ver 1.0
-[    2.218785] hclge is initializing
-[    2.222141] hns3: Hisilicon Ethernet Network Driver for Hip08
-Family - version
-[    2.229371] hns3: Copyright (c) 2017 Huawei Corporation.
-[    2.234716] e1000: Intel(R) PRO/1000 Network Driver
-[    2.239598] e1000: Copyright (c) 1999-2006 Intel Corporation.
-[    2.245370] e1000e: Intel(R) PRO/1000 Network Driver
-[    2.250338] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-[    2.256403] e1000e 0000:01:00.0: Adding to iommu group 0
-[    2.261733] arm-smmu 5000000.iommu: Cannot accommodate DMA offset
-for IOMMU page tables
-[    2.269752] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000000
-[    2.278544] Mem abort info:
-[    2.281334]   ESR = 0x96000004
-[    2.284389]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    2.289705]   SET = 0, FnV = 0
-[    2.292759]   EA = 0, S1PTW = 0
-[    2.295900] Data abort info:
-[    2.298781]   ISV = 0, ISS = 0x00000004
-[    2.302618]   CM = 0, WnR = 0
-[    2.305581] [0000000000000000] user address but active_mm is swapper
-[    2.311941] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-[    2.317512] Modules linked in:
-[    2.320566] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W
-  5.9.0-rc5-next-20200921 #1
-[    2.329352] Hardware name: Freescale Layerscape 2088A RDB Board (DT)
-[    2.335705] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-[    2.341715] pc : arm_smmu_flush_iotlb_all+0x28/0x90
-[    2.346590] lr : iommu_create_device_direct_mappings.isra.0+0x1f0/0x218
-[    2.353203] sp : ffff80001005b9b0
-[    2.356511] x29: ffff80001005b9b0 x28: 0000000000000000
-[    2.361822] x27: ffffdc3792e904e0 x26: ffff80001005ba48
-[    2.367134] x25: ffff0082ee6b0000 x24: ffff0082ed88e0a8
-[    2.372445] x23: 00000000fffffff4 x22: 0000000000001000
-[    2.377755] x21: ffff80001005ba48 x20: 0000000000000000
-[    2.383066] x19: ffff0082cceeeb58 x18: 0000000000000010
-[    2.388377] x17: 0000000000000000 x16: 00000000833b5ff2
-[    2.393688] x15: ffff0082ee6b0480 x14: 203a756d6d6f692e
-[    2.398999] x13: 3030303030303520 x12: 61646f6d6d6f6363
-[    2.404311] x11: 6120746f6e6e6143 x10: 6f66207465736666
-[    2.409622] x9 : ffffdc3791d31078 x8 : ffff0082ed8ffd00
-[    2.414933] x7 : 0000000000000000 x6 : 000000000000003f
-[    2.420244] x5 : 0000000000000040 x4 : ffff80001005b970
-[    2.425554] x3 : 0000000000000000 x2 : 0000000000000000
-[    2.430865] x1 : ffffdc37927dd2f0 x0 : ffff0082cceeeb58
-[    2.436176] Call trace:
-[    2.438618]  arm_smmu_flush_iotlb_all+0x28/0x90
-[    2.443144]  iommu_create_device_direct_mappings.isra.0+0x1f0/0x218
-[    2.449409]  iommu_probe_device+0x6c/0x120
-[    2.453501]  of_iommu_configure+0x134/0x218
-[    2.457683]  of_dma_configure_id+0x110/0x2e8
-[    2.461950]  pci_dma_configure+0x4c/0xd8
-[    2.465870]  really_probe+0xac/0x4d8
-[    2.469441]  driver_probe_device+0xfc/0x168
-[    2.473620]  device_driver_attach+0x7c/0x88
-[    2.477799]  __driver_attach+0xac/0x178
-[    2.481631]  bus_for_each_dev+0x78/0xc8
-[    2.485463]  driver_attach+0x2c/0x38
-[    2.489033]  bus_add_driver+0x14c/0x230
-[    2.492865]  driver_register+0x6c/0x128
-[    2.496696]  __pci_register_driver+0x4c/0x58
-[    2.500964]  e1000_init_module+0x44/0x50
-[    2.504882]  do_one_initcall+0x4c/0x2d0
-[    2.508714]  kernel_init_freeable+0x214/0x280
-[    2.513068]  kernel_init+0x1c/0x120
-[    2.516552]  ret_from_fork+0x10/0x30
-[    2.520124] Code: 910003fd a90153f3 aa0003f3 f85a8014 (f9400280)
-[    2.526224] ---[ end trace d051012f465b08ec ]---
-[    2.530848] Kernel panic - not syncing: Attempted to kill init!
-exitcode=0x0000000b
-[    2.538506] SMP: stopping secondary CPUs
-[    2.542431] Kernel Offset: 0x5c3781480000 from 0xffff800010000000
-[    2.548521] PHYS_OFFSET: 0xffffdb6ac0000000
-[    2.552700] CPU features: 0x0240022,21806008
-[    2.556965] Memory Limit: none
-
-full test log,
-https://lavalab.nxp.com/scheduler/job/86650#L849
-
--- 
-Linaro LKFT
-https://lkft.linaro.org
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
