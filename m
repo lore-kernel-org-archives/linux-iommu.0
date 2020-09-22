@@ -2,84 +2,95 @@ Return-Path: <SRS0=CZ1O=C7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8A3C4727C
-	for <iommu@archiver.kernel.org>; Tue, 22 Sep 2020 20:22:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD50C2D0E2
+	for <iommu@archiver.kernel.org>; Tue, 22 Sep 2020 21:13:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D5DD12220D
-	for <iommu@archiver.kernel.org>; Tue, 22 Sep 2020 20:22:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5DD12220D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4C99420715
+	for <iommu@archiver.kernel.org>; Tue, 22 Sep 2020 21:13:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="Eo9od3Yg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C99420715
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5A2FE22D33;
-	Tue, 22 Sep 2020 20:22:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DD0F587066;
+	Tue, 22 Sep 2020 21:13:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8fRGmwyaEAGL; Tue, 22 Sep 2020 20:22:17 +0000 (UTC)
+	with ESMTP id ia6+jZEvW5XK; Tue, 22 Sep 2020 21:13:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2F196228CA;
-	Tue, 22 Sep 2020 20:22:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E958F8704F;
+	Tue, 22 Sep 2020 21:13:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01761C0891;
-	Tue, 22 Sep 2020 20:22:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67D28C0889
- for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 20:22:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0957C0889;
+	Tue, 22 Sep 2020 21:13:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05398C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 21:13:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3F2B0228F1
- for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 20:22:16 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id DDBDA86709
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 21:13:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BprmprLyBnfA for <iommu@lists.linux-foundation.org>;
- Tue, 22 Sep 2020 20:22:08 +0000 (UTC)
+ with ESMTP id 4DMF2J90TPjG for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Sep 2020 21:13:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by silver.osuosl.org (Postfix) with ESMTPS id 2281C228CA
- for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 20:22:08 +0000 (UTC)
-IronPort-SDR: nE5sZ62rbSAFuxoRe/96Oz3SavwUmNmUgO43R65amzyMRVUHTPpMuWBvJDKYoJt71ihvE+1LBt
- /JouqjcOwmjw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9752"; a="222295019"
-X-IronPort-AV: E=Sophos;i="5.77,291,1596524400"; d="scan'208";a="222295019"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Sep 2020 13:22:07 -0700
-IronPort-SDR: 8CxwxhWgoL4Wn/YAMFmwoR54aP+Ht5jSCTlmmo9xGJ9mHUqC7zXk1hIDa44dNUPY85rDkB/xCt
- jmWVuCIQi6Sw==
-X-IronPort-AV: E=Sophos;i="5.77,291,1596524400"; d="scan'208";a="382436019"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Sep 2020 13:22:07 -0700
-Date: Tue, 22 Sep 2020 13:24:12 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v9 3/7] iommu/uapi: Introduce enum type for PASID data
- format
-Message-ID: <20200922132412.614d4461@jacob-builder>
-In-Reply-To: <20200918101108.672c2f5a@jacob-builder>
-References: <1599861476-53416-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1599861476-53416-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20200918094450.GP31590@8bytes.org>
- <20200918101108.672c2f5a@jacob-builder>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 97F85866F4
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Sep 2020 21:13:05 +0000 (UTC)
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B5f6a68b20000>; Tue, 22 Sep 2020 14:12:18 -0700
+Received: from [10.20.170.18] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 22 Sep
+ 2020 21:12:54 +0000
+Date: Tue, 22 Sep 2020 16:12:49 -0500
+From: Alex Goins <agoins@nvidia.com>
+X-X-Sender: agoins@agoins-DiGiTS
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v5 05/38] drm: prime: use sgtable iterators in
+ drm_prime_sg_to_page_addr_arrays()
+In-Reply-To: <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
+Message-ID: <alpine.DEB.2.20.2009221610450.27953@agoins-DiGiTS>
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <20200513133245.6408-1-m.szyprowski@samsung.com>
+ <CGME20200513133259eucas1p273f0e05005b7b1158d884295d35745fd@eucas1p2.samsung.com>
+ <20200513133245.6408-5-m.szyprowski@samsung.com>
+ <alpine.DEB.2.20.2009211803580.19454@agoins-DiGiTS>
+ <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Jacob Pan <jacob.pan.linux@gmail.com>,
- Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>, Wu Hao <hao.wu@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Yi Sun <yi.y.sun@intel.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1600809138; bh=eDw/Y+WvGisaFJLGeLDL1cgx4wGsvRwxMR3w6+tFJgE=;
+ h=Date:From:X-X-Sender:To:CC:Subject:In-Reply-To:Message-ID:
+ References:User-Agent:X-NVConfidentiality:MIME-Version:
+ Content-Type:X-Originating-IP:X-ClientProxiedBy;
+ b=Eo9od3YgFzrokUrlC+GkylUgaEM6H3/JoZ8VAsxxdIl9L1k7fmfTTeaMtcSVONyNe
+ ugVp5jMHoqMBBnEgkhlJLszfUZYtSl8RQ5G3uRlXt7zoCgIY/0h6XX4FNuiH8Kb0S7
+ WyRCcKI/bgFvn3zgzEfYD2tAqDxNiPDV/Dq3tjbte0g6Nhf4/YhF6akfbfcy/Styf4
+ bUNbi2Zb7AFaWAuZBIsbRGocbT6iAy6lQbVA6v2eMw6KTlEKdB+PzvydytW5YeufYd
+ t70q9gBMMRUD1C9tRuLLmMiYDa1OQo3J792HaY7U0hejkWFXmjlraDz1/kB/W6H1mV
+ 4/CT5hDoP5xiQ==
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ iommu@lists.linux-foundation.org, Thomas
+ Zimmermann <tzimmermann@suse.de>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,109 +108,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg,
+Hi Marek,
 
-I sent out v10 with Randy's comments addressed but I didn't change this
-patch. Does my explanation below make sense? I am hoping to make it in
-v5.10 since many other pieces depend on it, your guidance is much
-appreciated.
+On Tue, 22 Sep 2020, Marek Szyprowski wrote:
 
-Jacob
+> External email: Use caution opening links or attachments
+> 
+> 
+> Hi Alex,
+> 
+> On 22.09.2020 01:15, Alex Goins wrote:
+> > Tested-by: Alex Goins <agoins@nvidia.com>
+> >
+> > This change fixes a regression with drm_prime_sg_to_page_addr_arrays() and
+> > AMDGPU in v5.9.
+> 
+> Thanks for testing!
+> 
+> > Commit 39913934 similarly revamped AMDGPU to use sgtable helper functions. When
+> > it changed from dma_map_sg_attrs() to dma_map_sgtable(), as a side effect it
+> > started correctly updating sgt->nents to the return value of dma_map_sg_attrs().
+> > However, drm_prime_sg_to_page_addr_arrays() incorrectly uses sgt->nents to
+> > iterate over pages, rather than sgt->orig_nents, resulting in it now returning
+> > the incorrect number of pages on AMDGPU.
+> >
+> > I had written a patch that changes drm_prime_sg_to_page_addr_arrays() to use
+> > for_each_sgtable_sg() instead of for_each_sg(), iterating using sgt->orig_nents:
+> >
+> > -       for_each_sg(sgt->sgl, sg, sgt->nents, count) {
+> > +       for_each_sgtable_sg(sgt, sg, count) {
+> >
+> > This patch takes it further, but still has the effect of fixing the number of
+> > pages that drm_prime_sg_to_page_addr_arrays() returns. Something like this
+> > should be included in v5.9 to prevent a regression with AMDGPU.
+> 
+> Probably the easiest way to handle a fix for v5.9 would be to simply
+> merge the latest version of this patch also to v5.9-rcX:
+> https://lore.kernel.org/dri-devel/20200904131711.12950-3-m.szyprowski@samsung.com/
 
+Tested-by: Alex Goins <agoins@nvidia.com> that version too.
 
-On Fri, 18 Sep 2020 10:11:08 -0700, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
+> 
+> This way we would get it fixed and avoid possible conflict in the -next.
 
-> Hi Joerg,
-> 
-> On Fri, 18 Sep 2020 11:44:50 +0200, Joerg Roedel <joro@8bytes.org> wrote:
-> 
-> > On Fri, Sep 11, 2020 at 02:57:52PM -0700, Jacob Pan wrote:  
-> > > There can be multiple vendor-specific PASID data formats used in UAPI
-> > > structures. This patch adds enum type with a last entry which makes
-> > > range checking much easier.    
-> > 
-> > But it also makes it much easier to screw up the numbers (which are ABI)
-> > by inserting a new value into the middle. I prefer defines here, or
-> > alternativly BUILD_BUG_ON() checks for the numbers.
-> >   
-> I am not following, the purpose of IOMMU_PASID_FORMAT_LAST *is* for
-> preparing the future insertion of new value into the middle.
-> The checking against IOMMU_PASID_FORMAT_LAST is to protect ABI
-> compatibility by making sure that out of range format are rejected in all
-> versions of the ABI.
-> For example, in v5.10, ABI has IOMMU_PASID_FORMAT_LAST = 2, then user data
-> with format = 2 will be rejected. So this user app will not work or
-> released.
-> 
-> Now say in v5.11, we add one more format in the middle and set
-> IOMMU_PASID_FORMAT_LAST = 3. Then user data with the new format = 2 can
-> be supported.
-> 
-> Without the checking for IOMMU_PASID_FORMAT_LAST, at v5.10 time the user
-> binary may succeed and become legacy binary that we cannot break in v5.11.
-> This renders format = 2 unusable for v5.11.
-> 
-> I thought enum makes it less susceptible to programming errors than
-> defines by making sure the ascending order. I might have missed your
-> point, could you elaborate?
-> 
-> > Regards,
-> > 
-> > 	Joerg
-> >   
-> > > 
-> > > Suggested-by: Alex Williamson <alex.williamson@redhat.com>
-> > > Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > ---
-> > >  include/uapi/linux/iommu.h | 8 ++++++--
-> > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> > > index b42acc8fe007..7cc6ee6c41f7 100644
-> > > --- a/include/uapi/linux/iommu.h
-> > > +++ b/include/uapi/linux/iommu.h
-> > > @@ -298,11 +298,16 @@ struct iommu_gpasid_bind_data_vtd {
-> > >  					 IOMMU_SVA_VTD_GPASID_PCD |
-> > > \ IOMMU_SVA_VTD_GPASID_PWT)
-> > >  
-> > > +enum iommu_pasid_data_format {
-> > > +	IOMMU_PASID_FORMAT_INTEL_VTD = 1,
-> > > +	IOMMU_PASID_FORMAT_LAST,
-> > > +};
-> > > +
-> > >  /**
-> > >   * struct iommu_gpasid_bind_data - Information about device and guest
-> > > PASID binding
-> > >   * @argsz:	User filled size of this data
-> > >   * @version:	Version of this data structure
-> > > - * @format:	PASID table entry format
-> > > + * @format:	PASID table entry format of enum
-> > > iommu_pasid_data_format type
-> > >   * @flags:	Additional information on guest bind request
-> > >   * @gpgd:	Guest page directory base of the guest mm to bind
-> > >   * @hpasid:	Process address space ID used for the guest mm in
-> > > host IOMMU @@ -321,7 +326,6 @@ struct iommu_gpasid_bind_data {
-> > >  	__u32 argsz;
-> > >  #define IOMMU_GPASID_BIND_VERSION_1	1
-> > >  	__u32 version;
-> > > -#define IOMMU_PASID_FORMAT_INTEL_VTD	1
-> > >  	__u32 format;
-> > >  	__u32 addr_width;
-> > >  #define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid */
-> > > -- 
-> > > 2.7.4    
-> 
-> 
-> Thanks,
-> 
-> Jacob
+> Do you have any AMDGPU fixes for v5.9 in the queue? Maybe you can add that
+> patch to the queue? 
 
+I don't have any more AMDGPU fixes, just want to ensure that this makes it in.
 
 Thanks,
+Alex
 
-Jacob
+> Dave: would it be okay that way?
+> 
+> Best regards
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
