@@ -6,59 +6,63 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63664C4346E
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:09:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D9DC2D0E2
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:21:38 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E6263206FB
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:09:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E6263206FB
+	by mail.kernel.org (Postfix) with ESMTPS id 4C268212CC
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:21:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C268212CC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7AEB886A10;
-	Thu, 24 Sep 2020 09:09:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F151286B3B;
+	Thu, 24 Sep 2020 09:21:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1z0yQSVWSlLU; Thu, 24 Sep 2020 09:09:03 +0000 (UTC)
+	with ESMTP id EF5OO65hUFxT; Thu, 24 Sep 2020 09:21:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1E4A6869F4;
-	Thu, 24 Sep 2020 09:09:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2EAD086B9D;
+	Thu, 24 Sep 2020 09:21:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01A99C0889;
-	Thu, 24 Sep 2020 09:09:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 070A8C1AD6;
+	Thu, 24 Sep 2020 09:21:36 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 740F8C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:09:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42B6BC0051;
+ Thu, 24 Sep 2020 09:21:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 4CAA127E4C
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:09:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 268FF20467;
+ Thu, 24 Sep 2020 09:21:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gfDovfFuy85q for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 09:09:00 +0000 (UTC)
+ with ESMTP id BhpL0hEc93by; Thu, 24 Sep 2020 09:21:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id A82682045D
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:09:00 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 484312045D;
+ Thu, 24 Sep 2020 09:21:33 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id C04143D1; Thu, 24 Sep 2020 11:08:58 +0200 (CEST)
-Date: Thu, 24 Sep 2020 11:08:57 +0200
+ id DB01A295; Thu, 24 Sep 2020 11:21:30 +0200 (CEST)
+Date: Thu, 24 Sep 2020 11:21:29 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH] Revert "iommu/amd: Treat per-device exclusion ranges as
- r/w unity-mapped regions"
-Message-ID: <20200924090857.GG27174@8bytes.org>
-References: <20200923022655.750-1-bhe@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
+Message-ID: <20200924092129.GH27174@8bytes.org>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
+ <20200924045958-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200923022655.750-1-bhe@redhat.com>
+In-Reply-To: <20200924045958-mutt-send-email-mst@kernel.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, ahuang12@lenovo.com,
- linux-kernel@vger.kernel.org
+Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, linux-pci@vger.kernel.org,
+ jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
+ bhelgaas@google.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,28 +80,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 23, 2020 at 10:26:55AM +0800, Baoquan He wrote:
-> A regression failure of kdump kernel boot was reported on a HPE system.
-> Bisect points at commit 387caf0b759ac43 ("iommu/amd: Treat per-device
-> exclusion ranges as r/w unity-mapped regions") as criminal. Reverting it
-> fix the failure.
-> 
-> With the commit, kdump kernel will always print below error message, then
-> naturally AMD iommu can't function normally during kdump kernel bootup.
-> 
->   ~~~~~~~~~
->   AMD-Vi: [Firmware Bug]: IVRS invalid checksum
-> 
-> Why commit 387caf0b759ac43 causing it haven't been made clear.
+On Thu, Sep 24, 2020 at 05:00:35AM -0400, Michael S. Tsirkin wrote:
+> OK so this looks good. Can you pls repost with the minor tweak
+> suggested and all acks included, and I will queue this?
 
-I think this should be debugged further, in future IOMMUs the exclusion
-range feature will not be available anymore (mmio-fields get re-used for
-SNP). So starting to use them again is not going to work.
+My NACK still stands, as long as a few questions are open:
+
+	1) The format used here will be the same as in the ACPI table? I
+	   think the answer to this questions must be Yes, so this leads
+	   to the real question:
+	   
+	2) Has the ACPI table format stabalized already? If and only if
+	   the answer is Yes I will Ack these patches. We don't need to
+	   wait until the ACPI table format is published in a
+	   specification update, but at least some certainty that it
+	   will not change in incompatible ways anymore is needed.
+
+So what progress has been made with the ACPI table specification, is it
+just a matter of time to get it approved or are there concerns?
 
 Regards,
 
 	Joerg
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
