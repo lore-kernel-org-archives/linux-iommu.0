@@ -2,76 +2,106 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C898C4363D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:09:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1537C4363D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:14:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 970AB221EB
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:09:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2D5A2221EB
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:14:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="gq8l0jHF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 970AB221EB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ff/CN0yz"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D5A2221EB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1E2B386A14;
-	Thu, 24 Sep 2020 14:09:02 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A588F2DE2A;
+	Thu, 24 Sep 2020 14:14:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jajaDEzOEhFG; Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
+	with ESMTP id 9wmyy40yrWvx; Thu, 24 Sep 2020 14:14:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 80A9184D2E;
-	Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 80FCD2E104;
+	Thu, 24 Sep 2020 14:14:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 55941C0889;
-	Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42C2CC0859;
+	Thu, 24 Sep 2020 14:14:34 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37B6CC0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25CC8C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:14:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2665B85725
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:59 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1A76E86B15
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:14:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4U6dip9zP68G for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 14:08:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D1BDA84FBB
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:Date:Cc:To:
- From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=qUkinNTJpuQCd3BkAo9TSZAt85sai4eMgq79ZDgCZBw=; b=gq8l0jHFt1aWIwETbBNHpPVPdp
- OKdnESxvWWVLrcziud5ktHgTg/9Mn3HvOuFx9CGeKxEFI/IbBnYvMGsJQhU1+BWisXxoqXVoSk/DK
- hNDVzwemAFx03j6BanGOiYWfpwhnsTBXY+5Iu0ISqQp6k9C2T6QPqhWKVbPVqZ3ynVpNf1ezzR7fP
- z1GWb/J5xVYDmwChPyIsz9jZShi8RAigATbgZh7H4OiYxCYf4KZ8Qh0zurvIGl/NiDSWEUliFfmIP
- HRSVFiuOBkzg7PV1YtlTtxBVGwnxqz/bV3pz/BCSmxpM6oFWkt5r8/6lvHdjNSn2K775gdplxvFFV
- 7HyQ1Lxg==;
-Received: from 54-240-197-236.amazon.com ([54.240.197.236]
- helo=freeip.amazon.com)
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kLRvQ-0002zZ-B7; Thu, 24 Sep 2020 14:08:44 +0000
-Message-ID: <549928db2de6532117f36c9c810373c14cf76f51.camel@infradead.org>
-Subject: [PATCH] iommu/vt-d: gracefully handle DMAR units with no supported
- address widths
-From: David Woodhouse <dwmw2@infradead.org>
-To: Joerg Roedel <joro@8bytes.org>
-Date: Thu, 24 Sep 2020 15:08:42 +0100
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu <iommu@lists.linux-foundation.org>
+ with ESMTP id Db3pGjBKHgcw for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 14:14:32 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0CE5986A6F
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:14:32 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id e16so4039886wrm.2
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 07:14:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:sender:from:date:message-id
+ :subject:to:cc;
+ bh=oKmEvP0fvH/MtuuMfd1/7oF0tm9aotVrqabNoBoq5kU=;
+ b=Ff/CN0yzxu8BrvNMeqciq+FVYYVX2FOGfPQXwTLGfe0lQrivZ0ncLZjnJELMlFDvqr
+ 3L6kB8fT+Wb+X8vLs55KlIIyhJ3dJFr3Rj2DnyYz3Q20kFR5i2oziSiprcCaKqEXGFPy
+ DCbOu9gcA3McuJjQY1+gmJb7WWf5qodLH1cN7EwBuRzkAnnvzXy6Tg66FHUh+prLRl22
+ WU5UApmatapBNDHAADap1oxiGIPFpwFCnfz3pw3oFzr7izxHT1er/bWd7jQIB2frcuzi
+ +b+RQNwSPaHQNlYq5+CxZ6HhbA9rDNzQNN7uVUnOWZ1j8rmwXx0L+XdP6pWlMFgk+gEj
+ eXVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:sender:from
+ :date:message-id:subject:to:cc;
+ bh=oKmEvP0fvH/MtuuMfd1/7oF0tm9aotVrqabNoBoq5kU=;
+ b=OXRCPyIvNOSvi3f3Rgq2CA/Y2bf/FKQkfQiWW6B5s7ADtFqQXRpwAf0BUsQSotXSpc
+ XpztD7HTmK+l3xCPPNel6psHDH9DAW3fGEMFKXIqpogGpwbShlJF3LLNTf9od9rcE71M
+ N43VpPe3HtGnaMM5TLyoJsbAjVnLckBmJOB6TkN47Tu/LKuUMUTumLv9xVfnJsQaltH5
+ a8N4wj/0mqee3zt5PJKSLDEkI/uDybfKuu9oASdjbIdxXrX90XOxCIlrBSQ5Bl958Ogr
+ 6vPbgQYJPKiaCbJThO6Snh44h5ugmHzT9oI93nKG1oicUvzO5T4XV46fG8NMY3k/ZBWi
+ x95A==
+X-Gm-Message-State: AOAM5325gm/348YtAPM5gNPTfHvEXOfdT2N0B16rJDWwNoNKfvbFsycw
+ z+W8Uri/mBaJzNd41dj6FLTzY+6D9DU+qEUvkA0=
+X-Google-Smtp-Source: ABdhPJyNTqcd3aVlW3iItxA8DlolxWBS2LKF38N3Kl4q4kAwUYPjAmtzBpIhGbYdl5I4ht9nYkAIBiX3VLg1AotBuhw=
+X-Received: by 2002:a5d:5261:: with SMTP id l1mr5339778wrc.193.1600956870566; 
+ Thu, 24 Sep 2020 07:14:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAEC9eQOX9BHX4v5aY2cfCT=T-ZHA7y0xF7aiZhW9xzG4fme36Q@mail.gmail.com>
+ <CAEC9eQPaeF9=Li74x9RrSHyDgRZ6b653yBRu6EYsaU+eSj2wsQ@mail.gmail.com>
+ <59cda41f-170c-a1ad-a345-bc38b9ed4d73@arm.com>
+ <CGME20200424161534eucas1p29177cad5b4790d392acb69a335a3992e@eucas1p2.samsung.com>
+ <CAOD6ATrWYLPT0ydz2vFhNwWhqHum_q_pyCe=oGJWOcEqjmNOqQ@mail.gmail.com>
+ <11584d09-5995-6133-3bd3-8f7a0afd0e01@samsung.com>
+ <20200924082830.GB27174@8bytes.org>
+ <37e767b8-8ec4-ae80-ea0d-1caf3cdab8fa@samsung.com>
+ <20200924101640.GE2483160@ulmo>
+ <bff57cbe-2247-05e1-9059-d9c66d64c407@arm.com>
+ <832be601-c016-70b7-2b59-5f4915c53f85@samsung.com>
+ <46f10f99-5da5-257a-4a02-984ff8ed8c6f@arm.com>
+In-Reply-To: <46f10f99-5da5-257a-4a02-984ff8ed8c6f@arm.com>
+X-Google-Sender-Delegation: ameersk@gmail.com
+From: Shaik Ameer Basha <shaik.samsung@gmail.com>
+Date: Thu, 24 Sep 2020 19:44:19 +0530
+X-Google-Sender-Auth: HhYDNEdiSEFakz822RU-QAajhv0
+Message-ID: <CAOD6ATp2g7JMvACzF+30EcdGygRNGxwTa-3VkGWuanaWPAdt2w@mail.gmail.com>
+Subject: Re: IOVA allocation dependency between firmware buffer and remaining
+ buffers
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: jean-philippe@linaro.org, Shaik Ameer Basha <shaik.ameer@samsung.com>,
+ linux-mm@kvack.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Ajay kumar <ajaynumb@gmail.com>,
+ will@kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,224 +114,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8162715939987933589=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============8162715939987933589==
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-/OIm2ioxsVwGHUNdEQ+l"
+Hi Robin and Marek,
 
 
---=-/OIm2ioxsVwGHUNdEQ+l
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, Sep 24, 2020 at 4:36 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2020-09-24 11:47, Marek Szyprowski wrote:
+> > Hi Robin,
+> >
+> > On 24.09.2020 12:40, Robin Murphy wrote:
+> >> On 2020-09-24 11:16, Thierry Reding wrote:
+> >>> On Thu, Sep 24, 2020 at 10:46:46AM +0200, Marek Szyprowski wrote:
+> >>>> On 24.09.2020 10:28, Joerg Roedel wrote:
+> >>>>> On Wed, Sep 23, 2020 at 08:48:26AM +0200, Marek Szyprowski wrote:
+> >>>>>> It allows to remap given buffer at the specific IOVA address,
+> >>>>>> although
+> >>>>>> it doesn't guarantee that those specific addresses won't be later
+> >>>>>> used
+> >>>>>> by the IOVA allocator. Probably it would make sense to add an API for
+> >>>>>> generic IOMMU-DMA framework to mark the given IOVA range as
+> >>>>>> reserved/unused to protect them.
+> >>>>> There is an API for that, the IOMMU driver can return IOVA reserved
+> >>>>> regions per device and the IOMMU core code will take care of mapping
+> >>>>> these regions and reserving them in the IOVA allocator, so that
+> >>>>> DMA-IOMMU code will not use it for allocations.
+> >>>>>
+> >>>>> Have a look at the iommu_ops->get_resv_regions() and
+> >>>>> iommu_ops->put_resv_regions().
+> >>>>
+> >>>> I know about the reserved regions IOMMU API, but the main problem here,
+> >>>> in case of Exynos, is that those reserved regions won't be created by
+> >>>> the IOMMU driver but by the IOMMU client device. It is just a result
+> >>>> how
+> >>>> the media drivers manages their IOVA space. They simply have to load
+> >>>> firmware at the IOVA address lower than the any address of the used
+> >>>> buffers.
+> >>>
+> >>> I've been working on adding a way to automatically add direct mappings
+> >>> using reserved-memory regions parsed from device tree, see:
+> >>>
+> >>> https://lore.kernel.org/lkml/20200904130000.691933-1-thierry.reding@gmail.com/
+> >>>
+> >>> Perhaps this can be of use? With that you should be able to add a
+> >>> reserved-memory region somewhere in the lower range that you need for
+> >>> firmware images and have that automatically added as a direct mapping
+> >>> so that it won't be reused later on for dynamic allocations.
+> >>
+> >> It can't easily be a *direct* mapping though - if the driver has to
+> >> use the DMA masks to ensure that everything stays within the
+> >> addressable range, then (as far as I'm aware) there's no physical
+> >> memory that low down to equal the DMA addresses.
+> >>
+> >> TBH I'm not convinced that this is a sufficiently common concern to
+> >> justify new APIs, or even to try to make overly generic. I think just
+> >> implementing a new DMA attribute to say "please allocate/map this
+> >> particular request at the lowest DMA address possible" would be good
+> >> enough. Such a thing could also serve PCI drivers that actually care
+> >> about SAC/DAC to give us more of a chance of removing the "try a
+> >> 32-bit mask first" trick from everyone's hotpath...
+> >
+> > Hmm, I like the idea of such DMA attribute! It should make things really
+> > simple, especially in the drivers. Thanks for the great idea! I will try
+> > to implement it then instead of the workarounds I've proposed in
+> > s5p-mfc/exynos4-is drivers.
+>
+> Right, I think it's fair to draw a line and say that anyone who wants a
+> *specific* address needs to manage their own IOMMU domain.
+>
+> In the backend I suspect it's going to be cleanest to implement a
+> dedicated iova_alloc_low() (or similar) function in the IOVA API that
+> sidesteps all of the existing allocation paths and goes straight to the
+> rbtree.
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+This is the place we started with..
 
-Instead of bailing out completely, such a unit can still be used for
-interrupt remapping.
+But our solution was to provide an API which limits the allocation
+range per device (dynamically) based on the driver request..
+Something like,
+    limit_iova_alloc_range(dev, low_iova, high_iova); /* via helpers */
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
----
- drivers/iommu/intel/dmar.c | 46 +++++++++++++++++++++++++-------------
- 1 file changed, 31 insertions(+), 15 deletions(-)
+When multiple devices use the same IOVA space, how we can handle api's
+like " iova_alloc_low()" ?
+And providing APIs like " limit_iova_alloc_range()" may cater similar
+future requirements from drivers instead of worrying about
+high/low/mid etc.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 93e6345f3414..4420a759f095 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1024,8 +1024,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- {
- 	struct intel_iommu *iommu;
- 	u32 ver, sts;
--	int agaw =3D 0;
--	int msagaw =3D 0;
-+	int agaw =3D -1;
-+	int msagaw =3D -1;
- 	int err;
-=20
- 	if (!drhd->reg_base_addr) {
-@@ -1050,17 +1050,28 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	}
-=20
- 	err =3D -EINVAL;
--	agaw =3D iommu_calculate_agaw(iommu);
--	if (agaw < 0) {
--		pr_err("Cannot get a valid agaw for iommu (seq_id =3D %d)\n",
--			iommu->seq_id);
--		goto err_unmap;
--	}
--	msagaw =3D iommu_calculate_max_sagaw(iommu);
--	if (msagaw < 0) {
--		pr_err("Cannot get a valid max agaw for iommu (seq_id =3D %d)\n",
--			iommu->seq_id);
--		goto err_unmap;
-+	if (cap_sagaw(iommu->cap) =3D=3D 0) {
-+		pr_info("%s: No supported address widths. Not attempting DMA translation=
-.\n",
-+			iommu->name);
-+		drhd->ignored =3D 1;
-+	}
-+
-+	if (!drhd->ignored) {
-+		agaw =3D iommu_calculate_agaw(iommu);
-+		if (agaw < 0) {
-+			pr_err("Cannot get a valid agaw for iommu (seq_id =3D %d)\n",
-+			       iommu->seq_id);
-+			drhd->ignored =3D 1;
-+		}
-+	}
-+	if (!drhd->ignored) {
-+		msagaw =3D iommu_calculate_max_sagaw(iommu);
-+		if (msagaw < 0) {
-+			pr_err("Cannot get a valid max agaw for iommu (seq_id =3D %d)\n",
-+			       iommu->seq_id);
-+			drhd->ignored =3D 1;
-+			agaw =3D -1;
-+		}
- 	}
- 	iommu->agaw =3D agaw;
- 	iommu->msagaw =3D msagaw;
-@@ -1087,7 +1098,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
-=20
- 	raw_spin_lock_init(&iommu->register_lock);
-=20
--	if (intel_iommu_enabled) {
-+	/*
-+	 * This is only for hotplug; at boot time intel_iommu_enabled won't
-+	 * be set yet. When intel_iommu_init() runs, it registers the units
-+	 * present at boot time, then sets intel_iommu_enabled.
-+	 */
-+	if (intel_iommu_enabled && !drhd->ignored) {
- 		err =3D iommu_device_sysfs_add(&iommu->iommu, NULL,
- 					     intel_iommu_groups,
- 					     "%s", iommu->name);
-@@ -1117,7 +1133,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
-=20
- static void free_iommu(struct intel_iommu *iommu)
- {
--	if (intel_iommu_enabled) {
-+	if (intel_iommu_enabled && iommu->iommu.ops) {
- 		iommu_device_unregister(&iommu->iommu);
- 		iommu_device_sysfs_remove(&iommu->iommu);
- 	}
---=20
-2.17.1
+Again, flexibility should be there with user drivers to request the
+range they want at any point of time...
 
+Please let us know your inputs.
 
---=-/OIm2ioxsVwGHUNdEQ+l
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAw
-OTI0MTQwODQyWjAvBgkqhkiG9w0BCQQxIgQgqddjXCsqz9ZQrvEApCz2RlU+ZNkB3s82tunmOlHO
-hYQwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAFZTjTgsTb3aue8vLP0aiogbEX7+mAUl3Cs4cpCDXP9CWejNqDOXQH9CF7PqmuQd
-dl7TL60TXs4xyAkPiz0gxqVtSOL1GcHSwOBs1qS+zFLRQJtHCGjnIlQPOv32k7DgwsuR6tJ9dHBC
-/vA0Kq8GbaaAn8sa12Zn02eOwcRbiRNgo5PSQy8X0PZ1ylkMAtCdR6jXQGIRRmUcCTE4Ipg3OklE
-lRnbnSUte8U54iZhyMLCSnsJrj5pLz4C2SG0Hrifu3Zbm8bWJL1vLIfbbHjQuIvvbpLWlM0B9who
-o2mTRtYDQuEUhzBnCquSOBdyJv0lS10iYzro8MXrZP+YD7nqsbcAAAAAAAA=
-
-
---=-/OIm2ioxsVwGHUNdEQ+l--
-
-
---===============8162715939987933589==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+>
+> Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8162715939987933589==--
-
