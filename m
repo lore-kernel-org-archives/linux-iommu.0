@@ -7,100 +7,101 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D57E6C4727D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB71C4363D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6634F2388A
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 13BBE23787
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Oz3z6I1p"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6634F2388A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="jruSWmNg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13BBE23787
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 49E1A86B13;
-	Thu, 24 Sep 2020 15:09:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A64932E0ED;
+	Thu, 24 Sep 2020 15:09:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qvWvC7swHApn; Thu, 24 Sep 2020 15:09:32 +0000 (UTC)
+	with ESMTP id s8pgCDTc1cy9; Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A002E86B51;
-	Thu, 24 Sep 2020 15:09:26 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 32DC32E100;
+	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80F3DC1AD6;
-	Thu, 24 Sep 2020 15:09:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 838C3C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 15:00:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EA6BC0890;
+	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6DA3BC0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7CCCD86BDD
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 15:00:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5CC3687502
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SdBlNuFH7rXv for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 15:00:33 +0000 (UTC)
+ with ESMTP id T60QOS8phqGK for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 14:58:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BA53B86BD6
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 15:00:33 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OExX1Z122632;
- Thu, 24 Sep 2020 15:00:19 GMT
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D14D88748C
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:31 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEso7R071860;
+ Thu, 24 Sep 2020 14:58:14 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=gzg5twMJKNjp6lvCo9UI8kbkdEJTXqmja6D+xkQICEA=;
- b=Oz3z6I1pf/MhqRK+Fwig/UC8eTjoRwvzB4sufBARwl1AmwdlaaJd/3L0uWVDdAJFSgWP
- redcpUHS8SKhZNSXOoW2oxHNJIlDTuCsnB1hlA7wHWazWmQHYcz4C4z1bclTdTk14OLM
- olUdA5z7dfu9fmmc6n2zdE1KnrlzjQKEn6W5+L6Y0mbObgb0MANq9rXAAuMCxT0uKRh7
- FZ0VGn0PqYcKeV1SrsMXKoj+/RjhNoJB8byhZu7cCz4pCuOVtxfh16mKYC2+kEO33qls
- 2DSWsEK78t+K0toZ/k7nmv1eKtlzicULeHi4PRRR40HDC1tOZ3JNud3thiUaGeQzQuAp Eg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by aserp2130.oracle.com with ESMTP id 33qcpu5qrf-1
+ bh=Yqt+92qtIPnzV+UAbRlHcsR51LUOUu18fTQvRXDG2ek=;
+ b=jruSWmNgqGvPdAVtwnpd/0M8fJOyw+Cno9jJ0ZxpoauDBW/soMYIjHrP+rDMFzlg1T/e
+ 44ZroN3v6bbdrqm7zrdA57J33Lj7VwyY/mZN4BufW0HI2UTGcXoFZoVtDJzYhPNlhts9
+ Gm5x790up1N9RK9cZRzqXhPt7Zb7QyqBTqPhfXCtof4JxaU5YHGXZ5DujPXn8vYMqXTZ
+ OjqWLkV+fPKuaHiPinVSk4vNW9PmND+N9yNwHwXooawb7M7YTujgJOKXlBZL8XPEaA5+
+ +YgQpAA5f4A5rVAgPXkpL1f5B6MARrOJVbJqMBk35uHAzgc6IUtXmmYhfoieOpvqz/lD KQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2120.oracle.com with ESMTP id 33ndnurum0-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Thu, 24 Sep 2020 15:00:18 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuAEc177202;
- Thu, 24 Sep 2020 14:58:18 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by aserp3020.oracle.com with ESMTP id 33r28x3vka-1
+ Thu, 24 Sep 2020 14:58:14 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEtTlR159240;
+ Thu, 24 Sep 2020 14:58:13 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by userp3030.oracle.com with ESMTP id 33nux2vwjp-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 24 Sep 2020 14:58:18 +0000
+ Thu, 24 Sep 2020 14:58:13 +0000
 Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwEX9016160;
- Thu, 24 Sep 2020 14:58:14 GMT
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwCeA002782;
+ Thu, 24 Sep 2020 14:58:12 GMT
 Received: from disposition.us.oracle.com (/10.152.32.81)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Thu, 24 Sep 2020 07:58:14 -0700
+ with ESMTP ; Thu, 24 Sep 2020 07:58:11 -0700
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH 08/13] x86: Secure Launch kernel late boot stub
-Date: Thu, 24 Sep 2020 10:58:36 -0400
-Message-Id: <1600959521-24158-9-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH 05/13] x86: Add early TPM1.2/TPM2.0 interface support for
+ Secure Launch
+Date: Thu, 24 Sep 2020 10:58:33 -0400
+Message-Id: <1600959521-24158-6-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
- mlxlogscore=999
- suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009240114
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ mlxscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=2 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009240114
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
- mlxlogscore=999
- adultscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
- phishscore=0 spamscore=0 malwarescore=0 clxscore=1015 impostorscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+ priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=2 bulkscore=0
+ clxscore=1015 impostorscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009240115
+ definitions=main-2009240114
 X-Mailman-Approved-At: Thu, 24 Sep 2020 15:09:23 +0000
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
@@ -123,580 +124,663 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The routine slaunch_setup is called out of the x86 specific setup_arch
-routine during early kernel boot. After determining what platform is
-present, various operations specific to that platform occur. This
-includes finalizing setting for the platform late launch and verifying
-that memory protections are in place.
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
 
-For TXT, this code also reserves the original compressed kernel setup
-area where the APs were left looping so that this memory cannot be used.
+This commit introduces an abstraction for TPM1.2 and TPM2.0 devices
+above the TPM hardware interface.
 
+Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- arch/x86/kernel/Makefile   |   1 +
- arch/x86/kernel/setup.c    |   3 +
- arch/x86/kernel/slaunch.c  | 495 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel/dmar.c |   4 +
- 4 files changed, 503 insertions(+)
- create mode 100644 arch/x86/kernel/slaunch.c
+ arch/x86/boot/compressed/Makefile             |   3 +-
+ arch/x86/boot/compressed/tpm/tpm1.h           | 112 ++++++++++++++++++++
+ arch/x86/boot/compressed/tpm/tpm1_cmds.c      |  99 ++++++++++++++++++
+ arch/x86/boot/compressed/tpm/tpm2.h           |  89 ++++++++++++++++
+ arch/x86/boot/compressed/tpm/tpm2_auth.c      |  44 ++++++++
+ arch/x86/boot/compressed/tpm/tpm2_auth.h      |  21 ++++
+ arch/x86/boot/compressed/tpm/tpm2_cmds.c      | 145 ++++++++++++++++++++++++++
+ arch/x86/boot/compressed/tpm/tpm2_constants.h |  66 ++++++++++++
+ 8 files changed, 578 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm1.h
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm1_cmds.c
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm2.h
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm2_auth.c
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm2_auth.h
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm2_cmds.c
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm2_constants.h
 
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index e77261d..318366f 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -76,6 +76,7 @@ obj-$(CONFIG_X86_32)		+= tls.o
- obj-$(CONFIG_IA32_EMULATION)	+= tls.o
- obj-y				+= step.o
- obj-$(CONFIG_INTEL_TXT)		+= tboot.o
-+obj-$(CONFIG_SECURE_LAUNCH)	+= slaunch.o
- obj-$(CONFIG_ISA_DMA_API)	+= i8237.o
- obj-$(CONFIG_STACKTRACE)	+= stacktrace.o
- obj-y				+= cpu/
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 3511736..cae9476 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -18,6 +18,7 @@
- #include <linux/sfi.h>
- #include <linux/hugetlb.h>
- #include <linux/tboot.h>
-+#include <linux/slaunch.h>
- #include <linux/usb/xhci-dbgp.h>
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 5515afa..a4308d5 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -100,7 +100,8 @@ vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/early_sha1.o
+ vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA256) += $(obj)/early_sha256.o
+ vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA512) += $(obj)/early_sha512.o
+ vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/tpm/tpmio.o $(obj)/tpm/tpm_buff.o \
+-	$(obj)/tpm/tis.o $(obj)/tpm/crb.o
++	$(obj)/tpm/tis.o $(obj)/tpm/crb.o $(obj)/tpm/tpm1_cmds.o \
++	$(obj)/tpm/tpm2_cmds.o $(obj)/tpm/tpm2_auth.o
  
- #include <uapi/linux/mount.h>
-@@ -1009,6 +1010,8 @@ void __init setup_arch(char **cmdline_p)
- 	early_gart_iommu_check();
- #endif
- 
-+	slaunch_setup();
-+
- 	/*
- 	 * partially used pages are not usable - thus
- 	 * we are rounding upwards:
-diff --git a/arch/x86/kernel/slaunch.c b/arch/x86/kernel/slaunch.c
+ # The compressed kernel is built with -fPIC/-fPIE so that a boot loader
+ # can place it anywhere in memory and it will still run. However, since
+diff --git a/arch/x86/boot/compressed/tpm/tpm1.h b/arch/x86/boot/compressed/tpm/tpm1.h
 new file mode 100644
-index 0000000..e040e32
+index 0000000..498fa45
 --- /dev/null
-+++ b/arch/x86/kernel/slaunch.c
-@@ -0,0 +1,495 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/arch/x86/boot/compressed/tpm/tpm1.h
+@@ -0,0 +1,112 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * Secure Launch late validation/setup, securityfs exposure and
-+ * finalization support.
-+ *
-+ * Copyright (c) 2020, Oracle and/or its affiliates.
 + * Copyright (c) 2020 Apertus Solutions, LLC
 + *
 + * Author(s):
-+ *     Daniel P. Smith <dpsmith@apertussolutions.com>
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ * The definitions in this header are extracted from the Trusted Computing
++ * Group's "TPM Main Specification", Parts 1-3.
 + *
 + */
 +
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#ifndef _TPM1_H
++#define _TPM1_H
 +
-+#include <linux/fs.h>
-+#include <linux/init.h>
-+#include <linux/linkage.h>
-+#include <linux/mm.h>
-+#include <linux/io.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <linux/security.h>
-+#include <linux/memblock.h>
-+#include <asm/segment.h>
-+#include <asm/sections.h>
-+#include <asm/boot.h>
-+#include <asm/msr.h>
-+#include <asm/tlbflush.h>
-+#include <asm/processor-flags.h>
-+#include <asm/asm-offsets.h>
-+#include <asm/e820/api.h>
-+#include <asm/bootparam.h>
-+#include <asm/setup.h>
-+#include <linux/slaunch.h>
++#include "tpm.h"
 +
-+static u32 sl_flags;
-+static struct sl_ap_wake_info ap_wake_info;
-+static u64 evtlog_addr;
-+static u32 evtlog_size;
-+static u64 vtd_pmr_lo_size;
++/* Section 2.2.3 */
++#define TPM_AUTH_DATA_USAGE u8
++#define TPM_PAYLOAD_TYPE u8
++#define TPM_VERSION_BYTE u8
++#define TPM_TAG u16
++#define TPM_PROTOCOL_ID u16
++#define TPM_STARTUP_TYPE u16
++#define TPM_ENC_SCHEME u16
++#define TPM_SIG_SCHEME u16
++#define TPM_MIGRATE_SCHEME u16
++#define TPM_PHYSICAL_PRESENCE u16
++#define TPM_ENTITY_TYPE u16
++#define TPM_KEY_USAGE u16
++#define TPM_EK_TYPE u16
++#define TPM_STRUCTURE_TAG u16
++#define TPM_PLATFORM_SPECIFIC u16
++#define TPM_COMMAND_CODE u32
++#define TPM_CAPABILITY_AREA u32
++#define TPM_KEY_FLAGS u32
++#define TPM_ALGORITHM_ID u32
++#define TPM_MODIFIER_INDICATOR u32
++#define TPM_ACTUAL_COUNT u32
++#define TPM_TRANSPORT_ATTRIBUTES u32
++#define TPM_AUTHHANDLE u32
++#define TPM_DIRINDEX u32
++#define TPM_KEY_HANDLE u32
++#define TPM_PCRINDEX u32
++#define TPM_RESULT u32
++#define TPM_RESOURCE_TYPE u32
++#define TPM_KEY_CONTROL u32
++#define TPM_NV_INDEX u32 The
++#define TPM_FAMILY_ID u32
++#define TPM_FAMILY_VERIFICATION u32
++#define TPM_STARTUP_EFFECTS u32
++#define TPM_SYM_MODE u32
++#define TPM_FAMILY_FLAGS u32
++#define TPM_DELEGATE_INDEX u32
++#define TPM_CMK_DELEGATE u32
++#define TPM_COUNT_ID u32
++#define TPM_REDIT_COMMAND u32
++#define TPM_TRANSHANDLE u32
++#define TPM_HANDLE u32
++#define TPM_FAMILY_OPERATION u32
 +
-+/* This should be plenty of room */
-+static u8 txt_dmar[PAGE_SIZE] __aligned(16);
++/* Section 6 */
++#define TPM_TAG_RQU_COMMAND		0x00C1
++#define TPM_TAG_RQU_AUTH1_COMMAND	0x00C2
++#define TPM_TAG_RQU_AUTH2_COMMAND	0x00C3
++#define TPM_TAG_RSP_COMMAND		0x00C4
++#define TPM_TAG_RSP_AUTH1_COMMAND	0x00C5
++#define TPM_TAG_RSP_AUTH2_COMMAND	0x00C6
 +
-+u32 slaunch_get_flags(void)
-+{
-+	return sl_flags;
-+}
-+EXPORT_SYMBOL(slaunch_get_flags);
++/* Section 16 */
++#define TPM_SUCCESS 0x0
 +
-+struct sl_ap_wake_info *slaunch_get_ap_wake_info(void)
-+{
-+	return &ap_wake_info;
-+}
++/* Section 17 */
++#define TPM_ORD_EXTEND			0x00000014
 +
-+struct acpi_table_header *slaunch_get_dmar_table(struct acpi_table_header *dmar)
-+{
-+	/* The DMAR is only stashed and provided via TXT on Intel systems */
-+	if (memcmp(txt_dmar, "DMAR", 4))
-+		return dmar;
++#define SHA1_DIGEST_SIZE 20
 +
-+	return (struct acpi_table_header *)(&txt_dmar[0]);
-+}
++/* Section 5.4 */
++struct tpm_sha1_digest {
++	u8 digest[SHA1_DIGEST_SIZE];
++};
++struct tpm_digest {
++	TPM_PCRINDEX pcr;
++	union {
++		struct tpm_sha1_digest sha1;
++	} digest;
++};
 +
-+static void __init __noreturn slaunch_txt_reset(void __iomem *txt,
-+						const char *msg, u64 error)
-+{
-+	u64 one = 1, val;
++#define TPM_DIGEST		struct tpm_sha1_digest
++#define TPM_CHOSENID_HASH	TPM_DIGEST
++#define TPM_COMPOSITE_HASH	TPM_DIGEST
++#define TPM_DIRVALUE		TPM_DIGEST
++#define TPM_HMAC		TPM_DIGEST
++#define TPM_PCRVALUE		TPM_DIGEST
++#define TPM_AUDITDIGEST		TPM_DIGEST
++#define TPM_DAA_TPM_SEED	TPM_DIGEST
++#define TPM_DAA_CONTEXT_SEED	TPM_DIGEST
 +
-+	pr_err("%s", msg);
++struct tpm_extend_cmd {
++	TPM_PCRINDEX pcr_num;
++	TPM_DIGEST digest;
++};
 +
-+	/*
-+	 * This performs a TXT reset with a sticky error code. The reads of
-+	 * TXT_CR_E2STS act as barriers.
-+	 */
-+	memcpy_toio(txt + TXT_CR_ERRORCODE, &error, sizeof(u64));
-+	memcpy_fromio(&val, txt + TXT_CR_E2STS, sizeof(u64));
-+	memcpy_toio(txt + TXT_CR_CMD_NO_SECRETS, &one, sizeof(u64));
-+	memcpy_fromio(&val, txt + TXT_CR_E2STS, sizeof(u64));
-+	memcpy_toio(txt + TXT_CR_CMD_UNLOCK_MEM_CONFIG, &one, sizeof(u64));
-+	memcpy_fromio(&val, txt + TXT_CR_E2STS, sizeof(u64));
-+	memcpy_toio(txt + TXT_CR_CMD_RESET, &one, sizeof(u64));
++struct tpm_extend_resp {
++	TPM_COMMAND_CODE ordinal;
++	TPM_PCRVALUE digest;
++};
 +
-+	for ( ; ; )
-+		asm volatile ("hlt");
++/* TPM Commands */
++int tpm1_pcr_extend(struct tpm *t, struct tpm_digest *d);
 +
-+	unreachable();
-+}
-+
++#endif
+diff --git a/arch/x86/boot/compressed/tpm/tpm1_cmds.c b/arch/x86/boot/compressed/tpm/tpm1_cmds.c
+new file mode 100644
+index 0000000..2d8c9e5
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm1_cmds.c
+@@ -0,0 +1,99 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * The TXT heap is too big to map all at once with early_ioremap
-+ * so it is done a table at a time.
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ * The code in this file is based on the article "Writing a TPM Device Driver"
++ * published on http://ptgmedia.pearsoncmg.com.
++ *
 + */
-+static void __init *txt_early_get_heap_table(void __iomem *txt, u32 type,
-+					     u32 bytes)
++
++#include <linux/string.h>
++#include <linux/types.h>
++#include <linux/errno.h>
++#include <asm/byteorder.h>
++#include "tpm.h"
++#include "tpmbuff.h"
++#include "tis.h"
++#include "tpm_common.h"
++#include "tpm1.h"
++
++int tpm1_pcr_extend(struct tpm *t, struct tpm_digest *d)
 +{
-+	void *heap;
-+	u64 base, size, offset = 0;
-+	int i;
++	int ret = 0;
++	struct tpmbuff *b = t->buff;
++	struct tpm_header *hdr;
++	struct tpm_extend_cmd *cmd;
++	size_t size;
 +
-+	if (type > TXT_SINIT_MLE_DATA_TABLE)
-+		slaunch_txt_reset(txt,
-+			"Error invalid table type for early heap walk\n",
-+			SL_ERROR_HEAP_WALK);
-+
-+	memcpy_fromio(&base, txt + TXT_CR_HEAP_BASE, sizeof(u64));
-+	memcpy_fromio(&size, txt + TXT_CR_HEAP_SIZE, sizeof(u64));
-+
-+	/* Iterate over heap tables looking for table of "type" */
-+	for (i = 0; i < type; i++) {
-+		base += offset;
-+		heap = early_memremap(base, sizeof(u64));
-+		if (!heap)
-+			slaunch_txt_reset(txt,
-+				"Error early_memremap of heap for heap walk\n",
-+				SL_ERROR_HEAP_WALK);
-+
-+		offset = *((u64 *)heap);
-+
-+		/*
-+		 * After the first iteration, any offset of zero is invalid and
-+		 * implies the TXT heap is corrupted.
-+		 */
-+		if (!offset)
-+			slaunch_txt_reset(txt,
-+				"Error invalid 0 offset in heap walk\n",
-+				SL_ERROR_HEAP_ZERO_OFFSET);
-+
-+		early_memunmap(heap, sizeof(u64));
-+	}
-+
-+	/* Skip the size field at the head of each table */
-+	base += sizeof(u64);
-+	heap = early_memremap(base, bytes);
-+	if (!heap)
-+		slaunch_txt_reset(txt,
-+				  "Error early_memremap of heap section\n",
-+				  SL_ERROR_HEAP_MAP);
-+
-+	return heap;
-+}
-+
-+/*
-+ * TXT uses a special set of VTd registers to protect all of memory from DMA
-+ * until the IOMMU can be programmed to protect memory. There is the low
-+ * memory PMR that can protect all memory up to 4G. The high memory PRM can
-+ * be setup to protect all memory beyond 4Gb. Validate that these values cover
-+ * what is expected.
-+ */
-+static void __init slaunch_verify_pmrs(void __iomem *txt)
-+{
-+	struct txt_os_sinit_data *os_sinit_data;
-+	unsigned long last_pfn, initrd_extent;
-+	u32 field_offset, err = 0;
-+	const char *errmsg = "";
-+
-+	field_offset = offsetof(struct txt_os_sinit_data, lcp_po_base);
-+	os_sinit_data = txt_early_get_heap_table(txt, TXT_OS_SINIT_DATA_TABLE,
-+						 field_offset);
-+
-+	/* Save a copy */
-+	vtd_pmr_lo_size = os_sinit_data->vtd_pmr_lo_size;
-+
-+	last_pfn = e820__end_of_ram_pfn();
-+
-+	/*
-+	 * First make sure the hi PMR covers all memory above 4G. In the
-+	 * unlikely case where there is < 4G on the system, the hi PMR will
-+	 * not be set.
-+	 */
-+	if (os_sinit_data->vtd_pmr_hi_base != 0x0ULL) {
-+		if (os_sinit_data->vtd_pmr_hi_base != 0x100000000ULL) {
-+			err = SL_ERROR_HI_PMR_BASE;
-+			errmsg =  "Error hi PMR base\n";
-+			goto out;
-+		}
-+
-+		if (last_pfn << PAGE_SHIFT >
-+		    os_sinit_data->vtd_pmr_hi_base +
-+		    os_sinit_data->vtd_pmr_hi_size) {
-+			err = SL_ERROR_HI_PMR_SIZE;
-+			errmsg = "Error hi PMR size\n";
-+			goto out;
-+		}
-+	}
-+
-+	/* Lo PMR base should always be 0 */
-+	if (os_sinit_data->vtd_pmr_lo_base != 0x0ULL) {
-+		err = SL_ERROR_LO_PMR_BASE;
-+		errmsg = "Error lo PMR base\n";
++	if (b == NULL) {
++		ret = -EINVAL;
 +		goto out;
 +	}
 +
-+	/*
-+	 * Check that if the kernel was loaded below 4G, that it is protected
-+	 * by the lo PMR. Note this is the decompressed kernel. The ACM would
-+	 * have ensured the compressed kernel (the MLE image) was protected.
-+	 */
-+	if ((__pa_symbol(_end) < 0x100000000ULL) &&
-+	    (__pa_symbol(_end) > os_sinit_data->vtd_pmr_lo_size)) {
-+		err = SL_ERROR_LO_PMR_MLE;
-+		errmsg = "Error lo PMR does not cover MLE kernel\n";
++	/* ensure buffer is free for use */
++	tpmb_free(b);
++
++	hdr = (struct tpm_header *)tpmb_reserve(b);
++	if (!hdr) {
++		ret = -ENOMEM;
 +		goto out;
 +	}
 +
-+	/* Check that the AP wake block is protected by the lo PMR. */
-+	if (ap_wake_info.ap_wake_block + PAGE_SIZE >
-+	    os_sinit_data->vtd_pmr_lo_size) {
-+		err = SL_ERROR_LO_PMR_MLE;
-+		errmsg = "Error lo PMR does not cover AP wake block\n";
++
++	hdr->tag = cpu_to_be16(TPM_TAG_RQU_COMMAND);
++	hdr->code = cpu_to_be32(TPM_ORD_EXTEND);
++
++	cmd = (struct tpm_extend_cmd *)
++		tpmb_put(b, sizeof(struct tpm_extend_cmd));
++	if (cmd == NULL) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	cmd->pcr_num = cpu_to_be32(d->pcr);
++	memcpy(&(cmd->digest), &(d->digest), sizeof(TPM_DIGEST));
++
++	hdr->size = cpu_to_be32(tpmb_size(b));
++
++	if (be32_to_cpu(hdr->size) != t->ops.send(b)) {
++		ret = -EAGAIN;
++		goto free;
++	}
++
++	/* Reset buffer for receive */
++	tpmb_trim(b, tpmb_size(b));
++
++	hdr = (struct tpm_header *)b->head;
++	tpmb_put(b, sizeof(struct tpm_header));
++
++	/*
++	 * The extend receive operation returns a struct tpm_extend_resp
++	 * but the current implementation ignores the returned PCR value.
++	 */
++
++	/* recv() will increase the buffer size */
++	size = t->ops.recv(t->family, b);
++	if (tpmb_size(b) != size) {
++		ret = -EAGAIN;
++		goto free;
 +	}
 +
 +	/*
-+	 * If an external initrd is present and loaded below 4G, check
-+	 * that it is protected by the lo PMR.
++	 * On return, the code field is used for the return code out. Though
++	 * the commands specifications section 16.1 implies there is an
++	 * ordinal field, the return size and values point to this being
++	 * incorrect.
++	 *
++	 * Also tis_recv() converts the header back to CPU endianness.
 +	 */
-+	if (boot_params.hdr.ramdisk_image != 0 &&
-+	    boot_params.hdr.ramdisk_size != 0) {
-+		initrd_extent = boot_params.hdr.ramdisk_image +
-+				boot_params.hdr.ramdisk_size;
-+		if ((initrd_extent < 0x100000000ULL) &&
-+		    (initrd_extent > os_sinit_data->vtd_pmr_lo_size)) {
-+			err = SL_ERROR_LO_PMR_INITRD;
-+			errmsg = "Error lo PMR does not cover external initrd\n";
-+			goto out;
-+		}
-+	}
++	if (hdr->code != TPM_SUCCESS)
++		ret = -EAGAIN;
 +
++free:
++	tpmb_free(b);
 +out:
-+	early_memunmap(os_sinit_data, field_offset);
-+
-+	if (err)
-+		slaunch_txt_reset(txt, errmsg, err);
++	return ret;
 +}
-+
-+static void __init slaunch_txt_reserve_range(u64 base, u64 size)
-+{
-+	int type;
-+
-+	type = e820__get_entry_type(base, base + size - 1);
-+	if (type == E820_TYPE_RAM) {
-+		pr_info("memblock reserve base: %llx size: %llx\n", base, size);
-+		memblock_reserve(base, size);
-+	}
-+}
-+
+diff --git a/arch/x86/boot/compressed/tpm/tpm2.h b/arch/x86/boot/compressed/tpm/tpm2.h
+new file mode 100644
+index 0000000..4bc64f5
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm2.h
+@@ -0,0 +1,89 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * For Intel, certain regions of memory must be marked as reserved by putting
-+ * them on the memblock reserved list if they are not already e820 reserved.
-+ * This includes:
-+ *  - The TXT HEAP
-+ *  - The ACM area
-+ *  - The TXT private register bank
-+ *  - The MDR list sent to the MLE by the ACM (see TXT specification)
-+ *  (Normally the above are properly reserved by firmware but if it was not
-+ *  done, reserve them now)
-+ *  - The AP wake block
-+ *  - TPM log external to the TXT heap
++ * Copyright (c) 2020 Apertus Solutions, LLC
 + *
-+ * Also if the low PMR doesn't cover all memory < 4G, any RAM regions above
-+ * the low PMR must be reservered too.
-+ */
-+static void __init slaunch_txt_reserve(void __iomem *txt)
-+{
-+	struct txt_sinit_memory_descriptor_record *mdr;
-+	struct txt_sinit_mle_data *sinit_mle_data;
-+	void *mdrs;
-+	u64 base, size, heap_base, heap_size;
-+	u32 field_offset, mdrnum, mdroffset, mdrslen, i;
-+
-+	base = TXT_PRIV_CONFIG_REGS_BASE;
-+	size = TXT_PUB_CONFIG_REGS_BASE - TXT_PRIV_CONFIG_REGS_BASE;
-+	slaunch_txt_reserve_range(base, size);
-+
-+	memcpy_fromio(&heap_base, txt + TXT_CR_HEAP_BASE, sizeof(u64));
-+	memcpy_fromio(&heap_size, txt + TXT_CR_HEAP_SIZE, sizeof(u64));
-+	slaunch_txt_reserve_range(heap_base, heap_size);
-+
-+	memcpy_fromio(&base, txt + TXT_CR_SINIT_BASE, sizeof(u64));
-+	memcpy_fromio(&size, txt + TXT_CR_SINIT_SIZE, sizeof(u64));
-+	slaunch_txt_reserve_range(base, size);
-+
-+	field_offset = offsetof(struct txt_sinit_mle_data,
-+				sinit_vtd_dmar_table_size);
-+	sinit_mle_data = txt_early_get_heap_table(txt, TXT_SINIT_MLE_DATA_TABLE,
-+					field_offset);
-+
-+	mdrnum = sinit_mle_data->num_of_sinit_mdrs;
-+	mdroffset = sinit_mle_data->sinit_mdrs_table_offset;
-+
-+	early_memunmap(sinit_mle_data, field_offset);
-+
-+	if (!mdrnum)
-+		goto nomdr;
-+
-+	mdrslen = (mdrnum * sizeof(struct txt_sinit_memory_descriptor_record));
-+
-+	mdrs = txt_early_get_heap_table(txt, TXT_SINIT_MLE_DATA_TABLE,
-+					mdroffset + mdrslen - 8);
-+
-+	mdr = (struct txt_sinit_memory_descriptor_record *)
-+			(mdrs + mdroffset - 8);
-+
-+	for (i = 0; i < mdrnum; i++, mdr++) {
-+		/* Spec says some entries can have length 0, ignore them */
-+		if (mdr->type > 0 && mdr->length > 0)
-+			slaunch_txt_reserve_range(mdr->address, mdr->length);
-+	}
-+
-+	early_memunmap(mdrs, mdroffset + mdrslen - 8);
-+
-+nomdr:
-+	slaunch_txt_reserve_range(ap_wake_info.ap_wake_block,
-+				  ap_wake_info.ap_wake_block_size);
-+
-+	if (evtlog_addr < heap_base || evtlog_addr > (heap_base + heap_size))
-+		slaunch_txt_reserve_range(evtlog_addr, evtlog_size);
-+
-+	for (i = 0; i < e820_table->nr_entries; i++) {
-+		base = e820_table->entries[i].addr;
-+		size = e820_table->entries[i].size;
-+		if ((base > vtd_pmr_lo_size) && (base < 0x100000000ULL))
-+			slaunch_txt_reserve_range(base, size);
-+	}
-+}
-+
-+/*
-+ * TXT stashes a safe copy of the DMAR ACPI table to prevent tampering.
-+ * It is stored in the TXT heap. Fetch it from there and make it available
-+ * to the IOMMU driver.
-+ */
-+static void __init slaunch_copy_dmar_table(void __iomem *txt)
-+{
-+	struct txt_sinit_mle_data *sinit_mle_data;
-+	void *dmar;
-+	u32 field_offset, dmar_size, dmar_offset;
-+
-+	memset(&txt_dmar, 0, PAGE_SIZE);
-+
-+	field_offset = offsetof(struct txt_sinit_mle_data,
-+				processor_scrtm_status);
-+	sinit_mle_data = txt_early_get_heap_table(txt, TXT_SINIT_MLE_DATA_TABLE,
-+						  field_offset);
-+
-+	dmar_size = sinit_mle_data->sinit_vtd_dmar_table_size;
-+	dmar_offset = sinit_mle_data->sinit_vtd_dmar_table_offset;
-+
-+	early_memunmap(sinit_mle_data, field_offset);
-+
-+	if (!dmar_size || !dmar_offset)
-+		slaunch_txt_reset(txt,
-+				  "Error invalid DMAR table values\n",
-+				  SL_ERROR_HEAP_INVALID_DMAR);
-+
-+	if (unlikely(dmar_size > PAGE_SIZE))
-+		slaunch_txt_reset(txt,
-+				  "Error DMAR too big to store\n",
-+				  SL_ERROR_HEAP_DMAR_SIZE);
-+
-+
-+	dmar = txt_early_get_heap_table(txt, TXT_SINIT_MLE_DATA_TABLE,
-+					dmar_offset + dmar_size - 8);
-+	if (!dmar)
-+		slaunch_txt_reset(txt,
-+				  "Error early_ioremap of DMAR\n",
-+				  SL_ERROR_HEAP_DMAR_MAP);
-+
-+	memcpy(&txt_dmar[0], dmar + dmar_offset - 8, dmar_size);
-+
-+	early_memunmap(dmar, dmar_offset + dmar_size - 8);
-+}
-+
-+/*
-+ * The location of the safe AP wake code block is stored in the TXT heap.
-+ * Fetch it here in the early init code for later use in SMP startup.
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
 + *
-+ * Also get the TPM event log values that may have to be put on the
-+ * memblock reserve list later.
++ * The definitions in this header are extracted and/or dervied from the
++ * Trusted Computing Group's TPM 2.0 Library Specification Parts 1&2.
++ *
 + */
-+static void __init slaunch_fetch_os_mle_fields(void __iomem *txt)
-+{
-+	struct txt_os_mle_data *os_mle_data;
-+	u8 *jmp_offset;
 +
-+	os_mle_data = txt_early_get_heap_table(txt, TXT_OS_MLE_DATA_TABLE,
-+					       sizeof(struct txt_os_mle_data));
++#ifndef _TPM2_H
++#define _TPM2_H
 +
-+	ap_wake_info.ap_wake_block = os_mle_data->ap_wake_block;
-+	ap_wake_info.ap_wake_block_size = os_mle_data->ap_wake_block_size;
++#include "tpm_common.h"
++#include "tpm2_constants.h"
 +
-+	jmp_offset = os_mle_data->mle_scratch + SL_SCRATCH_AP_JMP_OFFSET;
-+	ap_wake_info.ap_jmp_offset = *((u32 *)jmp_offset);
 +
-+	evtlog_addr = os_mle_data->evtlog_addr;
-+	evtlog_size = os_mle_data->evtlog_size;
++/* Table 192  Definition of TPM2B_TEMPLATE Structure:
++ *   Using this as the base structure similar to the spec
++ */
++struct tpm2b {
++	u16 size;
++	u8 buffer[0];
++};
 +
-+	early_memunmap(os_mle_data, sizeof(struct txt_os_mle_data));
-+}
++// Table 32  Definition of TPMA_SESSION Bits <  IN/OUT>
++struct tpma_session {
++	u8 continue_session  : 1;
++	u8 audit_exclusive   : 1;
++	u8 audit_reset       : 1;
++	u8 reserved3_4       : 2;
++	u8 decrypt           : 1;
++	u8 encrypt           : 1;
++	u8 audit             : 1;
++};
 +
++
++// Table 72  Definition of TPMT_HA Structure <  IN/OUT>
++struct tpmt_ha {
++	u16 alg;	/* TPMI_ALG_HASH	*/
++	u8 digest[0];	/* TPMU_HA		*/
++};
++
++// Table 100  Definition of TPML_DIGEST_VALUES Structure
++struct tpml_digest_values {
++	u32 count;
++	struct tpmt_ha digests[0];
++};
++
++
++// Table 124  Definition of TPMS_AUTH_COMMAND Structure <  IN>
++struct tpms_auth_cmd {
++	u32 *handle;
++	struct tpm2b *nonce;
++	struct tpma_session *attributes;
++	struct tpm2b *hmac;
++};
++
++// Table 125  Definition of TPMS_AUTH_RESPONSE Structure <  OUT>
++struct tpms_auth_resp {
++	struct tpm2b *nonce;
++	struct tpma_session *attributes;
++	struct tpm2b *hmac;
++};
++
++struct tpm2_cmd {
++	struct tpm_header *header;
++	u32 *handles;			/* TPM Handles array	*/
++	u32 *auth_size;			/* Size of Auth Area	*/
++	u8 *auth;			/* Authorization Area	*/
++	u8 *params;			/* Parameters		*/
++	u8 *raw;			/* internal raw buffer	*/
++};
++
++struct tpm2_resp {
++	struct tpm_header *header;
++	u32 *handles;		/* TPM Handles array	*/
++	u32 *param_size;	/* Size of Parameters	*/
++	struct tpm2b *params;	/* Parameters		*/
++	u8 *auth;		/* Authorization Area	*/
++	u8 *raw;		/* internal raw buffer	*/
++};
++
++int tpm2_extend_pcr(struct tpm *t, u32 pcr,
++		struct tpml_digest_values *digests);
++
++#endif
+diff --git a/arch/x86/boot/compressed/tpm/tpm2_auth.c b/arch/x86/boot/compressed/tpm/tpm2_auth.c
+new file mode 100644
+index 0000000..016ecc1
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm2_auth.c
+@@ -0,0 +1,44 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Intel specific late stub setup and validation.
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
 + */
-+static void __init slaunch_setup_intel(void)
++
++#include <linux/types.h>
++#include <linux/const.h>
++#include <linux/string.h>
++#include <asm/byteorder.h>
++#include "tpm.h"
++#include "tpmbuff.h"
++#include "tpm2.h"
++#include "tpm2_constants.h"
++
++#define NULL_AUTH_SIZE 9
++
++u32 tpm2_null_auth_size(void)
 +{
-+	void __iomem *txt;
-+	u64 val = 0x1ULL;
-+
-+	/*
-+	 * First see if SENTER was done and not by TBOOT by reading the status
-+	 * register in the public space.
-+	 */
-+	txt = early_ioremap(TXT_PUB_CONFIG_REGS_BASE,
-+			    TXT_NR_CONFIG_PAGES * PAGE_SIZE);
-+	if (!txt) {
-+		/* This is really bad, no where to go from here */
-+		panic("Error early_ioremap of TXT pub registers\n");
-+	}
-+
-+	memcpy_fromio(&val, txt + TXT_CR_STS, sizeof(u64));
-+	early_iounmap(txt, TXT_NR_CONFIG_PAGES * PAGE_SIZE);
-+
-+	/* Was SENTER done? */
-+	if (!(val & TXT_SENTER_DONE_STS))
-+		return;
-+
-+	/* Was it done by TBOOT? */
-+	if (boot_params.tboot_addr)
-+		return;
-+
-+	/* Now we want to use the private register space */
-+	txt = early_ioremap(TXT_PRIV_CONFIG_REGS_BASE,
-+			    TXT_NR_CONFIG_PAGES * PAGE_SIZE);
-+	if (!txt) {
-+		/* This is really bad, no where to go from here */
-+		panic("Error early_ioremap of TXT priv registers\n");
-+	}
-+
-+	/*
-+	 * Try to read the Intel VID from the TXT private registers to see if
-+	 * TXT measured launch happened properly and the private space is
-+	 * available.
-+	 */
-+	memcpy_fromio(&val, txt + TXT_CR_DIDVID, sizeof(u64));
-+	if ((u16)(val & 0xffff) != 0x8086) {
-+		/*
-+		 * Can't do a proper TXT reset since it appears something is
-+		 * wrong even though SENTER happened and it should be in SMX
-+		 * mode.
-+		 */
-+		panic("Invalid TXT vendor ID, not in SMX mode\n");
-+	}
-+
-+	/* Set flags so subsequent code knows the status of the launch */
-+	sl_flags |= (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT);
-+
-+	/*
-+	 * Reading the proper DIDVID from the private register space means we
-+	 * are in SMX mode and private registers are open for read/write.
-+	 */
-+
-+	/* On Intel, have to handle TPM localities via TXT */
-+	val = 0x1ULL;
-+	memcpy_toio(txt + TXT_CR_CMD_SECRETS, &val, sizeof(u64));
-+	memcpy_fromio(&val, txt + TXT_CR_E2STS, sizeof(u64));
-+	val = 0x1ULL;
-+	memcpy_toio(txt + TXT_CR_CMD_OPEN_LOCALITY1, &val, sizeof(u64));
-+	memcpy_fromio(&val, txt + TXT_CR_E2STS, sizeof(u64));
-+
-+	slaunch_fetch_os_mle_fields(txt);
-+
-+	slaunch_verify_pmrs(txt);
-+
-+	slaunch_txt_reserve(txt);
-+
-+	slaunch_copy_dmar_table(txt);
-+
-+	early_iounmap(txt, TXT_NR_CONFIG_PAGES * PAGE_SIZE);
-+
-+	pr_info("Intel TXT setup complete\n");
++	return NULL_AUTH_SIZE;
 +}
 +
-+void __init slaunch_setup(void)
++u8 *tpm2_null_auth(struct tpmbuff *b)
 +{
-+	u32 vendor[4];
++	u32 *handle;
++	u8 *auth = (u8 *)tpmb_put(b, NULL_AUTH_SIZE);
 +
-+	/* Get manufacturer string with CPUID 0 */
-+	cpuid(0, &vendor[0], &vendor[1], &vendor[2], &vendor[3]);
++	if (!auth)
++		return NULL;
 +
-+	/* Only Intel TXT is supported at this point */
-+	if (vendor[1] == INTEL_CPUID_MFGID_EBX &&
-+	    vendor[2] == INTEL_CPUID_MFGID_ECX &&
-+	    vendor[3] == INTEL_CPUID_MFGID_EDX)
-+		slaunch_setup_intel();
++	memset(auth, 0, NULL_AUTH_SIZE);
++
++	/*
++	 * The handle, the first element, is the
++	 * only non-zero value in a NULL auth
++	 */
++	handle = (u32 *)auth;
++	*handle = cpu_to_be32(TPM_RS_PW);
++
++	return auth;
 +}
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 93e6345..d9856b5 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -29,6 +29,7 @@
- #include <linux/iommu.h>
- #include <linux/numa.h>
- #include <linux/limits.h>
-+#include <linux/slaunch.h>
- #include <asm/irq_remapping.h>
- #include <asm/iommu_table.h>
- 
-@@ -633,6 +634,9 @@ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
- 	 */
- 	dmar_tbl = tboot_get_dmar_table(dmar_tbl);
- 
-+	/* If Secure Launch is active, it has similar logic */
-+	dmar_tbl = slaunch_get_dmar_table(dmar_tbl);
+diff --git a/arch/x86/boot/compressed/tpm/tpm2_auth.h b/arch/x86/boot/compressed/tpm/tpm2_auth.h
+new file mode 100644
+index 0000000..1d4421c
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm2_auth.h
+@@ -0,0 +1,21 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ * The definitions in this header are extracted and/or dervied from the
++ * Trusted Computing Group's TPM 2.0 Library Specification Parts 1&2.
++ *
++ */
 +
- 	dmar = (struct acpi_table_dmar *)dmar_tbl;
- 	if (!dmar)
- 		return -ENODEV;
++#ifndef _TPM2_AUTH_H
++#define _TPM2_AUTH_H
++
++#include "tpm2.h"
++
++u32 tpm2_null_auth_size(void);
++u8 *tpm2_null_auth(struct tpmbuff *b);
++
++#endif
+diff --git a/arch/x86/boot/compressed/tpm/tpm2_cmds.c b/arch/x86/boot/compressed/tpm/tpm2_cmds.c
+new file mode 100644
+index 0000000..8e79f9e
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm2_cmds.c
+@@ -0,0 +1,145 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ */
++
++#include <linux/types.h>
++#include <linux/const.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include <asm/byteorder.h>
++#include "tpm.h"
++#include "tpmbuff.h"
++#include "tpm_common.h"
++#include "tpm2.h"
++#include "tpm2_auth.h"
++#include "tis.h"
++#include "crb.h"
++
++static int tpm2_alloc_cmd(struct tpmbuff *b, struct tpm2_cmd *c, u16 tag,
++		u32 code)
++{
++	/* ensure buffer is free for use */
++	tpmb_free(b);
++
++	c->header = (struct tpm_header *)tpmb_reserve(b);
++	if (!c->header)
++		return -ENOMEM;
++
++	c->header->tag = cpu_to_be16(tag);
++	c->header->code = cpu_to_be32(code);
++
++	return 0;
++}
++
++static u16 convert_digest_list(struct tpml_digest_values *digests)
++{
++	int i;
++	u16 size = sizeof(digests->count);
++	struct tpmt_ha *h = digests->digests;
++
++	for (i = 0; i < digests->count; i++) {
++		switch (h->alg) {
++		case TPM_ALG_SHA1:
++			h->alg = cpu_to_be16(h->alg);
++			h = (struct tpmt_ha *)((u8 *)h + SHA1_SIZE);
++			size += sizeof(u16) + SHA1_SIZE;
++			break;
++		case TPM_ALG_SHA256:
++			h->alg = cpu_to_be16(h->alg);
++			h = (struct tpmt_ha *)((u8 *)h + SHA256_SIZE);
++			size += sizeof(u16) + SHA256_SIZE;
++			break;
++		case TPM_ALG_SHA384:
++			h->alg = cpu_to_be16(h->alg);
++			h = (struct tpmt_ha *)((u8 *)h + SHA384_SIZE);
++			size += sizeof(u16) + SHA384_SIZE;
++			break;
++		case TPM_ALG_SHA512:
++			h->alg = cpu_to_be16(h->alg);
++			h = (struct tpmt_ha *)((u8 *)h + SHA512_SIZE);
++			size += sizeof(u16) + SHA512_SIZE;
++			break;
++		case TPM_ALG_SM3_256:
++			h->alg = cpu_to_be16(h->alg);
++			h = (struct tpmt_ha *)((u8 *)h + SM3256_SIZE);
++			size += sizeof(u16) + SHA1_SIZE;
++			break;
++		default:
++			return 0;
++		}
++	}
++
++	digests->count = cpu_to_be32(digests->count);
++
++	return size;
++}
++
++int tpm2_extend_pcr(struct tpm *t, u32 pcr,
++		struct tpml_digest_values *digests)
++{
++	struct tpmbuff *b = t->buff;
++	struct tpm2_cmd cmd;
++	u16 size;
++	int ret = 0;
++
++	if (b == NULL) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ret = tpm2_alloc_cmd(b, &cmd, TPM_ST_SESSIONS, TPM_CC_PCR_EXTEND);
++	if (ret < 0)
++		goto out;
++
++	cmd.handles = (u32 *)tpmb_put(b, sizeof(u32));
++	if (cmd.handles == NULL) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	cmd.handles[0] = cpu_to_be32(pcr);
++
++	cmd.auth_size = (u32 *)tpmb_put(b, sizeof(u32));
++	if (cmd.auth_size == NULL) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	cmd.auth = tpm2_null_auth(b);
++	if (cmd.auth == NULL) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	*cmd.auth_size = cpu_to_be32(tpm2_null_auth_size());
++
++	size = convert_digest_list(digests);
++	if (size == 0) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	cmd.params = (u8 *)tpmb_put(b, size);
++	if (cmd.params == NULL) {
++		ret = -ENOMEM;
++		goto free;
++	}
++
++	memcpy(cmd.params, digests, size);
++
++	cmd.header->size = cpu_to_be32(tpmb_size(b));
++
++	size = t->ops.send(b);
++	if (tpmb_size(b) != size)
++		ret = -EAGAIN;
++
++free:
++	tpmb_free(b);
++out:
++	return ret;
++}
+diff --git a/arch/x86/boot/compressed/tpm/tpm2_constants.h b/arch/x86/boot/compressed/tpm/tpm2_constants.h
+new file mode 100644
+index 0000000..bf31843
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm2_constants.h
+@@ -0,0 +1,66 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ * The definitions in this header are extracted and/or dervied from the
++ * Trusted Computing Group's TPM 2.0 Library Specification Parts 1&2.
++ *
++ */
++
++#ifndef _TPM2_CONSTANTS_H
++#define _TPM2_CONSTANTS_H
++
++/* Table 9  Definition of (UINT16) TPM_ALG_ID Constants <IN/OUT, S> */
++#define TPM_ALG_ERROR                _AT(u16, 0x0000)
++#define TPM_ALG_RSA                  _AT(u16, 0x0001)
++#define TPM_ALG_SHA                  _AT(u16, 0x0004)
++#define TPM_ALG_SHA1                 _AT(u16, 0x0004)
++#define TPM_ALG_HMAC                 _AT(u16, 0x0005)
++#define TPM_ALG_AES                  _AT(u16, 0x0006)
++#define TPM_ALG_MGF1                 _AT(u16, 0x0007)
++#define TPM_ALG_KEYEDHASH            _AT(u16, 0x0008)
++#define TPM_ALG_XOR                  _AT(u16, 0x000A)
++#define TPM_ALG_SHA256               _AT(u16, 0x000B)
++#define TPM_ALG_SHA384               _AT(u16, 0x000C)
++#define TPM_ALG_SHA512               _AT(u16, 0x000D)
++#define TPM_ALG_NULL                 _AT(u16, 0x0010)
++#define TPM_ALG_SM3_256              _AT(u16, 0x0012)
++#define TPM_ALG_SM4                  _AT(u16, 0x0013)
++#define TPM_ALG_RSASSA               _AT(u16, 0x0014)
++#define TPM_ALG_RSAES                _AT(u16, 0x0015)
++#define TPM_ALG_RSAPSS               _AT(u16, 0x0016)
++#define TPM_ALG_OAEP                 _AT(u16, 0x0017)
++#define TPM_ALG_ECDSA                _AT(u16, 0x0018)
++#define TPM_ALG_ECDH                 _AT(u16, 0x0019)
++#define TPM_ALG_ECDAA                _AT(u16, 0x001A)
++#define TPM_ALG_SM2                  _AT(u16, 0x001B)
++#define TPM_ALG_ECSCHNORR            _AT(u16, 0x001C)
++#define TPM_ALG_ECMQV                _AT(u16, 0x001D)
++#define TPM_ALG_KDF1_SP800_56A       _AT(u16, 0x0020)
++#define TPM_ALG_KDF2                 _AT(u16, 0x0021)
++#define TPM_ALG_KDF1_SP800_108       _AT(u16, 0x0022)
++#define TPM_ALG_ECC                  _AT(u16, 0x0023)
++#define TPM_ALG_SYMCIPHER            _AT(u16, 0x0025)
++#define TPM_ALG_CAMELLIA             _AT(u16, 0x0026)
++#define TPM_ALG_CTR                  _AT(u16, 0x0040)
++#define TPM_ALG_OFB                  _AT(u16, 0x0041)
++#define TPM_ALG_CBC                  _AT(u16, 0x0042)
++#define TPM_ALG_CFB                  _AT(u16, 0x0043)
++#define TPM_ALG_ECB                  _AT(u16, 0x0044)
++#define TPM_ALG_FIRST                _AT(u16, 0x0001)
++#define TPM_ALG_LAST                 _AT(u16, 0x0044)
++
++/* Table 12  Definition of (UINT32) TPM_CC Constants (Numeric Order) <IN/OUT, S> */
++#define TPM_CC_PCR_EXTEND            _AT(u32, 0x00000182)
++
++/* Table 19  Definition of (UINT16) TPM_ST Constants <IN/OUT, S> */
++#define TPM_ST_NO_SESSIONS           _AT(u16, 0x8001)
++#define TPM_ST_SESSIONS              _AT(u16, 0x8002)
++
++/* Table 28  Definition of (TPM_HANDLE) TPM_RH Constants <S> */
++#define TPM_RS_PW                    _AT(u32, 0x40000009)
++
++#endif
 -- 
 1.8.3.1
 
