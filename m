@@ -3,148 +3,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9036C4363D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFA1C2D0E2
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:50:52 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 591192396E
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:47:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A78E8206B8
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:50:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="UWlZsb/o"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 591192396E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="bWBa5D73"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A78E8206B8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D28A4874EE;
-	Thu, 24 Sep 2020 10:47:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5EEB9874F6;
+	Thu, 24 Sep 2020 10:50:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UE7nioCRbfLd; Thu, 24 Sep 2020 10:47:46 +0000 (UTC)
+	with ESMTP id 2jgdDVnhGhjE; Thu, 24 Sep 2020 10:50:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1EF43870CE;
-	Thu, 24 Sep 2020 10:47:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 89CC6874EA;
+	Thu, 24 Sep 2020 10:50:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 040DEC0889;
-	Thu, 24 Sep 2020 10:47:46 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2DB0C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:47:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C068C0889;
+	Thu, 24 Sep 2020 10:50:50 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D9D89C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:50:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EBD2B874E8
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:47:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id BC6972E0FE
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:50:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3l+aqWew4hyN for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 10:47:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 16F5F870CE
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:47:41 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200924104739euoutp01d95d7a51599b8bd5866cd793c95be36f~3soEB5uWL2248422484euoutp01T
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:47:39 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20200924104739euoutp01d95d7a51599b8bd5866cd793c95be36f~3soEB5uWL2248422484euoutp01T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1600944459;
- bh=WdiWUcj5OccQFrv4y8I7wpvlij9q9EFSK5IEGQ76WJY=;
- h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
- b=UWlZsb/o1JNuEozPXDu4YP1Y4oT5NxCXcQE1pPyyis2u90lL0W3+xsq0oVLKaIYmZ
- lXSoyw6u9gQpBu4+8b5Hac4m63OdpLVB7Djo+ymRvvYKQB6oB85d7pYZ3pZJR8o+iP
- fQTt1NCqb7JdeJvRlnIn18W12P+E0gTvoocZS9e8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20200924104739eucas1p20e7329b6e7fd68715032ecdac740ed88~3soDta42f2122221222eucas1p2Z;
- Thu, 24 Sep 2020 10:47:39 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
- eusmges1new.samsung.com (EUCPMTA) with SMTP id CF.D1.06456.B497C6F5; Thu, 24
- Sep 2020 11:47:39 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20200924104739eucas1p24e8ee378a5da317390385d065260647c~3soDYp6EE2121421214eucas1p21;
- Thu, 24 Sep 2020 10:47:39 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20200924104739eusmtrp24bf70cef52bb03aca65e774dcff0803e~3soDX4Rbo0630306303eusmtrp25;
- Thu, 24 Sep 2020 10:47:39 +0000 (GMT)
-X-AuditID: cbfec7f2-809ff70000001938-c2-5f6c794b2289
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id 12.71.06017.A497C6F5; Thu, 24
- Sep 2020 11:47:38 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
- eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20200924104738eusmtip189c79e7863fa953af3224720a37b90d4~3soCr8q_T1123011230eusmtip1M;
- Thu, 24 Sep 2020 10:47:38 +0000 (GMT)
-Subject: Re: IOVA allocation dependency between firmware buffer and
- remaining buffers
-To: Robin Murphy <robin.murphy@arm.com>, Thierry Reding
- <thierry.reding@gmail.com>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <832be601-c016-70b7-2b59-5f4915c53f85@samsung.com>
-Date: Thu, 24 Sep 2020 12:47:38 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <bff57cbe-2247-05e1-9059-d9c66d64c407@arm.com>
+ with ESMTP id 2hSgPM3a7FKp for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 10:50:48 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2077.outbound.protection.outlook.com [40.107.223.77])
+ by silver.osuosl.org (Postfix) with ESMTPS id 565622040B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:50:48 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZsVya4BujNekHyvNyNDGLEAvUtuKnDiZiuVIh6L3QSD8r7vctsrefMlKbj9X4CzUNdFoCeyemuN7VtjEUUaQHwLzVZI68gPmJ7ZAsauVorKLvAHYbPRK6zVKy9Wk5eYh4N9bf60a0/nKjbbv4Pupdi4S3iv4vqQgijlWFnSdBctKQ7ZPeHKmFbEWbMCcqwskqEyOBfEF5fImJ8UjA1Vz/I8wtb6t6NEg5QuI4xq0Z7C7s+NmJdHS+6IYnrtEEQ4bATprCEEeMVGMq4+52avCaJOPmvKBGL2mS3OWjF91QrK9GL7fse7nhyp0ik+f1gOmj8ocEX82Oyru4XyHV6NipQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YcCKoh9lnBfCzTA7Ims08zMzDRdcIc8kFN2fp8yqDZY=;
+ b=Vv5V+iNW/244ZfVlyfHzPcgeQw7xF02D8Mzx3DZyUisoS/xQm/x1CGz8y6GooL5IcNWBllemyRSPZH+SrZzhSIfLQf8qtY+dtOnL+B6PDcKT82afOEjiU6sNbVHNAvIF1/b2yvV0VW3vgyHt6JuuEnnORMSDWc5emYl6KgapiRLITdIieiTFYhVFKiN9p3i+L9ktLYlHLqMU8XabbwY99Fz9352mI53o88Bsky4Hcq4R0bgmXiAPgHhzJh+Fm1F0tdYBBzFTP3LM0Igt/htvijoWHcoyfC8u2CJYy18lDAGrGhKxXoxDrByyPw2YwP9Th4tdEHKJpgoJ02gyn7Ojzg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YcCKoh9lnBfCzTA7Ims08zMzDRdcIc8kFN2fp8yqDZY=;
+ b=bWBa5D73ofxfWWbERkKPzpe7PF6GoU7Lgk2PcO/zlpm2/x1T+YU9qRJLJHlr+Z5zY8DCkznB4eLbcCmC09S5xmzC95nMTZkEZwTlG0UEpKkNN+AYAD8jDAe2/eClSt0HQACWVbW4GohTODyPVpT5OlboxFVQzhstRkPuGSJbl8A=
+Authentication-Results: lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
+ header.from=amd.com;
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
+ DM6PR12MB3081.namprd12.prod.outlook.com (2603:10b6:5:38::27) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3391.17; Thu, 24 Sep 2020 10:50:46 +0000
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::48cf:d69:d457:1b1e]) by DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::48cf:d69:d457:1b1e%5]) with mapi id 15.20.3412.022; Thu, 24 Sep 2020
+ 10:50:46 +0000
+Subject: Re: [PATCH 00/13] iommu: amd: Add Generic IO Page Table Framework
+ Support
+To: Joerg Roedel <joro@8bytes.org>
+References: <20200923101442.73157-1-suravee.suthikulpanit@amd.com>
+ <20200924103448.GO27174@8bytes.org>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Message-ID: <c4b95103-8c66-6a9b-af18-a7c40d9dd943@amd.com>
+Date: Thu, 24 Sep 2020 17:50:37 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+In-Reply-To: <20200924103448.GO27174@8bytes.org>
 Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Se0hTcRTmt3u3XUeTn9PYwcpolGWkJhncsDRD6EL0AntQNFt6sWg+2lVT
- KVgPxI0Is5etmBnRQzebZr5RXOpYmpmFrVJLWZni0OyB62G5h+V/3/nOd875vh8/ipAM8AOp
- I6kZrCpVoZQJRGR1u/NZ6JYcZcLq3goJbRorIeiHFx4J6PtlbTz6ZnMUrS7r5tOa6yYhPWD4
- w6eHS6YIumXCzqdbBxuEdHldoZB21utJ+mzf2o1ixt6i5zEGvQExdbp+IVNZqhEwlZOFQqav
- t1HA6K07mYu2u4hpeK0WMOerStEO0T7R+iRWeSSLVYVHHxQd/v1yc3q7NNukn+CrkVOiRT4U
- 4Eh4V9Io0CIRJcH3EPxsHuN7iq8Ipk02wlN8QeD8WCGcHXF06nmexl0EZd+NXtU4gsqp1pll
- FOWP94C58YALBuB4eGcMcUkI3M+Dwfdj7kUCHAFah9YtF+No0D5d4aJJvAw0psfIhedjObQ/
- GSJdWIz9wHrN7sY+OAq6PlwiXJjAi6HGccOLpfDGXuz2BvgUBbquGuQxHQfGt7e82B9GLVXe
- MAvhT93swBkEg11Goac4h+DF6SLvRBT0df1wOyVwCDyoD/fQsTD0uYZ00YB9webw85jwhcLq
- q4SHFkN+nvepg0FnKf93tqW7hyhAMt2caLo5cXRz4uj+372JyFIkZTO5lGSWi0hlj4dxihQu
- MzU5LDEtpRLN/LqOactkLfrWc8iMMIVk88RU6NEECV+RxeWkmBFQhCxAvOlph1wiTlLk5LKq
- tARVppLlzGgBRcqk4jW3Rg5IcLIigz3KsumsarbLo3wC1Ygq//qkrf7X5YHE5UsMUbFJQfJv
- d8hAR2BT3fAbtKq1J1d9uSBvd9/7jOpjGRdtkT4dppKYoGHN9hOd45vj4v0mdi2t+tS/bmV2
- 7asN/PyT8t23O4uVA2GNVwwizf6A+9tslufBo7acvWXHXrU3jdzBRVsz663+2RJutXUo5sKi
- LEpGcocVESsJFaf4C06F8vpxAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrEIsWRmVeSWpSXmKPExsVy+t/xu7pelTnxBntvWllseLOQ2WLzxK1s
- FitXH2WyWLDf2qJh9QVWi87ZG9gt7q35z2rxfOEPZouDH56wWhx5uJvdYt3OSewWP3fNY7Fo
- uWPqwOvx5OA8Jo8189YweuycdZfdY9OqTjaPTZ8msXvcubaHzWPeyUCPyTeWM3rsvtnA5tG3
- ZRVjAFeUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWRqZK+nU1Kak5mWWqRvl2C
- XsbfK+4Fx8QrNsz7wNrA+FOoi5GTQ0LAROLtmXlMXYxcHEICSxkl7i/dwQSRkJE4Oa2BFcIW
- lvhzrYsNougto8SRqxeYQRLCAuES2zbOASsSEQiROHDpLCtIEbPAXSaJF1+3skN0HGOR2DBh
- O1gVm4ChRNdbkFEcHLwCdhJdZzVAwiwCqhKdGw4zgtiiAnESZ3pesIHYvAKCEidnPmEBsTkF
- rCXOPZ0CtphZwExi3uaHULa8xPa3c6BscYlbT+YzTWAUmoWkfRaSlllIWmYhaVnAyLKKUSS1
- tDg3PbfYSK84Mbe4NC9dLzk/dxMjML63Hfu5ZQdj17vgQ4wCHIxKPLwcutnxQqyJZcWVuYcY
- JTiYlUR4nc6ejhPiTUmsrEotyo8vKs1JLT7EaAr03ERmKdHkfGDqySuJNzQ1NLewNDQ3Njc2
- s1AS5+0QOBgjJJCeWJKanZpakFoE08fEwSnVwFjiNXH+UZbjR2cXRGtN3MhZvuxFe3j+a3d/
- AxW7tsyanozCS6G/Fh74Fx1oknNpd+L9HdG9BRtYjpmqbRAy2C9spixwWJfzf8mkO52LUz4y
- f8m2ufm60qdm4/Jlazpm5ChUXVhjcm6Ge15RZEOhv4yg3rRanyi12REO74rjnzGmxx1ZMCPh
- vRJLcUaioRZzUXEiAEVdtf0FAwAA
-X-CMS-MailID: 20200924104739eucas1p24e8ee378a5da317390385d065260647c
-X-Msg-Generator: CA
-X-RootMTR: 20200424161534eucas1p29177cad5b4790d392acb69a335a3992e
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200424161534eucas1p29177cad5b4790d392acb69a335a3992e
-References: <CAEC9eQOX9BHX4v5aY2cfCT=T-ZHA7y0xF7aiZhW9xzG4fme36Q@mail.gmail.com>
- <CAEC9eQPaeF9=Li74x9RrSHyDgRZ6b653yBRu6EYsaU+eSj2wsQ@mail.gmail.com>
- <59cda41f-170c-a1ad-a345-bc38b9ed4d73@arm.com>
- <CGME20200424161534eucas1p29177cad5b4790d392acb69a335a3992e@eucas1p2.samsung.com>
- <CAOD6ATrWYLPT0ydz2vFhNwWhqHum_q_pyCe=oGJWOcEqjmNOqQ@mail.gmail.com>
- <11584d09-5995-6133-3bd3-8f7a0afd0e01@samsung.com>
- <20200924082830.GB27174@8bytes.org>
- <37e767b8-8ec4-ae80-ea0d-1caf3cdab8fa@samsung.com>
- <20200924101640.GE2483160@ulmo>
- <bff57cbe-2247-05e1-9059-d9c66d64c407@arm.com>
-Cc: jean-philippe@linaro.org, linux-mm@kvack.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Ajay kumar <ajaynumb@gmail.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>,
- will@kernel.org, hch@lst.de
+X-Originating-IP: [183.89.247.160]
+X-ClientProxiedBy: SG2PR03CA0112.apcprd03.prod.outlook.com
+ (2603:1096:4:91::16) To DM5PR12MB1163.namprd12.prod.outlook.com
+ (2603:10b6:3:7a::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from Suravees-MacBook-Pro.local (183.89.247.160) by
+ SG2PR03CA0112.apcprd03.prod.outlook.com (2603:1096:4:91::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3412.9 via Frontend Transport; Thu, 24 Sep 2020 10:50:45 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: aed2f12f-9ed7-4860-ebbf-08d86077b121
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3081:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3081102CE1AF44124A3665C0F3390@DM6PR12MB3081.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y/fiEcp7RWozyMJD17lwFTaHitGml4KOR5Gf3rcHpAtqc2x+LooFElDzbIOqfaUonyud3qrd3l9pPVROF6ffn16RhCT2Fs+ifobZJcf9UgbMw0TLdXn76k5y0sEI8KtDtfyfPh4RKBDSKfstAPAzWxv/7ko44HzXQ5FNEdLpkIZUYR9GuP9ZBFnS75kXxc2hbHdRK2Ua3Yzu6l3stKzFmnrBAkVjxCDlxSc2a4rgs+WYu3AC9bAbRow+LX9npSlkkcN6614nJiQcDOR9RJWBQGZ7H79RAFElEKiSJiHkUUBwVBypVCHLSNoTjrpDlOOsKxR9MTBEJqJIxGZFvIK6YsEmWSPb9MwxnMPi6nNrWZIGBjLxyMUPwqGKSPGISn39T6nq0laPXjwE735YoVuXRQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(39860400002)(346002)(376002)(136003)(396003)(316002)(8676002)(4326008)(5660300002)(36756003)(66556008)(66476007)(4744005)(44832011)(2616005)(956004)(478600001)(16526019)(186003)(8936002)(66946007)(6666004)(26005)(2906002)(6512007)(31686004)(31696002)(6916009)(53546011)(6506007)(6486002)(86362001)(52116002)(41533002)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: IgL9nesptcl5jCURFcD4n3cLVzzjUgSEEwpYjvVoHOG3DEm5i+WZNNs8nPelJeeGc9FjOhUX+DwHq4LZ9R56Ykc+e6ob8c5Lyhuq2NGTMcNPF6OAMGg9XTFVirU0gGDscanFtOIJPUFjx24lVtep6+YJtUsuxcnBUDTWylEt9QJ0vuIhXp46tn6BoozNgm3S5TQXzBJVVuk00myuoOayyNhFQoe00SvQMCywtjf0L1DSn18cGA8u8MACXgZqR6UkKWVCWLeOF9oMut/kFOOVlh5+VVx2vuRb4CuvtWKUkCsRybM7KfDJg80RHiqsQ++XLKrm9f9s0x4xu+4lbQlAYNDKni1CiT0D5JR8y3r6hHLIBzODxJVBsiTZACeJqh8PvsCR4Tnh897ZhL3NRqCrYyUnBQYEA9A3jIuowZee3g4n3CvnJ0eBdZ6+B5TuP/qysHhyFPiURWNPWDOlGu3ETcDqxlTbMYa1SjWjQLJlMSf2UzxPkNU7mVdislGC5KOdNi975e0NzXs2/ftNj0bBHhbSVj72z1xIyMh6GgOjNmD8yT1a6Ml9plfqKdhRKCdOkW7gC9d2oLrhGCgOExIjlxavhtp8JzT/EqJYfSsxztOqHRy0Oiq0Bv6Rj0mAg+/4JZYuPV/iqFAAV8Y553O9Lg==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aed2f12f-9ed7-4860-ebbf-08d86077b121
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2020 10:50:46.4289 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lcKHRUYIn7yezpG+zsoU1/7A6aHxh+JmXvTFPIkVvxp9HQ6ZHLDRq5F24libAB4B2EFLZh6gBV1W8RgqYRxgwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3081
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,73 +134,29 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
 
-On 24.09.2020 12:40, Robin Murphy wrote:
-> On 2020-09-24 11:16, Thierry Reding wrote:
->> On Thu, Sep 24, 2020 at 10:46:46AM +0200, Marek Szyprowski wrote:
->>> On 24.09.2020 10:28, Joerg Roedel wrote:
->>>> On Wed, Sep 23, 2020 at 08:48:26AM +0200, Marek Szyprowski wrote:
->>>>> It allows to remap given buffer at the specific IOVA address, 
->>>>> although
->>>>> it doesn't guarantee that those specific addresses won't be later 
->>>>> used
->>>>> by the IOVA allocator. Probably it would make sense to add an API for
->>>>> generic IOMMU-DMA framework to mark the given IOVA range as
->>>>> reserved/unused to protect them.
->>>> There is an API for that, the IOMMU driver can return IOVA reserved
->>>> regions per device and the IOMMU core code will take care of mapping
->>>> these regions and reserving them in the IOVA allocator, so that
->>>> DMA-IOMMU code will not use it for allocations.
->>>>
->>>> Have a look at the iommu_ops->get_resv_regions() and
->>>> iommu_ops->put_resv_regions().
->>>
->>> I know about the reserved regions IOMMU API, but the main problem here,
->>> in case of Exynos, is that those reserved regions won't be created by
->>> the IOMMU driver but by the IOMMU client device. It is just a result 
->>> how
->>> the media drivers manages their IOVA space. They simply have to load
->>> firmware at the IOVA address lower than the any address of the used
->>> buffers.
->>
->> I've been working on adding a way to automatically add direct mappings
->> using reserved-memory regions parsed from device tree, see:
->>
->> https://lore.kernel.org/lkml/20200904130000.691933-1-thierry.reding@gmail.com/
->>
->> Perhaps this can be of use? With that you should be able to add a
->> reserved-memory region somewhere in the lower range that you need for
->> firmware images and have that automatically added as a direct mapping
->> so that it won't be reused later on for dynamic allocations.
->
-> It can't easily be a *direct* mapping though - if the driver has to 
-> use the DMA masks to ensure that everything stays within the 
-> addressable range, then (as far as I'm aware) there's no physical 
-> memory that low down to equal the DMA addresses.
->
-> TBH I'm not convinced that this is a sufficiently common concern to 
-> justify new APIs, or even to try to make overly generic. I think just 
-> implementing a new DMA attribute to say "please allocate/map this 
-> particular request at the lowest DMA address possible" would be good 
-> enough. Such a thing could also serve PCI drivers that actually care 
-> about SAC/DAC to give us more of a chance of removing the "try a 
-> 32-bit mask first" trick from everyone's hotpath...
 
-Hmm, I like the idea of such DMA attribute! It should make things really 
-simple, especially in the drivers. Thanks for the great idea! I will try 
-to implement it then instead of the workarounds I've proposed in 
-s5p-mfc/exynos4-is drivers.
+On 9/24/20 5:34 PM, Joerg Roedel wrote:
+> Hi Suravee,
+> 
+> On Wed, Sep 23, 2020 at 10:14:29AM +0000, Suravee Suthikulpanit wrote:
+>> The framework allows callable implementation of IO page table.
+>> This allows AMD IOMMU driver to switch between different types
+>> of AMD IOMMU page tables (e.g. v1 vs. v2).
+> 
+> Is there a reason you created your own framework, there is already an
+> io-pgtable framework for ARM, maybe that can be reused?
+> 
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Actually, this is the same framework used by ARM codes.
+Sorry if the description is not clear.
+
+Suravee
 
 _______________________________________________
 iommu mailing list
