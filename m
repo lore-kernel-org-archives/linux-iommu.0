@@ -7,83 +7,83 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49EDC4363D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FE0C2D0E2
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:31 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E57123787
+	by mail.kernel.org (Postfix) with ESMTPS id 8E4E0238A1
 	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="i47qAal2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E57123787
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="kX6ueIyp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E4E0238A1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4CEA486AB0;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7C2C386AE3;
 	Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tX2zxGiRWChg; Thu, 24 Sep 2020 15:09:28 +0000 (UTC)
+	with ESMTP id 6z7JMWTdlWjK; Thu, 24 Sep 2020 15:09:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6BD4186B12;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2FE2D86B00;
 	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5583EC0890;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C90DC0890;
 	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 321C4C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D327C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1F01485620
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7BAA287502
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ym1RE7iKX6F0 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
+ with ESMTP id ZFxDraeDk9s9 for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F28A385582
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:35 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEriXw101671;
- Thu, 24 Sep 2020 14:58:18 GMT
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EFEFB874F9
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEtGnj037479;
+ Thu, 24 Sep 2020 14:58:12 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=3RB2GjK9ADEmAIr+xoSAWhTF8Rk2yEY/ISVfaoeNfBs=;
- b=i47qAal2g2PSZT09qgQ22BTMzKVLAaudUpojAuRafVDiFoWkCs9/nyqtZmW65zzD9DC5
- 2U/rwye04mKjbGyGKdvJGX5/JjyssqYgdsyVSgyrEFy7Vom8dMb47tV2lucyYKIBebmV
- qWiotEMA1JCEmqQIsyyHvJrtd4BMFDb39vbN8KUHTy1IFfK0YER3DgRGDIpt+5p85lR1
- SVadiDJRRr82xNt4TkCqLxbUZZxV5wa2JnuChyxMcNA2EhsSAUbPOnb0NZwlSJMDh9lx
- eoFCN79O1LyDe81uG8/kVKa8d6e+3nWCxjjFgRdYFu+vpvhy6cXz8fwVZ3/CWeYzDF/8 og== 
+ bh=VJyk/H2s9dDWeqPz/Xhx7qOnjD9xCnM1/44obMCXtFQ=;
+ b=kX6ueIyp4SVt52upchUJrxzu7FHQ0xT74oC3QL5lhVkRTFND6nN7NKypsp5fUsJDf9pk
+ 958nmSRZVe9Uzex2aTzmQ57Zr83VBw8HEm0VZ7OSGJ2kRX4VuK1WxonM0IXjzUWoeBzi
+ +uUwjKyxRVOC5rZnIgopDVYDLrOXjsyBYHDvF9PvwKIf+HO+wyf4srOQXCvON7UvG3iM
+ EW5CVXAIx95W1opZCIZf9m0KhrjCqt8DPym2k6161BPygIbW8yKCdeGqbmL+F8nc+/Gz
+ nDemT3/HIfxX4drL+lE+M0QtjKTHBDGBCuUIBDc9lcwiA7rrh/hMCFv4ev6p48dqQK0i xg== 
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
- by aserp2130.oracle.com with ESMTP id 33qcpu5qcp-1
+ by aserp2120.oracle.com with ESMTP id 33q5rgq57x-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Thu, 24 Sep 2020 14:58:18 +0000
+ Thu, 24 Sep 2020 14:58:12 +0000
 Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
- by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuT6E126286;
- Thu, 24 Sep 2020 14:58:18 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by aserp3030.oracle.com with ESMTP id 33nujr18dk-1
+ by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuTGG126226;
+ Thu, 24 Sep 2020 14:58:12 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by aserp3030.oracle.com with ESMTP id 33nujr18a6-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 24 Sep 2020 14:58:18 +0000
+ Thu, 24 Sep 2020 14:58:12 +0000
 Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwD0q016152;
- Thu, 24 Sep 2020 14:58:13 GMT
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwAkv002765;
+ Thu, 24 Sep 2020 14:58:10 GMT
 Received: from disposition.us.oracle.com (/10.152.32.81)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Thu, 24 Sep 2020 07:58:12 -0700
+ with ESMTP ; Thu, 24 Sep 2020 07:58:10 -0700
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH 06/13] x86: Add early general TPM interface support for Secure
- Launch
-Date: Thu, 24 Sep 2020 10:58:34 -0400
-Message-Id: <1600959521-24158-7-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH 03/13] x86: Add early SHA support for Secure Launch early
+ measurements
+Date: Thu, 24 Sep 2020 10:58:31 -0400
+Message-Id: <1600959521-24158-4-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
@@ -96,12 +96,12 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
  engine=8.12.0-2006250000 definitions=main-2009240114
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
- mlxlogscore=999
- adultscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
- phishscore=0 spamscore=0 malwarescore=0 clxscore=1015 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009240114
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ impostorscore=0
+ clxscore=1011 suspectscore=2 phishscore=0 malwarescore=0
+ priorityscore=1501 mlxlogscore=999 adultscore=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009240114
 X-Mailman-Approved-At: Thu, 24 Sep 2020 15:09:23 +0000
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
@@ -124,183 +124,469 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+The SHA algorithms are necessary to measure configuration information into
+the TPM as early as possible before using the values. This implementation
+uses the established approach of #including the SHA libraries directly in
+the code since the compressed kernel is not uncompressed at this point.
 
-This commit exposes a minimal general interface for the compressed
-kernel to request the required TPM operations to send measurements to
-a TPM.
+The SHA code here has its origins in the code from the main kernel. That
+code could not be pulled directly into the setup portion of the compressed
+kernel because of other dependencies it pulls in. The result is this is a
+modified copy of that code that still leverages the core SHA algorithms.
 
 Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- arch/x86/boot/compressed/Makefile  |   2 +-
- arch/x86/boot/compressed/tpm/tpm.c | 145 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 146 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/boot/compressed/tpm/tpm.c
+ arch/x86/boot/compressed/Makefile       |   4 +
+ arch/x86/boot/compressed/early_sha1.c   | 104 ++++++++++++++++
+ arch/x86/boot/compressed/early_sha1.h   |  17 +++
+ arch/x86/boot/compressed/early_sha256.c |   6 +
+ arch/x86/boot/compressed/early_sha512.c |   6 +
+ include/linux/sha512.h                  |  21 ++++
+ lib/sha1.c                              |   4 +
+ lib/sha512.c                            | 209 ++++++++++++++++++++++++++++++++
+ 8 files changed, 371 insertions(+)
+ create mode 100644 arch/x86/boot/compressed/early_sha1.c
+ create mode 100644 arch/x86/boot/compressed/early_sha1.h
+ create mode 100644 arch/x86/boot/compressed/early_sha256.c
+ create mode 100644 arch/x86/boot/compressed/early_sha512.c
+ create mode 100644 include/linux/sha512.h
+ create mode 100644 lib/sha512.c
 
 diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index a4308d5..35947b9 100644
+index ff7894f..0fd84b9 100644
 --- a/arch/x86/boot/compressed/Makefile
 +++ b/arch/x86/boot/compressed/Makefile
-@@ -101,7 +101,7 @@ vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA256) += $(obj)/early_sha256.o
- vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA512) += $(obj)/early_sha512.o
- vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/tpm/tpmio.o $(obj)/tpm/tpm_buff.o \
- 	$(obj)/tpm/tis.o $(obj)/tpm/crb.o $(obj)/tpm/tpm1_cmds.o \
--	$(obj)/tpm/tpm2_cmds.o $(obj)/tpm/tpm2_auth.o
-+	$(obj)/tpm/tpm2_cmds.o $(obj)/tpm/tpm2_auth.o $(obj)/tpm/tpm.o
+@@ -96,6 +96,10 @@ vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
+ vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
+ efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
  
++vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/early_sha1.o
++vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA256) += $(obj)/early_sha256.o
++vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA512) += $(obj)/early_sha512.o
++
  # The compressed kernel is built with -fPIC/-fPIE so that a boot loader
  # can place it anywhere in memory and it will still run. However, since
-diff --git a/arch/x86/boot/compressed/tpm/tpm.c b/arch/x86/boot/compressed/tpm/tpm.c
+ # it is executed as-is without any ELF relocation processing performed
+diff --git a/arch/x86/boot/compressed/early_sha1.c b/arch/x86/boot/compressed/early_sha1.c
 new file mode 100644
-index 0000000..0fe62d2
+index 0000000..198c46d
 --- /dev/null
-+++ b/arch/x86/boot/compressed/tpm/tpm.c
-@@ -0,0 +1,145 @@
++++ b/arch/x86/boot/compressed/early_sha1.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2020, Oracle and/or its affiliates.
++ * Copyright (c) 2020 Apertus Solutions, LLC.
++ */
++
++#include <linux/init.h>
++#include <linux/linkage.h>
++#include <linux/string.h>
++#include <asm/boot.h>
++#include <asm/unaligned.h>
++
++#include "early_sha1.h"
++
++#define SHA1_DISABLE_EXPORT
++#include "../../../../lib/sha1.c"
++
++/* The SHA1 implementation in lib/sha1.c was written to get the workspace
++ * buffer as a parameter. This wrapper function provides a container
++ * around a temporary workspace that is cleared after the transform completes.
++ */
++static void __sha_transform(u32 *digest, const char *data)
++{
++	u32 ws[SHA1_WORKSPACE_WORDS];
++
++	sha1_transform(digest, data, ws);
++
++	memset(ws, 0, sizeof(ws));
++	/*
++	 * As this is cryptographic code, prevent the memset 0 from being
++	 * optimized out potentially leaving secrets in memory.
++	 */
++	wmb();
++
++}
++
++void early_sha1_init(struct sha1_state *sctx)
++{
++	sha1_init(sctx->state);
++	sctx->count = 0;
++}
++
++void early_sha1_update(struct sha1_state *sctx,
++		       const u8 *data,
++		       unsigned int len)
++{
++	unsigned int partial = sctx->count % SHA1_BLOCK_SIZE;
++
++	sctx->count += len;
++
++	if (likely((partial + len) >= SHA1_BLOCK_SIZE)) {
++		int blocks;
++
++		if (partial) {
++			int p = SHA1_BLOCK_SIZE - partial;
++
++			memcpy(sctx->buffer + partial, data, p);
++			data += p;
++			len -= p;
++
++			__sha_transform(sctx->state, sctx->buffer);
++		}
++
++		blocks = len / SHA1_BLOCK_SIZE;
++		len %= SHA1_BLOCK_SIZE;
++
++		if (blocks) {
++			while (blocks--) {
++				__sha_transform(sctx->state, data);
++				data += SHA1_BLOCK_SIZE;
++			}
++		}
++		partial = 0;
++	}
++
++	if (len)
++		memcpy(sctx->buffer + partial, data, len);
++}
++
++void early_sha1_final(struct sha1_state *sctx, u8 *out)
++{
++	const int bit_offset = SHA1_BLOCK_SIZE - sizeof(__be64);
++	__be64 *bits = (__be64 *)(sctx->buffer + bit_offset);
++	__be32 *digest = (__be32 *)out;
++	unsigned int partial = sctx->count % SHA1_BLOCK_SIZE;
++	int i;
++
++	sctx->buffer[partial++] = 0x80;
++	if (partial > bit_offset) {
++		memset(sctx->buffer + partial, 0x0, SHA1_BLOCK_SIZE - partial);
++		partial = 0;
++
++		__sha_transform(sctx->state, sctx->buffer);
++	}
++
++	memset(sctx->buffer + partial, 0x0, bit_offset - partial);
++	*bits = cpu_to_be64(sctx->count << 3);
++	__sha_transform(sctx->state, sctx->buffer);
++
++	for (i = 0; i < SHA1_DIGEST_SIZE / sizeof(__be32); i++)
++		put_unaligned_be32(sctx->state[i], digest++);
++
++	*sctx = (struct sha1_state){};
++}
+diff --git a/arch/x86/boot/compressed/early_sha1.h b/arch/x86/boot/compressed/early_sha1.h
+new file mode 100644
+index 0000000..8e19f13
+--- /dev/null
++++ b/arch/x86/boot/compressed/early_sha1.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2020, Oracle and/or its affiliates.
++ */
++
++#ifndef BOOT_COMPRESSED_EARLY_SHA1_H
++#define BOOT_COMPRESSED_EARLY_SHA1_H
++
++#include <crypto/sha.h>
++
++void early_sha1_init(struct sha1_state *sctx);
++void early_sha1_update(struct sha1_state *sctx,
++		       const u8 *data,
++		       unsigned int len);
++void early_sha1_final(struct sha1_state *sctx, u8 *out);
++
++#endif /* BOOT_COMPRESSED_EARLY_SHA1_H */
+diff --git a/arch/x86/boot/compressed/early_sha256.c b/arch/x86/boot/compressed/early_sha256.c
+new file mode 100644
+index 0000000..20cdc43
+--- /dev/null
++++ b/arch/x86/boot/compressed/early_sha256.c
+@@ -0,0 +1,6 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 Apertus Solutions, LLC
-+ *
-+ * Author(s):
-+ *      Daniel P. Smith <dpsmith@apertussolutions.com>
-+ *
 + */
 +
++#include "../../../../lib/crypto/sha256.c"
+diff --git a/arch/x86/boot/compressed/early_sha512.c b/arch/x86/boot/compressed/early_sha512.c
+new file mode 100644
+index 0000000..d352c55
+--- /dev/null
++++ b/arch/x86/boot/compressed/early_sha512.c
+@@ -0,0 +1,6 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ */
++
++#include "../../../../lib/sha512.c"
+diff --git a/include/linux/sha512.h b/include/linux/sha512.h
+new file mode 100644
+index 0000000..d562237
+--- /dev/null
++++ b/include/linux/sha512.h
+@@ -0,0 +1,21 @@
++/*
++ *  Copyright (C) 2020 Apertus Solutions, LLC
++ *
++ *  Author: Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
++ * This source code is licensed under the GNU General Public License,
++ * Version 2.  See the file COPYING for more details.
++ */
++
++#ifndef SHA512_H
++#define SHA512_H
++
 +#include <linux/types.h>
-+#include <linux/const.h>
++#include <crypto/sha.h>
++
++extern int sha512_init(struct sha512_state *sctx);
++extern int sha512_update(struct sha512_state *sctx, const u8 *input,
++			 unsigned int length);
++extern int sha512_final(struct sha512_state *sctx, u8 *hash);
++
++#endif /* SHA512_H */
+diff --git a/lib/sha1.c b/lib/sha1.c
+index 49257a9..f4efe6f 100644
+--- a/lib/sha1.c
++++ b/lib/sha1.c
+@@ -187,7 +187,9 @@ void sha1_transform(__u32 *digest, const char *data, __u32 *array)
+ 	digest[3] += D;
+ 	digest[4] += E;
+ }
++#ifndef SHA1_DISABLE_EXPORT
+ EXPORT_SYMBOL(sha1_transform);
++#endif
+ 
+ /**
+  * sha1_init - initialize the vectors for a SHA1 digest
+@@ -201,4 +203,6 @@ void sha1_init(__u32 *buf)
+ 	buf[3] = 0x10325476;
+ 	buf[4] = 0xc3d2e1f0;
+ }
++#ifndef SHA1_DISABLE_EXPORT
+ EXPORT_SYMBOL(sha1_init);
++#endif
+diff --git a/lib/sha512.c b/lib/sha512.c
+new file mode 100644
+index 0000000..7f91d83
+--- /dev/null
++++ b/lib/sha512.c
+@@ -0,0 +1,209 @@
++/* SHA-512 code by Jean-Luc Cooke <jlcooke@certainkey.com>
++ *
++ * Copyright (c) Jean-Luc Cooke <jlcooke@certainkey.com>
++ * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
++ * Copyright (c) 2003 Kyle McMartin <kyle@debian.org>
++ * Copyright (C) 2015 Linaro Ltd <ard.biesheuvel@linaro.org>
++ * Copyright (C) 2020 Apertus Solutions, LLC <dpsmith@apertussolutions.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2, or (at your option) any
++ * later version.
++ *
++ */
++#include <linux/bitops.h>
++#include <linux/sha512.h>
 +#include <linux/string.h>
-+#include <linux/errno.h>
-+#include "tpm.h"
-+#include "tpmbuff.h"
-+#include "tis.h"
-+#include "crb.h"
-+#include "tpm_common.h"
-+#include "tpm1.h"
-+#include "tpm2.h"
-+#include "tpm2_constants.h"
++#include <asm/byteorder.h>
 +
-+static struct tpm tpm;
++#include <asm/unaligned.h>
 +
-+static void find_interface_and_family(struct tpm *t)
++static inline u64 Ch(u64 x, u64 y, u64 z)
 +{
-+	struct tpm_interface_id intf_id;
-+	struct tpm_intf_capability intf_cap;
-+
-+	/* Sort out whether if it is 1.2 */
-+	intf_cap.val = tpm_read32(TPM_INTF_CAPABILITY_0);
-+	if ((intf_cap.interface_version == TPM12_TIS_INTF_12) ||
-+	    (intf_cap.interface_version == TPM12_TIS_INTF_13)) {
-+		t->family = TPM12;
-+		t->intf = TPM_TIS;
-+		return;
-+	}
-+
-+	/* Assume that it is 2.0 and TIS */
-+	t->family = TPM20;
-+	t->intf = TPM_TIS;
-+
-+	/* Check if the interface is CRB */
-+	intf_id.val = tpm_read32(TPM_INTERFACE_ID_0);
-+	if (intf_id.interface_type == TPM_CRB_INTF_ACTIVE)
-+		t->intf = TPM_CRB;
++        return z ^ (x & (y ^ z));
 +}
 +
-+struct tpm *enable_tpm(void)
++static inline u64 Maj(u64 x, u64 y, u64 z)
 +{
-+	struct tpm *t = &tpm;
-+
-+	find_interface_and_family(t);
-+
-+	switch (t->intf) {
-+	case TPM_TIS:
-+		if (!tis_init(t))
-+			return NULL;
-+		break;
-+	case TPM_CRB:
-+		if (!crb_init(t))
-+			return NULL;
-+		break;
-+	}
-+
-+	return t;
++        return (x & y) | (z & (x | y));
 +}
 +
-+u8 tpm_request_locality(struct tpm *t, u8 l)
++static const u64 sha512_K[80] = {
++        0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL,
++        0xe9b5dba58189dbbcULL, 0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL,
++        0x923f82a4af194f9bULL, 0xab1c5ed5da6d8118ULL, 0xd807aa98a3030242ULL,
++        0x12835b0145706fbeULL, 0x243185be4ee4b28cULL, 0x550c7dc3d5ffb4e2ULL,
++        0x72be5d74f27b896fULL, 0x80deb1fe3b1696b1ULL, 0x9bdc06a725c71235ULL,
++        0xc19bf174cf692694ULL, 0xe49b69c19ef14ad2ULL, 0xefbe4786384f25e3ULL,
++        0x0fc19dc68b8cd5b5ULL, 0x240ca1cc77ac9c65ULL, 0x2de92c6f592b0275ULL,
++        0x4a7484aa6ea6e483ULL, 0x5cb0a9dcbd41fbd4ULL, 0x76f988da831153b5ULL,
++        0x983e5152ee66dfabULL, 0xa831c66d2db43210ULL, 0xb00327c898fb213fULL,
++        0xbf597fc7beef0ee4ULL, 0xc6e00bf33da88fc2ULL, 0xd5a79147930aa725ULL,
++        0x06ca6351e003826fULL, 0x142929670a0e6e70ULL, 0x27b70a8546d22ffcULL,
++        0x2e1b21385c26c926ULL, 0x4d2c6dfc5ac42aedULL, 0x53380d139d95b3dfULL,
++        0x650a73548baf63deULL, 0x766a0abb3c77b2a8ULL, 0x81c2c92e47edaee6ULL,
++        0x92722c851482353bULL, 0xa2bfe8a14cf10364ULL, 0xa81a664bbc423001ULL,
++        0xc24b8b70d0f89791ULL, 0xc76c51a30654be30ULL, 0xd192e819d6ef5218ULL,
++        0xd69906245565a910ULL, 0xf40e35855771202aULL, 0x106aa07032bbd1b8ULL,
++        0x19a4c116b8d2d0c8ULL, 0x1e376c085141ab53ULL, 0x2748774cdf8eeb99ULL,
++        0x34b0bcb5e19b48a8ULL, 0x391c0cb3c5c95a63ULL, 0x4ed8aa4ae3418acbULL,
++        0x5b9cca4f7763e373ULL, 0x682e6ff3d6b2b8a3ULL, 0x748f82ee5defb2fcULL,
++        0x78a5636f43172f60ULL, 0x84c87814a1f0ab72ULL, 0x8cc702081a6439ecULL,
++        0x90befffa23631e28ULL, 0xa4506cebde82bde9ULL, 0xbef9a3f7b2c67915ULL,
++        0xc67178f2e372532bULL, 0xca273eceea26619cULL, 0xd186b8c721c0c207ULL,
++        0xeada7dd6cde0eb1eULL, 0xf57d4f7fee6ed178ULL, 0x06f067aa72176fbaULL,
++        0x0a637dc5a2c898a6ULL, 0x113f9804bef90daeULL, 0x1b710b35131c471bULL,
++        0x28db77f523047d84ULL, 0x32caab7b40c72493ULL, 0x3c9ebe0a15c9bebcULL,
++        0x431d67c49c100d4cULL, 0x4cc5d4becb3e42b6ULL, 0x597f299cfc657e2aULL,
++        0x5fcb6fab3ad6faecULL, 0x6c44198c4a475817ULL,
++};
++
++#define e0(x)       (ror64(x,28) ^ ror64(x,34) ^ ror64(x,39))
++#define e1(x)       (ror64(x,14) ^ ror64(x,18) ^ ror64(x,41))
++#define s0(x)       (ror64(x, 1) ^ ror64(x, 8) ^ (x >> 7))
++#define s1(x)       (ror64(x,19) ^ ror64(x,61) ^ (x >> 6))
++
++static inline void LOAD_OP(int I, u64 *W, const u8 *input)
 +{
-+	u8 ret = TPM_NO_LOCALITY;
-+
-+	ret = t->ops.request_locality(l);
-+
-+	if (ret < TPM_MAX_LOCALITY)
-+		t->buff = alloc_tpmbuff(t->intf, ret);
-+
-+	return ret;
++	W[I] = get_unaligned_be64((__u64 *)input + I);
 +}
 +
-+void tpm_relinquish_locality(struct tpm *t)
++static inline void BLEND_OP(int I, u64 *W)
 +{
-+	t->ops.relinquish_locality();
-+
-+	free_tpmbuff(t->buff, t->intf);
++	W[I & 15] += s1(W[(I-2) & 15]) + W[(I-7) & 15] + s0(W[(I-15) & 15]);
 +}
 +
-+#define MAX_TPM_EXTEND_SIZE 70 /* TPM2 SHA512 is the largest */
-+int tpm_extend_pcr(struct tpm *t, u32 pcr, u16 algo,
-+		u8 *digest)
++static void sha512_transform(u64 *state, const u8 *input)
 +{
-+	int ret = 0;
++	u64 a, b, c, d, e, f, g, h, t1, t2;
 +
-+	if (t->buff == NULL)
-+		return -EINVAL;
++	int i;
++	u64 W[16];
 +
-+	if (t->family == TPM12) {
-+		struct tpm_digest d;
++	/* load the state into our registers */
++	a=state[0];   b=state[1];   c=state[2];   d=state[3];
++	e=state[4];   f=state[5];   g=state[6];   h=state[7];
 +
-+		if (algo != TPM_ALG_SHA1)
-+			return -EINVAL;
++	/* now iterate */
++	for (i=0; i<80; i+=8) {
++		if (!(i & 8)) {
++			int j;
 +
-+		d.pcr = pcr;
-+		memcpy((void *)d.digest.sha1.digest,
-+			digest, SHA1_DIGEST_SIZE);
-+
-+		ret = tpm1_pcr_extend(t, &d);
-+	} else if (t->family == TPM20) {
-+		struct tpml_digest_values *d;
-+		u8 buf[MAX_TPM_EXTEND_SIZE];
-+
-+		d = (struct tpml_digest_values *) buf;
-+		d->count = 1;
-+		d->digests->alg = algo;
-+		switch (algo) {
-+		case TPM_ALG_SHA1:
-+			memcpy(d->digests->digest, digest, SHA1_SIZE);
-+			break;
-+		case TPM_ALG_SHA256:
-+			memcpy(d->digests->digest, digest, SHA256_SIZE);
-+			break;
-+		case TPM_ALG_SHA384:
-+			memcpy(d->digests->digest, digest, SHA384_SIZE);
-+			break;
-+		case TPM_ALG_SHA512:
-+			memcpy(d->digests->digest, digest, SHA512_SIZE);
-+			break;
-+		case TPM_ALG_SM3_256:
-+			memcpy(d->digests->digest, digest, SM3256_SIZE);
-+			break;
-+		default:
-+			return -EINVAL;
++			if (i < 16) {
++				/* load the input */
++				for (j = 0; j < 16; j++)
++					LOAD_OP(i + j, W, input);
++			} else {
++				for (j = 0; j < 16; j++) {
++					BLEND_OP(i + j, W);
++				}
++			}
 +		}
 +
-+		ret = tpm2_extend_pcr(t, pcr, d);
-+	} else
-+		ret = -EINVAL;
++		t1 = h + e1(e) + Ch(e,f,g) + sha512_K[i  ] + W[(i & 15)];
++		t2 = e0(a) + Maj(a,b,c);    d+=t1;    h=t1+t2;
++		t1 = g + e1(d) + Ch(d,e,f) + sha512_K[i+1] + W[(i & 15) + 1];
++		t2 = e0(h) + Maj(h,a,b);    c+=t1;    g=t1+t2;
++		t1 = f + e1(c) + Ch(c,d,e) + sha512_K[i+2] + W[(i & 15) + 2];
++		t2 = e0(g) + Maj(g,h,a);    b+=t1;    f=t1+t2;
++		t1 = e + e1(b) + Ch(b,c,d) + sha512_K[i+3] + W[(i & 15) + 3];
++		t2 = e0(f) + Maj(f,g,h);    a+=t1;    e=t1+t2;
++		t1 = d + e1(a) + Ch(a,b,c) + sha512_K[i+4] + W[(i & 15) + 4];
++		t2 = e0(e) + Maj(e,f,g);    h+=t1;    d=t1+t2;
++		t1 = c + e1(h) + Ch(h,a,b) + sha512_K[i+5] + W[(i & 15) + 5];
++		t2 = e0(d) + Maj(d,e,f);    g+=t1;    c=t1+t2;
++		t1 = b + e1(g) + Ch(g,h,a) + sha512_K[i+6] + W[(i & 15) + 6];
++		t2 = e0(c) + Maj(c,d,e);    f+=t1;    b=t1+t2;
++		t1 = a + e1(f) + Ch(f,g,h) + sha512_K[i+7] + W[(i & 15) + 7];
++		t2 = e0(b) + Maj(b,c,d);    e+=t1;    a=t1+t2;
++	}
 +
-+	return ret;
++	state[0] += a; state[1] += b; state[2] += c; state[3] += d;
++	state[4] += e; state[5] += f; state[6] += g; state[7] += h;
++
++	/* erase our data */
++	a = b = c = d = e = f = g = h = t1 = t2 = 0;
 +}
 +
-+void free_tpm(struct tpm *t)
++int sha512_init(struct sha512_state *sctx)
 +{
-+	tpm_relinquish_locality(t);
++	sctx->state[0] = SHA512_H0;
++	sctx->state[1] = SHA512_H1;
++	sctx->state[2] = SHA512_H2;
++	sctx->state[3] = SHA512_H3;
++	sctx->state[4] = SHA512_H4;
++	sctx->state[5] = SHA512_H5;
++	sctx->state[6] = SHA512_H6;
++	sctx->state[7] = SHA512_H7;
++	sctx->count[0] = sctx->count[1] = 0;
++
++	return 0;
++}
++
++int sha512_update(struct sha512_state *sctx, const u8 *data, unsigned int len)
++{
++	unsigned int partial = sctx->count[0] % SHA512_BLOCK_SIZE;
++
++	sctx->count[0] += len;
++	if (sctx->count[0] < len)
++		sctx->count[1]++;
++
++	if (likely((partial + len) >= SHA512_BLOCK_SIZE)) {
++		int blocks;
++
++		if (partial) {
++			int p = SHA512_BLOCK_SIZE - partial;
++
++			memcpy(sctx->buf + partial, data, p);
++			data += p;
++			len -= p;
++
++			sha512_transform(sctx->state, sctx->buf);
++		}
++
++		blocks = len / SHA512_BLOCK_SIZE;
++		len %= SHA512_BLOCK_SIZE;
++
++		if (blocks) {
++			while (blocks--) {
++				sha512_transform(sctx->state, data);
++				data += SHA512_BLOCK_SIZE;
++			}
++		}
++		partial = 0;
++	}
++	if (len)
++		memcpy(sctx->buf + partial, data, len);
++
++	return 0;
++}
++
++int sha512_final(struct sha512_state *sctx, u8 *out)
++{
++	const int bit_offset = SHA512_BLOCK_SIZE - sizeof(__be64[2]);
++	__be64 *bits = (__be64 *)(sctx->buf + bit_offset);
++	__be64 *digest = (__be64 *)out;
++	unsigned int partial = sctx->count[0] % SHA512_BLOCK_SIZE;
++	unsigned int digest_size = SHA512_DIGEST_SIZE;
++	int i;
++
++	sctx->buf[partial++] = 0x80;
++	if (partial > bit_offset) {
++		memset(sctx->buf + partial, 0x0, SHA512_BLOCK_SIZE - partial);
++		partial = 0;
++
++		sha512_transform(sctx->state, sctx->buf);
++	}
++
++	memset(sctx->buf + partial, 0x0, bit_offset - partial);
++	bits[0] = cpu_to_be64(sctx->count[1] << 3 | sctx->count[0] >> 61);
++	bits[1] = cpu_to_be64(sctx->count[0] << 3);
++	sha512_transform(sctx->state, sctx->buf);
++
++	for (i = 0; digest_size > 0; i++, digest_size -= sizeof(__be64))
++		put_unaligned_be64(sctx->state[i], digest++);
++
++	*sctx = (struct sha512_state){};
++	return 0;
 +}
 -- 
 1.8.3.1
