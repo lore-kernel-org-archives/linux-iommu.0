@@ -2,101 +2,76 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED94C2D0E2
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:01:41 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C898C4363D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:09:03 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B123B20BED
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:01:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 970AB221EB
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 14:09:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ui9d2C/n"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B123B20BED
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="gq8l0jHF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 970AB221EB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 609A986C2C;
-	Thu, 24 Sep 2020 14:01:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1E2B386A14;
+	Thu, 24 Sep 2020 14:09:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jYeCUtwcz9js; Thu, 24 Sep 2020 14:01:39 +0000 (UTC)
+	with ESMTP id jajaDEzOEhFG; Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6382986B96;
-	Thu, 24 Sep 2020 14:01:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 80A9184D2E;
+	Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 396BBC0889;
-	Thu, 24 Sep 2020 14:01:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 55941C0889;
+	Thu, 24 Sep 2020 14:09:01 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5B954C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:01:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37B6CC0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3FF8386BFA
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:01:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2665B85725
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8hl4Tnjcl2QU for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 14:01:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D622986B96
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:01:35 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id j2so3942371wrx.7
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 07:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=PvtAp/gMbJp+plte2qkDTSFrKB4IybETEeiyFrm6dyE=;
- b=ui9d2C/njxa6HWTxaM30N36rzyTPPb87ZS5luf/VP8xxRj+4u8k/Xax6QyCNXSMZGd
- 3KRT3tX0sYEJhOgqFrKQYqIOOSZDSf8Jf5F+eahDyO6svjlcUntWQ2JacrIVNmevrSb3
- BD5Qm2FoHGx0JZmhZY5XUzBFi1wu1GCOlf4OAglU9HrssNhtzh4EB0JoIjWVsdINJBgQ
- CxGcjw+qpfkrrkieP2VRJ1XCGZYmyDmk6ncV730AhG14O65D0878jndbweAofltNc4cx
- f+bnYgnZJeHqNv9OLa8kjhsxxNn9ae5eJ9iMei0iJJM0a8vuR0HJ2GUCp5+RFnOkF+9c
- k5zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=PvtAp/gMbJp+plte2qkDTSFrKB4IybETEeiyFrm6dyE=;
- b=qpoHVRMMI1IYnjEhk1Y58DHLzQA+/wEOW3flcSPYtF/tbzKPtOxNDHRj22RSRGHxEb
- 1gL1o+6UyIb36JcQWOlMxsG0jzInFOa28bIEaxFpvsC/aHp9rpiQc2D/THCUAydUGYlg
- 0P8rVNXC7E8LnsefVwFQZYaTRi4dEKzDIHQd0vSfCA/11el6zqV+vBgVIGpMYHMnFc4r
- aY8FLPVoAVmvqpcDAX8SmleEmO0vsXvteTsFOKYGH/qSUV4YMJW+79e5P944v2/wnbh8
- youYxM6qAcsrY6U8+UfVB3m7jTo7IZY7hUsPEKVK82FBWHkG2ezzjqzz6xTRjNZq5GCK
- Amyg==
-X-Gm-Message-State: AOAM531Kps9g2H4lvVHTc0LNYaqzO5Xo5Oow2cwNLccykfexoQ6AK8uB
- u8sLQtsGf5jrp2zuoKwHk5I=
-X-Google-Smtp-Source: ABdhPJxm41+NTdudwRk4qkWIOnJAoPI3MsHtF10Qpwy/AtTYga7ouFrdRG5QKjcga76IY1nE/d6jJQ==
-X-Received: by 2002:adf:e802:: with SMTP id o2mr5187100wrm.309.1600956094093; 
- Thu, 24 Sep 2020 07:01:34 -0700 (PDT)
-Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id t17sm3718241wrx.82.2020.09.24.07.01.32
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 24 Sep 2020 07:01:32 -0700 (PDT)
-Date: Thu, 24 Sep 2020 16:01:30 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: reserved-memory: Document "active"
- property
-Message-ID: <20200924140130.GA2527337@ulmo>
-References: <20200904130000.691933-1-thierry.reding@gmail.com>
- <d3d69cb4-b0f9-40b0-b526-52fdc1a4b876@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <d3d69cb4-b0f9-40b0-b526-52fdc1a4b876@gmail.com>
-User-Agent: Mutt/1.14.7 (2020-08-29)
-Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- Will Deacon <will@kernel.org>
+ with ESMTP id 4U6dip9zP68G for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 14:08:57 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D1BDA84FBB
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:08:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:Date:Cc:To:
+ From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=qUkinNTJpuQCd3BkAo9TSZAt85sai4eMgq79ZDgCZBw=; b=gq8l0jHFt1aWIwETbBNHpPVPdp
+ OKdnESxvWWVLrcziud5ktHgTg/9Mn3HvOuFx9CGeKxEFI/IbBnYvMGsJQhU1+BWisXxoqXVoSk/DK
+ hNDVzwemAFx03j6BanGOiYWfpwhnsTBXY+5Iu0ISqQp6k9C2T6QPqhWKVbPVqZ3ynVpNf1ezzR7fP
+ z1GWb/J5xVYDmwChPyIsz9jZShi8RAigATbgZh7H4OiYxCYf4KZ8Qh0zurvIGl/NiDSWEUliFfmIP
+ HRSVFiuOBkzg7PV1YtlTtxBVGwnxqz/bV3pz/BCSmxpM6oFWkt5r8/6lvHdjNSn2K775gdplxvFFV
+ 7HyQ1Lxg==;
+Received: from 54-240-197-236.amazon.com ([54.240.197.236]
+ helo=freeip.amazon.com)
+ by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kLRvQ-0002zZ-B7; Thu, 24 Sep 2020 14:08:44 +0000
+Message-ID: <549928db2de6532117f36c9c810373c14cf76f51.camel@infradead.org>
+Subject: [PATCH] iommu/vt-d: gracefully handle DMAR units with no supported
+ address widths
+From: David Woodhouse <dwmw2@infradead.org>
+To: Joerg Roedel <joro@8bytes.org>
+Date: Thu, 24 Sep 2020 15:08:42 +0100
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
+ merlin.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,160 +84,216 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2744833123206694863=="
+Content-Type: multipart/mixed; boundary="===============8162715939987933589=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============2744833123206694863==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xHFwDpU9dbj6ez1V"
-Content-Disposition: inline
+--===============8162715939987933589==
+Content-Type: multipart/signed; micalg="sha-256";
+	protocol="application/x-pkcs7-signature";
+	boundary="=-/OIm2ioxsVwGHUNdEQ+l"
 
 
---xHFwDpU9dbj6ez1V
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+--=-/OIm2ioxsVwGHUNdEQ+l
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 24, 2020 at 04:23:59PM +0300, Dmitry Osipenko wrote:
-> 04.09.2020 15:59, Thierry Reding =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > Reserved memory regions can be marked as "active" if hardware is
-> > expected to access the regions during boot and before the operating
-> > system can take control. One example where this is useful is for the
-> > operating system to infer whether the region needs to be identity-
-> > mapped through an IOMMU.
-> >=20
-> > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > ---
-> >  .../bindings/reserved-memory/reserved-memory.txt           | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved=
--memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-me=
-mory.txt
-> > index 4dd20de6977f..163d2927e4fc 100644
-> > --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory=
-=2Etxt
-> > +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory=
-=2Etxt
-> > @@ -63,6 +63,13 @@ reusable (optional) - empty property
-> >        able to reclaim it back. Typically that means that the operating
-> >        system can use that region to store volatile or cached data that
-> >        can be otherwise regenerated or migrated elsewhere.
-> > +active (optional) - empty property
-> > +    - If this property is set for a reserved memory region, it indicat=
-es
-> > +      that some piece of hardware may be actively accessing this regio=
-n.
-> > +      Should the operating system want to enable IOMMU protection for a
-> > +      device, all active memory regions must have been identity-mapped
-> > +      in order to ensure that non-quiescent hardware during boot can
-> > +      continue to access the memory.
-> > =20
-> >  Linux implementation note:
-> >  - If a "linux,cma-default" property is present, then Linux will use the
-> >=20
->=20
-> Hi,
->=20
-> Could you please explain what devices need this quirk? I see that you're
-> targeting Tegra SMMU driver, which means that it should be some pre-T186
-> device.
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-Primarily I'm looking at Tegra210 and later, because on earlier devices
-the bootloader doesn't consistently initialize display. I know that it
-does on some devices, but not all of them. This same code should also
-work on Tegra186 and later (with an ARM SMMU) although the situation is
-slightly more complicated there because IOMMU translations will fault by
-default long before these identity mappings can be established.
+Instead of bailing out completely, such a unit can still be used for
+interrupt remapping.
 
-> Is this reservation needed for some device that has display
-> hardwired to a very specific IOMMU domain at the boot time?
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+---
+ drivers/iommu/intel/dmar.c | 46 +++++++++++++++++++++++++-------------
+ 1 file changed, 31 insertions(+), 15 deletions(-)
 
-No, this is only used to convey information about the active framebuffer
-to the kernel. In practice the DMA/IOMMU code will use this information
-to establish a 1:1 mapping on whatever IOMMU domain that was picked for
-display.
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 93e6345f3414..4420a759f095 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1024,8 +1024,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ {
+ 	struct intel_iommu *iommu;
+ 	u32 ver, sts;
+-	int agaw =3D 0;
+-	int msagaw =3D 0;
++	int agaw =3D -1;
++	int msagaw =3D -1;
+ 	int err;
+=20
+ 	if (!drhd->reg_base_addr) {
+@@ -1050,17 +1050,28 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	}
+=20
+ 	err =3D -EINVAL;
+-	agaw =3D iommu_calculate_agaw(iommu);
+-	if (agaw < 0) {
+-		pr_err("Cannot get a valid agaw for iommu (seq_id =3D %d)\n",
+-			iommu->seq_id);
+-		goto err_unmap;
+-	}
+-	msagaw =3D iommu_calculate_max_sagaw(iommu);
+-	if (msagaw < 0) {
+-		pr_err("Cannot get a valid max agaw for iommu (seq_id =3D %d)\n",
+-			iommu->seq_id);
+-		goto err_unmap;
++	if (cap_sagaw(iommu->cap) =3D=3D 0) {
++		pr_info("%s: No supported address widths. Not attempting DMA translation=
+.\n",
++			iommu->name);
++		drhd->ignored =3D 1;
++	}
++
++	if (!drhd->ignored) {
++		agaw =3D iommu_calculate_agaw(iommu);
++		if (agaw < 0) {
++			pr_err("Cannot get a valid agaw for iommu (seq_id =3D %d)\n",
++			       iommu->seq_id);
++			drhd->ignored =3D 1;
++		}
++	}
++	if (!drhd->ignored) {
++		msagaw =3D iommu_calculate_max_sagaw(iommu);
++		if (msagaw < 0) {
++			pr_err("Cannot get a valid max agaw for iommu (seq_id =3D %d)\n",
++			       iommu->seq_id);
++			drhd->ignored =3D 1;
++			agaw =3D -1;
++		}
+ 	}
+ 	iommu->agaw =3D agaw;
+ 	iommu->msagaw =3D msagaw;
+@@ -1087,7 +1098,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+=20
+ 	raw_spin_lock_init(&iommu->register_lock);
+=20
+-	if (intel_iommu_enabled) {
++	/*
++	 * This is only for hotplug; at boot time intel_iommu_enabled won't
++	 * be set yet. When intel_iommu_init() runs, it registers the units
++	 * present at boot time, then sets intel_iommu_enabled.
++	 */
++	if (intel_iommu_enabled && !drhd->ignored) {
+ 		err =3D iommu_device_sysfs_add(&iommu->iommu, NULL,
+ 					     intel_iommu_groups,
+ 					     "%s", iommu->name);
+@@ -1117,7 +1133,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+=20
+ static void free_iommu(struct intel_iommu *iommu)
+ {
+-	if (intel_iommu_enabled) {
++	if (intel_iommu_enabled && iommu->iommu.ops) {
+ 		iommu_device_unregister(&iommu->iommu);
+ 		iommu_device_sysfs_remove(&iommu->iommu);
+ 	}
+--=20
+2.17.1
 
-> If you're targeting devices that don't have IOMMU enabled by default at
-> the boot time, then this approach won't work for the existing devices
-> which won't ever get an updated bootloader.
 
-If the devices don't use an IOMMU, then there should be no problem. The
-extra reserved-memory nodes would still be necessary to ensure that the
-kernel doesn't reuse the framebuffer memory for the slab allocator, but
-if no IOMMU is used, then the display controller accessing the memory
-isn't going to cause problems other than perhaps scanning out data that
-is no longer a framebuffer.
+--=-/OIm2ioxsVwGHUNdEQ+l
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
-There should also be no problem for devices with an old bootloader
-because this code is triggered by the presence of a reserved-memory node
-referenced via the memory-region property. Devices with an old
-bootloader should continue to work as they did before. Although I
-suppose they would start faulting once we enable DMA/IOMMU integration
-for Tegra SMMU if they have a bootloader that does initialize display to
-actively scan out during boot.
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAw
+OTI0MTQwODQyWjAvBgkqhkiG9w0BCQQxIgQgqddjXCsqz9ZQrvEApCz2RlU+ZNkB3s82tunmOlHO
+hYQwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAFZTjTgsTb3aue8vLP0aiogbEX7+mAUl3Cs4cpCDXP9CWejNqDOXQH9CF7PqmuQd
+dl7TL60TXs4xyAkPiz0gxqVtSOL1GcHSwOBs1qS+zFLRQJtHCGjnIlQPOv32k7DgwsuR6tJ9dHBC
+/vA0Kq8GbaaAn8sa12Zn02eOwcRbiRNgo5PSQy8X0PZ1ylkMAtCdR6jXQGIRRmUcCTE4Ipg3OklE
+lRnbnSUte8U54iZhyMLCSnsJrj5pLz4C2SG0Hrifu3Zbm8bWJL1vLIfbbHjQuIvvbpLWlM0B9who
+o2mTRtYDQuEUhzBnCquSOBdyJv0lS10iYzro8MXrZP+YD7nqsbcAAAAAAAA=
 
-> I think Robin Murphy already suggested that we should simply create
-> a dummy "identity" IOMMU domain by default for the DRM/VDE devices and
-> then replace it with an explicitly created domain within the drivers.
 
-I don't recall reading about that suggestion. So does this mean that for
-certain devices we'd want to basically passthrough by default and then
-at some point during boot take over with a properly managed IOMMU
-domain?
+--=-/OIm2ioxsVwGHUNdEQ+l--
 
-The primary goal here is to move towards using the DMA API rather than
-the IOMMU API directly, so we don't really have the option of replacing
-with an explicitly created domain. Unless we have code in the DMA/IOMMU
-code that does this somehow.
 
-But I'm not sure what would be a good way to mark certain devices as
-needing an identity domain by default. Do we still use the reserved-
-memory node for that? That would still require some sort of flag to
-specify which reserved-memory regions would need this identity mapping
-because, as was pointed out in earlier review, some devices may have
-reserved-memory regions that are not meant to be identity mapped.
-
-> Secondly, all NVIDIA bootloaders are passing tegra_fbmem=3D... via
-> kernel's cmdline with the physical location of the framebuffer in
-> memory. Maybe we could support this option?
-
-I'm not a big fan of that command-line option, but I also realize that
-for older bootloaders that's probably the only option we have. I don't
-suppose all of the devices support U-Boot? Because ideally we'd just
-translate from tegra_fbmem=3D... to reserved-memory region there so that
-we don't have to carry backwards-compatibility code for these purely
-downstream bootloaders.
-
-Thierry
-
---xHFwDpU9dbj6ez1V
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9sprcACgkQ3SOs138+
-s6E83RAAtbksMdpb/WjOX1mRTZMCHphwlHM8hmGCQYBF2sbzAaN17Uc0el1TiW+j
-02ZpaFR4lc6CeDiGIw2bA9jAMmQrmxZHnjsrT4lrJ3X8lANGTBX87R2wzL87SzN+
-Kdv1lMj4asVVXT8lrpTJGaho55dY3LV1ZjCKNLBsG8ABi6qzR/wxhts+X3brAfpA
-mTy6eOrc+kDqqF8PW3THGSv64SF2a/kf/IOFxeS+8cIasWSad614lKh20WTQbHBE
-x+VEY/ZjHc0tGY3fWUu7vieFSQLSDuEcPzBr21ZfUj/vCA20XIjP0xwmCdq/2YxV
-UWT+YIvABIdZWoeoqsuDtMp1wBpA1OBICDbeDGb2as7lxZEgIxCfSNFlSv4ZraeB
-W2+2CfbAdOX+unFJr4O5TZGnj25VQHCB9/Jy0Fzmj8KQUrR+g/71+urrUrJN4xzm
-MetJLcnCwa7zeBAMTGA5QK1BjdB0Z1q7NT3BSEbSs6H0gecK3kFXJe/Z+qFX3zEC
-Hx4kggwk6zgGQmXDS9EeCiaPqwABdRC5rWEu77piikvDgaMgcAgTinSX7N/85h3w
-CxSKjUVUZsu/n1mSug+tT5m5SrosffBieLeSWflDgz4bbp5c90v8Ky2TuBJ684tS
-22IYNc/yhqXbcMQrOPwnTDv1MQsK10ZO+eI1wrqQKMHjJGoFpFY=
-=y4qb
------END PGP SIGNATURE-----
-
---xHFwDpU9dbj6ez1V--
-
---===============2744833123206694863==
+--===============8162715939987933589==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -272,4 +303,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2744833123206694863==--
+--===============8162715939987933589==--
+
