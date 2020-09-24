@@ -2,97 +2,66 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1092BC4363D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:54:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00248C4727D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:55:41 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 81DBE2396E
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:54:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TWzYbEwC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81DBE2396E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8894E2076D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 09:55:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8894E2076D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4760F869F2;
-	Thu, 24 Sep 2020 09:54:23 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D26AE2E0F1;
+	Thu, 24 Sep 2020 09:55:40 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GZq2kp1eYv4f; Thu, 24 Sep 2020 09:55:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 2A99B2E0EB;
+	Thu, 24 Sep 2020 09:55:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 15C75C0859;
+	Thu, 24 Sep 2020 09:55:38 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D4ED6C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:55:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C3B18869EA
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:55:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aDKpDn70n-Eh; Thu, 24 Sep 2020 09:54:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CF661869C9;
-	Thu, 24 Sep 2020 09:54:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BCBD7C0859;
-	Thu, 24 Sep 2020 09:54:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71DF6C1AD5
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:54:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5D5868749F
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:54:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SjooPqBkO-Tb for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 09:54:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 63A6087499
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:54:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1600941258;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=iwnMqewnq7ETb4/KjSnn5wUZJcaPqFpokMzIrZDSlaw=;
- b=TWzYbEwC9sY/uRq0ulQ0xOXAez3ZCKdjQ3jdz7M/8EhFepBPUQYSmFLFuzQx3HSlsgYZnv
- QeFXXRLohabfDnZ1m0vRG/FINRz9PeSQgCRWV23uZNsdRxMi0kesk8+EviwKF+4OiXcLK8
- 1toR67qf38F0k9wHDDvqeSWwtDA0ABE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-585-ZLbeInCJOTG2dDcQi8I8lQ-1; Thu, 24 Sep 2020 05:54:16 -0400
-X-MC-Unique: ZLbeInCJOTG2dDcQi8I8lQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
- [10.5.11.16])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 609F18030CD;
- Thu, 24 Sep 2020 09:54:14 +0000 (UTC)
-Received: from [10.36.112.105] (ovpn-112-105.ams2.redhat.com [10.36.112.105])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 83BD95C1DC;
- Thu, 24 Sep 2020 09:54:08 +0000 (UTC)
-Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
-To: "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>,
- Al Stone <ahs3@redhat.com>
-References: <20200821131540.2801801-1-jean-philippe@linaro.org>
- <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
- <20200924045958-mutt-send-email-mst@kernel.org>
- <20200924092129.GH27174@8bytes.org>
- <20200924053159-mutt-send-email-mst@kernel.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <d54b674e-2626-fc73-d663-136573c32b8a@redhat.com>
-Date: Thu, 24 Sep 2020 11:54:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ with ESMTP id EWwV6Ces0l0F for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 09:55:36 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 49EEE869BE
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 09:55:36 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id EAEBB295; Thu, 24 Sep 2020 11:55:33 +0200 (CEST)
+Date: Thu, 24 Sep 2020 11:55:32 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 0/5] iommu aux-domain APIs extensions
+Message-ID: <20200924095532.GK27174@8bytes.org>
+References: <20200922061042.31633-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200924053159-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
- virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org,
- jasowang@redhat.com, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- bhelgaas@google.com
+Content-Disposition: inline
+In-Reply-To: <20200922061042.31633-1-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,62 +79,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-Adding Al in the loop
-
-On 9/24/20 11:38 AM, Michael S. Tsirkin wrote:
-> On Thu, Sep 24, 2020 at 11:21:29AM +0200, Joerg Roedel wrote:
->> On Thu, Sep 24, 2020 at 05:00:35AM -0400, Michael S. Tsirkin wrote:
->>> OK so this looks good. Can you pls repost with the minor tweak
->>> suggested and all acks included, and I will queue this?
->>
->> My NACK still stands, as long as a few questions are open:
->>
->> 	1) The format used here will be the same as in the ACPI table? I
->> 	   think the answer to this questions must be Yes, so this leads
->> 	   to the real question:
+On Tue, Sep 22, 2020 at 02:10:37PM +0800, Lu Baolu wrote:
+> Hi Jorge and Alex,
 > 
-> I am not sure it's a must.
-> We can always tweak the parser if there are slight differences
-> between ACPI and virtio formats.
+> A description of this patch series could be found here.
 > 
-> But we do want the virtio format used here to be approved by the virtio
-> TC, so it won't change.
-> 
-> Eric, Jean-Philippe, does one of you intend to create a github issue
-> and request a ballot for the TC? It's been posted end of August with no
-> changes ...
-Jean-Philippe, would you?
-> 
->> 	2) Has the ACPI table format stabalized already? If and only if
->> 	   the answer is Yes I will Ack these patches. We don't need to
->> 	   wait until the ACPI table format is published in a
->> 	   specification update, but at least some certainty that it
->> 	   will not change in incompatible ways anymore is needed.
->>
+> https://lore.kernel.org/linux-iommu/20200901033422.22249-1-baolu.lu@linux.intel.com/
 
-Al, do you have any news about the the VIOT definition submission to
-the UEFI ASWG?
+Hmm, I am wondering if we can avoid all this hassle and special APIs by
+making the mdev framework more visible outside of the vfio code. There
+is an underlying bus implementation for mdevs, so is there a reason
+those can't use the standard iommu-core code to setup IOMMU mappings?
 
-Thank you in advance
+What speaks against doing:
 
-Best Regards
+	- IOMMU drivers capable of handling mdevs register iommu-ops
+	  for the mdev_bus.
 
-Eric
+	- iommu_domain_alloc() takes bus_type as parameter, so there can
+	  be special domains be allocated for mdevs.
 
+	- Group creation and domain allocation will happen
+	  automatically in the iommu-core when a new mdev is registered
+	  through device-driver core code.
 
-> 
-> Not that I know, but I don't see why it's a must.
-> 
->> So what progress has been made with the ACPI table specification, is it
->> just a matter of time to get it approved or are there concerns?
->>
->> Regards,
->>
->> 	Joerg
-> 
+	- There should be no need for special iommu_aux_* APIs, as one
+	  can attach a domain directly to &mdev->dev with
+	  iommu_attach_device(domain, &mdev->dev).
 
+Doing it this way will probably also keep the mdev-special code in VFIO
+small.
+
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
