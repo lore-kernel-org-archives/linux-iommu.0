@@ -2,62 +2,80 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCF3C4363D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:34:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68226C2D0E2
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:40:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5539823772
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:34:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5539823772
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id A44B022208
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 10:40:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A44B022208
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E3A22204BD;
-	Thu, 24 Sep 2020 10:34:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2B98386A88;
+	Thu, 24 Sep 2020 10:40:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LU84u6WQ36yZ; Thu, 24 Sep 2020 10:34:53 +0000 (UTC)
+	with ESMTP id MW6ZJ-Lhgawb; Thu, 24 Sep 2020 10:40:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E1E0A228BD;
-	Thu, 24 Sep 2020 10:34:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EFD6F86A2B;
+	Thu, 24 Sep 2020 10:40:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D14D7C0889;
-	Thu, 24 Sep 2020 10:34:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD1FBC0889;
+	Thu, 24 Sep 2020 10:40:30 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D800C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:34:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77099C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:40:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 267C286B9E
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:34:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 645D686BA6
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:40:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bKPzCZwuFIqr for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 10:34:51 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8674086BA8
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:34:51 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id C40D5295; Thu, 24 Sep 2020 12:34:49 +0200 (CEST)
-Date: Thu, 24 Sep 2020 12:34:48 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH 00/13] iommu: amd: Add Generic IO Page Table Framework
- Support
-Message-ID: <20200924103448.GO27174@8bytes.org>
-References: <20200923101442.73157-1-suravee.suthikulpanit@amd.com>
+ with ESMTP id rXtKDHG7y5Gx for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 10:40:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3DB9086B9E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 10:40:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 85F17113E;
+ Thu, 24 Sep 2020 03:40:27 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5927D3F73B;
+ Thu, 24 Sep 2020 03:40:25 -0700 (PDT)
+Subject: Re: IOVA allocation dependency between firmware buffer and remaining
+ buffers
+To: Thierry Reding <thierry.reding@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+References: <CAEC9eQOX9BHX4v5aY2cfCT=T-ZHA7y0xF7aiZhW9xzG4fme36Q@mail.gmail.com>
+ <CAEC9eQPaeF9=Li74x9RrSHyDgRZ6b653yBRu6EYsaU+eSj2wsQ@mail.gmail.com>
+ <59cda41f-170c-a1ad-a345-bc38b9ed4d73@arm.com>
+ <CGME20200424161534eucas1p29177cad5b4790d392acb69a335a3992e@eucas1p2.samsung.com>
+ <CAOD6ATrWYLPT0ydz2vFhNwWhqHum_q_pyCe=oGJWOcEqjmNOqQ@mail.gmail.com>
+ <11584d09-5995-6133-3bd3-8f7a0afd0e01@samsung.com>
+ <20200924082830.GB27174@8bytes.org>
+ <37e767b8-8ec4-ae80-ea0d-1caf3cdab8fa@samsung.com>
+ <20200924101640.GE2483160@ulmo>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <bff57cbe-2247-05e1-9059-d9c66d64c407@arm.com>
+Date: Thu, 24 Sep 2020 11:40:24 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200923101442.73157-1-suravee.suthikulpanit@amd.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20200924101640.GE2483160@ulmo>
+Content-Language: en-GB
+Cc: jean-philippe@linaro.org, linux-mm@kvack.org,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Ajay kumar <ajaynumb@gmail.com>, Shaik Ameer Basha <shaik.ameer@samsung.com>,
+ will@kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,25 +88,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Suravee,
+On 2020-09-24 11:16, Thierry Reding wrote:
+> On Thu, Sep 24, 2020 at 10:46:46AM +0200, Marek Szyprowski wrote:
+>> Hi Joerg,
+>>
+>> On 24.09.2020 10:28, Joerg Roedel wrote:
+>>> On Wed, Sep 23, 2020 at 08:48:26AM +0200, Marek Szyprowski wrote:
+>>>> It allows to remap given buffer at the specific IOVA address, although
+>>>> it doesn't guarantee that those specific addresses won't be later used
+>>>> by the IOVA allocator. Probably it would make sense to add an API for
+>>>> generic IOMMU-DMA framework to mark the given IOVA range as
+>>>> reserved/unused to protect them.
+>>> There is an API for that, the IOMMU driver can return IOVA reserved
+>>> regions per device and the IOMMU core code will take care of mapping
+>>> these regions and reserving them in the IOVA allocator, so that
+>>> DMA-IOMMU code will not use it for allocations.
+>>>
+>>> Have a look at the iommu_ops->get_resv_regions() and
+>>> iommu_ops->put_resv_regions().
+>>
+>> I know about the reserved regions IOMMU API, but the main problem here,
+>> in case of Exynos, is that those reserved regions won't be created by
+>> the IOMMU driver but by the IOMMU client device. It is just a result how
+>> the media drivers manages their IOVA space. They simply have to load
+>> firmware at the IOVA address lower than the any address of the used
+>> buffers.
+> 
+> I've been working on adding a way to automatically add direct mappings
+> using reserved-memory regions parsed from device tree, see:
+> 
+>      https://lore.kernel.org/lkml/20200904130000.691933-1-thierry.reding@gmail.com/
+> 
+> Perhaps this can be of use? With that you should be able to add a
+> reserved-memory region somewhere in the lower range that you need for
+> firmware images and have that automatically added as a direct mapping
+> so that it won't be reused later on for dynamic allocations.
 
-On Wed, Sep 23, 2020 at 10:14:29AM +0000, Suravee Suthikulpanit wrote:
-> The framework allows callable implementation of IO page table.
-> This allows AMD IOMMU driver to switch between different types
-> of AMD IOMMU page tables (e.g. v1 vs. v2).
+It can't easily be a *direct* mapping though - if the driver has to use 
+the DMA masks to ensure that everything stays within the addressable 
+range, then (as far as I'm aware) there's no physical memory that low 
+down to equal the DMA addresses.
 
-Is there a reason you created your own framework, there is already an
-io-pgtable framework for ARM, maybe that can be reused?
+TBH I'm not convinced that this is a sufficiently common concern to 
+justify new APIs, or even to try to make overly generic. I think just 
+implementing a new DMA attribute to say "please allocate/map this 
+particular request at the lowest DMA address possible" would be good 
+enough. Such a thing could also serve PCI drivers that actually care 
+about SAC/DAC to give us more of a chance of removing the "try a 32-bit 
+mask first" trick from everyone's hotpath...
 
-Regards,
-
-	Joerg
-
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
