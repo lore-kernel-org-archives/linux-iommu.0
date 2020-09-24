@@ -2,94 +2,74 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96451C4346E
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 04:51:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236FAC2D0E2
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:23:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E04DB238A1
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 04:51:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="QBWjxKz/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E04DB238A1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9FE712376F
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:23:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FE712376F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 452F386FBE;
-	Thu, 24 Sep 2020 04:51:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 315A72DE2A;
+	Thu, 24 Sep 2020 08:23:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bPAvbY2e0ZiC; Thu, 24 Sep 2020 04:51:49 +0000 (UTC)
+	with ESMTP id zylDjRXz-YZ7; Thu, 24 Sep 2020 08:23:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 372DE86F74;
-	Thu, 24 Sep 2020 04:51:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D88C9203EA;
+	Thu, 24 Sep 2020 08:23:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C12DC0859;
-	Thu, 24 Sep 2020 04:51:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1DB2C0889;
+	Thu, 24 Sep 2020 08:23:25 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46520C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 04:51:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB275C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:23:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 19CBF27261
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 04:51:47 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id CC2E020449
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:23:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jdq+ZzM1Npt0 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 04:51:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
- by silver.osuosl.org (Postfix) with ESMTPS id D64E8228E7
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 04:51:45 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1600923105; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=OcuRehvXWjquPfAiTK+K+IF0XIj5WnIhvodV0AT8ZIE=;
- b=QBWjxKz/ky4K6MtY3wvVdEHi7HLa4MTYEwrsOUL8Qrld/ldlGX0vm1PEjWtSPDyVIXOzbfFH
- 3+JpcqwMKcKye8KAm7B8GrxIKwj8ZcllRS6h0yOMUxgAKLDMfLaOA2Xxz7BbRNfJ5y+tquw/
- WjtXsLtjqYPnPjf4JD2Da1h2lhA=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5f6c25e15476485453c1bd5b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 24 Sep 2020 04:51:45
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 47C6EC433CB; Thu, 24 Sep 2020 04:51:44 +0000 (UTC)
-Received: from [192.168.29.110] (unknown [49.37.203.218])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: charante)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 27279C433CA;
- Thu, 24 Sep 2020 04:51:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 27279C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=fail smtp.mailfrom=charante@codeaurora.org
-Subject: Re: [PATCH] iommu: of: skip iommu_device_list traversal in
- of_iommu_xlate()
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
- iommu@lists.linux-foundation.org
-References: <1600872826-2254-1-git-send-email-charante@codeaurora.org>
- <8722e4bc-efe0-27c4-2b7d-626188da5bfb@arm.com>
-From: Charan Teja Kalla <charante@codeaurora.org>
-Message-ID: <352d1518-8191-19e0-b9f3-29dfe91a2ad4@codeaurora.org>
-Date: Thu, 24 Sep 2020 10:21:31 +0530
+ with ESMTP id TwcouHsZ3FMP for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 08:23:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0053F203EA
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:23:22 +0000 (UTC)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+ by Forcepoint Email with ESMTP id BED77B6AD300A22DF907;
+ Thu, 24 Sep 2020 16:23:17 +0800 (CST)
+Received: from [10.174.185.226] (10.174.185.226) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 24 Sep 2020 16:23:10 +0800
+Subject: Re: [PATCH v10 04/11] vfio/pci: Add VFIO_REGION_TYPE_NESTED region
+ type
+To: Eric Auger <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <joro@8bytes.org>,
+ <alex.williamson@redhat.com>, <jacob.jun.pan@linux.intel.com>,
+ <yi.l.liu@intel.com>, <robin.murphy@arm.com>
+References: <20200320161911.27494-1-eric.auger@redhat.com>
+ <20200320161911.27494-5-eric.auger@redhat.com>
+From: Zenghui Yu <yuzenghui@huawei.com>
+Message-ID: <d21e74e5-00a7-79f9-24d2-c9385409cc05@huawei.com>
+Date: Thu, 24 Sep 2020 16:23:10 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <8722e4bc-efe0-27c4-2b7d-626188da5bfb@arm.com>
+In-Reply-To: <20200320161911.27494-5-eric.auger@redhat.com>
 Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org
+X-Originating-IP: [10.174.185.226]
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,47 +82,220 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiA5LzIzLzIwMjAgOTo1NCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjAtMDkt
-MjMgMTU6NTMsIENoYXJhbiBUZWphIFJlZGR5IHdyb3RlOgo+PiBJbiBvZl9pb21tdV94bGF0ZSgp
-LCBjaGVjayBpZiBpb21tdSBkZXZpY2UgaXMgZW5hYmxlZCBiZWZvcmUgdHJhdmVyc2luZwo+PiB0
-aGUgaW9tbXVfZGV2aWNlX2xpc3QgdGhyb3VnaCBpb21tdV9vcHNfZnJvbV9md25vZGUoKS4gSXQg
-aXMgb2Ygbm8gdXNlCj4+IGluIHRyYXZlcnNpbmcgdGhlIGlvbW11X2RldmljZV9saXN0IG9ubHkg
-dG8gcmV0dXJuIE5PX0lPTU1VIGJlY2F1c2Ugb2YKPj4gaW9tbXUgZGV2aWNlIG5vZGUgaXMgZGlz
-YWJsZWQuCj4gCj4gV2VsbCwgdGhlICJ1c2UiIGlzIHRoYXQgaXQga2VlcHMgdGhlIGNvZGUgdGhh
-dCBtdWNoIHNtYWxsZXIgYW5kIHNpbXBsZXIKPiB0byBoYXZlIGEgc2luZ2xlIHBhdGggZm9yIHJl
-dHVybmluZyB0aGlzIGNvbmRpdGlvbi4gVGhpcyB3aG9sZSBjYWxsc3RhY2sKPiBpc24ndCBleGFj
-dGx5IGEgaGlnaC1wZXJmb3JtYW5jZSBjb2RlIHBhdGggdG8gYmVnaW4gd2l0aCwgYW5kIHdlJ3Zl
-Cj4gYWx3YXlzIGFzc3VtZWQgdGhhdCBJT01NVXMgcHJlc2VudCBidXQgZGlzYWJsZWQgaW4gRFQg
-d291bGQgYmUgYSBwcmV0dHkKPiByYXJlIGV4Y2VwdGlvbi4gCgpGaW5lLi5JIHRob3VnaHQgdGhh
-dCBpdCBpcyBsb2dpY2FsIHRvIHJldHVybiB3aGVuIElPTU1VIERUIG5vZGUgaXMKZGlzYWJsZWQg
-b3ZlciBjb2RlIHNpbXBsaWNpdHkuIEFuZCBhZ3JlZSB0aGF0IGl0IGlzIG5vdCBoaWdoLXBlcmZv
-cm1hbmNlCnBhdGguCgo+IERvIHlvdSBoYXZlIGEgc3lzdGVtIHRoYXQgY2hhbGxlbmdlcyB0aG9z
-ZSBhc3N1bXB0aW9ucwo+IGFuZCBzaG93cyBhbnkgYmVuZWZpdCBmcm9tIHRoaXMgY2hhbmdlPwoK
-Tm8sIEkgZG9uJ3QgaGF2ZSBhIHN5c3RlbSB0aGF0IGNoYWxsZW5nZXMgdGhlc2UgYXNzdW1wdGlv
-bnMuCgo+IAo+IFJvYmluLgo+IAo+PiBTaWduZWQtb2ZmLWJ5OiBDaGFyYW4gVGVqYSBSZWRkeSA8
-Y2hhcmFudGVAY29kZWF1cm9yYS5vcmc+Cj4+IC0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L29mX2lv
-bW11LmMgfCA1ICsrKy0tCj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDIg
-ZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L29mX2lvbW11LmMg
-Yi9kcml2ZXJzL2lvbW11L29mX2lvbW11LmMKPj4gaW5kZXggZTUwNWI5MS4uMjI1NTk4YyAxMDA2
-NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9vZl9pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvb2ZfaW9tbXUuYwo+PiBAQCAtOTQsOSArOTQsMTAgQEAgc3RhdGljIGludCBvZl9pb21tdV94
-bGF0ZShzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+IMKgwqDCoMKgwqAgc3RydWN0IGZ3bm9kZV9oYW5k
-bGUgKmZ3bm9kZSA9ICZpb21tdV9zcGVjLT5ucC0+Zndub2RlOwo+PiDCoMKgwqDCoMKgIGludCBy
-ZXQ7Cj4+IMKgICvCoMKgwqAgaWYgKCFvZl9kZXZpY2VfaXNfYXZhaWxhYmxlKGlvbW11X3NwZWMt
-Pm5wKSkKPj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiBOT19JT01NVTsKPj4gwqDCoMKgwqDCoCBv
-cHMgPSBpb21tdV9vcHNfZnJvbV9md25vZGUoZndub2RlKTsKPj4gLcKgwqDCoCBpZiAoKG9wcyAm
-JiAhb3BzLT5vZl94bGF0ZSkgfHwKPj4gLcKgwqDCoMKgwqDCoMKgICFvZl9kZXZpY2VfaXNfYXZh
-aWxhYmxlKGlvbW11X3NwZWMtPm5wKSkKPj4gK8KgwqDCoCBpZiAob3BzICYmICFvcHMtPm9mX3hs
-YXRlKQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIE5PX0lPTU1VOwo+PiDCoCDCoMKgwqDC
-oMKgIHJldCA9IGlvbW11X2Z3c3BlY19pbml0KGRldiwgJmlvbW11X3NwZWMtPm5wLT5md25vZGUs
-IG9wcyk7Cj4+CgotLSAKVGhlIFF1YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlzIGEg
-bWVtYmVyIG9mIHRoZSBDb2RlIEF1cm9yYQpGb3J1bSwgYSBMaW51eCBGb3VuZGF0aW9uIENvbGxh
-Ym9yYXRpdmUgUHJvamVjdApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+Hi Eric,
+
+On 2020/3/21 0:19, Eric Auger wrote:
+> Add a new specific DMA_FAULT region aiming to exposed nested mode
+> translation faults.
+> 
+> The region has a ring buffer that contains the actual fault
+> records plus a header allowing to handle it (tail/head indices,
+> max capacity, entry size). At the moment the region is dimensionned
+> for 512 fault records.
+> 
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+
+[...]
+
+> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+> index 379a02c36e37..586b89debed5 100644
+> --- a/drivers/vfio/pci/vfio_pci.c
+> +++ b/drivers/vfio/pci/vfio_pci.c
+> @@ -260,6 +260,69 @@ int vfio_pci_set_power_state(struct vfio_pci_device *vdev, pci_power_t state)
+>   	return ret;
+>   }
+>   
+> +static void vfio_pci_dma_fault_release(struct vfio_pci_device *vdev,
+> +				       struct vfio_pci_region *region)
+> +{
+> +}
+> +
+> +static int vfio_pci_dma_fault_add_capability(struct vfio_pci_device *vdev,
+> +					     struct vfio_pci_region *region,
+> +					     struct vfio_info_cap *caps)
+> +{
+> +	struct vfio_region_info_cap_fault cap = {
+> +		.header.id = VFIO_REGION_INFO_CAP_DMA_FAULT,
+> +		.header.version = 1,
+> +		.version = 1,
+> +	};
+> +	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
+> +}
+> +
+> +static const struct vfio_pci_regops vfio_pci_dma_fault_regops = {
+> +	.rw		= vfio_pci_dma_fault_rw,
+> +	.release	= vfio_pci_dma_fault_release,
+> +	.add_capability = vfio_pci_dma_fault_add_capability,
+> +};
+> +
+> +#define DMA_FAULT_RING_LENGTH 512
+> +
+> +static int vfio_pci_init_dma_fault_region(struct vfio_pci_device *vdev)
+> +{
+> +	struct vfio_region_dma_fault *header;
+> +	size_t size;
+> +	int ret;
+> +
+> +	mutex_init(&vdev->fault_queue_lock);
+> +
+> +	/*
+> +	 * We provision 1 page for the header and space for
+> +	 * DMA_FAULT_RING_LENGTH fault records in the ring buffer.
+> +	 */
+> +	size = ALIGN(sizeof(struct iommu_fault) *
+> +		     DMA_FAULT_RING_LENGTH, PAGE_SIZE) + PAGE_SIZE;
+> +
+> +	vdev->fault_pages = kzalloc(size, GFP_KERNEL);
+> +	if (!vdev->fault_pages)
+> +		return -ENOMEM;
+> +
+> +	ret = vfio_pci_register_dev_region(vdev,
+> +		VFIO_REGION_TYPE_NESTED,
+> +		VFIO_REGION_SUBTYPE_NESTED_DMA_FAULT,
+> +		&vfio_pci_dma_fault_regops, size,
+> +		VFIO_REGION_INFO_FLAG_READ | VFIO_REGION_INFO_FLAG_WRITE,
+> +		vdev->fault_pages);
+> +	if (ret)
+> +		goto out;
+> +
+> +	header = (struct vfio_region_dma_fault *)vdev->fault_pages;
+> +	header->entry_size = sizeof(struct iommu_fault);
+> +	header->nb_entries = DMA_FAULT_RING_LENGTH;
+> +	header->offset = sizeof(struct vfio_region_dma_fault);
+> +	return 0;
+> +out:
+> +	kfree(vdev->fault_pages);
+> +	return ret;
+> +}
+> +
+>   static int vfio_pci_enable(struct vfio_pci_device *vdev)
+>   {
+>   	struct pci_dev *pdev = vdev->pdev;
+> @@ -358,6 +421,10 @@ static int vfio_pci_enable(struct vfio_pci_device *vdev)
+>   		}
+>   	}
+>   
+> +	ret = vfio_pci_init_dma_fault_region(vdev);
+> +	if (ret)
+> +		goto disable_exit;
+> +
+>   	vfio_pci_probe_mmaps(vdev);
+>   
+>   	return 0;
+> @@ -1383,6 +1450,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
+>   
+>   	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
+>   	kfree(vdev->region);
+> +	kfree(vdev->fault_pages);
+>   	mutex_destroy(&vdev->ioeventfds_lock);
+>   
+>   	if (!disable_idle_d3)
+> diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
+> index 8a2c7607d513..a392f50e3a99 100644
+> --- a/drivers/vfio/pci/vfio_pci_private.h
+> +++ b/drivers/vfio/pci/vfio_pci_private.h
+> @@ -119,6 +119,8 @@ struct vfio_pci_device {
+>   	int			ioeventfds_nr;
+>   	struct eventfd_ctx	*err_trigger;
+>   	struct eventfd_ctx	*req_trigger;
+> +	u8			*fault_pages;
+
+What's the reason to use 'u8'? It doesn't match the type of header, nor
+the type of ring buffer.
+
+> +	struct mutex		fault_queue_lock;
+>   	struct list_head	dummy_resources_list;
+>   	struct mutex		ioeventfds_lock;
+>   	struct list_head	ioeventfds_list;
+> @@ -150,6 +152,14 @@ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
+>   extern long vfio_pci_ioeventfd(struct vfio_pci_device *vdev, loff_t offset,
+>   			       uint64_t data, int count, int fd);
+>   
+> +struct vfio_pci_fault_abi {
+> +	u32 entry_size;
+> +};
+
+This is not used by this patch (and the whole series).
+
+> +
+> +extern size_t vfio_pci_dma_fault_rw(struct vfio_pci_device *vdev,
+> +				    char __user *buf, size_t count,
+> +				    loff_t *ppos, bool iswrite);
+> +
+>   extern int vfio_pci_init_perm_bits(void);
+>   extern void vfio_pci_uninit_perm_bits(void);
+>   
+> diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+> index a87992892a9f..4004ab8cad0e 100644
+> --- a/drivers/vfio/pci/vfio_pci_rdwr.c
+> +++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+> @@ -274,6 +274,51 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
+>   	return done;
+>   }
+>   
+> +size_t vfio_pci_dma_fault_rw(struct vfio_pci_device *vdev, char __user *buf,
+> +			     size_t count, loff_t *ppos, bool iswrite)
+> +{
+> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) - VFIO_PCI_NUM_REGIONS;
+> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
+> +	void *base = vdev->region[i].data;
+> +	int ret = -EFAULT;
+> +
+> +	if (pos >= vdev->region[i].size)
+> +		return -EINVAL;
+> +
+> +	count = min(count, (size_t)(vdev->region[i].size - pos));
+> +
+> +	mutex_lock(&vdev->fault_queue_lock);
+> +
+> +	if (iswrite) {
+> +		struct vfio_region_dma_fault *header =
+> +			(struct vfio_region_dma_fault *)base;
+> +		u32 new_tail;
+> +
+> +		if (pos != 0 || count != 4) {
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +
+> +		if (copy_from_user((void *)&new_tail, buf, count))
+> +			goto unlock;
+> +
+> +		if (new_tail > header->nb_entries) {
+
+Maybe
+
+new_tail >= header->nb_entries ?
+
+> +			ret = -EINVAL;
+> +			goto unlock;
+> +		}
+> +		header->tail = new_tail;
+> +	} else {
+> +		if (copy_to_user(buf, base + pos, count))
+> +			goto unlock;
+> +	}
+> +	*ppos += count;
+> +	ret = count;
+> +unlock:
+> +	mutex_unlock(&vdev->fault_queue_lock);
+> +	return ret;
+> +}
+> +
+> +
+>   static int vfio_pci_ioeventfd_handler(void *opaque, void *unused)
+>   {
+>   	struct vfio_pci_ioeventfd *ioeventfd = opaque;
+
+
+Thanks,
+Zenghui
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
