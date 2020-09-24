@@ -2,101 +2,101 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,UNWANTED_LANGUAGE_BODY,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F3EC4727D
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E49EDC4363D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B8EA23787
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7E57123787
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="IahnXl8H"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B8EA23787
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="i47qAal2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E57123787
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2ED0D86B1C;
-	Thu, 24 Sep 2020 15:09:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4CEA486AB0;
+	Thu, 24 Sep 2020 15:09:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gvvXmYj0NSQI; Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
+	with ESMTP id tX2zxGiRWChg; Thu, 24 Sep 2020 15:09:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6FECA86AE2;
-	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6BD4186B12;
+	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 503B7C1AD8;
-	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD76DC0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5583EC0890;
+	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 321C4C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B9B22854D0
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1F01485620
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pAKUy08XnAnK for <iommu@lists.linux-foundation.org>;
+ with ESMTP id ym1RE7iKX6F0 for <iommu@lists.linux-foundation.org>;
  Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7C33484DD5
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id F28A385582
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:35 +0000 (UTC)
 Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OErXvv101502;
- Thu, 24 Sep 2020 14:58:20 GMT
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEriXw101671;
+ Thu, 24 Sep 2020 14:58:18 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=EG2cDtHDj3afXnJV2kE6YpRWdf+r6HX61ECzGa4txCg=;
- b=IahnXl8HN8sriDPY4qBMrEjj0cpksyu87777AgCnlvd433L2GxdhBXGtxsMEOGY9XJS4
- ZEpHEMeTn9bto6biMUo0YVi6HXHhjxTatqGsxxDU6U9l51BJtRD5OZh/3C4l9VMoDecM
- s1keeIlhTS4GOZtB3M4ZBZ6h0Cj/Btyo5okriT/MoTsa7f9lH8yEXDghi0arnwaabujR
- HU79PSfaeOz//T2ikWpn3fLVGDTFq/n+98HenF/JDAozyeDFcguPdMjszMfvlorZzpkN
- cnajd4BEXtXUXQOvY2LKs6uVX7JJC4ZhdeLftfXLafbt4W6gNBIWEEjluMWCztoPb3Ha DQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by aserp2130.oracle.com with ESMTP id 33qcpu5qcr-1
+ bh=3RB2GjK9ADEmAIr+xoSAWhTF8Rk2yEY/ISVfaoeNfBs=;
+ b=i47qAal2g2PSZT09qgQ22BTMzKVLAaudUpojAuRafVDiFoWkCs9/nyqtZmW65zzD9DC5
+ 2U/rwye04mKjbGyGKdvJGX5/JjyssqYgdsyVSgyrEFy7Vom8dMb47tV2lucyYKIBebmV
+ qWiotEMA1JCEmqQIsyyHvJrtd4BMFDb39vbN8KUHTy1IFfK0YER3DgRGDIpt+5p85lR1
+ SVadiDJRRr82xNt4TkCqLxbUZZxV5wa2JnuChyxMcNA2EhsSAUbPOnb0NZwlSJMDh9lx
+ eoFCN79O1LyDe81uG8/kVKa8d6e+3nWCxjjFgRdYFu+vpvhy6cXz8fwVZ3/CWeYzDF/8 og== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+ by aserp2130.oracle.com with ESMTP id 33qcpu5qcp-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Thu, 24 Sep 2020 14:58:20 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEtUQZ159389;
- Thu, 24 Sep 2020 14:58:19 GMT
+ Thu, 24 Sep 2020 14:58:18 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+ by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuT6E126286;
+ Thu, 24 Sep 2020 14:58:18 GMT
 Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by userp3030.oracle.com with ESMTP id 33nux2vwnf-1
+ by aserp3030.oracle.com with ESMTP id 33nujr18dk-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 24 Sep 2020 14:58:19 +0000
+ Thu, 24 Sep 2020 14:58:18 +0000
 Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwGIx016161;
- Thu, 24 Sep 2020 14:58:16 GMT
+ by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08OEwD0q016152;
+ Thu, 24 Sep 2020 14:58:13 GMT
 Received: from disposition.us.oracle.com (/10.152.32.81)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Thu, 24 Sep 2020 07:58:16 -0700
+ with ESMTP ; Thu, 24 Sep 2020 07:58:12 -0700
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH 10/13] x86: Secure Launch adding event log securityfs
-Date: Thu, 24 Sep 2020 10:58:38 -0400
-Message-Id: <1600959521-24158-11-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH 06/13] x86: Add early general TPM interface support for Secure
+ Launch
+Date: Thu, 24 Sep 2020 10:58:34 -0400
+Message-Id: <1600959521-24158-7-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
- mlxscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009240114
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ malwarescore=0
+ mlxlogscore=999 phishscore=0 adultscore=0 spamscore=0 suspectscore=2
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009240114
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2
  mlxlogscore=999
  adultscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
  phishscore=0 spamscore=0 malwarescore=0 clxscore=1015 impostorscore=0
@@ -126,325 +126,182 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
 
-The late init functionality registers securityfs nodes to allow access
-to TXT register fields on Intel along with the fetching of and writing
-events to the late launch TPM log.
+This commit exposes a minimal general interface for the compressed
+kernel to request the required TPM operations to send measurements to
+a TPM.
 
 Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-Signed-off-by: garnetgrimm <grimmg@ainfosec.com>
 ---
- arch/x86/kernel/slaunch.c | 293 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 292 insertions(+), 1 deletion(-)
+ arch/x86/boot/compressed/Makefile  |   2 +-
+ arch/x86/boot/compressed/tpm/tpm.c | 145 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 146 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/boot/compressed/tpm/tpm.c
 
-diff --git a/arch/x86/kernel/slaunch.c b/arch/x86/kernel/slaunch.c
-index e040e32..7bdb89e 100644
---- a/arch/x86/kernel/slaunch.c
-+++ b/arch/x86/kernel/slaunch.c
-@@ -8,7 +8,7 @@
-  *
-  * Author(s):
-  *     Daniel P. Smith <dpsmith@apertussolutions.com>
-- *
-+ *     Garnet T. Grimm <grimmg@ainfosec.com>
-  */
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index a4308d5..35947b9 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -101,7 +101,7 @@ vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA256) += $(obj)/early_sha256.o
+ vmlinux-objs-$(CONFIG_SECURE_LAUNCH_SHA512) += $(obj)/early_sha512.o
+ vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/tpm/tpmio.o $(obj)/tpm/tpm_buff.o \
+ 	$(obj)/tpm/tis.o $(obj)/tpm/crb.o $(obj)/tpm/tpm1_cmds.o \
+-	$(obj)/tpm/tpm2_cmds.o $(obj)/tpm/tpm2_auth.o
++	$(obj)/tpm/tpm2_cmds.o $(obj)/tpm/tpm2_auth.o $(obj)/tpm/tpm.o
  
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-@@ -493,3 +493,294 @@ void __init slaunch_setup(void)
- 	    vendor[3] == INTEL_CPUID_MFGID_EDX)
- 		slaunch_setup_intel();
- }
-+
-+#define SL_FS_ENTRIES		10
-+/* root directory node must be last */
-+#define SL_ROOT_DIR_ENTRY	(SL_FS_ENTRIES - 1)
-+#define SL_TXT_DIR_ENTRY	(SL_FS_ENTRIES - 2)
-+#define SL_TXT_FILE_FIRST	(SL_TXT_DIR_ENTRY - 1)
-+#define SL_TXT_ENTRY_COUNT	7
-+
-+#define DECLARE_TXT_PUB_READ_U(size, fmt, msg_size)			\
-+static ssize_t txt_pub_read_u##size(unsigned int offset,		\
-+		loff_t *read_offset,					\
-+		size_t read_len,					\
-+		char __user *buf)					\
-+{									\
-+	void __iomem *txt;						\
-+	char msg_buffer[msg_size];					\
-+	u##size reg_value = 0;						\
-+	txt = ioremap(TXT_PUB_CONFIG_REGS_BASE,				\
-+			TXT_NR_CONFIG_PAGES * PAGE_SIZE);		\
-+	if (IS_ERR(txt))						\
-+		return PTR_ERR(txt);					\
-+	memcpy_fromio(&reg_value, txt + offset, sizeof(u##size));	\
-+	iounmap(txt);							\
-+	snprintf(msg_buffer, msg_size, fmt, reg_value);			\
-+	return simple_read_from_buffer(buf, read_len, read_offset,	\
-+			&msg_buffer, msg_size);				\
-+}
-+
-+DECLARE_TXT_PUB_READ_U(8, "%#04x\n", 6);
-+DECLARE_TXT_PUB_READ_U(32, "%#010x\n", 12);
-+DECLARE_TXT_PUB_READ_U(64, "%#018llx\n", 20);
-+
-+#define DECLARE_TXT_FOPS(reg_name, reg_offset, reg_size)		\
-+static ssize_t txt_##reg_name##_read(struct file *flip,			\
-+		char __user *buf, size_t read_len, loff_t *read_offset)	\
-+{									\
-+	return txt_pub_read_u##reg_size(reg_offset, read_offset,	\
-+			read_len, buf);					\
-+}									\
-+static const struct file_operations reg_name##_ops = {			\
-+	.read = txt_##reg_name##_read,					\
-+}
-+
-+DECLARE_TXT_FOPS(sts, TXT_CR_STS, 64);
-+DECLARE_TXT_FOPS(ests, TXT_CR_ESTS, 8);
-+DECLARE_TXT_FOPS(errorcode, TXT_CR_ERRORCODE, 32);
-+DECLARE_TXT_FOPS(didvid, TXT_CR_DIDVID, 64);
-+DECLARE_TXT_FOPS(e2sts, TXT_CR_E2STS, 64);
-+DECLARE_TXT_FOPS(ver_emif, TXT_CR_VER_EMIF, 32);
-+DECLARE_TXT_FOPS(scratchpad, TXT_CR_SCRATCHPAD, 64);
-+
+ # The compressed kernel is built with -fPIC/-fPIE so that a boot loader
+ # can place it anywhere in memory and it will still run. However, since
+diff --git a/arch/x86/boot/compressed/tpm/tpm.c b/arch/x86/boot/compressed/tpm/tpm.c
+new file mode 100644
+index 0000000..0fe62d2
+--- /dev/null
++++ b/arch/x86/boot/compressed/tpm/tpm.c
+@@ -0,0 +1,145 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Securityfs exposure
++ * Copyright (c) 2020 Apertus Solutions, LLC
++ *
++ * Author(s):
++ *      Daniel P. Smith <dpsmith@apertussolutions.com>
++ *
 + */
-+struct memfile {
-+	char *name;
-+	void *addr;
-+	size_t size;
-+};
 +
-+static struct memfile sl_evtlog = {"eventlog", 0, 0};
-+static void *txt_heap;
-+static struct txt_heap_event_log_pointer2_1_element __iomem *evtlog20;
-+static DEFINE_MUTEX(sl_evt_log_mutex);
++#include <linux/types.h>
++#include <linux/const.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include "tpm.h"
++#include "tpmbuff.h"
++#include "tis.h"
++#include "crb.h"
++#include "tpm_common.h"
++#include "tpm1.h"
++#include "tpm2.h"
++#include "tpm2_constants.h"
 +
-+static ssize_t sl_evtlog_read(struct file *file, char __user *buf,
-+			      size_t count, loff_t *pos)
++static struct tpm tpm;
++
++static void find_interface_and_family(struct tpm *t)
 +{
-+	ssize_t size;
++	struct tpm_interface_id intf_id;
++	struct tpm_intf_capability intf_cap;
 +
-+	if (!sl_evtlog.addr)
-+		return 0;
++	/* Sort out whether if it is 1.2 */
++	intf_cap.val = tpm_read32(TPM_INTF_CAPABILITY_0);
++	if ((intf_cap.interface_version == TPM12_TIS_INTF_12) ||
++	    (intf_cap.interface_version == TPM12_TIS_INTF_13)) {
++		t->family = TPM12;
++		t->intf = TPM_TIS;
++		return;
++	}
 +
-+	mutex_lock(&sl_evt_log_mutex);
-+	size = simple_read_from_buffer(buf, count, pos, sl_evtlog.addr,
-+				       sl_evtlog.size);
-+	mutex_unlock(&sl_evt_log_mutex);
++	/* Assume that it is 2.0 and TIS */
++	t->family = TPM20;
++	t->intf = TPM_TIS;
 +
-+	return size;
++	/* Check if the interface is CRB */
++	intf_id.val = tpm_read32(TPM_INTERFACE_ID_0);
++	if (intf_id.interface_type == TPM_CRB_INTF_ACTIVE)
++		t->intf = TPM_CRB;
 +}
 +
-+static ssize_t sl_evtlog_write(struct file *file, const char __user *buf,
-+				size_t datalen, loff_t *ppos)
++struct tpm *enable_tpm(void)
 +{
-+	char *data;
-+	ssize_t result;
++	struct tpm *t = &tpm;
 +
-+	if (!sl_evtlog.addr)
-+		return 0;
++	find_interface_and_family(t);
 +
-+	/* No partial writes. */
-+	result = -EINVAL;
-+	if (*ppos != 0)
-+		goto out;
-+
-+	data = memdup_user(buf, datalen);
-+	if (IS_ERR(data)) {
-+		result = PTR_ERR(data);
-+		goto out;
++	switch (t->intf) {
++	case TPM_TIS:
++		if (!tis_init(t))
++			return NULL;
++		break;
++	case TPM_CRB:
++		if (!crb_init(t))
++			return NULL;
++		break;
 +	}
 +
-+	mutex_lock(&sl_evt_log_mutex);
-+	if (evtlog20)
-+		result = tpm20_log_event(evtlog20, sl_evtlog.addr,
-+					 datalen, data);
-+	else
-+		result = tpm12_log_event(sl_evtlog.addr, datalen, data);
-+	mutex_unlock(&sl_evt_log_mutex);
-+
-+	kfree(data);
-+out:
-+	return result;
++	return t;
 +}
 +
-+static const struct file_operations sl_evtlog_ops = {
-+	.read = sl_evtlog_read,
-+	.write = sl_evtlog_write,
-+	.llseek	= default_llseek,
-+};
-+
-+static struct dentry *fs_entries[SL_FS_ENTRIES];
-+
-+struct sfs_file {
-+	int parent;
-+	const char *name;
-+	const struct file_operations *fops;
-+};
-+
-+static const struct sfs_file sl_files[] = {
-+	{ SL_TXT_DIR_ENTRY, "sts", &sts_ops },
-+	{ SL_TXT_DIR_ENTRY, "ests", &ests_ops },
-+	{ SL_TXT_DIR_ENTRY, "errorcode", &errorcode_ops },
-+	{ SL_TXT_DIR_ENTRY, "didvid", &didvid_ops },
-+	{ SL_TXT_DIR_ENTRY, "ver_emif", &ver_emif_ops },
-+	{ SL_TXT_DIR_ENTRY, "scratchpad", &scratchpad_ops },
-+	{ SL_TXT_DIR_ENTRY, "e2sts", &e2sts_ops }
-+};
-+
-+static int sl_create_file(int entry, int parent, const char *name,
-+		const struct file_operations *ops)
++u8 tpm_request_locality(struct tpm *t, u8 l)
 +{
-+	if (entry < 0 || entry > SL_TXT_DIR_ENTRY)
-+		return -EINVAL;
-+	fs_entries[entry] = securityfs_create_file(name, 0440,
-+			fs_entries[parent], NULL, ops);
-+	if (IS_ERR(fs_entries[entry])) {
-+		pr_err("Error creating securityfs %s file\n", name);
-+		return PTR_ERR(fs_entries[entry]);
-+	}
-+	return 0;
-+}
++	u8 ret = TPM_NO_LOCALITY;
 +
-+static long slaunch_expose_securityfs(void)
-+{
-+	long ret = 0;
-+	int i = 0;
++	ret = t->ops.request_locality(l);
 +
-+	fs_entries[SL_ROOT_DIR_ENTRY] = securityfs_create_dir("slaunch", NULL);
-+	if (IS_ERR(fs_entries[SL_ROOT_DIR_ENTRY])) {
-+		pr_err("Error creating securityfs slaunch root directory\n");
-+		ret = PTR_ERR(fs_entries[SL_ROOT_DIR_ENTRY]);
-+		goto err;
-+	}
++	if (ret < TPM_MAX_LOCALITY)
++		t->buff = alloc_tpmbuff(t->intf, ret);
 +
-+	if (sl_flags & SL_FLAG_ARCH_TXT) {
-+		fs_entries[SL_TXT_DIR_ENTRY] = securityfs_create_dir("txt",
-+				fs_entries[SL_ROOT_DIR_ENTRY]);
-+		if (IS_ERR(fs_entries[SL_TXT_DIR_ENTRY])) {
-+			pr_err("Error creating securityfs txt directory\n");
-+			ret = PTR_ERR(fs_entries[SL_TXT_DIR_ENTRY]);
-+			goto err_dir;
-+		}
-+
-+		for (i = 0; i < SL_TXT_ENTRY_COUNT; i++) {
-+			ret = sl_create_file(SL_TXT_FILE_FIRST - i,
-+					sl_files[i].parent, sl_files[i].name,
-+					sl_files[i].fops);
-+			if (ret)
-+				goto err_dir;
-+		}
-+	}
-+
-+	if (sl_evtlog.addr > 0) {
-+		ret = sl_create_file(0, SL_ROOT_DIR_ENTRY, sl_evtlog.name,
-+				&sl_evtlog_ops);
-+		if (ret)
-+			goto err_dir;
-+	}
-+
-+	return 0;
-+
-+err_dir:
-+	for (i = 0; i <= SL_ROOT_DIR_ENTRY; i++)
-+		securityfs_remove(fs_entries[i]);
-+err:
 +	return ret;
 +}
 +
-+static void slaunch_teardown_securityfs(void)
++void tpm_relinquish_locality(struct tpm *t)
 +{
-+	int i;
++	t->ops.relinquish_locality();
 +
-+	for (i = 0; i < SL_FS_ENTRIES; i++)
-+		securityfs_remove(fs_entries[i]);
++	free_tpmbuff(t->buff, t->intf);
++}
 +
-+	if (sl_flags & SL_FLAG_ARCH_TXT) {
-+		if (sl_evtlog.addr) {
-+			memunmap(sl_evtlog.addr);
-+			sl_evtlog.addr = NULL;
++#define MAX_TPM_EXTEND_SIZE 70 /* TPM2 SHA512 is the largest */
++int tpm_extend_pcr(struct tpm *t, u32 pcr, u16 algo,
++		u8 *digest)
++{
++	int ret = 0;
++
++	if (t->buff == NULL)
++		return -EINVAL;
++
++	if (t->family == TPM12) {
++		struct tpm_digest d;
++
++		if (algo != TPM_ALG_SHA1)
++			return -EINVAL;
++
++		d.pcr = pcr;
++		memcpy((void *)d.digest.sha1.digest,
++			digest, SHA1_DIGEST_SIZE);
++
++		ret = tpm1_pcr_extend(t, &d);
++	} else if (t->family == TPM20) {
++		struct tpml_digest_values *d;
++		u8 buf[MAX_TPM_EXTEND_SIZE];
++
++		d = (struct tpml_digest_values *) buf;
++		d->count = 1;
++		d->digests->alg = algo;
++		switch (algo) {
++		case TPM_ALG_SHA1:
++			memcpy(d->digests->digest, digest, SHA1_SIZE);
++			break;
++		case TPM_ALG_SHA256:
++			memcpy(d->digests->digest, digest, SHA256_SIZE);
++			break;
++		case TPM_ALG_SHA384:
++			memcpy(d->digests->digest, digest, SHA384_SIZE);
++			break;
++		case TPM_ALG_SHA512:
++			memcpy(d->digests->digest, digest, SHA512_SIZE);
++			break;
++		case TPM_ALG_SM3_256:
++			memcpy(d->digests->digest, digest, SM3256_SIZE);
++			break;
++		default:
++			return -EINVAL;
 +		}
-+		sl_evtlog.size = 0;
-+		if (txt_heap) {
-+			memunmap(txt_heap);
-+			txt_heap = NULL;
-+		}
-+	}
++
++		ret = tpm2_extend_pcr(t, pcr, d);
++	} else
++		ret = -EINVAL;
++
++	return ret;
 +}
 +
-+static void slaunch_intel_evtlog(void)
++void free_tpm(struct tpm *t)
 +{
-+	void __iomem *config;
-+	struct txt_os_mle_data *params;
-+	void *os_sinit_data;
-+	u64 base, size;
-+
-+	config = ioremap(TXT_PUB_CONFIG_REGS_BASE, TXT_NR_CONFIG_PAGES *
-+			 PAGE_SIZE);
-+	if (!config) {
-+		pr_err("Error failed to ioremap TXT reqs\n");
-+		return;
-+	}
-+
-+	memcpy_fromio(&base, config + TXT_CR_HEAP_BASE, sizeof(u64));
-+	memcpy_fromio(&size, config + TXT_CR_HEAP_SIZE, sizeof(u64));
-+	iounmap(config);
-+
-+	/* now map TXT heap */
-+	txt_heap = memremap(base, size, MEMREMAP_WB);
-+	if (!txt_heap) {
-+		pr_err("Error failed to memremap TXT heap\n");
-+		return;
-+	}
-+
-+	params = (struct txt_os_mle_data *)txt_os_mle_data_start(txt_heap);
-+
-+	sl_evtlog.size = params->evtlog_size;
-+	sl_evtlog.addr = memremap(params->evtlog_addr, params->evtlog_size,
-+				  MEMREMAP_WB);
-+	if (!sl_evtlog.addr) {
-+		pr_err("Error failed to memremap TPM event log\n");
-+		return;
-+	}
-+
-+	/* Determine if this is TPM 1.2 or 2.0 event log */
-+	if (memcmp(sl_evtlog.addr + sizeof(struct tpm12_pcr_event),
-+		    TPM20_EVTLOG_SIGNATURE, sizeof(TPM20_EVTLOG_SIGNATURE)))
-+		return; /* looks like it is not 2.0 */
-+
-+	/* For TPM 2.0 logs, the extended heap element must be located */
-+	os_sinit_data = txt_os_sinit_data_start(txt_heap);
-+
-+	evtlog20 = tpm20_find_log2_1_element(os_sinit_data);
-+
-+	/*
-+	 * If this fails, things are in really bad shape. Any attempt to write
-+	 * events to the log will fail.
-+	 */
-+	if (!evtlog20)
-+		pr_err("Error failed to find TPM20 event log element\n");
++	tpm_relinquish_locality(t);
 +}
-+
-+static int __init slaunch_late_init(void)
-+{
-+	/* Check to see if Secure Launch happened */
-+	if (!(sl_flags & (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT)))
-+		return 0;
-+
-+	/* Only Intel TXT is supported at this point */
-+	slaunch_intel_evtlog();
-+
-+	return slaunch_expose_securityfs();
-+}
-+
-+static void __exit slaunch_exit(void)
-+{
-+	slaunch_teardown_securityfs();
-+}
-+
-+late_initcall(slaunch_late_init);
-+
-+__exitcall(slaunch_exit);
 -- 
 1.8.3.1
 
