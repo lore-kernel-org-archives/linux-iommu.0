@@ -2,85 +2,98 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F27C47420
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 11:13:35 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228D4C4363D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 11:27:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E49BF239E5
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 11:13:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E49BF239E5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 97F54239A1
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 11:27:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KE9bXRFA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97F54239A1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5811820422;
-	Thu, 24 Sep 2020 11:13:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d2b4JW-Z97dd; Thu, 24 Sep 2020 11:13:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D554320364;
-	Thu, 24 Sep 2020 11:13:31 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F25CC0859;
-	Thu, 24 Sep 2020 11:13:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 26FB5C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:13:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 157AA86A0F
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:13:30 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 30F7886B07;
+	Thu, 24 Sep 2020 11:27:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w-nECueysP7b; Thu, 24 Sep 2020 11:27:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6FFF786B5C;
+	Thu, 24 Sep 2020 11:27:34 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 587CCC0859;
+	Thu, 24 Sep 2020 11:27:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DA540C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:27:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id C25D987494
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:27:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id noCZEDIM+khE for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 11:13:28 +0000 (UTC)
+ with ESMTP id GBeN7oK-FK5z for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 11:27:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by whitealder.osuosl.org (Postfix) with ESMTPS id ED500869A9
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:13:27 +0000 (UTC)
-Received: from lhreml713-chm.china.huawei.com (unknown [172.18.7.107])
- by Forcepoint Email with ESMTP id F173988DD8CE65492693;
- Thu, 24 Sep 2020 12:13:23 +0100 (IST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml713-chm.china.huawei.com (10.201.108.64) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Thu, 24 Sep 2020 12:13:23 +0100
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.1913.007; Thu, 24 Sep 2020 12:13:23 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: RE: [PATCH v10 10/13] iommu/arm-smmu-v3: Check for SVA features
-Thread-Topic: [PATCH v10 10/13] iommu/arm-smmu-v3: Check for SVA features
-Thread-Index: AQHWjaVYIOfN4SdH50ySUPU7pQ9X7Klyx0+AgATDYgCAAB0CgA==
-Date: Thu, 24 Sep 2020 11:13:23 +0000
-Message-ID: <47b244b99f284790b82b2c0a968ba830@huawei.com>
-References: <20200918101852.582559-1-jean-philippe@linaro.org>
- <20200918101852.582559-11-jean-philippe@linaro.org>
- <753bcd76c21c4ea98ef1d4e492db01f4@huawei.com>
- <20200924101340.GC170808@myrica>
-In-Reply-To: <20200924101340.GC170808@myrica>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.86.144]
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C404687490
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 11:27:30 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id q9so3162062wmj.2
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 04:27:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=tLMDNFt9TJF/ZryOzL1ilHgxO48Y454udYyrZfWfvtQ=;
+ b=KE9bXRFAViekuZoQZduiZKVxdWJdrkIl2nLqMZo98FdrI2wiDLcGMDaJ4mPks0qBOl
+ MMZGVnsc5FWJkREASoSaaYGas7QORH0Y4IMjXqUJZ9qMnmY/dYGtJ11e5xbrcCG4a2lC
+ QO5ulEPD55sfnzYwi5M1/ChtdiZdWlVdLsDcr/QsyTrcT+5OqWPdVymYV/39Vd9iGXxT
+ B7UHReiElDB66vlbn0XCRg8J3wws7U9E2uoIcpk3rx4YRx4IxirinXjeePIeawmAw6GD
+ g+MN3djt+ctElTBdm2Oidz9ASuhLPBgM1AmCdSw/x1oa78MFUnbONXDQIjAsY/LNeN6z
+ ypog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=tLMDNFt9TJF/ZryOzL1ilHgxO48Y454udYyrZfWfvtQ=;
+ b=lNT4HjMpVe/hQee0RpsL52g5QOakOt789W4+jK6xS/Y8Nxt3JDshYQuEmElfjsJXxu
+ o4GN7Toyjrkk9nownP9x76z1D1AIL+g3lwnJWHwsbzm+dApm5j7VKPOjXse6aKjP7Cmz
+ WdBYY9JZbguTaYig2cChIlnLZFb8XMesG6AMGPp4SVI8UmJqWIVe2RZl+nPQJK9+3xuS
+ 8LGk6DWmwhi60us0TRqndtA/+ySDftqFihtMmCy7Gg+ChqxNqv/laPzmraHFt2ap9ACC
+ Yv7eQG4Id3AFMGpy0BsPVQmJCgslF+/Ke89E8usMAw4JNPRQ94iiNxhhxBCvlr8aUzxr
+ AFPw==
+X-Gm-Message-State: AOAM5323Li0iNuzY4wKlTwvIyYoksIJLEHgV9Zwjwd16LhFGc2Y8eDag
+ /B5OE63WpgNvJMG1uA5/zqs=
+X-Google-Smtp-Source: ABdhPJzzr875MyIIlAKjUsDN40VPniPu1+Ti6Bzsj+dgGRxzdCtL/zGiHjqFXhZtmTarjQZLVFj8Hw==
+X-Received: by 2002:a1c:dd45:: with SMTP id u66mr4311728wmg.117.1600946849132; 
+ Thu, 24 Sep 2020 04:27:29 -0700 (PDT)
+Received: from localhost ([217.111.27.204])
+ by smtp.gmail.com with ESMTPSA id t124sm3381875wmg.31.2020.09.24.04.27.27
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 24 Sep 2020 04:27:27 -0700 (PDT)
+Date: Thu, 24 Sep 2020 13:27:25 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/4] dt-bindings: reserved-memory: Document "active"
+ property
+Message-ID: <20200924112725.GA2486709@ulmo>
+References: <20200904130000.691933-1-thierry.reding@gmail.com>
+ <20200914220829.GA330122@bogus> <20200915123648.GA3496938@ulmo>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "fenghua.yu@intel.com" <fenghua.yu@intel.com>,
- "will@kernel.org" <will@kernel.org>, Suzuki K Poulose <suzuki.poulose@arm.com>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20200915123648.GA3496938@ulmo>
+User-Agent: Mutt/1.14.7 (2020-08-29)
+Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,56 +106,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1726506938390475943=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
+--===============1726506938390475943==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
+Content-Disposition: inline
 
-> -----Original Message-----
-> From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
-> Sent: 24 September 2020 11:14
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org;
-> linux-mm@kvack.org; fenghua.yu@intel.com; catalin.marinas@arm.com;
-> Suzuki K Poulose <suzuki.poulose@arm.com>; robin.murphy@arm.com;
-> zhangfei.gao@linaro.org; will@kernel.org
-> Subject: Re: [PATCH v10 10/13] iommu/arm-smmu-v3: Check for SVA features
-> 
-> Hi Shameer,
-> 
-> On Mon, Sep 21, 2020 at 08:59:39AM +0000, Shameerali Kolothum Thodi
-> wrote:
-> > > +bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
-> > > +{
-> > > +	unsigned long reg, fld;
-> > > +	unsigned long oas;
-> > > +	unsigned long asid_bits;
-> > > +	u32 feat_mask = ARM_SMMU_FEAT_BTM |
-> > > ARM_SMMU_FEAT_COHERENCY;
-> >
-> > Why is BTM mandated for SVA? I couldn't find this requirement in SMMU spec
-> > (Sorry if I missed it or this got discussed earlier). But if performance is the
-> only concern here,
-> > is it better just to allow it with a warning rather than limiting SMMUs without
-> BTM?
-> 
-> It's a performance concern and requires to support multiple
-> configurations, but the spec allows it. Are there SMMUs without BTM that
-> need it?
 
-Ok. Thanks for clarifying. May be better to add a comment here. Our platforms
-do support BTM, but I had a strange case where the UEFI didn't enable DVM
-but SMMU reported BTM and was causing random failures due to lack of
-explicit tlbi on mm invalidation. Anyway that doesn't count here :)
+--9jxsPFA5p3P2qPhR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Shameer
+On Tue, Sep 15, 2020 at 02:36:48PM +0200, Thierry Reding wrote:
+> On Mon, Sep 14, 2020 at 04:08:29PM -0600, Rob Herring wrote:
+> > On Fri, Sep 04, 2020 at 02:59:57PM +0200, Thierry Reding wrote:
+> > > From: Thierry Reding <treding@nvidia.com>
+> > >=20
+> > > Reserved memory regions can be marked as "active" if hardware is
+> > > expected to access the regions during boot and before the operating
+> > > system can take control. One example where this is useful is for the
+> > > operating system to infer whether the region needs to be identity-
+> > > mapped through an IOMMU.
+> >=20
+> > I like simple solutions, but this hardly seems adequate to solve the=20
+> > problem of passing IOMMU setup from bootloader/firmware to the OS. Like=
+=20
+> > what is the IOVA that's supposed to be used if identity mapping is not=
+=20
+> > used?
+>=20
+> The assumption here is that if the region is not active there is no need
+> for the IOVA to be specified because the kernel will allocate memory and
+> assign any IOVA of its choosing.
+>=20
+> Also, note that this is not meant as a way of passing IOMMU setup from
+> the bootloader or firmware to the OS. The purpose of this is to specify
+> that some region of memory is actively being accessed during boot. The
+> particular case that I'm looking at is where the bootloader set up a
+> splash screen and keeps it on during boot. The bootloader has not set up
+> an IOMMU mapping and the identity mapping serves as a way of keeping the
+> accesses by the display hardware working during the transitional period
+> after the IOMMU translations have been enabled by the kernel but before
+> the kernel display driver has had a chance to set up its own IOMMU
+> mappings.
+>=20
+> > If you know enough about the regions to assume identity mapping, then=
+=20
+> > can't you know if active or not?
+>=20
+> We could alternatively add some property that describes the region as
+> requiring an identity mapping. But note that we can't make any
+> assumptions here about the usage of these regions because the IOMMU
+> driver simply has no way of knowing what they are being used for.
+>=20
+> Some additional information is required in device tree for the IOMMU
+> driver to be able to make that decision.
 
-> Thanks,
-> Jean
+Rob, can you provide any hints on exactly how you want to move this
+forward? I don't know in what direction you'd like to proceed.
+
+Thierry
+
+--9jxsPFA5p3P2qPhR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9sgpsACgkQ3SOs138+
+s6HU/BAAsp4ztlRhFpoZxRRVHt3XKaVuNsn3yxThPMn67Xbk9U6QwWaY+ssNTMuZ
+7oM3m4GgdUJ7vl1eoDNg7levtLHtMnhdXeEFSvBqkmPcxoPxSpll3mlMZk00uOX9
+ZKx9+fMOIhZj3vlnfAquU9uhOMAOivIEDZhLYQ8ic2Yr8kA2utHOpTNI61XOOVRh
+SphmnAYnJOkhvHehAIDc8M1qZH0ZQYUeJONEBRNK/wihFbiHeLnYY0FE0b5vxQpj
+rKzDGsGcd0tZc+s6PmT1v2OQru3rA6MWl6FGKwI0UzUouZG+dLQybLWBeY4mNCP/
+L6QjVVZa8oeQ5M+JIcEiIDbRrB4X/2M7is/539AwJ2IhBoIRZpr5LCbeVK/b//O7
+m0Tw1kV4ibrXzVLD0YKB0Ls4KF1gztmLrZcfUy5/qqP0TdzZWfwxmbW/M0PTSRG8
+oPK5W0TViRW9rn1B3RibGFUKdCXdassKFZWYWO5/FCEP4ijOrhsVbLHrMrkwBzBU
+YsAaqJDWCbl+xmHwT/2E/wWtCpjsuGmbscAfJ6lhKwQJcTfPsnIV0G9luXZxMoYu
+nFuWN2RBDnARwPqr6jubxe8evniLQSCE7PUZ2VdJYOlMt+3DEzrpx2JVdd/UysTa
+tP5K57t2OyxVjIEgcdBrxAYL0Uf/tgNMGk5LqNd8ZYyr7EHdFgM=
+=xZhX
+-----END PGP SIGNATURE-----
+
+--9jxsPFA5p3P2qPhR--
+
+--===============1726506938390475943==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1726506938390475943==--
