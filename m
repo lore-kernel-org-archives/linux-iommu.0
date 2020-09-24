@@ -7,91 +7,91 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41124C4727E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D41C4727D
 	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:32 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E44662344C
+	by mail.kernel.org (Postfix) with ESMTPS id DD315238A1
 	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 15:09:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="QOMLsak1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E44662344C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="vD7Wb2hE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD315238A1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9321F2E10A;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9D7AE86B00;
 	Thu, 24 Sep 2020 15:09:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Pf+W8X-JGVo4; Thu, 24 Sep 2020 15:09:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B47E42E10C;
-	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A259C1AD6;
-	Thu, 24 Sep 2020 15:09:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0B94C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id ED94C84DD5
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xG2WikN4VXgb; Thu, 24 Sep 2020 15:09:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AEEC386B1A;
+	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 948B7C1AD6;
+	Thu, 24 Sep 2020 15:09:25 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51DECC0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 40D3D85582
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:39 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IrRPNkXQJ4WP for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
+ with ESMTP id mNHevnVbvgkQ for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BD61984E9A
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:36 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id C2EA584F27
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 14:58:37 +0000 (UTC)
 Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
- by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEtNw4037511;
- Thu, 24 Sep 2020 14:58:20 GMT
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEtGqE037460;
+ Thu, 24 Sep 2020 14:58:19 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=qOx/WyIlX35flcYkRZF1E+iVsPY37zuDH5frIC2qMd0=;
- b=QOMLsak1AaK0UlwuJY54v7vqFZhJeJDEfG7OAoqaAdCwdOpo3GmutTgMAFVB7qwZLybv
- LP1GDNgDy72KIPR9c5u5zDWZNIPgY2WhFP2rz+V0blWtmy1YG0XKU+g8HJhvwNh5H3/o
- VeN40E9SUsjzYa2/loEK0YmoJ2cTLk0RKpOs9kj8RpI33Nx+9ZXsojGB5wjqYW7Z0RVH
- s8StFAWWGl3+4xAJI9P4CclJizomjyNFmrvSs0ogBG3O31dYYWs1awf3drMkPZxL4R4v
- +8M/2KuBH/LTtlGn/0bzvHXFZqssU/NjKe2Vj3LaMVbnkUUYxf7KV77I6geveHAYwhnB BQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by aserp2120.oracle.com with ESMTP id 33q5rgq588-1
+ bh=NiAX/lKhBwtj/b+yjV6cXPKWwcBGqpXA7p5pUSchAm0=;
+ b=vD7Wb2hE0pZQ+BeUmSaNSTuKgTZLdB2OSQDork8YNrZIlKQnKWTrRriOQWEvr4fOpZ8F
+ 7l2AKA351i5WLNejNJaLNVKCkYfcd99x+hqmbLyCufqV+UJibijufGVOyT7uauKMhFJ9
+ FA/n5Kd/wpes59nIiav7hqNUFcJkMYCHuafxChDxoiylu7iUVvTWngp2ab7bccHmtOUf
+ C7miJPOuWQ5V7oSFyqqeJoOk+SG9d+4qhIkLYY/1u3tHv/Xm8DDnitIOMJ2kZOFyLsQO
+ idAwfNvewodWonkZV8qcdVVZzb7rqdjwrmqTM6sw2ojECHzsSI6sQSfk/Xs8RtUih+ha xw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by aserp2120.oracle.com with ESMTP id 33q5rgq585-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Thu, 24 Sep 2020 14:58:20 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuTdp096380;
- Thu, 24 Sep 2020 14:58:19 GMT
+ Thu, 24 Sep 2020 14:58:18 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08OEuApX177221;
+ Thu, 24 Sep 2020 14:58:18 GMT
 Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by userp3020.oracle.com with ESMTP id 33nurw9x6n-1
+ by aserp3020.oracle.com with ESMTP id 33r28x3vkd-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 24 Sep 2020 14:58:19 +0000
+ Thu, 24 Sep 2020 14:58:18 +0000
 Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08OEwHYF000852;
- Thu, 24 Sep 2020 14:58:17 GMT
+ by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08OEwFG7000849;
+ Thu, 24 Sep 2020 14:58:15 GMT
 Received: from disposition.us.oracle.com (/10.152.32.81)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Thu, 24 Sep 2020 07:58:17 -0700
+ with ESMTP ; Thu, 24 Sep 2020 07:58:15 -0700
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH 11/13] kexec: Secure Launch kexec SEXIT support
-Date: Thu, 24 Sep 2020 10:58:39 -0400
-Message-Id: <1600959521-24158-12-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH 09/13] x86: Secure Launch SMP bringup support
+Date: Thu, 24 Sep 2020 10:58:37 -0400
+Message-Id: <1600959521-24158-10-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- malwarescore=0
- phishscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 suspectscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ mlxlogscore=999
+ suspectscore=0 adultscore=0 bulkscore=0 malwarescore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2009240114
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9753
  signatures=668680
@@ -123,116 +123,219 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Prior to running the next kernel via kexec, the Secure Launch code
-closes down private SMX resources and does an SEXIT. This allows the
-next kernel to start normally without any issues starting the APs etc.
+On Intel, the APs are left in a well documented state after TXT performs
+the late launch. Specifically they cannot have #INIT asserted on them so
+a standard startup via INIT/SIPI/SIPI cannot be performed. Instead the
+early SL stub code parked the APs in a pause/jmp loop waiting for an NMI.
+The modified SMP boot code is called for the Secure Launch case. The
+jump address for the RM piggy entry point is fixed up in the jump where
+the APs are waiting and an NMI IPI is sent to the AP. The AP vectors to
+the Secure Launch entry point in the RM piggy which mimics what the real
+mode code would do then jumps the the standard RM piggy protected mode
+entry point.
 
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- arch/x86/kernel/slaunch.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++
- kernel/kexec_core.c       |  4 +++
- 2 files changed, 74 insertions(+)
+ arch/x86/include/asm/realmode.h      |  3 ++
+ arch/x86/kernel/smpboot.c            | 86 ++++++++++++++++++++++++++++++++++++
+ arch/x86/realmode/rm/header.S        |  3 ++
+ arch/x86/realmode/rm/trampoline_64.S | 37 ++++++++++++++++
+ 4 files changed, 129 insertions(+)
 
-diff --git a/arch/x86/kernel/slaunch.c b/arch/x86/kernel/slaunch.c
-index 7bdb89e..b2221d8 100644
---- a/arch/x86/kernel/slaunch.c
-+++ b/arch/x86/kernel/slaunch.c
-@@ -784,3 +784,73 @@ static void __exit slaunch_exit(void)
- late_initcall(slaunch_late_init);
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index b35030e..20bc283 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -34,6 +34,9 @@ struct real_mode_header {
+ #ifdef CONFIG_X86_64
+ 	u32	machine_real_restart_seg;
+ #endif
++#ifdef CONFIG_SECURE_LAUNCH
++	u32	sl_trampoline_start32;
++#endif
+ };
  
- __exitcall(slaunch_exit);
-+
-+static inline void smx_getsec_sexit(void)
-+{
-+	asm volatile (".byte 0x0f,0x37\n"
-+		      : : "a" (SMX_X86_GETSEC_SEXIT));
-+}
-+
-+void slaunch_finalize(int do_sexit)
-+{
-+	void __iomem *config;
-+	u64 one = 1, val;
-+
-+	if (!(slaunch_get_flags() & (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT)))
-+		return;
-+
-+	config = ioremap(TXT_PRIV_CONFIG_REGS_BASE, TXT_NR_CONFIG_PAGES *
-+			 PAGE_SIZE);
-+	if (!config) {
-+		pr_emerg("Error SEXIT failed to ioremap TXT private reqs\n");
-+		return;
-+	}
-+
-+	/* Clear secrets bit for SEXIT */
-+	memcpy_toio(config + TXT_CR_CMD_NO_SECRETS, &one, sizeof(u64));
-+	memcpy_fromio(&val, config + TXT_CR_E2STS, sizeof(u64));
-+
-+	/* Unlock memory configurations */
-+	memcpy_toio(config + TXT_CR_CMD_UNLOCK_MEM_CONFIG, &one, sizeof(u64));
-+	memcpy_fromio(&val, config + TXT_CR_E2STS, sizeof(u64));
-+
-+	/* Close the TXT private register space */
-+	memcpy_fromio(&val, config + TXT_CR_E2STS, sizeof(u64));
-+	memcpy_toio(config + TXT_CR_CMD_CLOSE_PRIVATE, &one, sizeof(u64));
-+
-+	/*
-+	 * Calls to iounmap are not being done because of the state of the
-+	 * system this late in the kexec process. Local IRQs are disabled and
-+	 * iounmap causes a TLB flush which in turn causes a warning. Leaving
-+	 * thse mappings is not an issue since the next kernel is going to
-+	 * completely re-setup memory management.
-+	 */
-+
-+	/* Map public registers and do a final read fence */
-+	config = ioremap(TXT_PUB_CONFIG_REGS_BASE, TXT_NR_CONFIG_PAGES *
-+			 PAGE_SIZE);
-+	if (!config) {
-+		pr_emerg("Error SEXIT failed to ioremap TXT public reqs\n");
-+		return;
-+	}
-+
-+	memcpy_fromio(&val, config + TXT_CR_E2STS, sizeof(u64));
-+
-+	pr_emerg("TXT clear secrets bit and unlock memory complete.");
-+
-+	if (!do_sexit)
-+		return;
-+
-+	if (smp_processor_id() != 0) {
-+		pr_emerg("Error TXT SEXIT must be called on CPU 0\n");
-+		return;
-+	}
-+
-+	/* Disable SMX mode */
-+	cr4_set_bits(X86_CR4_SMXE);
-+
-+	/* Do the SEXIT SMX operation */
-+	smx_getsec_sexit();
-+
-+	pr_emerg("TXT SEXIT complete.");
-+}
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index c19c0da..6b9ac11 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -37,6 +37,7 @@
- #include <linux/compiler.h>
- #include <linux/hugetlb.h>
- #include <linux/frame.h>
+ /* This must match data at realmode/rm/trampoline_{32,64}.S */
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index f5ef689..0ca0b07 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -56,6 +56,7 @@
+ #include <linux/numa.h>
+ #include <linux/pgtable.h>
+ #include <linux/overflow.h>
 +#include <linux/slaunch.h>
  
- #include <asm/page.h>
- #include <asm/sections.h>
-@@ -1179,6 +1180,9 @@ int kernel_kexec(void)
- 		cpu_hotplug_enable();
- 		pr_notice("Starting new kernel\n");
- 		machine_shutdown();
-+
-+		/* Finalize TXT registers and do SEXIT */
-+		slaunch_finalize(1);
- 	}
+ #include <asm/acpi.h>
+ #include <asm/desc.h>
+@@ -1017,6 +1018,83 @@ int common_cpu_up(unsigned int cpu, struct task_struct *idle)
+ 	return 0;
+ }
  
- 	machine_kexec(kexec_image);
++#ifdef CONFIG_SECURE_LAUNCH
++
++static atomic_t first_ap_only = {1};
++
++/*
++ * Called to fix the long jump address for the waiting APs to vector to
++ * the correct startup location in the Secure Launch stub in the rmpiggy.
++ */
++static int
++slaunch_fixup_jump_vector(void)
++{
++	struct sl_ap_wake_info *ap_wake_info;
++	unsigned int *ap_jmp_ptr = 0;
++
++	if (!atomic_dec_and_test(&first_ap_only))
++		return 0;
++
++	ap_wake_info = slaunch_get_ap_wake_info();
++
++	ap_jmp_ptr = (unsigned int *)__va(ap_wake_info->ap_wake_block +
++					  ap_wake_info->ap_jmp_offset);
++
++	*ap_jmp_ptr = real_mode_header->sl_trampoline_start32;
++
++	pr_info("TXT AP long jump address updated\n");
++
++	return 0;
++}
++
++/*
++ * TXT AP startup is quite different than normal. The APs cannot have #INIT
++ * asserted on them or receive SIPIs. The early Secure Launch code has parked
++ * the APs in a pause loop waiting to receive an NMI. This will wake the APs
++ * and have them jump to the protected mode code in the rmpiggy where the rest
++ * of the SMP boot of the AP will proceed normally.
++ */
++static int
++slaunch_wakeup_cpu_from_txt(int cpu, int apicid)
++{
++	unsigned long send_status = 0, accept_status = 0;
++
++	/* Only done once */
++	if (slaunch_fixup_jump_vector())
++		return -1;
++
++	/* Send NMI IPI to idling AP and wake it up */
++	apic_icr_write(APIC_DM_NMI, apicid);
++
++	if (init_udelay == 0)
++		udelay(10);
++	else
++		udelay(300);
++
++	send_status = safe_apic_wait_icr_idle();
++
++	if (init_udelay == 0)
++		udelay(10);
++	else
++		udelay(300);
++
++	accept_status = (apic_read(APIC_ESR) & 0xEF);
++
++	if (send_status)
++		pr_err("Secure Launch IPI never delivered???\n");
++	if (accept_status)
++		pr_err("Secure Launch IPI delivery error (%lx)\n",
++			accept_status);
++
++	return (send_status | accept_status);
++}
++
++#else
++
++#define slaunch_wakeup_cpu_from_txt(cpu, apicid)	0
++
++#endif  /* !CONFIG_SECURE_LAUNCH */
++
+ /*
+  * NOTE - on most systems this is a PHYSICAL apic ID, but on multiquad
+  * (ie clustered apic addressing mode), this is a LOGICAL apic ID.
+@@ -1071,6 +1149,12 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+ 	cpumask_clear_cpu(cpu, cpu_initialized_mask);
+ 	smp_mb();
+ 
++	/* With Intel TXT, the AP startup is totally different */
++	if (slaunch_get_flags() & (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT)) {
++		boot_error = slaunch_wakeup_cpu_from_txt(cpu, apicid);
++		goto txt_wake;
++	}
++
+ 	/*
+ 	 * Wake up a CPU in difference cases:
+ 	 * - Use the method in the APIC driver if it's defined
+@@ -1083,6 +1167,8 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+ 		boot_error = wakeup_cpu_via_init_nmi(cpu, start_ip, apicid,
+ 						     cpu0_nmi_registered);
+ 
++txt_wake:
++
+ 	if (!boot_error) {
+ 		/*
+ 		 * Wait 10s total for first sign of life from AP
+diff --git a/arch/x86/realmode/rm/header.S b/arch/x86/realmode/rm/header.S
+index af04512..7215040 100644
+--- a/arch/x86/realmode/rm/header.S
++++ b/arch/x86/realmode/rm/header.S
+@@ -33,6 +33,9 @@ SYM_DATA_START(real_mode_header)
+ #ifdef CONFIG_X86_64
+ 	.long	__KERNEL32_CS
+ #endif
++#ifdef CONFIG_SECURE_LAUNCH
++	.long	pa_sl_trampoline_start32
++#endif
+ SYM_DATA_END(real_mode_header)
+ 
+ 	/* End signature, used to verify integrity */
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index 251758e..d5fb210 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -84,6 +84,43 @@ SYM_CODE_END(trampoline_start)
+ 
+ 	.section ".text32","ax"
+ 	.code32
++#ifdef CONFIG_SECURE_LAUNCH
++	.balign 4
++SYM_CODE_START(sl_trampoline_start32)
++	/*
++	 * The early secure launch stub AP wakeup code has taken care of all
++	 * the vagaries of launching out of TXT. This bit just mimics what the
++	 * 16b entry code does and jumps off to the real startup_32.
++	 */
++	cli
++	wbinvd
++
++	/*
++	 * The %ebx provided is not terribly useful since it is the physical
++	 * address of tb_trampoline_start and not the base of the image.
++	 * Use pa_real_mode_base, which is fixed up, to get a run time
++	 * base register to use for offsets to location that do not have
++	 * pa_ symbols.
++	 */
++	movl    $pa_real_mode_base, %ebx
++
++	/*
++	 * This may seem a little odd but this is what %esp would have had in
++	 * it on the jmp from real mode because all real mode fixups were done
++	 * via the code segment. The base is added at the 32b entry.
++	 */
++	movl	rm_stack_end, %esp
++
++	lgdt    tr_gdt(%ebx)
++	lidt    tr_idt(%ebx)
++
++	movw	$__KERNEL_DS, %dx	# Data segment descriptor
++
++	/* Jump to where the 16b code would have jumped */
++	ljmpl	$__KERNEL32_CS, $pa_startup_32
++SYM_CODE_END(sl_trampoline_start32)
++#endif
++
+ 	.balign 4
+ SYM_CODE_START(startup_32)
+ 	movl	%edx, %ss
 -- 
 1.8.3.1
 
