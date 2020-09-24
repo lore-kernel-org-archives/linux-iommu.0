@@ -2,71 +2,99 @@ Return-Path: <SRS0=ygJE=DB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0CCC4346E
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8632C4727D
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:31:41 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5C85B2376F
-	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:28:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C85B2376F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5DBB123772
+	for <iommu@archiver.kernel.org>; Thu, 24 Sep 2020 08:31:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JxmiTewQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DBB123772
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 29138874CF;
-	Thu, 24 Sep 2020 08:28:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 631698737E;
+	Thu, 24 Sep 2020 08:31:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7OPvxgJMy2EI; Thu, 24 Sep 2020 08:28:48 +0000 (UTC)
+	with ESMTP id ZuK8+iXSDGRN; Thu, 24 Sep 2020 08:31:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F19DF874BF;
-	Thu, 24 Sep 2020 08:28:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B77AF87380;
+	Thu, 24 Sep 2020 08:31:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA6C4C0889;
-	Thu, 24 Sep 2020 08:28:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85311C0889;
+	Thu, 24 Sep 2020 08:31:39 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC603C0051
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:28:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34810C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:31:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BF1922E0DA
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:28:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2CD4E2E0DF
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:31:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W57LSpxJ7Nay for <iommu@lists.linux-foundation.org>;
- Thu, 24 Sep 2020 08:28:41 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id 979CD2DFF8
- for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:28:41 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 9CBAC295; Thu, 24 Sep 2020 10:28:36 +0200 (CEST)
-Date: Thu, 24 Sep 2020 10:28:30 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: IOVA allocation dependency between firmware buffer and remaining
- buffers
-Message-ID: <20200924082830.GB27174@8bytes.org>
-References: <CAEC9eQOX9BHX4v5aY2cfCT=T-ZHA7y0xF7aiZhW9xzG4fme36Q@mail.gmail.com>
- <CAEC9eQPaeF9=Li74x9RrSHyDgRZ6b653yBRu6EYsaU+eSj2wsQ@mail.gmail.com>
- <59cda41f-170c-a1ad-a345-bc38b9ed4d73@arm.com>
- <CGME20200424161534eucas1p29177cad5b4790d392acb69a335a3992e@eucas1p2.samsung.com>
- <CAOD6ATrWYLPT0ydz2vFhNwWhqHum_q_pyCe=oGJWOcEqjmNOqQ@mail.gmail.com>
- <11584d09-5995-6133-3bd3-8f7a0afd0e01@samsung.com>
+ with ESMTP id g7lqpyuUEmXE for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Sep 2020 08:31:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
+ [209.85.218.67])
+ by silver.osuosl.org (Postfix) with ESMTPS id 8AFC72E0DA
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 08:31:36 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id gx22so3300870ejb.5
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Sep 2020 01:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=iQLky5ZWJdFZQTUOK1fAqSj9E9vn3fC5tbC/RCI+f5o=;
+ b=JxmiTewQDn+DVnAHs5YSCKXGT9ubPK/YQGSoDm86k7pdu51akn98y0gMvSdQrAKLVN
+ O8mfewLHNsyNzndlhjkcDqtCXCMrX0Ejgi/Dr/u3JJa0kY7fnmGkkhTC8zh6wtROgN3R
+ QmGd1E7DNjOrhV3SaSSLohUmmndRJccit3YqqlHXuVhnYphUN0ssoPq9DxEXbgFKGz1p
+ VfNeLjJbe3KBnXoYeLJHS5J0+RM77PeCKO5CzxXjhnzO1Lr7AAlm4e3uhH6dHZwyltoo
+ VRSbtBnHCu9qkPNJipDLql43zuJgP4lnfr2q2bbMivywCcFILBEMwmOWCOdmuyJeC3LM
+ N+QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=iQLky5ZWJdFZQTUOK1fAqSj9E9vn3fC5tbC/RCI+f5o=;
+ b=X3t6sUlEEpdxCAs4oWxebtti6GBFT4xbHf9rGpnUk0P0I5/zt/jjrgf3A/xTHo1n2d
+ v4exfWM24I0Xu+Eg7wsbX0942CF5rMLuvPFtKL1zYGuxldJQAUoZNPRuZBGHOUjJ22sg
+ C+bnNXqgpny8MwPiDLNG+Snyx1AkpYY6vWcFXZG+IUoiPbwu2YCpp8A1CrA1w4Dcp1Wu
+ YdoQ8FnNcVnZkfrPegPojsCIebl1ZMie0h4vBYEWqAKAnlZiGSfCauWicyUoVcBhzdEh
+ hIjjl34+QadaTQUlHA/+sSA891YQIfK3fcR3mDh7dWuliuz/NlFjG5cOCII1BmQDG1xR
+ xeLg==
+X-Gm-Message-State: AOAM532mecdgNVOC91aSra++foRjuv+1ImSPA46SNdfa/yoKbdqjsdL9
+ GHiAdsA3IXz035xh4yRy8DPgAQ==
+X-Google-Smtp-Source: ABdhPJwLzzXN+IyUsf3KGNT7aZtIbPoxS7jdNw92acn5PhSUI2Uv1RL6H8dlzn8f4ElxNCwc/0DyMA==
+X-Received: by 2002:a17:906:2659:: with SMTP id
+ i25mr3402228ejc.16.1600936294818; 
+ Thu, 24 Sep 2020 01:31:34 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id q23sm1988704edw.41.2020.09.24.01.31.33
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 24 Sep 2020 01:31:34 -0700 (PDT)
+Date: Thu, 24 Sep 2020 10:31:16 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v3 2/6] iommu/virtio: Add topology helpers
+Message-ID: <20200924083116.GA170808@myrica>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <20200821131540.2801801-3-jean-philippe@linaro.org>
+ <21fce247-4c1c-b7a8-bcac-4d7b649eaeca@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <11584d09-5995-6133-3bd3-8f7a0afd0e01@samsung.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: jean-philippe@linaro.org, will@kernel.org, linux-mm@kvack.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Thierry Reding <thierry.reding@gmail.com>, Ajay kumar <ajaynumb@gmail.com>,
- Shaik Ameer Basha <shaik.ameer@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, hch@lst.de
+In-Reply-To: <21fce247-4c1c-b7a8-bcac-4d7b649eaeca@redhat.com>
+Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com, mst@redhat.com,
+ linux-pci@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
+ bhelgaas@google.com, jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,24 +112,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 23, 2020 at 08:48:26AM +0200, Marek Szyprowski wrote:
-> It allows to remap given buffer at the specific IOVA address, although 
-> it doesn't guarantee that those specific addresses won't be later used 
-> by the IOVA allocator. Probably it would make sense to add an API for 
-> generic IOMMU-DMA framework to mark the given IOVA range as 
-> reserved/unused to protect them.
+On Fri, Sep 04, 2020 at 06:22:12PM +0200, Auger Eric wrote:
+> > +/**
+> > + * virt_dma_configure - Configure DMA of virtualized devices
+> > + * @dev: the endpoint
+> > + *
+> > + * Setup the DMA and IOMMU ops of a virtual device, for platforms without DT or
+> > + * ACPI.
+> > + *
+> > + * Return: -EPROBE_DEFER if the device is managed by an IOMMU that hasn't been
+> > + *   probed yet, 0 otherwise
+> > + */
+> > +int virt_dma_configure(struct device *dev)
+> > +{
+> > +	const struct iommu_ops *iommu_ops;
+> > +
+> > +	iommu_ops = virt_iommu_setup(dev);
+> > +	if (IS_ERR_OR_NULL(iommu_ops)) {
+> > +		int ret = PTR_ERR(iommu_ops);
+> > +
+> > +		if (ret == -EPROBE_DEFER || ret == 0)
+> > +			return ret;
+> > +		dev_err(dev, "error %d while setting up virt IOMMU\n", ret);
+> > +		return 0;
+> why do we return 0 here?
 
-There is an API for that, the IOMMU driver can return IOVA reserved
-regions per device and the IOMMU core code will take care of mapping
-these regions and reserving them in the IOVA allocator, so that
-DMA-IOMMU code will not use it for allocations.
+So we can fall back to another method (ACPI or DT) if available
 
-Have a look at the iommu_ops->get_resv_regions() and
-iommu_ops->put_resv_regions().
+> Besides
+> 
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Regards,
-
-	Joerg
+Thanks!
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
