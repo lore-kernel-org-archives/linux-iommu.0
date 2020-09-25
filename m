@@ -2,75 +2,108 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08808C4363D
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 14:37:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247A5C4363D
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 14:54:17 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2CDC722B2D
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 14:37:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2CDC722B2D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8331A2074B
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 14:54:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hi/TfxZ3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8331A2074B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AB6D82E16F;
-	Fri, 25 Sep 2020 14:37:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1D622875B0;
+	Fri, 25 Sep 2020 14:54:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eaM1bp-L2vO7; Fri, 25 Sep 2020 14:37:38 +0000 (UTC)
+	with ESMTP id PLsLjhgnahih; Fri, 25 Sep 2020 14:54:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0423B203F0;
-	Fri, 25 Sep 2020 14:37:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 28DD687556;
+	Fri, 25 Sep 2020 14:54:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7DBFC0890;
-	Fri, 25 Sep 2020 14:37:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D62E2C0859
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 14:37:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E534C0890;
+	Fri, 25 Sep 2020 14:54:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA6E1C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 13:55:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C06C086917
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 14:37:36 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id AF15F875B6
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 13:55:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q6P7FwQYeg-6 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 14:37:35 +0000 (UTC)
+ with ESMTP id 6sOrLFlfpNHD for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 13:55:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 64C9F868AB
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 14:37:35 +0000 (UTC)
-Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.106])
- by Forcepoint Email with ESMTP id 124BC412629B66515EF8;
- Fri, 25 Sep 2020 15:37:32 +0100 (IST)
-Received: from [127.0.0.1] (10.47.7.140) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 25 Sep
- 2020 15:37:31 +0100
-Subject: Re: [PATCH 1/2] iommu/iova: Flush CPU rcache for when a depot fills
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>
-References: <1601027469-221812-1-git-send-email-john.garry@huawei.com>
- <1601027469-221812-2-git-send-email-john.garry@huawei.com>
- <bede311f-9a07-98e1-e728-9acd4ad13b51@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <11d30dc2-0b2d-fc30-a07a-9c5f18064d2b@huawei.com>
-Date: Fri, 25 Sep 2020 15:34:37 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
-MIME-Version: 1.0
-In-Reply-To: <bede311f-9a07-98e1-e728-9acd4ad13b51@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.7.140]
-X-ClientProxiedBy: lhreml725-chm.china.huawei.com (10.201.108.76) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, xiyou.wangcong@gmail.com
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 5F277875B4
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 13:55:11 +0000 (UTC)
+Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1601042110;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=6n8qfow2srJZ/wVE5bZaW/DNL/DT/TCXXKIdMa5+xeg=;
+ b=hi/TfxZ3S1Ze2cYNRtIk0TfDcLokKpGNO6WjK4yuOap0/YpYiDfwA1ItLfDE/i30GkHRFZ
+ So6iVEi5Vk2dCy9mY8foO3RoQSewwKWJ86TM1EX2YwyvTVMyjPKnPHUaF5vDXJgj+8oHUt
+ HkOGkygFjh8bBuN0zp3q3ljZyZ3ncR4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-439-KKpNboZLOfasdSEOvcuo4g-1; Fri, 25 Sep 2020 09:55:05 -0400
+X-MC-Unique: KKpNboZLOfasdSEOvcuo4g-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 525441021202;
+ Fri, 25 Sep 2020 13:55:00 +0000 (UTC)
+Received: from ovpn-66-87.rdu2.redhat.com (unknown [10.10.67.87])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 29E9973662;
+ Fri, 25 Sep 2020 13:54:53 +0000 (UTC)
+Message-ID: <cdfd63305caa57785b0925dd24c0711ea02c8527.camel@redhat.com>
+Subject: Re: [patch V2 34/46] PCI/MSI: Make arch_.*_msi_irq[s] fallbacks
+ selectable
+From: Qian Cai <cai@redhat.com>
+To: Thomas Gleixner <tglx@linutronix.de>, LKML
+ <linux-kernel@vger.kernel.org>,  Heiko Carstens <hca@linux.ibm.com>, Vasily
+ Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>,
+ linux-s390@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+ linux-next@vger.kernel.org
+Date: Fri, 25 Sep 2020 09:54:52 -0400
+In-Reply-To: <20200826112333.992429909@linutronix.de>
+References: <20200826111628.794979401@linutronix.de>
+ <20200826112333.992429909@linutronix.de>
+Mime-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Mailman-Approved-At: Fri, 25 Sep 2020 14:54:14 +0000
+Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org, "K. Y.
+ Srinivasan" <kys@microsoft.com>, Dan Williams <dan.j.williams@intel.com>,
+ Wei Liu <wei.liu@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>,
+ Baolu Lu <baolu.lu@intel.com>, Marc Zyngier <maz@kernel.org>, x86@kernel.org,
+ Jason Gunthorpe <jgg@mellanox.com>, Megha Dey <megha.dey@intel.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
+ Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,109 +116,227 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjUvMDkvMjAyMCAxMjo1MywgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiAtLS0KPj4gwqAgZHJp
-dmVycy9pb21tdS9pb3ZhLmMgfCAyNSArKysrKysrKysrKysrKysrLS0tLS0tLS0tCj4+IMKgIDEg
-ZmlsZSBjaGFuZ2VkLCAxNiBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb3ZhLmMgYi9kcml2ZXJzL2lvbW11L2lvdmEuYwo+PiBp
-bmRleCA0NWEyNTFkYTU0NTMuLjA1ZTBiNDYyZTBkOSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9p
-b21tdS9pb3ZhLmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9pb3ZhLmMKPj4gQEAgLTg5Miw5ICs4
-OTIsOCBAQCBzdGF0aWMgYm9vbCBfX2lvdmFfcmNhY2hlX2luc2VydChzdHJ1Y3QgCj4+IGlvdmFf
-ZG9tYWluICppb3ZhZCwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0
-cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hlLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhX3BmbikKPj4gwqAgewo+PiAtwqDCoMKgIHN0cnVj
-dCBpb3ZhX21hZ2F6aW5lICptYWdfdG9fZnJlZSA9IE5VTEw7Cj4+IMKgwqDCoMKgwqAgc3RydWN0
-IGlvdmFfY3B1X3JjYWNoZSAqY3B1X3JjYWNoZTsKPj4gLcKgwqDCoCBib29sIGNhbl9pbnNlcnQg
-PSBmYWxzZTsKPj4gK8KgwqDCoCBib29sIGNhbl9pbnNlcnQgPSBmYWxzZSwgZmx1c2ggPSBmYWxz
-ZTsKPj4gwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIGZsYWdzOwo+PiDCoMKgwqDCoMKgIGNwdV9y
-Y2FjaGUgPSByYXdfY3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVzKTsKPj4gQEAgLTkxMywxMyAr
-OTEyLDE5IEBAIHN0YXRpYyBib29sIF9faW92YV9yY2FjaGVfaW5zZXJ0KHN0cnVjdCAKPj4gaW92
-YV9kb21haW4gKmlvdmFkLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAocmNhY2hl
-LT5kZXBvdF9zaXplIDwgTUFYX0dMT0JBTF9NQUdTKSB7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgcmNhY2hlLT5kZXBvdFtyY2FjaGUtPmRlcG90X3NpemUrK10gPQo+PiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjcHVfcmNh
-Y2hlLT5sb2FkZWQ7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2FuX2luc2Vy
-dCA9IHRydWU7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY3B1X3JjYWNoZS0+
-bG9hZGVkID0gbmV3X21hZzsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfSBlbHNlIHsK
-Pj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBtYWdfdG9fZnJlZSA9IGNwdV9yY2Fj
-aGUtPmxvYWRlZDsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKgo+PiArwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBUaGUgZGVwb3QgaXMgZnVsbCwgbWVhbmlu
-ZyB0aGF0IGEgdmVyeSBsYXJnZQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-KiBjYWNoZSBvZiBJT1ZBcyBoYXMgYnVpbHQgdXAsIHdoaWNoIHNsb3dzCj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIGRvd24gUkIgdHJlZSBhY2Nlc3NlcyBzaWduaWZpY2Fu
-dGx5Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIC0+IGxldCdzIGZsdXNo
-IGF0IHRoaXMgcG9pbnQuCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqLwo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZsdXNoID0gdHJ1ZTsKPj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpb3ZhX21hZ2F6aW5lX2ZyZWUobmV3X21hZyk7Cj4+
-IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgc3Bpbl91bmxvY2soJnJjYWNoZS0+bG9jayk7Cj4+IC0KPj4gLcKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgY3B1X3JjYWNoZS0+bG9hZGVkID0gbmV3X21hZzsKPj4gLcKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgY2FuX2luc2VydCA9IHRydWU7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+IMKgwqDC
-oMKgwqAgfQo+PiBAQCAtOTI4LDkgKzkzMywxMSBAQCBzdGF0aWMgYm9vbCBfX2lvdmFfcmNhY2hl
-X2luc2VydChzdHJ1Y3QgCj4+IGlvdmFfZG9tYWluICppb3ZhZCwKPj4gwqDCoMKgwqDCoCBzcGlu
-X3VubG9ja19pcnFyZXN0b3JlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7Cj4+IC3CoMKgwqAg
-aWYgKG1hZ190b19mcmVlKSB7Cj4+IC3CoMKgwqDCoMKgwqDCoCBpb3ZhX21hZ2F6aW5lX2ZyZWVf
-cGZucyhtYWdfdG9fZnJlZSwgaW92YWQpOwo+PiAtwqDCoMKgwqDCoMKgwqAgaW92YV9tYWdhemlu
-ZV9mcmVlKG1hZ190b19mcmVlKTsKPj4gK8KgwqDCoCBpZiAoZmx1c2gpIHsKPiAKPiBEbyB5b3Ug
-cmVhbGx5IG5lZWQgdGhpcyBmbGFnLCBvciBpcyBpdCBlZmZlY3RpdmVseSBqdXN0IG1pcnJvcmlu
-ZyAKPiAiIWNhbl9pbnNlcnQiIC0gaW4gdGhlb3J5IGlmIHRoZXJlIHdhc24ndCBlbm91Z2ggbWVt
-b3J5IHRvIGFsbG9jYXRlIGEgCj4gbmV3IG1hZ2F6aW5lLCB0aGVuIGZyZWVpbmcgc29tZSBtb3Jl
-IElPVkFzIHdvdWxkbid0IG5lY2Vzc2FyaWx5IGJlIGEgYmFkIAo+IHRoaW5nIHRvIGRvIGFueXdh
-eS4KClJpZ2h0LCBJIGNhbiByZXVzZSBjYW5faW5zZXJ0LgoKPiAKPiBPdGhlciB0aGFuIHRoYXQs
-IEkgdGhpbmsgdGhpcyBsb29rcyByZWFzb25hYmxlLiBFdmVyeSB0aW1lIEkgbG9vayBhdCAKPiBf
-X2lvdmFfcmNhY2hlX2luc2VydCgpIEknbSBjb252aW5jZWQgdGhlcmUgbXVzdCBiZSBhIHdheSB0
-byByZXN0cnVjdHVyZSAKPiBpdCB0byBiZSBtb3JlIHN0cmVhbWxpbmVkIG92ZXJhbGwsIGJ1dCBJ
-IGNhbiBuZXZlciBxdWl0ZSBzZWUgZXhhY3RseSBob3cuLi4KPiAKCldlIGNvdWxkIHJlbW92ZSB0
-aGUgbmV3X21hZyBjaGVjaywgYnV0IHRoZSBjb2RlIGNhbm5vdCBzYWZlbHkgaGFuZGxlIApsb2Fk
-ZWQvcHJldiA9IE5VTEwuIEluZGVlZCwgSSB0aGluayB0aGF0IHRoZSBtYWlubGluZSBjb2RlIGhh
-cyBhIGJ1ZzoKCklmIHRoZSBpbml0aWFsIGFsbG9jYXRpb24gZm9yIHRoZSBsb2FkZWQvcHJldiBt
-YWdhemluZXMgZmFpbCAoZ2l2ZSBOVUxMKSAKaW4gaW5pdF9pb3ZhX3JjYWNoZXMoKSwgdGhlbiBp
-biBfX2lvdmFfcmNhY2hlX2luc2VydCgpOgoKaWYgKCFpb3ZhX21hZ2F6aW5lX2Z1bGwoY3B1X3Jj
-YWNoZS0+bG9hZGVkKSkgewoJY2FuX2luc2VydCA9IHRydWU7CgpJZiBjcHVfcmNhY2hlLT5sb2Fk
-ZWQgPT0gTlVMTCwgdGhlbiBjYW5faW5zZXJ0IGlzIGFzc2lnbmVkIHRydWUgLT4gYmFuZywgCmFz
-IEkgZXhwZXJpbWVudGVkLCBiZWxvdy4gVGhpcyBuZWVkcyB0byBiZSBmaXhlZC4uLgoKVGhhbmtz
-LApqb2huCgoKCmVyZWZlcmVuY2UgYXQgdmlydHVhbCBhZGRyZXNzIDAwMDAwMDAwMDAwMDAwMDAK
-WyAxMC4xOTUyOTldIE1lbSBhYm9ydCBpbmZvOgpbIDEwLjE5ODA4MF0gRVNSID0gMHg5NjAwMDAw
-NApbIDEwLjIwMTEyMV0gRUMgPSAweDI1OiBEQUJUIChjdXJyZW50IEVMKSwgSUwgPSAzMiBiaXRz
-ClsgMTAuMjA2NDE4XSBTRVQgPSAwLCBGblYgPSAwClsgMTAuMjA5NDU5XSBFQSA9IDAsIFMxUFRX
-ID0gMApbIDEwLjIxMjU4NV0gRGF0YSBhYm9ydCBpbmZvOgpbIDEwLjIxNTQ1Ml0gSVNWID0gMCwg
-SVNTID0gMHgwMDAwMDAwNApbIDEwLjIxOTI3NF0gQ00gPSAwLCBXblIgPSAwClsgMTAuMjIyMjI4
-XSBbMDAwMDAwMDAwMDAwMDAwMF0gdXNlciBhZGRyZXNzIGJ1dCBhY3RpdmVfbW0gaXMgc3dhcHBl
-cgpbIDEwLjIyODU2OV0gSW50ZXJuYWwgZXJyb3I6IE9vcHM6IDk2MDAwMDA0IFsjMV0gUFJFRU1Q
-VCBTTVAKWyAxMC4yMzQxMjddIE1vZHVsZXMgbGlua2VkIGluOgpbIDEwLjIzNzE3MF0gQ1BVOiAx
-MSBQSUQ6IDY5NiBDb21tOiBpcnEvNDAtaGlzaV9zYXMgTm90IHRhaW50ZWQgCjUuOS4wLXJjNS00
-NzczOC1nYjFlYWQ2NTdhM2ZhLWRpcnR5ICM2NTgKWyAxMC4yNDY1NDhdIEhhcmR3YXJlIG5hbWU6
-IEh1YXdlaSBEMDYgL0QwNiwgQklPUyBIaXNpbGljb24gRDA2IFVFRkkgUkMwIAotIFYxLjE2LjAx
-IDAzLzE1LzIwMTkKWyAxMC4yNTUwNThdIHBzdGF0ZTogNjBjMDAwODkgKG5aQ3YgZGFJZiArUEFO
-ICtVQU8gQlRZUEU9LS0pClsgMTAuMjYwNjIwXSBwYyA6IGZyZWVfaW92YV9mYXN0KzB4ZmMvMHgy
-ODAKWyAxMC4yNjQ3MDNdIGxyIDogZnJlZV9pb3ZhX2Zhc3QrMHg5NC8weDI4MApbIDEwLjI2ODc4
-NV0gc3AgOiBmZmZmODAwMDI0NzdiYmIwClsgMTAuMjcyMDg2XSB4Mjk6IGZmZmY4MDAwMjQ3N2Ji
-YjAgeDI4OiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMjc3Mzg1XSB4Mjc6IGZmZmYwMDJiYzhmYmI5
-NDAgeDI2OiBmZmZmMDAyYmM3MjdlMjZjClsgMTAuMjgyNjg0XSB4MjU6IDAwMDAwMDAwMDAwMDAw
-MDAgeDI0OiBmZmZmMDAyYmM5NDM5MDA4ClsgMTAuMjg3OTgyXSB4MjM6IDAwMDAwMDAwMDAwZmRm
-ZmUgeDIyOiAwMDAwMDAwMDAwMDAwMDgwClsgMTAuMjkzMjgwXSB4MjE6IGZmZmYwMDJiYzk0Mzkw
-MDggeDIwOiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMjk4NTc5XSB4MTk6IGZmZmZmNDAzZTllYmI3
-MDAgeDE4OiBmZmZmZmZmZmZmZmZmZmZmClsgMTAuMzAzODc3XSB4MTc6IDAwMDAwMDAwMDAwMDAw
-MDEgeDE2OiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMzA5MTc2XSB4MTU6IDAwMDAwMDAwMDAwMGZm
-ZmYgeDE0OiAwMDAwMDAwMDAwMDAwMDQwClsgMTAuMzE0NDc0XSB4MTM6IDAwMDAwMDAwMDAwMDdm
-ZmYgeDEyOiAwMDAwMDAwMDAwMDFmZmZmClsgMTAuMzE5NzcyXSB4MTE6IDAwMDAwMDAwMDAwMDAw
-MGYgeDEwOiAwMDAwMDAwMDAwMDA2MDAwClsgMTAuMzI1MDcwXSB4OSA6IDAwMDAwMDAwMDAwMDAw
-MDAgeDggOiBmZmZmODAwMDI0NzdiNzY4ClsgMTAuMzMwMzY4XSB4NyA6IDAwMDAwMDAwMDAwMDAw
-MDAgeDYgOiAwMDAwMDAwMDAwMDAwMDNmClsgMTAuMzM1NjY2XSB4NSA6IDAwMDAwMDAwMDAwMDAw
-NDAgeDQgOiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMzQwOTY0XSB4MyA6IGZmZmZmNDAzZTllYmI3
-MDAgeDIgOiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMzQ2MjYyXSB4MSA6IDAwMDAwMDAwMDAwMDAw
-MDAgeDAgOiAwMDAwMDAwMDAwMDAwMDAwClsgMTAuMzUxNTYxXSBDYWxsIHRyYWNlOgpbIDEwLjM1
-Mzk5NV1mcmVlX2lvdmFfZmFzdCsweGZjLzB4MjgwClsgMTAuMzU3NzMxXWlvbW11X2RtYV9mcmVl
-X2lvdmErMHg2NC8weDcwClsgMTAuMzYxODE0XV9faW9tbXVfZG1hX3VubWFwKzB4OWMvMHhmOApb
-IDEwLjM2NTcyM11pb21tdV9kbWFfdW5tYXBfc2crMHhhOC8weGM4ClsgMTAuMzY5NzIwXWRtYV91
-bm1hcF9zZ19hdHRycysweDI4LzB4NTAKWyAxMC4zNzM3MTddY3FfdGhyZWFkX3YzX2h3KzB4MmRj
-LzB4NTI4ClsgMTAuMzc3NjI2XWlycV90aHJlYWRfZm4rMHgyYy8weGEwClsgMTAuMzgxMTg4XWly
-cV90aHJlYWQrMHgxMzAvMHgxZTAKWyAxMC4zODQ2NjRda3RocmVhZCsweDE1NC8weDE1OApbIDEw
-LjM4Nzg3OV1yZXRfZnJvbV9mb3JrKzB4MTAvMHgzNApfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXU=
+On Wed, 2020-08-26 at 13:17 +0200, Thomas Gleixner wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
+> 
+> The arch_.*_msi_irq[s] fallbacks are compiled in whether an architecture
+> requires them or not. Architectures which are fully utilizing hierarchical
+> irq domains should never call into that code.
+> 
+> It's not only architectures which depend on that by implementing one or
+> more of the weak functions, there is also a bunch of drivers which relies
+> on the weak functions which invoke msi_controller::setup_irq[s] and
+> msi_controller::teardown_irq.
+> 
+> Make the architectures and drivers which rely on them select them in Kconfig
+> and if not selected replace them by stub functions which emit a warning and
+> fail the PCI/MSI interrupt allocation.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+Today's linux-next will have some warnings on s390x:
+
+.config: https://gitlab.com/cailca/linux-mm/-/blob/master/s390.config
+
+WARNING: unmet direct dependencies detected for PCI_MSI_ARCH_FALLBACKS
+  Depends on [n]: PCI [=n]
+  Selected by [y]:
+  - S390 [=y]
+
+WARNING: unmet direct dependencies detected for PCI_MSI_ARCH_FALLBACKS
+  Depends on [n]: PCI [=n]
+  Selected by [y]:
+  - S390 [=y]
+
+> ---
+> V2: Make the architectures (and drivers) which need the fallbacks select them
+>     and not the other way round (Bjorn).
+> ---
+>  arch/ia64/Kconfig              |    1 +
+>  arch/mips/Kconfig              |    1 +
+>  arch/powerpc/Kconfig           |    1 +
+>  arch/s390/Kconfig              |    1 +
+>  arch/sparc/Kconfig             |    1 +
+>  arch/x86/Kconfig               |    1 +
+>  drivers/pci/Kconfig            |    3 +++
+>  drivers/pci/controller/Kconfig |    3 +++
+>  drivers/pci/msi.c              |    3 ++-
+>  include/linux/msi.h            |   31 ++++++++++++++++++++++++++-----
+>  10 files changed, 40 insertions(+), 6 deletions(-)
+> 
+> --- a/arch/ia64/Kconfig
+> +++ b/arch/ia64/Kconfig
+> @@ -56,6 +56,7 @@ config IA64
+>  	select NEED_DMA_MAP_STATE
+>  	select NEED_SG_DMA_LENGTH
+>  	select NUMA if !FLATMEM
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	default y
+>  	help
+>  	  The Itanium Processor Family is Intel's 64-bit successor to
+> --- a/arch/mips/Kconfig
+> +++ b/arch/mips/Kconfig
+> @@ -86,6 +86,7 @@ config MIPS
+>  	select MODULES_USE_ELF_REL if MODULES
+>  	select MODULES_USE_ELF_RELA if MODULES && 64BIT
+>  	select PERF_USE_VMALLOC
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	select RTC_LIB
+>  	select SYSCTL_EXCEPTION_TRACE
+>  	select VIRT_TO_BUS
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -246,6 +246,7 @@ config PPC
+>  	select OLD_SIGACTION			if PPC32
+>  	select OLD_SIGSUSPEND
+>  	select PCI_DOMAINS			if PCI
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	select PCI_SYSCALL			if PCI
+>  	select PPC_DAWR				if PPC64
+>  	select RTC_LIB
+> --- a/arch/s390/Kconfig
+> +++ b/arch/s390/Kconfig
+> @@ -185,6 +185,7 @@ config S390
+>  	select OLD_SIGSUSPEND3
+>  	select PCI_DOMAINS		if PCI
+>  	select PCI_MSI			if PCI
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	select SPARSE_IRQ
+>  	select SYSCTL_EXCEPTION_TRACE
+>  	select THREAD_INFO_IN_TASK
+> --- a/arch/sparc/Kconfig
+> +++ b/arch/sparc/Kconfig
+> @@ -43,6 +43,7 @@ config SPARC
+>  	select GENERIC_STRNLEN_USER
+>  	select MODULES_USE_ELF_RELA
+>  	select PCI_SYSCALL if PCI
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	select ODD_RT_SIGACTION
+>  	select OLD_SIGSUSPEND
+>  	select CPU_NO_EFFICIENT_FFS
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -225,6 +225,7 @@ config X86
+>  	select NEED_SG_DMA_LENGTH
+>  	select PCI_DOMAINS			if PCI
+>  	select PCI_LOCKLESS_CONFIG		if PCI
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	select PERF_EVENTS
+>  	select RTC_LIB
+>  	select RTC_MC146818_LIB
+> --- a/drivers/pci/Kconfig
+> +++ b/drivers/pci/Kconfig
+> @@ -56,6 +56,9 @@ config PCI_MSI_IRQ_DOMAIN
+>  	depends on PCI_MSI
+>  	select GENERIC_MSI_IRQ_DOMAIN
+>  
+> +config PCI_MSI_ARCH_FALLBACKS
+> +	bool
+> +
+>  config PCI_QUIRKS
+>  	default y
+>  	bool "Enable PCI quirk workarounds" if EXPERT
+> --- a/drivers/pci/controller/Kconfig
+> +++ b/drivers/pci/controller/Kconfig
+> @@ -41,6 +41,7 @@ config PCI_TEGRA
+>  	bool "NVIDIA Tegra PCIe controller"
+>  	depends on ARCH_TEGRA || COMPILE_TEST
+>  	depends on PCI_MSI_IRQ_DOMAIN
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	help
+>  	  Say Y here if you want support for the PCIe host controller found
+>  	  on NVIDIA Tegra SoCs.
+> @@ -67,6 +68,7 @@ config PCIE_RCAR_HOST
+>  	bool "Renesas R-Car PCIe host controller"
+>  	depends on ARCH_RENESAS || COMPILE_TEST
+>  	depends on PCI_MSI_IRQ_DOMAIN
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	help
+>  	  Say Y here if you want PCIe controller support on R-Car SoCs in host
+>  	  mode.
+> @@ -103,6 +105,7 @@ config PCIE_XILINX_CPM
+>  	bool "Xilinx Versal CPM host bridge support"
+>  	depends on ARCH_ZYNQMP || COMPILE_TEST
+>  	select PCI_HOST_COMMON
+> +	select PCI_MSI_ARCH_FALLBACKS
+>  	help
+>  	  Say 'Y' here if you want kernel support for the
+>  	  Xilinx Versal CPM host bridge.
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -58,8 +58,8 @@ static void pci_msi_teardown_msi_irqs(st
+>  #define pci_msi_teardown_msi_irqs	arch_teardown_msi_irqs
+>  #endif
+>  
+> +#ifdef CONFIG_PCI_MSI_ARCH_FALLBACKS
+>  /* Arch hooks */
+> -
+>  int __weak arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
+>  {
+>  	struct msi_controller *chip = dev->bus->msi;
+> @@ -132,6 +132,7 @@ void __weak arch_teardown_msi_irqs(struc
+>  {
+>  	return default_teardown_msi_irqs(dev);
+>  }
+> +#endif /* CONFIG_PCI_MSI_ARCH_FALLBACKS */
+>  
+>  static void default_restore_msi_irq(struct pci_dev *dev, int irq)
+>  {
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -193,17 +193,38 @@ void pci_msi_mask_irq(struct irq_data *d
+>  void pci_msi_unmask_irq(struct irq_data *data);
+>  
+>  /*
+> - * The arch hooks to setup up msi irqs. Those functions are
+> - * implemented as weak symbols so that they /can/ be overriden by
+> - * architecture specific code if needed.
+> + * The arch hooks to setup up msi irqs. Default functions are implemented
+> + * as weak symbols so that they /can/ be overriden by architecture specific
+> + * code if needed. These hooks must be enabled by the architecture or by
+> + * drivers which depend on them via msi_controller based MSI handling.
+> + *
+> + * If CONFIG_PCI_MSI_ARCH_FALLBACKS is not selected they are replaced by
+> + * stubs with warnings.
+>   */
+> +#ifdef CONFIG_PCI_MSI_DISABLE_ARCH_FALLBACKS
+>  int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc);
+>  void arch_teardown_msi_irq(unsigned int irq);
+>  int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type);
+>  void arch_teardown_msi_irqs(struct pci_dev *dev);
+> -void arch_restore_msi_irqs(struct pci_dev *dev);
+> -
+>  void default_teardown_msi_irqs(struct pci_dev *dev);
+> +#else
+> +static inline int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int
+> type)
+> +{
+> +	WARN_ON_ONCE(1);
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void arch_teardown_msi_irqs(struct pci_dev *dev)
+> +{
+> +	WARN_ON_ONCE(1);
+> +}
+> +#endif
+> +
+> +/*
+> + * The restore hooks are still available as they are useful even
+> + * for fully irq domain based setups. Courtesy to XEN/X86.
+> + */
+> +void arch_restore_msi_irqs(struct pci_dev *dev);
+>  void default_restore_msi_irqs(struct pci_dev *dev);
+>  
+>  struct msi_controller {
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
