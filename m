@@ -2,81 +2,67 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00A9C4346E
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 02:09:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B158DC4363D
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 04:14:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0501B20888
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 02:09:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="d3mPvSTA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0501B20888
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2EDA221D20
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 04:14:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EDA221D20
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AFEE48755A;
-	Fri, 25 Sep 2020 02:09:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CEF5F86CE1;
+	Fri, 25 Sep 2020 04:14:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iztKRW314AnD; Fri, 25 Sep 2020 02:09:21 +0000 (UTC)
+	with ESMTP id bPpJAB+6RkHA; Fri, 25 Sep 2020 04:14:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CA34A87559;
-	Fri, 25 Sep 2020 02:09:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C551C86C59;
+	Fri, 25 Sep 2020 04:14:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A751FC0890;
-	Fri, 25 Sep 2020 02:09:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9B52AC0859
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 02:09:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B07FC0890;
+	Fri, 25 Sep 2020 04:14:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED1BCC0859
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 04:14:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 762428755A
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 02:09:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E712A85267
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 04:14:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ACwBsYd2Xru9 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 02:09:16 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D551287559
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 02:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description;
- bh=J1HkhvmRiGdIYDPIe3gIfcnRgqplrWsR6CykG4Adksc=; b=d3mPvSTAi7fvnRqKXhBNzXRsaM
- ycQVuva54BLVbK8NHQsPGbesdSENi2vNdOYDP7qriVBwM7fPlJBdCB1WQwbvV9aqnC6X8CwfENqUI
- ieJlNmKP0M/Wj1c9l1Qe7yMbrE7FPagHqrAMjQKhpQFz41XyNFHGgZ7DPwya42caPAQW85dcd1R01
- plRtlL70tAFBhEZjXD9Mh71wSV1Go22qBW4qV2r3+GYuNY5ddi6AaNXXcyWu7i0KYygdtAStMni56
- FKh+7ev69YwgGHMkPqwI0rJpdgf8rbItRc8IdZWpiBx+Etv/c/VXkxTsOQVKPA420WiOXTQfXLdte
- UdgflFTw==;
-Received: from [2601:1c0:6280:3f0::19c2]
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kLdAS-00033Q-49; Fri, 25 Sep 2020 02:09:00 +0000
-Subject: Re: [PATCH 01/13] x86: Secure Launch Kconfig
-To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org, 
- x86@kernel.org, iommu@lists.linux-foundation.org,
- linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org
-References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
- <1600959521-24158-2-git-send-email-ross.philipson@oracle.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <22ecb054-c340-cea7-7d80-28469fdcddc6@infradead.org>
-Date: Thu, 24 Sep 2020 19:08:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ with ESMTP id GmalGiBcqAPD for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 04:14:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 9B73784DD5
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 04:14:30 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 0871E68AFE; Fri, 25 Sep 2020 06:14:26 +0200 (CEST)
+Date: Fri, 25 Sep 2020 06:14:25 +0200
+From: 'Christoph Hellwig' <hch@lst.de>
+To: David Laight <David.Laight@ACULAB.COM>
+Subject: Re: [PATCH 3/3] dma-mapping: better document dma_addr_t and
+ DMA_MAPPING_ERROR
+Message-ID: <20200925041425.GA9419@lst.de>
+References: <20200922134002.1227279-1-hch@lst.de>
+ <20200922134002.1227279-4-hch@lst.de>
+ <f9c37e5ff1cb4a02bff6d2a8d0ea2dcc@AcuMS.aculab.com>
 MIME-Version: 1.0
-In-Reply-To: <1600959521-24158-2-git-send-email-ross.philipson@oracle.com>
-Content-Language: en-US
-Cc: dpsmith@apertussolutions.com, luto@amacapital.net, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, tglx@linutronix.de,
- trenchboot-devel@googlegroups.com
+Content-Disposition: inline
+In-Reply-To: <f9c37e5ff1cb4a02bff6d2a8d0ea2dcc@AcuMS.aculab.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ 'Christoph Hellwig' <hch@lst.de>,
+ Dominik Brodowski <linux@dominikbrodowski.net>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,73 +80,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/24/20 7:58 AM, Ross Philipson wrote:
-> Initial bits to bring in Secure Launch functionality. Add Kconfig
-> options for compiling in/out the Secure Launch code.
+On Tue, Sep 22, 2020 at 01:56:46PM +0000, David Laight wrote:
+> > +/*
+> > + * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+> > + * be given to a device to use as a DMA source or target.  A CPU cannot
+> > + * reference a dma_addr_t directly because there may be translation between its
+> > + * physical address space and the bus address space.
 > 
-> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-
-Hi,
-from Documentation/process/coding-style.rst:
-
-Lines under a ``config`` definition
-are indented with one tab, while help text is indented an additional two
-spaces.
-
-> ---
->  arch/x86/Kconfig | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
+> It can't access it 'directly' because it isn't a virtual address....
 > 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 7101ac6..8957981 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -1968,6 +1968,42 @@ config EFI_MIXED
->  
->  	   If unsure, say N.
->  
-> +config SECURE_LAUNCH
-> +	bool "Secure Launch support"
-> +	default n
-> +	depends on X86_64
-> +	help
-> +	   The Secure Launch feature allows a kernel to be loaded
-> +	   directly through an Intel TXT measured launch. Intel TXT
-> +	   establishes a Dynamic Root of Trust for Measurement (DRTM)
-> +	   where the CPU measures the kernel image. This feature then
-> +	   continues the measurement chain over kernel configuration
-> +	   information and init images.
-> +
-> +choice
-> +	prompt "Select Secure Launch Algorithm for TPM2"
-> +	depends on SECURE_LAUNCH
-> +
-> +config SECURE_LAUNCH_SHA1
-> +	bool "Secure Launch TPM1 SHA1"
-> +	help
-> +	   When using Secure Launch and TPM1 is present, use SHA1 hash
-> +	   algorithm for measurements.
-> +
-> +config SECURE_LAUNCH_SHA256
-> +	bool "Secure Launch TPM2 SHA256"
-> +	help
-> +	   When using Secure Launch and TPM2 is present, use SHA256 hash
-> +	   algorithm for measurements.
-> +
-> +config SECURE_LAUNCH_SHA512
-> +	bool "Secure Launch TPM2 SHA512"
-> +	help
-> +	   When using Secure Launch and TPM2 is present, use SHA512 hash
-> +	   algorithm for measurements.
-> +
-> +endchoice
-> +
+> > + *
+> > + * DMA_MAPPING_ERROR is the magic error code if a mapping failed.  It should not
+> > + * be used directly in drivers, but checked for using dma_mapping_error()
+> > + * instead.
+> > + */
+> 
+> I think it might be worth adding:
+> 
+> A dma_addr_t value may be device dependant and differ from the
+> 'physical address' of the memory.
 
+This is what I've committed:
 
-thanks.
--- 
-~Randy
-
+ * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+ * be given to a device to use as a DMA source or target.  It is specific to a
+ * given device and there may be a translation between the CPU physical address
+ * space and the bus address space.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
