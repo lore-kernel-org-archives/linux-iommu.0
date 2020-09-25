@@ -2,98 +2,122 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEDCC4741F
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:26:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB13C4363D
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:42:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2AFA623718
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:26:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E70952083B
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:42:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ftqCBkfn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2AFA623718
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="yNu4P9L2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E70952083B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D4EE286CB3;
-	Fri, 25 Sep 2020 11:26:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A62902E169;
+	Fri, 25 Sep 2020 11:42:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gry5JB79nlfF; Fri, 25 Sep 2020 11:26:53 +0000 (UTC)
+	with ESMTP id MULjrBYwZtJJ; Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3D69986C73;
-	Fri, 25 Sep 2020 11:26:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C01CA2E170;
+	Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C3D4C0859;
-	Fri, 25 Sep 2020 11:26:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A38E3C0859;
+	Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16FB2C0051
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:26:51 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 22840C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 019AF86C94
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:26:51 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1140386CB2
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6uY6kyRmr5Q6 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 11:26:50 +0000 (UTC)
+ with ESMTP id mGhrpUqokV73 for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 11:42:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 095C986C73
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:26:50 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id y15so2904369wmi.0
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 04:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=A60QA7/hIdfukqiV/j0jVbWiv3LMArbDpJyApzX3WvI=;
- b=ftqCBkfn/C4p7By9V/KyZFqPJeZy7/xn1PfcJxEBZdug495AZSrw033D60K7eAB6Ig
- T98+fFtAtR2fMfrf4YpUyoeQAItmIPpMlw70708iaz4Mys8RWfY2L98A6R2XRNA82dEr
- a08VdMoZwpfa9+SIFcuqZyeGWLJU3y8eSbJDwTprwOVIB1VgWpnJf2RaAPIGgXd8cIrK
- Pu0SWfemDZSdI8Ed0fXEr6cbjjHFarJER4aRSRYls0ebusVExXYK1NbWWwqy1Il2FhLO
- qOa+1Tog0CADvniUdEJMYfA7Bsk0DoYsFbpV1Pp5Khcuf7QbdoWqeYDorAGSyVqjNm+y
- zsoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=A60QA7/hIdfukqiV/j0jVbWiv3LMArbDpJyApzX3WvI=;
- b=UkZ2rTiIo0IUBclbvbJSsHYX9T2nZzl93L/G8tCM7mvLtM/14g4qdMZHJUn+++SLBI
- HxBE4/yBqe9uP4hnWmV5itTCcj/BYIVhFGQLWAebWECev32lYjcxm1O3ZM0jf6DfligR
- WDIVvnfc4o0N/PGag1etFwhU5+BkRyg5IHV0UIFl4Y4DK98yao9U1Flh+DzJzjdFqvEA
- xJJvZxkItb6FK6V1bNjmeUVXQB4+HnyGC7tloTm5MgKywfjvpvF0yhLbZQpsfDxJjWNM
- VQp+BklHQAbA57CloSpGGWMuD+7s9yr+5IeEeyxevTy+hRsCsj5cj3cDB0u9xXOb50+M
- ezXg==
-X-Gm-Message-State: AOAM530RffBH+U2Fc9GQF5X1FPpb5TzpHR+mqAvUgIAEhbXASw0ICs7x
- LRtTzKrHDEaa9zWMS3e4WpEvug==
-X-Google-Smtp-Source: ABdhPJyv13qwG5g2DgIM8ecyiaNCHrI1193NKi2NMlWF2QntaY8OnbgiSNf16JhwZ6M3gzNUrPJS7g==
-X-Received: by 2002:a7b:c151:: with SMTP id z17mr2764224wmi.53.1601033208483; 
- Fri, 25 Sep 2020 04:26:48 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id w7sm2422588wmc.43.2020.09.25.04.26.47
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 25 Sep 2020 04:26:47 -0700 (PDT)
-Date: Fri, 25 Sep 2020 13:26:29 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
-Message-ID: <20200925112629.GA1337555@myrica>
-References: <20200821131540.2801801-1-jean-philippe@linaro.org>
- <20200925084806.GB490533@myrica>
- <20200925062230-mutt-send-email-mst@kernel.org>
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1848486C9B
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:06 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gs/gRDuQhOmRVRVVBjmLFa4utiX7sfr0ZXZq+v3bB7Ekik6ARkN72+2YkMSKTdF3PSH1tySVIKl/gywVuRFMPZF5Drvz/QDwWhnjlUoUgpBUzMUo5qsRRKlc46gGgm1+1NoZtd3I8hwuM2kDxKArM1ezbh3FKFM8QR2/O9bUjj55f6hC9yt2n2ioYneIOM/C2S+q7p7Hi6Q576r/vukUjz8MgX9cap+EES16LIPzMwO24evQF3+etL9qBjvrO7QaFv1HhP0/NqzBvYihRJKuza9JnABRWTAGgmZppm6/xS/AihJr3aSA9eBxjPpMYK+9u5JUvqonWoOvF+52xSohtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wotW7OAD+b+0Aqg26B4hnW2V+z/VAKpDbBpNI2yZjvE=;
+ b=QI8iAP/lShptD7miJVNHexgLh1YMnh5CFY9+A8lufFq2rNwp0SSyJqQQ0SBdiZNnOpquFYdtK3qooOPP4pTfpCKHHxAN+HX+ZlQnlZzRyNrBzNAF/wt4wa0lizFW9BAtL4rvMgLxTk2pkTzGnzxxqJUPOigZFSIjcYe86rRtDZYESpoCOwEM/fnyYobrmL1NIhTY4HKmJLHmiXztnrA34sxokrU7g3NGRKHzG8k38Y+BD3JBpHvIBykgoaOxGeufbaHfkJHkKJZKHSfnZGRUP5WR/rsSPhSpWmSqkCXcjK+UgaP5cWQq1iavSuLMBa9a2L20/uNsEhewbzzq7JqKwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wotW7OAD+b+0Aqg26B4hnW2V+z/VAKpDbBpNI2yZjvE=;
+ b=yNu4P9L2Rr/svt04r7woGz4ODKsT6FL3wRA5Wa06bMrJMJ9EYzFqtObghnLX3KkTjzvUkbQ87xsF0dRw0D+UObaS9XDLY4mWVtv6uCok9t/cMtc4CcROOy1Gv8elMuva7U9P6HJtEb1Yv8FPseWgoeOzL6v7wNqr2qL1ciuKRUo=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
+ DM6PR12MB4957.namprd12.prod.outlook.com (2603:10b6:5:20d::14) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3412.20; Fri, 25 Sep 2020 11:41:55 +0000
+Received: from DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::48cf:d69:d457:1b1e]) by DM5PR12MB1163.namprd12.prod.outlook.com
+ ([fe80::48cf:d69:d457:1b1e%5]) with mapi id 15.20.3412.024; Fri, 25 Sep 2020
+ 11:41:55 +0000
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE
+Date: Fri, 25 Sep 2020 11:45:05 +0000
+Message-Id: <20200925114505.232280-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [165.204.78.2]
+X-ClientProxiedBy: SN6PR04CA0098.namprd04.prod.outlook.com
+ (2603:10b6:805:f2::39) To DM5PR12MB1163.namprd12.prod.outlook.com
+ (2603:10b6:3:7a::18)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200925062230-mutt-send-email-mst@kernel.org>
-Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
- linux-pci@vger.kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- bhelgaas@google.com, jasowang@redhat.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from ethanolx5673host.amd.com (165.204.78.2) by
+ SN6PR04CA0098.namprd04.prod.outlook.com (2603:10b6:805:f2::39) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3412.20 via Frontend Transport; Fri, 25 Sep 2020 11:41:54 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: adc4c2b4-fec6-4be4-0c81-08d86148008f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4957:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4957855FEC25B727DF398B21F3360@DM6PR12MB4957.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tH14XkrNkpmrmN2sBg00gJnpGQsA3H+FJf/HynTs3VBFPERR0Z9YI8GsINt/CJkjtPpwdpCj7OXd4ZhU4MQi0mTu+kJobdD7aGJQVaFAryKx3H6EJAru4AmoH4+J5riYyiUnLI7uzzK/enKwB7VU4Ay4d0PNgh3Hhd3sJ8xkeH+PQq3J9PND0gEsX7EqG/UP5FsqlJaECGIruBmTorIJrFAVb0abCdtkK7egvSiyWAOZmeN5BkNFpyvOraPn0p34U2cB/DK5XsXD0p4ocw+vRImx+NTsYQqpM8MCxHmWwAN5WDFn1c6colLaEKAg7Ne+9CbGtVJeHfdG4y0Zgz2anI2hRlXvdNEKsps9R+PCS1epj3a2PijXVLDSNTNOxefj81sB7BLr2Jye76kn3jEds0qeZI1zeF8iCfQst9FvvhVCQLFnjFhWch2FGcbI2uHQqvSFE8jrV7o3Cn9gdIt6mg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(39860400002)(346002)(136003)(366004)(376002)(396003)(966005)(66476007)(66556008)(6666004)(66946007)(86362001)(478600001)(54906003)(8676002)(83380400001)(8936002)(1076003)(316002)(2906002)(52116002)(36756003)(5660300002)(4326008)(16526019)(6486002)(44832011)(26005)(2616005)(956004)(7696005)(186003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: TwMn4aU3Mi3h53FZikBtS41rdmOSWL6u1X/pBuo1KtW3AOy42xqY1o9/3BfblWrNlF74wXbvgSzPh7ynHcYSAjgV0EhqNsLa4faRG2JlhrWmu1EecpMubtolSJS1S6gNoEWS2zz9gMYt9EvjFZlOnLqIvy1Gr/sHUL/5EJDg6k1TQnKe+x9Y9XzDKqOLzfSFxwo5ry8Ks1usQGRIKMY5jACjYK21hJ8OZigoIFrgMPi5TcGYK8PvH/y/v4pdygVSVreJ7WN7kZSPczfqQOsTNZEcqpdjpuPVY84PhcxWwJOO1W3qvVZmF0IO2L73KphlPI3DIZ2gaMetl7NKYI00J5g9TjYKe9jfXMlPYxhl5AGLGjSztkuWDKYptf/gYimtwfgPSPBWhSp+hOXFAYLdQPh8PkR4CtWZ99PPFO1g1kuA6qpwzvLBu2cyT8hdEwCvdNayQjc+AHkFZdfZfNjgTofL2iNqPktXrzQ57o/xiOo0HWUea0b8AjlMAnCDN4RK9WywR2MhVctnOJE7Mv6pYy4Fqle1MYOmdtUJvzsFxCPsl+Epx9/yIJRZcSqPgcnddu+kd3JKKFYN285HvjxotHNFP/PK5d2Jq/7sZVsAyeEttIiw3GnaR8C617enI0UJlABYTYv2DMxERQx7DKORHw==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: adc4c2b4-fec6-4be4-0c81-08d86148008f
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2020 11:41:55.0748 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yfr49A2C8Xq4WA5W/waCHyInsGuFHy0S1AEUDdKHNJ++fE0NtAVtQ/Dkmg6ymksbduoyvUN/Wn/hj66m8ceF8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4957
+Cc: sashal@kernel.org, Joerg Roedel <jroedel@suse.de>, brijesh.singh@amd.com,
+ gregkh@linuxfoundation.org, Jon.Grimm@amd.com, stable@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,53 +135,139 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Sep 25, 2020 at 06:22:57AM -0400, Michael S. Tsirkin wrote:
-> On Fri, Sep 25, 2020 at 10:48:06AM +0200, Jean-Philippe Brucker wrote:
-> > On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
-> > > Add a topology description to the virtio-iommu driver and enable x86
-> > > platforms.
-> > > 
-> > > Since [v2] we have made some progress on adding ACPI support for
-> > > virtio-iommu, which is the preferred boot method on x86. It will be a
-> > > new vendor-agnostic table describing para-virtual topologies in a
-> > > minimal format. However some platforms don't use either ACPI or DT for
-> > > booting (for example microvm), and will need the alternative topology
-> > > description method proposed here. In addition, since the process to get
-> > > a new ACPI table will take a long time, this provides a boot method even
-> > > to ACPI-based platforms, if only temporarily for testing and
-> > > development.
-> > > 
-> > > v3:
-> > > * Add patch 1 that moves virtio-iommu to a subfolder.
-> > > * Split the rest:
-> > >   * Patch 2 adds topology-helper.c, which will be shared with the ACPI
-> > >     support.
-> > >   * Patch 4 adds definitions.
-> > >   * Patch 5 adds parser in topology.c.
-> > > * Address other comments.
-> > > 
-> > > Linux and QEMU patches available at:
-> > > https://jpbrucker.net/git/linux virtio-iommu/devel
-> > > https://jpbrucker.net/git/qemu virtio-iommu/devel
-> > 
-> > I'm parking this work again, until we make progress on the ACPI table, or
-> > until a platform without ACPI and DT needs it. Until then, I've pushed v4
-> > to my virtio-iommu/topo branch and will keep it rebased on master.
-> > 
-> > Thanks,
-> > Jean
-> 
-> I think you guys need to work on virtio spec too, not too much left to
-> do there ...
+When using 128-bit interrupt-remapping table entry (IRTE) (a.k.a GA mode),
+current driver disables interrupt remapping when it updates the IRTE
+so that the upper and lower 64-bit values can be updated safely.
 
-I know it's ready and I'd really like to move on with this, but I'd rather
-not commit it to the spec until we know it's going to be used at all. As
-Gerd pointed out the one example we had, microvm, now supports ACPI. Since
-we've kicked off the ACPI work anyway it isn't clear that the built-in
-topology will be useful.
+However, this creates a small window, where the interrupt could
+arrive and result in IO_PAGE_FAULT (for interrupt) as shown below.
 
-Thanks,
-Jean
+  IOMMU Driver            Device IRQ
+  ============            ===========
+  irte.RemapEn=0
+       ...
+   change IRTE            IRQ from device ==> IO_PAGE_FAULT !!
+       ...
+  irte.RemapEn=1
+
+This scenario has been observed when changing irq affinity on a system
+running I/O-intensive workload, in which the destination APIC ID
+in the IRTE is updated.
+
+Instead, use cmpxchg_double() to update the 128-bit IRTE at once without
+disabling the interrupt remapping. However, this means several features,
+which require GA (128-bit IRTE) support will also be affected if cmpxchg16b
+is not supported (which is unprecedented for AMD processors w/ IOMMU).
+
+Cc: stable@vger.kernel.org
+Fixes: 880ac60e2538 ("iommu/amd: Introduce interrupt remapping ops structure")
+Reported-by: Sean Osborne <sean.m.osborne@oracle.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Tested-by: Erik Rockstrom <erik.rockstrom@oracle.com>
+Reviewed-by: Joao Martins <joao.m.martins@oracle.com>
+Link: https://lore.kernel.org/r/20200903093822.52012-3-suravee.suthikulpanit@amd.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+Note: This patch is the back-port on top of the stable branch linux-5.4.y
+for the upstream commit e52d58d54a32 ("iommu/amd: Use cmpxchg_double() when
+updating 128-bit IRTE") since the original patch does not apply cleanly.
+
+ drivers/iommu/Kconfig          |  2 +-
+ drivers/iommu/amd_iommu.c      | 17 +++++++++++++----
+ drivers/iommu/amd_iommu_init.c | 21 +++++++++++++++++++--
+ 3 files changed, 33 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 390568afee9f..fc0160e8ed33 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -138,7 +138,7 @@ config AMD_IOMMU
+ 	select PCI_PASID
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+-	depends on X86_64 && PCI && ACPI
++	depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
+ 	---help---
+ 	  With this option you can enable support for AMD IOMMU hardware in
+ 	  your system. An IOMMU is a hardware component which provides
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index fa91d856a43e..7b724f7b27a9 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3873,6 +3873,7 @@ static int alloc_irq_index(u16 devid, int count, bool align,
+ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+ 			  struct amd_ir_data *data)
+ {
++	bool ret;
+ 	struct irq_remap_table *table;
+ 	struct amd_iommu *iommu;
+ 	unsigned long flags;
+@@ -3890,10 +3891,18 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+ 
+ 	entry = (struct irte_ga *)table->table;
+ 	entry = &entry[index];
+-	entry->lo.fields_remap.valid = 0;
+-	entry->hi.val = irte->hi.val;
+-	entry->lo.val = irte->lo.val;
+-	entry->lo.fields_remap.valid = 1;
++
++	ret = cmpxchg_double(&entry->lo.val, &entry->hi.val,
++			     entry->lo.val, entry->hi.val,
++			     irte->lo.val, irte->hi.val);
++	/*
++	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
++	 * and it cannot be updated by the hardware or other processors
++	 * behind us, so the return value of cmpxchg16 should be the
++	 * same as the old value.
++	 */
++	WARN_ON(!ret);
++
+ 	if (data)
+ 		data->ref = entry;
+ 
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 135ae5222cf3..31d7e2d4f304 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1522,7 +1522,14 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
+-		if (((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
++
++		/*
++		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
++		 * GAM also requires GA mode. Therefore, we need to
++		 * check cmpxchg16b support before enabling it.
++		 */
++		if (!boot_cpu_has(X86_FEATURE_CX16) ||
++		    ((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
+ 		break;
+ 	case 0x11:
+@@ -1531,8 +1538,18 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
+ 		else
+ 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
+-		if (((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0))
++
++		/*
++		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
++		 * XT, GAM also requires GA mode. Therefore, we need to
++		 * check cmpxchg16b support before enabling them.
++		 */
++		if (!boot_cpu_has(X86_FEATURE_CX16) ||
++		    ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0)) {
+ 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
++			break;
++		}
++
+ 		/*
+ 		 * Note: Since iommu_update_intcapxt() leverages
+ 		 * the IOMMU MMIO access to MSI capability block registers
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
