@@ -2,107 +2,81 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D38EC4727F
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 10:23:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663B5C4727C
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:15:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8AA9822B2D
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 10:23:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ABi7/9SN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AA9822B2D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB55220936
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:15:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB55220936
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 50DDA875CF;
-	Fri, 25 Sep 2020 10:23:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6F39986CA0;
+	Fri, 25 Sep 2020 11:15:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wZyJ3pMPQzvk; Fri, 25 Sep 2020 10:23:13 +0000 (UTC)
+	with ESMTP id k_6vYZSQgxqs; Fri, 25 Sep 2020 11:15:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D34CD87459;
-	Fri, 25 Sep 2020 10:23:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C0A7B86C73;
+	Fri, 25 Sep 2020 11:15:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF5D2C0889;
-	Fri, 25 Sep 2020 10:23:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A30A6C0859;
+	Fri, 25 Sep 2020 11:15:45 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8FFCCC0051
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 10:23:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EFB7C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:15:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7EA19875C9
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 10:23:12 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 57931875D2
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:15:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ovvKfhF3lhv7 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 10:23:11 +0000 (UTC)
+ with ESMTP id ENwThEJivqXH for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 11:15:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AB0D987459
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 10:23:11 +0000 (UTC)
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1601029390;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=N8U1FHT96w/PLZq5zU9S1B7ShBJVy7YnIM6zbSDnntI=;
- b=ABi7/9SN/Vbj+98I2cHodnBGduC/rxDQkcgFuIsypcDQeAZcYaNMQMVeb2J72ntKmnaA7i
- tO9H39UuvhQBgDWTo2gMuZNh9pFUrfv555cxZnjTi5+d5IyYUYI2vMTb9sOMOovOeoQMlM
- oRMU6k0+5KE+nwMF/QwTxVMMll4rucQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-413-CkzfZXJ9M2C56g4Ga7mCjg-1; Fri, 25 Sep 2020 06:23:02 -0400
-X-MC-Unique: CkzfZXJ9M2C56g4Ga7mCjg-1
-Received: by mail-wm1-f71.google.com with SMTP id m125so913522wmm.7
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 03:23:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=N8U1FHT96w/PLZq5zU9S1B7ShBJVy7YnIM6zbSDnntI=;
- b=mlcpfcNBMGdlY1e+oR1WxU4R+zfKegJq+vRs1T9MkFLJqptWO6b4ilP5VFlW1Okjfi
- CqkH0dSt2kVIOXd5aRryQehZcyrgLcQ0I3dmgSxgH1jZzMcB8xaAFcc/7wKuROj1QYjS
- PBorvdHOMfo1bKln+/2BLYQF+9uwHtMYOhzSQQZD0ylNTM963XoUEXFw8tRfVLW4CRLL
- jyxSlI5fG0v0hggEwESm3wakcsI5F/NG6QY963C3SSG+npBDtXGGflFKNaT4FYCBQ/K2
- wrUTkXGUzG8t9NcCswc5nsDuYGg5Yoct2XlmLMTODgKzOqGPq5Ho+5ElO7exkOYpZW+N
- iVIw==
-X-Gm-Message-State: AOAM530rYwEusNyzK/9yzD0NcEoz4iol0lBI9iGeHoN7GRKtWWB4Kg5S
- BqF7FGhxAHK72t8yXSeenABz9O2W124sNqVX5q+COGFhFzwPThCh5p0nIdNwuNLk4BIDYJVNV8g
- i10Mzl0t38FqTbchWHBt4pko2mnvtuw==
-X-Received: by 2002:a5d:55c8:: with SMTP id i8mr3728307wrw.331.1601029381666; 
- Fri, 25 Sep 2020 03:23:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxiECiPGTS15kvZqa8R0xHOPr4KjpmYEDueiFgt/xYTRs755Rb+d0YFWnl/vVYKdot5K3D6nQ==
-X-Received: by 2002:a5d:55c8:: with SMTP id i8mr3728283wrw.331.1601029381484; 
- Fri, 25 Sep 2020 03:23:01 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
- by smtp.gmail.com with ESMTPSA id d9sm2246590wmb.30.2020.09.25.03.22.59
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 25 Sep 2020 03:23:00 -0700 (PDT)
-Date: Fri, 25 Sep 2020 06:22:57 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
-Message-ID: <20200925062230-mutt-send-email-mst@kernel.org>
-References: <20200821131540.2801801-1-jean-philippe@linaro.org>
- <20200925084806.GB490533@myrica>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 22CBE87573
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:15:43 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34B1D101E;
+ Fri, 25 Sep 2020 04:15:42 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 986323F70D;
+ Fri, 25 Sep 2020 04:15:38 -0700 (PDT)
+Subject: Re: [PATCH 08/18] dma-mapping: add a new dma_alloc_noncoherent API
+To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Joonyoung Shim <jy0922.shim@samsung.com>,
+ Seung-Woo Kim <sw0312.kim@samsung.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Tomasz Figa
+ <tfiga@chromium.org>, Matt Porter <mporter@kernel.crashing.org>,
+ iommu@lists.linux-foundation.org
+References: <20200915155122.1768241-1-hch@lst.de>
+ <20200915155122.1768241-9-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c8ea4023-3e19-d63b-d936-46a04f502a61@arm.com>
+Date: Fri, 25 Sep 2020 12:15:37 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200925084806.GB490533@myrica>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
- linux-pci@vger.kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- bhelgaas@google.com, jasowang@redhat.com
+In-Reply-To: <20200915155122.1768241-9-hch@lst.de>
+Content-Language: en-GB
+Cc: alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org,
+ linux-scsi@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ Stefan Richter <stefanr@s5r6.in-berlin.de>, netdev@vger.kernel.org,
+ linux1394-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org,
+ linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,52 +89,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Sep 25, 2020 at 10:48:06AM +0200, Jean-Philippe Brucker wrote:
-> On Fri, Aug 21, 2020 at 03:15:34PM +0200, Jean-Philippe Brucker wrote:
-> > Add a topology description to the virtio-iommu driver and enable x86
-> > platforms.
-> > 
-> > Since [v2] we have made some progress on adding ACPI support for
-> > virtio-iommu, which is the preferred boot method on x86. It will be a
-> > new vendor-agnostic table describing para-virtual topologies in a
-> > minimal format. However some platforms don't use either ACPI or DT for
-> > booting (for example microvm), and will need the alternative topology
-> > description method proposed here. In addition, since the process to get
-> > a new ACPI table will take a long time, this provides a boot method even
-> > to ACPI-based platforms, if only temporarily for testing and
-> > development.
-> > 
-> > v3:
-> > * Add patch 1 that moves virtio-iommu to a subfolder.
-> > * Split the rest:
-> >   * Patch 2 adds topology-helper.c, which will be shared with the ACPI
-> >     support.
-> >   * Patch 4 adds definitions.
-> >   * Patch 5 adds parser in topology.c.
-> > * Address other comments.
-> > 
-> > Linux and QEMU patches available at:
-> > https://jpbrucker.net/git/linux virtio-iommu/devel
-> > https://jpbrucker.net/git/qemu virtio-iommu/devel
-> 
-> I'm parking this work again, until we make progress on the ACPI table, or
-> until a platform without ACPI and DT needs it. Until then, I've pushed v4
-> to my virtio-iommu/topo branch and will keep it rebased on master.
-> 
-> Thanks,
-> Jean
+On 2020-09-15 16:51, Christoph Hellwig wrote:
+[...]
+> +These APIs allow to allocate pages in the kernel direct mapping that are
+> +guaranteed to be DMA addressable.  This means that unlike dma_alloc_coherent,
+> +virt_to_page can be called on the resulting address, and the resulting
 
-I think you guys need to work on virtio spec too, not too much left to
-do there ...
+Nit: if we explicitly describe this as if it's a guarantee that can be 
+relied upon...
 
--- 
-MST
+> +struct page can be used for everything a struct page is suitable for.
 
+[...]
+> +This routine allocates a region of <size> bytes of consistent memory.  It
+> +returns a pointer to the allocated region (in the processor's virtual address
+> +space) or NULL if the allocation failed.  The returned memory may or may not
+> +be in the kernels direct mapping.  Drivers must not call virt_to_page on
+> +the returned memory region.
+
+...then forbid this document's target audience from relying on it, 
+something seems off. At the very least it's unhelpfully unclear :/
+
+Given patch #17, I suspect that the first paragraph is the one that's no 
+longer true.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
