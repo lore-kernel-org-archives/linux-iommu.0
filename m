@@ -7,84 +7,98 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 484A9C4727E
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 19:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE48DC4727F
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 21:23:33 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7611E23119
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 19:26:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 775E321D7F
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 21:23:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XOq9Hu0z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7611E23119
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oh/rOaeX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 775E321D7F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B2C6C2E1B2;
-	Fri, 25 Sep 2020 19:26:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id ED6052E193;
+	Fri, 25 Sep 2020 21:23:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ztFGMOgxr-RZ; Fri, 25 Sep 2020 19:26:45 +0000 (UTC)
+	with ESMTP id dr-yPfAA64Im; Fri, 25 Sep 2020 21:23:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id F19602E199;
-	Fri, 25 Sep 2020 19:26:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D598920482;
+	Fri, 25 Sep 2020 21:23:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4051C0859;
-	Fri, 25 Sep 2020 19:26:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C79E2C0859;
+	Fri, 25 Sep 2020 21:23:29 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7C7AC0051
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 19:26:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9BD09C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B08B686EA3
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 19:26:41 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 83F73869A7
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UNBhDaIQlHrF for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 19:26:41 +0000 (UTC)
+ with ESMTP id K0D9GL0um7x3 for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 21:23:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
- [209.85.166.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F3F8886EB9
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 19:26:40 +0000 (UTC)
-Received: by mail-io1-f67.google.com with SMTP id r9so4135968ioa.2
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 12:26:40 -0700 (PDT)
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+ [209.85.221.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B2C69866D9
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:26 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id g4so5379465wrs.5
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 14:23:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=3JF4yPnp4JTi+/MHrKogyuI7nkofHddgH0FgyoYHlHs=;
- b=XOq9Hu0z7Nxjy9g8sQ2fSc81MwUTKAUr3ZzhcXAWaeHtwyEvMCnbKn72/LcWYkQcfe
- WsFKuG5/1Btxz1BOkSskKM2EUzlfjsIZputb/hZzGyVMUGFjsufth7k91D5pYMbn+jgm
- rmzwLTK5Jq05XvjHfLhpwPNgIBlxUoKEWE82cvI+MjdA8BhKcOBFUg/GTFcLnMtIjJVz
- KLW2QrDkW0SZaY9fsSZ8StcvjR+jBxLmcL22m0n1KoSRIgwQ50TsN4w9mBEjqh8toatD
- JqiOLsaSCa+2cQGBWWCUtsuRQEI73oolekAdIVvtXNdXC+HJIooD+ctlAkc12y5KcaUH
- o5ow==
+ :cc; bh=xu3WUdYX5svcbV4xrw1b6YX5aAbNB7AgpH2Adx4jZFo=;
+ b=Oh/rOaeXFzcu9qSAmCq/rolkH8P14hud6p8K5BfNI2WFG5a9+CDyEGSSQhX2ckSOFm
+ zhaUJj91cpSE7fjOgEU1lXwLJ+IWz8fvIt0d9ZLig66lfafGswbdX3HjuUIetLcvXIRK
+ iTH/uLltlOJ4fw+ePue65S94O7opuSVXxQHSpsONmulokYemM7SGq9yQ+hWEmXvhV86F
+ z03M9NhNkvuyYCe3g7sBFrF7SAacgZVx0Vpqiomtz+6y2XL78RtnxnguoI2dZ69jA0P6
+ sb1aT7CbUe0tNayEoXajWXtZalCNyj5M83zbwKR5M/a2WvCpOpF2gPQoaJNqY08mROL1
+ 4Blg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=3JF4yPnp4JTi+/MHrKogyuI7nkofHddgH0FgyoYHlHs=;
- b=Ab3JHaXr6vvdQ55Nnmyw21UCPi1O494A8qNyf8OrfeLGQlyNKGjUtc9yQGFEcOnVVW
- 5HVfPEQ2e5XlzGbDw9jobGAKxD9hZBA4z+qSF6v9n1Ge8CdVxca6oMSZOX6l9he9JLtw
- 1q8nMCg/MZezin5buvWTRLo+Mo+iipDrhr+1r8E383JygqJkg4aXaTUzrzakMOAtPyI/
- 3h31ulVrxwRu5QtvECiJ/2U7l9aRy+7WQsVzs0S44GNZvzmnGmp5kjrPwHb/MamyQvXy
- uKTYwOCA9d7hN/FIqSpQ+FTBWRj8cdo0AUQb8PWDpJ9sRmQ3lVN9fJNGOiynN1ysyQeN
- /mSg==
-X-Gm-Message-State: AOAM5333PC8YtnrupuXdKvQA3ksfMXhhNy6fMwxvyrnPfBrjD5ArHNjG
- xx55e8lufkDWOJd8T0ZPDBuYssjVvub+d7wjK4A=
-X-Google-Smtp-Source: ABdhPJzpRwmQRavL4njMYs0WOTaLb65+LcLZkmI03ChwKy2LzOKgq6PH8fEOmz9DcHCpU4EuCEjuKXrZvBAe0feRlL8=
-X-Received: by 2002:a02:b199:: with SMTP id t25mr494691jah.124.1601062000321; 
- Fri, 25 Sep 2020 12:26:40 -0700 (PDT)
+ bh=xu3WUdYX5svcbV4xrw1b6YX5aAbNB7AgpH2Adx4jZFo=;
+ b=pgX7eb7TbQmsQ5y7kfsnlJD3oNl56feiNeuwjqXbG6aJKxU6QkBjFWdAMQMZRPKanC
+ Oj/NLn1rvlmlfbiJANZN8U9VPfsHaJuLHPzO0gkhjhb5X8GTlyLHyr5dH94a6mIt5YSP
+ Y8CUJpELW2oYUxj7QC+AycdMkHZcH5g6JIa88FA/gu/VuQDxKqIfDc8nUGGt09M7EIV/
+ 7LgKMe8gfqZdJtMHpr90kHGeS6v7cR4q/SC/kgH366A063lC4WSZfJ2frt3/sPe6YWAu
+ XHkV2q8CsZDjdJDxMXmtma5Q7dhENJaGbir9reUiNcqFawKuQWWhTmxw7QQe7LELD59v
+ PHmg==
+X-Gm-Message-State: AOAM532KiJSPXjgrF/OTD5/IIlfoM0uIUO3dIOyswsodx7NrWcfLucDz
+ yn0T+D1eS+PZpsaL4XXtu1oOCMgXd+YeOjmCfnI=
+X-Google-Smtp-Source: ABdhPJwCPyTdQSA04vqPSfWKSY3pipKmyGpRObz8EdYnATmeFvpcGyznCvz/MGH6xrabFJhMlum7YCBfq8aVNQdHzTI=
+X-Received: by 2002:adf:fc0a:: with SMTP id i10mr6384708wrr.111.1601069005049; 
+ Fri, 25 Sep 2020 14:23:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <1601027469-221812-1-git-send-email-john.garry@huawei.com>
-In-Reply-To: <1601027469-221812-1-git-send-email-john.garry@huawei.com>
-From: Cong Wang <xiyou.wangcong@gmail.com>
-Date: Fri, 25 Sep 2020 12:26:28 -0700
-Message-ID: <CAM_iQpUowPbuqx7-LsZTZ71KxTPpXAUqYU5+aWPy+qv0U2BqTg@mail.gmail.com>
-Subject: Re: [PATCH 0/2] iommu/iova: Solve longterm IOVA issue
-To: John Garry <john.garry@huawei.com>
-Cc: linuxarm@huawei.com, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <20200513133245.6408-1-m.szyprowski@samsung.com>
+ <CGME20200513133259eucas1p273f0e05005b7b1158d884295d35745fd@eucas1p2.samsung.com>
+ <20200513133245.6408-5-m.szyprowski@samsung.com>
+ <alpine.DEB.2.20.2009211803580.19454@agoins-DiGiTS>
+ <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
+In-Reply-To: <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
+From: Alex Deucher <alexdeucher@gmail.com>
+Date: Fri, 25 Sep 2020 17:23:14 -0400
+Message-ID: <CADnq5_OP4pEg7Cg9E=TUB0viSX8rTALQoFck=ueTh=phTtUfEA@mail.gmail.com>
+Subject: Re: [Linaro-mm-sig] [PATCH v5 05/38] drm: prime: use sgtable
+ iterators in drm_prime_sg_to_page_addr_arrays()
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Alex Goins <agoins@nvidia.com>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, LKML <linux-kernel@vger.kernel.org>,
+ Maling list - DRI developers <dri-devel@lists.freedesktop.org>,
+ "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,26 +116,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Sep 25, 2020 at 2:56 AM John Garry <john.garry@huawei.com> wrote:
+On Tue, Sep 22, 2020 at 2:28 AM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
 >
-> This series contains a patch to solve the longterm IOVA issue which
-> leizhen originally tried to address at [0].
+> Hi Alex,
 >
-> I also included the small optimisation from Cong Wang, which never seems
-> to be have been accepted [1]. There was some debate of the other patches
-> in that series, but this one is quite straightforward.
+> On 22.09.2020 01:15, Alex Goins wrote:
+> > Tested-by: Alex Goins <agoins@nvidia.com>
+> >
+> > This change fixes a regression with drm_prime_sg_to_page_addr_arrays() and
+> > AMDGPU in v5.9.
 >
-> @Cong Wang, Please resend your series if prefer I didn't upstream your
-> patch.
+> Thanks for testing!
+>
+> > Commit 39913934 similarly revamped AMDGPU to use sgtable helper functions. When
+> > it changed from dma_map_sg_attrs() to dma_map_sgtable(), as a side effect it
+> > started correctly updating sgt->nents to the return value of dma_map_sg_attrs().
+> > However, drm_prime_sg_to_page_addr_arrays() incorrectly uses sgt->nents to
+> > iterate over pages, rather than sgt->orig_nents, resulting in it now returning
+> > the incorrect number of pages on AMDGPU.
+> >
+> > I had written a patch that changes drm_prime_sg_to_page_addr_arrays() to use
+> > for_each_sgtable_sg() instead of for_each_sg(), iterating using sgt->orig_nents:
+> >
+> > -       for_each_sg(sgt->sgl, sg, sgt->nents, count) {
+> > +       for_each_sgtable_sg(sgt, sg, count) {
+> >
+> > This patch takes it further, but still has the effect of fixing the number of
+> > pages that drm_prime_sg_to_page_addr_arrays() returns. Something like this
+> > should be included in v5.9 to prevent a regression with AMDGPU.
+>
+> Probably the easiest way to handle a fix for v5.9 would be to simply
+> merge the latest version of this patch also to v5.9-rcX:
+> https://lore.kernel.org/dri-devel/20200904131711.12950-3-m.szyprowski@samsung.com/
+>
+>
+> This way we would get it fixed and avoid possible conflict in the -next.
+> Do you have any AMDGPU fixes for v5.9 in the queue? Maybe you can add
+> that patch to the queue? Dave: would it be okay that way?
 
-Thanks for letting me know. But I still don't think it is worth any effort,
-given it is hard to work with Robin. Users who care about latency here
-should just disable IOMMU, it is really hard to optimize IOVA cache
-performance to catch up with !IOMMU case.
+I think this should go into drm-misc for 5.9 since it's an update to
+drm_prime.c.  Is that patch ready to merge?
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
 
-So, please feel free to carry it on your own, I have no problem with it.
+Alex
 
-Thanks.
+>
+> Best regards
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>
+> _______________________________________________
+> Linaro-mm-sig mailing list
+> Linaro-mm-sig@lists.linaro.org
+> https://lists.linaro.org/mailman/listinfo/linaro-mm-sig
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
