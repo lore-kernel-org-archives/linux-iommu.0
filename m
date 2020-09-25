@@ -2,103 +2,74 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE48DC4727F
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 21:23:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 685B1C4727F
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 22:55:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 775E321D7F
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 21:23:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oh/rOaeX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 775E321D7F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 070D4208B6
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 22:55:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 070D4208B6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id ED6052E193;
-	Fri, 25 Sep 2020 21:23:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 82B9387696;
+	Fri, 25 Sep 2020 22:55:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dr-yPfAA64Im; Fri, 25 Sep 2020 21:23:30 +0000 (UTC)
+	with ESMTP id ZLJ6ZXXJzdUY; Fri, 25 Sep 2020 22:54:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D598920482;
-	Fri, 25 Sep 2020 21:23:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 943D18768F;
+	Fri, 25 Sep 2020 22:54:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C79E2C0859;
-	Fri, 25 Sep 2020 21:23:29 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9BD09C0051
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5938BC0891;
+	Fri, 25 Sep 2020 22:54:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C875EC0859
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 22:54:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 83F73869A7
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B017486DA9
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 22:54:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K0D9GL0um7x3 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 21:23:27 +0000 (UTC)
+ with ESMTP id pPs2CHPxXYjp for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 22:54:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id B2C69866D9
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 21:23:26 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id g4so5379465wrs.5
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 14:23:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=xu3WUdYX5svcbV4xrw1b6YX5aAbNB7AgpH2Adx4jZFo=;
- b=Oh/rOaeXFzcu9qSAmCq/rolkH8P14hud6p8K5BfNI2WFG5a9+CDyEGSSQhX2ckSOFm
- zhaUJj91cpSE7fjOgEU1lXwLJ+IWz8fvIt0d9ZLig66lfafGswbdX3HjuUIetLcvXIRK
- iTH/uLltlOJ4fw+ePue65S94O7opuSVXxQHSpsONmulokYemM7SGq9yQ+hWEmXvhV86F
- z03M9NhNkvuyYCe3g7sBFrF7SAacgZVx0Vpqiomtz+6y2XL78RtnxnguoI2dZ69jA0P6
- sb1aT7CbUe0tNayEoXajWXtZalCNyj5M83zbwKR5M/a2WvCpOpF2gPQoaJNqY08mROL1
- 4Blg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=xu3WUdYX5svcbV4xrw1b6YX5aAbNB7AgpH2Adx4jZFo=;
- b=pgX7eb7TbQmsQ5y7kfsnlJD3oNl56feiNeuwjqXbG6aJKxU6QkBjFWdAMQMZRPKanC
- Oj/NLn1rvlmlfbiJANZN8U9VPfsHaJuLHPzO0gkhjhb5X8GTlyLHyr5dH94a6mIt5YSP
- Y8CUJpELW2oYUxj7QC+AycdMkHZcH5g6JIa88FA/gu/VuQDxKqIfDc8nUGGt09M7EIV/
- 7LgKMe8gfqZdJtMHpr90kHGeS6v7cR4q/SC/kgH366A063lC4WSZfJ2frt3/sPe6YWAu
- XHkV2q8CsZDjdJDxMXmtma5Q7dhENJaGbir9reUiNcqFawKuQWWhTmxw7QQe7LELD59v
- PHmg==
-X-Gm-Message-State: AOAM532KiJSPXjgrF/OTD5/IIlfoM0uIUO3dIOyswsodx7NrWcfLucDz
- yn0T+D1eS+PZpsaL4XXtu1oOCMgXd+YeOjmCfnI=
-X-Google-Smtp-Source: ABdhPJwCPyTdQSA04vqPSfWKSY3pipKmyGpRObz8EdYnATmeFvpcGyznCvz/MGH6xrabFJhMlum7YCBfq8aVNQdHzTI=
-X-Received: by 2002:adf:fc0a:: with SMTP id i10mr6384708wrr.111.1601069005049; 
- Fri, 25 Sep 2020 14:23:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200513132114.6046-1-m.szyprowski@samsung.com>
- <20200513133245.6408-1-m.szyprowski@samsung.com>
- <CGME20200513133259eucas1p273f0e05005b7b1158d884295d35745fd@eucas1p2.samsung.com>
- <20200513133245.6408-5-m.szyprowski@samsung.com>
- <alpine.DEB.2.20.2009211803580.19454@agoins-DiGiTS>
- <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
-In-Reply-To: <afb59d1b-1fcf-fd6d-2b48-e078e129f1eb@samsung.com>
-From: Alex Deucher <alexdeucher@gmail.com>
-Date: Fri, 25 Sep 2020 17:23:14 -0400
-Message-ID: <CADnq5_OP4pEg7Cg9E=TUB0viSX8rTALQoFck=ueTh=phTtUfEA@mail.gmail.com>
-Subject: Re: [Linaro-mm-sig] [PATCH v5 05/38] drm: prime: use sgtable
- iterators in drm_prime_sg_to_page_addr_arrays()
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Alex Goins <agoins@nvidia.com>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, LKML <linux-kernel@vger.kernel.org>,
- Maling list - DRI developers <dri-devel@lists.freedesktop.org>,
- "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7AEF386DA6
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 22:54:56 +0000 (UTC)
+IronPort-SDR: cWxMnCxaMq3bFoQj2gw8/Hcm30iqhM8Ztu5TC/d0po3xAhnKrZcRAt4HhsrOE6gMZQUo2sqByw
+ kJFuV6+QphwA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9755"; a="223263427"
+X-IronPort-AV: E=Sophos;i="5.77,303,1596524400"; d="scan'208";a="223263427"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Sep 2020 15:54:54 -0700
+IronPort-SDR: vGqYM0y2LvvNcoXpZ6AJQYIWOV2sKR4XBvUMxnwA2zvkYFkq5bxmSM146jgNUoPmAP9WOGNxf0
+ Ot6aRPaQwVkQ==
+X-IronPort-AV: E=Sophos;i="5.77,303,1596524400"; d="scan'208";a="414103890"
+Received: from araj-mobl1.jf.intel.com (HELO localhost) ([10.254.96.12])
+ by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Sep 2020 15:54:54 -0700
+From: Ashok Raj <ashok.raj@intel.com>
+To: iommu@lists.linux-foundation.org,
+	Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 1/1] pci: pciehp: Handle MRL interrupts to enable slot for
+ hotplug.
+Date: Fri, 25 Sep 2020 15:54:47 -0700
+Message-Id: <20200925225447.28582-1-ashok.raj@intel.com>
+X-Mailer: git-send-email 2.13.6
+Cc: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,66 +82,208 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 22, 2020 at 2:28 AM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> Hi Alex,
->
-> On 22.09.2020 01:15, Alex Goins wrote:
-> > Tested-by: Alex Goins <agoins@nvidia.com>
-> >
-> > This change fixes a regression with drm_prime_sg_to_page_addr_arrays() and
-> > AMDGPU in v5.9.
->
-> Thanks for testing!
->
-> > Commit 39913934 similarly revamped AMDGPU to use sgtable helper functions. When
-> > it changed from dma_map_sg_attrs() to dma_map_sgtable(), as a side effect it
-> > started correctly updating sgt->nents to the return value of dma_map_sg_attrs().
-> > However, drm_prime_sg_to_page_addr_arrays() incorrectly uses sgt->nents to
-> > iterate over pages, rather than sgt->orig_nents, resulting in it now returning
-> > the incorrect number of pages on AMDGPU.
-> >
-> > I had written a patch that changes drm_prime_sg_to_page_addr_arrays() to use
-> > for_each_sgtable_sg() instead of for_each_sg(), iterating using sgt->orig_nents:
-> >
-> > -       for_each_sg(sgt->sgl, sg, sgt->nents, count) {
-> > +       for_each_sgtable_sg(sgt, sg, count) {
-> >
-> > This patch takes it further, but still has the effect of fixing the number of
-> > pages that drm_prime_sg_to_page_addr_arrays() returns. Something like this
-> > should be included in v5.9 to prevent a regression with AMDGPU.
->
-> Probably the easiest way to handle a fix for v5.9 would be to simply
-> merge the latest version of this patch also to v5.9-rcX:
-> https://lore.kernel.org/dri-devel/20200904131711.12950-3-m.szyprowski@samsung.com/
->
->
-> This way we would get it fixed and avoid possible conflict in the -next.
-> Do you have any AMDGPU fixes for v5.9 in the queue? Maybe you can add
-> that patch to the queue? Dave: would it be okay that way?
+When Mechanical Retention Lock (MRL) is present, Linux doesn't process
+those change events.
 
-I think this should go into drm-misc for 5.9 since it's an update to
-drm_prime.c.  Is that patch ready to merge?
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
+The following changes need to be enabled when MRL is present.
 
-Alex
+1. Subscribe to MRL change events in SlotControl.
+2. When MRL is closed,
+   - If there is no ATTN button, then POWER on the slot.
+   - If there is ATTN button, and an MRL event pending, ignore
+     Presence Detect. Since we want ATTN button to drive the
+     hotplug event.
 
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
-> _______________________________________________
-> Linaro-mm-sig mailing list
-> Linaro-mm-sig@lists.linaro.org
-> https://lists.linaro.org/mailman/listinfo/linaro-mm-sig
+
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ drivers/pci/hotplug/pciehp.h      |  1 +
+ drivers/pci/hotplug/pciehp_ctrl.c | 69 +++++++++++++++++++++++++++++++++++++++
+ drivers/pci/hotplug/pciehp_hpc.c  | 27 ++++++++++++++-
+ 3 files changed, 96 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pci/hotplug/pciehp.h b/drivers/pci/hotplug/pciehp.h
+index 4fd200d8b0a9..24a1c9c8ac78 100644
+--- a/drivers/pci/hotplug/pciehp.h
++++ b/drivers/pci/hotplug/pciehp.h
+@@ -155,6 +155,7 @@ void pciehp_request(struct controller *ctrl, int action);
+ void pciehp_handle_button_press(struct controller *ctrl);
+ void pciehp_handle_disable_request(struct controller *ctrl);
+ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events);
++void pciehp_handle_mrl_change(struct controller *ctrl);
+ int pciehp_configure_device(struct controller *ctrl);
+ void pciehp_unconfigure_device(struct controller *ctrl, bool presence);
+ void pciehp_queue_pushbutton_work(struct work_struct *work);
+diff --git a/drivers/pci/hotplug/pciehp_ctrl.c b/drivers/pci/hotplug/pciehp_ctrl.c
+index 9f85815b4f53..c4310ee3678b 100644
+--- a/drivers/pci/hotplug/pciehp_ctrl.c
++++ b/drivers/pci/hotplug/pciehp_ctrl.c
+@@ -227,6 +227,7 @@ void pciehp_handle_disable_request(struct controller *ctrl)
+ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events)
+ {
+ 	int present, link_active;
++	u8 getstatus = 0;
+ 
+ 	/*
+ 	 * If the slot is on and presence or link has changed, turn it off.
+@@ -275,6 +276,16 @@ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events)
+ 		if (link_active)
+ 			ctrl_info(ctrl, "Slot(%s): Link Up\n",
+ 				  slot_name(ctrl));
++		if (MRL_SENS(ctrl)) {
++			pciehp_get_latch_status(ctrl, &getstatus);
++			/*
++			 * If slot is closed && ATTN button exists
++			 * don't continue, let the ATTN button
++			 * drive the hot-plug
++			 */
++			if (!getstatus && ATTN_BUTTN(ctrl))
++				return;
++		}
+ 		ctrl->request_result = pciehp_enable_slot(ctrl);
+ 		break;
+ 	default:
+@@ -283,6 +294,64 @@ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events)
+ 	}
+ }
+ 
++void pciehp_handle_mrl_change(struct controller *ctrl)
++{
++	u8 getstatus = 0;
++	int present, link_active;
++
++	pciehp_get_latch_status(ctrl, &getstatus);
++
++	present = pciehp_card_present(ctrl);
++	link_active = pciehp_check_link_active(ctrl);
++
++	ctrl_info(ctrl, "Slot(%s): Card %spresent\n",
++		  slot_name(ctrl), present ? "" : "not ");
++
++	ctrl_info(ctrl, "Slot(%s): Link %s\n",
++		  slot_name(ctrl), link_active ? "Up" : "Down");
++
++	ctrl_info(ctrl, "Slot(%s): Latch %s\n",
++			  slot_name(ctrl), getstatus ? "Open" : "Closed");
++
++	/*
++	 * Need to handle only MRL Open. When MRL is closed with
++	 * a Card Present, either the ATTN button, or the PDC indication
++	 * should power the slot and add the card in the slot
++	 */
++	if (getstatus) {
++		/*
++		 * If slot was powered on, time to power off
++		 * and remove the card
++		 */
++		mutex_lock(&ctrl->state_lock);
++		if (ctrl->state == ON_STATE) {
++			mutex_unlock(&ctrl->state_lock);
++			pciehp_handle_disable_request(ctrl);
++		} else
++			mutex_unlock(&ctrl->state_lock);
++	} else {
++		/*
++		 * If latch is closed, and previous state is OFF
++		 * Then enable the slot
++		 */
++		mutex_lock(&ctrl->state_lock);
++		if (ctrl->state == OFF_STATE) {
++			/*
++			 * Only continue to power on the slot when the
++			 * Attention button is not present. When button
++			 * present, button press event will process the
++			 * hot-add part of the flow.
++			 */
++			if ((present || link_active) && !ATTN_BUTTN(ctrl)) {
++				ctrl->state = POWERON_STATE;
++				mutex_unlock(&ctrl->state_lock);
++				ctrl->request_result = pciehp_enable_slot(ctrl);
++			} else
++				mutex_unlock(&ctrl->state_lock);
++		}
++	}
++}
++
+ static int __pciehp_enable_slot(struct controller *ctrl)
+ {
+ 	u8 getstatus = 0;
+diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
+index 53433b37e181..5a4b5cfbfe48 100644
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -605,7 +605,7 @@ static irqreturn_t pciehp_isr(int irq, void *dev_id)
+ 	 */
+ 	status &= PCI_EXP_SLTSTA_ABP | PCI_EXP_SLTSTA_PFD |
+ 		  PCI_EXP_SLTSTA_PDC | PCI_EXP_SLTSTA_CC |
+-		  PCI_EXP_SLTSTA_DLLSC;
++		  PCI_EXP_SLTSTA_DLLSC | PCI_EXP_SLTSTA_MRLSC;
+ 
+ 	/*
+ 	 * If we've already reported a power fault, don't report it again
+@@ -658,6 +658,12 @@ static irqreturn_t pciehp_isr(int irq, void *dev_id)
+ 		return IRQ_HANDLED;
+ 	}
+ 
++	/*
++	 * If MRL is triggered, if ATTN button exists, ignore the event.
++	 */
++	if (ATTN_BUTTN(ctrl) && (events & PCI_EXP_SLTSTA_MRLSC))
++		events &= ~PCI_EXP_SLTSTA_PDC;
++
+ 	/* Save pending events for consumption by IRQ thread. */
+ 	atomic_or(events, &ctrl->pending_events);
+ 	return IRQ_WAKE_THREAD;
+@@ -688,6 +694,13 @@ static irqreturn_t pciehp_ist(int irq, void *dev_id)
+ 		goto out;
+ 	}
+ 
++	/*
++	 * If ATTN is present and MRL is triggered
++	 * ignore the Presence Change Event.
++	 */
++	if (ATTN_BUTTN(ctrl) && (events & PCI_EXP_SLTSTA_MRLSC))
++		events &= ~PCI_EXP_SLTSTA_PDC;
++
+ 	/* Check Attention Button Pressed */
+ 	if (events & PCI_EXP_SLTSTA_ABP) {
+ 		ctrl_info(ctrl, "Slot(%s): Attention button pressed\n",
+@@ -712,6 +725,10 @@ static irqreturn_t pciehp_ist(int irq, void *dev_id)
+ 		pciehp_handle_disable_request(ctrl);
+ 	else if (events & (PCI_EXP_SLTSTA_PDC | PCI_EXP_SLTSTA_DLLSC))
+ 		pciehp_handle_presence_or_link_change(ctrl, events);
++
++	if (events & PCI_EXP_SLTSTA_MRLSC)
++		pciehp_handle_mrl_change(ctrl);
++
+ 	up_read(&ctrl->reset_lock);
+ 
+ 	ret = IRQ_HANDLED;
+@@ -768,6 +785,14 @@ static void pcie_enable_notification(struct controller *ctrl)
+ 		cmd |= PCI_EXP_SLTCTL_ABPE;
+ 	else
+ 		cmd |= PCI_EXP_SLTCTL_PDCE;
++
++	/*
++	 * If MRL sensor is present, then subscribe for MRL
++	 * Changes to be notified as well.
++	 */
++	if (MRL_SENS(ctrl))
++		cmd |= PCI_EXP_SLTCTL_MRLSCE;
++
+ 	if (!pciehp_poll_mode)
+ 		cmd |= PCI_EXP_SLTCTL_HPIE | PCI_EXP_SLTCTL_CCIE;
+ 
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
