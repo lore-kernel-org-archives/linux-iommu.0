@@ -2,122 +2,69 @@ Return-Path: <SRS0=3fVv=DC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB13C4363D
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:42:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA42C4727C
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:53:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E70952083B
-	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:42:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="yNu4P9L2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E70952083B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	by mail.kernel.org (Postfix) with ESMTPS id 74C4921775
+	for <iommu@archiver.kernel.org>; Fri, 25 Sep 2020 11:53:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74C4921775
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A62902E169;
-	Fri, 25 Sep 2020 11:42:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MULjrBYwZtJJ; Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C01CA2E170;
-	Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A38E3C0859;
-	Fri, 25 Sep 2020 11:42:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22840C0051
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:07 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1140386CB2
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 10AF486CBB;
+	Fri, 25 Sep 2020 11:53:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Ez7vrj5DTIiw; Fri, 25 Sep 2020 11:53:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2448086CB2;
+	Fri, 25 Sep 2020 11:53:13 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3E5EC0859;
+	Fri, 25 Sep 2020 11:53:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D87DC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:53:11 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 810ED20435
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:53:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mGhrpUqokV73 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Sep 2020 11:42:06 +0000 (UTC)
+ with ESMTP id 1LbKnT0GfkeI for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Sep 2020 11:53:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1848486C9B
- for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:42:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gs/gRDuQhOmRVRVVBjmLFa4utiX7sfr0ZXZq+v3bB7Ekik6ARkN72+2YkMSKTdF3PSH1tySVIKl/gywVuRFMPZF5Drvz/QDwWhnjlUoUgpBUzMUo5qsRRKlc46gGgm1+1NoZtd3I8hwuM2kDxKArM1ezbh3FKFM8QR2/O9bUjj55f6hC9yt2n2ioYneIOM/C2S+q7p7Hi6Q576r/vukUjz8MgX9cap+EES16LIPzMwO24evQF3+etL9qBjvrO7QaFv1HhP0/NqzBvYihRJKuza9JnABRWTAGgmZppm6/xS/AihJr3aSA9eBxjPpMYK+9u5JUvqonWoOvF+52xSohtA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wotW7OAD+b+0Aqg26B4hnW2V+z/VAKpDbBpNI2yZjvE=;
- b=QI8iAP/lShptD7miJVNHexgLh1YMnh5CFY9+A8lufFq2rNwp0SSyJqQQ0SBdiZNnOpquFYdtK3qooOPP4pTfpCKHHxAN+HX+ZlQnlZzRyNrBzNAF/wt4wa0lizFW9BAtL4rvMgLxTk2pkTzGnzxxqJUPOigZFSIjcYe86rRtDZYESpoCOwEM/fnyYobrmL1NIhTY4HKmJLHmiXztnrA34sxokrU7g3NGRKHzG8k38Y+BD3JBpHvIBykgoaOxGeufbaHfkJHkKJZKHSfnZGRUP5WR/rsSPhSpWmSqkCXcjK+UgaP5cWQq1iavSuLMBa9a2L20/uNsEhewbzzq7JqKwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wotW7OAD+b+0Aqg26B4hnW2V+z/VAKpDbBpNI2yZjvE=;
- b=yNu4P9L2Rr/svt04r7woGz4ODKsT6FL3wRA5Wa06bMrJMJ9EYzFqtObghnLX3KkTjzvUkbQ87xsF0dRw0D+UObaS9XDLY4mWVtv6uCok9t/cMtc4CcROOy1Gv8elMuva7U9P6HJtEb1Yv8FPseWgoeOzL6v7wNqr2qL1ciuKRUo=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com (2603:10b6:3:7a::18) by
- DM6PR12MB4957.namprd12.prod.outlook.com (2603:10b6:5:20d::14) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3412.20; Fri, 25 Sep 2020 11:41:55 +0000
-Received: from DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e]) by DM5PR12MB1163.namprd12.prod.outlook.com
- ([fe80::48cf:d69:d457:1b1e%5]) with mapi id 15.20.3412.024; Fri, 25 Sep 2020
- 11:41:55 +0000
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE
-Date: Fri, 25 Sep 2020 11:45:05 +0000
-Message-Id: <20200925114505.232280-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [165.204.78.2]
-X-ClientProxiedBy: SN6PR04CA0098.namprd04.prod.outlook.com
- (2603:10b6:805:f2::39) To DM5PR12MB1163.namprd12.prod.outlook.com
- (2603:10b6:3:7a::18)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 09FF2203A8
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Sep 2020 11:53:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B57F101E;
+ Fri, 25 Sep 2020 04:53:09 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A52A53F70D;
+ Fri, 25 Sep 2020 04:53:07 -0700 (PDT)
+Subject: Re: [PATCH 1/2] iommu/iova: Flush CPU rcache for when a depot fills
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org
+References: <1601027469-221812-1-git-send-email-john.garry@huawei.com>
+ <1601027469-221812-2-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <bede311f-9a07-98e1-e728-9acd4ad13b51@arm.com>
+Date: Fri, 25 Sep 2020 12:53:06 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from ethanolx5673host.amd.com (165.204.78.2) by
- SN6PR04CA0098.namprd04.prod.outlook.com (2603:10b6:805:f2::39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3412.20 via Frontend Transport; Fri, 25 Sep 2020 11:41:54 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: adc4c2b4-fec6-4be4-0c81-08d86148008f
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4957:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4957855FEC25B727DF398B21F3360@DM6PR12MB4957.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tH14XkrNkpmrmN2sBg00gJnpGQsA3H+FJf/HynTs3VBFPERR0Z9YI8GsINt/CJkjtPpwdpCj7OXd4ZhU4MQi0mTu+kJobdD7aGJQVaFAryKx3H6EJAru4AmoH4+J5riYyiUnLI7uzzK/enKwB7VU4Ay4d0PNgh3Hhd3sJ8xkeH+PQq3J9PND0gEsX7EqG/UP5FsqlJaECGIruBmTorIJrFAVb0abCdtkK7egvSiyWAOZmeN5BkNFpyvOraPn0p34U2cB/DK5XsXD0p4ocw+vRImx+NTsYQqpM8MCxHmWwAN5WDFn1c6colLaEKAg7Ne+9CbGtVJeHfdG4y0Zgz2anI2hRlXvdNEKsps9R+PCS1epj3a2PijXVLDSNTNOxefj81sB7BLr2Jye76kn3jEds0qeZI1zeF8iCfQst9FvvhVCQLFnjFhWch2FGcbI2uHQqvSFE8jrV7o3Cn9gdIt6mg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1163.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39860400002)(346002)(136003)(366004)(376002)(396003)(966005)(66476007)(66556008)(6666004)(66946007)(86362001)(478600001)(54906003)(8676002)(83380400001)(8936002)(1076003)(316002)(2906002)(52116002)(36756003)(5660300002)(4326008)(16526019)(6486002)(44832011)(26005)(2616005)(956004)(7696005)(186003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: TwMn4aU3Mi3h53FZikBtS41rdmOSWL6u1X/pBuo1KtW3AOy42xqY1o9/3BfblWrNlF74wXbvgSzPh7ynHcYSAjgV0EhqNsLa4faRG2JlhrWmu1EecpMubtolSJS1S6gNoEWS2zz9gMYt9EvjFZlOnLqIvy1Gr/sHUL/5EJDg6k1TQnKe+x9Y9XzDKqOLzfSFxwo5ry8Ks1usQGRIKMY5jACjYK21hJ8OZigoIFrgMPi5TcGYK8PvH/y/v4pdygVSVreJ7WN7kZSPczfqQOsTNZEcqpdjpuPVY84PhcxWwJOO1W3qvVZmF0IO2L73KphlPI3DIZ2gaMetl7NKYI00J5g9TjYKe9jfXMlPYxhl5AGLGjSztkuWDKYptf/gYimtwfgPSPBWhSp+hOXFAYLdQPh8PkR4CtWZ99PPFO1g1kuA6qpwzvLBu2cyT8hdEwCvdNayQjc+AHkFZdfZfNjgTofL2iNqPktXrzQ57o/xiOo0HWUea0b8AjlMAnCDN4RK9WywR2MhVctnOJE7Mv6pYy4Fqle1MYOmdtUJvzsFxCPsl+Epx9/yIJRZcSqPgcnddu+kd3JKKFYN285HvjxotHNFP/PK5d2Jq/7sZVsAyeEttIiw3GnaR8C617enI0UJlABYTYv2DMxERQx7DKORHw==
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: adc4c2b4-fec6-4be4-0c81-08d86148008f
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2020 11:41:55.0748 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yfr49A2C8Xq4WA5W/waCHyInsGuFHy0S1AEUDdKHNJ++fE0NtAVtQ/Dkmg6ymksbduoyvUN/Wn/hj66m8ceF8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4957
-Cc: sashal@kernel.org, Joerg Roedel <jroedel@suse.de>, brijesh.singh@amd.com,
- gregkh@linuxfoundation.org, Jon.Grimm@amd.com, stable@vger.kernel.org
+In-Reply-To: <1601027469-221812-2-git-send-email-john.garry@huawei.com>
+Content-Language: en-GB
+Cc: linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, xiyou.wangcong@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,144 +77,135 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When using 128-bit interrupt-remapping table entry (IRTE) (a.k.a GA mode),
-current driver disables interrupt remapping when it updates the IRTE
-so that the upper and lower 64-bit values can be updated safely.
+On 2020-09-25 10:51, John Garry wrote:
+> Leizhen reported some time ago that IOVA performance may degrade over time
+> [0], but unfortunately his solution to fix this problem was not given
+> attention.
+> 
+> To summarize, the issue is that as time goes by, the CPU rcache and depot
+> rcache continue to grow. As such, IOVA RB tree access time also continues
+> to grow.
+> 
+> At a certain point, a depot may become full, and also some CPU rcaches may
+> also be full when we try to insert another IOVA. For this scenario,
+> currently we free the "loaded" CPU rcache and create a new one. This
+> free'ing means that we need to free many IOVAs in the RB tree, which
+> makes IO throughput performance fall off a cliff in our storage scenario:
+> 
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6314MB/0KB/0KB /s] [1616K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [5669MB/0KB/0KB /s] [1451K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6673MB/0KB/0KB /s] [1708K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6761MB/0KB/0KB /s] [1731K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6685MB/0KB/0KB /s] [1711K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6178MB/0KB/0KB /s] [1582K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6731MB/0KB/0KB /s] [1723K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2387MB/0KB/0KB /s] [611K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2689MB/0KB/0KB /s] [688K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2278MB/0KB/0KB /s] [583K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1288MB/0KB/0KB /s] [330K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1632MB/0KB/0KB /s] [418K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1765MB/0KB/0KB /s] [452K/0/0 iops]
+> 
+> And continue in this fashion, without recovering. Note that in this
+> example we had to wait 16 hours for this to occur. Also note that IO
+> throughput also becomes gradually becomes more unstable leading up to this
+> point.
+> 
+> As a solution this issue, we judge that the IOVA rcaches have grown too
+> big, and just flush all the CPUs rcaches instead.
+> 
+> The depot rcaches, however, are not flushed, as they can be used to
+> immediately replenish active CPUs.
+> 
+> In future, some IOVA rcache compaction could be implemented to solve the
+> instabilty issue, which I figure could be quite complex to implement.
+> 
+> [0] https://lore.kernel.org/linux-iommu/20190815121104.29140-3-thunder.leizhen@huawei.com/
+> 
+> Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
+> Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/iova.c | 25 ++++++++++++++++---------
+>   1 file changed, 16 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 45a251da5453..05e0b462e0d9 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -892,9 +892,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   				 struct iova_rcache *rcache,
+>   				 unsigned long iova_pfn)
+>   {
+> -	struct iova_magazine *mag_to_free = NULL;
+>   	struct iova_cpu_rcache *cpu_rcache;
+> -	bool can_insert = false;
+> +	bool can_insert = false, flush = false;
+>   	unsigned long flags;
+>   
+>   	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
+> @@ -913,13 +912,19 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
+>   				rcache->depot[rcache->depot_size++] =
+>   						cpu_rcache->loaded;
+> +				can_insert = true;
+> +				cpu_rcache->loaded = new_mag;
+>   			} else {
+> -				mag_to_free = cpu_rcache->loaded;
+> +				/*
+> +				 * The depot is full, meaning that a very large
+> +				 * cache of IOVAs has built up, which slows
+> +				 * down RB tree accesses significantly
+> +				 * -> let's flush at this point.
+> +				 */
+> +				flush = true;
+> +				iova_magazine_free(new_mag);
+>   			}
+>   			spin_unlock(&rcache->lock);
+> -
+> -			cpu_rcache->loaded = new_mag;
+> -			can_insert = true;
+>   		}
+>   	}
+>   
+> @@ -928,9 +933,11 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   
+>   	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+>   
+> -	if (mag_to_free) {
+> -		iova_magazine_free_pfns(mag_to_free, iovad);
+> -		iova_magazine_free(mag_to_free);
+> +	if (flush) {
 
-However, this creates a small window, where the interrupt could
-arrive and result in IO_PAGE_FAULT (for interrupt) as shown below.
+Do you really need this flag, or is it effectively just mirroring 
+"!can_insert" - in theory if there wasn't enough memory to allocate a 
+new magazine, then freeing some more IOVAs wouldn't necessarily be a bad 
+thing to do anyway.
 
-  IOMMU Driver            Device IRQ
-  ============            ===========
-  irte.RemapEn=0
-       ...
-   change IRTE            IRQ from device ==> IO_PAGE_FAULT !!
-       ...
-  irte.RemapEn=1
+Other than that, I think this looks reasonable. Every time I look at 
+__iova_rcache_insert() I'm convinced there must be a way to restructure 
+it to be more streamlined overall, but I can never quite see exactly how...
 
-This scenario has been observed when changing irq affinity on a system
-running I/O-intensive workload, in which the destination APIC ID
-in the IRTE is updated.
+Thanks,
+Robin.
 
-Instead, use cmpxchg_double() to update the 128-bit IRTE at once without
-disabling the interrupt remapping. However, this means several features,
-which require GA (128-bit IRTE) support will also be affected if cmpxchg16b
-is not supported (which is unprecedented for AMD processors w/ IOMMU).
-
-Cc: stable@vger.kernel.org
-Fixes: 880ac60e2538 ("iommu/amd: Introduce interrupt remapping ops structure")
-Reported-by: Sean Osborne <sean.m.osborne@oracle.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Tested-by: Erik Rockstrom <erik.rockstrom@oracle.com>
-Reviewed-by: Joao Martins <joao.m.martins@oracle.com>
-Link: https://lore.kernel.org/r/20200903093822.52012-3-suravee.suthikulpanit@amd.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
-Note: This patch is the back-port on top of the stable branch linux-5.4.y
-for the upstream commit e52d58d54a32 ("iommu/amd: Use cmpxchg_double() when
-updating 128-bit IRTE") since the original patch does not apply cleanly.
-
- drivers/iommu/Kconfig          |  2 +-
- drivers/iommu/amd_iommu.c      | 17 +++++++++++++----
- drivers/iommu/amd_iommu_init.c | 21 +++++++++++++++++++--
- 3 files changed, 33 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 390568afee9f..fc0160e8ed33 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -138,7 +138,7 @@ config AMD_IOMMU
- 	select PCI_PASID
- 	select IOMMU_API
- 	select IOMMU_IOVA
--	depends on X86_64 && PCI && ACPI
-+	depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
- 	---help---
- 	  With this option you can enable support for AMD IOMMU hardware in
- 	  your system. An IOMMU is a hardware component which provides
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index fa91d856a43e..7b724f7b27a9 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3873,6 +3873,7 @@ static int alloc_irq_index(u16 devid, int count, bool align,
- static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
- 			  struct amd_ir_data *data)
- {
-+	bool ret;
- 	struct irq_remap_table *table;
- 	struct amd_iommu *iommu;
- 	unsigned long flags;
-@@ -3890,10 +3891,18 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
- 
- 	entry = (struct irte_ga *)table->table;
- 	entry = &entry[index];
--	entry->lo.fields_remap.valid = 0;
--	entry->hi.val = irte->hi.val;
--	entry->lo.val = irte->lo.val;
--	entry->lo.fields_remap.valid = 1;
-+
-+	ret = cmpxchg_double(&entry->lo.val, &entry->hi.val,
-+			     entry->lo.val, entry->hi.val,
-+			     irte->lo.val, irte->hi.val);
-+	/*
-+	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
-+	 * and it cannot be updated by the hardware or other processors
-+	 * behind us, so the return value of cmpxchg16 should be the
-+	 * same as the old value.
-+	 */
-+	WARN_ON(!ret);
-+
- 	if (data)
- 		data->ref = entry;
- 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 135ae5222cf3..31d7e2d4f304 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1522,7 +1522,14 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
- 		else
- 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
--		if (((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
-+
-+		/*
-+		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
-+		 * GAM also requires GA mode. Therefore, we need to
-+		 * check cmpxchg16b support before enabling it.
-+		 */
-+		if (!boot_cpu_has(X86_FEATURE_CX16) ||
-+		    ((h->efr_attr & (0x1 << IOMMU_FEAT_GASUP_SHIFT)) == 0))
- 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
- 		break;
- 	case 0x11:
-@@ -1531,8 +1538,18 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
- 		else
- 			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
--		if (((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0))
-+
-+		/*
-+		 * Note: GA (128-bit IRTE) mode requires cmpxchg16b supports.
-+		 * XT, GAM also requires GA mode. Therefore, we need to
-+		 * check cmpxchg16b support before enabling them.
-+		 */
-+		if (!boot_cpu_has(X86_FEATURE_CX16) ||
-+		    ((h->efr_reg & (0x1 << IOMMU_EFR_GASUP_SHIFT)) == 0)) {
- 			amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY;
-+			break;
-+		}
-+
- 		/*
- 		 * Note: Since iommu_update_intcapxt() leverages
- 		 * the IOMMU MMIO access to MSI capability block registers
--- 
-2.17.1
-
+> +		int cpu;
+> +
+> +		for_each_online_cpu(cpu)
+> +			free_cpu_cached_iovas(cpu, iovad);
+>   	}
+>   
+>   	return can_insert;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
