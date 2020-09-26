@@ -2,102 +2,115 @@ Return-Path: <SRS0=cnVx=DD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C571C4741F
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 14:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C61DC4727E
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 15:25:50 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CDDC2184D
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 14:48:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E1D1A20878
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 15:25:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mVVIaVs4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CDDC2184D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IgNtiCGT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1D1A20878
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C537E87165;
-	Sat, 26 Sep 2020 14:48:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 990A987251;
+	Sat, 26 Sep 2020 15:25:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sA-glbuQmN-j; Sat, 26 Sep 2020 14:48:59 +0000 (UTC)
+	with ESMTP id QSKu63YLRJcC; Sat, 26 Sep 2020 15:25:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3D6A887163;
-	Sat, 26 Sep 2020 14:48:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C98AB8724F;
+	Sat, 26 Sep 2020 15:25:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 29C85C0859;
-	Sat, 26 Sep 2020 14:48:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37444C0051
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 14:48:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A953EC0891;
+	Sat, 26 Sep 2020 15:25:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1EC0CC0859
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 15:25:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2FD1D86826
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 14:48:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0711685F8F
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 15:25:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q9rprYmxUIn4 for <iommu@lists.linux-foundation.org>;
- Sat, 26 Sep 2020 14:48:57 +0000 (UTC)
+ with ESMTP id CM2Lio8pTkxK for <iommu@lists.linux-foundation.org>;
+ Sat, 26 Sep 2020 15:25:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
- [209.85.208.193])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F2DAA868AC
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 14:48:56 +0000 (UTC)
-Received: by mail-lj1-f193.google.com with SMTP id v23so4831170ljd.1
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 07:48:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=4OSLoIvgTYKgG5y/bcFbwHMYscpnTNwdnsVBcUysUWY=;
- b=mVVIaVs4BacQs0AQgvwyFqke2v36x9e78QGTTUtogy5RKUpiKsJGuXDe/sZEYFq2fw
- sK8dP1/moJH16zAvN+ntaQtyqwSQyqN02mDwNi5qtKf7YEqwAIuQ1REHOwkG3Hib8pAH
- EUXGRhjopioQQBM7yKWE4iIdnSpGKZe2Lfg4BAhLMDPqT6dlCggEhZfj+RudZHBgBKyO
- AmpGHQVJURH9X3NSoJEQKBCHLGczyfvDCw1FEOXzGhZu0cTyuFTYtL4+1e4G+9NjpktI
- ISFGuXdGGpdjLIHgHqeNHArXIsYSHRiHqDHNP7TwfwRnLNvzwIH0cVglL1Dc5EHlNvKp
- R7PQ==
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+ [209.85.208.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0420185F8C
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 15:25:46 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id g4so5556366edk.0
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=NyijGOIcOg0IQ8xJ7tRK9WXb8VbwFr7joS3ngRxTFtY=;
+ b=IgNtiCGTIRw+9Jq9+OugAEUgOtWjA8eNb9N0lGKIZhSzq8+Nq6i8p6dAPgDSw3WCu5
+ 5zLCQcy1nGd484dN8MEuuVSYHqucVtHjEfU81Ws4/lYX/HOp4JbMrZzXbrOql6BtdQAy
+ +hEnD/Pr6tT/viPh9YkxxEEc7eplb0NwJB92c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=4OSLoIvgTYKgG5y/bcFbwHMYscpnTNwdnsVBcUysUWY=;
- b=ElZRwd4vUsDYy3EYSQIh1rvf4EZ3iIJ4eH2Z6iwUc1aOhZzydva2Gw4QjwmsV667k7
- IT+wcdFwNQmy+KyLMsmy9uSr6ayChydHfkHA9gr3cyX4c3yLq6acJnPHxw4zma512E02
- AQjKhDjrl7nY5Mal2K2SClKUQJdzLieMDqAifqzR+XDLaOStVDYkCi12ZVkpPmUbAspb
- p75yNQVHv2HBCtD7Z3/xeilzuAsLwz0uA+eDvJcfrINM9G8UsYG0txhtNCcCqL5h2L8D
- 3v8ZV83oe6bH/6FNUqBJLEG9MIL2KTcYubghObBVjZBEsy8jPGwhCVRyolcqQYvwildW
- Zmwg==
-X-Gm-Message-State: AOAM530VDzjFjTDdkhDMR4nbgvGzgNJYJvxU8H6WWV8TAPJBcMrG22xS
- g9VE1BotypC97W8Aj6vroWxfUcBQlKk=
-X-Google-Smtp-Source: ABdhPJwY7G8FOMBEhZy5FRZ4mUUuXJU3s9VtwvIaDkRDccOb3pX1z+sZkkSo10SkAsacRQDjGD13hQ==
-X-Received: by 2002:a2e:814c:: with SMTP id t12mr2858344ljg.362.1601131735096; 
- Sat, 26 Sep 2020 07:48:55 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
- [109.252.170.211])
- by smtp.googlemail.com with ESMTPSA id 191sm1744043lfa.131.2020.09.26.07.48.54
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=NyijGOIcOg0IQ8xJ7tRK9WXb8VbwFr7joS3ngRxTFtY=;
+ b=LC5LwC8ONd2HQl/lZFjdUJPvG923+wA6cjyNbO2ERKjWJV7egKcv7ec42k/6IJrqAJ
+ FBMPpWXrW6bzX97CQIxUIPJHXSwr0R4YPetD2840KviTG1RT0aLnWybGjubtmsJC0oMM
+ trXeg7OoF5Nwjtrcoa173iQKE/MOZprx92X65mRqnHeUdRzNgbljEb06JaERsDsdweXt
+ TVY+7dFtzzMDKG5wGIRKlX7Ff8GUJoIt8X9eFg7ytm0NoQcCpO/rDxLc2O/qHoYp+H7P
+ ezfrYggd1inkpmdgf0GpvZKfwPEJ6Nj2PWSJMcvJnY1btli86QdaBEJKutKS7F1sUti7
+ qvQw==
+X-Gm-Message-State: AOAM531tvKab76koY8FB/HSdlYUmELNOAAe53UUAzgYOEGXMtBi4JOuu
+ 9iL2xhhU6giE6tILJ6ps1fz+mC4aj4mZpg==
+X-Google-Smtp-Source: ABdhPJzt0ckBReRcqedW9M8wBlxL9gs844WQ55D5niv6WBRoA95615f7vbbU1ldyqqdDAHebV0LEUw==
+X-Received: by 2002:a05:6402:144c:: with SMTP id
+ d12mr7238469edx.168.1601133944367; 
+ Sat, 26 Sep 2020 08:25:44 -0700 (PDT)
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com.
+ [209.85.128.44])
+ by smtp.gmail.com with ESMTPSA id u15sm4566536edq.96.2020.09.26.08.25.43
+ for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sat, 26 Sep 2020 07:48:54 -0700 (PDT)
-Subject: Re: [PATCH 5/5] iommu/tegra-smmu: Add pagetable mappings to debugfs
-To: Nicolin Chen <nicoleotsuka@gmail.com>, thierry.reding@gmail.com,
- joro@8bytes.org, krzk@kernel.org
-References: <20200926080719.6822-1-nicoleotsuka@gmail.com>
- <20200926080719.6822-6-nicoleotsuka@gmail.com>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <0c9ca297-d656-59a5-eefd-00e0c0542c29@gmail.com>
-Date: Sat, 26 Sep 2020 17:48:54 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Sat, 26 Sep 2020 08:25:44 -0700 (PDT)
+Received: by mail-wm1-f44.google.com with SMTP id k18so2321254wmj.5
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:25:43 -0700 (PDT)
+X-Received: by 2002:a7b:c925:: with SMTP id h5mr2968012wml.28.1601133943201;
+ Sat, 26 Sep 2020 08:25:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200926080719.6822-6-nicoleotsuka@gmail.com>
-Content-Language: en-US
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, jonathanh@nvidia.com
+References: <20200915155122.1768241-1-hch@lst.de>
+ <20200915155122.1768241-18-hch@lst.de>
+ <20200925184622.GB3607091@chromium.org> <20200926141428.GB10379@lst.de>
+In-Reply-To: <20200926141428.GB10379@lst.de>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Sat, 26 Sep 2020 17:25:27 +0200
+X-Gmail-Original-Message-ID: <CAAFQd5CjSKswdc3qOEZy73cyYJ9kfaXsSFyxkOHA+buh-J12UA@mail.gmail.com>
+Message-ID: <CAAFQd5CjSKswdc3qOEZy73cyYJ9kfaXsSFyxkOHA+buh-J12UA@mail.gmail.com>
+Subject: Re: [PATCH 17/18] dma-iommu: implement ->alloc_noncoherent
+To: Christoph Hellwig <hch@lst.de>
+Cc: alsa-devel@alsa-project.org,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ nouveau@lists.freedesktop.org, linux-mips@vger.kernel.org,
+ "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+ linux-mm@kvack.org, linux1394-devel@lists.sourceforge.net,
+ linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+ Joonyoung Shim <jy0922.shim@samsung.com>, linux-scsi@vger.kernel.org,
+ Ben Skeggs <bskeggs@redhat.com>, Matt Porter <mporter@kernel.crashing.org>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
+ netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Stefan Richter <stefanr@s5r6.in-berlin.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,60 +123,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MjYuMDkuMjAyMCAxMTowNywgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Ci4uLgo+ICtzdGF0aWMg
-aW50IHRlZ3JhX3NtbXVfbWFwcGluZ3Nfc2hvdyhzdHJ1Y3Qgc2VxX2ZpbGUgKnMsIHZvaWQgKmRh
-dGEpCj4gK3sKPiArCXN0cnVjdCB0ZWdyYV9zbW11X2dyb3VwX2RlYnVnICpncm91cF9kZWJ1ZyA9
-IHMtPnByaXZhdGU7Cj4gKwljb25zdCBzdHJ1Y3QgdGVncmFfc21tdV9zd2dyb3VwICpncm91cDsK
-PiArCXN0cnVjdCB0ZWdyYV9zbW11X2FzICphczsKPiArCXN0cnVjdCB0ZWdyYV9zbW11ICpzbW11
-Owo+ICsJaW50IHBkX2luZGV4LCBwdF9pbmRleDsKPiArCXU2NCBwdGVfY291bnQgPSAwOwo+ICsJ
-dTMyIHBkZV9jb3VudCA9IDA7Cj4gKwl1MzIgdmFsLCBwdGJfcmVnOwo+ICsJdTMyICpwZDsKPiAr
-Cj4gKwlpZiAoIWdyb3VwX2RlYnVnIHx8ICFncm91cF9kZWJ1Zy0+cHJpdiB8fCAhZ3JvdXBfZGVi
-dWctPmdyb3VwKQo+ICsJCXJldHVybiAwOwo+ICsKPiArCWdyb3VwID0gZ3JvdXBfZGVidWctPmdy
-b3VwOwo+ICsJYXMgPSBncm91cF9kZWJ1Zy0+cHJpdjsKPiArCXNtbXUgPSBhcy0+c21tdTsKPiAr
-Cj4gKwl2YWwgPSBzbW11X3JlYWRsKHNtbXUsIGdyb3VwLT5yZWcpICYgU01NVV9BU0lEX0VOQUJM
-RTsKPiArCWlmICghdmFsKQo+ICsJCXJldHVybiAwOwo+ICsKPiArCXBkID0gcGFnZV9hZGRyZXNz
-KGFzLT5wZCk7Cj4gKwlpZiAoIXBkKQo+ICsJCXJldHVybiAwOwo+ICsKPiArCXNlcV9wcmludGYo
-cywgIlxuU1dHUk9VUDogJXNcbkFTSUQ6ICVkXG5yZWc6IDB4JXhcbiIsIGdyb3VwLT5uYW1lLAo+
-ICsJCQlhcy0+aWQsIGdyb3VwLT5yZWcpOwo+ICsKPiArCW11dGV4X2xvY2soJnNtbXUtPmxvY2sp
-Owo+ICsJc21tdV93cml0ZWwoc21tdSwgYXMtPmlkICYgMHg3ZiwgU01NVV9QVEJfQVNJRCk7Cj4g
-KwlwdGJfcmVnID0gc21tdV9yZWFkbChzbW11LCBTTU1VX1BUQl9EQVRBKTsKCkkgdGhpbmsgdGhl
-IHdob2xlIHRyYXZlcnNlIG5lZWRzIGEgbG9ja2luZyBwcm90ZWN0aW9uLCBkb2Vzbid0IGl0PwoK
-PiArCW11dGV4X3VubG9jaygmc21tdS0+bG9jayk7Cj4gKwo+ICsJc2VxX3ByaW50ZihzLCAiUFRC
-X0FTSUQ6IDB4JXhcbmFzLT5wZF9kbWE6IDB4JWxseFxuIiwgcHRiX3JlZywgYXMtPnBkX2RtYSk7
-Cj4gKwlzZXFfcHV0cyhzLCAie1xuIik7Cj4gKwo+ICsJZm9yIChwZF9pbmRleCA9IDA7IHBkX2lu
-ZGV4IDwgU01NVV9OVU1fUERFOyBwZF9pbmRleCsrKSB7Cj4gKwkJc3RydWN0IHBhZ2UgKnB0Owo+
-ICsJCXUzMiAqYWRkcjsKPiArCj4gKwkJaWYgKCFhcy0+Y291bnRbcGRfaW5kZXhdIHx8ICFwZFtw
-ZF9pbmRleF0pCj4gKwkJCWNvbnRpbnVlOwo+ICsKPiArCQlwZGVfY291bnQrKzsKPiArCQlwdGVf
-Y291bnQgKz0gYXMtPmNvdW50W3BkX2luZGV4XTsKPiArCQlzZXFfcHJpbnRmKHMsICJcdFslZF0g
-MHgleCAoJWQpXG4iLAo+ICsJCQkgICBwZF9pbmRleCwgcGRbcGRfaW5kZXhdLCBhcy0+Y291bnRb
-cGRfaW5kZXhdKTsKPiArCQlwdCA9IGFzLT5wdHNbcGRfaW5kZXhdOwo+ICsJCWFkZHIgPSBwYWdl
-X2FkZHJlc3MocHQpOwoKVGhpcyBuZWVkcyBhcy0+bG9jayBwcm90ZWN0aW9uLgoKPiArCQlzZXFf
-cHV0cyhzLCAiXHR7XG4iKTsKPiArCQlzZXFfcHJpbnRmKHMsICJcdFx0JS01cyAlLTRzICUxMnMg
-JTEyc1xuIiwgIlBERSIsICJBVFRSIiwgIlBIWVMiLCAiSU9WQSIpOwo+ICsJCWZvciAocHRfaW5k
-ZXggPSAwOyBwdF9pbmRleCA8IFNNTVVfTlVNX1BURTsgcHRfaW5kZXgrKykgewo+ICsJCQl1NjQg
-aW92YTsKPiArCj4gKwkJCWlmICghYWRkcltwdF9pbmRleF0pCj4gKwkJCQljb250aW51ZTsKPiAr
-Cj4gKwkJCWlvdmEgPSAoKGRtYV9hZGRyX3QpcGRfaW5kZXggJiAoU01NVV9OVU1fUERFIC0gMSkp
-IDw8IFNNTVVfUERFX1NISUZUOwo+ICsJCQlpb3ZhIHw9ICgoZG1hX2FkZHJfdClwdF9pbmRleCAm
-IChTTU1VX05VTV9QVEUgLSAxKSkgPDwgU01NVV9QVEVfU0hJRlQ7Cj4gKwo+ICsJCQlzZXFfcHJp
-bnRmKHMsICJcdFx0IyUtNGQgMHglLTR4IDB4JS0xMmxseCAweCUtMTJsbHhcbiIsCj4gKwkJCQkg
-ICBwdF9pbmRleCwgYWRkcltwdF9pbmRleF0gPj4gU01NVV9QVEVfQVRUUl9TSElGVCwKPiArCQkJ
-CSAgIFNNTVVfUEZOX1BIWVMoYWRkcltwdF9pbmRleF0gJiB+U01NVV9QVEVfQVRUUiksIGlvdmEp
-Owo+ICsJCX0KPiArCQlzZXFfcHV0cyhzLCAiXHR9XG4iKTsKPiArCX0KPiArCXNlcV9wdXRzKHMs
-ICJ9XG4iKTsKPiArCXNlcV9wcmludGYocywgIlRvdGFsIFBERSBjb3VudDogJWRcbiIsIHBkZV9j
-b3VudCk7Cj4gKwlzZXFfcHJpbnRmKHMsICJUb3RhbCBQVEUgY291bnQ6ICVsbGRcbiIsIHB0ZV9j
-b3VudCk7Cj4gKwo+ICsJcmV0dXJuIDA7Cj4gK30KPiArCj4gK0RFRklORV9TSE9XX0FUVFJJQlVU
-RSh0ZWdyYV9zbW11X21hcHBpbmdzKTsKPiArCj4gIHN0YXRpYyB2b2lkIHRlZ3JhX3NtbXVfZGVi
-dWdmc19pbml0KHN0cnVjdCB0ZWdyYV9zbW11ICpzbW11KQo+ICB7Cj4gKwljb25zdCBzdHJ1Y3Qg
-dGVncmFfc21tdV9zb2MgKnNvYyA9IHNtbXUtPnNvYzsKPiArCXN0cnVjdCB0ZWdyYV9zbW11X2dy
-b3VwX2RlYnVnICpncm91cF9kZWJ1ZzsKPiArCXN0cnVjdCBkZXZpY2UgKmRldiA9IHNtbXUtPmRl
-djsKPiArCXN0cnVjdCBkZW50cnkgKmQ7Cj4gKwlpbnQgaTsKPiArCj4gKwlncm91cF9kZWJ1ZyA9
-IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqZ3JvdXBfZGVidWcpICogc29jLT5udW1fc3dncm91
-cHMsIEdGUF9LRVJORUwpOwoKZGV2bV9rY2FsbG9jKCkKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+On Sat, Sep 26, 2020 at 4:14 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Fri, Sep 25, 2020 at 06:46:22PM +0000, Tomasz Figa wrote:
+> > > +static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
+> > > +           dma_addr_t *handle, enum dma_data_direction dir, gfp_t gfp)
+> > > +{
+> > > +   if (!gfpflags_allow_blocking(gfp)) {
+> > > +           struct page *page;
+> > > +
+> > > +           page = dma_common_alloc_pages(dev, size, handle, dir, gfp);
+> > > +           if (!page)
+> > > +                   return NULL;
+> > > +           return page_address(page);
+> > > +   }
+> > > +
+> > > +   return iommu_dma_alloc_remap(dev, size, handle, gfp | __GFP_ZERO,
+> > > +                                PAGE_KERNEL, 0);
+> >
+> > iommu_dma_alloc_remap() makes use of the DMA_ATTR_ALLOC_SINGLE_PAGES attribute
+> > to optimize the allocations for devices which don't care about how contiguous
+> > the backing memory is. Do you think we could add an attrs argument to this
+> > function and pass it there?
+> >
+> > As ARM is being moved to the common iommu-dma layer as well, we'll probably
+> > make use of the argument to support the DMA_ATTR_NO_KERNEL_MAPPING attribute to
+> > conserve the vmalloc area.
+>
+> We could probably at it.  However I wonder why this is something the
+> drivers should care about.  Isn't this really something that should
+> be a kernel-wide policy for a given system?
+
+There are IOMMUs out there which support huge pages and those can
+benefit *some* hardware depending on what kind of accesses they
+perform, possibly on a per-buffer basis. At the same time, order > 0
+allocations can be expensive, significantly affecting allocation
+latency, so for devices which don't care about huge pages anyone would
+prefer simple single-page allocations. Currently the drivers know the
+best on whether the hardware they drive would care. There are some
+decision factors listed in the documentation [1].
+
+I can imagine cases where drivers could not be the best to decide
+about this - for example, the workload could vary depending on the
+userspace or a product decision regarding the performance vs
+allocation latency, but we haven't seen such cases in practice yet.
+
+[1] https://www.kernel.org/doc/html/latest/core-api/dma-attributes.html?highlight=dma_attr_alloc_single_pages#dma-attr-alloc-single-pages
+
+Best regards,
+Tomasz
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
