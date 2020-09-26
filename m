@@ -8,91 +8,87 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B327BC47423
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAA2C2D0A8
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 10:26:27 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 633C9208A9
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2D90E238E5
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 10:26:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E9gN1ml5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 633C9208A9
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cfs5vJdb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D90E238E5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1B9A386BA4;
-	Sat, 26 Sep 2020 08:12:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B477386B34;
+	Sat, 26 Sep 2020 10:26:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KbPaKOvJ1Nnl; Sat, 26 Sep 2020 08:12:38 +0000 (UTC)
+	with ESMTP id T9IAmoKKNKII; Sat, 26 Sep 2020 10:26:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5A82286BBD;
-	Sat, 26 Sep 2020 08:12:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 226E886B2C;
+	Sat, 26 Sep 2020 10:26:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46FF9C0890;
-	Sat, 26 Sep 2020 08:12:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 956A0C0051
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BF11C0890;
+	Sat, 26 Sep 2020 10:26:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7323C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 10:26:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 845B186B87
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9934386C59
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 10:26:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nZCQGiAx05MH for <iommu@lists.linux-foundation.org>;
- Sat, 26 Sep 2020 08:12:33 +0000 (UTC)
+ with ESMTP id tPeDq3MdyBgZ for <iommu@lists.linux-foundation.org>;
+ Sat, 26 Sep 2020 10:26:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CE8C28508E
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:33 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id x16so3578269pgj.3
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 01:12:33 -0700 (PDT)
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+ [209.85.214.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 924C186BC7
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 10:26:23 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id e4so660537pln.10
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 03:26:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=hn15A+vsHfLhY3Qf2WKiES6GK2r9N1/EPLi1y9sGZ+o=;
- b=E9gN1ml5289yy634xD3SxLIOwpcQ28fm+5OJf0GUVpnRghCObspVzuiA4bxNrVSUIk
- A4PFZp75Q8+OOTW/RcXdduTpvYmbKz1GlgpApbx1wllz4sBoBna4b02v8bCYpjamsiEz
- rLpcovobdTgXmG4XIWKHOeNEsK56O1BoPBuuE4pmFkAFy8t/7F+5Elt6cbU7dHiZ5IRn
- tpPVKnHoHC4KdSrb725ADTki2VliPGQvom6u4sW4SxERnhc3t6rZ1TyH0+C+IPdfxyVO
- M0C1OQbZBBX2b4iImXCYmkiLGd49zuj5QHZMh4sKDs/q/96Uszso3HvKVD+d2WPjoCNP
- tgHw==
+ h=from:to:cc:subject:date:message-id;
+ bh=Qc1UwYP9QdaM2Uq0oUSNcfLLWO4N5zpmpQntw/iIfmE=;
+ b=Cfs5vJdbDr7cTO/v2ezM4v5IhScmCFYmHRzvFPCXRtp5A7E81+lBnnSeG0EyD3t5Bl
+ +CsDikE/tRp0Fe/vO9TVSBq7Cv+nJtvJSZE2ylLyIoFTsDvqOgSxd17Mxqim53/UDxQh
+ YTg/IoEOHqxJ9slYtiDQ/vmxzndwd7FxerFnW3674CFwCaaluoqsA0rvQZeUj4qkYeSr
+ s/WItQrveHnP9P/9WvgHHVqN6FR0w1Kz6so5YY0f/jGONDEnaPskXYlJnusZZVPNZbcR
+ GyfVtW/i4KGezlD7XzN5KBFL78ohMzvYUOTI6K16EtrH9pRQAF+a1GUhzx72CzRMFm6R
+ Bp8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=hn15A+vsHfLhY3Qf2WKiES6GK2r9N1/EPLi1y9sGZ+o=;
- b=reRiyX+otOquPO1jWXxKnM7ZQGvLofgbPBS6mK6scrsLARLQUtUMi5UhjKijNhGqOU
- I0nH+OCnXgxlpLqOZCYya7XPg9gT1itmb1G8qwfvW1Mu1B8qxJNTOPe5AsfRxlU9FKTz
- ytOVN2S5dnDkThuxSnigcHqB+Z5y0f0WWmwiRgcdOwMdeATxv5wJ/BD6wbr6kKhi1Imm
- sSyzrH9KmMcXLbFaXbwPHXyE/shrUFhKxOSb1ETtxPEIyIpMy7QASJoMyN+82+fulzsT
- UeW2/mZ4hHXMctdBdT+2iEfBwUrga68aIDy89ORcaxOkPD9knelJQrN7kINMaX1+RTsu
- n4UA==
-X-Gm-Message-State: AOAM531zGUM+2LOeuiyO8HbmpMIwbv0nwqyIk9ZftmmnEg91lPJlRa47
- R4xLRO++ClpsO7sDaS837Bg=
-X-Google-Smtp-Source: ABdhPJyH63/udFsunnlEF9CWjc0nbDNTUFXv6823ctOsZ47ZbwEKBQn1Iy/guE1oUd/7sUJUDxLhLw==
-X-Received: by 2002:a63:1604:: with SMTP id w4mr2057718pgl.148.1601107953334; 
- Sat, 26 Sep 2020 01:12:33 -0700 (PDT)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
- [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id i1sm4833497pfk.21.2020.09.26.01.12.32
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=Qc1UwYP9QdaM2Uq0oUSNcfLLWO4N5zpmpQntw/iIfmE=;
+ b=TCL5aDfLEpJTbQ5niE77s4CeGC7Lr9fbff06fKmbVJxRJp9qVez2OAVwEukb/7kV+Q
+ PDCCHFlB9C3wXta67x2xOXZvJO5vicPRavq0fLDRvnfefY8fWoTG9xm16W8MvaUia8cq
+ Smp0J1FBUpO34X5yAvqeo5Q8/bQTTI+Lb6BDO1wYL8Ng8+1+a255UysUYzphXUMC/oNS
+ HB9GW3GyzLv9MZArGom4jnIV06uzTEmR3eMuf1YK/H6rXg92yVf8C5f8w5zD2Pi2GRmX
+ vNf/GCIW74bBk1KJxgOceWWfJfADm4fOfMjujPNP7OGhZmYsooEyOlVmPZD4GFNKL9fh
+ wYUg==
+X-Gm-Message-State: AOAM530Fa36JGlQ47S+/MvzME78CgeXYex4Emd4XdNOxqmrR3bLuJLNX
+ /y+XVpzBvntP/2m0IjMsyKQ=
+X-Google-Smtp-Source: ABdhPJwUMl8jH/dygzu9qJiy4t4dHFHm8b2z9Q3wPG2fxKX2dNsWvHmhutrJt1kgG3cycvGdc9RqQw==
+X-Received: by 2002:a17:902:eb54:b029:d1:f365:a5d2 with SMTP id
+ i20-20020a170902eb54b02900d1f365a5d2mr3330823pli.73.1601115983058; 
+ Sat, 26 Sep 2020 03:26:23 -0700 (PDT)
+Received: from AHUANG12-1LT7M0.lenovo.com
+ (2001-b011-e002-911c-e012-3c95-6cb0-1326.dynamic-ip6.hinet.net.
+ [2001:b011:e002:911c:e012:3c95:6cb0:1326])
+ by smtp.googlemail.com with ESMTPSA id s62sm4506037pgb.91.2020.09.26.03.26.21
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 26 Sep 2020 01:12:32 -0700 (PDT)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: thierry.reding@gmail.com,
-	joro@8bytes.org,
-	krzk@kernel.org
-Subject: [PATCH 5/5] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Date: Sat, 26 Sep 2020 01:07:19 -0700
-Message-Id: <20200926080719.6822-6-nicoleotsuka@gmail.com>
+ Sat, 26 Sep 2020 03:26:22 -0700 (PDT)
+From: Adrian Huang <adrianhuang0701@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/1] iommu/amd: Fix the overwritten field in IVMD header
+Date: Sat, 26 Sep 2020 18:26:02 +0800
+Message-Id: <20200926102602.19177-1-adrianhuang0701@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200926080719.6822-1-nicoleotsuka@gmail.com>
-References: <20200926080719.6822-1-nicoleotsuka@gmail.com>
-Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,254 +107,120 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch dumps all active mapping entries from pagetable
-to a debugfs directory named "mappings".
+From: Adrian Huang <ahuang12@lenovo.com>
 
-Ataching an example:
+Commit 387caf0b759a ("iommu/amd: Treat per-device exclusion
+ranges as r/w unity-mapped regions") accidentally overwrites
+the 'flags' field in IVMD (struct ivmd_header) when the I/O
+virtualization memory definition is associated with the
+exclusion range entry. This leads to the corrupted IVMD table
+(incorrect checksum). The kdump kernel reports the invalid checksum:
 
-SWGROUP: hc
-ASID: 0
-reg: 0x250
-PTB_ASID: 0xe00bb880
-as->pd_dma: 0xbb880000
-{
-        [1023] 0xf00bb882 (1)
-        {
-                PDE   ATTR         PHYS         IOVA
-                #1023 0x5    0x159f5d000    0xfffff000
-        }
-}
-Total PDE count: 1
-Total PTE count: 1
+ACPI BIOS Warning (bug): Incorrect checksum in table [IVRS] - 0x5C, should be 0x60 (20200717/tbprint-177)
+AMD-Vi: [Firmware Bug]: IVRS invalid checksum
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Fix the above-mentioned issue by modifying the 'struct unity_map_entry'
+member instead of the IVMD header.
+
+Cleanup: The *exclusion_range* functions are not used anymore, so
+get rid of them.
+
+Fixes: 387caf0b759a ("iommu/amd: Treat per-device exclusion ranges as r/w unity-mapped regions")
+Reported-and-tested-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
+Cc: Jerry Snitselaar <jsnitsel@redhat.com>
 ---
- drivers/iommu/tegra-smmu.c | 130 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 125 insertions(+), 5 deletions(-)
+ drivers/iommu/amd/init.c | 56 +++++++---------------------------------
+ 1 file changed, 10 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 9dbc5d7183cc..53160d1ca086 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -20,6 +20,11 @@
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
- 
-+struct tegra_smmu_group_debug {
-+	const struct tegra_smmu_swgroup *group;
-+	void *priv;
-+};
-+
- struct tegra_smmu_group {
- 	struct list_head list;
- 	struct tegra_smmu *smmu;
-@@ -48,6 +53,8 @@ struct tegra_smmu {
- 	struct dentry *debugfs;
- 
- 	struct iommu_device iommu;	/* IOMMU Core code handle */
-+
-+	struct tegra_smmu_group_debug *group_debug;
- };
- 
- struct tegra_smmu_as {
-@@ -155,6 +162,9 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
- 
- #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
- 				 SMMU_PDE_NONSECURE)
-+#define SMMU_PTE_ATTR		(SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
-+				 SMMU_PTE_NONSECURE)
-+#define SMMU_PTE_ATTR_SHIFT	(29)
- 
- static unsigned int iova_pd_index(unsigned long iova)
- {
-@@ -337,7 +347,7 @@ static void tegra_smmu_domain_free(struct iommu_domain *domain)
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 445a08d23fed..1ba6b4cc56e8 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1103,25 +1103,6 @@ static int __init add_early_maps(void)
+ 	return 0;
  }
  
- static const struct tegra_smmu_swgroup *
--tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
-+tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup, int *index)
- {
- 	const struct tegra_smmu_swgroup *group = NULL;
- 	unsigned int i;
-@@ -345,6 +355,8 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
- 	for (i = 0; i < smmu->soc->num_swgroups; i++) {
- 		if (smmu->soc->swgroups[i].swgroup == swgroup) {
- 			group = &smmu->soc->swgroups[i];
-+			if (index)
-+				*index = i;
- 			break;
- 		}
+-/*
+- * Reads the device exclusion range from ACPI and initializes the IOMMU with
+- * it
+- */
+-static void __init set_device_exclusion_range(u16 devid, struct ivmd_header *m)
+-{
+-	if (!(m->flags & IVMD_FLAG_EXCL_RANGE))
+-		return;
+-
+-	/*
+-	 * Treat per-device exclusion ranges as r/w unity-mapped regions
+-	 * since some buggy BIOSes might lead to the overwritten exclusion
+-	 * range (exclusion_start and exclusion_length members). This
+-	 * happens when there are multiple exclusion ranges (IVMD entries)
+-	 * defined in ACPI table.
+-	 */
+-	m->flags = (IVMD_FLAG_IW | IVMD_FLAG_IR | IVMD_FLAG_UNITY_MAP);
+-}
+-
+ /*
+  * Takes a pointer to an AMD IOMMU entry in the ACPI table and
+  * initializes the hardware and our data structures with it.
+@@ -2073,30 +2054,6 @@ static void __init free_unity_maps(void)
  	}
-@@ -353,19 +365,22 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
  }
  
- static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
--			      unsigned int asid)
-+			      struct tegra_smmu_as *as)
+-/* called when we find an exclusion range definition in ACPI */
+-static int __init init_exclusion_range(struct ivmd_header *m)
+-{
+-	int i;
+-
+-	switch (m->type) {
+-	case ACPI_IVMD_TYPE:
+-		set_device_exclusion_range(m->devid, m);
+-		break;
+-	case ACPI_IVMD_TYPE_ALL:
+-		for (i = 0; i <= amd_iommu_last_bdf; ++i)
+-			set_device_exclusion_range(i, m);
+-		break;
+-	case ACPI_IVMD_TYPE_RANGE:
+-		for (i = m->devid; i <= m->aux; ++i)
+-			set_device_exclusion_range(i, m);
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	return 0;
+-}
+-
+ /* called for unity map ACPI definition */
+ static int __init init_unity_map_range(struct ivmd_header *m)
  {
- 	const struct tegra_smmu_swgroup *group;
-+	unsigned int asid = as->id;
- 	unsigned int i;
- 	u32 value;
+@@ -2107,9 +2064,6 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+ 	if (e == NULL)
+ 		return -ENOMEM;
  
--	group = tegra_smmu_find_swgroup(smmu, swgroup);
-+	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
- 	if (group) {
- 		value = smmu_readl(smmu, group->reg);
- 		value &= ~SMMU_ASID_MASK;
- 		value |= SMMU_ASID_VALUE(asid);
- 		value |= SMMU_ASID_ENABLE;
- 		smmu_writel(smmu, value, group->reg);
-+		if (smmu->group_debug)
-+			smmu->group_debug[i].priv = as;
- 	} else {
- 		pr_warn("%s group from swgroup %u not found\n", __func__,
- 				swgroup);
-@@ -392,13 +407,15 @@ static void tegra_smmu_disable(struct tegra_smmu *smmu, unsigned int swgroup,
- 	unsigned int i;
- 	u32 value;
+-	if (m->flags & IVMD_FLAG_EXCL_RANGE)
+-		init_exclusion_range(m);
+-
+ 	switch (m->type) {
+ 	default:
+ 		kfree(e);
+@@ -2133,6 +2087,16 @@ static int __init init_unity_map_range(struct ivmd_header *m)
+ 	e->address_end = e->address_start + PAGE_ALIGN(m->range_length);
+ 	e->prot = m->flags >> 1;
  
--	group = tegra_smmu_find_swgroup(smmu, swgroup);
-+	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
- 	if (group) {
- 		value = smmu_readl(smmu, group->reg);
- 		value &= ~SMMU_ASID_MASK;
- 		value |= SMMU_ASID_VALUE(asid);
- 		value &= ~SMMU_ASID_ENABLE;
- 		smmu_writel(smmu, value, group->reg);
-+		if (smmu->group_debug)
-+			smmu->group_debug[i].priv = NULL;
- 	}
- 
- 	for (i = 0; i < smmu->soc->num_clients; i++) {
-@@ -501,7 +518,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 		if (err)
- 			goto err_disable;
- 
--		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
-+		tegra_smmu_enable(smmu, fwspec->ids[index], as);
- 	}
- 
- 	if (index == 0)
-@@ -1078,8 +1095,96 @@ static int tegra_smmu_clients_show(struct seq_file *s, void *data)
- 
- DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- 
-+static int tegra_smmu_mappings_show(struct seq_file *s, void *data)
-+{
-+	struct tegra_smmu_group_debug *group_debug = s->private;
-+	const struct tegra_smmu_swgroup *group;
-+	struct tegra_smmu_as *as;
-+	struct tegra_smmu *smmu;
-+	int pd_index, pt_index;
-+	u64 pte_count = 0;
-+	u32 pde_count = 0;
-+	u32 val, ptb_reg;
-+	u32 *pd;
++	/*
++	 * Treat per-device exclusion ranges as r/w unity-mapped regions
++	 * since some buggy BIOSes might lead to the overwritten exclusion
++	 * range (exclusion_start and exclusion_length members). This
++	 * happens when there are multiple exclusion ranges (IVMD entries)
++	 * defined in ACPI table.
++	 */
++	if (m->flags & IVMD_FLAG_EXCL_RANGE)
++		e->prot = (IVMD_FLAG_IW | IVMD_FLAG_IR) >> 1;
 +
-+	if (!group_debug || !group_debug->priv || !group_debug->group)
-+		return 0;
-+
-+	group = group_debug->group;
-+	as = group_debug->priv;
-+	smmu = as->smmu;
-+
-+	val = smmu_readl(smmu, group->reg) & SMMU_ASID_ENABLE;
-+	if (!val)
-+		return 0;
-+
-+	pd = page_address(as->pd);
-+	if (!pd)
-+		return 0;
-+
-+	seq_printf(s, "\nSWGROUP: %s\nASID: %d\nreg: 0x%x\n", group->name,
-+			as->id, group->reg);
-+
-+	mutex_lock(&smmu->lock);
-+	smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
-+	ptb_reg = smmu_readl(smmu, SMMU_PTB_DATA);
-+	mutex_unlock(&smmu->lock);
-+
-+	seq_printf(s, "PTB_ASID: 0x%x\nas->pd_dma: 0x%llx\n", ptb_reg, as->pd_dma);
-+	seq_puts(s, "{\n");
-+
-+	for (pd_index = 0; pd_index < SMMU_NUM_PDE; pd_index++) {
-+		struct page *pt;
-+		u32 *addr;
-+
-+		if (!as->count[pd_index] || !pd[pd_index])
-+			continue;
-+
-+		pde_count++;
-+		pte_count += as->count[pd_index];
-+		seq_printf(s, "\t[%d] 0x%x (%d)\n",
-+			   pd_index, pd[pd_index], as->count[pd_index]);
-+		pt = as->pts[pd_index];
-+		addr = page_address(pt);
-+
-+		seq_puts(s, "\t{\n");
-+		seq_printf(s, "\t\t%-5s %-4s %12s %12s\n", "PDE", "ATTR", "PHYS", "IOVA");
-+		for (pt_index = 0; pt_index < SMMU_NUM_PTE; pt_index++) {
-+			u64 iova;
-+
-+			if (!addr[pt_index])
-+				continue;
-+
-+			iova = ((dma_addr_t)pd_index & (SMMU_NUM_PDE - 1)) << SMMU_PDE_SHIFT;
-+			iova |= ((dma_addr_t)pt_index & (SMMU_NUM_PTE - 1)) << SMMU_PTE_SHIFT;
-+
-+			seq_printf(s, "\t\t#%-4d 0x%-4x 0x%-12llx 0x%-12llx\n",
-+				   pt_index, addr[pt_index] >> SMMU_PTE_ATTR_SHIFT,
-+				   SMMU_PFN_PHYS(addr[pt_index] & ~SMMU_PTE_ATTR), iova);
-+		}
-+		seq_puts(s, "\t}\n");
-+	}
-+	seq_puts(s, "}\n");
-+	seq_printf(s, "Total PDE count: %d\n", pde_count);
-+	seq_printf(s, "Total PTE count: %lld\n", pte_count);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(tegra_smmu_mappings);
-+
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
-+	const struct tegra_smmu_soc *soc = smmu->soc;
-+	struct tegra_smmu_group_debug *group_debug;
-+	struct device *dev = smmu->dev;
-+	struct dentry *d;
-+	int i;
-+
-+	group_debug = devm_kzalloc(dev, sizeof(*group_debug) * soc->num_swgroups, GFP_KERNEL);
-+	if (!group_debug)
-+		return;
-+
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
- 	if (!smmu->debugfs)
- 		return;
-@@ -1088,6 +1193,21 @@ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- 			    &tegra_smmu_swgroups_fops);
- 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_clients_fops);
-+	d = debugfs_create_dir("mappings", smmu->debugfs);
-+
-+	for (i = 0; i < soc->num_swgroups; i++) {
-+		const struct tegra_smmu_swgroup *group = &soc->swgroups[i];
-+
-+		if (!group->name)
-+			continue;
-+
-+		group_debug[i].group = group;
-+
-+		debugfs_create_file(group->name, 0444, d, &group_debug[i],
-+				    &tegra_smmu_mappings_fops);
-+	}
-+
-+	smmu->group_debug = group_debug;
- }
- 
- static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
+ 	DUMP_printk("%s devid_start: %02x:%02x.%x devid_end: %02x:%02x.%x"
+ 		    " range_start: %016llx range_end: %016llx flags: %x\n", s,
+ 		    PCI_BUS_NUM(e->devid_start), PCI_SLOT(e->devid_start),
 -- 
 2.17.1
 
