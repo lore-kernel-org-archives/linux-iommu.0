@@ -6,89 +6,89 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9ADCC47426
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18A2C4727F
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4BAC221D24
-	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5D6F82177B
+	for <iommu@archiver.kernel.org>; Sat, 26 Sep 2020 08:12:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hmkUGQOx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BAC221D24
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TsMf55c7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D6F82177B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1EEC986CB5;
-	Sat, 26 Sep 2020 08:12:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1D6C48756D;
+	Sat, 26 Sep 2020 08:12:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s7nWZoEScHQO; Sat, 26 Sep 2020 08:12:35 +0000 (UTC)
+	with ESMTP id ja1qYNi+fBRA; Sat, 26 Sep 2020 08:12:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 95E3D86CA1;
-	Sat, 26 Sep 2020 08:12:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 148618752B;
+	Sat, 26 Sep 2020 08:12:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82E4EC0890;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFBCEC0895;
 	Sat, 26 Sep 2020 08:12:35 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BACCEC0051
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 535C3C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A985F874B2
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4E739874DF
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a7xkgFYg4nSt for <iommu@lists.linux-foundation.org>;
- Sat, 26 Sep 2020 08:12:31 +0000 (UTC)
+ with ESMTP id HUs5CaJyNhWs for <iommu@lists.linux-foundation.org>;
+ Sat, 26 Sep 2020 08:12:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
- [209.85.214.195])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 36613874A7
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:31 +0000 (UTC)
-Received: by mail-pl1-f195.google.com with SMTP id c3so536351plz.5
- for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 01:12:31 -0700 (PDT)
+Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com
+ [209.85.216.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DEB6D874BA
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 08:12:32 +0000 (UTC)
+Received: by mail-pj1-f65.google.com with SMTP id fa1so682183pjb.0
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Sep 2020 01:12:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=cQy5r4UWby+Vec3bHtXW3n4G3fBT+msNMsjI9PpDyho=;
- b=hmkUGQOxgKIIyd8RLw/iYtrNnngZVsFSDi3UNm49yNZvc9/e5SaLtgUORdlPu/tUrW
- WPVYP1/4TVOB3PvNL4ogHylbdwdIOrd/b99aYyaU8j+G5J/m+8L4Vi2AECD1elfyRnIV
- W+1bnmZNKiiLDkw6XWqRy16clWzv64ECP1J11No6VVt6XHEjlWTt8ChdqgFfn94U6VHI
- AzkNPal30me6t9+ZI1I6G/8VltIivzMCd2k/W859yV82tLJJslA5prJ6oglFzgPVvNFG
- yoKE+ruxqH54BTOKR6ZZFBcxNVs53OWovo8wstDioYEKZTRf4Mso9ZujbHQiCBVwnV+j
- HXvg==
+ bh=4N2RU9Ug7heB8a6NcMVwTlvvnh89jdIRun82jXeq3G8=;
+ b=TsMf55c7ja55kZb8XRYBn19eKpbGNQUAiN6GDEdfxyh/MeijTAdLF1J82dBA5m+kik
+ j0KlgcvcvtfminbRImgiomnQaQKZDrqPqt5m+v/axnh1cIW7z44+B3vVWBURr+91G/v5
+ OvRfulPc5r/km0NLdYrJMNktEnDA63LI7fZEdrC/Xg5KsnNsjwvKxztlSDLxy21ChhZI
+ pBt1yvaiT3rB0xwl5P7eCiul5FhvPKe96fBisMwe63KtwFCC3452B7ibydP9GE5xM96d
+ t1D3/epKaiORAwbUG/cu2fMlXbOdk8ypg5RLmcyOx3HVXQ/wY8Iz44RPO/qj2qA1gwp3
+ njAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=cQy5r4UWby+Vec3bHtXW3n4G3fBT+msNMsjI9PpDyho=;
- b=W8eH8HuD4fZYj/z6+Unc/b6QrTcjgX90Gl9DsaDf6DLl8D6RZbK2g+v2E4oTBXv2Op
- /augktGWtNVNlyeIOuVmHcisQgzz+EIFlXnksM/GgCLmkjpr0n5tSlUJOACtINsGBaNx
- 6KSc4SHH8obEkVz1otIVwVH1BSD8olJFsnY3liEnE3kKeluHJV2N1rUXMrG5uaQcUl9n
- PuPZgwY7MVWybYSiO7MFE8tFs3X5XchHA7g2XuZVWD0IEB8Mq00696Iw1k7CDl/6haKQ
- N4mCsckZcVu+PVSTIFppi6rIMzTBtstAYhwEdch+8KlUKr820VgdWa9VgU0rqSyNnWEX
- /D1A==
-X-Gm-Message-State: AOAM533AWN4cFccamR8R5qburOkXiFqrYw8uFpyp3laEN7+BgljUzal+
- 7SHyrpfLCxYQp2JzU03Pf85ZV9WAaJ4=
-X-Google-Smtp-Source: ABdhPJzPsRm9Rhazt7BinH4NVa9O18uaL9DvZqntqAKhVGdEb1LQI9AysWQn9R25hWM3cMtqpMTQVw==
-X-Received: by 2002:a17:902:b7c4:b029:d2:173:34ba with SMTP id
- v4-20020a170902b7c4b02900d2017334bamr3029562plz.57.1601107950759; 
- Sat, 26 Sep 2020 01:12:30 -0700 (PDT)
+ bh=4N2RU9Ug7heB8a6NcMVwTlvvnh89jdIRun82jXeq3G8=;
+ b=b3zWmwrCH1iKXwQuQ2zi5JdAbx8/y3jHkl/mPIQZb6nYZSClSnuPkeveFaxCrhoXwJ
+ L90dLH3yNM/xCGRUz0QnV2ovYNFt3pACTphCi3snBesvOGXx1ZMVTL2Aa7h09XBi1V/b
+ 0+/ug28iW1hJX6gDKdZJYLx9Tw/IZzsvl8qbwheeHgcaibuKv/AjUHCuIDAtk2R35MkV
+ g05t6ZPRGnk/KJ/2gb5zw4F5xmWQ3vGaMlfSNsU9SHAgcTtylZ9AGLgubLlla0Jd5+an
+ mVRAbU9R0sM2E6nRoKw253mSfQys3afrQ3PxSyJSOkXcQanM12UJkWCLKsZKLYVnWBYw
+ CGgQ==
+X-Gm-Message-State: AOAM530tyahgJNg0CYVpQMytUza1/6Q76CafnZhH+amgjgXkzJpn7uus
+ A/g2P8e/EA2v0h0xaJgQFu8=
+X-Google-Smtp-Source: ABdhPJwEPdNila3vp3a63sOLkMJAbK9eU0IlCNDn4Y5WBmWj6jjkznuUsugSZPjO284NVlXgV/QGww==
+X-Received: by 2002:a17:90a:d512:: with SMTP id
+ t18mr1205484pju.106.1601107952502; 
+ Sat, 26 Sep 2020 01:12:32 -0700 (PDT)
 Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
  [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id i1sm4833497pfk.21.2020.09.26.01.12.30
+ by smtp.gmail.com with ESMTPSA id i1sm4833497pfk.21.2020.09.26.01.12.31
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 26 Sep 2020 01:12:30 -0700 (PDT)
+ Sat, 26 Sep 2020 01:12:32 -0700 (PDT)
 From: Nicolin Chen <nicoleotsuka@gmail.com>
 To: thierry.reding@gmail.com,
 	joro@8bytes.org,
 	krzk@kernel.org
-Subject: [PATCH 2/5] iommu/tegra-smmu: Expend mutex protection range
-Date: Sat, 26 Sep 2020 01:07:16 -0700
-Message-Id: <20200926080719.6822-3-nicoleotsuka@gmail.com>
+Subject: [PATCH 4/5] iommu/tegra-smmu: Add PCI support
+Date: Sat, 26 Sep 2020 01:07:18 -0700
+Message-Id: <20200926080719.6822-5-nicoleotsuka@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200926080719.6822-1-nicoleotsuka@gmail.com>
 References: <20200926080719.6822-1-nicoleotsuka@gmail.com>
@@ -112,110 +112,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is used to protect potential race condition at use_count.
-since probes of client drivers, calling attach_dev(), may run
-concurrently.
+This patch simply adds support for PCI devices.
 
 Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
 ---
- drivers/iommu/tegra-smmu.c | 34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
+ drivers/iommu/tegra-smmu.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 6335285dc373..b10e02073610 100644
+index 97a7185b4578..9dbc5d7183cc 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -256,26 +256,19 @@ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
- {
- 	unsigned long id;
+@@ -15,6 +15,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
++#include <linux/pci.h>
  
--	mutex_lock(&smmu->lock);
--
- 	id = find_first_zero_bit(smmu->asids, smmu->soc->num_asids);
--	if (id >= smmu->soc->num_asids) {
--		mutex_unlock(&smmu->lock);
-+	if (id >= smmu->soc->num_asids)
- 		return -ENOSPC;
--	}
+ #include <soc/tegra/ahb.h>
+ #include <soc/tegra/mc.h>
+@@ -935,6 +936,7 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
+ 	const struct tegra_smmu_group_soc *soc;
+ 	struct tegra_smmu_group *group;
+ 	int swgroup = fwspec->ids[0];
++	bool pci = dev_is_pci(dev);
+ 	struct iommu_group *grp;
  
- 	set_bit(id, smmu->asids);
- 	*idp = id;
+ 	/* Find group_soc associating with swgroup */
+@@ -961,7 +963,7 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
+ 	group->smmu = smmu;
+ 	group->soc = soc;
  
--	mutex_unlock(&smmu->lock);
- 	return 0;
- }
- 
- static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
- {
--	mutex_lock(&smmu->lock);
- 	clear_bit(id, smmu->asids);
--	mutex_unlock(&smmu->lock);
- }
- 
- static bool tegra_smmu_capable(enum iommu_cap cap)
-@@ -420,17 +413,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
- 				 struct tegra_smmu_as *as)
- {
- 	u32 value;
--	int err;
-+	int err = 0;
-+
-+	mutex_lock(&smmu->lock);
- 
- 	if (as->use_count > 0) {
- 		as->use_count++;
--		return 0;
-+		goto err_unlock;
+-	group->group = iommu_group_alloc();
++	group->group = pci ? pci_device_group(dev) : iommu_group_alloc();
+ 	if (IS_ERR(group->group)) {
+ 		devm_kfree(smmu->dev, group);
+ 		mutex_unlock(&smmu->lock);
+@@ -1180,6 +1182,19 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 		return ERR_PTR(err);
  	}
  
- 	as->pd_dma = dma_map_page(smmu->dev, as->pd, 0, SMMU_SIZE_PD,
- 				  DMA_TO_DEVICE);
--	if (dma_mapping_error(smmu->dev, as->pd_dma))
--		return -ENOMEM;
-+	if (dma_mapping_error(smmu->dev, as->pd_dma)) {
-+		err = -ENOMEM;
-+		goto err_unlock;
++#ifdef CONFIG_PCI
++	if (!iommu_present(&pci_bus_type)) {
++		pci_request_acs();
++		err = bus_set_iommu(&pci_bus_type, &tegra_smmu_ops);
++		if (err < 0) {
++			bus_set_iommu(&platform_bus_type, NULL);
++			iommu_device_unregister(&smmu->iommu);
++			iommu_device_sysfs_remove(&smmu->iommu);
++			return ERR_PTR(err);
++		}
 +	}
- 
- 	/* We can't handle 64-bit DMA addresses */
- 	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
-@@ -453,24 +450,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
- 	as->smmu = smmu;
- 	as->use_count++;
- 
-+	mutex_unlock(&smmu->lock);
++#endif
 +
- 	return 0;
+ 	if (IS_ENABLED(CONFIG_DEBUG_FS))
+ 		tegra_smmu_debugfs_init(smmu);
  
- err_unmap:
- 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
-+err_unlock:
-+	mutex_unlock(&smmu->lock);
-+
- 	return err;
- }
- 
- static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- 				    struct tegra_smmu_as *as)
- {
--	if (--as->use_count > 0)
-+	mutex_lock(&smmu->lock);
-+
-+	if (--as->use_count > 0) {
-+		mutex_unlock(&smmu->lock);
- 		return;
-+	}
- 
- 	tegra_smmu_free_asid(smmu, as->id);
- 
- 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
- 
- 	as->smmu = NULL;
-+
-+	mutex_unlock(&smmu->lock);
- }
- 
- static int tegra_smmu_attach_dev(struct iommu_domain *domain,
 -- 
 2.17.1
 
