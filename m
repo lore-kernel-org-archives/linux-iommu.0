@@ -2,95 +2,82 @@ Return-Path: <SRS0=BifM=DE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0686C4346E
-	for <iommu@archiver.kernel.org>; Sun, 27 Sep 2020 08:46:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DF5C4346E
+	for <iommu@archiver.kernel.org>; Sun, 27 Sep 2020 23:59:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 539BF23718
-	for <iommu@archiver.kernel.org>; Sun, 27 Sep 2020 08:46:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="vtWT6FXN";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2lHZQSLV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 539BF23718
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id D5F2821D91
+	for <iommu@archiver.kernel.org>; Sun, 27 Sep 2020 23:59:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5F2821D91
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id BC7732039E;
-	Sun, 27 Sep 2020 08:46:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Po-pWvtpKNEN; Sun, 27 Sep 2020 08:46:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7AF0D2002E;
-	Sun, 27 Sep 2020 08:46:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C751C0889;
-	Sun, 27 Sep 2020 08:46:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 81FCDC0051
- for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 08:46:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 723C2854C9
- for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 08:46:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8B23084E9A;
+	Sun, 27 Sep 2020 23:59:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id O_9jvbos43B2; Sun, 27 Sep 2020 23:59:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E82E584917;
+	Sun, 27 Sep 2020 23:59:13 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B9C90C016F;
+	Sun, 27 Sep 2020 23:59:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3E5CAC0051
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 23:59:12 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2629287048
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 23:59:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WFt0NdwUAd-0 for <iommu@lists.linux-foundation.org>;
- Sun, 27 Sep 2020 08:46:49 +0000 (UTC)
+ with ESMTP id iKKpGIoWkQXw for <iommu@lists.linux-foundation.org>;
+ Sun, 27 Sep 2020 23:59:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A7751848C2
- for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 08:46:49 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1601196405;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to; bh=3LGtm2OI8qF06h9KMGGQRJ7d4e/B09d0iYRNLqK19DE=;
- b=vtWT6FXNpv1rJGdbEJJKxhxZ2hkowdjPcJEaDMAro5/mwYgF7f2qjEeiKFQSSH9PtTbtjQ
- HsUFQz/Trt8kMSfUg/AQa+Dd6H6TLmp85HgtKhILMKJEBPAXZTlBVlCuBVrTlZ3SWkXObd
- A3uYhH4wFHZJacmbgX2O+NsHMqa/9G2Pkuz65AAv9jSfW+iCB+ZS9fYcuTgvLwKZwmDf/O
- zZgGz9fCusPWYJqd2bYwAHlyXGdEd/MWFvhUhNXr7HHWvB0uTZIwM6dBXR4V6SnJO+mQK+
- WSRcbCQJ++zz1iV8DGtZCO9vHOjRIHe69AAw88TEiMXTyc69NYyY/moKXh9SBg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1601196405;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to; bh=3LGtm2OI8qF06h9KMGGQRJ7d4e/B09d0iYRNLqK19DE=;
- b=2lHZQSLVc5ukVdtzXcK6JAqYUmFwK6ZXXzxyFLvvd4IZf5x37NfcDYaGYy6WSVTOsGs4s7
- 44wL1Jbt8wkVdCAA==
-To: Peter Zijlstra <peterz@infradead.org>, Qian Cai <cai@redhat.com>
-Subject: [PATCH] x86/apic/msi: Unbreak DMAR and HPET MSI
-In-Reply-To: <87tuvltpo5.fsf@nanos.tec.linutronix.de>
-Date: Sun, 27 Sep 2020 10:46:44 +0200
-Message-ID: <87wo0fli8b.fsf@nanos.tec.linutronix.de>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4925587046
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Sep 2020 23:59:11 +0000 (UTC)
+IronPort-SDR: N6qaOeZMuO3IjJ+zatO37nmCI7wBZuQZPEb+3LjYMrT0DBU52xXGqM8C6sorISJzYinHgyyqIu
+ PPq1Cf7vRomw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9757"; a="159299837"
+X-IronPort-AV: E=Sophos;i="5.77,311,1596524400"; d="scan'208";a="159299837"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2020 16:59:10 -0700
+IronPort-SDR: opfHP+mi7b+9hDG7K3XH6ZaD53EIAcHlw2mkDousIGYiufJK7+3aBAsiIOhyodytHmlVxPF98w
+ WwVfw9OGLLww==
+X-IronPort-AV: E=Sophos;i="5.77,311,1596524400"; d="scan'208";a="488339604"
+Received: from memara-mobl.ger.corp.intel.com (HELO localhost)
+ ([10.252.49.157])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2020 16:59:07 -0700
+Date: Mon, 28 Sep 2020 02:59:08 +0300
+From: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+To: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Subject: Re: [PATCH 00/13] x86: Trenchboot secure dynamic launch Linux kernel
+ support
+Message-ID: <20200927235908.GC5283@linux.intel.com>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <20200925053051.GA165011@linux.intel.com>
+ <8329607a-704d-1da0-dc7b-4b97c2440afb@apertussolutions.com>
 MIME-Version: 1.0
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>, Jason Gunthorpe <jgg@mellanox.com>,
- Stephen Rothwell <sfr@canb.auug.org.au>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org, linux-next@vger.kernel.org,
- Megha Dey <megha.dey@intel.com>, xen-devel@lists.xenproject.org,
- Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <8329607a-704d-1da0-dc7b-4b97c2440afb@apertussolutions.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Cc: linux-doc@vger.kernel.org, Ross Philipson <ross.philipson@oracle.com>,
+ x86@kernel.org, linux-kernel@vger.kernel.org, luto@amacapital.net,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+ hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,39 +95,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Switching the DMAR and HPET MSI code to use the generic MSI domain ops
-missed to add the flag which tells the core code to update the domain
-operations with the defaults. As a consequence the core code crashes
-when an interrupt in one of those domains is allocated.
+On Fri, Sep 25, 2020 at 05:32:50PM -0400, Daniel P. Smith wrote:
+> The work for this is split across different teams with different
+> resourcing levels resulting in one organization working Intel and
+> another working AMD. This then raised the concern over submitting a
+> single patch set developed by two groups pseudo-independently. In this
+> situation the result would be patches being submitted from one
+> organization that had no direct development or testing and therefore
+> could not sign off on a subset of the patches being submitted.
 
-Add the missing flags.
+Not sure if internal team structures qualify as a techical argument for
+upstream code.
 
-Fixes: 9006c133a422 ("x86/msi: Use generic MSI domain ops")
-Reported-by: Qian Cai <cai@redhat.com> 
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- arch/x86/kernel/apic/msi.c |    2 ++
- 1 file changed, 2 insertions(+)
+> > I'd be more motivated to review and test a full all encompassing x86
+> > solution. It would increase the patch set size but would also give it
+> > a better test coverage, which I think would be a huge plus in such a
+> > complex patch set.
+> 
+> We would not disagree with those sentiments but see the previous
+> response about the conflict that exists.
 
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -309,6 +309,7 @@ static struct msi_domain_ops dmar_msi_do
- static struct msi_domain_info dmar_msi_domain_info = {
- 	.ops		= &dmar_msi_domain_ops,
- 	.chip		= &dmar_msi_controller,
-+	.flags		= MSI_FLAG_USE_DEF_DOM_OPS,
- };
- 
- static struct irq_domain *dmar_get_irq_domain(void)
-@@ -408,6 +409,7 @@ static struct msi_domain_ops hpet_msi_do
- static struct msi_domain_info hpet_msi_domain_info = {
- 	.ops		= &hpet_msi_domain_ops,
- 	.chip		= &hpet_msi_controller,
-+	.flags		= MSI_FLAG_USE_DEF_DOM_OPS,
- };
- 
- struct irq_domain *hpet_create_irq_domain(int hpet_id)
+At minimum, you have to make the case that the AMD support is easy to
+tackle in to the framework of things you have later on.
+
+/Jarkko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
