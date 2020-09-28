@@ -8,80 +8,80 @@ X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC07AC47426
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 21:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CCAC47427
+	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 21:36:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 65C802083B
+	by mail.kernel.org (Postfix) with ESMTPS id ABF8021531
 	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 21:36:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BLa1n7jG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65C802083B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XPHtpj/x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABF8021531
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 50BAE87090;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9127D87098;
 	Mon, 28 Sep 2020 21:36:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jriy-IRdKAZ8; Mon, 28 Sep 2020 21:36:55 +0000 (UTC)
+	with ESMTP id XUIegXTF1nTh; Mon, 28 Sep 2020 21:36:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B6B1187092;
-	Mon, 28 Sep 2020 21:36:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 02D088708F;
+	Mon, 28 Sep 2020 21:36:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BCAEC0891;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DA5D1C0891;
 	Mon, 28 Sep 2020 21:36:55 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C82F2C0051
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58624C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C3A0286661
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3E79286668
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w5Zh-e5ssby6 for <iommu@lists.linux-foundation.org>;
- Mon, 28 Sep 2020 21:36:51 +0000 (UTC)
+ with ESMTP id uNVou-OcQsTn for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Sep 2020 21:36:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4DDC38665D
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:51 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id fa1so1502592pjb.0
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 14:36:51 -0700 (PDT)
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 70DB48665F
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 21:36:52 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id 197so2052573pge.8
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 14:36:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=k4Am4rbSCn6s1LkiSoS1FQPjQrgQdxus6zxqbBBGArU=;
- b=BLa1n7jGZg/z/AUQhN1k1olzszjlGtanGPHXCxNRPvd1gwLxEQQE3EeiKA12Gq27x9
- pfkzTNhUWeK9uuZXFNLNsypwqnJXbyrClkTc2gNuacrAxshq+hYNNZZoEKJL8PXdjBQI
- gnp5UkwcdgU252d0esse9WI/D4jqX1yCT+ajbHg1rkQ9fscftyHh2ucis/aRf8TyP+Iu
- clw1O4Jms6UvgXvyxcWlTt0qXWPssWIcWPy+KSil9l7e1rB53dafFf5qN3fMtjtdolsz
- arJhJ+Yokn9KIRMB4FDebkuocwFmWHH3OjWc2qXGe2EPwlI9EzqF0txHvpktDhZabNys
- Arjg==
+ bh=JJmT+wXDNgmHpDjA6Wjx651ekcEY2yxOz6JsHoiTC2s=;
+ b=XPHtpj/xAaJjyziV9uUCZbopBjydUsAQm85HbGN9XN242XTj1VTZmgInoTDzMvtpjj
+ SO75OlJk1Qqps448QZahHPvBHDaYYTNC3m+f1+7FMcb2upRsU9xA+n3wDJUChaVMv0G8
+ tGWUmLpKn10ZWyqw/N2p2nUPjyIskGbVs//ejlAXtyMMAh/h5I4vvVUjOYCWkYgHwybQ
+ iWTP5MZk71it+JLkusmAIW+j4u5M/Wh1w3b+D0VVAxl8dkKm0p7Yjlfz5qnm9w23lLjz
+ nRYC9cY8T0j+hwpDfsiMWhlXr9sTxf0Q4y0GYzCGmEBBYI1FzoW5VxJRM0vrCjCXCao6
+ zc5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=k4Am4rbSCn6s1LkiSoS1FQPjQrgQdxus6zxqbBBGArU=;
- b=G2kVGPHiB6Hn48IwSpLcH/tOLLfgnYPHT/bSl5QDQDAXdRzzSKsuTvXAQ05HVAYWW9
- lkPDWnrV8kcSwaqPnW8MZMTQ0Gx4v92sKZvzxxTJSfaM8Fy81gj/vTBDYIOIOZ6nHoCV
- yMGStOnS2PqS3Z5NexaTHmo0BWi2LvOIfcqHhqxB6Onf7IJ2jodLENn6VvKsr3alOtXE
- 0Qrtruuk8He8F3+UpxIbuMqMSx4bglcix+mOUubaLtCv4XRSZRgx5lH4GBjDg9dx886E
- IndksUiHrBBRkAVZNHoY4RrKk03GOpaaeT3Ap43lx5QNkEhAvdY/GqPI0RiiM7c/7EkB
- 0Svw==
-X-Gm-Message-State: AOAM531sq6Y4lXo95cK+3m9PFJStUW6orGgsC6cLJ0bviY846gvy4NSR
- cI1gB04ZwF1/keUEW6tuM/2yuHB9fYk=
-X-Google-Smtp-Source: ABdhPJxD+IuFyRv5MbubVmcGTE/u2MkQTy5kQKm9WQW6pH4E0JT2qRuHJfzZN2fc4ohYKFdfxuqF1g==
-X-Received: by 2002:a17:90b:611:: with SMTP id
- gb17mr1013905pjb.71.1601329010674; 
- Mon, 28 Sep 2020 14:36:50 -0700 (PDT)
+ bh=JJmT+wXDNgmHpDjA6Wjx651ekcEY2yxOz6JsHoiTC2s=;
+ b=Cg54ypSdPh2pWcPfxFxMfyxLIP6D0fRbOfNPjvYOfjE7NbNpuIe1I2tAL77UyNn2Mi
+ W5FQNSTv9f1QJEn+3+j0nDn7aP83LxL/wLNZ/oF4D/gVnreLi/do64NdFzAG8sgjcxqC
+ CqwrQaypqxAG/UfP/n0HH4+U0D91o+RYI/BglTlfF5QjV+niST0pQ/WsNtp6Mdzu/NX2
+ i5a3ZieQ1eXOg1NoJ6o0ntF1a9KPEwzg6a+NqmIzOJIIbx7zIhTVqNU9UanE9WMH1imi
+ /A0pvn9JAvtZyg4fEswiXwvGTLzCH9C1tR/QXuthoDF0TNnlf+1lyC4CQ1S+N5S8S4yE
+ o4jw==
+X-Gm-Message-State: AOAM533dmQ1sPXmu+hEwBJrPqF0Yf5ImqZojZetaET6jzAlzm4nwup0D
+ FBWS7mwBcpE/e3rZFPKy4Us9DMxp2UE=
+X-Google-Smtp-Source: ABdhPJz2pmATJMgyHqSyYo2SPSRnU2JNB0/L1WajIRXqX0MDjnmGUy7mo2PGrKAkolcH0IWcZPipFg==
+X-Received: by 2002:aa7:83d9:0:b029:138:b217:f347 with SMTP id
+ j25-20020aa783d90000b0290138b217f347mr1356862pfn.0.1601329011768; 
+ Mon, 28 Sep 2020 14:36:51 -0700 (PDT)
 Received: from jacob-builder.jf.intel.com (jfdmzpr04-ext.jf.intel.com.
  [134.134.137.73])
- by smtp.gmail.com with ESMTPSA id l11sm2220864pjf.17.2020.09.28.14.36.49
+ by smtp.gmail.com with ESMTPSA id l11sm2220864pjf.17.2020.09.28.14.36.50
  (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 28 Sep 2020 14:36:50 -0700 (PDT)
+ Mon, 28 Sep 2020 14:36:51 -0700 (PDT)
 From: Jacob Pan <jacob.pan.linux@gmail.com>
 X-Google-Original-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
@@ -89,10 +89,9 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  Alex Williamson <alex.williamson@redhat.com>,
  "Lu Baolu" <baolu.lu@linux.intel.com>,
  David Woodhouse <dwmw2@infradead.org>, Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v3 06/14] iommu/ioasid: Introduce API to adjust the quota of
- an ioasid_set
-Date: Mon, 28 Sep 2020 14:38:33 -0700
-Message-Id: <1601329121-36979-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 07/14] iommu/ioasid: Add an iterator API for ioasid_set
+Date: Mon, 28 Sep 2020 14:38:34 -0700
+Message-Id: <1601329121-36979-8-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -118,101 +117,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Each ioasid_set is given a quota during allocation. As system
-administrators balance resources among VMs, we shall support the
-adjustment of quota at runtime. The new quota cannot be less than the
-outstanding IOASIDs already allocated within the set. The extra quota
-will be returned to the system-wide IOASID pool if the new quota is
-smaller than the existing one.
+Users of an ioasid_set may not keep track of all the IOASIDs allocated
+under the set. When collective actions are needed for each IOASIDs, it
+is useful to iterate over all the IOASIDs within the set. For example,
+when the ioasid_set is freed, the user might perform the same cleanup
+operation on each IOASID.
+
+This patch adds an API to iterate all the IOASIDs within the set.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/ioasid.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/ioasid.h |  6 ++++++
- 2 files changed, 53 insertions(+)
+ drivers/iommu/ioasid.c | 17 +++++++++++++++++
+ include/linux/ioasid.h |  9 +++++++++
+ 2 files changed, 26 insertions(+)
 
 diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index 61e25c2375ab..cf8c7d34e2de 100644
+index cf8c7d34e2de..9628e78b2ab4 100644
 --- a/drivers/iommu/ioasid.c
 +++ b/drivers/iommu/ioasid.c
-@@ -654,6 +654,53 @@ void ioasid_set_put(struct ioasid_set *set)
- EXPORT_SYMBOL_GPL(ioasid_set_put);
+@@ -701,6 +701,23 @@ int ioasid_adjust_set(struct ioasid_set *set, int quota)
+ EXPORT_SYMBOL_GPL(ioasid_adjust_set);
  
  /**
-+ * ioasid_adjust_set - Adjust the quota of an IOASID set
-+ * @set:	IOASID set to be assigned
-+ * @quota:	Quota allowed in this set
++ * ioasid_set_for_each_ioasid - Iterate over all the IOASIDs within the set
 + *
-+ * Return 0 on success. If the new quota is smaller than the number of
-+ * IOASIDs already allocated, -EINVAL will be returned. No change will be
-+ * made to the existing quota.
++ * Caller must hold a reference of the set and handles its own locking.
 + */
-+int ioasid_adjust_set(struct ioasid_set *set, int quota)
++void ioasid_set_for_each_ioasid(struct ioasid_set *set,
++				void (*fn)(ioasid_t id, void *data),
++				void *data)
 +{
-+	int ret = 0;
++	struct ioasid_data *entry;
++	unsigned long index;
 +
-+	if (quota <= 0)
-+		return -EINVAL;
-+
-+	spin_lock(&ioasid_allocator_lock);
-+	if (set->nr_ioasids > quota) {
-+		pr_err("New quota %d is smaller than outstanding IOASIDs %d\n",
-+			quota, set->nr_ioasids);
-+		ret = -EINVAL;
-+		goto done_unlock;
-+	}
-+
-+	if ((quota > set->quota) &&
-+		(quota - set->quota > ioasid_capacity_avail)) {
-+		ret = -ENOSPC;
-+		goto done_unlock;
-+	}
-+
-+	/* Return the delta back to system pool */
-+	ioasid_capacity_avail += set->quota - quota;
-+
-+	/*
-+	 * May have a policy to prevent giving all available IOASIDs
-+	 * to one set. But we don't enforce here, it should be in the
-+	 * upper layers.
-+	 */
-+	set->quota = quota;
-+
-+done_unlock:
-+	spin_unlock(&ioasid_allocator_lock);
-+
-+	return ret;
++	xa_for_each(&set->xa, index, entry)
++		fn(index, data);
 +}
-+EXPORT_SYMBOL_GPL(ioasid_adjust_set);
++EXPORT_SYMBOL_GPL(ioasid_set_for_each_ioasid);
 +
 +/**
   * ioasid_find - Find IOASID data
   * @set: the IOASID set
   * @ioasid: the IOASID to find
 diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 1ae213b660f0..0a5e82148eb9 100644
+index 0a5e82148eb9..aab58bc26714 100644
 --- a/include/linux/ioasid.h
 +++ b/include/linux/ioasid.h
-@@ -62,6 +62,7 @@ struct ioasid_allocator_ops {
- void ioasid_install_capacity(ioasid_t total);
- ioasid_t ioasid_get_capacity(void);
- struct ioasid_set *ioasid_set_alloc(void *token, ioasid_t quota, int type);
-+int ioasid_adjust_set(struct ioasid_set *set, int quota);
- void ioasid_set_get(struct ioasid_set *set);
- void ioasid_set_put(struct ioasid_set *set);
- 
-@@ -99,6 +100,11 @@ static inline struct ioasid_set *ioasid_set_alloc(void *token, ioasid_t quota, i
- 	return ERR_PTR(-ENOTSUPP);
- }
- 
-+static inline int ioasid_adjust_set(struct ioasid_set *set, int quota)
-+{
-+	return -ENOTSUPP;
-+}
-+
- static inline void ioasid_set_put(struct ioasid_set *set)
+@@ -75,6 +75,9 @@ int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+ void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+ int ioasid_attach_data(ioasid_t ioasid, void *data);
+ void ioasid_detach_data(ioasid_t ioasid);
++void ioasid_set_for_each_ioasid(struct ioasid_set *sdata,
++				void (*fn)(ioasid_t id, void *data),
++				void *data);
+ #else /* !CONFIG_IOASID */
+ static inline void ioasid_install_capacity(ioasid_t total)
+ {
+@@ -131,5 +134,11 @@ static inline int ioasid_attach_data(ioasid_t ioasid, void *data)
+ static inline void ioasid_detach_data(ioasid_t ioasid)
  {
  }
++
++static inline void ioasid_set_for_each_ioasid(struct ioasid_set *sdata,
++					      void (*fn)(ioasid_t id, void *data),
++					      void *data)
++{
++}
+ #endif /* CONFIG_IOASID */
+ #endif /* __LINUX_IOASID_H */
 -- 
 2.7.4
 
