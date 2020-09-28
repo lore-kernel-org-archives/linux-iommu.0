@@ -2,151 +2,95 @@ Return-Path: <SRS0=rmn6=DF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7F7C4727F
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 11:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9122FC4727F
+	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 12:27:13 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F4802080C
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 11:32:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0F919207E8
+	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 12:27:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="YpOdnes0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F4802080C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="lJofrCSq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F919207E8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E1A29856BF;
-	Mon, 28 Sep 2020 11:32:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BD69585621;
+	Mon, 28 Sep 2020 12:27:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zXw4ovur0N7U; Mon, 28 Sep 2020 11:32:54 +0000 (UTC)
+	with ESMTP id DgbvTs2giSH8; Mon, 28 Sep 2020 12:27:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E316885641;
-	Mon, 28 Sep 2020 11:32:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 28D8085618;
+	Mon, 28 Sep 2020 12:27:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7E8DC0891;
-	Mon, 28 Sep 2020 11:32:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08431C0889;
+	Mon, 28 Sep 2020 12:27:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CE7E0C016F
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 11:32:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3602C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 12:27:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A665D20027
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 11:32:52 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A5F26203F4
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 12:27:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hc-ULmpkIumv for <iommu@lists.linux-foundation.org>;
- Mon, 28 Sep 2020 11:32:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
- [210.118.77.12])
- by silver.osuosl.org (Postfix) with ESMTPS id 0B3F41FCB5
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 11:32:49 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200928113247euoutp02c574221dee36bcaa8d78217a2441bf4a~470myI0Q61347513475euoutp02O
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 11:32:47 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
- 20200928113247euoutp02c574221dee36bcaa8d78217a2441bf4a~470myI0Q61347513475euoutp02O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1601292767;
- bh=+uo/0vdDAtG25qGjp09xK2qh3VzfFRoNQyQxfRdW754=;
- h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
- b=YpOdnes0Yjrqe/2nD9pUx4yDJsVEH06XpDI80qW/qBwE3rogv45G29fnEEVF+r6Ee
- yoyhQHwQ+nPLYtnMvvSJ5ZP53xf/vJXJlkXfIogmz0iAwvbvVdYHGzlvSDwdQqjAn5
- Z2XpcVUnqsiQu+/SqBz/eQq02REcXoh7I2FTCNF0=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20200928113246eucas1p202daf455573dc6614f1285c7fcca2757~470mZVS1T1751417514eucas1p2H;
- Mon, 28 Sep 2020 11:32:46 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges3new.samsung.com (EUCPMTA) with SMTP id BC.8B.06318.ED9C17F5; Mon, 28
- Sep 2020 12:32:46 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
- 20200928113246eucas1p12a4b178ec04da6d0b1448d42861bf78c~470l1yIz31119311193eucas1p1z;
- Mon, 28 Sep 2020 11:32:46 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20200928113246eusmtrp21d25f691a89ecf6d64b491f43a9cda3d~470l0uE8e1717117171eusmtrp2g;
- Mon, 28 Sep 2020 11:32:46 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-ae-5f71c9de010c
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
- eusmgms1.samsung.com (EUCPMTA) with SMTP id FC.80.06314.ED9C17F5; Mon, 28
- Sep 2020 12:32:46 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
- eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20200928113244eusmtip2fd0487d5ac28e35d0bf3f6adfb341026~470kVFgvX0454604546eusmtip2a;
- Mon, 28 Sep 2020 11:32:44 +0000 (GMT)
-Subject: Re: [PATCH 05/18] ARM/dma-mapping: Switch to iommu_dma_ops
-To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de, joro@8bytes.org,
- linux@armlinux.org.uk
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <1d4c80ef-db03-3c31-a827-ab047fe9741f@samsung.com>
-Date: Mon, 28 Sep 2020 13:32:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ with ESMTP id LXIK6y59qXyH for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Sep 2020 12:27:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m42-4.mailgun.net (m42-4.mailgun.net [69.72.42.4])
+ by silver.osuosl.org (Postfix) with ESMTPS id ECE7520020
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 12:27:06 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1601296029; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=KkChGI+YeqZAg3DuMRg/VqX+l3pGX1T0VLK9izTxs/U=;
+ b=lJofrCSq6o4qjsVTP9pT3n84o3r1HZFcUWgv1PBMTELu0OT2iyrnjsmIg0cD9gpKcd21LIVx
+ fZmdfUXuRQuayq/PeGFSZvsI1EejNh7W0s1fcWe3PWZLX8W7jayF0LP2X4+9XonyW5roYiAu
+ Am+0jo8tfsunddlDqkDnnVL71IQ=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 5f71d691809bd330145c0be8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 28 Sep 2020 12:26:57
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 44118C43395; Mon, 28 Sep 2020 12:26:57 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id DAD27C433CA;
+ Mon, 28 Sep 2020 12:26:55 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <4b51f1685a7ff88b673bf013ca6c27501e52f9b4.1597931876.git.robin.murphy@arm.com>
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxTZxTHeXpv7700ltwWDCeiaJppwhKlyMyexIX5sg832RIXzT6ovFj0
- Dhpo0RacMDc7IIYyRCgx4q0CaTAoRWUFVJAXaSYNLy0ohjHWrRtgCCBiIzph+NbebfLt9z/n
- f/Kc/8nDEEoPtYbR6rN5g16TqaJk5M2eRc/mP3qPpahfvtiKPRP/kLi/6wmJ7f4JhB8+n6fw
- JasF4av2exJs8ZWRuKZrOy4UbCQ2Wxtp7M5/TGNzeS2NHRMjUlze5abxcNtFCpc0tkjxcMF9
- hCsHOyXYvCBQ2HmuA+E/7XMUzi+Mx91PJ6W4Y6lTiisrpilc+6iIwottVSQu7diLC73bsM/S
- RO6I5ia7qyRcQ1UD4oZH7hNcuXsz1yr8TnPWogtSzlFvpjjvSDvF+X50Sbim2lNcxWgd4u78
- aqK4wt4ukjtT8ITiSpvrEecavSX5UnFA9skRPlN7nDfEJhySpc+3fHzUE3HCfjnChGoUxYhh
- gP0IvHe/KEYyRsleQTDgOisRxQKCvtlBqSieIXh6x/9OhAYnOhaWCLFRh2DQ5qZFMY/APXCP
- DLjC2d0wdn2aCHAEmwRLt5eDJoJtl4LJ4guaKDYOiueKqQDL2QQYr/LSASbZjWAt7w/WV7PJ
- 0NM3TooeBfRemAxyKHsQZuouBZlg10NBi5UQORLGJqsl4qpnQ+Gnoe9F/gxsD81I5HCYcTXT
- Iq+FN63VwdDAFiD4y3ONFkUJguH8yn8ntoPXs0QFTkawMXCjLVYs74TWcQctXjIMRucU4g5h
- YLl5nhDLcig6rRTdm0BwXf//2e6hB0QZUgkrkgkr0ggr0gjv361BZD2K5HOMujTeGK/nv9li
- 1OiMOfq0LYezdA707pf3v3Y9v406l1OdiGWQapVc7TyWopRqjhtzdU4EDKGKkO9y9ycr5Uc0
- uXm8ISvFkJPJG50oiiFVkfJ423SSkk3TZPMZPH+UN/zXlTCha0zoB/Wzb7UxsaZGx6mckyUl
- f+u+GzuoS7gyNduUsng4ujbxWp52/jfZocSMzyv8cr9sVWvZ1AtbzKvkhqivQr5W1PmifDs/
- aAjXx5V+ui5ssW99/b6hBPtdV8/u/esi92p/KfIvqF+GbNPcWo6e6syzhKSOxWjVvdnRwurG
- 9g2x+OfZPSrSmK6J+5AwGDVvAb76VTLhAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTcRTH+e0+NqPRdU38Ib1YDSJodn20Y9Z6EVyIoAeBPdSGXdRyLne3
- 0giSKaHLxBmVbrbER5aLMs3evhYmOk3UECvTzAVZTo0ssBfpVuB/H875fjgc+EoI2QgVIklO
- NfKGVG2Kgl5Auv+0Da0dak+LX/fs9yJ4MfqTBHfTBAnOL6MIXn6bpOGqvRDBTWerCAqHC0go
- bYqGbFsZCbn2GjF0mcfFkGutEEPtaD8F1qYuMfQ9LqEhr6aegr6sHgRF3Y0iyJ220eC61IDg
- ndNLgzk7HFqmPBQ0/GikoOjiGA0VH3JomHnsICG/YS9kD0bCcGEduWUZ52lxiLhbjluI6+vv
- IThr11ruke2tmLPnFFNcbXUuzQ32P6W54fNtIq6u4ix3caAKcU9eZdJcdnsTyV3ImqC5/HvV
- iGsbeCDaHXhQtdGgNxn5FUl6wbhJcYiFMBUbBaqwiCgVG66O3RAWqQjVbDzKpySf5A2hmiOq
- pMl69YkX8nRnpTwTlQZaUIAEMxG4YfoHYUELJDKmEuGbX8y0f7EEt1/OpPy8GP/qt9D+kBfh
- /OYpcm6xmNmOX98eI+ZYzsTi6SqnTyaYpxSu9Ib4hUGEz30f8Ak0w2KL1+ILSRkNfu8YFM8x
- ySix3er2zYOYONyZ9/FfJhC3F3t8bgBzCH+qukr6D6zHjroRws/LcVa9/R8H49eea6ICJLPN
- 023zFNs8xTZPKUVkNZLzJkGXqBNYlaDVCabURFWCXleLZut1//lM3UPUe3efCzESpFgoXedK
- i5dR2pNChs6FsIRQyKXbutxxMulRbcZp3qCPN5hSeMGFImefsxIhQQn62bKmGuPZSFYNUaw6
- XB2+HhTB0hym5bCMSdQa+eM8f4I3/PdEkoCQTFROTiVpgsnN5s4jaM99W4nhnnJlREbajes7
- xBr3KUZ5Xn979c6YvKDrFzpORX0OPfbmj6Sn+2wnnbDNMzK++ivV3FGz9P3Mw9itr4ralHxY
- nKj8gMf0s2XXqpcFea1lVZN3hjZ4oydSSAZqpWYZFTOyP2Zh/ZWp9DOtvcronc2UghSStOwa
- wiBo/wJinf+vdAMAAA==
-X-CMS-MailID: 20200928113246eucas1p12a4b178ec04da6d0b1448d42861bf78c
-X-Msg-Generator: CA
-X-RootMTR: 20200820150917eucas1p258445fb7b4aa1da9fa605d63423aed01
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200820150917eucas1p258445fb7b4aa1da9fa605d63423aed01
-References: <cover.1597931875.git.robin.murphy@arm.com>
- <CGME20200820150917eucas1p258445fb7b4aa1da9fa605d63423aed01@eucas1p2.samsung.com>
- <4b51f1685a7ff88b673bf013ca6c27501e52f9b4.1597931876.git.robin.murphy@arm.com>
-Cc: geert+renesas@glider.be, dri-devel@lists.freedesktop.org,
- matthias.bgg@gmail.com, thierry.reding@gmail.com,
- laurent.pinchart@ideasonboard.com, digetx@gmail.com, will@kernel.org,
- linux-samsung-soc@vger.kernel.org, magnus.damm@gmail.com,
- kyungmin.park@samsung.com, jonathanh@nvidia.com, agross@kernel.org,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- inki.dae@samsung.com, linux-mediatek@lists.infradead.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- sw0312.kim@samsung.com, linux-kernel@vger.kernel.org, t-kristo@ti.com,
- iommu@lists.linux-foundation.org
+Date: Mon, 28 Sep 2020 17:56:55 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Subject: Re: [PATCHv5 4/6] drm/msm/a6xx: Add support for using system
+ cache(LLC)
+In-Reply-To: <20200923150320.GD31425@jcrouse1-lnx.qualcomm.com>
+References: <cover.1600754909.git.saiprakash.ranjan@codeaurora.org>
+ <889a32458cec92ed110b94f393aa1c2f0d64dca5.1600754909.git.saiprakash.ranjan@codeaurora.org>
+ <20200923150320.GD31425@jcrouse1-lnx.qualcomm.com>
+Message-ID: <800c2108606cb921fef1ffc27569ffb2@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: freedreno@lists.freedesktop.org, Jonathan Marek <jonathan@marek.ca>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ Akhil P Oommen <akhilpo@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+ "Kristian H . Kristensen" <hoegsberg@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sharat Masetty <smasetty@codeaurora.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -159,56 +103,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiAyMC4wOC4yMDIwIDE3OjA4LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gV2l0
-aCB0aGUgSU9NTVUgb3BzIG5vdyBsb29raW5nIG11Y2ggdGhlIHNhbWUgc2hhcGUgYXMgaW9tbXVf
-ZG1hX29wcywKPiBzd2l0Y2ggdGhlbSBvdXQgaW4gZmF2b3VyIG9mIHRoZSBpb21tdS1kbWEgbGli
-cmFyeSwgY3VycmVudGx5IGVuaGFuY2VkCj4gd2l0aCB0ZW1wb3Jhcnkgd29ya2Fyb3VuZHMgdGhh
-dCBhbGxvdyBpdCB0byBhbHNvIHNpdCB1bmRlcm5lYXRoIHRoZQo+IGFyY2gtc3BlY2lmaWMgQVBJ
-LiBXaXRoIHRoYXQgaW4gcGxhY2UsIHdlIGNhbiBub3cgc3RhcnQgY29udmVydGluZyB0aGUKPiBy
-ZW1haW5pbmcgSU9NTVUgZHJpdmVycyBhbmQgY29uc3VtZXJzIHRvIHdvcmsgd2l0aCBJT01NVSBB
-UEkgZGVmYXVsdAo+IGRvbWFpbnMgaW5zdGVhZC4KPgo+IFNpZ25lZC1vZmYtYnk6IFJvYmluIE11
-cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+CgpJJ3ZlIHBsYXllZCBhIGJpdCBsb25nZXIgd2l0
-aCB0aGlzIGFuZCBmb3VuZCB0aGF0IHJlYWRpbmcgdGhlIGtlcm5lbCAKdmlydHVhbCBhZGRyZXNz
-IG9mIHRoZSBidWZmZXJzIGFsbG9jYXRlZCB2aWEgZG1hX2FsbG9jX2F0dHJzKCkgZnJvbSAKZG1h
-LWlvbW11IG9wcyBnaXZlcyB0cmFzaGVzIGZyb20gdGltZSB0byB0aW1lLiBJdCB0b29rIG1lIGEg
-d2hpbGUgdG8gCmRlYnVnIHRoaXMuLi4KCllvdXIgY29udmVyc2lvbiBtaXNzZXMgYWRkaW5nIGFy
-Y2hfZG1hX3ByZXBfY29oZXJlbnQoKSB0byBhcmNoL2FybSwgc28gCnRoZSBidWZmZXJzIGFyZSBj
-bGVhcmVkIGJ5IHRoZSBtbSBhbGxvY2F0b3IsIGJ1dCB0aGUgY2FjaGVzIGFyZSBOT1QgCmZsdXNo
-ZWQgZm9yIHRoZSBuZXdseSBhbGxvY2F0ZWQgYnVmZmVycy4KClRoaXMgZml4ZXMgdGhlIGlzc3Vl
-OgoKZGlmZiAtLWdpdCBhL2FyY2gvYXJtL0tjb25maWcgYi9hcmNoL2FybS9LY29uZmlnCmluZGV4
-IGZlYzNlNTkyMTViOC4uOGI2MGJjYzViMTRmIDEwMDY0NAotLS0gYS9hcmNoL2FybS9LY29uZmln
-CisrKyBiL2FyY2gvYXJtL0tjb25maWcKQEAgLTIsNiArMiw3IEBACiDCoGNvbmZpZyBBUk0KIMKg
-wqDCoMKgwqDCoMKgIGJvb2wKIMKgwqDCoMKgwqDCoMKgIGRlZmF1bHQgeQorwqDCoMKgwqDCoMKg
-IHNlbGVjdCBBUkNIX0hBU19ETUFfUFJFUF9DT0hFUkVOVAogwqDCoMKgwqDCoMKgwqAgc2VsZWN0
-IEFSQ0hfMzJCSVRfT0ZGX1QKIMKgwqDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19CSU5GTVRf
-RkxBVAogwqDCoMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX0RFQlVHX1ZJUlRVQUwgaWYgTU1V
-CmRpZmYgLS1naXQgYS9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jIGIvYXJjaC9hcm0vbW0vZG1h
-LW1hcHBpbmcuYwppbmRleCBmZjZjNDk2MjE2MWEuLjY5NTQ2ODFiNzNkYSAxMDA2NDQKLS0tIGEv
-YXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYworKysgYi9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5j
-CkBAIC0yNjYsNiArMjY2LDIwIEBAIHN0YXRpYyB2b2lkIF9fZG1hX2NsZWFyX2J1ZmZlcihzdHJ1
-Y3QgcGFnZSAqcGFnZSwgCnNpemVfdCBzaXplLCBpbnQgY29oZXJlbnRfZmxhZwogwqDCoMKgwqDC
-oMKgwqAgfQogwqB9Cgordm9pZCBhcmNoX2RtYV9wcmVwX2NvaGVyZW50KHN0cnVjdCBwYWdlICpw
-YWdlLCBzaXplX3Qgc2l6ZSkKK3sKKworwqDCoMKgwqDCoMKgIGlmIChQYWdlSGlnaE1lbShwYWdl
-KSkgeworwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwaHlzX2FkZHJfdCBiYXNlID0gX19w
-Zm5fdG9fcGh5cyhwYWdlX3RvX3BmbihwYWdlKSk7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHBoeXNfYWRkcl90IGVuZCA9IGJhc2UgKyBzaXplOworwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBvdXRlcl9mbHVzaF9yYW5nZShiYXNlLCBlbmQpOworwqDCoMKgwqDCoMKgIH0gZWxz
-ZSB7CivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZvaWQgKnB0ciA9IHBhZ2VfYWRkcmVz
-cyhwYWdlKTsKK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZG1hY19mbHVzaF9yYW5nZShw
-dHIsIHB0ciArIHNpemUpOworwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBvdXRlcl9mbHVz
-aF9yYW5nZShfX3BhKHB0ciksIF9fcGEocHRyKSArIHNpemUpOworwqDCoMKgwqDCoMKgIH0KK30K
-KwogwqAvKgogwqAgKiBBbGxvY2F0ZSBhIERNQSBidWZmZXIgZm9yICdkZXYnIG9mIHNpemUgJ3Np
-emUnIHVzaW5nIHRoZQogwqAgKiBzcGVjaWZpZWQgZ2ZwIG1hc2suwqAgTm90ZSB0aGF0ICdzaXpl
-JyBtdXN0IGJlIHBhZ2UgYWxpZ25lZC4KCkkgYWxzbyB3b25kZXIgaWYgaXQgd291bGQgYmUgYmV0
-dGVyIHRvIHVzZSBwZXItYXJjaCBfX2RtYV9jbGVhcl9idWZmZXIoKSAKaW5zdGVhZCBvZiBzZXR0
-aW5nIF9fR0ZQX1pFUk8gdW5jb25kaXRpb25hbGx5IGluIGRtYS1pb21tdS5jLiBUaGlzIApzaG91
-bGQgYmUgZmFzdGVyIG9uIEFSTSB3aXRoIGhpZ2htZW0uLi4KCiA+IC4uLgoKQmVzdCByZWdhcmRz
-Ci0tIApNYXJlayBTenlwcm93c2tpLCBQaEQKU2Ftc3VuZyBSJkQgSW5zdGl0dXRlIFBvbGFuZAoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
-bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Jordan,
+
+On 2020-09-23 20:33, Jordan Crouse wrote:
+> On Tue, Sep 22, 2020 at 11:48:17AM +0530, Sai Prakash Ranjan wrote:
+>> From: Sharat Masetty <smasetty@codeaurora.org>
+>> 
+>> The last level system cache can be partitioned to 32 different
+>> slices of which GPU has two slices preallocated. One slice is
+>> used for caching GPU buffers and the other slice is used for
+>> caching the GPU SMMU pagetables. This talks to the core system
+>> cache driver to acquire the slice handles, configure the SCID's
+>> to those slices and activates and deactivates the slices upon
+>> GPU power collapse and restore.
+>> 
+>> Some support from the IOMMU driver is also needed to make use
+>> of the system cache to set the right TCR attributes. GPU then
+>> has the ability to override a few cacheability parameters which
+>> it does to override write-allocate to write-no-allocate as the
+>> GPU hardware does not benefit much from it.
+>> 
+>> DOMAIN_ATTR_SYS_CACHE is another domain level attribute used by the
+>> IOMMU driver to set the right attributes to cache the hardware
+>> pagetables into the system cache.
+>> 
+>> Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
+>> [saiprakash.ranjan: fix to set attr before device attach to iommu and 
+>> rebase]
+>> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+>> ---
+>>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 83 
+>> +++++++++++++++++++++++++
+>>  drivers/gpu/drm/msm/adreno/a6xx_gpu.h   |  4 ++
+>>  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 17 +++++
+>>  3 files changed, 104 insertions(+)
+>> 
+>> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c 
+>> b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>> index 8915882e4444..151190ff62f7 100644
+>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>> @@ -8,7 +8,9 @@
+>>  #include "a6xx_gpu.h"
+>>  #include "a6xx_gmu.xml.h"
+>> 
+>> +#include <linux/bitfield.h>
+>>  #include <linux/devfreq.h>
+>> +#include <linux/soc/qcom/llcc-qcom.h>
+>> 
+>>  #define GPU_PAS_ID 13
+>> 
+>> @@ -1022,6 +1024,79 @@ static irqreturn_t a6xx_irq(struct msm_gpu 
+>> *gpu)
+>>  	return IRQ_HANDLED;
+>>  }
+>> 
+>> +static void a6xx_llc_rmw(struct a6xx_gpu *a6xx_gpu, u32 reg, u32 
+>> mask, u32 or)
+>> +{
+>> +	return msm_rmw(a6xx_gpu->llc_mmio + (reg << 2), mask, or);
+>> +}
+>> +
+>> +static void a6xx_llc_write(struct a6xx_gpu *a6xx_gpu, u32 reg, u32 
+>> value)
+>> +{
+>> +	return msm_writel(value, a6xx_gpu->llc_mmio + (reg << 2));
+>> +}
+>> +
+>> +static void a6xx_llc_deactivate(struct a6xx_gpu *a6xx_gpu)
+>> +{
+>> +	llcc_slice_deactivate(a6xx_gpu->llc_slice);
+>> +	llcc_slice_deactivate(a6xx_gpu->htw_llc_slice);
+>> +}
+>> +
+>> +static void a6xx_llc_activate(struct a6xx_gpu *a6xx_gpu)
+>> +{
+>> +	u32 cntl1_regval = 0;
+>> +
+>> +	if (IS_ERR(a6xx_gpu->llc_mmio))
+>> +		return;
+>> +
+>> +	if (!llcc_slice_activate(a6xx_gpu->llc_slice)) {
+>> +		u32 gpu_scid = llcc_get_slice_id(a6xx_gpu->llc_slice);
+>> +
+>> +		gpu_scid &= 0x1f;
+>> +		cntl1_regval = (gpu_scid << 0) | (gpu_scid << 5) | (gpu_scid << 10) 
+>> |
+>> +			       (gpu_scid << 15) | (gpu_scid << 20);
+>> +	}
+>> +
+>> +	if (!llcc_slice_activate(a6xx_gpu->htw_llc_slice)) {
+>> +		u32 gpuhtw_scid = llcc_get_slice_id(a6xx_gpu->htw_llc_slice);
+>> +
+>> +		gpuhtw_scid &= 0x1f;
+>> +		cntl1_regval |= FIELD_PREP(GENMASK(29, 25), gpuhtw_scid);
+>> +	}
+>> +
+>> +	if (cntl1_regval) {
+>> +		/*
+>> +		 * Program the slice IDs for the various GPU blocks and GPU MMU
+>> +		 * pagetables
+>> +		 */
+>> +		a6xx_llc_write(a6xx_gpu, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1, 
+>> cntl1_regval);
+>> +
+>> +		/*
+>> +		 * Program cacheability overrides to not allocate cache lines on
+>> +		 * a write miss
+>> +		 */
+>> +		a6xx_llc_rmw(a6xx_gpu, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_0, 0xF, 
+>> 0x03);
+>> +	}
+>> +}
+> 
+> This code has been around long enough that it pre-dates a650. On a650 
+> and other
+> MMU-500 targets the htw_llc is configured by the firmware and the 
+> llc_slice is
+> configured in a different register.
+> 
+> I don't think we need to pause everything and add support for the 
+> MMU-500 path,
+> but we do need a way to disallow LLCC on affected targets until such 
+> time that
+> we can get it fixed up.
+> 
+
+Thanks for taking a close look, does something like below look ok or 
+something
+else is needed here?
+
++         /* Till the time we get in LLCC support for A650 */
++         if (!(info && info->revn == 650))
++                 a6xx_llc_slices_init(pdev, a6xx_gpu);
+
+Thanks,
+Sai
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
