@@ -2,77 +2,77 @@ Return-Path: <SRS0=rmn6=DF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D01CC2D0A8
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 22:13:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2682BC4727C
+	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 22:23:02 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA09B235F7
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 22:13:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 84837239E5
+	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 22:23:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="h8nnBBMO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA09B235F7
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vpgej5UC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 84837239E5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 58A7D84D9F;
-	Mon, 28 Sep 2020 22:13:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EFB1985B25;
+	Mon, 28 Sep 2020 22:23:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iNM5X79RZfoV; Mon, 28 Sep 2020 22:13:36 +0000 (UTC)
+	with ESMTP id p47vCiB0LTOv; Mon, 28 Sep 2020 22:22:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AD11B842EA;
-	Mon, 28 Sep 2020 22:13:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BD54185B0C;
+	Mon, 28 Sep 2020 22:22:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 67BDDC0889;
-	Mon, 28 Sep 2020 22:13:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF599C0051
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:13:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99F82C0889;
+	Mon, 28 Sep 2020 22:22:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2048AC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:22:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D3BC984627
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:13:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 14419868E7
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:22:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nKpiaIZSfA-C for <iommu@lists.linux-foundation.org>;
- Mon, 28 Sep 2020 22:13:34 +0000 (UTC)
+ with ESMTP id hUUwdOhotG11 for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Sep 2020 22:22:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 43C18842EA
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:13:34 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
- [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 48AD6235F7;
- Mon, 28 Sep 2020 22:13:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A116385948
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 22:22:57 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id BB50A23976;
+ Mon, 28 Sep 2020 22:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1601331214;
- bh=hnIsyOgSNTmnedkbmmONmFzwOC6X92QvwikpZlRdq2Q=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=h8nnBBMOUNJq4pvSzCqtjq7+kecOh37v8UUxD1VqIEO9btiiBq1aitxIxMHk38zJF
- aA8/OXubvZZrTGkvdbxEUbptSaoTwsx/wdpeNkMct6vtI134pYPriwoQ1UQko8veIF
- 536KaS7LUXT6a6faQ0ss3WtZa64tRnkYyWaeOhJQ=
+ s=default; t=1601331777;
+ bh=KckGuHNjpXWgi3JvMZQ0Yewh2mKrNMi6Nq4AclxpP/w=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Vpgej5UCzziq1X9FOdkJKve7/ui1qENMXIsoy6papwhzW+n3Kfh/kBthk9Od085D6
+ /01kxZQxRBsJ6g59/7b/rpc5zD6P6J5ZLbNIPoUcWT3PN4h3wCXg0w9MpRtZZ72Idi
+ 5qkMxo/pxWThi01CSbWNg6KdX02ROJWZnJfIQ5zk=
+Date: Mon, 28 Sep 2020 23:22:51 +0100
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Zhou Wang <wangzhou1@hisilicon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add rmb after reading event queue
- prod_reg
-Date: Mon, 28 Sep 2020 23:13:22 +0100
-Message-Id: <160132830305.1858738.13352352759100546799.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <1601281922-117296-1-git-send-email-wangzhou1@hisilicon.com>
-References: <1601281922-117296-1-git-send-email-wangzhou1@hisilicon.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 01/13] mm: Define pasid in mm
+Message-ID: <20200928222250.GA12847@willie-the-truck>
+References: <20200918101852.582559-1-jean-philippe@linaro.org>
+ <20200918101852.582559-2-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com, linuxarm@huawei.com,
- iommu@lists.linux-foundation.org, kernel-team@android.com,
+Content-Disposition: inline
+In-Reply-To: <20200918101852.582559-2-jean-philippe@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: fenghua.yu@intel.com, catalin.marinas@arm.com,
+ Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
+ zhangfei.gao@linaro.org, robin.murphy@arm.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -91,31 +91,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 28 Sep 2020 16:32:02 +0800, Zhou Wang wrote:
-> In arm_smmu_evtq_thread, reading event queue is from consumer pointer,
-> which has no address dependency on producer pointer, prog_reg(MMIO) and
-> event queue memory(Normal memory) can disorder. So the load for event queue
-> can be done before the load of prod_reg, then perhaps wrong event entry
-> value will be got.
+On Fri, Sep 18, 2020 at 12:18:41PM +0200, Jean-Philippe Brucker wrote:
+> From: Fenghua Yu <fenghua.yu@intel.com>
 > 
-> Add rmb to make sure to get correct event queue entry value.
+> PASID is shared by all threads in a process. So the logical place to keep
+> track of it is in the "mm". Both ARM and X86 need to use the PASID in the
+> "mm".
+> 
+> Suggested-by: Christoph Hellwig <hch@infradead.org>
+> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> ---
+> https://lore.kernel.org/linux-iommu/1600187413-163670-8-git-send-email-fenghua.yu@intel.com/
+> ---
+>  include/linux/mm_types.h | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Acked-by: Will Deacon <will@kernel.org>
 
-[1/1] iommu/arm-smmu-v3: Add rmb after reading event queue prod_reg
-      https://git.kernel.org/will/c/a76a37777f2c 
-
-(please note that I changed the patch to use readl() instead of an rmb()
-in conjunction with the _relaxed() accessor, and then adjusted the cons
-side to match in terms of DMB vs DSB).
-
-Cheers,
--- 
 Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
