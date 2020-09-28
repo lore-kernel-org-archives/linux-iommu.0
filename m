@@ -1,80 +1,98 @@
-Return-Path: <SRS0=rmn6=DF=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=l9dJ=DG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45399C2D0A8
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 23:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE36EC4727F
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:04:54 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AE8D423A5A
-	for <iommu@archiver.kernel.org>; Mon, 28 Sep 2020 23:08:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5298521775
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:04:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="esDNOvaQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE8D423A5A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vbseF/dD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5298521775
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 52FA2870CD;
-	Mon, 28 Sep 2020 23:08:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 071A386FC5;
+	Tue, 29 Sep 2020 00:04:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 91Wu3NzNG1ae; Mon, 28 Sep 2020 23:08:45 +0000 (UTC)
+	with ESMTP id ZTHsPhC6HwMT; Tue, 29 Sep 2020 00:04:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A5220870C7;
-	Mon, 28 Sep 2020 23:08:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BF42F86FB2;
+	Tue, 29 Sep 2020 00:04:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7627BC0891;
-	Mon, 28 Sep 2020 23:08:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A97E1C016F
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 23:08:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9B6C1AD6;
+	Tue, 29 Sep 2020 00:04:52 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 81AC4C0891
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:04:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 90378870C9
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 23:08:43 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 79850866C3
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:04:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QdQ+iRULIcK2 for <iommu@lists.linux-foundation.org>;
- Mon, 28 Sep 2020 23:08:42 +0000 (UTC)
+ with ESMTP id YqW2oGNle6Jw for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Sep 2020 00:04:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E997B870C7
- for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 23:08:42 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 4447D23A58;
- Mon, 28 Sep 2020 23:08:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1601334522;
- bh=yx7Kl0l4LL/Tx5VWW4V3Yshm8iNUcgJJrDqsEi+/CI0=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=esDNOvaQBOKfLSsr97k+I5mnTJEnZaivBEIgHvM19pd79mkh8+Th6XPwP9Dg7Nu8F
- n1JK1azkKbq5XAjhQvWuh8gZeIXNRzYUR0SLDbng3W2pSqMX5+frAs9Kre/PSATOTQ
- 1mB7qdIrAZLVKO/Jx9zpQxnEd4tPpiq3CWHfS3ps=
-Date: Tue, 29 Sep 2020 00:08:35 +0100
-From: Will Deacon <will@kernel.org>
-To: kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] iommu/qcom: add missing put_device() call in
- qcom_iommu_of_xlate()
-Message-ID: <20200928230835.GA12939@willie-the-truck>
-References: <20200918011357.909335-1-yukuai3@huawei.com>
- <202009220340.bJfsaeQn%lkp@intel.com>
- <20200921204556.GB3811@willie-the-truck>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200921204556.GB3811@willie-the-truck>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: kbuild-all@lists.01.org, yi.zhang@huawei.com, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- clang-built-linux@googlegroups.com, Yu Kuai <yukuai3@huawei.com>,
- linux-arm-kernel@lists.infradead.org
+Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
+ [209.85.216.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 49B2B866BA
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:04:48 +0000 (UTC)
+Received: by mail-pj1-f67.google.com with SMTP id t7so1679399pjd.3
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 17:04:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references;
+ bh=Ak7Ng8aJusKwlu1ow/SGyHutH7FZzRbWyWxzcNaToBI=;
+ b=vbseF/dDrAqieP+HHCdB/1SnSYVNo3zR6H+rhRZjZ/4Gx7/U4Y2+ufZJpr2BSv1Fat
+ gUXB23PctE6Upb6vW/JvVAQ5+KNFIS3DYgf0U/Kpq7Gqe/RuLjZ5Vo4jXkWyhi0sBBf6
+ W8h7SKzGfg8ucM42yXjkr0MHprAr/mTGCQ0G6pZtRSIpiL8T5n2ogFE89dhm0CuAWN3G
+ cvbPtyBHgLQpXkR53MYF+ORl8csy28N3OGDUu7xjVRgjuGaFVxxPkbYlJCQJynK0CQ0L
+ 050Xz1YJH4w5cG/YTbNttIFyX+UhhbUNzGH+yBEJfJm7KuYFQAuu6lyYfAadHjyTJ5Cl
+ mavw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references;
+ bh=Ak7Ng8aJusKwlu1ow/SGyHutH7FZzRbWyWxzcNaToBI=;
+ b=C9MciQtMLF4nsYPWbbs5luiInylLLFCQUGhYfGRQZOovNXz/hHgYF7arnzXkmPoIvC
+ OXF6hf8IybTh+V7lQ3MQrW/5/mNvU4N1ogM9X7H0gBd9CJ3NHBpYyrePl4SBlBwiRVtq
+ 1pr9uV3yJOoPpZ8iNO5LmJ7zqxsYSvQjt/sT5j4zz3X4My4m5M1r6n98pOo245rPzPIO
+ K+6lvU7GzuQkP5BVXVY/rC0+3pLvWWpcELCJgxmbzlsneJGbTRvOiC/XNJ3Rsv523YZv
+ 9zs0YojzfhoWLdfbs9Dsoyue1YMxwLVjV+SGdtK5sk90k6ikyNx/3J4h0nN2BxFG1jqh
+ yPfg==
+X-Gm-Message-State: AOAM530MmRVT3hcgVJgLkU0Za6g/p3QtaIwKkf4fiUZCd8l353x586wZ
+ vFh0gRiGlpWm7H42rjmFkGA=
+X-Google-Smtp-Source: ABdhPJzfftLBnioepcruORsOFCylGetHbEudyK5hBpQ88TcFkWVYtcbyVEOPUO8lQZO4e54kAnFQLg==
+X-Received: by 2002:a17:90a:ed88:: with SMTP id
+ k8mr1391123pjy.232.1601337887889; 
+ Mon, 28 Sep 2020 17:04:47 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
+ [216.228.112.22])
+ by smtp.gmail.com with ESMTPSA id fz23sm2392814pjb.36.2020.09.28.17.04.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 28 Sep 2020 17:04:47 -0700 (PDT)
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: thierry.reding@gmail.com,
+	joro@8bytes.org
+Subject: [PATCH v2 2/2] iommu/tegra-smmu: Expend mutex protection range
+Date: Mon, 28 Sep 2020 16:59:01 -0700
+Message-Id: <20200928235901.28337-3-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200928235901.28337-1-nicoleotsuka@gmail.com>
+References: <20200928235901.28337-1-nicoleotsuka@gmail.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ jonathanh@nvidia.com, linux-tegra@vger.kernel.org, digetx@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,50 +105,124 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Sep 21, 2020 at 09:45:57PM +0100, Will Deacon wrote:
-> On Tue, Sep 22, 2020 at 03:13:53AM +0800, kernel test robot wrote:
-> > Thank you for the patch! Perhaps something to improve:
-> > 
-> > [auto build test WARNING on iommu/next]
-> > [also build test WARNING on linus/master v5.9-rc6 next-20200921]
-> > [cannot apply to robclark/msm-next]
-> > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > And when submitting patch, we suggest to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch]
-> > 
-> > url:    https://github.com/0day-ci/linux/commits/Yu-Kuai/iommu-qcom-add-missing-put_device-call-in-qcom_iommu_of_xlate/20200918-091341
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-> > config: arm64-randconfig-r023-20200920 (attached as .config)
-> > compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 4e8c028158b56d9c2142a62464e8e0686bde3584)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install arm64 cross compiling tool for clang build
-> >         # apt-get install binutils-aarch64-linux-gnu
-> >         # save the attached .config to linux build tree
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm64 
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All warnings (new ones prefixed by >>):
-> > 
-> > >> drivers/iommu/arm/arm-smmu/qcom_iommu.c:601:4: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
-> >                            return -EINVAL;
-> >                            ^
-> >    drivers/iommu/arm/arm-smmu/qcom_iommu.c:599:3: note: previous statement is here
-> >                    if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev)))
-> 
-> Oh, this looks like a nasty bug. Seems we're missing some braces.
+This is used to protect potential race condition at use_count.
+since probes of client drivers, calling attach_dev(), may run
+concurrently.
 
-Yu Kuai: please could you send a v2 of this?
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
 
-Will
+Changelog
+v1->v2:
+ * N/A
+
+ drivers/iommu/tegra-smmu.c | 34 +++++++++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index ec4c9dafff95..acda5902e095 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -256,26 +256,19 @@ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
+ {
+ 	unsigned long id;
+ 
+-	mutex_lock(&smmu->lock);
+-
+ 	id = find_first_zero_bit(smmu->asids, smmu->soc->num_asids);
+-	if (id >= smmu->soc->num_asids) {
+-		mutex_unlock(&smmu->lock);
++	if (id >= smmu->soc->num_asids)
+ 		return -ENOSPC;
+-	}
+ 
+ 	set_bit(id, smmu->asids);
+ 	*idp = id;
+ 
+-	mutex_unlock(&smmu->lock);
+ 	return 0;
+ }
+ 
+ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
+ {
+-	mutex_lock(&smmu->lock);
+ 	clear_bit(id, smmu->asids);
+-	mutex_unlock(&smmu->lock);
+ }
+ 
+ static bool tegra_smmu_capable(enum iommu_cap cap)
+@@ -420,17 +413,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 				 struct tegra_smmu_as *as)
+ {
+ 	u32 value;
+-	int err;
++	int err = 0;
++
++	mutex_lock(&smmu->lock);
+ 
+ 	if (as->use_count > 0) {
+ 		as->use_count++;
+-		return 0;
++		goto err_unlock;
+ 	}
+ 
+ 	as->pd_dma = dma_map_page(smmu->dev, as->pd, 0, SMMU_SIZE_PD,
+ 				  DMA_TO_DEVICE);
+-	if (dma_mapping_error(smmu->dev, as->pd_dma))
+-		return -ENOMEM;
++	if (dma_mapping_error(smmu->dev, as->pd_dma)) {
++		err = -ENOMEM;
++		goto err_unlock;
++	}
+ 
+ 	/* We can't handle 64-bit DMA addresses */
+ 	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
+@@ -453,24 +450,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 	as->smmu = smmu;
+ 	as->use_count++;
+ 
++	mutex_unlock(&smmu->lock);
++
+ 	return 0;
+ 
+ err_unmap:
+ 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
++err_unlock:
++	mutex_unlock(&smmu->lock);
++
+ 	return err;
+ }
+ 
+ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+ 				    struct tegra_smmu_as *as)
+ {
+-	if (--as->use_count > 0)
++	mutex_lock(&smmu->lock);
++
++	if (--as->use_count > 0) {
++		mutex_unlock(&smmu->lock);
+ 		return;
++	}
+ 
+ 	tegra_smmu_free_asid(smmu, as->id);
+ 
+ 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
+ 
+ 	as->smmu = NULL;
++
++	mutex_unlock(&smmu->lock);
+ }
+ 
+ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
