@@ -2,94 +2,127 @@ Return-Path: <SRS0=l9dJ=DG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59296C47423
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 23:03:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BFEC47420
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 23:48:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C51BF21924
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 23:03:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C51BF21924
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 258902158C
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 23:48:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="egTjnuud"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 258902158C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2410F85F32;
-	Tue, 29 Sep 2020 23:03:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9356384B36;
+	Tue, 29 Sep 2020 23:48:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DeA3eXdCODby; Tue, 29 Sep 2020 23:03:41 +0000 (UTC)
+	with ESMTP id vhfXMY-xYWZh; Tue, 29 Sep 2020 23:48:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B812685E91;
-	Tue, 29 Sep 2020 23:03:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D662D81F3F;
+	Tue, 29 Sep 2020 23:48:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A5208C0889;
-	Tue, 29 Sep 2020 23:03:41 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BDADEC0051
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:03:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B55B9C016F;
+	Tue, 29 Sep 2020 23:48:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8DD69C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:48:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B76C3203B4
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:03:40 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 822B0871B0
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:48:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lY61k5AUiBOm for <iommu@lists.linux-foundation.org>;
- Tue, 29 Sep 2020 23:03:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by silver.osuosl.org (Postfix) with ESMTPS id 300B420399
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:03:39 +0000 (UTC)
-IronPort-SDR: 3Q3FhExhhOTlPfbijlt5T8npRc8Z8b9kSnKCcS9qrYx7LEXpYfakGBF26gQqxBUZ1tJv224T2C
- VXxMyX0igYsA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="159647229"
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; d="scan'208";a="159647229"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2020 16:03:38 -0700
-IronPort-SDR: /EvObaL5A0efO+V3yWJ7n6DgRY4Jfn26hfbu0C8T5O1RjfwKjT7pd78ZVG7iKsEJ0UgybKhTke
- epnaRxRgrjvA==
-X-IronPort-AV: E=Sophos;i="5.77,320,1596524400"; d="scan'208";a="415545172"
-Received: from meghadey-mobl1.amr.corp.intel.com (HELO [10.209.163.104])
- ([10.209.163.104])
- by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2020 16:03:36 -0700
-Subject: Re: [patch V2 00/46] x86, PCI, XEN, genirq ...: Prepare for device MSI
-To: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>
-References: <20200826111628.794979401@linutronix.de>
-From: "Dey, Megha" <megha.dey@intel.com>
-Message-ID: <10b5d933-f104-7699-341a-0afb16640d54@intel.com>
-Date: Tue, 29 Sep 2020 16:03:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ with ESMTP id sSW0pfktlgmZ for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Sep 2020 23:48:16 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
+ [136.143.188.51])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 83EA9871AD
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 23:48:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; t=1601423276; cv=none; 
+ d=zohomail.com; s=zohoarc; 
+ b=IuHFzA2EPmZVTQAmNMF4hK23usbjcpiZaONQfHKiFJ6We32LP7rL033dQE4heQC0h6QXFtBvqir0Upv47NhIAu+ufAkQ2QBYZDIg1M2Sp7fGYlQ02jlmMx8VX1gRQRn1GtHzRTr+aVdGufec0bXknVYs7vydMvhY+DU2T6xviCY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
+ s=zohoarc; t=1601423276;
+ h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
+ bh=6ixniHgEplVIhcPaYdBMZkE4jAKURq3FUls7D6j7mik=; 
+ b=PqpssLwkJvkfIJGONsDphYoIj6Np0wmDe8kG4J27N2bha/+JlYKOQYKdYlzsOQEE0422PfOTXDyfWF2HT1bLgNO3P0Jch56EFEoV2EDN6BWzqRmQyXR8huJvTLCk6jb/NFBsVbIdth7eaSa93B8y57Vp9kPQzwq0UCtYST1FLeI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+ dkim=pass  header.i=apertussolutions.com;
+ spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+ dmarc=pass header.from=<dpsmith@apertussolutions.com>
+ header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1601423276; 
+ s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+ h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+ bh=6ixniHgEplVIhcPaYdBMZkE4jAKURq3FUls7D6j7mik=;
+ b=egTjnuudxteogSv2KKbJdqWcZX7Tc8LBFmsOCMCYEPoRRq64hH8AmPNdOF7PzsY0
+ 37NjbcDY0rtR62HG2JUxPuP1DNEeCm0dn+lvAOwfL02NyLDCUGcgPm7jgTIk1wGf+Db
+ TJUpntq7OIE9Lv7G99tU1TBWc8asjAL7tzIOkGY8=
+Received: from [10.10.1.24] (c-73-129-147-140.hsd1.md.comcast.net
+ [73.129.147.140]) by mx.zohomail.com
+ with SMTPS id 1601423275480196.65040696695542;
+ Tue, 29 Sep 2020 16:47:55 -0700 (PDT)
+Subject: Re: [PATCH 05/13] x86: Add early TPM1.2/TPM2.0 interface support for
+ Secure Launch
+To: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+ Ross Philipson <ross.philipson@oracle.com>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <1600959521-24158-6-git-send-email-ross.philipson@oracle.com>
+ <20200925054313.GB165011@linux.intel.com>
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Message-ID: <bf1d8df9-ec79-2cc6-534f-ce1f0a58f123@apertussolutions.com>
+Autocrypt: addr=dpsmith@apertussolutions.com; prefer-encrypt=mutual; keydata=
+ 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
+Date: Tue, 29 Sep 2020 19:47:52 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200826111628.794979401@linutronix.de>
+In-Reply-To: <20200925054313.GB165011@linux.intel.com>
 Content-Language: en-US
-Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
- Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
- Marc Zyngier <maz@kernel.org>, x86@kernel.org,
- Jason Gunthorpe <jgg@mellanox.com>, xen-devel@lists.xenproject.org,
- ravi.v.shankar@intel.com, Kevin Tian <kevin.tian@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, dave.jiang@intel.com,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Jon Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
- Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>
+X-ZohoMailClient: External
+Cc: linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+ luto@amacapital.net, iommu@lists.linux-foundation.org, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,124 +135,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgVGhvbWFzLAoKT24gOC8yNi8yMDIwIDQ6MTYgQU0sIFRob21hcyBHbGVpeG5lciB3cm90ZToK
-PiBUaGlzIGlzIHRoZSBzZWNvbmQgdmVyc2lvbiBvZiBwcm92aWRpbmcgYSBiYXNlIHRvIHN1cHBv
-cnQgZGV2aWNlIE1TSSAobm9uCj4gUENJIGJhc2VkKSBhbmQgb24gdG9wIG9mIHRoYXQgc3VwcG9y
-dCBmb3IgSU1TIChJbnRlcnJ1cHQgTWVzc2FnZSBTdG9ybSkKPiBiYXNlZCBkZXZpY2VzIGluIGEg
-aGFsZndheXMgYXJjaGl0ZWN0dXJlIGluZGVwZW5kZW50IHdheS4KPgo+IFRoZSBmaXJzdCB2ZXJz
-aW9uIGNhbiBiZSBmb3VuZCBoZXJlOgo+Cj4gICAgICBodHRwczovL2xvcmUua2VybmVsLm9yZy9y
-LzIwMjAwODIxMDAyNDI0LjExOTQ5MjIzMUBsaW51dHJvbml4LmRlCj4KPiBJdCdzIHN0aWxsIGEg
-bWl4ZWQgYmFnIG9mIGJ1ZyBmaXhlcywgY2xlYW51cHMgYW5kIGdlbmVyYWwgaW1wcm92ZW1lbnRz
-Cj4gd2hpY2ggYXJlIHdvcnRod2hpbGUgaW5kZXBlbmRlbnQgb2YgZGV2aWNlIE1TSS4KPgo+IFRo
-ZXJlIGFyZSBxdWl0ZSBhIGJ1bmNoIG9mIGlzc3VlcyB0byBzb2x2ZToKPgo+ICAgIC0gWDg2IGRv
-ZXMgbm90IHVzZSB0aGUgZGV2aWNlOjptc2lfZG9tYWluIHBvaW50ZXIgZm9yIGhpc3RvcmljYWwg
-cmVhc29ucwo+ICAgICAgYW5kIGR1ZSB0byBYRU4sIHdoaWNoIG1ha2VzIGl0IGltcG9zc2libGUg
-dG8gY3JlYXRlIGFuIGFyY2hpdGVjdHVyZQo+ICAgICAgYWdub3N0aWMgZGV2aWNlIE1TSSBpbmZy
-YXN0cnVjdHVyZS4KPgo+ICAgIC0gWDg2IGhhcyBpdCdzIG93biBtc2lfYWxsb2NfaW5mbyBkYXRh
-IHR5cGUgd2hpY2ggaXMgcG9pbnRsZXNzbHkKPiAgICAgIGRpZmZlcmVudCBmcm9tIHRoZSBnZW5l
-cmljIHZlcnNpb24gYW5kIGRvZXMgbm90IGFsbG93IHRvIHNoYXJlIGNvZGUuCj4KPiAgICAtIFRo
-ZSBsb2dpYyBvZiBjb21wb3NpbmcgTVNJIG1lc3NhZ2VzIGluIGFuIGhpZXJhcmNoeSBpcyBidXN0
-ZWQgYXQgdGhlCj4gICAgICBjb3JlIGxldmVsIGFuZCBvZiBjb3Vyc2Ugc29tZSAoeDg2KSBkcml2
-ZXJzIGRlcGVuZCBvbiB0aGF0Lgo+Cj4gICAgLSBBIGZldyBtaW5vciBzaG9ydGNvbWluZ3MgYXMg
-dXN1YWwKPgo+IFRoaXMgc2VyaWVzIGFkZHJlc3NlcyB0aGF0IGluIHNldmVyYWwgc3RlcHM6Cj4K
-PiAgIDEpIEFjY2lkZW50YWwgYnVnIGZpeGVzCj4KPiAgICAgICAgaW9tbXUvYW1kOiBQcmV2ZW50
-IE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZQo+Cj4gICAyKSBKYW5pdG9yaW5nCj4KPiAgICAgICAg
-eDg2L2luaXQ6IFJlbW92ZSB1bnVzZWQgaW5pdCBvcHMKPiAgICAgICAgUENJOiB2bWQ6IERvbnQg
-YWJ1c2UgdmVjdG9yIGlycW9tYWluIGFzIHBhcmVudAo+ICAgICAgICB4ODYvbXNpOiBSZW1vdmUg
-cG9pbnRsZXNzIHZjcHVfYWZmaW5pdHkgY2FsbGJhY2sKPgo+ICAgMykgU2FuaXRpemluZyB0aGUg
-Y29tcG9zaXRpb24gb2YgTVNJIG1lc3NhZ2VzIGluIGEgaGllcmFyY2h5Cj4gICAKPiAgICAgICAg
-Z2VuaXJxL2NoaXA6IFVzZSB0aGUgZmlyc3QgY2hpcCBpbiBpcnFfY2hpcF9jb21wb3NlX21zaV9t
-c2coKQo+ICAgICAgICB4ODYvbXNpOiBNb3ZlIGNvbXBvc2UgbWVzc2FnZSBjYWxsYmFjayB3aGVy
-ZSBpdCBiZWxvbmdzCj4KPiAgIDQpIFNpbXBsaWZpY2F0aW9uIG9mIHRoZSB4ODYgc3BlY2lmaWMg
-aW50ZXJydXB0IGFsbG9jYXRpb24gbWVjaGFuaXNtCj4KPiAgICAgICAgeDg2L2lycTogUmVuYW1l
-IFg4Nl9JUlFfQUxMT0NfVFlQRV9NU0kqIHRvIHJlZmxlY3QgUENJIGRlcGVuZGVuY3kKPiAgICAg
-ICAgeDg2L2lycTogQWRkIGFsbG9jYXRpb24gdHlwZSBmb3IgcGFyZW50IGRvbWFpbiByZXRyaWV2
-YWwKPiAgICAgICAgaW9tbXUvdnQtZDogQ29uc29saWRhdGUgaXJxIGRvbWFpbiBnZXR0ZXIKPiAg
-ICAgICAgaW9tbXUvYW1kOiBDb25zb2xpZGF0ZSBpcnEgZG9tYWluIGdldHRlcgo+ICAgICAgICBp
-b21tdS9pcnFfcmVtYXBwaW5nOiBDb25zb2xpZGF0ZSBpcnEgZG9tYWluIGxvb2t1cAo+Cj4gICA1
-KSBDb25zb2xpZGF0aW9uIG9mIHRoZSBYODYgc3BlY2lmaWMgaW50ZXJydXB0IGFsbG9jYXRpb24g
-bWVjaGFuaXNtIHRvIGJlIGFzIGNsb3NlCj4gICAgICBhcyBwb3NzaWJsZSB0byB0aGUgZ2VuZXJp
-YyBNU0kgYWxsb2NhdGlvbiBtZWNoYW5pc20gd2hpY2ggYWxsb3dzIHRvIGdldCByaWQKPiAgICAg
-IG9mIHF1aXRlIGEgYnVuY2ggb2YgeDg2J2lzbXMgd2hpY2ggYXJlIHBvaW50bGVzcwo+Cj4gICAg
-ICAgIHg4Ni9pcnE6IFByZXBhcmUgY29uc29saWRhdGlvbiBvZiBpcnFfYWxsb2NfaW5mbwo+ICAg
-ICAgICB4ODYvbXNpOiBDb25zb2xpZGF0ZSBIUEVUIGFsbG9jYXRpb24KPiAgICAgICAgeDg2L2lv
-YXBpYzogQ29uc29saWRhdGUgSU9BUElDIGFsbG9jYXRpb24KPiAgICAgICAgeDg2L2lycTogQ29u
-c29saWRhdGUgRE1BUiBpcnEgYWxsb2NhdGlvbgo+ICAgICAgICB4ODYvaXJxOiBDb25zb2xpZGF0
-ZSBVViBkb21haW4gYWxsb2NhdGlvbgo+ICAgICAgICBQQ0kvTVNJOiBSZXdvcmsgcGNpX21zaV9k
-b21haW5fY2FsY19od2lycSgpCj4gICAgICAgIHg4Ni9tc2k6IENvbnNvbGlkYXRlIE1TSSBhbGxv
-Y2F0aW9uCj4gICAgICAgIHg4Ni9tc2k6IFVzZSBnZW5lcmljIE1TSSBkb21haW4gb3BzCj4KPiAg
-ICA2KSB4ODYgc3BlY2lmaWMgY2xlYW51cHMgdG8gcmVtb3ZlIHRoZSBkZXBlbmRlbmN5IG9uIGFy
-Y2hfKl9tc2lfaXJxcygpCj4KPiAgICAgICAgeDg2L2lycTogTW92ZSBhcGljX3Bvc3RfaW5pdCgp
-IGludm9jYXRpb24gdG8gb25lIHBsYWNlCj4gICAgICAgIHg4Ni9wY2k6IFJlZHVjZGUgI2lmZGVm
-ZmVyeSBpbiBQQ0kgaW5pdCBjb2RlCj4gICAgICAgIHg4Ni9pcnE6IEluaXRpYWxpemUgUENJL01T
-SSBkb21haW4gYXQgUENJIGluaXQgdGltZQo+ICAgICAgICBpcnFkb21haW4vbXNpOiBQcm92aWRl
-IERPTUFJTl9CVVNfVk1EX01TSQo+ICAgICAgICBQQ0k6IHZtZDogTWFyayBWTUQgaXJxZG9tYWlu
-IHdpdGggRE9NQUlOX0JVU19WTURfTVNJCj4gICAgICAgIFBDSS9NU0k6IFByb3ZpZGUgcGNpX2Rl
-dl9oYXNfc3BlY2lhbF9tc2lfZG9tYWluKCkgaGVscGVyCj4gICAgICAgIHg4Ni94ZW46IE1ha2Ug
-eGVuX21zaV9pbml0KCkgc3RhdGljIGFuZCByZW5hbWUgaXQgdG8geGVuX2h2bV9tc2lfaW5pdCgp
-Cj4gICAgICAgIHg4Ni94ZW46IFJld29yayBNU0kgdGVhcmRvd24KPiAgICAgICAgeDg2L3hlbjog
-Q29uc29saWRhdGUgWEVOLU1TSSBpbml0Cj4gICAgICAgIGlycWRvbWFpbi9tc2k6IEFsbG93IHRv
-IG92ZXJyaWRlIG1zaV9kb21haW5fYWxsb2MvZnJlZV9pcnFzKCkKPiAgICAgICAgeDg2L3hlbjog
-V3JhcCBYRU4gTVNJIG1hbmFnZW1lbnQgaW50byBpcnFkb21haW4KPiAgICAgICAgaW9tbW0vdnQt
-ZDogU3RvcmUgaXJxIGRvbWFpbiBpbiBzdHJ1Y3QgZGV2aWNlCj4gICAgICAgIGlvbW1tL2FtZDog
-U3RvcmUgaXJxIGRvbWFpbiBpbiBzdHJ1Y3QgZGV2aWNlCj4gICAgICAgIHg4Ni9wY2k6IFNldCBk
-ZWZhdWx0IGlycSBkb21haW4gaW4gcGNpYmlvc19hZGRfZGV2aWNlKCkKPiAgICAgICAgUENJL01T
-STogTWFrZSBhcmNoXy4qX21zaV9pcnFbc10gZmFsbGJhY2tzIHNlbGVjdGFibGUKPiAgICAgICAg
-eDg2L2lycTogQ2xlYW51cCB0aGUgYXJjaF8qX21zaV9pcnFzKCkgbGVmdG92ZXJzCj4gICAgICAg
-IHg4Ni9pcnE6IE1ha2UgbW9zdCBNU0kgb3BzIFhFTiBwcml2YXRlCj4gICAgICAgIGlvbW11L3Z0
-LWQ6IFJlbW92ZSBkb21haW4gc2VhcmNoIGZvciBQQ0kvTVNJW1hdCj4gICAgICAgIGlvbW11L2Ft
-ZDogUmVtb3ZlIGRvbWFpbiBzZWFyY2ggZm9yIFBDSS9NU0kKPgo+ICAgIDcpIFg4NiBzcGVjaWZp
-YyBwcmVwYXJhdGlvbiBmb3IgZGV2aWNlIE1TSQo+Cj4gICAgICAgIHg4Ni9pcnE6IEFkZCBERVZf
-TVNJIGFsbG9jYXRpb24gdHlwZQo+ICAgICAgICB4ODYvbXNpOiBSZW5hbWUgYW5kIHJld29yayBw
-Y2lfbXNpX3ByZXBhcmUoKSB0byBjb3ZlciBub24tUENJIE1TSQo+Cj4gICAgOCkgR2VuZXJpYyBk
-ZXZpY2UgTVNJIGluZnJhc3RydWN0dXJlCj4gICAgICAgIHBsYXRmb3JtLW1zaTogUHJvdmlkZSBk
-ZWZhdWx0IGlycV9jaGlwOjogQWNrCj4gICAgICAgIGdlbmlycS9wcm9jOiBUYWtlIGJ1c2xvY2sg
-b24gYWZmaW5pdHkgd3JpdGUKPiAgICAgICAgZ2VuaXJxL21zaTogUHJvdmlkZSBhbmQgdXNlIG1z
-aV9kb21haW5fc2V0X2RlZmF1bHRfaW5mb19mbGFncygpCj4gICAgICAgIHBsYXRmb3JtLW1zaTog
-QWRkIGRldmljZSBNU0kgaW5mcmFzdHJ1Y3R1cmUKPiAgICAgICAgaXJxZG9tYWluL21zaTogUHJv
-dmlkZSBtc2lfYWxsb2MvZnJlZV9zdG9yZSgpIGNhbGxiYWNrcwo+Cj4gICAgOSkgUE9DIG9mIElN
-UyAoSW50ZXJydXB0IE1lc3NhZ2UgU3Rvcm0pIGlycSBkb21haW4gYW5kIGlycWNoaXAKPiAgICAg
-ICBpbXBsZW1lbnRhdGlvbnMgZm9yIGJvdGggZGV2aWNlIGFycmF5IGFuZCBxdWV1ZSBzdG9yYWdl
-Lgo+Cj4gICAgICAgIGlycWNoaXA6IEFkZCBJTVMgKEludGVycnVwdCBNZXNzYWdlIFN0b3JtKSBk
-cml2ZXIgLSBOT1QgRk9SIE1FUkdJTkcKPgo+IENoYW5nZXMgdnMuIFYxOgo+Cj4gICAgIC0gQWRk
-cmVzc2VkIHZhcmlvdXMgcmV2aWV3IGNvbW1lbnRzIGFuZCBhZGRyZXNzZWQgdGhlIDBkYXkgZmFs
-bG91dC4KPiAgICAgICAtIENvcnJlY3RlZCB0aGUgWEVOIGxvZ2ljIChKw7xyZ2VuKQo+ICAgICAg
-IC0gTWFrZSB0aGUgYXJjaCBmYWxsYmFjayBpbiBQQ0kvTVNJIG9wdC1pbiBub3Qgb3B0LW91dCAo
-Qmpvcm4pCj4KPiAgICAgLSBGaXhlZCB0aGUgY29tcG9zZSBNU0kgbWVzc2FnZSBpbmNvbnNpc3Rl
-bmN5Cj4KPiAgICAgLSBFbnN1cmUgdGhhdCB0aGUgbmVjZXNzYXJ5IGZsYWdzIGFyZSBzZXQgZm9y
-IGRldmljZSBTTUkKPgo+ICAgICAtIE1ha2UgdGhlIGlycSBidXMgbG9naWMgd29yayBmb3IgYWZm
-aW5pdHkgc2V0dGluZyB0byBwcmVwYXJlCj4gICAgICAgc3VwcG9ydCBmb3IgSU1TIHN0b3JhZ2Ug
-aW4gcXVldWUgbWVtb3J5LiBJdCB0dXJuZWQgb3V0IHRvIGJlCj4gICAgICAgbGVzcyBzY2FyeSB0
-aGFuIEkgZmVhcmVkLgo+Cj4gICAgIC0gUmVtb3ZlIGxlZnRvdmVycyBpbiBpb21tdS9pbnRlbHxh
-bWQKPgo+ICAgICAtIFJld29ya2VkIHRoZSBJTVMgUE9DIGRyaXZlciB0byBjb3ZlciBxdWV1ZSBz
-dG9yYWdlIHNvIEphc29uIGNhbiBoYXZlIGEKPiAgICAgICBsb29rIHdoZXRoZXIgdGhhdCBmaXRz
-IHRoZSBuZWVkcyBvZiBNTFggZGV2aWNlcy4KPgo+IFRoZSB3aG9sZSBsb3QgaXMgYWxzbyBhdmFp
-bGFibGUgZnJvbSBnaXQ6Cj4KPiAgICAgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51
-eC9rZXJuZWwvZ2l0L3RnbHgvZGV2ZWwuZ2l0IGRldmljZS1tc2kKPgo+IFRoaXMgaGFzIGJlZW4g
-dGVzdGVkIG9uIEludGVsL0FNRC9LVk0gYnV0IGxhY2tzIHRlc3Rpbmcgb246Cj4KPiAgICAgIC0g
-SFlQRVJWICgtRU5PREVWKQo+ICAgICAgLSBWTUQgZW5hYmxlZCBzeXN0ZW1zICgtRU5PREVWKQo+
-ICAgICAgLSBYRU4gKC1FTk9DTFVFKQo+ICAgICAgLSBJTVMgKC1FTk9ERVYpCj4KPiAgICAgIC0g
-QW55IG5vbi1YODYgY29kZSB3aGljaCBtaWdodCBkZXBlbmQgb24gdGhlIGJyb2tlbiBjb21wb3Nl
-IE1TSSBtZXNzYWdlCj4gICAgICAgIGxvZ2ljLiBNYXJjIGV4Y3BlY3RzIG5vdCBtdWNoIGZhbGxv
-dXQsIGJ1dCBhZ3JlZXMgdGhhdCB3ZSBuZWVkIHRvIGZpeAo+ICAgICAgICBpdCBhbnl3YXkuCj4K
-PiAjMSAtICMzIHNob3VsZCBiZSBhcHBsaWVkIHVuY29uZGl0aW9uYWxseSBmb3Igb2J2aW91cyBy
-ZWFzb25zCj4gIzQgLSAjNiBhcmUgd29ydHdoaWxlIGNsZWFudXBzIHdoaWNoIHNob3VsZCBiZSBk
-b25lIGluZGVwZW5kZW50IG9mIGRldmljZSBNU0kKPgo+ICM3IC0gIzggbG9vayBwcm9taXNpbmcg
-dG8gY2xlYW51cCB0aGUgcGxhdGZvcm0gTVNJIGltcGxlbWVudGF0aW9uCj4gICAgICAgCWluZGVw
-ZW5kZW50IG9mICM4LCBidXQgSSBuZWl0aGVyIGhhZCBjeWNsZXMgbm9yIHRoZSBzdG9tYWNoIHRv
-Cj4gICAgICAgCXRhY2tsZSB0aGF0Lgo+Cj4gIzkJaXMgb2J2aW91c2x5IGp1c3QgZm9yIHRoZSBm
-b2xrcyBpbnRlcmVzdGVkIGluIElNUwo+Cj4gVGhhbmtzLAo+Cj4gCXRnbHgKCkkgc2VlIHRoYXQg
-dGhlIHRpcCB0cmVlIChhcyBvZiA5LzI5KSBoYXMgbW9zdCBvZiB0aGVzZSBwYXRjaGVzIGJ1dCAK
-bm90aWNlIHRoYXQgdGhlIERFVl9NU0kgcmVsYXRlZCBwYXRjaGVzCgpoYXZlbid0IG1hZGUgaXQu
-IEkgaGF2ZSB0ZXN0ZWQgdGhlIHRpcCB0cmVlKHg4Ni9pcnEgYnJhbmNoKSB3aXRoIHlvdXIgCkRF
-Vl9NU0kgaW5mcmEgcGF0Y2hlcyBhbmQgb3VyIElNUwoKcGF0Y2hlcyB3aXRoIHRoZSBJRFhEIGRy
-aXZlciBhbmQgd2FzIHdvbmRlcmluZyBpZiB3ZSBzaG91bGQgcHVzaCBvdXQgCnRob3NlIHBhdGNo
-ZXMgYXMgcGFydCBvZiBvdXIgcGF0Y2hzZXQ/CgpUaGFua3MsCgpNZWdoYQoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 9/25/20 1:43 AM, Jarkko Sakkinen wrote:
+> On Thu, Sep 24, 2020 at 10:58:33AM -0400, Ross Philipson wrote:
+>> From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+>>
+>> This commit introduces an abstraction for TPM1.2 and TPM2.0 devices
+>> above the TPM hardware interface.
+>>
+>> Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
+>> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+> 
+> This is way, way too PoC. I wonder why there is no RFC tag.
+
+An RFC was sent back in March and we incorporated the feedback we
+received at that time.
+
+> Please also read section 2 of
+> 
+> https://www.kernel.org/doc/html/v5.8/process/submitting-patches.html
+> 
+> You should leverage existing TPM code in a way or another. Refine it so
+> that it scales for your purpose and then compile it into your thing
+> (just include the necesary C-files with relative paths).
+
+We explained during the RFC phase that we took a fair bit of time and a
+very hard look to see if we could #include sections out the TPM driver
+but as it is today none of the TPM driver's c files can be included
+outside of the mainline kernel. If you look at the early boot stub for
+the compressed kernel you will see that we are interacting with the TPM
+as the first thing upon leaving the assembly world and entering C. Since
+we weren't going to be able to get the mainline TPM driver plucked down,
+we could either 1.) borrow an implementation from a colleague that
+provides the minimum command strings hard coded in C macros to send
+measurements to the TPM or 2.) reuse the TPM implementation we wrote for
+TrenchBoot's AMD Secure Loader (LZ). The former is not well supported
+and the latter will be getting maintenance under TB. While this is not
+preferred, we had to weigh this versus trying to convince you and the
+other TPM driver maintainers on a significant refactoring of the TPM
+driver. It was elected for the reuse of a clean implementation that can
+be replaced later if/when the TPM driver was refactored. When we
+explained this during the RFC and it was not rejected, therefore we
+carried it forward into this submission.
+
+
+> How it is now is never going to fly.
+
+We would gladly work with you and the other TPM maintainers on a
+refactoring of the TPM driver to separate core logic into standalone
+files that both the driver and the compressed kernel can share.
+
+> /Jarkko
+> 
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
