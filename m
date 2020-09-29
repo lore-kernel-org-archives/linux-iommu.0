@@ -2,81 +2,102 @@ Return-Path: <SRS0=l9dJ=DG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9419C2D0A8
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:17:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5B7C2D0A8
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:18:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BA9F2075B
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:17:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BA9F2075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9EC7A2100A
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 00:18:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KVViTjv7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EC7A2100A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4491F866B2;
-	Tue, 29 Sep 2020 00:17:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id BCF6520519;
+	Tue, 29 Sep 2020 00:18:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mZhcSYLGYBPF; Tue, 29 Sep 2020 00:17:52 +0000 (UTC)
+	with ESMTP id Y3yjoIosA5mA; Tue, 29 Sep 2020 00:18:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9FE37866C3;
-	Tue, 29 Sep 2020 00:17:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D101C204E6;
+	Tue, 29 Sep 2020 00:18:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 86665C016F;
-	Tue, 29 Sep 2020 00:17:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C983FC016F;
+	Tue, 29 Sep 2020 00:18:05 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9DAAC0051
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:17:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F31FBC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:18:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E151886D5A
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:17:50 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DFC6E86D63
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:18:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4tzgu+5S3VUh for <iommu@lists.linux-foundation.org>;
- Tue, 29 Sep 2020 00:17:50 +0000 (UTC)
+ with ESMTP id 69DQmu+iu7FE for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Sep 2020 00:18:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3C90186A98
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:17:50 +0000 (UTC)
-IronPort-SDR: 3jf2S9Sc1E5VMZYJcPI6k9vIeBH8whCcWhrjUU5IqFsCk5SBhWzBV36ruJcpSmwm8YdSs5P1iJ
- r1nLQFA1qJ6g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9758"; a="223676491"
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; d="scan'208";a="223676491"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2020 17:17:49 -0700
-IronPort-SDR: vBRBwymd2PTiWX2JYPy/kVamnLH16EZO03swENsMtJAUXMzMi//4+COfuiuFAY5Az4SbuQygQB
- dsW9T/Fk2OZA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,315,1596524400"; d="scan'208";a="415182150"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 28 Sep 2020 17:17:47 -0700
-Subject: Re: [PATCH v4 0/7] Convert the intel iommu driver to the dma-iommu api
-To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Tom Murphy <murphyt7@tcd.ie>,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@infradead.org>
-References: <20200927063437.13988-1-baolu.lu@linux.intel.com>
- <e999e371-6d36-ffea-542f-a5f4b230b0ed@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <c2af9a9d-1cae-b8f7-a0b3-880574060a23@linux.intel.com>
-Date: Tue, 29 Sep 2020 08:11:35 +0800
+Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
+ [209.85.167.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C4EA386D85
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 00:18:01 +0000 (UTC)
+Received: by mail-lf1-f67.google.com with SMTP id d15so3375612lfq.11
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Sep 2020 17:18:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=LWyAFftzTgQ/8ZzQPra6i4Q9NzonWukybh/xqSD4SNY=;
+ b=KVViTjv7RofB3mbilJ2qmNPZNQQZQ2SkADTKbbPfsgHfvKhDmG8TMVEnLO+2Krmjrm
+ OQJFHEfjvECuHHMGCafV5snickVdo8dhrl+Q2j/yh3Hbq2kvm9teu9Rpn0tG5lPPi6Qe
+ zyUuHkY5yn/SIMD6H4Jy7HupHIvoCpS8dk2IyVuXQxrHzo7NQMgkPIrqzNul7mQiDMVI
+ 53dSdLsumgoB2js+usNGms5nvdcz2QhLsOFimGfizTbkV18pygYDl5jCyz0vR3u+trvg
+ FZ1+dk2qbQRZV6u9X6LBvV53Xv6MDgESnLeqnfjhdNEaHzrsnkWWhro1xHp45PKiHMJt
+ BN1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=LWyAFftzTgQ/8ZzQPra6i4Q9NzonWukybh/xqSD4SNY=;
+ b=RdhTrLhbKXm0aEXoR/Zxif24eXiMVCn5bsKw/rerH2NUoHiNFd+jfr89gCpfwPE+iv
+ sCEzRnP8WeYChvDeqjEYfSPddHFuBlra4fKke/sCDWJ5boEoWLRfz9N7WYZcipPvTtUq
+ pFD+RwHrn+wHp9QJbeJT9KzmmRHxE+WbrIgcWFquM/WH3s8kAlHN5opuoCzzU1+DxzgY
+ UVANEvMVf6vWeSsMM/e7Wk2nvfXeXtbKSPIJC3hwu7pfTIwWXFZSUjZ8g+hsH8HBRi02
+ j2oLDrIRRW25kKcvWYVNjxgRE7LSCYVTGzP26XiFjB7uoXHI/TPVsp6pqevGReRSoGBZ
+ otIg==
+X-Gm-Message-State: AOAM531+5kNueAQwSb4JMpy/umqskxUmE11Gu8qGKWCHCdMMs2PBKEQT
+ PJwLLl2OJ5VFZoYPt8hEip8=
+X-Google-Smtp-Source: ABdhPJwFazCF3sQTeRk6md9P7UFhr2ln8RaMSsv5Xi844x9rjX1AdEJnCbCVu/UtUBG0dljKX7XY9Q==
+X-Received: by 2002:ac2:4424:: with SMTP id w4mr217288lfl.447.1601338679960;
+ Mon, 28 Sep 2020 17:17:59 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
+ [109.252.170.211])
+ by smtp.googlemail.com with ESMTPSA id x25sm2990589lfe.284.2020.09.28.17.17.58
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 28 Sep 2020 17:17:59 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] iommu/tegra-smmu: Expend mutex protection range
+To: Nicolin Chen <nicoleotsuka@gmail.com>, thierry.reding@gmail.com,
+ joro@8bytes.org
+References: <20200928235901.28337-1-nicoleotsuka@gmail.com>
+ <20200928235901.28337-3-nicoleotsuka@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <692b51fa-7a3e-dee7-b628-7cb2d2dc188d@gmail.com>
+Date: Tue, 29 Sep 2020 03:17:58 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <e999e371-6d36-ffea-542f-a5f4b230b0ed@linux.intel.com>
+In-Reply-To: <20200928235901.28337-3-nicoleotsuka@gmail.com>
 Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, Intel-gfx@lists.freedesktop.org,
- Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,45 +110,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgVHZydGtvLAoKT24gOS8yOC8yMCA1OjQ0IFBNLCBUdnJ0a28gVXJzdWxpbiB3cm90ZToKPiAK
-PiBPbiAyNy8wOS8yMDIwIDA3OjM0LCBMdSBCYW9sdSB3cm90ZToKPj4gSGksCj4+Cj4+IFRoZSBw
-cmV2aW91cyBwb3N0IG9mIHRoaXMgc2VyaWVzIGNvdWxkIGJlIGZvdW5kIGhlcmUuCj4+Cj4+IGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMjAwOTEyMDMyMjAwLjExNDg5LTEt
-YmFvbHUubHVAbGludXguaW50ZWwuY29tLyAKPj4KPj4KPj4gVGhpcyB2ZXJzaW9uIGludHJvZHVj
-ZSBhIG5ldyBwYXRjaCBbNC83XSB0byBmaXggYW4gaXNzdWUgcmVwb3J0ZWQgaGVyZS4KPj4KPj4g
-aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUvNTFhMWJhZWMtNDhkMS1jMGFjLTE4
-MWItMWZiYTkyYWE0MjhkQGxpbnV4LmludGVsLmNvbS8gCj4+Cj4+Cj4+IFRoZXJlIGFyZW4ndCBh
-bnkgb3RoZXIgY2hhbmdlcy4KPj4KPj4gUGxlYXNlIGhlbHAgdG8gdGVzdCBhbmQgcmV2aWV3Lgo+
-Pgo+PiBCZXN0IHJlZ2FyZHMsCj4+IGJhb2x1Cj4+Cj4+IEx1IEJhb2x1ICgzKToKPj4gwqDCoCBp
-b21tdTogQWRkIHF1aXJrIGZvciBJbnRlbCBncmFwaGljIGRldmljZXMgaW4gbWFwX3NnCj4gCj4g
-U2luY2UgSSBkbyBoYXZlIHBhdGNoZXMgdG8gZml4IGk5MTUgdG8gaGFuZGxlIHRoaXMsIGRvIHdl
-IHdhbnQgdG8gCj4gY28tb3JkaW5hdGUgdGhlIHR3byBhbmQgYXZvaWQgaGF2aW5nIHRvIGFkZCB0
-aGlzIHF1aXJrIGFuZCB0aGVuIGxhdGVyIAo+IHJlbW92ZSBpdD8gT3IgeW91IHdhbnQgdG8gZ28g
-dGhlIHN0YWdlZCBhcHByb2FjaD8KCkkgaGF2ZSBubyBwcmVmZXJlbmNlLiBJdCBkZXBlbmRzIG9u
-IHdoaWNoIHBhdGNoIGdvZXMgZmlyc3QuIExldCB0aGUKbWFpbnRhaW5lcnMgaGVscCBoZXJlLgoK
-QmVzdCByZWdhcmRzLApiYW9sdQoKPiAKPiBSZWdhcmRzLAo+IAo+IFR2cnRrbwo+IAo+PiDCoMKg
-IGlvbW11L3Z0LWQ6IFVwZGF0ZSBkb21haW4gZ2VvbWV0cnkgaW4gaW9tbXVfb3BzLmF0KGRlKXRh
-Y2hfZGV2Cj4+IMKgwqAgaW9tbXUvdnQtZDogQ2xlYW51cCBhZnRlciBjb252ZXJ0aW5nIHRvIGRt
-YS1pb21tdSBvcHMKPj4KPj4gVG9tIE11cnBoeSAoNCk6Cj4+IMKgwqAgaW9tbXU6IEhhbmRsZSBm
-cmVlbGlzdHMgd2hlbiB1c2luZyBkZWZlcnJlZCBmbHVzaGluZyBpbiBpb21tdSBkcml2ZXJzCj4+
-IMKgwqAgaW9tbXU6IEFkZCBpb21tdV9kbWFfZnJlZV9jcHVfY2FjaGVkX2lvdmFzKCkKPj4gwqDC
-oCBpb21tdTogQWxsb3cgdGhlIGRtYS1pb21tdSBhcGkgdG8gdXNlIGJvdW5jZSBidWZmZXJzCj4+
-IMKgwqAgaW9tbXUvdnQtZDogQ29udmVydCBpbnRlbCBpb21tdSBkcml2ZXIgdG8gdGhlIGlvbW11
-IG9wcwo+Pgo+PiDCoCAuLi4vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0wqDCoMKg
-wqDCoMKgwqDCoCB8wqDCoCA1IC0KPj4gwqAgZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuY8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfCAyMjggKysrKy0KPj4gwqAgZHJp
-dmVycy9pb21tdS9pbnRlbC9LY29uZmlnwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHzCoMKgIDEgKwo+PiDCoCBkcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmPCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfCA5MDEgKysrLS0tLS0tLS0tLS0tLS0tCj4+IMKg
-IGluY2x1ZGUvbGludXgvZG1hLWlvbW11LmjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIHzCoMKgIDggKwo+PiDCoCBpbmNsdWRlL2xpbnV4L2lvbW11LmjCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqAgMSArCj4+IMKgIDYg
-ZmlsZXMgY2hhbmdlZCwgMzM2IGluc2VydGlvbnMoKyksIDgwOCBkZWxldGlvbnMoLSkKPj4KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+...
+>  static bool tegra_smmu_capable(enum iommu_cap cap)
+> @@ -420,17 +413,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+>  				 struct tegra_smmu_as *as)
+>  {
+>  	u32 value;
+> -	int err;
+> +	int err = 0;
+> +
+> +	mutex_lock(&smmu->lock);
+>  
+>  	if (as->use_count > 0) {
+>  		as->use_count++;
+> -		return 0;
+> +		goto err_unlock;
+
+This looks a bit odd because it's not a error condition. Perhaps should
+be better to "goto bump_usecount"?
+
+Or make it similar to tegra_smmu_as_unprepare()?
+
+>  	}
+>  
+>  	as->pd_dma = dma_map_page(smmu->dev, as->pd, 0, SMMU_SIZE_PD,
+>  				  DMA_TO_DEVICE);
+> -	if (dma_mapping_error(smmu->dev, as->pd_dma))
+> -		return -ENOMEM;
+> +	if (dma_mapping_error(smmu->dev, as->pd_dma)) {
+> +		err = -ENOMEM;
+> +		goto err_unlock;
+> +	}
+>  
+>  	/* We can't handle 64-bit DMA addresses */
+>  	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
+> @@ -453,24 +450,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+>  	as->smmu = smmu;
+
+bump_usecount:
+
+>  	as->use_count++;
+>  
+> +	mutex_unlock(&smmu->lock);
+> +
+>  	return 0;
+>  
+>  err_unmap:
+>  	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
+> +err_unlock:
+> +	mutex_unlock(&smmu->lock);
+> +
+>  	return err;
+>  }
+>  
+>  static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+>  				    struct tegra_smmu_as *as)
+>  {
+> -	if (--as->use_count > 0)
+> +	mutex_lock(&smmu->lock);
+> +
+> +	if (--as->use_count > 0) {
+> +		mutex_unlock(&smmu->lock);
+>  		return;
+> +	}
+>  
+>  	tegra_smmu_free_asid(smmu, as->id);
+>  
+>  	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
+>  
+>  	as->smmu = NULL;
+> +
+> +	mutex_unlock(&smmu->lock);
+>  }
+>  
+>  static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
