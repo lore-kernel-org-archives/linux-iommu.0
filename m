@@ -2,96 +2,141 @@ Return-Path: <SRS0=l9dJ=DG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED56C4727C
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 11:26:30 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B41C47423
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 14:04:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99A2423B79
-	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 11:26:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ECD232145D
+	for <iommu@archiver.kernel.org>; Tue, 29 Sep 2020 14:04:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JCZ7u/of"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99A2423B79
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="uUTAuRS9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECD232145D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 494CD1FD16;
-	Tue, 29 Sep 2020 11:26:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3E9DA84EC0;
+	Tue, 29 Sep 2020 14:04:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pQf-nqIyPJBh; Tue, 29 Sep 2020 11:26:27 +0000 (UTC)
+	with ESMTP id SC0z3ceWqnYm; Tue, 29 Sep 2020 14:04:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6E33E2075B;
-	Tue, 29 Sep 2020 11:26:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 923B481DC7;
+	Tue, 29 Sep 2020 14:04:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 54AC9C0890;
-	Tue, 29 Sep 2020 11:26:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7319AC016F
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 11:26:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E01EC0889;
+	Tue, 29 Sep 2020 14:04:23 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23C5EC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 14:04:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6FC8685FA2
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 11:26:25 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1F517859C2
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 14:04:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P7JBxpiWiEiM for <iommu@lists.linux-foundation.org>;
- Tue, 29 Sep 2020 11:26:24 +0000 (UTC)
+ with ESMTP id WGOyrtUrxKqV for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Sep 2020 14:04:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1E5B885FA0
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 11:26:24 +0000 (UTC)
-Dkim-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1601378783;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=SgJypUbEPIAT535q8RI3FlFcphuMM5BekhRZdOSqiic=;
- b=JCZ7u/ofDmAJ50AcQuzzRNPfzQ2iCK4z9spO97wFf0XUGXLnZsJIBCymJ8rlm+F06d1JdK
- QFOkRu3qlcODLnhvIbIiUN88FOVo9NcjwSZKJafzicRfOa1BeuhIXKV/BiCBAw+ZPCoyTL
- g3HmxBHgVuJZCiFTevXKgD5pn7mz0G8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-567-eiIxPAswMom9CF-i-HQJ2Q-1; Tue, 29 Sep 2020 07:26:17 -0400
-X-MC-Unique: eiIxPAswMom9CF-i-HQJ2Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CBCAE1019624;
- Tue, 29 Sep 2020 11:26:14 +0000 (UTC)
-Received: from [10.36.113.210] (ovpn-113-210.ams2.redhat.com [10.36.113.210])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id A8CC96198E;
- Tue, 29 Sep 2020 11:26:05 +0000 (UTC)
-Subject: Re: [PATCH v12 5/6] iommu/uapi: Handle data and argsz filled by users
-To: Jacob Pan <jacob.pan.linux@gmail.com>, iommu@lists.linux-foundation.org,
- LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>,
- Jonathan Corbet <corbet@lwn.net>
-References: <1601051567-54787-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1601051567-54787-6-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <db1354ef-69fd-5bfa-1783-eccb69290326@redhat.com>
-Date: Tue, 29 Sep 2020 13:26:04 +0200
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2200185802
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 14:04:21 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TDxmDC118624;
+ Tue, 29 Sep 2020 14:03:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=CFe+cvI5nz53lfd2+KweINkQ3YP12gBpcRgZPmyn9yY=;
+ b=uUTAuRS94TAqd9hRPZZYzQIQspIUmVznDdSbHz1SrC1eO/K2NRu0Lew5h0f0rq9fo6TJ
+ 3odhIbjestgfsEsJcZWWLJ027Utn3s/p/xYo1X4LmC5tCjgCrmaxjFymCJHAUOzsK1Gq
+ qeIHY3FQeyI6KjUN3BY/uOY+UHNj26M76bVBGnMIhoULMOjwecNs82FbYvKfXs4SSwbk
+ G5HE/dSKbt0s/ShWoxTwzVaOjtxFCkfy0FGw9Eqv8mEDgvIhxyzFtslaXPEa5urqxXAs
+ 594j8vKP4/h8ILdHaIzmzVmTqmOczvNw6+Jn+8bPN9KTa5eQpvgKkQH/S5DQoKvXy33t yA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by aserp2130.oracle.com with ESMTP id 33su5au12n-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Tue, 29 Sep 2020 14:03:55 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08TE1kG5039541;
+ Tue, 29 Sep 2020 14:03:54 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+ by userp3030.oracle.com with ESMTP id 33tfjwrqg1-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 29 Sep 2020 14:03:54 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+ by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08TE3p4c009567;
+ Tue, 29 Sep 2020 14:03:51 GMT
+Received: from [10.39.214.226] (/10.39.214.226)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 29 Sep 2020 07:03:50 -0700
+Subject: Re: [PATCH 07/13] x86: Secure Launch kernel early boot stub
+To: Arvind Sankar <nivedita@alum.mit.edu>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <1600959521-24158-8-git-send-email-ross.philipson@oracle.com>
+ <20200924173801.GA103726@rani.riverdale.lan>
+ <c9ab2edf-1aaf-a1c9-92d5-2d37382a3163@oracle.com>
+ <20200925191842.GA643740@rani.riverdale.lan>
+From: Ross Philipson <ross.philipson@oracle.com>
+Autocrypt: addr=ross.philipson@oracle.com; keydata=
+ mQENBFtHZ04BCADHhtvMImplKfIEOytU7ZH4haZ9eFAqZpGeIpG9D+pzTCuReM2/49bvgNoI
+ e1xuiQFO+UEJ8FjedFjDdqY7fSw3xVdX9gLwD1Rmw0Dadc1w6sGbcoOQLHcglesu+BmcKBtU
+ tWQZkzCpEShN4etgZThk8469YnAvO08vNZsrizgrpD90T7mEYiNXxIkX87sPGbnBrL1X7RvZ
+ TaRXfE8174W+XVwGEpSiO/GjRgLW8+DFZB5MgXpCR993+U1YT9Lz97/MRzr4hqcOYry6LBYi
+ s8dOly4oP7gK15oW8Xap9+ur0Jd8Vy8o99Axq+7yunF+2KE2SwP3/w8H3VDpx7EeDhWDABEB
+ AAG0KlJvc3MgUGhpbGlwc29uIDxyb3NzLnBoaWxpcHNvbkBvcmFjbGUuY29tPokBVAQTAQgA
+ PgIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBFsN7r6v0OZTCaJ1wdpHdTZHiMYcBQJb
+ R2eBBQkJZgGzAAoJENpHdTZHiMYcPYcH/Rlp3/F3P4/2i/W0F4yQDVD6rAkejCws4KlbgC5D
+ Slkdvk6j8jOW/HNeIY3n+a3mW0iyyhZlipgYAqkK1loDiDxJjc2eUaHxiYWNLQ4CwIj2EC27
+ AWCp6hgwHNWmZrdeNbM/Z6LTFQILx5xzgX+86KNqzFV7gOcAaS2qBVz1D83dgrFZaGaao918
+ nvfe+SnImo0GaEf8nVDKgsD2zfzMBkk4q/E0mrEADFXwBHSvNCnVyrCN6Ve0dHWgI7SszUDt
+ 7v01zbGPR5mRfGuyC9gykd2SDCw5/Q27RMWfaPFL/dtiZBljUzb2yW5jicZAz7zNdDcBSUGR
+ r//wxtG4k/dBrMW5AQ0EW0dnTwEIAPelEnLDnfJnHdFR+1Thrvv3Udt/1cjqQfHqH4F8zef/
+ MsIcPV1skL7qPUYD+CrbasvmqhlPxtJAtN68inPa70fA2g0PtNmLUH1NBb2e6EjOoVZg9ais
+ BWfdYUITZouOXs2zCTFsoNWjTJANnXxexbTf1ZEqfzlVtQK+xAnXl3kiL4Y47VMbgDkGedhw
+ 3ZMWQ2zMMZqYJkPYhtlTXtedhV91DL1347ULwHsvkUJDZ0gL+WU6tYhsCOOiD61x58PfUiFb
+ /WkZEPxb96dSSSWrTlLlBWSSD24RnhfbJjfsXeSu9s4XldmGTDkj7jclMVU1xV0BUfqEwhVn
+ xR8FlC+dZvkAEQEAAYkBPAQYAQgAJgIbDBYhBFsN7r6v0OZTCaJ1wdpHdTZHiMYcBQJbR2eB
+ BQkJZgGyAAoJENpHdTZHiMYcDIAIAIRJrKjIStRvLsOOCX92s9XJPUjrC/xmtVsqVviyFWIC
+ QRPQzDE+bDSvRazudBHmcPW+BOOB5B+p7zKZzOGoZV2peG8oA/Y8oCxOYBtpbBaZ5KJexm/g
+ BbnJUwb3uhmKtDShHGUCmtq8MZBJBr6Q6xHprOU8Qnzs9Jea8NVwaz9O226Rrg4XVv/sK1Lh
+ ++xZfhi7YqKWdx5vdfdnX1xWe8ma0eXLeCDh3V6Ys+Habw1jEbMuafrcVzAbp1rMt2Lju1ls
+ BNAoxeViK7QXWfwGTmGJP++jHmo99gMqEtiohf+37N0oS6uYu6kaE7PxsEcOjWKJxW/DdgwO
+ eFq+D6xuiKk=
+Message-ID: <d34c189c-4528-0458-0b84-cfd36dc068b3@oracle.com>
+Date: Tue, 29 Sep 2020 10:03:47 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <1601051567-54787-6-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20200925191842.GA643740@rani.riverdale.lan>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- linux-api@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
- Yi Sun <yi.y.sun@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Wu Hao <hao.wu@intel.com>
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758
+ signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ spamscore=0 mlxscore=0
+ phishscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009290124
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9758
+ signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999
+ suspectscore=0
+ lowpriorityscore=0 spamscore=0 clxscore=1015 mlxscore=0 impostorscore=0
+ malwarescore=0 phishscore=0 adultscore=0 bulkscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009290124
+Cc: linux-doc@vger.kernel.org, dpsmith@apertussolutions.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, luto@amacapital.net,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+ hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,337 +154,113 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+On 9/25/20 3:18 PM, Arvind Sankar wrote:
+> On Fri, Sep 25, 2020 at 10:56:43AM -0400, Ross Philipson wrote:
+>> On 9/24/20 1:38 PM, Arvind Sankar wrote:
+>>> On Thu, Sep 24, 2020 at 10:58:35AM -0400, Ross Philipson wrote:
+>>>
+>>>> diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+>>>> index 97d37f0..42043bf 100644
+>>>> --- a/arch/x86/boot/compressed/head_64.S
+>>>> +++ b/arch/x86/boot/compressed/head_64.S
+>>>> @@ -279,6 +279,21 @@ SYM_INNER_LABEL(efi32_pe_stub_entry, SYM_L_LOCAL)
+>>>>  SYM_FUNC_END(efi32_stub_entry)
+>>>>  #endif
+>>>>  
+>>>> +#ifdef CONFIG_SECURE_LAUNCH
+>>>> +SYM_FUNC_START(sl_stub_entry)
+>>>> +	/*
+>>>> +	 * On entry, %ebx has the entry abs offset to sl_stub_entry. To
+>>>> +	 * find the beginning of where we are loaded, sub off from the
+>>>> +	 * beginning.
+>>>> +	 */
+>>>
+>>> This requirement should be added to the documentation. Is it necessary
+>>> or can this stub just figure out the address the same way as the other
+>>> 32-bit entry points, using the scratch space in bootparams as a little
+>>> stack?
+>>
+>> It is based on the state of the BSP when TXT vectors to the measured
+>> launch environment. It is documented in the TXT spec and the SDMs.
+>>
+> 
+> I think it would be useful to add to the x86 boot documentation how
+> exactly this new entry point is called, even if it's just adding a link
+> to some section of those specs. The doc should also say that an
+> mle_header_offset of 0 means the kernel isn't secure launch enabled.
 
-On 9/25/20 6:32 PM, Jacob Pan wrote:
-> IOMMU user APIs are responsible for processing user data. This patch
-> changes the interface such that user pointers can be passed into IOMMU
-> code directly. Separate kernel APIs without user pointers are introduced
-> for in-kernel users of the UAPI functionality.
-> 
-> IOMMU UAPI data has a user filled argsz field which indicates the data
-> length of the structure. User data is not trusted, argsz must be
-> validated based on the current kernel data size, mandatory data size,
-> and feature flags.
-> 
-> User data may also be extended, resulting in possible argsz increase.
-> Backward compatibility is ensured based on size and flags (or
-> the functional equivalent fields) checking.
-> 
-> This patch adds sanity checks in the IOMMU layer. In addition to argsz,
-> reserved/unused fields in padding, flags, and version are also checked.
-> Details are documented in Documentation/userspace-api/iommu.rst
-> 
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Ok will do.
 
-Thanks
-
-Eric
-> ---
->  drivers/iommu/iommu.c      | 194 +++++++++++++++++++++++++++++++++++++++++++--
->  include/linux/iommu.h      |  28 ++++---
->  include/uapi/linux/iommu.h |   1 +
->  3 files changed, 207 insertions(+), 16 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 4ae02291ccc2..a11f2733dc54 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1961,34 +1961,214 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(iommu_attach_device);
->  
-> +/*
-> + * Check flags and other user provided data for valid combinations. We also
-> + * make sure no reserved fields or unused flags are set. This is to ensure
-> + * not breaking userspace in the future when these fields or flags are used.
-> + */
-> +static int iommu_check_cache_invl_data(struct iommu_cache_invalidate_info *info)
-> +{
-> +	u32 mask;
-> +	int i;
-> +
-> +	if (info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	mask = (1 << IOMMU_CACHE_INV_TYPE_NR) - 1;
-> +	if (info->cache & ~mask)
-> +		return -EINVAL;
-> +
-> +	if (info->granularity >= IOMMU_INV_GRANU_NR)
-> +		return -EINVAL;
-> +
-> +	switch (info->granularity) {
-> +	case IOMMU_INV_GRANU_ADDR:
-> +		if (info->cache & IOMMU_CACHE_INV_TYPE_PASID)
-> +			return -EINVAL;
-> +
-> +		mask = IOMMU_INV_ADDR_FLAGS_PASID |
-> +			IOMMU_INV_ADDR_FLAGS_ARCHID |
-> +			IOMMU_INV_ADDR_FLAGS_LEAF;
-> +
-> +		if (info->granu.addr_info.flags & ~mask)
-> +			return -EINVAL;
-> +		break;
-> +	case IOMMU_INV_GRANU_PASID:
-> +		mask = IOMMU_INV_PASID_FLAGS_PASID |
-> +			IOMMU_INV_PASID_FLAGS_ARCHID;
-> +		if (info->granu.pasid_info.flags & ~mask)
-> +			return -EINVAL;
-> +
-> +		break;
-> +	case IOMMU_INV_GRANU_DOMAIN:
-> +		if (info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB)
-> +			return -EINVAL;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Check reserved padding fields */
-> +	for (i = 0; i < sizeof(info->padding); i++) {
-> +		if (info->padding[i])
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int iommu_uapi_cache_invalidate(struct iommu_domain *domain, struct device *dev,
-> -				struct iommu_cache_invalidate_info *inv_info)
-> +				void __user *uinfo)
->  {
-> +	struct iommu_cache_invalidate_info inv_info = { 0 };
-> +	u32 minsz;
-> +	int ret;
-> +
->  	if (unlikely(!domain->ops->cache_invalidate))
->  		return -ENODEV;
->  
-> -	return domain->ops->cache_invalidate(domain, dev, inv_info);
-> +	/*
-> +	 * No new spaces can be added before the variable sized union, the
-> +	 * minimum size is the offset to the union.
-> +	 */
-> +	minsz = offsetof(struct iommu_cache_invalidate_info, granu);
-> +
-> +	/* Copy minsz from user to get flags and argsz */
-> +	if (copy_from_user(&inv_info, uinfo, minsz))
-> +		return -EFAULT;
-> +
-> +	/* Fields before the variable size union are mandatory */
-> +	if (inv_info.argsz < minsz)
-> +		return -EINVAL;
-> +
-> +	/* PASID and address granu require additional info beyond minsz */
-> +	if (inv_info.granularity == IOMMU_INV_GRANU_PASID &&
-> +	    inv_info.argsz < offsetofend(struct iommu_cache_invalidate_info, granu.pasid_info))
-> +		return -EINVAL;
-> +
-> +	if (inv_info.granularity == IOMMU_INV_GRANU_ADDR &&
-> +	    inv_info.argsz < offsetofend(struct iommu_cache_invalidate_info, granu.addr_info))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * User might be using a newer UAPI header which has a larger data
-> +	 * size, we shall support the existing flags within the current
-> +	 * size. Copy the remaining user data _after_ minsz but not more
-> +	 * than the current kernel supported size.
-> +	 */
-> +	if (copy_from_user((void *)&inv_info + minsz, uinfo + minsz,
-> +			   min_t(u32, inv_info.argsz, sizeof(inv_info)) - minsz))
-> +		return -EFAULT;
-> +
-> +	/* Now the argsz is validated, check the content */
-> +	ret = iommu_check_cache_invl_data(&inv_info);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return domain->ops->cache_invalidate(domain, dev, &inv_info);
->  }
->  EXPORT_SYMBOL_GPL(iommu_uapi_cache_invalidate);
->  
-> -int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
-> -			       struct device *dev, struct iommu_gpasid_bind_data *data)
-> +static int iommu_check_bind_data(struct iommu_gpasid_bind_data *data)
-> +{
-> +	u32 mask;
-> +	int i;
-> +
-> +	if (data->version != IOMMU_GPASID_BIND_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	/* Check the range of supported formats */
-> +	if (data->format >= IOMMU_PASID_FORMAT_LAST)
-> +		return -EINVAL;
-> +
-> +	/* Check all flags */
-> +	mask = IOMMU_SVA_GPASID_VAL;
-> +	if (data->flags & ~mask)
-> +		return -EINVAL;
-> +
-> +	/* Check reserved padding fields */
-> +	for (i = 0; i < sizeof(data->padding); i++) {
-> +		if (data->padding[i])
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int iommu_sva_prepare_bind_data(void __user *udata,
-> +				       struct iommu_gpasid_bind_data *data)
-> +{
-> +	u32 minsz;
-> +
-> +	/*
-> +	 * No new spaces can be added before the variable sized union, the
-> +	 * minimum size is the offset to the union.
-> +	 */
-> +	minsz = offsetof(struct iommu_gpasid_bind_data, vendor);
-> +
-> +	/* Copy minsz from user to get flags and argsz */
-> +	if (copy_from_user(data, udata, minsz))
-> +		return -EFAULT;
-> +
-> +	/* Fields before the variable size union are mandatory */
-> +	if (data->argsz < minsz)
-> +		return -EINVAL;
-> +	/*
-> +	 * User might be using a newer UAPI header, we shall let IOMMU vendor
-> +	 * driver decide on what size it needs. Since the guest PASID bind data
-> +	 * can be vendor specific, larger argsz could be the result of extension
-> +	 * for one vendor but it should not affect another vendor.
-> +	 * Copy the remaining user data _after_ minsz
-> +	 */
-> +	if (copy_from_user((void *)data + minsz, udata + minsz,
-> +			   min_t(u32, data->argsz, sizeof(*data)) - minsz))
-> +		return -EFAULT;
-> +
-> +	return iommu_check_bind_data(data);
-> +}
-> +
-> +int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +			       void __user *udata)
->  {
-> +	struct iommu_gpasid_bind_data data = { 0 };
-> +	int ret;
-> +
->  	if (unlikely(!domain->ops->sva_bind_gpasid))
->  		return -ENODEV;
->  
-> -	return domain->ops->sva_bind_gpasid(domain, dev, data);
-> +	ret = iommu_sva_prepare_bind_data(udata, &data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return domain->ops->sva_bind_gpasid(domain, dev, &data);
->  }
->  EXPORT_SYMBOL_GPL(iommu_uapi_sva_bind_gpasid);
->  
-> -int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> -				 ioasid_t pasid)
-> +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +			     ioasid_t pasid)
->  {
->  	if (unlikely(!domain->ops->sva_unbind_gpasid))
->  		return -ENODEV;
->  
->  	return domain->ops->sva_unbind_gpasid(dev, pasid);
->  }
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
-> +
-> +int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +				 void __user *udata)
-> +{
-> +	struct iommu_gpasid_bind_data data = { 0 };
-> +	int ret;
-> +
-> +	if (unlikely(!domain->ops->sva_bind_gpasid))
-> +		return -ENODEV;
-> +
-> +	ret = iommu_sva_prepare_bind_data(udata, &data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return iommu_sva_unbind_gpasid(domain, dev, data.hpasid);
-> +}
->  EXPORT_SYMBOL_GPL(iommu_uapi_sva_unbind_gpasid);
->  
->  static void __iommu_detach_device(struct iommu_domain *domain,
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 710d5d2691eb..3ca3a40fc80f 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -426,11 +426,14 @@ extern void iommu_detach_device(struct iommu_domain *domain,
->  				struct device *dev);
->  extern int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
->  				       struct device *dev,
-> -				       struct iommu_cache_invalidate_info *inv_info);
-> +				       void __user *uinfo);
-> +
->  extern int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
-> -				      struct device *dev, struct iommu_gpasid_bind_data *data);
-> +				      struct device *dev, void __user *udata);
->  extern int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
-> -					struct device *dev, ioasid_t pasid);
-> +					struct device *dev, void __user *udata);
-> +extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> +				   struct device *dev, ioasid_t pasid);
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> @@ -1032,22 +1035,29 @@ static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
->  	return IOMMU_PASID_INVALID;
->  }
->  
-> -static inline int iommu_uapi_cache_invalidate(struct iommu_domain *domain,
-> -					      struct device *dev,
-> -					      struct iommu_cache_invalidate_info *inv_info)
-> +static inline int
-> +iommu_uapi_cache_invalidate(struct iommu_domain *domain,
-> +			    struct device *dev,
-> +			    struct iommu_cache_invalidate_info *inv_info)
->  {
->  	return -ENODEV;
->  }
->  
->  static inline int iommu_uapi_sva_bind_gpasid(struct iommu_domain *domain,
-> -					     struct device *dev,
-> -					     struct iommu_gpasid_bind_data *data)
-> +					     struct device *dev, void __user *udata)
->  {
->  	return -ENODEV;
->  }
->  
->  static inline int iommu_uapi_sva_unbind_gpasid(struct iommu_domain *domain,
-> -					       struct device *dev, int pasid)
-> +					       struct device *dev, void __user *udata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-> +					  struct device *dev,
-> +					  ioasid_t pasid)
->  {
->  	return -ENODEV;
->  }
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 5946779ac1f9..66d4ca40b40f 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -322,6 +322,7 @@ struct iommu_gpasid_bind_data {
->  #define IOMMU_GPASID_BIND_VERSION_1	1
->  	__u32 version;
->  #define IOMMU_PASID_FORMAT_INTEL_VTD	1
-> +#define IOMMU_PASID_FORMAT_LAST		2
->  	__u32 format;
->  	__u32 addr_width;
->  #define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid */
+>>>
+>>> For the 32-bit assembler code that's being added, tip/master now has
+>>> changes that prevent the compressed kernel from having any runtime
+>>> relocations.  You'll need to revise some of the code and the data
+>>> structures initial values to avoid creating relocations.
+>>
+>> Could you elaborate on this some more? I am not sure I see places in the
+>> secure launch asm that would be creating relocations like this.
+>>
+>> Thank you,
+>> Ross
+>>
+> 
+> You should see them if you do
+> 	readelf -r arch/x86/boot/compressed/vmlinux
+> 
+> In terms of the code, things like:
+> 
+> 	addl    %ebx, (sl_gdt_desc + 2)(%ebx)
+> 
+> will create a relocation, because the linker interprets this as wanting
+> the runtime address of sl_gdt_desc, rather than just the offset from
+> startup_32.
+> 
+> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/tree/arch/x86/boot/compressed/head_64.S*n48__;Iw!!GqivPVa7Brio!JpZWv1cCPZdjD2jbCCGT7P9UIVl_lhX7YjckAnUcvi927jwZI7X3nX0MpIAZOyktJds$ 
+> 
+> has a comment with some explanation and a macro that the 32-bit code in
+> startup_32 uses to avoid creating relocations.
+> 
+> Since the SL code is in a different assembler file (and a different
+> section), you can't directly use the same macro. I would suggest getting
+> rid of sl_stub_entry and entering directly at sl_stub, and then the code
+> in sl_stub.S can use sl_stub for the base address, defining the rva()
+> macro there as
+> 
+> 	#define rva(X) ((X) - sl_stub)
+> 
+> You will also need to avoid initializing data with symbol addresses.
+> 
+> 	.long mle_header
+> 	.long sl_stub_entry
+> 	.long sl_gdt
+> 
+> will create relocations. The third one is easy, just replace it with
+> sl_gdt - sl_gdt_desc and initialize it at runtime with
+> 
+> 	leal	rva(sl_gdt_desc)(%ebx), %eax
+> 	addl	%eax, 2(%eax)
+> 	lgdt	(%eax)
+> 
+> The other two are more messy, unfortunately there is no easy way to tell
+> the linker what we want here. The other entry point addresses (for the
+> EFI stub) are populated in a post-processing step after the compressed
+> kernel has been linked, we could teach it to also update kernel_info.
+> 
+> Without that, for kernel_info, you could change it to store the offset
+> of the MLE header from kernel_info, instead of from the start of the
+> image.
+> 
+> For the MLE header, it could be moved to .head.text in head_64.S, and
+> initialized with
+> 	.long rva(sl_stub)
+> This will also let it be placed at a fixed offset from startup_32, so
+> that kernel_info can just be populated with a constant.
+
+Thank you for the detailed reply. I am going to start digging into this now.
+
+Ross
+
 > 
 
 _______________________________________________
