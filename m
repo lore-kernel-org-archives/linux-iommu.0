@@ -7,76 +7,75 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E53A3C4727C
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DBF0C2D0A8
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86A852076E
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D690A2075F
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="U1YoZS0O"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86A852076E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="MU8xJXcQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D690A2075F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 30CA286054;
-	Wed, 30 Sep 2020 07:10:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 93B2886847;
+	Wed, 30 Sep 2020 07:10:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3yCQcn0VJ95k; Wed, 30 Sep 2020 07:10:44 +0000 (UTC)
+	with ESMTP id oq3BDazE-kkD; Wed, 30 Sep 2020 07:10:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A88A785008;
-	Wed, 30 Sep 2020 07:10:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DBB6586792;
+	Wed, 30 Sep 2020 07:10:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 93FCFC0889;
-	Wed, 30 Sep 2020 07:10:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C21E8C0889;
+	Wed, 30 Sep 2020 07:10:55 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5E2BC0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:43 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D1FCC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B1B268683F
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:43 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4912586792
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mNJrf30M1mO9 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 07:10:42 +0000 (UTC)
+ with ESMTP id DVhMf97QIKBM for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 07:10:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3412986792
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:42 +0000 (UTC)
-X-UUID: 2e0710118a114872b8f6f2bfe7ff0f64-20200930
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6DD988683F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:53 +0000 (UTC)
+X-UUID: 738073c326bb4aebba436f60e779267f-20200930
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=32ll1ba3Marssu44z6TcC3QfRjSBtE6bugNhwwgxSZ4=; 
- b=U1YoZS0OUoVSTdGCLCm+zEeE73+s+T+YqI9ox6zxaEykO1IMieENfIOimRn0OZyA/SPGkvwfg/HVjPEL/VOwi79CWqni+JRbFBkIF5oME3FaVOmt3F0wBOiQmTC3Mu66btRbQI9YOAwtdSCzMQNZpY8xXPFBIPw8eNszR49o8bE=;
-X-UUID: 2e0710118a114872b8f6f2bfe7ff0f64-20200930
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
+ bh=Ui4GWpIpEZeEo5yFuSRb2UvikryR+dwUjLl+SOuaZaI=; 
+ b=MU8xJXcQDmw6SBf2HliXfHXco5FDrdUA6A65X1N1qV3ZNUmuNXwh25qepKf294MhaPIZMDSgy+hsPXz8N/XqXtvYY+lG6HcUGnfXJEYda4/omcxiuTnf3ZWwyIAW9UwhYb1TEELYfMvBCJZAaRS2lSbbxKebWlqUUd8N++v4Xis=;
+X-UUID: 738073c326bb4aebba436f60e779267f-20200930
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1226348511; Wed, 30 Sep 2020 15:10:38 +0800
+ with ESMTP id 906972227; Wed, 30 Sep 2020 15:10:52 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 30 Sep 2020 15:10:36 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 30 Sep 2020 15:10:52 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Sep 2020 15:10:36 +0800
+ Transport; Wed, 30 Sep 2020 15:10:50 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Krzysztof Kozlowski <krzk@kernel.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH v3 18/24] iommu/mediatek: Support master use iova over 32bit
-Date: Wed, 30 Sep 2020 15:06:41 +0800
-Message-ID: <20200930070647.10188-19-yong.wu@mediatek.com>
+Subject: [PATCH v3 19/24] iommu/mediatek: Support up to 34bit iova in tlb flush
+Date: Wed, 30 Sep 2020 15:06:42 +0800
+Message-ID: <20200930070647.10188-20-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200930070647.10188-1-yong.wu@mediatek.com>
 References: <20200930070647.10188-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 6C0FEB249B953302BA0C92E8A7C9EF6EEC673D8C975A6A7EEE073A7124B463A52000:8
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -102,110 +101,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-After extending v7s, our pagetable already support iova reach
-16GB(34bit). the master got the iova via dma_alloc_attrs may reach
-34bits, but its HW register still is 32bit. then how to set the
-bit32/bit33 iova? this depend on a SMI larb setting(bank_sel).
+If the iova is 34bit, the iova[32][33] is the bit0/1 in the tlb flush
+register. Add a new macro for this.
 
-we separate whole 16GB iova to four banks:
-bank: 0: 0~4G; 1: 4~8G; 2: 8-12G; 3: 12-16G;
-The bank number is (iova >> 32).
-
-We will preassign which bank the larbs belong to. currently we don't
-have a interface for master to adjust its bank number.
-
-Each a bank is a iova_region which is a independent iommu-domain.
-the iova range for each iommu-domain can't cross 4G.
+there is a minor change unrelated with this patch. it also use the new
+macro.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c  | 12 +++++++++---
- drivers/memory/mtk-smi.c   |  7 +++++++
- include/soc/mediatek/smi.h |  1 +
- 3 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 87ca4f47e494..2f26a8242428 100644
+index 2f26a8242428..a2e519c86ce9 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -303,17 +303,23 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- 			     struct device *dev, bool enable)
- {
- 	struct mtk_smi_larb_iommu    *larb_mmu;
--	unsigned int                 larbid, portid;
-+	unsigned int                 larbid, portid, domid;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	const struct mtk_iommu_iova_region *region;
- 	int i;
+@@ -125,6 +125,9 @@ static const struct iommu_ops mtk_iommu_ops;
  
- 	for (i = 0; i < fwspec->num_ids; ++i) {
- 		larbid = MTK_M4U_TO_LARB(fwspec->ids[i]);
- 		portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
-+		domid = MTK_M4U_TO_DOM(fwspec->ids[i]);
+ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data);
+ 
++#define MTK_IOMMU_ADDR(addr) ({unsigned long _addr = addr; \
++			      (lower_32_bits(_addr) | upper_32_bits(_addr)); })
 +
- 		larb_mmu = &data->larb_imu[larbid];
-+		region = data->plat_data->iova_region + domid;
-+		larb_mmu->bank[portid] = upper_32_bits(region->iova_base);
- 
--		dev_dbg(dev, "%s iommu port: %d\n",
--			enable ? "enable" : "disable", portid);
-+		dev_dbg(dev, "%s iommu for larb(%s) port %d dom %d bank %d.\n",
-+			enable ? "enable" : "disable", dev_name(larb_mmu->dev),
-+			portid, domid, larb_mmu->bank[portid]);
- 
- 		if (enable)
- 			larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index ec83f1ac48b1..e94c99ca2883 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -41,6 +41,10 @@
- /* mt2712 */
- #define SMI_LARB_NONSEC_CON(id)	(0x380 + ((id) * 4))
- #define F_MMU_EN		BIT(0)
-+#define BANK_SEL(id)		({			\
-+	u32 _id = (id) & 0x3;				\
-+	(_id << 8 | _id << 10 | _id << 12 | _id << 14);	\
-+})
- 
- /* SMI COMMON */
- #define SMI_BUS_SEL			0x220
-@@ -85,6 +89,7 @@ struct mtk_smi_larb { /* larb: local arbiter */
- 	const struct mtk_smi_larb_gen	*larb_gen;
- 	int				larbid;
- 	u32				*mmu;
-+	unsigned char			*bank;
- };
- 
- static int mtk_smi_clk_enable(const struct mtk_smi *smi)
-@@ -151,6 +156,7 @@ mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
- 		if (dev == larb_mmu[i].dev) {
- 			larb->larbid = i;
- 			larb->mmu = &larb_mmu[i].mmu;
-+			larb->bank = larb_mmu[i].bank;
- 			return 0;
- 		}
- 	}
-@@ -169,6 +175,7 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
- 	for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
- 		reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
- 		reg |= F_MMU_EN;
-+		reg |= BANK_SEL(larb->bank[i]);
- 		writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
- 	}
- }
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 9371bf572ab8..4cf445dbbdaa 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -16,6 +16,7 @@
- struct mtk_smi_larb_iommu {
- 	struct device *dev;
- 	unsigned int   mmu;
-+	unsigned char  bank[32];
- };
- 
  /*
+  * In M4U 4GB mode, the physical address is remapped as below:
+  *
+@@ -213,8 +216,9 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+ 			       data->base + data->plat_data->inv_sel_reg);
+ 
+-		writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
+-		writel_relaxed(iova + size - 1,
++		writel_relaxed(MTK_IOMMU_ADDR(iova),
++			       data->base + REG_MMU_INVLD_START_A);
++		writel_relaxed(MTK_IOMMU_ADDR(iova + size - 1),
+ 			       data->base + REG_MMU_INVLD_END_A);
+ 		writel_relaxed(F_MMU_INV_RANGE,
+ 			       data->base + REG_MMU_INVALIDATE);
+@@ -634,8 +638,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 	if (data->plat_data->m4u_plat == M4U_MT8173)
+ 		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
+ 	else
+-		regval = lower_32_bits(data->protect_base) |
+-			 upper_32_bits(data->protect_base);
++		regval = MTK_IOMMU_ADDR(data->protect_base);
+ 	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+ 
+ 	if (data->enable_4GB &&
 -- 
 2.18.0
 _______________________________________________
