@@ -2,70 +2,72 @@ Return-Path: <SRS0=Vh7E=DH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC182C4727F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D5FC47420
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:05 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CA7B720659
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4DB4420659
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="GUmCkkS5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA7B720659
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="dFDx5ZNM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4DB4420659
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 62E0787211;
-	Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CD6932202C;
+	Wed, 30 Sep 2020 08:56:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wA1-bFQEhIQw; Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
+	with ESMTP id v-KDPz1iMfgd; Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5BAE486FFB;
+	by silver.osuosl.org (Postfix) with ESMTP id AD1AE20445;
 	Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 30B46C0890;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B76DC1AD7;
 	Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A3BD2C016F
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 254C3C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5F3EC20445
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:58 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 07889203D0
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DjzWflpalU9C for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 08:55:56 +0000 (UTC)
+ with ESMTP id oGvLOyn8UVD7 for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 08:55:57 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id E6603203D0
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:55 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 63EDF20400
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=Hc4ZwUam31VwnraGp3u9+lkEQz3nnsxSY58s3rx8EN0=; b=GUmCkkS5M+DSSMVNpa1ARhdAOA
- xO1GX/XB3fZ+wQwodHpr/baxLfM1+ws4Gny5Pxmnfo3SlUOIvRDrw39kG2TLkTY5ygx0ry4qqSeGJ
- IPWIRMCwy3u3fH/caphz5js/VXACSaObZ5Bfp+MoemoiCRqD5eQCtYvXVlyzBXwIAOZ+dQV8nHd4k
- JmW/GH/dHH8+I20mR3g4P/17KMvXn0UuDKyD8IfOTCnG0K5pB8msoYd5hKoxs0zxM5HADDe6wGyWA
- 1h3S1M0SgisK5DoRE9WkQVgagY0SFWqcncFM8t6V8sgMAtAVbeQJ8CmDT5lLkrTJP4gWCrpZ69Cwo
- VSXIwEqw==;
+ References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-Type:Content-ID:Content-Description;
+ bh=uoDyUocMuxzXBw/J3MbtQm99bSltpvYBdHObApmUBIs=; b=dFDx5ZNML+cWYXkIEd6M5bUEy8
+ Ar5BHcfB6+dtOGD1wBQRyRAmE2iye02HQKfsdJJfgTOpYowgxuLIxmfM81z2HFg7z31W3toGzdsFw
+ f/BScPfOqNIVdPt5GaLNORtSWW8k+e6xjfk7NoGOVGHyw3OqpC7jKOOf6ESTy4K0cgvWv/GPSbe8e
+ ZMvexOaWThxdFvgc6sKB4h5+gyp7VLAC7+6NM6awEfX5YZ65ld9mVVIg6hqMD3+Pp3PhLZgH4A75W
+ FTw9f8kDlC7dT408D7eY1r+Tw23zX0oMM9g3+slkfbQxiXQpBl5oCf7h3iXw/PQk6zieqGG4wEESw
+ +heP/yKQ==;
 Received: from [2001:4bb8:180:7b62:c70:4a89:bc61:4] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kNXtv-0003s2-OW; Wed, 30 Sep 2020 08:55:52 +0000
+ id 1kNXtz-0003sE-2r; Wed, 30 Sep 2020 08:55:55 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: clean up the DMA mapping headers
-Date: Wed, 30 Sep 2020 10:55:39 +0200
-Message-Id: <20200930085548.920261-1-hch@lst.de>
+Subject: [PATCH 2/9] dma-contiguous: remove dma_declare_contiguous
+Date: Wed, 30 Sep 2020 10:55:41 +0200
+Message-Id: <20200930085548.920261-3-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200930085548.920261-1-hch@lst.de>
+References: <20200930085548.920261-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  casper.infradead.org. See http://www.infradead.org/rpr.html
@@ -89,129 +91,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi all,
+dma_declare_contiguous is a trivial wrapper around
+dma_contiguous_reserve_area and just has a single caller.
 
-this series cleans up the dma-mapping headers by moving everything not
-required by normal drivers out of <linux/dma-mapping.h> into a new
-<linux/dma-map-ops.h> and then folding most other DMA mapping related
-headers either into the new dma-map-ops.h one, or by moving them to
-kernel/dma/ and thus out of the global scope.  A bunch of cleanups
-for the DMA CMA code are thrown in as well, as they help keeping the
-exposed bits in the header small.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/arm/mach-davinci/devices-da8xx.c | 16 +++++++++-----
+ include/linux/dma-contiguous.h        | 32 ---------------------------
+ 2 files changed, 10 insertions(+), 38 deletions(-)
 
-Diffstat:
- arch/arm/include/asm/dma-contiguous.h             |   15 
- b/Documentation/admin-guide/kernel-parameters.txt |    2 
- b/MAINTAINERS                                     |    2 
- b/arch/alpha/kernel/pci_iommu.c                   |    2 
- b/arch/arc/mm/dma.c                               |    2 
- b/arch/arm/common/dmabounce.c                     |    1 
- b/arch/arm/include/asm/dma-iommu.h                |    1 
- b/arch/arm/include/asm/dma-mapping.h              |    1 
- b/arch/arm/mach-davinci/devices-da8xx.c           |   18 -
- b/arch/arm/mach-highbank/highbank.c               |    2 
- b/arch/arm/mach-imx/mach-imx27_visstrim_m10.c     |    2 
- b/arch/arm/mach-imx/mach-mx31moboard.c            |    2 
- b/arch/arm/mach-mvebu/coherency.c                 |    2 
- b/arch/arm/mach-shmobile/setup-rcar-gen2.c        |    2 
- b/arch/arm/mm/dma-mapping-nommu.c                 |    1 
- b/arch/arm/mm/dma-mapping.c                       |    5 
- b/arch/arm/mm/init.c                              |    2 
- b/arch/arm/xen/mm.c                               |    2 
- b/arch/arm64/mm/dma-mapping.c                     |    2 
- b/arch/arm64/mm/init.c                            |    3 
- b/arch/c6x/mm/dma-coherent.c                      |    2 
- b/arch/csky/kernel/setup.c                        |    2 
- b/arch/csky/mm/dma-mapping.c                      |    4 
- b/arch/hexagon/kernel/dma.c                       |    2 
- b/arch/ia64/hp/common/sba_iommu.c                 |    2 
- b/arch/ia64/kernel/dma-mapping.c                  |    2 
- b/arch/ia64/mm/init.c                             |    2 
- b/arch/m68k/kernel/dma.c                          |    2 
- b/arch/microblaze/kernel/dma.c                    |    3 
- b/arch/microblaze/mm/consistent.c                 |    2 
- b/arch/microblaze/mm/init.c                       |    2 
- b/arch/mips/jazz/jazzdma.c                        |    2 
- b/arch/mips/kernel/setup.c                        |    2 
- b/arch/mips/mm/dma-noncoherent.c                  |    3 
- b/arch/nds32/kernel/dma.c                         |    2 
- b/arch/openrisc/kernel/dma.c                      |    2 
- b/arch/parisc/kernel/drivers.c                    |    1 
- b/arch/parisc/kernel/pci-dma.c                    |    2 
- b/arch/powerpc/include/asm/iommu.h                |    2 
- b/arch/powerpc/include/asm/pci.h                  |    2 
- b/arch/powerpc/mm/dma-noncoherent.c               |    2 
- b/arch/powerpc/platforms/ps3/system-bus.c         |    2 
- b/arch/powerpc/platforms/pseries/ibmebus.c        |    2 
- b/arch/powerpc/platforms/pseries/vio.c            |    2 
- b/arch/s390/kernel/setup.c                        |    2 
- b/arch/s390/pci/pci_dma.c                         |    2 
- b/arch/sh/boards/mach-ap325rxa/setup.c            |    1 
- b/arch/sh/boards/mach-ecovec24/setup.c            |    1 
- b/arch/sh/boards/mach-kfr2r09/setup.c             |    2 
- b/arch/sh/boards/mach-migor/setup.c               |    2 
- b/arch/sh/boards/mach-se/7724/setup.c             |    1 
- b/arch/sh/drivers/pci/fixups-dreamcast.c          |    2 
- b/arch/sh/drivers/pci/pci.c                       |    1 
- b/arch/sh/kernel/dma-coherent.c                   |    2 
- b/arch/sparc/kernel/iommu.c                       |    2 
- b/arch/sparc/kernel/ioport.c                      |    2 
- b/arch/sparc/kernel/pci_sun4v.c                   |    1 
- b/arch/sparc/mm/io-unit.c                         |    2 
- b/arch/sparc/mm/iommu.c                           |    2 
- b/arch/x86/include/asm/dma-mapping.h              |    2 
- b/arch/x86/kernel/amd_gart_64.c                   |    1 
- b/arch/x86/kernel/pci-dma.c                       |    2 
- b/arch/x86/kernel/setup.c                         |    2 
- b/arch/x86/xen/pci-swiotlb-xen.c                  |    2 
- b/arch/xtensa/kernel/pci-dma.c                    |    3 
- b/arch/xtensa/mm/init.c                           |    2 
- b/drivers/acpi/arm64/iort.c                       |    2 
- b/drivers/acpi/scan.c                             |    2 
- b/drivers/base/dd.c                               |    2 
- b/drivers/dma-buf/heaps/cma_heap.c                |    2 
- b/drivers/gpu/drm/exynos/exynos_drm_dma.c         |    2 
- b/drivers/gpu/drm/msm/msm_gem.c                   |    1 
- b/drivers/iommu/amd/iommu.c                       |    3 
- b/drivers/iommu/dma-iommu.c                       |    3 
- b/drivers/iommu/intel/iommu.c                     |    4 
- b/drivers/media/platform/exynos4-is/fimc-is.c     |    1 
- b/drivers/misc/mic/bus/mic_bus.c                  |    1 
- b/drivers/misc/mic/bus/scif_bus.c                 |    2 
- b/drivers/misc/mic/bus/scif_bus.h                 |    2 
- b/drivers/misc/mic/bus/vop_bus.c                  |    2 
- b/drivers/misc/mic/host/mic_boot.c                |    1 
- b/drivers/of/device.c                             |    1 
- b/drivers/parisc/ccio-dma.c                       |    1 
- b/drivers/parisc/sba_iommu.c                      |    1 
- b/drivers/pci/pci-driver.c                        |    1 
- b/drivers/pci/xen-pcifront.c                      |    1 
- b/drivers/remoteproc/remoteproc_core.c            |    1 
- b/drivers/remoteproc/remoteproc_virtio.c          |    2 
- b/drivers/vdpa/vdpa_sim/vdpa_sim.c                |    2 
- b/drivers/xen/swiotlb-xen.c                       |    2 
- b/include/asm-generic/Kbuild                      |    1 
- b/include/linux/dma-direct.h                      |  108 -------
- b/include/linux/dma-map-ops.h                     |  339 ++++++++++++++++++++++
- b/include/linux/dma-mapping.h                     |  172 -----------
- b/kernel/dma/Kconfig                              |    2 
- b/kernel/dma/coherent.c                           |    1 
- b/kernel/dma/contiguous.c                         |   42 ++
- b/kernel/dma/debug.c                              |    5 
- b/kernel/dma/debug.h                              |   44 --
- b/kernel/dma/direct.c                             |    4 
- b/kernel/dma/direct.h                             |  119 +++++++
- b/kernel/dma/dummy.c                              |    2 
- b/kernel/dma/mapping.c                            |    5 
- b/kernel/dma/ops_helpers.c                        |    3 
- b/kernel/dma/pool.c                               |    3 
- b/kernel/dma/swiotlb.c                            |    2 
- b/kernel/dma/virt.c                               |    2 
- b/mm/memory.c                                     |    1 
- include/asm-generic/dma-contiguous.h              |   10 
- include/linux/dma-contiguous.h                    |  182 -----------
- include/linux/dma-noncoherent.h                   |  109 -------
- 111 files changed, 620 insertions(+), 737 deletions(-)
+diff --git a/arch/arm/mach-davinci/devices-da8xx.c b/arch/arm/mach-davinci/devices-da8xx.c
+index feb206bdf6e172..2e2853582b459e 100644
+--- a/arch/arm/mach-davinci/devices-da8xx.c
++++ b/arch/arm/mach-davinci/devices-da8xx.c
+@@ -884,6 +884,7 @@ early_param("rproc_mem", early_rproc_mem);
+ 
+ void __init da8xx_rproc_reserve_cma(void)
+ {
++	struct cma *cma;
+ 	int ret;
+ 
+ 	if (!rproc_base || !rproc_size) {
+@@ -897,13 +898,16 @@ void __init da8xx_rproc_reserve_cma(void)
+ 	pr_info("%s: reserving 0x%lx @ 0x%lx...\n",
+ 		__func__, rproc_size, (unsigned long)rproc_base);
+ 
+-	ret = dma_declare_contiguous(&da8xx_dsp.dev, rproc_size, rproc_base, 0);
+-	if (ret)
+-		pr_err("%s: dma_declare_contiguous failed %d\n", __func__, ret);
+-	else
+-		rproc_mem_inited = true;
++	ret = dma_contiguous_reserve_area(rproc_size, rproc_base, 0, &cma,
++			true);
++	if (ret) {
++		pr_err("%s: dma_contiguous_reserve_area failed %d\n",
++			__func__, ret);
++		return;
++	}
++	dev_set_cma_area(&da8xx_dsp.dev, cma);
++	rproc_mem_inited = true;
+ }
+-
+ #else
+ 
+ void __init da8xx_rproc_reserve_cma(void)
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
+index fe55e004f1f433..62fd55d0723546 100644
+--- a/include/linux/dma-contiguous.h
++++ b/include/linux/dma-contiguous.h
+@@ -83,31 +83,6 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+ 				       phys_addr_t limit, struct cma **res_cma,
+ 				       bool fixed);
+ 
+-/**
+- * dma_declare_contiguous() - reserve area for contiguous memory handling
+- *			      for particular device
+- * @dev:   Pointer to device structure.
+- * @size:  Size of the reserved memory.
+- * @base:  Start address of the reserved memory (optional, 0 for any).
+- * @limit: End address of the reserved memory (optional, 0 for any).
+- *
+- * This function reserves memory for specified device. It should be
+- * called by board specific code when early allocator (memblock or bootmem)
+- * is still activate.
+- */
+-
+-static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+-					 phys_addr_t base, phys_addr_t limit)
+-{
+-	struct cma *cma;
+-	int ret;
+-	ret = dma_contiguous_reserve_area(size, base, limit, &cma, true);
+-	if (ret == 0)
+-		dev_set_cma_area(dev, cma);
+-
+-	return ret;
+-}
+-
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int order, bool no_warn);
+ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+@@ -135,13 +110,6 @@ static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base
+ 	return -ENOSYS;
+ }
+ 
+-static inline
+-int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+-			   phys_addr_t base, phys_addr_t limit)
+-{
+-	return -ENOSYS;
+-}
+-
+ static inline
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+ 				       unsigned int order, bool no_warn)
+-- 
+2.28.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
