@@ -8,89 +8,89 @@ X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F67CC4727F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 05:10:09 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43A8C2D0A8
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 05:10:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D4F182074A
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 05:10:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 37CC92074A
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 05:10:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JEKFiD9I"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D4F182074A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G+eIUnDi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 37CC92074A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 295A92041B;
-	Wed, 30 Sep 2020 05:10:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BBC85871AD;
+	Wed, 30 Sep 2020 05:10:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TM5adZg4w8Z4; Wed, 30 Sep 2020 05:10:07 +0000 (UTC)
+	with ESMTP id MOpg42aeeOGu; Wed, 30 Sep 2020 05:10:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 31BBC2041D;
-	Wed, 30 Sep 2020 05:10:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4FBCE871B4;
+	Wed, 30 Sep 2020 05:10:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EBD7C016F;
-	Wed, 30 Sep 2020 05:10:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1553FC0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C3B6C016F;
+	Wed, 30 Sep 2020 05:10:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8427FC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DBE0C2041D
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:05 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 73AEA85F75
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XTCrGqsagzh8 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 05:10:04 +0000 (UTC)
+ with ESMTP id l6LhBRpaGBqP for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 05:10:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
- [209.85.167.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 3118E2041B
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:04 +0000 (UTC)
-Received: by mail-lf1-f67.google.com with SMTP id b12so545166lfp.9
- for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 22:10:04 -0700 (PDT)
+Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
+ [209.85.208.194])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1AE718506B
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 05:10:11 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id w3so456478ljo.5
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Sep 2020 22:10:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=cEH+zGuhb7boZPnK+5qwlskD7dzNXbs2N7hqt0FYXtI=;
- b=JEKFiD9IhMc0d2BR62xEDLkwxPUNZ5O5AdjXzgRfQBoaNRDPyAaOzVSksh5qzthbOn
- cYaL2EEnInhh9d9qCI/VzTHM1UAFrtLeelC6pPjdHatdMhlXKjkbIwO7k0//RsZkRsjS
- 423U++/3789kQEX1LWZcA5NE/DgIeZJI+acgQJ9GYvKAG4XiCcvjr/EDmHXnhenbvhwx
- tuH8F9P/YTm19nRrmsNVTDY6ylX+zAyu5FzeFSHMQ0xbRSvwdp3IfcWatk/brX3Rh49h
- ptCq5FurX26gGHPZHjo9Rvr1ERKApIQju9F9KmmigUZ9gY3kmkYyPPHkqXtglU0jw/ww
- +Fsg==
+ bh=+bNH00/3TyfIl7ZmwUbB3/9mSNJL/xs6urc84WGD8GQ=;
+ b=G+eIUnDiiFVQqLzVvhzNbtgRd8FBnc+NxeAyEMeLgwyr3gEs/cYEv5/Nr4xHPbeaUH
+ R2+9LBdcKv2hwfzKBaeocX1H/DCOXwH0lkIuZmUaPBobHONWj+WEyV0rQY6xvHXpjc68
+ Ky0zPRMmYSYRLlw2zXvJbBZjPZdsNWpR8JpeCA2nHzvcChEqV1+BkZI2Dlv3a+3zrekF
+ IqBaxtYCYmnwgy84Fy55K72QFMB7DfqVQku9auLfwv2G76FMU/YnbASLCbOEo0cO5ctS
+ o4JkTfi2qCiqyHsk2HInQR4mbI2fYRfE0oYBkrJKIM4QWl/jld/n9JgQhf/EVBttuPJK
+ 6Mrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:message-id:date
  :user-agent:mime-version:in-reply-to:content-language
  :content-transfer-encoding;
- bh=cEH+zGuhb7boZPnK+5qwlskD7dzNXbs2N7hqt0FYXtI=;
- b=IXYww6tVmwOu8wvbvluoojpJGVbkl50DclXlO3HfW82mt7xzx14Gn2KXc39PqDjABJ
- V4ug5YWsiW1fEGgsXf/KCniEMJhQgj8YrKx/l49rlulK/TGJRlxwbhoLIqvx2fuS0fFO
- iHM+DlAuzsbL1Z7AstGRczvI1RB/zH8c833E1XZT3SxubnlY1HgLukAK7JyggCdDVBVH
- eDLx6wZZtMx1gE73S/vtCluzuSCZ62S3jYoI679sOL3h9GcdVc2ytOXkmTGeqmJzHGeg
- 3uETHWsWAl2FZEAtRZTmf6SWiCJRfryd/CCBYycP6WKPcARPed/sI3vXS79Z0mRkIAlt
- 59pg==
-X-Gm-Message-State: AOAM531T6fzAO3HG4s7+gagSRL1Mk4mybuph5lCehOJN92EDl0RZg1KX
- gKVFS09gCOs9pll+iN/nMB4=
-X-Google-Smtp-Source: ABdhPJyOrfcyT8AJjKsE9UZTICu54D13qTLp0F9P1YPzBCvcB7eAm/HnfeYg1e2/Xa+QzTIeCRVeNA==
-X-Received: by 2002:a19:8bc2:: with SMTP id n185mr211884lfd.211.1601442601966; 
- Tue, 29 Sep 2020 22:10:01 -0700 (PDT)
+ bh=+bNH00/3TyfIl7ZmwUbB3/9mSNJL/xs6urc84WGD8GQ=;
+ b=aaxF+yRAah87KTiPAdklNMbjPqaFkvomR0mdlO9lcc3zMWeyJAhXg+7rwqyXoIyXuV
+ qbr57CJoVAP58QgdzTaqyFLWK8p/cEUVhJdiI7ZUR6L3UJOL5GCwr3f686c8lK8d88fd
+ 3PMHoVk2niI8rwEu9t9AOPMT0dtchYE9SsJXdiVpWh2jaxFHNhdEWrplwemw3Bi1c56g
+ rHRbOPZGTDQs0gE4cIfK1w4m5Ly+eZ2afjj+4r75htS2epD4VGx1j047P5YLgZctevMx
+ qUb26xMnQr6x+JCADkEbdsWd+KsQ7aF239TH2sxcO/Xrz0o+Y96z1SJ6CNhMdHbtC8+E
+ 9dKQ==
+X-Gm-Message-State: AOAM533c4+9Y18cqhu4MafPmf8enWw2S7NrBsYGF0p5U3HO/X9VLt+oZ
+ pHA3lkjxsQgBiSabNzmIXlI=
+X-Google-Smtp-Source: ABdhPJyBeiHR9Qc67e7ldwWWy0bPbLVPgS64Y2llKuUrtKUpPvGasO3B2VdR5oOOslPZQ9jKVsvWlw==
+X-Received: by 2002:a2e:3304:: with SMTP id d4mr292406ljc.440.1601442609011;
+ Tue, 29 Sep 2020 22:10:09 -0700 (PDT)
 Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
  [109.252.170.211])
- by smtp.googlemail.com with ESMTPSA id v196sm54763lfa.96.2020.09.29.22.10.00
+ by smtp.googlemail.com with ESMTPSA id x73sm54949lfa.94.2020.09.29.22.10.08
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 29 Sep 2020 22:10:00 -0700 (PDT)
+ Tue, 29 Sep 2020 22:10:08 -0700 (PDT)
 Subject: Re: [PATCH v2 3/3] iommu/tegra-smmu: Add PCI support
 To: Nicolin Chen <nicoleotsuka@gmail.com>, thierry.reding@gmail.com,
  joro@8bytes.org, krzk@kernel.org
 References: <20200930003013.31289-1-nicoleotsuka@gmail.com>
  <20200930003013.31289-4-nicoleotsuka@gmail.com>
 From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <27b155ec-97ab-98f6-7b48-3fded875d5cc@gmail.com>
-Date: Wed, 30 Sep 2020 08:10:00 +0300
+Message-ID: <f07d4fcc-ee19-874b-c542-0679660c3549@gmail.com>
+Date: Wed, 30 Sep 2020 08:10:07 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
@@ -115,9 +115,12 @@ Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MzAuMDkuMjAyMCAwMzozMCwgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Ci4uLgo+ICsjaWZkZWYg
-Q09ORklHX1BDSQo+ICsJaWYgKCFpb21tdV9wcmVzZW50KCZwY2lfYnVzX3R5cGUpKSB7CgpDb3Vs
-ZCB5b3UgcGxlYXNlIGV4cGxhaW4gd2h5IHRoaXMgY2hlY2sgaXMgbmVlZGVkPwpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+MzAuMDkuMjAyMCAwMzozMCwgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gLQlncm91cC0+Z3Jv
+dXAgPSBpb21tdV9ncm91cF9hbGxvYygpOwo+ICsJZ3JvdXAtPmdyb3VwID0gcGNpID8gcGNpX2Rl
+dmljZV9ncm91cChkZXYpIDogaW9tbXVfZ3JvdXBfYWxsb2MoKTsKClRoaXMgd2lsbCBiZSBuaWNl
+ciB0byB3cml0ZSBhczoKCmlmIChkZXZfaXNfcGNpKGRldikpCiAgICBncm91cC0+Z3JvdXAgPSBw
+Y2lfZGV2aWNlX2dyb3VwKGRldik7CmVsc2UKICAgIGdyb3VwLT5ncm91cCA9IGdlbmVyaWNfZGV2
+aWNlX2dyb3VwKGRldik7Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
