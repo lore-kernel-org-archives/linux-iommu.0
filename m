@@ -7,77 +7,76 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A17AC4727F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:07:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7EDC2D0A8
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:08:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B871A20BED
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:07:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 68FB92145D
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:08:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="WyjxxvIG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B871A20BED
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="kVAVcmKF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68FB92145D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6BD7A204B5;
-	Wed, 30 Sep 2020 07:07:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1A3A3867AE;
+	Wed, 30 Sep 2020 07:08:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BifvEsqw5kEk; Wed, 30 Sep 2020 07:07:29 +0000 (UTC)
+	with ESMTP id R7Sto3ibeG+k; Wed, 30 Sep 2020 07:07:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CE37420446;
-	Wed, 30 Sep 2020 07:07:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 51D5B8683F;
+	Wed, 30 Sep 2020 07:07:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4A02C0889;
-	Wed, 30 Sep 2020 07:07:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 315FCC1AD6;
+	Wed, 30 Sep 2020 07:07:59 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46CFFC0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:28 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D2C1C0889
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 357B586822
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:28 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 713E786838
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2kFRRPDw2iPA for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 07:07:26 +0000 (UTC)
+ with ESMTP id GZAG4RMzPRml for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 07:07:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 46A86867AE
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:26 +0000 (UTC)
-X-UUID: a9e1b03a8cd5403b9141da278220aa07-20200930
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2B583867AE
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:07:52 +0000 (UTC)
+X-UUID: 6f15bc5e8b6e4af79ab5cc4381aa988a-20200930
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=QWub3L+ccr/eJHzjUEIZRm19MHx5falCYtlORP3uryQ=; 
- b=WyjxxvIGTpuWtXUVf5mpNkPXIFW349/vqRj7MSJsmVK1SKsb/kQWHLGZy+FLOEl9PJ1dbJFpQ9xIp/FmOvo3HQ2Q0xmN07GbqagArYbMuhudohB0NMV2hNCHtpYYbs7eLRZUx40NTRF4uoprzl4yVgJ1KIwkbFvWbO46JCnsFOI=;
-X-UUID: a9e1b03a8cd5403b9141da278220aa07-20200930
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
+ bh=Mlf2GwHop96saVmabqgU5HVRCsxvQNPFbWb6Z3AQyMg=; 
+ b=kVAVcmKFerBMWFX/7HD+2efdnm1FfiWXwHY/09aq5p2nx4FkYxORbKsF1PSbmMCXcI7u5m2tkZ8gjJYJXSy7zTvgz0XJTxOnEMo2mg2R6ieSf6olKL8o4JxZ013jhM815+BTXmIpYeJ+/QZZjZrH5Rp2WJiWP/eayMdxjvwIP08=;
+X-UUID: 6f15bc5e8b6e4af79ab5cc4381aa988a-20200930
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 919837546; Wed, 30 Sep 2020 15:07:20 +0800
+ with ESMTP id 1987852866; Wed, 30 Sep 2020 15:07:50 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 30 Sep 2020 15:07:16 +0800
+ mtkmbs08n1.mediatek.inc (172.21.101.55) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 30 Sep 2020 15:07:40 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Sep 2020 15:07:15 +0800
+ Transport; Wed, 30 Sep 2020 15:07:41 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Krzysztof Kozlowski <krzk@kernel.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH v3 01/24] dt-bindings: iommu: mediatek: Convert IOMMU to DT
- schema
-Date: Wed, 30 Sep 2020 15:06:24 +0800
-Message-ID: <20200930070647.10188-2-yong.wu@mediatek.com>
+Subject: [PATCH v3 03/24] dt-bindings: memory: mediatek: Add a common
+ larb-port header file
+Date: Wed, 30 Sep 2020 15:06:26 +0800
+Message-ID: <20200930070647.10188-4-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200930070647.10188-1-yong.wu@mediatek.com>
 References: <20200930070647.10188-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 98A02145FE27BB9A30E7185DFB45C7ED9B1B7E39BB6B948EB11B042E961A9C452000:8
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -103,285 +102,93 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Convert MediaTek IOMMU to DT schema.
+Put all the macros about smi larb/port togethers, this is a preparing
+patch for extending LARB_NR and adding new dom-id support.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/iommu/mediatek,iommu.txt         | 103 ------------
- .../bindings/iommu/mediatek,iommu.yaml        | 154 ++++++++++++++++++
- 2 files changed, 154 insertions(+), 103 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
- create mode 100644 Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+ include/dt-bindings/memory/mt2712-larb-port.h  |  2 +-
+ include/dt-bindings/memory/mt6779-larb-port.h  |  2 +-
+ include/dt-bindings/memory/mt8173-larb-port.h  |  2 +-
+ include/dt-bindings/memory/mt8183-larb-port.h  |  2 +-
+ include/dt-bindings/memory/mtk-smi-larb-port.h | 15 +++++++++++++++
+ 5 files changed, 19 insertions(+), 4 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mtk-smi-larb-port.h
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-deleted file mode 100644
-index c1ccd8582eb2..000000000000
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-+++ /dev/null
-@@ -1,103 +0,0 @@
--* Mediatek IOMMU Architecture Implementation
--
--  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U), and
--this M4U have two generations of HW architecture. Generation one uses flat
--pagetable, and only supports 4K size page mapping. Generation two uses the
--ARM Short-Descriptor translation table format for address translation.
--
--  About the M4U Hardware Block Diagram, please check below:
--
--              EMI (External Memory Interface)
--               |
--              m4u (Multimedia Memory Management Unit)
--               |
--          +--------+
--          |        |
--      gals0-rx   gals1-rx    (Global Async Local Sync rx)
--          |        |
--          |        |
--      gals0-tx   gals1-tx    (Global Async Local Sync tx)
--          |        |          Some SoCs may have GALS.
--          +--------+
--               |
--           SMI Common(Smart Multimedia Interface Common)
--               |
--       +----------------+-------
--       |                |
--       |             gals-rx        There may be GALS in some larbs.
--       |                |
--       |                |
--       |             gals-tx
--       |                |
--   SMI larb0        SMI larb1   ... SoCs have several SMI local arbiter(larb).
--   (display)         (vdec)
--       |                |
--       |                |
-- +-----+-----+     +----+----+
-- |     |     |     |    |    |
-- |     |     |...  |    |    |  ... There are different ports in each larb.
-- |     |     |     |    |    |
--OVL0 RDMA0 WDMA0  MC   PP   VLD
--
--  As above, The Multimedia HW will go through SMI and M4U while it
--access EMI. SMI is a bridge between m4u and the Multimedia HW. It contain
--smi local arbiter and smi common. It will control whether the Multimedia
--HW should go though the m4u for translation or bypass it and talk
--directly with EMI. And also SMI help control the power domain and clocks for
--each local arbiter.
--  Normally we specify a local arbiter(larb) for each multimedia HW
--like display, video decode, and camera. And there are different ports
--in each larb. Take a example, There are many ports like MC, PP, VLD in the
--video decode local arbiter, all these ports are according to the video HW.
--  In some SoCs, there may be a GALS(Global Async Local Sync) module between
--smi-common and m4u, and additional GALS module between smi-larb and
--smi-common. GALS can been seen as a "asynchronous fifo" which could help
--synchronize for the modules in different clock frequency.
--
--Required properties:
--- compatible : must be one of the following string:
--	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
--	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
--	"mediatek,mt6779-m4u" for mt6779 which uses generation two m4u HW.
--	"mediatek,mt7623-m4u", "mediatek,mt2701-m4u" for mt7623 which uses
--						     generation one m4u HW.
--	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
--	"mediatek,mt8183-m4u" for mt8183 which uses generation two m4u HW.
--- reg : m4u register base and size.
--- interrupts : the interrupt of m4u.
--- clocks : must contain one entry for each clock-names.
--- clock-names : Only 1 optional clock:
--  - "bclk": the block clock of m4u.
--  Here is the list which require this "bclk":
--  - mt2701, mt2712, mt7623 and mt8173.
--  Note that m4u use the EMI clock which always has been enabled before kernel
--  if there is no this "bclk".
--- mediatek,larbs : List of phandle to the local arbiters in the current Socs.
--	Refer to bindings/memory-controllers/mediatek,smi-larb.txt. It must sort
--	according to the local arbiter index, like larb0, larb1, larb2...
--- iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
--	Specifies the mtk_m4u_id as defined in
--	dt-binding/memory/mt2701-larb-port.h for mt2701, mt7623
--	dt-binding/memory/mt2712-larb-port.h for mt2712,
--	dt-binding/memory/mt6779-larb-port.h for mt6779,
--	dt-binding/memory/mt8173-larb-port.h for mt8173, and
--	dt-binding/memory/mt8183-larb-port.h for mt8183.
--
--Example:
--	iommu: iommu@10205000 {
--		compatible = "mediatek,mt8173-m4u";
--		reg = <0 0x10205000 0 0x1000>;
--		interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&infracfg CLK_INFRA_M4U>;
--		clock-names = "bclk";
--		mediatek,larbs = <&larb0 &larb1 &larb2 &larb3 &larb4 &larb5>;
--		#iommu-cells = <1>;
--	};
--
--Example for a client device:
--	display {
--		compatible = "mediatek,mt8173-disp";
--		iommus = <&iommu M4U_PORT_DISP_OVL0>,
--			 <&iommu M4U_PORT_DISP_RDMA0>;
--		...
--	};
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+diff --git a/include/dt-bindings/memory/mt2712-larb-port.h b/include/dt-bindings/memory/mt2712-larb-port.h
+index 6f9aa7349cef..b6b2c6bf4459 100644
+--- a/include/dt-bindings/memory/mt2712-larb-port.h
++++ b/include/dt-bindings/memory/mt2712-larb-port.h
+@@ -6,7 +6,7 @@
+ #ifndef __DTS_IOMMU_PORT_MT2712_H
+ #define __DTS_IOMMU_PORT_MT2712_H
+ 
+-#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++#include <dt-bindings/memory/mtk-smi-larb-port.h>
+ 
+ #define M4U_LARB0_ID			0
+ #define M4U_LARB1_ID			1
+diff --git a/include/dt-bindings/memory/mt6779-larb-port.h b/include/dt-bindings/memory/mt6779-larb-port.h
+index 2ad0899fbf2f..60f57f54393e 100644
+--- a/include/dt-bindings/memory/mt6779-larb-port.h
++++ b/include/dt-bindings/memory/mt6779-larb-port.h
+@@ -7,7 +7,7 @@
+ #ifndef _DTS_IOMMU_PORT_MT6779_H_
+ #define _DTS_IOMMU_PORT_MT6779_H_
+ 
+-#define MTK_M4U_ID(larb, port)		 (((larb) << 5) | (port))
++#include <dt-bindings/memory/mtk-smi-larb-port.h>
+ 
+ #define M4U_LARB0_ID			 0
+ #define M4U_LARB1_ID			 1
+diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
+index 9f31ccfeca21..d8c99c946053 100644
+--- a/include/dt-bindings/memory/mt8173-larb-port.h
++++ b/include/dt-bindings/memory/mt8173-larb-port.h
+@@ -6,7 +6,7 @@
+ #ifndef __DTS_IOMMU_PORT_MT8173_H
+ #define __DTS_IOMMU_PORT_MT8173_H
+ 
+-#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++#include <dt-bindings/memory/mtk-smi-larb-port.h>
+ 
+ #define M4U_LARB0_ID			0
+ #define M4U_LARB1_ID			1
+diff --git a/include/dt-bindings/memory/mt8183-larb-port.h b/include/dt-bindings/memory/mt8183-larb-port.h
+index 2c579f305162..275c095a6fd6 100644
+--- a/include/dt-bindings/memory/mt8183-larb-port.h
++++ b/include/dt-bindings/memory/mt8183-larb-port.h
+@@ -6,7 +6,7 @@
+ #ifndef __DTS_IOMMU_PORT_MT8183_H
+ #define __DTS_IOMMU_PORT_MT8183_H
+ 
+-#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++#include <dt-bindings/memory/mtk-smi-larb-port.h>
+ 
+ #define M4U_LARB0_ID			0
+ #define M4U_LARB1_ID			1
+diff --git a/include/dt-bindings/memory/mtk-smi-larb-port.h b/include/dt-bindings/memory/mtk-smi-larb-port.h
 new file mode 100644
-index 000000000000..eae773ad53a3
+index 000000000000..2ec7fe5ce4e9
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -0,0 +1,154 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/mediatek,iommu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/include/dt-bindings/memory/mtk-smi-larb-port.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2020 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ */
++#ifndef __DTS_MTK_IOMMU_PORT_H_
++#define __DTS_MTK_IOMMU_PORT_H_
 +
-+title: MediaTek IOMMU Architecture Implementation
++#define MTK_LARB_NR_MAX			16
 +
-+maintainers:
-+  - Yong Wu <yong.wu@mediatek.com>
++#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++#define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0xf)
++#define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
 +
-+description: |+
-+  Some MediaTek SOCs contain a Multimedia Memory Management Unit (M4U), and
-+  this M4U have two generations of HW architecture. Generation one uses flat
-+  pagetable, and only supports 4K size page mapping. Generation two uses the
-+  ARM Short-Descriptor translation table format for address translation.
-+
-+  About the M4U Hardware Block Diagram, please check below:
-+
-+                EMI (External Memory Interface)
-+                 |
-+                m4u (Multimedia Memory Management Unit)
-+                 |
-+            +--------+
-+            |        |
-+        gals0-rx   gals1-rx    (Global Async Local Sync rx)
-+            |        |
-+            |        |
-+        gals0-tx   gals1-tx    (Global Async Local Sync tx)
-+            |        |          Some SoCs may have GALS.
-+            +--------+
-+                 |
-+             SMI Common(Smart Multimedia Interface Common)
-+                 |
-+         +----------------+-------
-+         |                |
-+         |             gals-rx        There may be GALS in some larbs.
-+         |                |
-+         |                |
-+         |             gals-tx
-+         |                |
-+     SMI larb0        SMI larb1   ... SoCs have several SMI local arbiter(larb).
-+     (display)         (vdec)
-+         |                |
-+         |                |
-+   +-----+-----+     +----+----+
-+   |     |     |     |    |    |
-+   |     |     |...  |    |    |  ... There are different ports in each larb.
-+   |     |     |     |    |    |
-+  OVL0 RDMA0 WDMA0  MC   PP   VLD
-+
-+  As above, The Multimedia HW will go through SMI and M4U while it
-+  access EMI. SMI is a bridge between m4u and the Multimedia HW. It contain
-+  smi local arbiter and smi common. It will control whether the Multimedia
-+  HW should go though the m4u for translation or bypass it and talk
-+  directly with EMI. And also SMI help control the power domain and clocks for
-+  each local arbiter.
-+
-+  Normally we specify a local arbiter(larb) for each multimedia HW
-+  like display, video decode, and camera. And there are different ports
-+  in each larb. Take a example, There are many ports like MC, PP, VLD in the
-+  video decode local arbiter, all these ports are according to the video HW.
-+
-+  In some SoCs, there may be a GALS(Global Async Local Sync) module between
-+  smi-common and m4u, and additional GALS module between smi-larb and
-+  smi-common. GALS can been seen as a "asynchronous fifo" which could help
-+  synchronize for the modules in different clock frequency.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-m4u # mt2701 generation one HW
-+          - mediatek,mt2712-m4u # mt2712 generation two HW
-+          - mediatek,mt6779-m4u # mt6779 generation two HW
-+          - mediatek,mt8173-m4u # mt8173 generation two HW
-+          - mediatek,mt8183-m4u # mt8183 generation two HW
-+
-+      - description: mt7623 generation one HW
-+        items:
-+          - const: mediatek,mt7623-m4u
-+          - const: mediatek,mt2701-m4u
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    description: |
-+      bclk is optional. here is the list which require this bclk:
-+      mt2701, mt2712, mt7623 and mt8173.
-+      M4U will use the EMI clock which always has been enabled before
-+      kernel if there is no this bclk.
-+    items:
-+      - description: bclk is the block clock.
-+
-+  clock-names:
-+    items:
-+      - const: bclk
-+
-+  mediatek,larbs:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: |
-+      List of phandle to the local arbiters in the current Socs.
-+      Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
-+      according to the local arbiter index, like larb0, larb1, larb2...
-+
-+  '#iommu-cells':
-+    const: 1
-+    description: |
-+      This is the mtk_m4u_id according to the HW. Specifies the mtk_m4u_id as
-+      defined in
-+      dt-binding/memory/mt2701-larb-port.h for mt2701 and mt7623,
-+      dt-binding/memory/mt2712-larb-port.h for mt2712,
-+      dt-binding/memory/mt6779-larb-port.h for mt6779,
-+      dt-binding/memory/mt8173-larb-port.h for mt8173,
-+      dt-binding/memory/mt8183-larb-port.h for mt8183.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - mediatek,larbs
-+  - '#iommu-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8173-clk.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    iommu: iommu@10205000 {
-+            compatible = "mediatek,mt8173-m4u";
-+            reg = <0x10205000 0x1000>;
-+            interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
-+            clocks = <&infracfg CLK_INFRA_M4U>;
-+            clock-names = "bclk";
-+            mediatek,larbs = <&larb0 &larb1 &larb2
-+                              &larb3 &larb4 &larb5>;
-+            #iommu-cells = <1>;
-+    };
-+
-+  - |
-+    #include <dt-bindings/memory/mt8173-larb-port.h>
-+
-+    /* Example for a client device */
-+    display {
-+           compatible = "mediatek,mt8173-disp";
-+           iommus = <&iommu M4U_PORT_DISP_OVL0>,
-+                    <&iommu M4U_PORT_DISP_RDMA0>;
-+     };
++#endif
 -- 
 2.18.0
 _______________________________________________
