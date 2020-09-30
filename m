@@ -2,71 +2,71 @@ Return-Path: <SRS0=MyXX=DI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EFEC47426
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A96C4727F
 	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A702B2074A
+	by mail.kernel.org (Postfix) with ESMTPS id 435472074A
 	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A702B2074A
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 435472074A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5245C87260;
-	Thu,  1 Oct 2020 00:11:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EA1AE84EE4;
+	Thu,  1 Oct 2020 00:11:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qeCUdY2p9P9d; Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
+	with ESMTP id J7eMIXNNV3ae; Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 08B24865F6;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C4F2A86204;
 	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4120C1AD7;
-	Thu,  1 Oct 2020 00:11:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B1972C1AD6;
+	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55A0AC0051
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3717FC016F
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4505A86450
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 25D9286408
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1j2fB-IvOjgy for <iommu@lists.linux-foundation.org>;
+ with ESMTP id lrMhzs3gR1qH for <iommu@lists.linux-foundation.org>;
  Thu,  1 Oct 2020 00:11:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 78DAD86408
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 607B4862B2
  for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:54 +0000 (UTC)
-IronPort-SDR: a82aJtxR8SuBwWThBzkZkXt0Ol7T9BZHVAFXmII1YYk+rygSjRt1w9vv4H3GvIQTFf8H1hLGKc
- MEX9fzauZo0w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180732766"
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="180732766"
+IronPort-SDR: m2g1qNCIBgQBqpJGxodyrnxwGSzzOkzGeVWCYpQKzwzaB/vFa+6oOOO00lNLAGeKJMDoFeBYE2
+ mC3ORTnYYwRg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180732763"
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="180732763"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  30 Sep 2020 17:11:53 -0700
-IronPort-SDR: lVo9eSJj/IsN5Tg8pw5RGLMuIXcMyrmWK9AaVbfUi3wA8q7P8r6CKxmc7b53nZ13n3/xa6tn3D
- u74eIkb3wLXA==
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="500276783"
+IronPort-SDR: ecRCQUVC8v++2cPeL1lorRs9faCWDyGZOxQsFpGl2GZKv6va+M4jDxLzS3WO9ptp68I2+wrgmD
+ lE6fRIpAzsww==
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="500276757"
 Received: from km-skylake-client-platform.sc.intel.com ([10.3.52.153])
  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Sep 2020 17:11:53 -0700
+ 30 Sep 2020 17:11:52 -0700
 From: Kyung Min Park <kyung.min.park@intel.com>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux-foundation.org
-Subject: [RESEND PATCH 3/4] iommu/vt-d: Audit IOMMUs for Interrupt Remapping
- features
-Date: Wed, 30 Sep 2020 16:53:08 -0700
-Message-Id: <20200930235309.22841-4-kyung.min.park@intel.com>
+Subject: [RESEND PATCH 2/4] iommu/vt-d: Report out when IOMMU features have
+ inconsistencies
+Date: Wed, 30 Sep 2020 16:53:07 -0700
+Message-Id: <20200930235309.22841-3-kyung.min.park@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200930235309.22841-1-kyung.min.park@intel.com>
 References: <20200930235309.22841-1-kyung.min.park@intel.com>
@@ -90,179 +90,195 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Audit IOMMU Capability/Extended Capabilities for Interrupt Remapping.
-Check if the IOMMUs have the consistent value for the features as below.
-When the features are not matched among IOMMUs, report out the IOMMU
-features during irq remapping initialization. Audit IOMMUs again
-when a device is hot plugged.
+IOMMU features as below can have incompatibilities among IOMMUs.
+Audit IOMMU Capability/Extended Capability and check if the IOMMUs have
+the consistent value for features as below. Report out when features as
+below have incompatibility among IOMMUs.
 
 Report out features when below features are mismatched:
-  - Posted Interrupts (PI)
-  - Extended Interrupt Mode (EIM)
+  - First Level 5 Level Paging Support (FL5LP)
+  - First Level 1 GByte Page Support (FL1GP)
+  - Read Draining (DRD)
+  - Write Draining (DWD)
+  - Page Selective Invalidation (PSI)
+  - Caching Mode (CM)
+  - Protected High/Low-Memory Region (PHMR/PLMR)
+  - Scalable Mode Page Walk Coherency (SMPWC)
+  - First Level Translation Support (FLTS)
+  - Second Level Translation Support (SLTS)
+  - Second Level Accessed/Dirty Support (SLADS)
+  - Virtual Command Support (VCS)
+  - Scalable Mode Translation Support (SMTS)
+  - Device TLB Invalidation Throttle (DIT)
+  - Page Drain Support (PDS)
+  - Nested Translation Support (NEST)
+  - Snoop Control (SC)
+  - Pass Through (PT)
+  - Device TLB Support (DT)
+  - Queued Invalidation (QI)
+  - Page walk Coherency (C)
 
 Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
 ---
- drivers/iommu/intel/Makefile        |  2 +-
- drivers/iommu/intel/audit.c         | 39 ++++++++++++++++++++++++-----
- drivers/iommu/intel/audit.h         |  4 +++
- drivers/iommu/intel/irq_remapping.c |  8 ++++++
- 4 files changed, 46 insertions(+), 7 deletions(-)
+ drivers/iommu/intel/audit.c | 48 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/audit.h | 43 +++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  2 ++
+ 3 files changed, 93 insertions(+)
 
-diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-index 02c26acb479f..b5760c4abc54 100644
---- a/drivers/iommu/intel/Makefile
-+++ b/drivers/iommu/intel/Makefile
-@@ -4,4 +4,4 @@ obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o audit.o
- obj-$(CONFIG_INTEL_IOMMU) += trace.o
- obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
- obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
--obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
-+obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o audit.o
 diff --git a/drivers/iommu/intel/audit.c b/drivers/iommu/intel/audit.c
-index f783acabb402..e005bc61770a 100644
+index 2893170f5b6c..f783acabb402 100644
 --- a/drivers/iommu/intel/audit.c
 +++ b/drivers/iommu/intel/audit.c
-@@ -27,6 +27,13 @@ bool get_cap_audit_svm_sanity(void)
- 	return svm_sanity_check;
- }
+@@ -13,6 +13,8 @@
+ #include "audit.h"
  
-+static inline void check_irq_capabilities(struct intel_iommu *a,
-+					  struct intel_iommu *b)
-+{
-+	CHECK_FEATURE_MISMATCH(a, b, cap, pi_support, CAP_PI_MASK);
-+	CHECK_FEATURE_MISMATCH(a, b, ecap, eim_support, ECAP_EIM_MASK);
-+}
-+
- static inline void check_dmar_capabilities(struct intel_iommu *a,
- 					   struct intel_iommu *b)
+ static bool svm_sanity_check = true;
++/* global variables that hold feature consistency and minimum features */
++static u64 intel_iommu_cap_sanity = ~0ULL;
+ static u64 intel_iommu_ecap_sanity = ~0ULL;
+ 
+ static void set_cap_audit_svm_sanity(bool svm_sanity)
+@@ -30,12 +32,58 @@ static inline void check_dmar_capabilities(struct intel_iommu *a,
  {
-@@ -57,10 +64,17 @@ static inline void check_dmar_capabilities(struct intel_iommu *a,
- 	CHECK_FEATURE_MISMATCH(a, b, ecap, coherent, ECAP_C_MASK);
+ 	if (MINIMAL_SVM_ECAP & (a->ecap ^ b->ecap))
+ 		set_cap_audit_svm_sanity(false);
++
++	CHECK_FEATURE_MISMATCH(a, b, cap, 5lp_support, CAP_FL5LP_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, fl1gp_support, CAP_FL1GP_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, read_drain, CAP_RD_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, write_drain, CAP_WD_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, pgsel_inv, CAP_PSI_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, caching_mode, CAP_CM_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, phmr, CAP_PHMR_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, cap, plmr, CAP_PLMR_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, smpwc, ECAP_SMPWC_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, flts, ECAP_FLTS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, slts, ECAP_SLTS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, slads, ECAP_SLADS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, vcs, ECAP_VCS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, smts, ECAP_SMTS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, pds, ECAP_PDS_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, dit, ECAP_DIT_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, nest, ECAP_NEST_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, sc_support, ECAP_SC_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, pass_through, ECAP_PT_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, dev_iotlb_support, ECAP_DT_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, qis, ECAP_QI_MASK);
++	CHECK_FEATURE_MISMATCH(a, b, ecap, coherent, ECAP_C_MASK);
  }
  
--static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu)
-+static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu,
-+					    bool audit_irq)
+ static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu)
  {
  	bool mismatch = false;
  
-+	if (audit_irq) {
-+		CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, pi_support, CAP_PI_MASK);
-+		CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, eim_support, ECAP_EIM_MASK);
-+		goto out;
-+	}
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, 5lp_support, CAP_FL5LP_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, fl1gp_support, CAP_FL1GP_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, read_drain, CAP_RD_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, write_drain, CAP_WD_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, pgsel_inv, CAP_PSI_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, caching_mode, CAP_CM_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, phmr, CAP_PHMR_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, plmr, CAP_PLMR_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, smpwc, ECAP_SMPWC_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, flts, ECAP_FLTS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, slts, ECAP_SLTS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, slads, ECAP_SLADS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, vcs, ECAP_VCS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, smts, ECAP_SMTS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, pds, ECAP_PDS_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, dit, ECAP_DIT_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, nest, ECAP_NEST_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, sc_support, ECAP_SC_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, pass_through, ECAP_PT_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, dev_iotlb_support, ECAP_DT_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, qis, ECAP_QI_MASK);
++	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, coherent, ECAP_C_MASK);
 +
- 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, 5lp_support, CAP_FL5LP_MASK);
- 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, fl1gp_support, CAP_FL1GP_MASK);
- 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, cap, read_drain, CAP_RD_MASK);
-@@ -103,7 +117,7 @@ static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu)
- 	return 0;
- }
- 
--static int audit_iommu_capabilities(void)
-+static int audit_iommu_capabilities(bool audit_irq)
- {
- 	struct dmar_drhd_unit *first_drhd, *drhd;
- 	struct intel_iommu *iommu;
-@@ -117,8 +131,17 @@ static int audit_iommu_capabilities(void)
+ 	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
  		goto out;
- 	}
  
--	for_each_active_iommu(iommu, drhd)
--		check_dmar_capabilities(first_drhd->iommu, iommu);
-+	for_each_active_iommu(iommu, drhd) {
-+		if (audit_irq)
-+			check_irq_capabilities(first_drhd->iommu, iommu);
-+		else
-+			check_dmar_capabilities(first_drhd->iommu, iommu);
-+	}
-+
-+	if (audit_irq) {
-+		ret = 0;
-+		goto out;
-+	}
- 
- 	if (get_cap_audit_svm_sanity())
- 		intel_iommu_ecap_sanity = (intel_iommu_ecap_sanity & ~MINIMAL_SVM_ECAP) |
-@@ -134,9 +157,13 @@ int intel_iommu_audit_capabilities(enum cap_audit_type type, struct intel_iommu
- {
- 	switch (type) {
- 	case CAP_AUDIT_STATIC_DMAR:
--		return audit_iommu_capabilities();
-+		return audit_iommu_capabilities(false);
-+	case CAP_AUDIT_STATIC_IRQR:
-+		return audit_iommu_capabilities(true);
- 	case CAP_AUDIT_HOTPLUG_DMAR:
--		return audit_iommu_capabilities_hotplug(iommu);
-+		return audit_iommu_capabilities_hotplug(iommu, false);
-+	case CAP_AUDIT_HOTPLUG_IRQR:
-+		return audit_iommu_capabilities_hotplug(iommu, true);
- 	default:
- 		return -EFAULT;
- 	}
 diff --git a/drivers/iommu/intel/audit.h b/drivers/iommu/intel/audit.h
-index e3a370405f82..6dfebe8e8fbe 100644
+index 887900d9517d..e3a370405f82 100644
 --- a/drivers/iommu/intel/audit.h
 +++ b/drivers/iommu/intel/audit.h
-@@ -11,6 +11,7 @@
-  * Capability Register Mask
+@@ -7,19 +7,62 @@
+  * Author: Kyung Min Park <kyung.min.park@intel.com>
   */
- #define CAP_FL5LP_MASK		BIT(60)
-+#define CAP_PI_MASK		BIT(59)
- #define CAP_FL1GP_MASK		BIT(56)
- #define CAP_RD_MASK		BIT(55)
- #define CAP_WD_MASK		BIT(54)
-@@ -38,6 +39,7 @@
- #define ECAP_NEST_MASK		BIT(26)
- #define ECAP_SC_MASK		BIT(7)
- #define ECAP_PT_MASK		BIT(6)
-+#define ECAP_EIM_MASK		BIT(4)
- #define ECAP_DT_MASK		BIT(2)
- #define ECAP_QI_MASK		BIT(1)
- #define ECAP_C_MASK		BIT(0)
-@@ -65,7 +67,9 @@ do { \
  
++/*
++ * Capability Register Mask
++ */
++#define CAP_FL5LP_MASK		BIT(60)
++#define CAP_FL1GP_MASK		BIT(56)
++#define CAP_RD_MASK		BIT(55)
++#define CAP_WD_MASK		BIT(54)
++#define CAP_PSI_MASK		BIT(39)
++#define CAP_CM_MASK		BIT(7)
++#define CAP_PHMR_MASK		BIT(6)
++#define CAP_PLMR_MASK		BIT(5)
++
+ /*
+  * Extended Capability Register Mask
+  */
++#define ECAP_SMPWC_MASK		BIT(48)
+ #define ECAP_FLTS_MASK		BIT(47)
++#define ECAP_SLTS_MASK		BIT(46)
++#define ECAP_SLADS_MASK		BIT(45)
++#define ECAP_VCS_MASK		BIT(44)
++#define ECAP_SMTS_MASK		BIT(43)
++#define ECAP_PDS_MASK		BIT(42)
++#define ECAP_DIT_MASK		BIT(41)
+ #define ECAP_PASID_MASK		BIT(40)
+ #define ECAP_EAFS_MASK		BIT(34)
+ #define ECAP_SRS_MASK		BIT(31)
+ #define ECAP_ERS_MASK		BIT(30)
+ #define ECAP_PRS_MASK		BIT(29)
++#define ECAP_NEST_MASK		BIT(26)
++#define ECAP_SC_MASK		BIT(7)
++#define ECAP_PT_MASK		BIT(6)
++#define ECAP_DT_MASK		BIT(2)
++#define ECAP_QI_MASK		BIT(1)
++#define ECAP_C_MASK		BIT(0)
+ 
+ #define MINIMAL_SVM_ECAP (ECAP_FLTS_MASK | ECAP_PASID_MASK | ECAP_EAFS_MASK | \
+ 			  ECAP_SRS_MASK | ECAP_ERS_MASK | ECAP_PRS_MASK)
+ 
++#define DO_CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
++do { \
++	if (cap##_##feature(a) != cap##_##feature(b)) { \
++		intel_iommu_##cap##_sanity &= ~(MASK); \
++		pr_info("IOMMU feature %s inconsistent.", #feature); \
++	} \
++} while (0)
++
++#define CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
++	DO_CHECK_FEATURE_MISMATCH((a)->cap, (b)->cap, cap, feature, MASK)
++
++#define CHECK_FEATURE_MISMATCH_HOTPLUG(b, cap, feature, MASK) \
++do { \
++	if (cap##_##feature(intel_iommu_##cap##_sanity)) \
++		DO_CHECK_FEATURE_MISMATCH(intel_iommu_##cap##_sanity, \
++					  (b)->cap, cap, feature, MASK); \
++} while (0)
++
  enum cap_audit_type {
  	CAP_AUDIT_STATIC_DMAR,
-+	CAP_AUDIT_STATIC_IRQR,
  	CAP_AUDIT_HOTPLUG_DMAR,
-+	CAP_AUDIT_HOTPLUG_IRQR,
- };
- 
- int intel_iommu_audit_capabilities(enum cap_audit_type type, struct intel_iommu *iommu);
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 8f4ce72570ce..7c77e0754896 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -23,6 +23,7 @@
- #include <asm/msidef.h>
- 
- #include "../irq_remapping.h"
-+#include "audit.h"
- 
- enum irq_mode {
- 	IRQ_REMAPPING,
-@@ -737,6 +738,9 @@ static int __init intel_prepare_irq_remapping(void)
- 	if (dmar_table_init() < 0)
- 		return -ENODEV;
- 
-+	if (intel_iommu_audit_capabilities(CAP_AUDIT_STATIC_IRQR, NULL))
-+		goto error;
-+
- 	if (!dmar_ir_support())
- 		return -ENODEV;
- 
-@@ -1470,6 +1474,10 @@ static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
- 	int ret;
- 	int eim = x2apic_enabled();
- 
-+	ret = intel_iommu_audit_capabilities(CAP_AUDIT_HOTPLUG_IRQR, iommu);
-+	if (ret)
-+		return ret;
-+
- 	if (eim && !ecap_eim_support(iommu->ecap)) {
- 		pr_info("DRHD %Lx: EIM not supported by DRHD, ecap %Lx\n",
- 			iommu->reg_phys, iommu->ecap);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index b1ed2f25f7c0..6744f00a144a 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -171,8 +171,10 @@
+ #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
+ #define ecap_flts(e)		(((e) >> 47) & 0x1)
+ #define ecap_slts(e)		(((e) >> 46) & 0x1)
++#define ecap_slads(e)		(((e) >> 45) & 0x1)
+ #define ecap_vcs(e)		(((e) >> 44) & 0x1)
+ #define ecap_smts(e)		(((e) >> 43) & 0x1)
++#define ecap_pds(e)		(((e) >> 42) & 0x1)
+ #define ecap_dit(e)		((e >> 41) & 0x1)
+ #define ecap_pasid(e)		((e >> 40) & 0x1)
+ #define ecap_pss(e)		((e >> 35) & 0x1f)
 -- 
 2.17.1
 
