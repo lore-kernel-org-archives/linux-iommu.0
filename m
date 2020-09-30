@@ -7,65 +7,64 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE50C47428
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:16 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE284C47429
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:17 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F0C320738
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7232720754
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="W3yrPRZq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F0C320738
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JoVeTh8Y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7232720754
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3DC8986142;
-	Wed, 30 Sep 2020 08:56:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lgiHpD2a3DMO; Wed, 30 Sep 2020 08:56:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 509BF85F10;
-	Wed, 30 Sep 2020 08:56:15 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A15EC0890;
-	Wed, 30 Sep 2020 08:56:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7CCC4C016F
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5F65922654
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1975020445;
+	Wed, 30 Sep 2020 08:56:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SReXVweZptfX; Wed, 30 Sep 2020 08:56:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 7BA5F220C1;
+	Wed, 30 Sep 2020 08:56:09 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 655DFC0890;
+	Wed, 30 Sep 2020 08:56:09 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC607C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:07 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9B7838684F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:07 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2d6ud-wKX7yp for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 08:56:07 +0000 (UTC)
+ with ESMTP id 3phtbzxGPIdb for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 08:56:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 3D3982155B
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:07 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D2A6E86844
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=HbQ6m17pq6ato1qhmBn11ulfqsTTotEdbjnmREJ4qwI=; b=W3yrPRZq2GYwbFtfQyUjs2jhqk
- tcwGGDJf/Q9EwEA/R1pqoNCS0iu1NiHuwCrLBSAIk81AviOiwP5p4eIqoY5t9XVpCgYiKXCWPfAah
- RnwQleeay5fa3M9kTJhZ75UOnXxbp6DBRFxk6duecHl7ScKcNCYNrs44geKXZ0aSIfs15fSecN3bd
- 1lMnOmY9aLnGUw5HwSuMk8NIcVmBNTQ6BWbjtSeGs9r4CSBWDj/mg0+yXosVbgxzKew35bIpm0+l1
- DuN3oZLt7gNCcWuVYAOq5dFaPupwAa6QHzmpJzi22LiqHD39wSTl4cOnV29gGkCqnG1Ht8jap3n1S
- SOJ1wwtQ==;
+ bh=M/VB7RvUTqS7x6MU8faY6GolcBOVninwR3B54x3JU50=; b=JoVeTh8YB//F+evVVlupMsVdR/
+ 8lD0UcXPlZXeEGa30mLglM4b9PE5IWaFUvLbOJmbmICt7B/F/sRMpXMJ5i53QhV49/cMoysKiK0Ro
+ yyqI6gsyosaoVkiI1bG4lCqNhf7HnwLzSBwBGyBaVvzhCP/Jr6OL4ehojSqROB+vWRxhLbFu6A2m4
+ 3oTFzZjaH1PPAUPCnWjLEflk2zVIyLyuV4irHTFbErKafNmN7h4kEzWVwm2irTScRNoRHC0bj/RS4
+ OV4pM6s+NV4oRUPMwSBLdsjbrMUycUpExitGwd6l/hnDoHol5I1ol7avH+wWdMgoqrl3XiIhfAP7Z
+ FFWV+NLg==;
 Received: from [2001:4bb8:180:7b62:c70:4a89:bc61:4] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kNXu8-0003u8-Jj; Wed, 30 Sep 2020 08:56:05 +0000
+ id 1kNXu5-0003tA-AQ; Wed, 30 Sep 2020 08:56:01 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 8/9] dma-mapping: move large parts of <linux/dma-direct.h> to
- kernel/dma
-Date: Wed, 30 Sep 2020 10:55:47 +0200
-Message-Id: <20200930085548.920261-9-hch@lst.de>
+Subject: [PATCH 6/9] dma-mapping: remove <asm/dma-contiguous.h>
+Date: Wed, 30 Sep 2020 10:55:45 +0200
+Message-Id: <20200930085548.920261-7-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200930085548.920261-1-hch@lst.de>
 References: <20200930085548.920261-1-hch@lst.de>
@@ -92,303 +91,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Most of the dma_direct symbols should only be used by direct.c and
-mapping.c, so move them to kernel/dma.  In fact more of dma-direct.h
-should eventually move, but that will require more coordination with
-other subsystems.
+Just provide a weak default definition of dma_contiguous_early_fixup and
+let arm override it.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/dma-direct.h | 106 ---------------------------------
- kernel/dma/direct.c        |   2 +-
- kernel/dma/direct.h        | 119 +++++++++++++++++++++++++++++++++++++
- kernel/dma/mapping.c       |   2 +-
- 4 files changed, 121 insertions(+), 108 deletions(-)
- create mode 100644 kernel/dma/direct.h
+ arch/arm/include/asm/dma-contiguous.h | 15 ---------------
+ arch/arm/mm/dma-mapping.c             |  1 -
+ include/asm-generic/Kbuild            |  1 -
+ include/asm-generic/dma-contiguous.h  | 10 ----------
+ include/linux/dma-map-ops.h           |  2 ++
+ kernel/dma/contiguous.c               |  6 +++++-
+ 6 files changed, 7 insertions(+), 28 deletions(-)
+ delete mode 100644 arch/arm/include/asm/dma-contiguous.h
+ delete mode 100644 include/asm-generic/dma-contiguous.h
 
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 38ed3b55034d50..a2d6640c42c04e 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -120,114 +120,8 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- void dma_direct_free_pages(struct device *dev, size_t size,
- 		struct page *page, dma_addr_t dma_addr,
- 		enum dma_data_direction dir);
--int dma_direct_get_sgtable(struct device *dev, struct sg_table *sgt,
--		void *cpu_addr, dma_addr_t dma_addr, size_t size,
--		unsigned long attrs);
--bool dma_direct_can_mmap(struct device *dev);
--int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
--		void *cpu_addr, dma_addr_t dma_addr, size_t size,
--		unsigned long attrs);
- int dma_direct_supported(struct device *dev, u64 mask);
--bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr);
--int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
--		enum dma_data_direction dir, unsigned long attrs);
- dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs);
--size_t dma_direct_max_mapping_size(struct device *dev);
- 
--#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
--    defined(CONFIG_SWIOTLB)
--void dma_direct_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
--		int nents, enum dma_data_direction dir);
--#else
--static inline void dma_direct_sync_sg_for_device(struct device *dev,
--		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
--{
--}
+diff --git a/arch/arm/include/asm/dma-contiguous.h b/arch/arm/include/asm/dma-contiguous.h
+deleted file mode 100644
+index d785187a6f8ac1..00000000000000
+--- a/arch/arm/include/asm/dma-contiguous.h
++++ /dev/null
+@@ -1,15 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef ASMARM_DMA_CONTIGUOUS_H
+-#define ASMARM_DMA_CONTIGUOUS_H
+-
+-#ifdef __KERNEL__
+-#ifdef CONFIG_DMA_CMA
+-
+-#include <linux/types.h>
+-
+-void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size);
+-
+-#endif
 -#endif
 -
--#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
--    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL) || \
--    defined(CONFIG_SWIOTLB)
--void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
--		int nents, enum dma_data_direction dir, unsigned long attrs);
--void dma_direct_sync_sg_for_cpu(struct device *dev,
--		struct scatterlist *sgl, int nents, enum dma_data_direction dir);
--#else
--static inline void dma_direct_unmap_sg(struct device *dev,
--		struct scatterlist *sgl, int nents, enum dma_data_direction dir,
--		unsigned long attrs)
--{
--}
--static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
--		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
--{
--}
 -#endif
--
--static inline void dma_direct_sync_single_for_device(struct device *dev,
--		dma_addr_t addr, size_t size, enum dma_data_direction dir)
--{
--	phys_addr_t paddr = dma_to_phys(dev, addr);
--
--	if (unlikely(is_swiotlb_buffer(paddr)))
--		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_DEVICE);
--
--	if (!dev_is_dma_coherent(dev))
--		arch_sync_dma_for_device(paddr, size, dir);
--}
--
--static inline void dma_direct_sync_single_for_cpu(struct device *dev,
--		dma_addr_t addr, size_t size, enum dma_data_direction dir)
--{
--	phys_addr_t paddr = dma_to_phys(dev, addr);
--
--	if (!dev_is_dma_coherent(dev)) {
--		arch_sync_dma_for_cpu(paddr, size, dir);
--		arch_sync_dma_for_cpu_all();
--	}
--
--	if (unlikely(is_swiotlb_buffer(paddr)))
--		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
--
--	if (dir == DMA_FROM_DEVICE)
--		arch_dma_mark_clean(paddr, size);
--}
--
--static inline dma_addr_t dma_direct_map_page(struct device *dev,
--		struct page *page, unsigned long offset, size_t size,
--		enum dma_data_direction dir, unsigned long attrs)
--{
--	phys_addr_t phys = page_to_phys(page) + offset;
--	dma_addr_t dma_addr = phys_to_dma(dev, phys);
--
--	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
--		return swiotlb_map(dev, phys, size, dir, attrs);
--
--	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
--		if (swiotlb_force != SWIOTLB_NO_FORCE)
--			return swiotlb_map(dev, phys, size, dir, attrs);
--
--		dev_WARN_ONCE(dev, 1,
--			     "DMA addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
--			     &dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);
--		return DMA_MAPPING_ERROR;
--	}
--
--	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		arch_sync_dma_for_device(phys, size, dir);
--	return dma_addr;
--}
--
--static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
--{
--	phys_addr_t phys = dma_to_phys(dev, addr);
--
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
--
--	if (unlikely(is_swiotlb_buffer(phys)))
--		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
--}
- #endif /* _LINUX_DMA_DIRECT_H */
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 87697c86f0b82a..bf9f77623022bb 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -7,13 +7,13 @@
- #include <linux/memblock.h> /* for max_pfn */
- #include <linux/export.h>
- #include <linux/mm.h>
--#include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
- #include <linux/scatterlist.h>
- #include <linux/pfn.h>
- #include <linux/vmalloc.h>
- #include <linux/set_memory.h>
- #include <linux/slab.h>
-+#include "direct.h"
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 154c24cec94c74..911fc6ea26071e 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -34,7 +34,6 @@
+ #include <asm/dma-iommu.h>
+ #include <asm/mach/map.h>
+ #include <asm/system_info.h>
+-#include <asm/dma-contiguous.h>
+ #include <xen/swiotlb-xen.h>
  
- /*
-  * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use it
-diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-new file mode 100644
-index 00000000000000..b9861557873768
---- /dev/null
-+++ b/kernel/dma/direct.h
-@@ -0,0 +1,119 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2018 Christoph Hellwig.
-+ *
-+ * DMA operations that map physical memory directly without using an IOMMU.
-+ */
-+#ifndef _KERNEL_DMA_DIRECT_H
-+#define _KERNEL_DMA_DIRECT_H
+ #include "dma.h"
+diff --git a/include/asm-generic/Kbuild b/include/asm-generic/Kbuild
+index 74b0612601dd1b..62ebdc731ee239 100644
+--- a/include/asm-generic/Kbuild
++++ b/include/asm-generic/Kbuild
+@@ -16,7 +16,6 @@ mandatory-y += current.h
+ mandatory-y += delay.h
+ mandatory-y += device.h
+ mandatory-y += div64.h
+-mandatory-y += dma-contiguous.h
+ mandatory-y += dma-mapping.h
+ mandatory-y += dma.h
+ mandatory-y += emergency-restart.h
+diff --git a/include/asm-generic/dma-contiguous.h b/include/asm-generic/dma-contiguous.h
+deleted file mode 100644
+index f24b0f9a4f05b6..00000000000000
+--- a/include/asm-generic/dma-contiguous.h
++++ /dev/null
+@@ -1,10 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _ASM_GENERIC_DMA_CONTIGUOUS_H
+-#define _ASM_GENERIC_DMA_CONTIGUOUS_H
+-
+-#include <linux/types.h>
+-
+-static inline void
+-dma_contiguous_early_fixup(phys_addr_t base, unsigned long size) { }
+-
+-#endif
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 474fc81bd4921c..7912f5d00ed950 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -116,6 +116,8 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+ 				 int count);
+ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
+ void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
 +
-+#include <linux/dma-direct.h>
-+
-+int dma_direct_get_sgtable(struct device *dev, struct sg_table *sgt,
-+		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		unsigned long attrs);
-+bool dma_direct_can_mmap(struct device *dev);
-+int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
-+		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		unsigned long attrs);
-+bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr);
-+int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
-+		enum dma_data_direction dir, unsigned long attrs);
-+size_t dma_direct_max_mapping_size(struct device *dev);
-+
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+    defined(CONFIG_SWIOTLB)
-+void dma_direct_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-+		int nents, enum dma_data_direction dir);
-+#else
-+static inline void dma_direct_sync_sg_for_device(struct device *dev,
-+		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-+{
-+}
-+#endif
-+
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL) || \
-+    defined(CONFIG_SWIOTLB)
-+void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-+		int nents, enum dma_data_direction dir, unsigned long attrs);
-+void dma_direct_sync_sg_for_cpu(struct device *dev,
-+		struct scatterlist *sgl, int nents, enum dma_data_direction dir);
-+#else
-+static inline void dma_direct_unmap_sg(struct device *dev,
-+		struct scatterlist *sgl, int nents, enum dma_data_direction dir,
-+		unsigned long attrs)
-+{
-+}
-+static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
-+		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-+{
-+}
-+#endif
-+
-+static inline void dma_direct_sync_single_for_device(struct device *dev,
-+		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-+{
-+	phys_addr_t paddr = dma_to_phys(dev, addr);
-+
-+	if (unlikely(is_swiotlb_buffer(paddr)))
-+		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_DEVICE);
-+
-+	if (!dev_is_dma_coherent(dev))
-+		arch_sync_dma_for_device(paddr, size, dir);
-+}
-+
-+static inline void dma_direct_sync_single_for_cpu(struct device *dev,
-+		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-+{
-+	phys_addr_t paddr = dma_to_phys(dev, addr);
-+
-+	if (!dev_is_dma_coherent(dev)) {
-+		arch_sync_dma_for_cpu(paddr, size, dir);
-+		arch_sync_dma_for_cpu_all();
-+	}
-+
-+	if (unlikely(is_swiotlb_buffer(paddr)))
-+		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
-+
-+	if (dir == DMA_FROM_DEVICE)
-+		arch_dma_mark_clean(paddr, size);
-+}
-+
-+static inline dma_addr_t dma_direct_map_page(struct device *dev,
-+		struct page *page, unsigned long offset, size_t size,
-+		enum dma_data_direction dir, unsigned long attrs)
-+{
-+	phys_addr_t phys = page_to_phys(page) + offset;
-+	dma_addr_t dma_addr = phys_to_dma(dev, phys);
-+
-+	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
-+		return swiotlb_map(dev, phys, size, dir, attrs);
-+
-+	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
-+		if (swiotlb_force != SWIOTLB_NO_FORCE)
-+			return swiotlb_map(dev, phys, size, dir, attrs);
-+
-+		dev_WARN_ONCE(dev, 1,
-+			     "DMA addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
-+			     &dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);
-+		return DMA_MAPPING_ERROR;
-+	}
-+
-+	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		arch_sync_dma_for_device(phys, size, dir);
-+	return dma_addr;
-+}
-+
-+static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	phys_addr_t phys = dma_to_phys(dev, addr);
-+
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
-+
-+	if (unlikely(is_swiotlb_buffer(phys)))
-+		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
-+}
-+#endif /* _KERNEL_DMA_DIRECT_H */
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 335ba183e0956a..51bb8fa8eb8948 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -7,7 +7,6 @@
-  */
- #include <linux/memblock.h> /* for max_pfn */
- #include <linux/acpi.h>
--#include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
- #include <linux/export.h>
- #include <linux/gfp.h>
-@@ -15,6 +14,7 @@
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include "debug.h"
-+#include "direct.h"
++void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size);
+ #else /* CONFIG_DMA_CMA */
+ static inline struct cma *dev_get_cma_area(struct device *dev)
+ {
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 6bfb763fff6fca..a2ee330a3749ec 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -44,7 +44,6 @@
+ #endif
  
- /*
-  * Managed DMA API
+ #include <asm/page.h>
+-#include <asm/dma-contiguous.h>
+ 
+ #include <linux/memblock.h>
+ #include <linux/err.h>
+@@ -212,6 +211,11 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 	}
+ }
+ 
++void __weak
++dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
++{
++}
++
+ /**
+  * dma_contiguous_reserve_area() - reserve custom contiguous area
+  * @size: Size of the reserved area (in bytes),
 -- 
 2.28.0
 
