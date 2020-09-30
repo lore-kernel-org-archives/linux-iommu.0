@@ -2,120 +2,103 @@ Return-Path: <SRS0=Vh7E=DH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F51DC4727E
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 13:08:43 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C015C4727C
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 14:41:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E2C402075F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 13:08:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2C402075F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8671E2076B
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 14:41:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JNkZLJZ5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8671E2076B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8513382419;
-	Wed, 30 Sep 2020 13:08:42 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 19030860FD;
+	Wed, 30 Sep 2020 14:41:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0xgQyGPPSgx3; Wed, 30 Sep 2020 13:08:40 +0000 (UTC)
+	with ESMTP id DrabuwKFx0t2; Wed, 30 Sep 2020 14:41:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 733AE81F70;
-	Wed, 30 Sep 2020 13:08:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9BF0685F10;
+	Wed, 30 Sep 2020 14:41:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C36DC0889;
-	Wed, 30 Sep 2020 13:08:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A85BAC0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 13:08:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A8C7C016F;
+	Wed, 30 Sep 2020 14:41:33 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28102C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 14:41:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9C4F4204D8
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 13:08:38 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0F014871D2
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 14:41:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zrgpQS0795g4 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 13:08:35 +0000 (UTC)
+ with ESMTP id eyI7kH+Z-Hd9 for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 14:41:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by silver.osuosl.org (Postfix) with ESMTPS id 300E920489
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 13:08:35 +0000 (UTC)
-IronPort-SDR: MmjG9DhBEujMhQZxGXqB3QjUCfN/5svTWomfCEqm90lyPwyWreDgy8vdSgg0CjsvKKpglETxH+
- 5wxKxVT+m6kA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9759"; a="142454717"
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="142454717"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Sep 2020 06:08:29 -0700
-IronPort-SDR: 7s2UjCbfKUqBwDv/XvMW3S47VDpzGckwYBowePWDcL41i65KVN689X/0oxm6L0Yb63h8tgLizY
- Uxws7zv6TMRg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="457649639"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
- by orsmga004.jf.intel.com with ESMTP; 30 Sep 2020 06:08:28 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 30 Sep 2020 06:08:28 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 30 Sep 2020 06:08:27 -0700
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.1713.004;
- Wed, 30 Sep 2020 06:08:27 -0700
-From: "Derrick, Jonathan" <jonathan.derrick@intel.com>
-To: "jgg@nvidia.com" <jgg@nvidia.com>
-Subject: Re: [patch V2 24/46] PCI: vmd: Mark VMD irqdomain with
- DOMAIN_BUS_VMD_MSI
-Thread-Topic: [patch V2 24/46] PCI: vmd: Mark VMD irqdomain with
- DOMAIN_BUS_VMD_MSI
-Thread-Index: AQHWe6Ci+RtSrJb+okaPJR2eu/FJZalSxzQAgC8GCICAAANhgIAAAwyA
-Date: Wed, 30 Sep 2020 13:08:27 +0000
-Message-ID: <97a8605902a7ee9f17af471458d1fe3029f2ad20.camel@intel.com>
-References: <20200826111628.794979401@linutronix.de>
- <20200826112333.047315047@linutronix.de>
- <20200831143940.GA1152540@nvidia.com>
- <1d284a478d4e5bf4a247ee83afa1b8b45f9e1b3f.camel@intel.com>
- <20200930125733.GI816047@nvidia.com>
-In-Reply-To: <20200930125733.GI816047@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.1.200.100]
-Content-ID: <B8974402C8B105498508BBB556348F59@intel.com>
+Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
+ [209.85.167.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 164CE871CA
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 14:41:31 +0000 (UTC)
+Received: by mail-lf1-f67.google.com with SMTP id b12so2442853lfp.9
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:41:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=6Lys2W6r4uZ+JX1Onj0nOj2DyGILV+GiicWVaaDTbhY=;
+ b=JNkZLJZ5MRllsBCJdpRE1u37X/c/q+oLZP1F3LbzZqGrxmckGpJY1wzFXFntooiqf2
+ Dq4ZuCHwjgbTQc2wZMmjUNwhJ6tqgcd0l7i2fDpyKp3WZlK/J3bFqiptDqZEhscCRES2
+ NWvYyPr02rFZV2fhwK26+p3v1viIJTajPF59U2bWQYrzQ53ote0tQqY8kLhN4oZbjeQO
+ bWtweB34MvLdZarKsjtCMdgN4mJ2PEJ3MFvZYq9x4LOtId/KS42HlUUzosFOKLEPlJJJ
+ eb4M8m7kD/mo83ymWXeFTeCgay65yiUnTvOkD1/bIdMBsoJxtt2tUmlDSiwo8fDSHdBm
+ oQqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=6Lys2W6r4uZ+JX1Onj0nOj2DyGILV+GiicWVaaDTbhY=;
+ b=S09GkxqyAIQgQdOlF8tv/aulM3opFCGTFtB2FzYXdknnn7sFaNZP/30wTWJf/60rUA
+ 4xBxN8+v+PHLHvjhuf+ojJVzF3eM0hyQO7LnckfCp5f8FY0VJL8pq0VD5nxfa6PHCuTY
+ RFuqQt+dT5JadfSNFiq9NligsrjvhIOtLAOHGbJwU1d8FoUnEPSRlop06OollUb9zePR
+ /oMXrGEeZgrat4ohVJQuiRs04IpP52iox1+m/Ggc7DgJdD6h8HG1RTNI51rtT1DuqL4e
+ 9wro6OpVDXaiLqcWbvRJgx/+qY5k6Qj+8ZU2SM4eMBpY3zOMCDwZ8VPeTL79tUi5BhLS
+ dtSA==
+X-Gm-Message-State: AOAM533EpphsgtjrKe+EirkekSPzByWhMgVkh8DaAxErGy6K2BqL3n/b
+ xF3Vf+SfZ0HbxOPxvlN8aYM=
+X-Google-Smtp-Source: ABdhPJxZteRnCj4CyjWFcyNQ7qma6ukKblkKDrRwCBv2GJXz+iCTYWRhMG04fbUpOIdXG+DUQQJSeg==
+X-Received: by 2002:a19:e03:: with SMTP id 3mr902474lfo.488.1601476889348;
+ Wed, 30 Sep 2020 07:41:29 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
+ [109.252.170.211])
+ by smtp.googlemail.com with ESMTPSA id e14sm175616ljp.15.2020.09.30.07.41.28
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 30 Sep 2020 07:41:28 -0700 (PDT)
+Subject: Re: [PATCH v3 1/3] memory: tegra: Add
+ devm_tegra_get_memory_controller()
+To: Nicolin Chen <nicoleotsuka@gmail.com>, thierry.reding@gmail.com,
+ joro@8bytes.org, krzk@kernel.org
+References: <20200930084258.25493-1-nicoleotsuka@gmail.com>
+ <20200930084258.25493-2-nicoleotsuka@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <f9712d4c-8497-ca84-0d8a-d33eb6abc513@gmail.com>
+Date: Wed, 30 Sep 2020 17:41:27 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Cc: "sivanich@hpe.com" <sivanich@hpe.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "rafael@kernel.org" <rafael@kernel.org>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "steve.wahl@hpe.com" <steve.wahl@hpe.com>,
- "kys@microsoft.com" <kys@microsoft.com>, "Williams,
- Dan J" <dan.j.williams@intel.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
- "sstabellini@kernel.org" <sstabellini@kernel.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Lu, Baolu" <baolu.lu@intel.com>,
- "maz@kernel.org" <maz@kernel.org>, "x86@kernel.org" <x86@kernel.org>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "Tian,
- Kevin" <kevin.tian@intel.com>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>, "Dey, Megha" <megha.dey@intel.com>,
- "jgross@suse.com" <jgross@suse.com>, "rja@hpe.com" <rja@hpe.com>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
+In-Reply-To: <20200930084258.25493-2-nicoleotsuka@gmail.com>
+Content-Language: en-US
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -133,78 +116,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-+Megha
+...
+> +struct tegra_mc *devm_tegra_get_memory_controller(struct device *dev)
+> +{
+> +	struct platform_device *pdev;
+> +	struct device_node *np;
+> +	struct tegra_mc *mc;
+> +	int err;
+> +
+> +	np = of_find_matching_node_and_match(NULL, tegra_mc_of_match, NULL);
+> +	if (!np)
+> +		return ERR_PTR(-ENOENT);
+> +
+> +	pdev = of_find_device_by_node(np);
+> +	of_node_put(np);
+> +	if (!pdev)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	mc = platform_get_drvdata(pdev);
+> +	if (!mc) {
+> +		put_device(mc->dev);
 
-On Wed, 2020-09-30 at 09:57 -0300, Jason Gunthorpe wrote:
-> On Wed, Sep 30, 2020 at 12:45:30PM +0000, Derrick, Jonathan wrote:
-> > Hi Jason
-> > 
-> > On Mon, 2020-08-31 at 11:39 -0300, Jason Gunthorpe wrote:
-> > > On Wed, Aug 26, 2020 at 01:16:52PM +0200, Thomas Gleixner wrote:
-> > > > From: Thomas Gleixner <tglx@linutronix.de>
-> > > > 
-> > > > Devices on the VMD bus use their own MSI irq domain, but it is not
-> > > > distinguishable from regular PCI/MSI irq domains. This is required
-> > > > to exclude VMD devices from getting the irq domain pointer set by
-> > > > interrupt remapping.
-> > > > 
-> > > > Override the default bus token.
-> > > > 
-> > > > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > >  drivers/pci/controller/vmd.c |    6 ++++++
-> > > >  1 file changed, 6 insertions(+)
-> > > > 
-> > > > +++ b/drivers/pci/controller/vmd.c
-> > > > @@ -579,6 +579,12 @@ static int vmd_enable_domain(struct vmd_
-> > > >  		return -ENODEV;
-> > > >  	}
-> > > >  
-> > > > +	/*
-> > > > +	 * Override the irq domain bus token so the domain can be distinguished
-> > > > +	 * from a regular PCI/MSI domain.
-> > > > +	 */
-> > > > +	irq_domain_update_bus_token(vmd->irq_domain, DOMAIN_BUS_VMD_MSI);
-> > > > +
-> > > 
-> > > Having the non-transparent-bridge hold a MSI table and
-> > > multiplex/de-multiplex IRQs looks like another good use case for
-> > > something close to pci_subdevice_msi_create_irq_domain()?
-> > > 
-> > > If each device could have its own internal MSI-X table programmed
-> > > properly things would work alot better. Disable capture/remap of the
-> > > MSI range in the NTB.
-> > We can disable the capture and remap in newer devices so we don't even
-> > need the irq domain.
-> 
-> You'd still need an irq domain, it just comes from
-> pci_subdevice_msi_create_irq_domain() instead of internal to this
-> driver.
-I have this set which disables remapping and bypasses the creation of
-the IRQ domain:
-https://patchwork.ozlabs.org/project/linux-pci/list/?series=192936
-
-It allows the end-devices like NVMe to directly manager their own
-interrupts and eliminates the VMD interrupt completely. The only quirk
-was that kernel has to program IRTE with the VMD device ID as it still
-remaps Requester-ID from subdevices.
-
-> 
-> > I would however like to determine if the MSI data bits could be used
-> > for individual devices to have the IRQ domain subsystem demultiplex the
-> > virq from that and eliminate the IRQ list iteration.
-> 
-> Yes, exactly. This new pci_subdevice_msi_create_irq_domain() creates
-> *proper* fully functional interrupts, no need for any IRQ handler in
-> this driver.
-> 
-> > A concern I have about that scheme is virtualization as I think those
-> > bits are used to route to the virtual vector.
-> 
-> It should be fine with this patch series, consult with Megha how
-> virtualization is working with IDXD/etc
-> 
-> Jason
+This should be put_device(&pdev->dev). Please always be careful while
+copying someones else code :)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
