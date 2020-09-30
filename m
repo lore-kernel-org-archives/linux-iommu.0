@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED23C4363D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53696C4741F
 	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:59 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4D712074A
+	by mail.kernel.org (Postfix) with ESMTPS id 04FE22184D
 	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4D712074A
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04FE22184D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 57EBB86981;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9F85386F21;
 	Thu,  1 Oct 2020 00:11:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LQnA-QUvXq2h; Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
+	with ESMTP id WW29EKr2NJpa; Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8A4C7871C7;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 42BDF86B2C;
 	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 758A3C0890;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3165BC1AD6;
 	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D956AC0051
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B476CC0051
  for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C8DE586408
+ by hemlock.osuosl.org (Postfix) with ESMTP id A415586408
  for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JVpwr3EOlog6 for <iommu@lists.linux-foundation.org>;
- Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
+ with ESMTP id aRdzH+ncrjrp for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 00:11:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id EC82D86981
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C631A865F6
  for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:54 +0000 (UTC)
-IronPort-SDR: 9ANsYlDsAdwkrmAJdcRJTUTynEUtvx/RIjC4ENyZAAgXyHNn8cwr7ru6t3CAoJbRTqVqiDoIRy
- //DoSzTu1L+A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180732769"
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="180732769"
+IronPort-SDR: 9l3d+nsQx6DM9FLNTE7k/349ZbVYoW9NeCnut9okSRXYtJ2ACEXIJfWwSdw3wQLe3Sfh6+xWWp
+ KpcjC3t00i0A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180732762"
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="180732762"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  30 Sep 2020 17:11:53 -0700
-IronPort-SDR: siWcgfDe4B8i//3Kid0VOiIRRaudQVGpf14GOLMbcVJBdLUjv4EDSyUEllJ5prWv3FVf71+b6J
- iKIWQurRDxPg==
-X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="500276825"
+IronPort-SDR: UJ6yNBdwokIZ8gHYcu/Il8lkSteIouYhw1iTI4xQ+9sDaK6ZGaq5ltClEPvu+SjmtHj8atlfJA
+ YD1cWwMx41Ew==
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="500276721"
 Received: from km-skylake-client-platform.sc.intel.com ([10.3.52.153])
  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Sep 2020 17:11:53 -0700
+ 30 Sep 2020 17:11:52 -0700
 From: Kyung Min Park <kyung.min.park@intel.com>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux-foundation.org
-Subject: [RESEND PATCH 4/4] iommu/vt-d: Scale capability to the lowest
- supported between the IOMMUs
-Date: Wed, 30 Sep 2020 16:53:09 -0700
-Message-Id: <20200930235309.22841-5-kyung.min.park@intel.com>
+Subject: [RESEND PATCH 1/4] iommu/vt-d: Disable SVM in the platform when
+ IOMMUs have inconsistencies
+Date: Wed, 30 Sep 2020 16:53:06 -0700
+Message-Id: <20200930235309.22841-2-kyung.min.park@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200930235309.22841-1-kyung.min.park@intel.com>
 References: <20200930235309.22841-1-kyung.min.park@intel.com>
@@ -90,150 +90,222 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Audit IOMMU Capability/Extended Capabilities and check if the IOMMUs
-have the consistent value for features as below. Find common denominator
-for the features and set to the lowest supported value for each IOMMU.
+Some IOMMU Capabilities must be consistent for Shared Virtual Memory (SVM).
+Audit IOMMU Capability/Extended Capabilities and check if IOMMUs have
+the consistent value for features as below. When the features are not
+matched among IOMMUs, disable SVMs in the platform during DMAR
+initialization. Audit IOMMUs again when a device is hot plugged.
 
-Abort hot plug when the hot plugged IOMMU does not meet the aforementioned
-common denominator.
-
-Set capability to the lowest supported when below features are mismatched:
-  - Maximum Address Mask Value (MAMV)
-  - Second Level Large Page Support (SLLPS)
-  - Maximum Guest Address Width (MGAW)
-  - Supported Adjusted Guest Address Width (SAGAW)
-  - Number of Domains supported (ND)
-  - Pasid Size Supported (PSS)
+Disable Shared Virtual Memory when below features are mistmatched:
+  - First Level Translation Support (FLTS)
+  - Process Address Space ID Support (PASID)
+  - Extended Accessed Flag Support (EAFS)
+  - Supervisor Support (SRS)
+  - Execute Request Support (ERS)
+  - Page Request Support (PRS)
 
 Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
 ---
- drivers/iommu/intel/audit.c | 23 +++++++++++++++++++++++
- drivers/iommu/intel/audit.h | 27 +++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  1 +
- 3 files changed, 51 insertions(+)
+ drivers/iommu/intel/Makefile |  2 +-
+ drivers/iommu/intel/audit.c  | 95 ++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/audit.h  | 29 +++++++++++
+ drivers/iommu/intel/iommu.c  | 12 ++++-
+ 4 files changed, 136 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/intel/audit.c
+ create mode 100644 drivers/iommu/intel/audit.h
 
+diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+index fb8e1e8c8029..02c26acb479f 100644
+--- a/drivers/iommu/intel/Makefile
++++ b/drivers/iommu/intel/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+-obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
++obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o audit.o
+ obj-$(CONFIG_INTEL_IOMMU) += trace.o
+ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
+ obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
 diff --git a/drivers/iommu/intel/audit.c b/drivers/iommu/intel/audit.c
-index e005bc61770a..7e12c963c2b7 100644
---- a/drivers/iommu/intel/audit.c
+new file mode 100644
+index 000000000000..2893170f5b6c
+--- /dev/null
 +++ b/drivers/iommu/intel/audit.c
-@@ -40,6 +40,13 @@ static inline void check_dmar_capabilities(struct intel_iommu *a,
- 	if (MINIMAL_SVM_ECAP & (a->ecap ^ b->ecap))
- 		set_cap_audit_svm_sanity(false);
- 
-+	MINIMAL_FEATURE_IOMMU(b, cap, CAP_MAMV_MASK);
-+	MINIMAL_FEATURE_IOMMU(b, cap, CAP_SLLPS_MASK);
-+	MINIMAL_FEATURE_IOMMU(b, cap, CAP_MGAW_MASK);
-+	MINIMAL_FEATURE_IOMMU(b, cap, CAP_SAGAW_MASK);
-+	MINIMAL_FEATURE_IOMMU(b, cap, CAP_NDOMS_MASK);
-+	MINIMAL_FEATURE_IOMMU(b, ecap, ECAP_PSS_MASK);
+@@ -0,0 +1,95 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * audit.c - audit iommu capabilities for boot time and hot plug
++ *
++ * Copyright (C) 2020 Intel Corporation
++ *
++ * Author: Kyung Min Park <kyung.min.park@intel.com>
++ */
 +
- 	CHECK_FEATURE_MISMATCH(a, b, cap, 5lp_support, CAP_FL5LP_MASK);
- 	CHECK_FEATURE_MISMATCH(a, b, cap, fl1gp_support, CAP_FL1GP_MASK);
- 	CHECK_FEATURE_MISMATCH(a, b, cap, read_drain, CAP_RD_MASK);
-@@ -98,6 +105,14 @@ static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu,
- 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, qis, ECAP_QI_MASK);
- 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, coherent, ECAP_C_MASK);
- 
-+	/* Abort hot plug if the hot plug iommu feature is smaller than global */
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, mamv, CAP_MAMV_MASK, mismatch);
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, super_page_val, CAP_SLLPS_MASK, mismatch);
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, mgaw, CAP_MGAW_MASK, mismatch);
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, sagaw, CAP_SAGAW_MASK, mismatch);
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, ndoms, CAP_NDOMS_MASK, mismatch);
-+	MINIMAL_FEATURE_HOTPLUG(hot_iommu, ecap, pss, ECAP_PSS_MASK, mismatch);
++#define pr_fmt(fmt)	"DMAR: " fmt
 +
- 	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
- 		goto out;
- 
-@@ -147,6 +162,14 @@ static int audit_iommu_capabilities(bool audit_irq)
- 		intel_iommu_ecap_sanity = (intel_iommu_ecap_sanity & ~MINIMAL_SVM_ECAP) |
- 					   (first_drhd->iommu->ecap & MINIMAL_SVM_ECAP);
- 
-+	/* scale capability to the lowest supported value */
-+	for_each_active_iommu(iommu, drhd) {
-+		iommu->cap = (intel_iommu_cap_sanity & MINIMAL_FEATURE_CAP) |
-+			     (~MINIMAL_FEATURE_CAP & iommu->cap);
-+		iommu->ecap = (intel_iommu_ecap_sanity & ECAP_PSS_MASK) |
-+			      (~ECAP_PSS_MASK & iommu->ecap);
++#include <linux/intel-iommu.h>
++#include "audit.h"
++
++static bool svm_sanity_check = true;
++static u64 intel_iommu_ecap_sanity = ~0ULL;
++
++static void set_cap_audit_svm_sanity(bool svm_sanity)
++{
++	svm_sanity_check = svm_sanity;
++}
++
++bool get_cap_audit_svm_sanity(void)
++{
++	return svm_sanity_check;
++}
++
++static inline void check_dmar_capabilities(struct intel_iommu *a,
++					   struct intel_iommu *b)
++{
++	if (MINIMAL_SVM_ECAP & (a->ecap ^ b->ecap))
++		set_cap_audit_svm_sanity(false);
++}
++
++static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu)
++{
++	bool mismatch = false;
++
++	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
++		goto out;
++
++	if (!get_cap_audit_svm_sanity() && (hot_iommu->flags & VTD_FLAG_SVM_CAPABLE)) {
++		pr_warn("Disable SVM in the IOMMU: SVM disabled at boot time.\n");
++		hot_iommu->flags = hot_iommu->flags & ~VTD_FLAG_SVM_CAPABLE;
++	} else if (get_cap_audit_svm_sanity() && (MINIMAL_SVM_ECAP &
++		   (hot_iommu->ecap ^ intel_iommu_ecap_sanity))) {
++		pr_warn("Abort Hot Plug IOMMU: SVM inconsistent.\n");
++		mismatch = true;
 +	}
 +
- 	ret = 0;
- out:
- 	rcu_read_unlock();
++out:
++	if (mismatch)
++		return -EFAULT;
++
++	return 0;
++}
++
++static int audit_iommu_capabilities(void)
++{
++	struct dmar_drhd_unit *first_drhd, *drhd;
++	struct intel_iommu *iommu;
++	int ret = -EFAULT;
++
++	rcu_read_lock();
++	first_drhd = list_first_or_null_rcu(&dmar_drhd_units, typeof(*drhd),
++					    list);
++	if (!first_drhd) {
++		ret = 0;
++		goto out;
++	}
++
++	for_each_active_iommu(iommu, drhd)
++		check_dmar_capabilities(first_drhd->iommu, iommu);
++
++	if (get_cap_audit_svm_sanity())
++		intel_iommu_ecap_sanity = (intel_iommu_ecap_sanity & ~MINIMAL_SVM_ECAP) |
++					   (first_drhd->iommu->ecap & MINIMAL_SVM_ECAP);
++
++	ret = 0;
++out:
++	rcu_read_unlock();
++	return ret;
++}
++
++int intel_iommu_audit_capabilities(enum cap_audit_type type, struct intel_iommu *iommu)
++{
++	switch (type) {
++	case CAP_AUDIT_STATIC_DMAR:
++		return audit_iommu_capabilities();
++	case CAP_AUDIT_HOTPLUG_DMAR:
++		return audit_iommu_capabilities_hotplug(iommu);
++	default:
++		return -EFAULT;
++	}
++}
 diff --git a/drivers/iommu/intel/audit.h b/drivers/iommu/intel/audit.h
-index 6dfebe8e8fbe..a293e71ce9ab 100644
---- a/drivers/iommu/intel/audit.h
+new file mode 100644
+index 000000000000..887900d9517d
+--- /dev/null
 +++ b/drivers/iommu/intel/audit.h
-@@ -13,9 +13,14 @@
- #define CAP_FL5LP_MASK		BIT(60)
- #define CAP_PI_MASK		BIT(59)
- #define CAP_FL1GP_MASK		BIT(56)
-+#define CAP_MAMV_MASK		GENMASK_ULL(53, 48)
- #define CAP_RD_MASK		BIT(55)
- #define CAP_WD_MASK		BIT(54)
- #define CAP_PSI_MASK		BIT(39)
-+#define CAP_SLLPS_MASK		GENMASK_ULL(37, 34)
-+#define CAP_MGAW_MASK		GENMASK_ULL(21, 16)
-+#define CAP_SAGAW_MASK		GENMASK_ULL(12, 8)
-+#define CAP_NDOMS_MASK		GENMASK_ULL(2, 0)
- #define CAP_CM_MASK		BIT(7)
- #define CAP_PHMR_MASK		BIT(6)
- #define CAP_PLMR_MASK		BIT(5)
-@@ -32,6 +37,7 @@
- #define ECAP_PDS_MASK		BIT(42)
- #define ECAP_DIT_MASK		BIT(41)
- #define ECAP_PASID_MASK		BIT(40)
-+#define ECAP_PSS_MASK		GENMASK_ULL(39, 35)
- #define ECAP_EAFS_MASK		BIT(34)
- #define ECAP_SRS_MASK		BIT(31)
- #define ECAP_ERS_MASK		BIT(30)
-@@ -47,6 +53,9 @@
- #define MINIMAL_SVM_ECAP (ECAP_FLTS_MASK | ECAP_PASID_MASK | ECAP_EAFS_MASK | \
- 			  ECAP_SRS_MASK | ECAP_ERS_MASK | ECAP_PRS_MASK)
- 
-+#define MINIMAL_FEATURE_CAP (CAP_MAMV_MASK | CAP_SLLPS_MASK | CAP_MGAW_MASK | \
-+			     CAP_SAGAW_MASK | CAP_NDOMS_MASK)
+@@ -0,0 +1,29 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * audit.h - audit iommu capabilities header
++ *
++ * Copyright (C) 2020 Intel Corporation
++ *
++ * Author: Kyung Min Park <kyung.min.park@intel.com>
++ */
 +
- #define DO_CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
- do { \
- 	if (cap##_##feature(a) != cap##_##feature(b)) { \
-@@ -65,6 +74,24 @@ do { \
- 					  (b)->cap, cap, feature, MASK); \
- } while (0)
- 
-+#define MINIMAL_FEATURE_IOMMU(iommu, cap, MASK) \
-+do { \
-+	u64 min_feature = intel_iommu_##cap##_sanity & MASK; \
-+	min_feature = min_t(u64, min_feature, (iommu)->cap & (MASK)); \
-+	intel_iommu_##cap##_sanity = (intel_iommu_##cap##_sanity & ~(MASK)) | \
-+				     min_feature; \
-+} while (0)
++/*
++ * Extended Capability Register Mask
++ */
++#define ECAP_FLTS_MASK		BIT(47)
++#define ECAP_PASID_MASK		BIT(40)
++#define ECAP_EAFS_MASK		BIT(34)
++#define ECAP_SRS_MASK		BIT(31)
++#define ECAP_ERS_MASK		BIT(30)
++#define ECAP_PRS_MASK		BIT(29)
 +
-+#define MINIMAL_FEATURE_HOTPLUG(iommu, cap, feature, MASK, mismatch) \
-+do { \
-+	if ((intel_iommu_##cap##_sanity & (MASK)) > \
-+	    (cap##_##feature((iommu)->cap))) \
-+		mismatch = true; \
-+	else \
-+		(iommu)->cap = ((iommu)->cap & ~(MASK)) | \
-+		(intel_iommu_##cap##_sanity & (MASK)); \
-+} while (0)
++#define MINIMAL_SVM_ECAP (ECAP_FLTS_MASK | ECAP_PASID_MASK | ECAP_EAFS_MASK | \
++			  ECAP_SRS_MASK | ECAP_ERS_MASK | ECAP_PRS_MASK)
 +
- enum cap_audit_type {
- 	CAP_AUDIT_STATIC_DMAR,
- 	CAP_AUDIT_STATIC_IRQR,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 6744f00a144a..297a10091bb5 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -154,6 +154,7 @@
- #define cap_max_fault_reg_offset(c) \
- 	(cap_fault_reg_offset(c) + cap_num_fault_regs(c) * 16)
++enum cap_audit_type {
++	CAP_AUDIT_STATIC_DMAR,
++	CAP_AUDIT_HOTPLUG_DMAR,
++};
++
++int intel_iommu_audit_capabilities(enum cap_audit_type type, struct intel_iommu *iommu);
++bool get_cap_audit_svm_sanity(void);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 87b17bac04c2..ab8300ee9791 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -49,6 +49,7 @@
  
-+#define cap_mamv(c)		(((c) >> 48) & 0x3f)
- #define cap_zlr(c)		(((c) >> 22) & 1)
- #define cap_isoch(c)		(((c) >> 23) & 1)
- #define cap_mgaw(c)		((((c) >> 16) & 0x3f) + 1)
+ #include "../irq_remapping.h"
+ #include "pasid.h"
++#include "audit.h"
+ 
+ #define ROOT_SIZE		VTD_PAGE_SIZE
+ #define CONTEXT_SIZE		VTD_PAGE_SIZE
+@@ -3230,6 +3231,10 @@ static int __init init_dmars(void)
+ 		goto error;
+ 	}
+ 
++	ret = intel_iommu_audit_capabilities(CAP_AUDIT_STATIC_DMAR, NULL);
++	if (ret)
++		goto free_iommu;
++
+ 	for_each_iommu(iommu, drhd) {
+ 		if (drhd->ignored) {
+ 			iommu_disable_translation(iommu);
+@@ -3300,7 +3305,8 @@ static int __init init_dmars(void)
+ 
+ 		if (!ecap_pass_through(iommu->ecap))
+ 			hw_pass_through = 0;
+-		intel_svm_check(iommu);
++		if (get_cap_audit_svm_sanity())
++			intel_svm_check(iommu);
+ 	}
+ 
+ 	/*
+@@ -4366,6 +4372,10 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+ 	if (g_iommus[iommu->seq_id])
+ 		return 0;
+ 
++	ret = intel_iommu_audit_capabilities(CAP_AUDIT_HOTPLUG_DMAR, iommu);
++	if (ret)
++		goto out;
++
+ 	if (hw_pass_through && !ecap_pass_through(iommu->ecap)) {
+ 		pr_warn("%s: Doesn't support hardware pass through.\n",
+ 			iommu->name);
 -- 
 2.17.1
 
