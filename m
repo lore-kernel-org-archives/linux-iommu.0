@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E2EC4741F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A528CC4727F
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8CED62076B
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 11DF720738
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PZTmJCKi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8CED62076B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Ur7y8KKe"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11DF720738
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3E062203D0;
-	Wed, 30 Sep 2020 08:56:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D44528721E;
+	Wed, 30 Sep 2020 08:56:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YIg+ekwYImPT; Wed, 30 Sep 2020 08:56:04 +0000 (UTC)
+	with ESMTP id qb4uxGDGMqcY; Wed, 30 Sep 2020 08:56:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1254F21FA9;
-	Wed, 30 Sep 2020 08:56:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4CCDA86FFB;
+	Wed, 30 Sep 2020 08:56:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F32D1C0890;
-	Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5936EC1AD6
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E881C0890;
+	Wed, 30 Sep 2020 08:56:03 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 759D0C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 29B08203D0
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4346685F45
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p2m2dsWnJ41I for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 08:55:59 +0000 (UTC)
+ with ESMTP id EseAz8JqjjGI for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id 1D72A20445
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:55:59 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8619485F32
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=FfdHYeDTXhoYO7qCBmRlpvBIzEFqBt+3svzGl87S3x8=; b=PZTmJCKijrz58G/RG2MqzXGL/l
- olVALkl3XpDvDm+bNdqRHm/MtEDq2iMIwNKD6VJBzlMeGghnezkcE+6TEZ1VYVsca8mN2KeCerq28
- aBu6FBeZWZ72xCtrD8CpFDvjTWOv8Ydr/SMMhdFYQ7Ff1PJQUhXopL/AWUGOB+ezasg+qz+dm6vG1
- dUdK6SOxuscB000wVcJejnpRS6fJ7e99+fhXANHIgnSihBPpdi0V/qFRM/sqT/CI+VGPpEl74GR5q
- JrHqaasZKrbNuE98xnDDZbmapQPSjYEMb7ThNShXS96WvIw5i9aS7fPtTAw4w1olvLFnwyVhw4HuQ
- ux7qCDxA==;
+ bh=7wlocwmYpV53gq2F4Jsvj5msvlzhpCuIuqnDE5DhBvk=; b=Ur7y8KKe3cjA7e0c1Ea7QqV9r0
+ vY6VIBz2QcoRLJe9lf7uVRs2DNjFyCceMqUuaJygZTMw/RtSXGJbPOPzNAzKNsJ1k73ddTiasezFZ
+ d0hr/6pxdWLxOh5G5wi2tXE5PItFpNtOtmzrOATkrGIFj+CSQRKxjTQP+80GSwnqfxLRzI5GIQM7t
+ K+UXTWNBUwSNRxuZWs4qixxTrx0/+tQCjZOLhctLfzeUlYLst+FOknUyqNZ8n7HjsVmTEyGAD7Iid
+ mBbuQ58px4mSIIt4V5A5liJNpP0MRtl24PqVZybE6L48rdfFCi+v4WRhR7c4l8YwN7EX093oOyrEQ
+ MiD31FuA==;
 Received: from [2001:4bb8:180:7b62:c70:4a89:bc61:4] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kNXu0-0003sL-NR; Wed, 30 Sep 2020 08:55:57 +0000
+ id 1kNXu2-0003sf-CF; Wed, 30 Sep 2020 08:55:58 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 3/9] dma-contiguous: remove dev_set_cma_area
-Date: Wed, 30 Sep 2020 10:55:42 +0200
-Message-Id: <20200930085548.920261-4-hch@lst.de>
+Subject: [PATCH 4/9] dma-contiguous: remove dma_contiguous_set_default
+Date: Wed, 30 Sep 2020 10:55:43 +0200
+Message-Id: <20200930085548.920261-5-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200930085548.920261-1-hch@lst.de>
 References: <20200930085548.920261-1-hch@lst.de>
@@ -91,77 +91,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-dev_set_cma_area contains a trivial assignment.  It has just three
-callers that all have a non-NULL device and depend on CONFIG_DMA_CMA,
-so remove the wrapper.
+dma_contiguous_set_default contains a trivial assignment, and has a
+single caller that is compiled if CONFIG_CMA_DMA is enabled.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/arm/mach-davinci/devices-da8xx.c | 2 +-
- include/linux/dma-contiguous.h        | 8 --------
- kernel/dma/contiguous.c               | 4 ++--
- 3 files changed, 3 insertions(+), 11 deletions(-)
+ include/linux/dma-contiguous.h | 7 -------
+ kernel/dma/contiguous.c        | 2 +-
+ 2 files changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/arch/arm/mach-davinci/devices-da8xx.c b/arch/arm/mach-davinci/devices-da8xx.c
-index 2e2853582b459e..1207eabe8d1cc4 100644
---- a/arch/arm/mach-davinci/devices-da8xx.c
-+++ b/arch/arm/mach-davinci/devices-da8xx.c
-@@ -905,7 +905,7 @@ void __init da8xx_rproc_reserve_cma(void)
- 			__func__, ret);
- 		return;
- 	}
--	dev_set_cma_area(&da8xx_dsp.dev, cma);
-+	da8xx_dsp.dev.cma_area = cma;
- 	rproc_mem_inited = true;
- }
- #else
 diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index 62fd55d0723546..41ec08d81bc317 100644
+index 41ec08d81bc317..f9ce1ee58d4180 100644
 --- a/include/linux/dma-contiguous.h
 +++ b/include/linux/dma-contiguous.h
-@@ -66,12 +66,6 @@ static inline struct cma *dev_get_cma_area(struct device *dev)
+@@ -66,11 +66,6 @@ static inline struct cma *dev_get_cma_area(struct device *dev)
  	return dma_contiguous_default_area;
  }
  
--static inline void dev_set_cma_area(struct device *dev, struct cma *cma)
+-static inline void dma_contiguous_set_default(struct cma *cma)
 -{
--	if (dev)
--		dev->cma_area = cma;
+-	dma_contiguous_default_area = cma;
 -}
 -
- static inline void dma_contiguous_set_default(struct cma *cma)
- {
- 	dma_contiguous_default_area = cma;
-@@ -97,8 +91,6 @@ static inline struct cma *dev_get_cma_area(struct device *dev)
+ void dma_contiguous_reserve(phys_addr_t addr_limit);
+ 
+ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+@@ -91,8 +86,6 @@ static inline struct cma *dev_get_cma_area(struct device *dev)
  	return NULL;
  }
  
--static inline void dev_set_cma_area(struct device *dev, struct cma *cma) { }
+-static inline void dma_contiguous_set_default(struct cma *cma) { }
 -
- static inline void dma_contiguous_set_default(struct cma *cma) { }
- 
  static inline void dma_contiguous_reserve(phys_addr_t limit) { }
+ 
+ static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
 diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index f4c150810fd25c..95adcee972e85c 100644
+index 95adcee972e85c..bf05ec2256e149 100644
 --- a/kernel/dma/contiguous.c
 +++ b/kernel/dma/contiguous.c
-@@ -359,14 +359,14 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+@@ -407,7 +407,7 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 	dma_contiguous_early_fixup(rmem->base, rmem->size);
  
- static int rmem_cma_device_init(struct reserved_mem *rmem, struct device *dev)
- {
--	dev_set_cma_area(dev, rmem->priv);
-+	dev->cma_area = rmem->priv;
- 	return 0;
- }
+ 	if (default_cma)
+-		dma_contiguous_set_default(cma);
++		dma_contiguous_default_area = cma;
  
- static void rmem_cma_device_release(struct reserved_mem *rmem,
- 				    struct device *dev)
- {
--	dev_set_cma_area(dev, NULL);
-+	dev->cma_area = NULL;
- }
- 
- static const struct reserved_mem_ops rmem_cma_ops = {
+ 	rmem->ops = &rmem_cma_ops;
+ 	rmem->priv = cma;
 -- 
 2.28.0
 
