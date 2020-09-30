@@ -7,76 +7,76 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB00C4741F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12FCC4741F
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 065D7207C3
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 47F6B20789
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 07:10:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="k5z2wM2/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 065D7207C3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="GWLZfJvE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 47F6B20789
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AEED7871AC;
-	Wed, 30 Sep 2020 07:10:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BEF1086844;
+	Wed, 30 Sep 2020 07:10:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2vDy92JVvPHz; Wed, 30 Sep 2020 07:10:09 +0000 (UTC)
+	with ESMTP id Gh5yD8k40rIO; Wed, 30 Sep 2020 07:10:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 29303871DE;
-	Wed, 30 Sep 2020 07:10:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 415AD8683F;
+	Wed, 30 Sep 2020 07:10:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F10E8C0889;
-	Wed, 30 Sep 2020 07:10:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E931C0889;
+	Wed, 30 Sep 2020 07:10:20 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34FD2C0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:07 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6DDBDC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 234788683F
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:07 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5CB0B8683F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gAxiJqy3Sewe for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 07:10:06 +0000 (UTC)
+ with ESMTP id 3wgQEF9AMl3V for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 07:10:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3F40D86792
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:06 +0000 (UTC)
-X-UUID: 71777b04e1034f118107bac2916b0cc4-20200930
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 831F586840
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 07:10:17 +0000 (UTC)
+X-UUID: ff5ce9857e17491db4a124e29d10d057-20200930
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=5cuaBwfVccDx8t6YaxBqxyKgg/cFncPpWk3C5+45/Dk=; 
- b=k5z2wM2/SYVmS3M7s5242mIgNZB8bjX4Gg05ixoHxaQYYD9TSKkk9kWFjn3a/Oe6V9sma98DXWDlTw1hDSSGpOR2S7tnR8rp8AKuZQ2QOIt4hjHMOjELIfuLheATOAJqftFKSpozAB3QlOylXUUMqyjVcbrfigM9rRtoXMJz3dY=;
-X-UUID: 71777b04e1034f118107bac2916b0cc4-20200930
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ bh=Cd85HbGdomIatcszaQsBe028Lmk8A4DWmIet/rjvJNA=; 
+ b=GWLZfJvEIhax1zcJzT7uX2coW9dCL9m+JqhZqO7eecHoQaHDeyaepMzm4sAU5B0P4MT8RpqaTGTtTPBnEXnt9Kg/3lyYpAF3hE6yeoF8EBrdgbiG51e7f9oxqyAID+Mcc3swZFUzbqAczak7hniteP7OesEyJncV8oxX9z6ICqA=;
+X-UUID: ff5ce9857e17491db4a124e29d10d057-20200930
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 946817937; Wed, 30 Sep 2020 15:10:03 +0800
+ with ESMTP id 1118781204; Wed, 30 Sep 2020 15:10:15 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
  mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 30 Sep 2020 15:10:00 +0800
+ 15.0.1497.2; Wed, 30 Sep 2020 15:10:13 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Sep 2020 15:10:01 +0800
+ Transport; Wed, 30 Sep 2020 15:10:13 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Krzysztof Kozlowski <krzk@kernel.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH v3 15/24] iommu/mediatek: Add power-domain operation
-Date: Wed, 30 Sep 2020 15:06:38 +0800
-Message-ID: <20200930070647.10188-16-yong.wu@mediatek.com>
+Subject: [PATCH v3 16/24] iommu/mediatek: Add iova reserved function
+Date: Wed, 30 Sep 2020 15:06:39 +0800
+Message-ID: <20200930070647.10188-17-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200930070647.10188-1-yong.wu@mediatek.com>
 References: <20200930070647.10188-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: C77212E66262157FC1E61846B81DE56A08D456D9678A5E9C684DD4C76542F2D42000:8
+X-TM-SNTS-SMTP: 55AB3C9BE1447268D24CD38B123F0E26462D1AE382557C45894227B167097E4F2000:8
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -102,113 +102,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In the previous SoC, the M4U HW is in the EMI power domain which is
-always on. the latest M4U is in the display power domain which may be
-turned on/off, thus we have to add pm_runtime interface for it.
+For multiple iommu_domains, we need to reserve some iova regions. Take a
+example, If the default iova region is 0 ~ 4G, but the 0x4000_0000 ~
+0x43ff_ffff is only for the special CCU0 domain. Thus we should exclude
+this region for the default iova region.
 
-When the engine work, the engine always enable the power and clocks for
-smi-larb/smi-common, then the M4U's power will always be powered on
-automatically via the device link with smi-common.
+This patch adds iova reserved flow. It's a preparing patch for supporting
+multi-domain.
 
-Note: we don't enable the M4U power in iommu_map/unmap for tlb flush.
-If its power already is on, of course it is ok. if the power is off,
-the main tlb will be reset while M4U power on, thus the tlb flush while
-m4u power off is unnecessary, just skip it.
-
+Signed-off-by: Anan sun <anan.sun@mediatek.com>
+Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ drivers/iommu/mtk_iommu.c | 28 ++++++++++++++++++++++++++++
+ drivers/iommu/mtk_iommu.h |  5 +++++
+ 2 files changed, 33 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 052eb72acf69..1e6e6d3fa7f1 100644
+index 1e6e6d3fa7f1..8e2a8e29d13c 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -196,6 +196,10 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
- 	u32 tmp;
+@@ -153,6 +153,11 @@ static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
  
- 	for_each_m4u(data) {
-+		/* skip tlb flush when pm is not active. */
-+		if (!pm_runtime_active(data->dev))
-+			continue;
+ #define for_each_m4u(data)	list_for_each_entry(data, &m4ulist, list)
+ 
++struct mtk_iommu_iova_region {
++	dma_addr_t		iova_base;
++	unsigned long long	size;
++};
 +
- 		spin_lock_irqsave(&data->tlb_lock, flags);
- 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
- 			       data->base + data->plat_data->inv_sel_reg);
-@@ -380,6 +384,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- {
- 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-+	struct device *m4udev = data->dev;
- 	int ret;
- 
- 	if (!data)
-@@ -387,12 +392,18 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 
- 	/* Update the pgtable base address register of the M4U HW */
- 	if (!data->m4u_dom) {
-+		ret = pm_runtime_get_sync(m4udev);
-+		if (ret < 0)
-+			return ret;
- 		ret = mtk_iommu_hw_init(data);
--		if (ret)
-+		if (ret) {
-+			pm_runtime_put(m4udev);
- 			return ret;
-+		}
- 		data->m4u_dom = dom;
- 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
- 		       data->base + REG_MMU_PT_BASE_ADDR);
-+		pm_runtime_put(m4udev);
- 	}
- 
- 	mtk_iommu_config(data, dev, true);
-@@ -742,10 +753,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (dev->pm_domain) {
- 		struct device_link *link;
- 
-+		pm_runtime_enable(dev);
-+
- 		link = device_link_add(data->smicomm_dev, dev,
- 				       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
- 		if (!link) {
- 			dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
-+			pm_runtime_disable(dev);
- 			return -EINVAL;
- 		}
- 	}
-@@ -763,8 +777,10 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 		bus_set_iommu(&platform_bus_type, NULL);
- 
- 	clk_disable_unprepare(data->bclk);
--	if (pdev->dev.pm_domain)
-+	if (pdev->dev.pm_domain) {
- 		device_link_remove(data->smicomm_dev, &pdev->dev);
-+		pm_runtime_disable(&pdev->dev);
-+	}
- 	devm_free_irq(&pdev->dev, data->irq, data);
- 	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
- 	return 0;
-@@ -796,6 +812,9 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	void __iomem *base = data->base;
- 	int ret;
- 
-+	/* Avoid first resume to affect the default value of registers below. */
-+	if (!m4u_dom)
-+		return 0;
- 	ret = clk_prepare_enable(data->bclk);
- 	if (ret) {
- 		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
-@@ -809,9 +828,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
- 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
- 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
--	if (m4u_dom)
--		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       base + REG_MMU_PT_BASE_ADDR);
-+	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
- 	return 0;
+ /*
+  * There may be 1 or 2 M4U HWs, But we always expect they are in the same domain
+  * for the performance.
+@@ -539,6 +544,27 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
  }
+ 
++static void mtk_iommu_get_resv_regions(struct device *dev,
++				       struct list_head *head)
++{
++	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
++	const struct mtk_iommu_iova_region *resv;
++	struct iommu_resv_region *region;
++	int prot = IOMMU_WRITE | IOMMU_READ;
++	unsigned int i;
++
++	for (i = 0; i < data->plat_data->iova_region_nr; i++) {
++		resv = data->plat_data->iova_region + i;
++
++		region = iommu_alloc_resv_region(resv->iova_base, resv->size,
++						 prot, IOMMU_RESV_RESERVED);
++		if (!region)
++			return;
++
++		list_add_tail(&region->list, head);
++	}
++}
++
+ static const struct iommu_ops mtk_iommu_ops = {
+ 	.domain_alloc	= mtk_iommu_domain_alloc,
+ 	.domain_free	= mtk_iommu_domain_free,
+@@ -553,6 +579,8 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.release_device	= mtk_iommu_release_device,
+ 	.device_group	= mtk_iommu_device_group,
+ 	.of_xlate	= mtk_iommu_of_xlate,
++	.get_resv_regions = mtk_iommu_get_resv_regions,
++	.put_resv_regions = generic_iommu_put_resv_regions,
+ 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+ };
+ 
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index ae7909815cdb..d45c13c9d324 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -44,10 +44,15 @@ enum mtk_iommu_plat {
+ 	M4U_MT8183,
+ };
+ 
++struct mtk_iommu_iova_region;
++
+ struct mtk_iommu_plat_data {
+ 	enum mtk_iommu_plat m4u_plat;
+ 	u32                 flags;
+ 	u32                 inv_sel_reg;
++
++	unsigned int        iova_region_nr;
++	const struct mtk_iommu_iova_region   *iova_region;
+ 	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
+ };
  
 -- 
 2.18.0
