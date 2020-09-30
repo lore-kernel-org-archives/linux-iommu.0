@@ -7,65 +7,65 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C53BC4727F
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282C3C4741F
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B99B320659
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B8FCE20659
+	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 08:56:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="gNjWwpWQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B99B320659
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="NtuRmt/3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8FCE20659
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5158E86103;
-	Wed, 30 Sep 2020 08:56:13 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3EF5A8688F;
+	Wed, 30 Sep 2020 08:56:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q_PeNCcFsY1s; Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
+	with ESMTP id 2Njj8Llfb-om; Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F225B85F45;
-	Wed, 30 Sep 2020 08:56:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 31A3586886;
+	Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DE500C0890;
-	Wed, 30 Sep 2020 08:56:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 626A0C016F
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 15372C1AD6;
+	Wed, 30 Sep 2020 08:56:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD195C016F
  for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 50DD885F45
+ by silver.osuosl.org (Postfix) with ESMTP id AAB2A2263C
  for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XNuQVHixLaII for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 08:56:08 +0000 (UTC)
+ with ESMTP id 2yiAz7+vtcQE for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Sep 2020 08:56:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 91BC285F32
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id F29A221FA8
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 08:56:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=Te/3Ibwqk+ElqBAHs1+TvHOGRh1COGKRDAKkpm/LB54=; b=gNjWwpWQuiJ9+XThegmowHShsT
- CKHrq/tyTACZRLhmy/gFbG0BspKoLofXHLT4tVReVxCzIhptmhoCIgBtBN+cIC1eN0XQDCRCVPN2X
- wfr1ka6GozVYKIGwWtFIoa6MxD/KFJQwVW6EeTrmbqmjqAVVf5M3mhhqIPBFHJtloMioMJis2yq2P
- FZdIY9dUm6FbOJJ4ytFGyi1GuYyI4YMxrPcQO2z2DYFESHfp3FtFpj2WH0TmM9Nt/iRGcMnSEwDlJ
- 9mZFqPr92Aa2/pO2UfT+WZ8bpzHhYLjYr1Cn2OE/ZVHzamXEVatkATdNAhhx/Zd7RqMcHS55qlp5r
- m9s+4iBw==;
+ bh=k3N/J9vjWrXqp4RBm9WLMthbWgeVyH8ElD/H4klikM8=; b=NtuRmt/3YTvPGMJFztZ387kPRd
+ m8UVHZ1cAxiJivn45xbQQhiL12f7Go3ah0tb1hHu8ThN2VeiKWFpS7GYQi5/Sktrtl4eBmFGVptWR
+ A7s1rGZ+SdKlSp/r0Js30pM3dsEWR8INhIRGwDEsE//Oz2hRAga2LPYDOerOutjMV+jHtExa7Xyd/
+ koaavb6gIrQGQF1OCjGpmPDxeG9yxW2tlwjLpc6LPt53FrtY0GvZqtScu+hTVjJse8zssDS54jqRR
+ IGh2rcVRWFS3LoGdQa44Svxkxs6bjXPw/6HaZPT2ECduV9UKrRj2h3VvRK3AtIJ7WAuPaFXn07rSO
+ qVWVf/YQ==;
 Received: from [2001:4bb8:180:7b62:c70:4a89:bc61:4] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kNXuA-0003uP-Ba; Wed, 30 Sep 2020 08:56:06 +0000
+ id 1kNXu3-0003sp-TM; Wed, 30 Sep 2020 08:56:00 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 9/9] dma-mapping: merge <linux/dma-noncoherent.h> into
+Subject: [PATCH 5/9] dma-mapping: merge <linux/dma-contiguous.h> into
  <linux/dma-map-ops.h>
-Date: Wed, 30 Sep 2020 10:55:48 +0200
-Message-Id: <20200930085548.920261-10-hch@lst.de>
+Date: Wed, 30 Sep 2020 10:55:44 +0200
+Message-Id: <20200930085548.920261-6-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200930085548.920261-1-hch@lst.de>
 References: <20200930085548.920261-1-hch@lst.de>
@@ -92,620 +92,642 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move more nitty gritty DMA implementation details into the common
-internal header.
+Merge dma-contiguous.h into dma-map-ops.h, after removing the comment
+describing the contiguous allocator into kernel/dma/contigous.c.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- MAINTAINERS                       |   1 -
- arch/arc/mm/dma.c                 |   1 -
- arch/arm/mm/dma-mapping.c         |   1 -
- arch/arm/xen/mm.c                 |   2 +-
- arch/arm64/mm/dma-mapping.c       |   1 -
- arch/c6x/mm/dma-coherent.c        |   2 +-
- arch/csky/mm/dma-mapping.c        |   1 -
- arch/hexagon/kernel/dma.c         |   2 +-
- arch/ia64/mm/init.c               |   2 +-
- arch/m68k/kernel/dma.c            |   2 +-
- arch/microblaze/kernel/dma.c      |   2 +-
- arch/microblaze/mm/consistent.c   |   2 +-
- arch/mips/jazz/jazzdma.c          |   1 -
- arch/mips/mm/dma-noncoherent.c    |   1 -
- arch/nds32/kernel/dma.c           |   2 +-
- arch/openrisc/kernel/dma.c        |   2 +-
- arch/parisc/kernel/pci-dma.c      |   2 +-
- arch/powerpc/mm/dma-noncoherent.c |   2 +-
- arch/sh/kernel/dma-coherent.c     |   2 +-
- arch/sparc/kernel/ioport.c        |   2 +-
- arch/xtensa/kernel/pci-dma.c      |   1 -
- drivers/iommu/dma-iommu.c         |   1 -
- drivers/xen/swiotlb-xen.c         |   3 +-
- include/linux/dma-direct.h        |   2 +-
- include/linux/dma-map-ops.h       | 102 ++++++++++++++++++++++++++++
- include/linux/dma-noncoherent.h   | 109 ------------------------------
- kernel/dma/ops_helpers.c          |   1 -
- kernel/dma/pool.c                 |   1 -
- kernel/dma/swiotlb.c              |   2 +-
- 29 files changed, 118 insertions(+), 137 deletions(-)
- delete mode 100644 include/linux/dma-noncoherent.h
+ .../admin-guide/kernel-parameters.txt         |   2 +-
+ arch/arm/mach-davinci/devices-da8xx.c         |   2 +-
+ arch/arm/mach-shmobile/setup-rcar-gen2.c      |   2 +-
+ arch/arm/mm/dma-mapping.c                     |   1 -
+ arch/arm/mm/init.c                            |   2 +-
+ arch/arm64/mm/init.c                          |   3 +-
+ arch/csky/kernel/setup.c                      |   2 +-
+ arch/csky/mm/dma-mapping.c                    |   3 +-
+ arch/microblaze/mm/init.c                     |   2 +-
+ arch/mips/kernel/setup.c                      |   2 +-
+ arch/mips/mm/dma-noncoherent.c                |   1 -
+ arch/s390/kernel/setup.c                      |   2 +-
+ arch/x86/include/asm/dma-mapping.h            |   1 -
+ arch/x86/kernel/setup.c                       |   2 +-
+ arch/xtensa/kernel/pci-dma.c                  |   2 +-
+ arch/xtensa/mm/init.c                         |   2 +-
+ drivers/dma-buf/heaps/cma_heap.c              |   2 +-
+ drivers/iommu/amd/iommu.c                     |   3 +-
+ drivers/iommu/dma-iommu.c                     |   1 -
+ drivers/iommu/intel/iommu.c                   |   2 +-
+ drivers/media/platform/exynos4-is/fimc-is.c   |   1 -
+ include/linux/dma-contiguous.h                | 135 ------------------
+ include/linux/dma-map-ops.h                   |  65 +++++++++
+ kernel/dma/Kconfig                            |   2 +-
+ kernel/dma/contiguous.c                       |  30 +++-
+ kernel/dma/direct.c                           |   1 -
+ kernel/dma/ops_helpers.c                      |   1 -
+ kernel/dma/pool.c                             |   2 +-
+ 28 files changed, 112 insertions(+), 164 deletions(-)
+ delete mode 100644 include/linux/dma-contiguous.h
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b13fc17943079a..c0dbe6e9de6549 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5203,7 +5203,6 @@ F:	include/asm-generic/dma-mapping.h
- F:	include/linux/dma-direct.h
- F:	include/linux/dma-mapping.h
- F:	include/linux/dma-map-ops.h
--F:	include/linux/dma-noncoherent.h
- F:	kernel/dma/
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index e464cf0b502591..7657e00e83ca38 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -597,7 +597,7 @@
+ 			placement constraint by the physical address range of
+ 			memory allocations. A value of 0 disables CMA
+ 			altogether. For more information, see
+-			include/linux/dma-contiguous.h
++			kernel/dma/contiguous.c
  
- DMA-BUF HEAPS FRAMEWORK
-diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
-index a8c453e98d753b..517988e60cfc4d 100644
---- a/arch/arc/mm/dma.c
-+++ b/arch/arc/mm/dma.c
-@@ -4,7 +4,6 @@
-  */
+ 	cma_pernuma=nn[MG]
+ 			[ARM64,KNL]
+diff --git a/arch/arm/mach-davinci/devices-da8xx.c b/arch/arm/mach-davinci/devices-da8xx.c
+index 1207eabe8d1cc4..bb368938fc4921 100644
+--- a/arch/arm/mach-davinci/devices-da8xx.c
++++ b/arch/arm/mach-davinci/devices-da8xx.c
+@@ -10,7 +10,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/clk.h>
+ #include <linux/clkdev.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/dmaengine.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
+diff --git a/arch/arm/mach-shmobile/setup-rcar-gen2.c b/arch/arm/mach-shmobile/setup-rcar-gen2.c
+index c42ff8c314c82d..e00f5b3b929362 100644
+--- a/arch/arm/mach-shmobile/setup-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/setup-rcar-gen2.c
+@@ -9,7 +9,7 @@
  
- #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
- #include <asm/cache.h>
- #include <asm/cacheflush.h>
- 
+ #include <linux/clocksource.h>
+ #include <linux/device.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
+ #include <linux/memblock.h>
 diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 911fc6ea26071e..c4b8df2ad32850 100644
+index 8bf0bc6bc31172..154c24cec94c74 100644
 --- a/arch/arm/mm/dma-mapping.c
 +++ b/arch/arm/mm/dma-mapping.c
-@@ -16,7 +16,6 @@
- #include <linux/device.h>
+@@ -17,7 +17,6 @@
  #include <linux/dma-direct.h>
  #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
+ #include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
  #include <linux/highmem.h>
  #include <linux/memblock.h>
  #include <linux/slab.h>
-diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
-index 396797ffe2b1df..5c80088db13b59 100644
---- a/arch/arm/xen/mm.c
-+++ b/arch/arm/xen/mm.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- #include <linux/cpu.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/gfp.h>
+diff --git a/arch/arm/mm/init.c b/arch/arm/mm/init.c
+index 000c1b48e9734f..ab1d1931a3525e 100644
+--- a/arch/arm/mm/init.c
++++ b/arch/arm/mm/init.c
+@@ -18,7 +18,7 @@
  #include <linux/highmem.h>
- #include <linux/export.h>
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 3afd3bd659d8de..93e87b2875567e 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -7,7 +7,6 @@
  #include <linux/gfp.h>
- #include <linux/cache.h>
- #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
- #include <linux/dma-iommu.h>
- #include <xen/xen.h>
- #include <xen/swiotlb-xen.h>
-diff --git a/arch/c6x/mm/dma-coherent.c b/arch/c6x/mm/dma-coherent.c
-index a5909091cb1424..03df07a831fc99 100644
---- a/arch/c6x/mm/dma-coherent.c
-+++ b/arch/c6x/mm/dma-coherent.c
-@@ -15,7 +15,7 @@
- #include <linux/bitops.h>
- #include <linux/module.h>
- #include <linux/interrupt.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
  #include <linux/memblock.h>
- 
- #include <asm/cacheflush.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/sizes.h>
+ #include <linux/stop_machine.h>
+ #include <linux/swiotlb.h>
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index f1c75957ff3c24..1b591ddb28b01b 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -21,8 +21,7 @@
+ #include <linux/of.h>
+ #include <linux/of_fdt.h>
+ #include <linux/dma-direct.h>
+-#include <linux/dma-mapping.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/efi.h>
+ #include <linux/swiotlb.h>
+ #include <linux/vmalloc.h>
+diff --git a/arch/csky/kernel/setup.c b/arch/csky/kernel/setup.c
+index 0481f4e34538ea..e4cab16056d606 100644
+--- a/arch/csky/kernel/setup.c
++++ b/arch/csky/kernel/setup.c
+@@ -7,7 +7,7 @@
+ #include <linux/of.h>
+ #include <linux/of_fdt.h>
+ #include <linux/start_kernel.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/screen_info.h>
+ #include <asm/sections.h>
+ #include <asm/mmu_context.h>
 diff --git a/arch/csky/mm/dma-mapping.c b/arch/csky/mm/dma-mapping.c
-index 3d9ff26c4bb4d8..c3a775a7e8f9d8 100644
+index 8f6571ae27c867..3d9ff26c4bb4d8 100644
 --- a/arch/csky/mm/dma-mapping.c
 +++ b/arch/csky/mm/dma-mapping.c
-@@ -3,7 +3,6 @@
+@@ -2,8 +2,7 @@
+ // Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
  
  #include <linux/cache.h>
- #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
+-#include <linux/dma-mapping.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/dma-noncoherent.h>
  #include <linux/genalloc.h>
  #include <linux/highmem.h>
- #include <linux/io.h>
-diff --git a/arch/hexagon/kernel/dma.c b/arch/hexagon/kernel/dma.c
-index 25f388d9cfcc36..00b9a81075dd54 100644
---- a/arch/hexagon/kernel/dma.c
-+++ b/arch/hexagon/kernel/dma.c
-@@ -5,7 +5,7 @@
-  * Copyright (c) 2010-2012, The Linux Foundation. All rights reserved.
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index 3344d4a1fe890c..7659a8b86580fd 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -7,7 +7,7 @@
+  * for more details.
   */
  
--#include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
 +#include <linux/dma-map-ops.h>
  #include <linux/memblock.h>
- #include <linux/genalloc.h>
- #include <linux/module.h>
-diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
-index 02e5aa08294ee0..ccba04d1267182 100644
---- a/arch/ia64/mm/init.c
-+++ b/arch/ia64/mm/init.c
-@@ -8,7 +8,7 @@
- #include <linux/kernel.h>
  #include <linux/init.h>
- 
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/dmar.h>
- #include <linux/efi.h>
- #include <linux/elf.h>
-diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
-index b1ca3522eccc2f..1c1b875fadc180 100644
---- a/arch/m68k/kernel/dma.c
-+++ b/arch/m68k/kernel/dma.c
-@@ -6,7 +6,7 @@
- 
- #undef DEBUG
- 
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/device.h>
  #include <linux/kernel.h>
- #include <linux/platform_device.h>
-diff --git a/arch/microblaze/kernel/dma.c b/arch/microblaze/kernel/dma.c
-index a564863db06e98..04d091ade4172b 100644
---- a/arch/microblaze/kernel/dma.c
-+++ b/arch/microblaze/kernel/dma.c
-@@ -8,7 +8,7 @@
-  */
- 
+diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+index bf5f5acab0a82f..464bfd3957ae96 100644
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -24,7 +24,7 @@
+ #include <linux/kexec.h>
+ #include <linux/sizes.h>
  #include <linux/device.h>
--#include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
 +#include <linux/dma-map-ops.h>
- #include <linux/gfp.h>
- #include <linux/export.h>
- #include <linux/bug.h>
-diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
-index e09b66e43cb63f..81dffe43b18c1e 100644
---- a/arch/microblaze/mm/consistent.c
-+++ b/arch/microblaze/mm/consistent.c
-@@ -11,7 +11,7 @@
- #include <linux/types.h>
- #include <linux/mm.h>
- #include <linux/init.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <asm/cpuinfo.h>
- #include <asm/cacheflush.h>
- 
-diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
-index b8fb42e56da0a8..461457b289828a 100644
---- a/arch/mips/jazz/jazzdma.c
-+++ b/arch/mips/jazz/jazzdma.c
-@@ -17,7 +17,6 @@
- #include <linux/spinlock.h>
- #include <linux/gfp.h>
- #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
- #include <asm/mipsregs.h>
- #include <asm/jazz.h>
- #include <asm/io.h>
+ #include <linux/decompress/generic.h>
+ #include <linux/of_fdt.h>
+ #include <linux/of_reserved_mem.h>
 diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index 22d99ccc70c81e..38d3d9143b47fb 100644
+index f4e8404ee0490d..22d99ccc70c81e 100644
 --- a/arch/mips/mm/dma-noncoherent.c
 +++ b/arch/mips/mm/dma-noncoherent.c
-@@ -6,7 +6,6 @@
-  */
+@@ -7,7 +7,6 @@
  #include <linux/dma-direct.h>
  #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
+ #include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
  #include <linux/highmem.h>
  
  #include <asm/cache.h>
-diff --git a/arch/nds32/kernel/dma.c b/arch/nds32/kernel/dma.c
-index 69d762182d49bf..2ac8e6c82a61a5 100644
---- a/arch/nds32/kernel/dma.c
-+++ b/arch/nds32/kernel/dma.c
-@@ -3,7 +3,7 @@
- 
- #include <linux/types.h>
- #include <linux/mm.h>
--#include <linux/dma-noncoherent.h>
+diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
+index c2c1b4e723eafb..151092565a2704 100644
+--- a/arch/s390/kernel/setup.c
++++ b/arch/s390/kernel/setup.c
+@@ -37,7 +37,7 @@
+ #include <linux/root_dev.h>
+ #include <linux/console.h>
+ #include <linux/kernel_stat.h>
+-#include <linux/dma-contiguous.h>
 +#include <linux/dma-map-ops.h>
- #include <linux/cache.h>
- #include <linux/highmem.h>
- #include <asm/cacheflush.h>
-diff --git a/arch/openrisc/kernel/dma.c b/arch/openrisc/kernel/dma.c
-index 345727638d52da..1b16d97e7da7f9 100644
---- a/arch/openrisc/kernel/dma.c
-+++ b/arch/openrisc/kernel/dma.c
-@@ -13,7 +13,7 @@
-  * DMA mapping callbacks...
-  */
- 
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/pagewalk.h>
- 
- #include <asm/cpuinfo.h>
-diff --git a/arch/parisc/kernel/pci-dma.c b/arch/parisc/kernel/pci-dma.c
-index ce38c0b9158125..36610a5c029fc2 100644
---- a/arch/parisc/kernel/pci-dma.c
-+++ b/arch/parisc/kernel/pci-dma.c
-@@ -26,7 +26,7 @@
- #include <linux/string.h>
- #include <linux/types.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/dma.h>    /* for DMA_CHUNK_SIZE */
-diff --git a/arch/powerpc/mm/dma-noncoherent.c b/arch/powerpc/mm/dma-noncoherent.c
-index 5ab4f868e919b8..30260b5d146da3 100644
---- a/arch/powerpc/mm/dma-noncoherent.c
-+++ b/arch/powerpc/mm/dma-noncoherent.c
-@@ -11,7 +11,7 @@
- #include <linux/types.h>
- #include <linux/highmem.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/dma.h>
-diff --git a/arch/sh/kernel/dma-coherent.c b/arch/sh/kernel/dma-coherent.c
-index cd46a9825e3c59..6a44c0e7ba40ef 100644
---- a/arch/sh/kernel/dma-coherent.c
-+++ b/arch/sh/kernel/dma-coherent.c
-@@ -3,7 +3,7 @@
-  * Copyright (C) 2004 - 2007  Paul Mundt
-  */
- #include <linux/mm.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <asm/cacheflush.h>
- #include <asm/addrspace.h>
- 
-diff --git a/arch/sparc/kernel/ioport.c b/arch/sparc/kernel/ioport.c
-index d6874c9b639f8d..8e1d72a1675949 100644
---- a/arch/sparc/kernel/ioport.c
-+++ b/arch/sparc/kernel/ioport.c
-@@ -38,7 +38,7 @@
- #include <linux/proc_fs.h>
- #include <linux/seq_file.h>
- #include <linux/scatterlist.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/of_device.h>
- 
+ #include <linux/device.h>
+ #include <linux/notifier.h>
+ #include <linux/pfn.h>
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index fed67eafcaccc2..e0c380b3ec1407 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -11,7 +11,6 @@
+ #include <linux/dma-debug.h>
  #include <asm/io.h>
+ #include <asm/swiotlb.h>
+-#include <linux/dma-contiguous.h>
+ 
+ extern int iommu_merge;
+ extern int panic_on_overflow;
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 9286fa9d575e6d..e8155e85bd8f34 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -7,7 +7,7 @@
+  */
+ #include <linux/console.h>
+ #include <linux/crash_dump.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/dmi.h>
+ #include <linux/efi.h>
+ #include <linux/init_ohci1394_dma.h>
 diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
-index 790dbe022a0796..94955caa4488c8 100644
+index 17c4384f849558..790dbe022a0796 100644
 --- a/arch/xtensa/kernel/pci-dma.c
 +++ b/arch/xtensa/kernel/pci-dma.c
-@@ -12,7 +12,6 @@
+@@ -11,7 +11,7 @@
+  * Joe Taylor <joe@tensilica.com, joetylr@yahoo.com>
   */
  
- #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/dma-noncoherent.h>
  #include <linux/dma-direct.h>
  #include <linux/gfp.h>
+diff --git a/arch/xtensa/mm/init.c b/arch/xtensa/mm/init.c
+index a05b306cf371bf..8079007842ac8e 100644
+--- a/arch/xtensa/mm/init.c
++++ b/arch/xtensa/mm/init.c
+@@ -26,7 +26,7 @@
+ #include <linux/nodemask.h>
+ #include <linux/mm.h>
+ #include <linux/of_fdt.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ 
+ #include <asm/bootparam.h>
+ #include <asm/page.h>
+diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+index 626cf7fd033afd..e55384dc115ba2 100644
+--- a/drivers/dma-buf/heaps/cma_heap.c
++++ b/drivers/dma-buf/heaps/cma_heap.c
+@@ -10,7 +10,7 @@
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
+ #include <linux/dma-heap.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/err.h>
+ #include <linux/errno.h>
  #include <linux/highmem.h>
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 10e4200d355204..5396eb8d730bca 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -18,7 +18,7 @@
+ #include <linux/slab.h>
+ #include <linux/debugfs.h>
+ #include <linux/scatterlist.h>
+-#include <linux/dma-mapping.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/dma-direct.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/iommu-helper.h>
+@@ -28,7 +28,6 @@
+ #include <linux/export.h>
+ #include <linux/irq.h>
+ #include <linux/msi.h>
+-#include <linux/dma-contiguous.h>
+ #include <linux/irqdomain.h>
+ #include <linux/percpu.h>
+ #include <linux/iova.h>
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 22c221bba13e2f..3a00fb64477b0c 100644
+index d2e3f26228151f..22c221bba13e2f 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -12,7 +12,6 @@
+@@ -11,7 +11,6 @@
+ #include <linux/acpi_iort.h>
  #include <linux/device.h>
  #include <linux/dma-map-ops.h>
+-#include <linux/dma-contiguous.h>
  #include <linux/dma-iommu.h>
--#include <linux/dma-noncoherent.h>
+ #include <linux/dma-noncoherent.h>
  #include <linux/gfp.h>
- #include <linux/huge_mm.h>
- #include <linux/iommu.h>
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 71ff4bf380738c..71ce1b7a23d1cc 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -27,9 +27,8 @@
- #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
- 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index bd3470142b0678..0c5b4500ae83d3 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -37,7 +37,7 @@
+ #include <linux/dmi.h>
+ #include <linux/pci-ats.h>
  #include <linux/memblock.h>
--#include <linux/dma-map-ops.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
  #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/export.h>
- #include <xen/swiotlb-xen.h>
- #include <xen/page.h>
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index a2d6640c42c04e..18aade195884d7 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -7,7 +7,7 @@
- #define _LINUX_DMA_DIRECT_H 1
- 
- #include <linux/dma-mapping.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/memblock.h> /* for min_low_pfn */
- #include <linux/mem_encrypt.h>
- #include <linux/swiotlb.h>
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 9891def42da71f..33c6e24707a94b 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -7,6 +7,7 @@
- #define _LINUX_DMA_MAP_OPS_H
- 
- #include <linux/dma-mapping.h>
-+#include <linux/pgtable.h>
- 
- struct cma;
- 
-@@ -202,6 +203,107 @@ static inline int dma_mmap_from_global_coherent(struct vm_area_struct *vma,
- }
- #endif /* CONFIG_DMA_DECLARE_COHERENT */
- 
-+#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
-+#include <asm/dma-coherence.h>
-+#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+static inline bool dev_is_dma_coherent(struct device *dev)
-+{
-+	return dev->dma_coherent;
-+}
-+#else
-+static inline bool dev_is_dma_coherent(struct device *dev)
-+{
-+	return true;
-+}
-+#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
-+
-+/*
-+ * Check if an allocation needs to be marked uncached to be coherent.
-+ */
-+static __always_inline bool dma_alloc_need_uncached(struct device *dev,
-+		unsigned long attrs)
-+{
-+	if (dev_is_dma_coherent(dev))
-+		return false;
-+	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
-+		return false;
-+	return true;
-+}
-+
-+void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-+		gfp_t gfp, unsigned long attrs);
-+void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
-+		dma_addr_t dma_addr, unsigned long attrs);
-+
-+#ifdef CONFIG_MMU
-+/*
-+ * Page protection so that devices that can't snoop CPU caches can use the
-+ * memory coherently.  We default to pgprot_noncached which is usually used
-+ * for ioremap as a safe bet, but architectures can override this with less
-+ * strict semantics if possible.
-+ */
-+#ifndef pgprot_dmacoherent
-+#define pgprot_dmacoherent(prot)	pgprot_noncached(prot)
-+#endif
-+
-+pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs);
-+#else
-+static inline pgprot_t dma_pgprot(struct device *dev, pgprot_t prot,
-+		unsigned long attrs)
-+{
-+	return prot;	/* no protection bits supported without page tables */
-+}
-+#endif /* CONFIG_MMU */
-+
-+#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE
-+void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
-+		enum dma_data_direction dir);
-+#else
-+static inline void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
-+		enum dma_data_direction dir)
-+{
-+}
-+#endif /* ARCH_HAS_SYNC_DMA_FOR_DEVICE */
-+
-+#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU
-+void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
-+		enum dma_data_direction dir);
-+#else
-+static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
-+		enum dma_data_direction dir)
-+{
-+}
-+#endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
-+
-+#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
-+void arch_sync_dma_for_cpu_all(void);
-+#else
-+static inline void arch_sync_dma_for_cpu_all(void)
-+{
-+}
-+#endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
-+
-+#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
-+void arch_dma_prep_coherent(struct page *page, size_t size);
-+#else
-+static inline void arch_dma_prep_coherent(struct page *page, size_t size)
-+{
-+}
-+#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
-+
-+#ifdef CONFIG_ARCH_HAS_DMA_MARK_CLEAN
-+void arch_dma_mark_clean(phys_addr_t paddr, size_t size);
-+#else
-+static inline void arch_dma_mark_clean(phys_addr_t paddr, size_t size)
-+{
-+}
-+#endif /* ARCH_HAS_DMA_MARK_CLEAN */
-+
-+void *arch_dma_set_uncached(void *addr, size_t size);
-+void arch_dma_clear_uncached(void *addr, size_t size);
-+
- #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		const struct iommu_ops *iommu, bool coherent);
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+ #include <linux/crash_dump.h>
+ #include <linux/numa.h>
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index a474014f0a0fa5..32f5982afa1ab2 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -12,7 +12,6 @@
+ #include <linux/device.h>
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
+-#include <linux/dma-contiguous.h>
+ #include <linux/errno.h>
+ #include <linux/firmware.h>
+ #include <linux/interrupt.h>
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
 deleted file mode 100644
-index e61283e06576a8..00000000000000
---- a/include/linux/dma-noncoherent.h
+index f9ce1ee58d4180..00000000000000
+--- a/include/linux/dma-contiguous.h
 +++ /dev/null
-@@ -1,109 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _LINUX_DMA_NONCOHERENT_H
--#define _LINUX_DMA_NONCOHERENT_H 1
+@@ -1,135 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-#ifndef __LINUX_CMA_H
+-#define __LINUX_CMA_H
 -
--#include <linux/dma-mapping.h>
--#include <linux/pgtable.h>
+-/*
+- * Contiguous Memory Allocator for DMA mapping framework
+- * Copyright (c) 2010-2011 by Samsung Electronics.
+- * Written by:
+- *	Marek Szyprowski <m.szyprowski@samsung.com>
+- *	Michal Nazarewicz <mina86@mina86.com>
+- */
 -
--#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
--#include <asm/dma-coherence.h>
--#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
--	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
--	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
--static inline bool dev_is_dma_coherent(struct device *dev)
+-/*
+- * Contiguous Memory Allocator
+- *
+- *   The Contiguous Memory Allocator (CMA) makes it possible to
+- *   allocate big contiguous chunks of memory after the system has
+- *   booted.
+- *
+- * Why is it needed?
+- *
+- *   Various devices on embedded systems have no scatter-getter and/or
+- *   IO map support and require contiguous blocks of memory to
+- *   operate.  They include devices such as cameras, hardware video
+- *   coders, etc.
+- *
+- *   Such devices often require big memory buffers (a full HD frame
+- *   is, for instance, more then 2 mega pixels large, i.e. more than 6
+- *   MB of memory), which makes mechanisms such as kmalloc() or
+- *   alloc_page() ineffective.
+- *
+- *   At the same time, a solution where a big memory region is
+- *   reserved for a device is suboptimal since often more memory is
+- *   reserved then strictly required and, moreover, the memory is
+- *   inaccessible to page system even if device drivers don't use it.
+- *
+- *   CMA tries to solve this issue by operating on memory regions
+- *   where only movable pages can be allocated from.  This way, kernel
+- *   can use the memory for pagecache and when device driver requests
+- *   it, allocated pages can be migrated.
+- *
+- * Driver usage
+- *
+- *   CMA should not be used by the device drivers directly. It is
+- *   only a helper framework for dma-mapping subsystem.
+- *
+- *   For more information, see kernel-docs in kernel/dma/contiguous.c
+- */
+-
+-#ifdef __KERNEL__
+-
+-#include <linux/device.h>
+-#include <linux/mm.h>
+-
+-struct cma;
+-struct page;
+-
+-#ifdef CONFIG_DMA_CMA
+-
+-extern struct cma *dma_contiguous_default_area;
+-
+-static inline struct cma *dev_get_cma_area(struct device *dev)
 -{
--	return dev->dma_coherent;
+-	if (dev && dev->cma_area)
+-		return dev->cma_area;
+-	return dma_contiguous_default_area;
 -}
+-
+-void dma_contiguous_reserve(phys_addr_t addr_limit);
+-
+-int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+-				       phys_addr_t limit, struct cma **res_cma,
+-				       bool fixed);
+-
+-struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order, bool no_warn);
+-bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+-				 int count);
+-struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
+-void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
+-
 -#else
--static inline bool dev_is_dma_coherent(struct device *dev)
--{
--	return true;
--}
--#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
 -
--/*
-- * Check if an allocation needs to be marked uncached to be coherent.
-- */
--static __always_inline bool dma_alloc_need_uncached(struct device *dev,
--		unsigned long attrs)
+-static inline struct cma *dev_get_cma_area(struct device *dev)
 -{
--	if (dev_is_dma_coherent(dev))
--		return false;
--	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
--		return false;
--	return true;
+-	return NULL;
 -}
 -
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		gfp_t gfp, unsigned long attrs);
--void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
--		dma_addr_t dma_addr, unsigned long attrs);
+-static inline void dma_contiguous_reserve(phys_addr_t limit) { }
 -
--#ifdef CONFIG_MMU
--/*
-- * Page protection so that devices that can't snoop CPU caches can use the
-- * memory coherently.  We default to pgprot_noncached which is usually used
-- * for ioremap as a safe bet, but architectures can override this with less
-- * strict semantics if possible.
-- */
--#ifndef pgprot_dmacoherent
--#define pgprot_dmacoherent(prot)	pgprot_noncached(prot)
+-static inline int dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+-				       phys_addr_t limit, struct cma **res_cma,
+-				       bool fixed)
+-{
+-	return -ENOSYS;
+-}
+-
+-static inline
+-struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order, bool no_warn)
+-{
+-	return NULL;
+-}
+-
+-static inline
+-bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+-				 int count)
+-{
+-	return false;
+-}
+-
+-/* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
+-static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
+-		gfp_t gfp)
+-{
+-	return NULL;
+-}
+-
+-static inline void dma_free_contiguous(struct device *dev, struct page *page,
+-		size_t size)
+-{
+-	__free_pages(page, get_order(size));
+-}
+-
 -#endif
 -
--pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs);
+-#ifdef CONFIG_DMA_PERNUMA_CMA
+-void dma_pernuma_cma_reserve(void);
 -#else
--static inline pgprot_t dma_pgprot(struct device *dev, pgprot_t prot,
--		unsigned long attrs)
--{
--	return prot;	/* no protection bits supported without page tables */
--}
--#endif /* CONFIG_MMU */
+-static inline void dma_pernuma_cma_reserve(void) { }
+-#endif
 -
--#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE
--void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
--		enum dma_data_direction dir);
--#else
--static inline void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
--		enum dma_data_direction dir)
--{
--}
--#endif /* ARCH_HAS_SYNC_DMA_FOR_DEVICE */
+-#endif
 -
--#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU
--void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
--		enum dma_data_direction dir);
--#else
--static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
--		enum dma_data_direction dir)
--{
--}
--#endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
--
--#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
--void arch_sync_dma_for_cpu_all(void);
--#else
--static inline void arch_sync_dma_for_cpu_all(void)
--{
--}
--#endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
--
--#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
--void arch_dma_prep_coherent(struct page *page, size_t size);
--#else
--static inline void arch_dma_prep_coherent(struct page *page, size_t size)
--{
--}
--#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
--
--#ifdef CONFIG_ARCH_HAS_DMA_MARK_CLEAN
--void arch_dma_mark_clean(phys_addr_t paddr, size_t size);
--#else
--static inline void arch_dma_mark_clean(phys_addr_t paddr, size_t size)
--{
--}
--#endif /* ARCH_HAS_DMA_MARK_CLEAN */
--
--void *arch_dma_set_uncached(void *addr, size_t size);
--void arch_dma_clear_uncached(void *addr, size_t size);
--
--#endif /* _LINUX_DMA_NONCOHERENT_H */
+-#endif
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 4b4ba5bdcf6a8d..474fc81bd4921c 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -8,6 +8,8 @@
+ 
+ #include <linux/dma-mapping.h>
+ 
++struct cma;
++
+ struct dma_map_ops {
+ 	void *(*alloc)(struct device *dev, size_t size,
+ 			dma_addr_t *dma_handle, gfp_t gfp,
+@@ -94,6 +96,69 @@ static inline void set_dma_ops(struct device *dev,
+ }
+ #endif /* CONFIG_DMA_OPS */
+ 
++#ifdef CONFIG_DMA_CMA
++extern struct cma *dma_contiguous_default_area;
++
++static inline struct cma *dev_get_cma_area(struct device *dev)
++{
++	if (dev && dev->cma_area)
++		return dev->cma_area;
++	return dma_contiguous_default_area;
++}
++
++void dma_contiguous_reserve(phys_addr_t addr_limit);
++int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
++		phys_addr_t limit, struct cma **res_cma, bool fixed);
++
++struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
++				       unsigned int order, bool no_warn);
++bool dma_release_from_contiguous(struct device *dev, struct page *pages,
++				 int count);
++struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
++void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
++#else /* CONFIG_DMA_CMA */
++static inline struct cma *dev_get_cma_area(struct device *dev)
++{
++	return NULL;
++}
++static inline void dma_contiguous_reserve(phys_addr_t limit)
++{
++}
++static inline int dma_contiguous_reserve_area(phys_addr_t size,
++		phys_addr_t base, phys_addr_t limit, struct cma **res_cma,
++		bool fixed)
++{
++	return -ENOSYS;
++}
++static inline struct page *dma_alloc_from_contiguous(struct device *dev,
++		size_t count, unsigned int order, bool no_warn)
++{
++	return NULL;
++}
++static inline bool dma_release_from_contiguous(struct device *dev,
++		struct page *pages, int count)
++{
++	return false;
++}
++/* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
++static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
++		gfp_t gfp)
++{
++	return NULL;
++}
++static inline void dma_free_contiguous(struct device *dev, struct page *page,
++		size_t size)
++{
++	__free_pages(page, get_order(size));
++}
++#endif /* CONFIG_DMA_CMA*/
++
++#ifdef CONFIG_DMA_PERNUMA_CMA
++void dma_pernuma_cma_reserve(void);
++#else
++static inline void dma_pernuma_cma_reserve(void) { }
++#endif /* CONFIG_DMA_PERNUMA_CMA */
++
+ #ifdef CONFIG_DMA_DECLARE_COHERENT
+ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
+ 		dma_addr_t device_addr, size_t size);
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index c5f717021f5654..598e772baebb10 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -118,7 +118,7 @@ config DMA_CMA
+ 	  You can disable CMA by specifying "cma=0" on the kernel's command
+ 	  line.
+ 
+-	  For more information see <include/linux/dma-contiguous.h>.
++	  For more information see <kernel/dma/contiguous.c>.
+ 	  If unsure, say "n".
+ 
+ if  DMA_CMA
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index bf05ec2256e149..6bfb763fff6fca 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -5,6 +5,34 @@
+  * Written by:
+  *	Marek Szyprowski <m.szyprowski@samsung.com>
+  *	Michal Nazarewicz <mina86@mina86.com>
++ *
++ * Contiguous Memory Allocator
++ *
++ *   The Contiguous Memory Allocator (CMA) makes it possible to
++ *   allocate big contiguous chunks of memory after the system has
++ *   booted.
++ *
++ * Why is it needed?
++ *
++ *   Various devices on embedded systems have no scatter-getter and/or
++ *   IO map support and require contiguous blocks of memory to
++ *   operate.  They include devices such as cameras, hardware video
++ *   coders, etc.
++ *
++ *   Such devices often require big memory buffers (a full HD frame
++ *   is, for instance, more then 2 mega pixels large, i.e. more than 6
++ *   MB of memory), which makes mechanisms such as kmalloc() or
++ *   alloc_page() ineffective.
++ *
++ *   At the same time, a solution where a big memory region is
++ *   reserved for a device is suboptimal since often more memory is
++ *   reserved then strictly required and, moreover, the memory is
++ *   inaccessible to page system even if device drivers don't use it.
++ *
++ *   CMA tries to solve this issue by operating on memory regions
++ *   where only movable pages can be allocated from.  This way, kernel
++ *   can use the memory for pagecache and when device driver requests
++ *   it, allocated pages can be migrated.
+  */
+ 
+ #define pr_fmt(fmt) "cma: " fmt
+@@ -21,7 +49,7 @@
+ #include <linux/memblock.h>
+ #include <linux/err.h>
+ #include <linux/sizes.h>
+-#include <linux/dma-contiguous.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/cma.h>
+ 
+ #ifdef CONFIG_CMA_SIZE_MBYTES
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 8cf5689a8c4044..87697c86f0b82a 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -10,7 +10,6 @@
+ #include <linux/dma-direct.h>
+ #include <linux/dma-map-ops.h>
+ #include <linux/scatterlist.h>
+-#include <linux/dma-contiguous.h>
+ #include <linux/pfn.h>
+ #include <linux/vmalloc.h>
+ #include <linux/set_memory.h>
 diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index bc80fd2648bcf2..910ae69cae7774 100644
+index 60d7b6cdfd8d15..bc80fd2648bcf2 100644
 --- a/kernel/dma/ops_helpers.c
 +++ b/kernel/dma/ops_helpers.c
-@@ -4,7 +4,6 @@
+@@ -3,7 +3,6 @@
+  * Helpers for DMA ops implementations.  These generally rely on the fact that
   * the allocated memory contains normal pages in the direct kernel mapping.
   */
+-#include <linux/dma-contiguous.h>
  #include <linux/dma-map-ops.h>
--#include <linux/dma-noncoherent.h>
+ #include <linux/dma-noncoherent.h>
  
- /*
-  * Create scatter-list for the already allocated DMA buffer.
 diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index c9fb5c3d8bd002..d4637f72239b40 100644
+index fe11643ff9cc7b..c9fb5c3d8bd002 100644
 --- a/kernel/dma/pool.c
 +++ b/kernel/dma/pool.c
-@@ -7,7 +7,6 @@
+@@ -5,7 +5,7 @@
+  */
+ #include <linux/cma.h>
  #include <linux/debugfs.h>
- #include <linux/dma-map-ops.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
- #include <linux/init.h>
- #include <linux/genalloc.h>
- #include <linux/set_memory.h>
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 4ea72d145cd27d..2be1e8b34ae3b9 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -22,7 +22,7 @@
- 
- #include <linux/cache.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
+-#include <linux/dma-contiguous.h>
 +#include <linux/dma-map-ops.h>
- #include <linux/mm.h>
- #include <linux/export.h>
- #include <linux/spinlock.h>
+ #include <linux/dma-direct.h>
+ #include <linux/dma-noncoherent.h>
+ #include <linux/init.h>
 -- 
 2.28.0
 
