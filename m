@@ -1,107 +1,77 @@
-Return-Path: <SRS0=Vh7E=DH=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=MyXX=DI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37232C4363D
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 21:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED23C4363D
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:59 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B949B20658
-	for <iommu@archiver.kernel.org>; Wed, 30 Sep 2020 21:56:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TuQ/Jkj6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B949B20658
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id A4D712074A
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 00:11:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4D712074A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6E0CA871DF;
-	Wed, 30 Sep 2020 21:56:53 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 57EBB86981;
+	Thu,  1 Oct 2020 00:11:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uL0pRY96eX-h; Wed, 30 Sep 2020 21:56:52 +0000 (UTC)
+	with ESMTP id LQnA-QUvXq2h; Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6D49886FC9;
-	Wed, 30 Sep 2020 21:56:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8A4C7871C7;
+	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F9E3C0889;
-	Wed, 30 Sep 2020 21:56:52 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A19B3C0051
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 21:56:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 758A3C0890;
+	Thu,  1 Oct 2020 00:11:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D956AC0051
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7F13B203BA
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 21:56:50 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C8DE586408
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W6SqdT+IODp0 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Sep 2020 21:56:49 +0000 (UTC)
+ with ESMTP id JVpwr3EOlog6 for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 00:11:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
- [209.85.208.194])
- by silver.osuosl.org (Postfix) with ESMTPS id 82A6920345
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 21:56:49 +0000 (UTC)
-Received: by mail-lj1-f194.google.com with SMTP id b19so2883558lji.11
- for <iommu@lists.linux-foundation.org>; Wed, 30 Sep 2020 14:56:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=l4v1Rqtf8JVCwJCj2DIQWVh+hszuC1ak27UuWq627Tw=;
- b=TuQ/Jkj6MHCpiYxy2xBdJKJB2aGd4oWNFivqUaMBEVJuCFgOXZOqWY1NmlohAU9OMc
- ohMZNRJ95teLwYIXdEYfCHlzF4kQ798Qm6Jo+kgeYxGK50F21IkBGdyxAbP2/7/gSoAk
- dpC+sWK38lsiC6EUZU1GH/q2dBc0V/7OpmsAKG9EOgVHnGbQW4sIiVtaOb8J9/NcgENF
- wFhJM307doFqLOWoIz9aPDgSgpDKK5lxBYWSSY+2sHn+bPw9iWdAk/4fBNaIEIRGfAfA
- td/pUQ0Xi4XcbbErpqOdC9Ps3H1dXUBGS/q0cTOUC6RL/hhcqyJ0ZdkzFBUIcwq6cU6H
- sZrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=l4v1Rqtf8JVCwJCj2DIQWVh+hszuC1ak27UuWq627Tw=;
- b=UkXguyhzEaODit89dBFxtPkHkJhIDHqaCX8+0OMHk3EwiBokt4otva2yzR4bhQu3il
- fehxl4JOpb9SHoj36mF/eZUj9VI66UexYCUOaKQAyanVT2w5n9YuhsDc+2TR/7EB/uIw
- BBP6e7FQoYc4YAsyiVuytuyKUAJ84DGu9hOxM5WCsJFrz40c4v6/LchszA3gnyV/K2db
- bfA6ICutkoW0C7mGUwxZR4QNibbhFHZl4qzyPBclUEb1n9VaosUA7KrwuzIwZb+24IG0
- ifEMcVuA+md8O3J6ZFtPwyqKxPKniXnnVeqAchg0/mMOxa0LS0o3r05cWNZ8pcGIw1/n
- UBbg==
-X-Gm-Message-State: AOAM5336DhS8IxUkgCdHgSidWly2PTd+ttEsLv/73r4JWdilG2xfJrA7
- vcd49dL2VrJn92A5plnPVqE=
-X-Google-Smtp-Source: ABdhPJy71Zq7RRgjGwcTuu/+eYGrfcM5iZCBTgqk/k/1z1F09LrJXac+jA2l2r6FiHiLkyCbegyaNQ==
-X-Received: by 2002:a2e:b4a5:: with SMTP id q5mr1599589ljm.200.1601503007550; 
- Wed, 30 Sep 2020 14:56:47 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru.
- [109.252.170.211])
- by smtp.googlemail.com with ESMTPSA id t23sm259746ljc.125.2020.09.30.14.56.46
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 30 Sep 2020 14:56:47 -0700 (PDT)
-Subject: Re: [PATCH v3 2/3] iommu/tegra-smmu: Rework .probe_device and
- .attach_dev
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20200930084258.25493-1-nicoleotsuka@gmail.com>
- <20200930084258.25493-3-nicoleotsuka@gmail.com>
- <20200930153131.GB3833404@ulmo> <20200930203618.GC2110@Asurada-Nvidia>
- <13746922-0253-cda7-e9ac-2bd20bf1a17f@gmail.com>
- <20200930213244.GA10573@Asurada-Nvidia>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <5945a63e-79d8-e3ae-ab53-cee8c220ac7d@gmail.com>
-Date: Thu, 1 Oct 2020 00:56:46 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20200930213244.GA10573@Asurada-Nvidia>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- krzk@kernel.org, jonathanh@nvidia.com,
- Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EC82D86981
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 00:11:54 +0000 (UTC)
+IronPort-SDR: 9ANsYlDsAdwkrmAJdcRJTUTynEUtvx/RIjC4ENyZAAgXyHNn8cwr7ru6t3CAoJbRTqVqiDoIRy
+ //DoSzTu1L+A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180732769"
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="180732769"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Sep 2020 17:11:53 -0700
+IronPort-SDR: siWcgfDe4B8i//3Kid0VOiIRRaudQVGpf14GOLMbcVJBdLUjv4EDSyUEllJ5prWv3FVf71+b6J
+ iKIWQurRDxPg==
+X-IronPort-AV: E=Sophos;i="5.77,322,1596524400"; d="scan'208";a="500276825"
+Received: from km-skylake-client-platform.sc.intel.com ([10.3.52.153])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Sep 2020 17:11:53 -0700
+From: Kyung Min Park <kyung.min.park@intel.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org
+Subject: [RESEND PATCH 4/4] iommu/vt-d: Scale capability to the lowest
+ supported between the IOMMUs
+Date: Wed, 30 Sep 2020 16:53:09 -0700
+Message-Id: <20200930235309.22841-5-kyung.min.park@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200930235309.22841-1-kyung.min.park@intel.com>
+References: <20200930235309.22841-1-kyung.min.park@intel.com>
+Cc: ravi.v.shankar@intel.com, kevin.tian@intel.com, ashok.raj@intel.com,
+ ricardo.neri@intel.com, kyung.min.park@intel.com, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,38 +84,160 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MDEuMTAuMjAyMCAwMDozMiwgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gT24gVGh1LCBPY3Qg
-MDEsIDIwMjAgYXQgMTI6MjQ6MjVBTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+PiAu
-Li4KPj4+PiBJdCBsb29rcyB0byBtZSBsaWtlIHRoZSBvbmx5IHJlYXNvbiB3aHkgeW91IG5lZWQg
-dGhpcyBuZXcgZ2xvYmFsIEFQSSBpcwo+Pj4+IGJlY2F1c2UgUENJIGRldmljZXMgbWF5IG5vdCBo
-YXZlIGEgZGV2aWNlIHRyZWUgbm9kZSB3aXRoIGEgcGhhbmRsZSB0bwo+Pj4+IHRoZSBJT01NVS4g
-SG93ZXZlciwgU01NVSBzdXBwb3J0IGZvciBQQ0kgd2lsbCBvbmx5IGJlIGVuYWJsZWQgaWYgdGhl
-Cj4+Pj4gcm9vdCBjb21wbGV4IGhhcyBhbiBpb21tdXMgcHJvcGVydHksIHJpZ2h0PyBJbiB0aGF0
-IGNhc2UsIGNhbid0IHdlCj4+Pj4gc2ltcGx5IGRvIHNvbWV0aGluZyBsaWtlIHRoaXM6Cj4+Pj4K
-Pj4+PiAJaWYgKGRldl9pc19wY2koZGV2KSkKPj4+PiAJCW5wID0gZmluZF9ob3N0X2JyaWRnZShk
-ZXYpLT5vZl9ub2RlOwo+Pj4+IAllbHNlCj4+Pj4gCQlucCA9IGRldi0+b2Zfbm9kZTsKPj4+Pgo+
-Pj4+ID8gSSdtIG5vdCBzdXJlIGV4YWN0bHkgd2hhdCBmaW5kX2hvc3RfYnJpZGdlKCkgaXMgY2Fs
-bGVkLCBidXQgSSdtIHByZXR0eQo+Pj4+IHN1cmUgdGhhdCBleGlzdHMuCj4+Pj4KPj4+PiBPbmNl
-IHdlIGhhdmUgdGhhdCB3ZSBjYW4gc3RpbGwgaXRlcmF0ZSBvdmVyIHRoZSBpb21tdXMgcHJvcGVy
-dHkgYW5kIGRvCj4+Pj4gbm90IG5lZWQgdG8gcmVseSBvbiB0aGlzIGdsb2JhbCB2YXJpYWJsZS4K
-Pj4+Cj4+PiBJIGFncmVlIHRoYXQgaXQnZCB3b3JrLiBCdXQgSSB3YXMgaG9waW5nIHRvIHNpbXBs
-aWZ5IHRoZSBjb2RlCj4+PiBoZXJlIGlmIGl0J3MgcG9zc2libGUuIExvb2tzIGxpa2Ugd2UgaGF2
-ZSBhbiBhcmd1bWVudCBvbiB0aGlzCj4+PiBzbyBJIHdpbGwgY2hvb3NlIHRvIGdvIHdpdGggeW91
-ciBzdWdnZXN0aW9uIGFib3ZlIGZvciBub3cuCj4+Cj4+IFRoaXMgcGF0Y2ggcmVtb3ZlZCBtb3Jl
-IGxpbmVzIHRoYW4gd2VyZSBhZGRlZC4gSWYgdGhpcyB3aWxsIGJlIG9wcG9zaXRlCj4+IGZvciB0
-aGUgVGhpZXJyeSdzIHN1Z2dlc3Rpb24sIHRoZW4gaXQncyBwcm9iYWJseSBub3QgYSBncmVhdCBz
-dWdnZXN0aW9uLgo+IAo+IFNvcnJ5LCBJIGRvbid0IHF1aXRlIHVuZGVyc3RhbmQgdGhpcyBjb21t
-ZW50cy4gV291bGQgeW91IHBsZWFzZQo+IGVsYWJvcmF0ZSB3aGF0J3MgdGhpcyAiaXQiIGJlaW5n
-ICJub3QgYSBncmVhdCBzdWdnZXN0aW9uIj8KPiAKCkkgbWVhbnQgdGhhdCB5b3Ugc2hvdWxkIHRy
-eSB0byBpbXBsZW1lbnQgVGhpZXJyeSdzIHNvbHV0aW9uLCBidXQgaWYgdGhlCmVuZCByZXN1bHQg
-d2lsbCBiZSB3b3JzZSB0aGFuIHRoZSBjdXJyZW50IHBhdGNoLCB0aGVuIHlvdSBzaG91bGRuJ3Qg
-bWFrZQphIHY0LCBidXQgZ2V0IGJhY2sgdG8gdGhpcyBkaXNjdXNzaW9uIGluIG9yZGVyIHRvIGNo
-b29zZSB0aGUgYmVzdCBvcHRpb24KYW5kIG1ha2UgZXZlcnlvbmUgYWdyZWUgb24gaXQuCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Audit IOMMU Capability/Extended Capabilities and check if the IOMMUs
+have the consistent value for features as below. Find common denominator
+for the features and set to the lowest supported value for each IOMMU.
+
+Abort hot plug when the hot plugged IOMMU does not meet the aforementioned
+common denominator.
+
+Set capability to the lowest supported when below features are mismatched:
+  - Maximum Address Mask Value (MAMV)
+  - Second Level Large Page Support (SLLPS)
+  - Maximum Guest Address Width (MGAW)
+  - Supported Adjusted Guest Address Width (SAGAW)
+  - Number of Domains supported (ND)
+  - Pasid Size Supported (PSS)
+
+Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
+---
+ drivers/iommu/intel/audit.c | 23 +++++++++++++++++++++++
+ drivers/iommu/intel/audit.h | 27 +++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  1 +
+ 3 files changed, 51 insertions(+)
+
+diff --git a/drivers/iommu/intel/audit.c b/drivers/iommu/intel/audit.c
+index e005bc61770a..7e12c963c2b7 100644
+--- a/drivers/iommu/intel/audit.c
++++ b/drivers/iommu/intel/audit.c
+@@ -40,6 +40,13 @@ static inline void check_dmar_capabilities(struct intel_iommu *a,
+ 	if (MINIMAL_SVM_ECAP & (a->ecap ^ b->ecap))
+ 		set_cap_audit_svm_sanity(false);
+ 
++	MINIMAL_FEATURE_IOMMU(b, cap, CAP_MAMV_MASK);
++	MINIMAL_FEATURE_IOMMU(b, cap, CAP_SLLPS_MASK);
++	MINIMAL_FEATURE_IOMMU(b, cap, CAP_MGAW_MASK);
++	MINIMAL_FEATURE_IOMMU(b, cap, CAP_SAGAW_MASK);
++	MINIMAL_FEATURE_IOMMU(b, cap, CAP_NDOMS_MASK);
++	MINIMAL_FEATURE_IOMMU(b, ecap, ECAP_PSS_MASK);
++
+ 	CHECK_FEATURE_MISMATCH(a, b, cap, 5lp_support, CAP_FL5LP_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, cap, fl1gp_support, CAP_FL1GP_MASK);
+ 	CHECK_FEATURE_MISMATCH(a, b, cap, read_drain, CAP_RD_MASK);
+@@ -98,6 +105,14 @@ static int audit_iommu_capabilities_hotplug(struct intel_iommu *hot_iommu,
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, qis, ECAP_QI_MASK);
+ 	CHECK_FEATURE_MISMATCH_HOTPLUG(hot_iommu, ecap, coherent, ECAP_C_MASK);
+ 
++	/* Abort hot plug if the hot plug iommu feature is smaller than global */
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, mamv, CAP_MAMV_MASK, mismatch);
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, super_page_val, CAP_SLLPS_MASK, mismatch);
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, mgaw, CAP_MGAW_MASK, mismatch);
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, sagaw, CAP_SAGAW_MASK, mismatch);
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, cap, ndoms, CAP_NDOMS_MASK, mismatch);
++	MINIMAL_FEATURE_HOTPLUG(hot_iommu, ecap, pss, ECAP_PSS_MASK, mismatch);
++
+ 	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
+ 		goto out;
+ 
+@@ -147,6 +162,14 @@ static int audit_iommu_capabilities(bool audit_irq)
+ 		intel_iommu_ecap_sanity = (intel_iommu_ecap_sanity & ~MINIMAL_SVM_ECAP) |
+ 					   (first_drhd->iommu->ecap & MINIMAL_SVM_ECAP);
+ 
++	/* scale capability to the lowest supported value */
++	for_each_active_iommu(iommu, drhd) {
++		iommu->cap = (intel_iommu_cap_sanity & MINIMAL_FEATURE_CAP) |
++			     (~MINIMAL_FEATURE_CAP & iommu->cap);
++		iommu->ecap = (intel_iommu_ecap_sanity & ECAP_PSS_MASK) |
++			      (~ECAP_PSS_MASK & iommu->ecap);
++	}
++
+ 	ret = 0;
+ out:
+ 	rcu_read_unlock();
+diff --git a/drivers/iommu/intel/audit.h b/drivers/iommu/intel/audit.h
+index 6dfebe8e8fbe..a293e71ce9ab 100644
+--- a/drivers/iommu/intel/audit.h
++++ b/drivers/iommu/intel/audit.h
+@@ -13,9 +13,14 @@
+ #define CAP_FL5LP_MASK		BIT(60)
+ #define CAP_PI_MASK		BIT(59)
+ #define CAP_FL1GP_MASK		BIT(56)
++#define CAP_MAMV_MASK		GENMASK_ULL(53, 48)
+ #define CAP_RD_MASK		BIT(55)
+ #define CAP_WD_MASK		BIT(54)
+ #define CAP_PSI_MASK		BIT(39)
++#define CAP_SLLPS_MASK		GENMASK_ULL(37, 34)
++#define CAP_MGAW_MASK		GENMASK_ULL(21, 16)
++#define CAP_SAGAW_MASK		GENMASK_ULL(12, 8)
++#define CAP_NDOMS_MASK		GENMASK_ULL(2, 0)
+ #define CAP_CM_MASK		BIT(7)
+ #define CAP_PHMR_MASK		BIT(6)
+ #define CAP_PLMR_MASK		BIT(5)
+@@ -32,6 +37,7 @@
+ #define ECAP_PDS_MASK		BIT(42)
+ #define ECAP_DIT_MASK		BIT(41)
+ #define ECAP_PASID_MASK		BIT(40)
++#define ECAP_PSS_MASK		GENMASK_ULL(39, 35)
+ #define ECAP_EAFS_MASK		BIT(34)
+ #define ECAP_SRS_MASK		BIT(31)
+ #define ECAP_ERS_MASK		BIT(30)
+@@ -47,6 +53,9 @@
+ #define MINIMAL_SVM_ECAP (ECAP_FLTS_MASK | ECAP_PASID_MASK | ECAP_EAFS_MASK | \
+ 			  ECAP_SRS_MASK | ECAP_ERS_MASK | ECAP_PRS_MASK)
+ 
++#define MINIMAL_FEATURE_CAP (CAP_MAMV_MASK | CAP_SLLPS_MASK | CAP_MGAW_MASK | \
++			     CAP_SAGAW_MASK | CAP_NDOMS_MASK)
++
+ #define DO_CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
+ do { \
+ 	if (cap##_##feature(a) != cap##_##feature(b)) { \
+@@ -65,6 +74,24 @@ do { \
+ 					  (b)->cap, cap, feature, MASK); \
+ } while (0)
+ 
++#define MINIMAL_FEATURE_IOMMU(iommu, cap, MASK) \
++do { \
++	u64 min_feature = intel_iommu_##cap##_sanity & MASK; \
++	min_feature = min_t(u64, min_feature, (iommu)->cap & (MASK)); \
++	intel_iommu_##cap##_sanity = (intel_iommu_##cap##_sanity & ~(MASK)) | \
++				     min_feature; \
++} while (0)
++
++#define MINIMAL_FEATURE_HOTPLUG(iommu, cap, feature, MASK, mismatch) \
++do { \
++	if ((intel_iommu_##cap##_sanity & (MASK)) > \
++	    (cap##_##feature((iommu)->cap))) \
++		mismatch = true; \
++	else \
++		(iommu)->cap = ((iommu)->cap & ~(MASK)) | \
++		(intel_iommu_##cap##_sanity & (MASK)); \
++} while (0)
++
+ enum cap_audit_type {
+ 	CAP_AUDIT_STATIC_DMAR,
+ 	CAP_AUDIT_STATIC_IRQR,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 6744f00a144a..297a10091bb5 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -154,6 +154,7 @@
+ #define cap_max_fault_reg_offset(c) \
+ 	(cap_fault_reg_offset(c) + cap_num_fault_regs(c) * 16)
+ 
++#define cap_mamv(c)		(((c) >> 48) & 0x3f)
+ #define cap_zlr(c)		(((c) >> 22) & 1)
+ #define cap_isoch(c)		(((c) >> 23) & 1)
+ #define cap_mgaw(c)		((((c) >> 16) & 0x3f) + 1)
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
