@@ -2,66 +2,67 @@ Return-Path: <SRS0=MyXX=DI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66948C4727C
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 14:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B47EC47429
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 16:18:01 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D8AB2145D
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 14:55:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D8AB2145D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id E991F221EF
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 16:18:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E991F221EF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B50968735E;
-	Thu,  1 Oct 2020 14:55:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A86CC8735C;
+	Thu,  1 Oct 2020 16:18:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oaH1539xGVLJ; Thu,  1 Oct 2020 14:55:09 +0000 (UTC)
+	with ESMTP id 6ewpaT2m4jJf; Thu,  1 Oct 2020 16:17:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A285B8735B;
-	Thu,  1 Oct 2020 14:55:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C094E87280;
+	Thu,  1 Oct 2020 16:17:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E532C0889;
-	Thu,  1 Oct 2020 14:55:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A147C0051
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 14:55:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A722FC0895;
+	Thu,  1 Oct 2020 16:17:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D166C0051
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 16:17:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 782FD86BED
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 14:55:08 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 54FCA87236
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 16:17:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id occW6T2WltUG for <iommu@lists.linux-foundation.org>;
- Thu,  1 Oct 2020 14:55:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id DB6A686BEC
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 14:55:07 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id F220C2C3; Thu,  1 Oct 2020 16:55:04 +0200 (CEST)
-Date: Thu, 1 Oct 2020 16:55:03 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH 00/13] iommu: amd: Add Generic IO Page Table Framework
- Support
-Message-ID: <20201001145503.GB364@8bytes.org>
-References: <20200923101442.73157-1-suravee.suthikulpanit@amd.com>
- <20200924103448.GO27174@8bytes.org>
- <c4b95103-8c66-6a9b-af18-a7c40d9dd943@amd.com>
- <20201001125949.GG30426@8bytes.org>
- <74b23968-2dfc-524e-dc2b-74b5819ad161@amd.com>
+ with ESMTP id J1gPHbJ4Crqe for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 16:17:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9C72087225
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 16:17:56 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id 355AFAF55;
+ Thu,  1 Oct 2020 16:17:55 +0000 (UTC)
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: robh+dt@kernel.org, catalin.marinas@arm.com, hch@lst.de,
+ robin.murphy@arm.com, devicetree@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-mm@kvack.org,
+ Frank Rowand <frowand.list@gmail.com>
+Subject: [PATCH 1/4] of/fdt: Update zone_dma_bits when running in bcm2711
+Date: Thu,  1 Oct 2020 18:17:37 +0200
+Message-Id: <20201001161740.29064-2-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201001161740.29064-1-nsaenzjulienne@suse.de>
+References: <20201001161740.29064-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <74b23968-2dfc-524e-dc2b-74b5819ad161@amd.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: will@kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,16 +80,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Oct 01, 2020 at 09:51:51PM +0700, Suravee Suthikulpanit wrote:
-> Sure. Let me send out v2 for this with some more clean up.
+arm64 wants to be able to set ZONE_DMA's size depending on the specific
+platform its being run on. Ideally this could be achieved in a smart way
+by parsing all dma-ranges and calculating the smaller DMA constraint in
+the system. Easier said than done. We compromised on a simpler solution
+as the only platform interested in using this is the Raspberry Pi 4.
 
-Great, while at it please also change the "iommu: amd:" subjects to
-"iommu/amd:".
+So update zone_dma_bits if the machine's compatible string matches
+Raspberry Pi 4's, otherwise let arm64's mm code deal with it.
 
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ drivers/of/fdt.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Thanks,
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 4602e467ca8b..cd0d115ef329 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -25,6 +25,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/sysfs.h>
+ #include <linux/random.h>
++#include <linux/dma-direct.h>	/* for zone_dma_bits */
+ 
+ #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
+ #include <asm/page.h>
+@@ -1198,6 +1199,14 @@ void __init early_init_dt_scan_nodes(void)
+ 	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+ }
+ 
++void __init early_init_dt_update_zone_dma_bits(void)
++{
++	unsigned long dt_root = of_get_flat_dt_root();
++
++	if (of_flat_dt_is_compatible(dt_root, "brcm,bcm2711"))
++		zone_dma_bits = 30;
++}
++
+ bool __init early_init_dt_scan(void *params)
+ {
+ 	bool status;
+@@ -1207,6 +1216,7 @@ bool __init early_init_dt_scan(void *params)
+ 		return false;
+ 
+ 	early_init_dt_scan_nodes();
++	early_init_dt_update_zone_dma_bits();
+ 	return true;
+ }
+ 
+-- 
+2.28.0
 
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
