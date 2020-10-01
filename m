@@ -2,91 +2,93 @@ Return-Path: <SRS0=MyXX=DI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D426EC4727F
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 10:23:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C14C47420
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 10:33:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 645C320848
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 10:23:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7BEBA2176B
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 10:33:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dbp8rEtw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 645C320848
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kIlhuTNq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BEBA2176B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C4ECC87332;
-	Thu,  1 Oct 2020 10:23:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4BD1685A84;
+	Thu,  1 Oct 2020 10:33:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3Wv4K-Uygbt0; Thu,  1 Oct 2020 10:23:23 +0000 (UTC)
+	with ESMTP id pBW04ZZK5OpG; Thu,  1 Oct 2020 10:33:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 87ACE87304;
-	Thu,  1 Oct 2020 10:23:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A823084E97;
+	Thu,  1 Oct 2020 10:33:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B756C0889;
-	Thu,  1 Oct 2020 10:23:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C3C95C0051
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:23:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 93C8CC0889;
+	Thu,  1 Oct 2020 10:33:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 471BBC0051
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:33:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AB09387328
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:23:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2F654230F3
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:33:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z0+LfqWeqvie for <iommu@lists.linux-foundation.org>;
- Thu,  1 Oct 2020 10:23:21 +0000 (UTC)
+ with ESMTP id jXVn617KnczY for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 10:33:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
- [209.85.208.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DD26587304
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:23:20 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id i1so5060173edv.2
- for <iommu@lists.linux-foundation.org>; Thu, 01 Oct 2020 03:23:20 -0700 (PDT)
+Received: from mail-pj1-f65.google.com (mail-pj1-f65.google.com
+ [209.85.216.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3325923115
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 10:33:25 +0000 (UTC)
+Received: by mail-pj1-f65.google.com with SMTP id jw11so1663575pjb.0
+ for <iommu@lists.linux-foundation.org>; Thu, 01 Oct 2020 03:33:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to:user-agent;
- bh=W44N+jftb23F8yET1l0mgDLP8TLfoJw/pGspRNe/hHc=;
- b=Dbp8rEtwOtZh2Hqd91NKvBhxiYekNB+N8V4dhgG67qoDMr6U4mf3KVpSTA5KaQmZVz
- 3V6id+m7r8/IED7pCRfNJkGWr/Ui7VRbB3dJiiN+4y6EHFqY89gMZclKcVC9jAfwLyCy
- h8oJBmtiVFOW7d9acrQH/NVJp6DSV6I5KaxDFqA1a4Epd2VspTJKp+X+NgwpYMWRzVVt
- 4bcm67robzL5s2IJPESod3LZaxYjuK2ntObbWlulwG+5YDwKnz7g15KYMyfFdq09EjEd
- IlGrZqlhEg1zu10WASZ54gMzpmCFe0nFdnTlJmF7RTRK2e8Oij+2ZadXzsMGVzhf9uQk
- Oc6A==
+ bh=rGjo8l+NdpUXZUZilL4Q0g6fe7v4+HYilXIVrlEcVns=;
+ b=kIlhuTNqwSTNhpHOrcs3e9r8cZPB4BQivq2B++Zm7J3/CHW/Q1TguGqKMZqeU9Etek
+ rXcQE2DBMTI02L3/D7/2zw2SBASLVn7JPYyGbwvmCKZM6OOhy4ewV1MSEDCFAhJfZQto
+ QoQE7DyXm+g8YWoG01UrHPNSjm6PV2+cNF/IQUanhW5bL0nJkaBH7oNnPZ7FCHECkU2E
+ ERneJFOPz70xBd676Ns1f/VFEL0QcI4yxFSV5F9p8mbwe7lARibAQ7IuedFD9jtrJoai
+ SThkqUcd9rE/QVJQ2RNjR8DrPFR7FOzdhfeOXK3F6s+7LflIhKxFx+DmyZrtEFN+51AP
+ XstA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to:user-agent;
- bh=W44N+jftb23F8yET1l0mgDLP8TLfoJw/pGspRNe/hHc=;
- b=uGwx1AqhYhqZy2Claq9mBqicCwrix4YZRB4bY452JgNv/1WIRZyCt5UgI3kmAO37r5
- NLEcAxyHjgXXIJ69vWzr6ALZRoIZPjZ8FwwwkaAWL+7VVpSPLekRcjjlyPFW+Vy+kHQQ
- nrKCrB4ZCij0zMxp8KdJSEfzUJbWGKaxS9hrCG18OAOAsOzTxyEf1vobBJ2jHoBymdj8
- XMaJa8ZRhB+kHyjUdeCYWMn2QDHo8G/ndQQfetiMj6Urvu2UxbQoAtz+Dc9uz+EowfN5
- 54yC/rBie+EkuefnJ2I5Q/zsuIw+2ryjag7ZHM9D8AKZ+tTe9tu0MmyW7MT45hY62c8C
- Ffww==
-X-Gm-Message-State: AOAM533WLFxHzE4dPOGzQHbV7R60FOcnP74zbWMMU/fuC+eQsEC+f36F
- CtpQX6UZFPC+oe+3we0eiYA=
-X-Google-Smtp-Source: ABdhPJwiywR/H0Uuaero5sNwwrf1u3GhSmIp+OXclJ9rJGsR6f8CkFn4PJoF0n+C048JpmD4Tsq0Vg==
-X-Received: by 2002:a05:6402:515:: with SMTP id
- m21mr7539182edv.348.1601547799181; 
- Thu, 01 Oct 2020 03:23:19 -0700 (PDT)
-Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id h18sm3764960edt.75.2020.10.01.03.23.17
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 01 Oct 2020 03:23:18 -0700 (PDT)
-Date: Thu, 1 Oct 2020 12:23:16 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
+ bh=rGjo8l+NdpUXZUZilL4Q0g6fe7v4+HYilXIVrlEcVns=;
+ b=EPPtvgrq4iHUjwReA1gJE1DcqlSWzd8oI7qAIjP1R/8McysEYiAgMp6oSEEvVOyGNe
+ hWS2aTJgt/OZBFVGZkEfkhJ2jH7s3LaY2dG09WMb4yjG1HUvcp1/4CJpY5l0TcfZC2y4
+ Lfrkb9TyIKbbSYqiLh9sluSn1mmYH38qH0AQcxPJ1MHeeZA82kfBnmH6OL6Ea1lWwVtU
+ dCk2F0y8slao00YJP+NhuBrtRk+pv3CVD1F3y4dMUj7DXvkAIHg2z/qHAWdwFTyfgqiW
+ un+ZifRb7TnWIsXTS+4eAAZLd27x6FDRbYprZsC81ZOVc54zUOfIf1mwnfiYmXagmpZ2
+ S3AA==
+X-Gm-Message-State: AOAM530TurnWuB5SRoqC+t7cJea31Hmhdc6mdoZ60T6Aa6CCu4Ht0pCE
+ QCsuQg4cKiTaE5dsgGciAVU=
+X-Google-Smtp-Source: ABdhPJzDPpJPeWaB0a9XY6UYJikyluOcFnxBCnGqwbuZq2h+kV9PGioTgzS16S8Vp0+7n2WHSE0rVg==
+X-Received: by 2002:a17:90b:a44:: with SMTP id
+ gw4mr6137841pjb.26.1601548404519; 
+ Thu, 01 Oct 2020 03:33:24 -0700 (PDT)
+Received: from Asurada (c-73-162-191-63.hsd1.ca.comcast.net. [73.162.191.63])
+ by smtp.gmail.com with ESMTPSA id
+ h5sm5432799pja.55.2020.10.01.03.33.23
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Thu, 01 Oct 2020 03:33:24 -0700 (PDT)
+Date: Thu, 1 Oct 2020 03:33:19 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v3 2/3] iommu/tegra-smmu: Rework .probe_device and
  .attach_dev
-Message-ID: <20201001102316.GF3919720@ulmo>
+Message-ID: <20201001103318.GA1272@Asurada>
 References: <20200930084258.25493-1-nicoleotsuka@gmail.com>
  <20200930084258.25493-3-nicoleotsuka@gmail.com>
  <20200930153131.GB3833404@ulmo>
@@ -95,11 +97,11 @@ References: <20200930084258.25493-1-nicoleotsuka@gmail.com>
  <20200930213244.GA10573@Asurada-Nvidia>
  <5945a63e-79d8-e3ae-ab53-cee8c220ac7d@gmail.com>
  <20201001012630.GA28240@Asurada-Nvidia>
- <72b11925-5857-8ce5-d084-cab01ca1b396@gmail.com>
- <20201001024850.GA28456@Asurada-Nvidia>
+ <20201001095152.GD3919720@ulmo>
 MIME-Version: 1.0
-In-Reply-To: <20201001024850.GA28456@Asurada-Nvidia>
-User-Agent: Mutt/1.14.7 (2020-08-29)
+Content-Disposition: inline
+In-Reply-To: <20201001095152.GD3919720@ulmo>
+User-Agent: Mutt/1.5.22 (2013-10-16)
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  krzk@kernel.org, jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
  Dmitry Osipenko <digetx@gmail.com>
@@ -115,132 +117,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2048549962799649618=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, Oct 01, 2020 at 11:51:52AM +0200, Thierry Reding wrote:
+> > > >> ...
+> > > >>>> It looks to me like the only reason why you need this new global API is
+> > > >>>> because PCI devices may not have a device tree node with a phandle to
+> > > >>>> the IOMMU. However, SMMU support for PCI will only be enabled if the
+> > > >>>> root complex has an iommus property, right? In that case, can't we
+> > > >>>> simply do something like this:
+> > > >>>>
+> > > >>>> 	if (dev_is_pci(dev))
+> > > >>>> 		np = find_host_bridge(dev)->of_node;
+> > > >>>> 	else
+> > > >>>> 		np = dev->of_node;
+> > > >>>>
+> > > >>>> ? I'm not sure exactly what find_host_bridge() is called, but I'm pretty
+> > > >>>> sure that exists.
 
---===============2048549962799649618==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="iBwuxWUsK/REspAd"
-Content-Disposition: inline
+> > @@ -814,12 +815,15 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
+> >  }
+> >  
+> >  static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
+> > -				struct of_phandle_args *args)
+> > +				struct of_phandle_args *args, struct fwnode_handle *fwnode)
+> >  {
+> >  	const struct iommu_ops *ops = smmu->iommu.ops;
+> >  	int err;
+> >  
+> > -	err = iommu_fwspec_init(dev, &dev->of_node->fwnode, ops);
+> > +	if (!fwnode)
+> > +		return -ENOENT;
+> > +
+> > +	err = iommu_fwspec_init(dev, fwnode, ops);
+> >  	if (err < 0) {
+> >  		dev_err(dev, "failed to initialize fwspec: %d\n", err);
+> >  		return err;
+> > @@ -835,6 +839,19 @@ static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
+> >  	return 0;
+> >  }
+> >  
+> > +static struct device_node *tegra_smmu_find_pci_np(struct pci_dev *pci_dev)
+> > +{
+> > +	struct pci_bus *bus = pci_dev->bus;
+> > +	struct device *dev = &bus->dev;
+> > +
+> > +	while (!of_property_read_bool(dev->of_node, "iommus") && bus->parent) {
+> > +		dev = &bus->parent->dev;
+> > +		bus = bus->parent;
+> > +	}
+> > +
+> > +	return dev->of_node;
+> > +}
+> 
+> This seems like it's the equivalent of pci_get_host_bridge_device(). Can
+> you use that instead? I think you might use the parent of the host
+> bridge that's returned from that function, though.
 
+I noticed that one when looking up one of the of_ functions, yet
+also found that this pci_get_host_bridge_device() is privated by
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/pci/pci.h?id=975e1ac173058b8710e5979e97fc1397233301f3
 
---iBwuxWUsK/REspAd
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Sep 30, 2020 at 07:48:50PM -0700, Nicolin Chen wrote:
-> On Thu, Oct 01, 2020 at 05:06:19AM +0300, Dmitry Osipenko wrote:
-> > 01.10.2020 04:26, Nicolin Chen =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > > On Thu, Oct 01, 2020 at 12:56:46AM +0300, Dmitry Osipenko wrote:
-> > >> 01.10.2020 00:32, Nicolin Chen =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > >>> On Thu, Oct 01, 2020 at 12:24:25AM +0300, Dmitry Osipenko wrote:
-> > >>>> ...
-> > >>>>>> It looks to me like the only reason why you need this new global=
- API is
-> > >>>>>> because PCI devices may not have a device tree node with a phand=
-le to
-> > >>>>>> the IOMMU. However, SMMU support for PCI will only be enabled if=
- the
-> > >>>>>> root complex has an iommus property, right? In that case, can't =
-we
-> > >>>>>> simply do something like this:
-> > >>>>>>
-> > >>>>>> 	if (dev_is_pci(dev))
-> > >>>>>> 		np =3D find_host_bridge(dev)->of_node;
-> > >>>>>> 	else
-> > >>>>>> 		np =3D dev->of_node;
-> > >>>>>>
-> > >>>>>> ? I'm not sure exactly what find_host_bridge() is called, but I'=
-m pretty
-> > >>>>>> sure that exists.
-> > >>>>>>
-> > >>>>>> Once we have that we can still iterate over the iommus property =
-and do
-> > >>>>>> not need to rely on this global variable.
-> > >>>>>
-> > >>>>> I agree that it'd work. But I was hoping to simplify the code
-> > >>>>> here if it's possible. Looks like we have an argument on this
-> > >>>>> so I will choose to go with your suggestion above for now.
-> > >>>>
-> > >>>> This patch removed more lines than were added. If this will be opp=
-osite
-> > >>>> for the Thierry's suggestion, then it's probably not a great sugge=
-stion.
-> > >>>
-> > >>> Sorry, I don't quite understand this comments. Would you please
-> > >>> elaborate what's this "it" being "not a great suggestion"?
-> > >>>
-> > >>
-> > >> I meant that you should try to implement Thierry's solution, but if =
-the
-> > >> end result will be worse than the current patch, then you shouldn't =
-make
-> > >> a v4, but get back to this discussion in order to choose the best op=
-tion
-> > >> and make everyone agree on it.
-> > >=20
-> > > I see. Thanks for the reply. And here is a sample implementation:
-> >=20
-> > That's what I supposed to happen :) The new variant adds code and
-> > complexity, while old did the opposite. Hence the old variant is clearly
-> > more attractive, IMO.
->=20
-> I personally am not a fan of adding a path for PCI device either,
-> since PCI/IOMMU cores could have taken care of it while the same
-> path can't be used for other buses.
-
-There's already plenty of other drivers that do something similar to
-this. Take a look at the arm-smmu driver, for example, which seems to be
-doing exactly the same thing to finding the right device tree node to
-look at (see dev_get_dev_node() in drivers/iommu/arm-smmu/arm-smmu.c).
-
-> If we can't come to an agreement on globalizing mc pointer, would
-> it be possible to pass tegra_mc_driver through tegra_smmu_probe()
-> so we can continue to use driver_find_device_by_fwnode() as v1?
->=20
-> v1: https://lkml.org/lkml/2020/9/26/68
-
-tegra_smmu_probe() already takes a struct tegra_mc *. Did you mean
-tegra_smmu_probe_device()? I don't think we can do that because it isn't
-known at that point whether MC really is the SMMU. That's in fact the
-whole reason why we have to go through this whole dance of iterating
-over the iommus entries to find the SMMU.
-
-Thierry
-
---iBwuxWUsK/REspAd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl91rhIACgkQ3SOs138+
-s6E6uxAAqKaStX4y9vZE9JRQTPDn15vugDAmwje59SOKK7suH/5dTim+6O2iNNeF
-Ywm8u9fn28Z6ImSJmqrFOykq+bRcASQNlZUfuX0vBuL1YZCDeqa2KnvyynMPAIz8
-fV15348TJ+BFzSioeEerTo1G25axLZZWMsQgkXAnhrwxrZ3gjiHCZob6h5ZR827w
-W6iDeVD8e9zwuxbMsnQChNMUJgRfPvwyOvaPSHz7kcJCojExlaFY/7Tr0xLUDIqF
-mKiY2xCv0gocBqZqCZcExNXMCfrFCxWpI8OX+P0MAJRysR+NkSs0HZ0dHA6ZcLOZ
-iOOgkybOI/a0bZ0GDF/tmcMLBHB96lcfVGKuWaGgoOBa18fWQQUKQ6ZbItNAH6v0
-WPSdwnIOH1qdzZnY3Q72VFwvCBLfU6d4zgiVFg7FjbsfeKjtr8etz2hULgAXBjVr
-BkaxoojPJsugsz2/z2RSu2nUyLjHT8zpemvu3vnhEIztvRmcmuPHqdcE3Gmo77oO
-SHrxTZLDQu2p72+KK9IpV7KI9ujDum/+39Jbvv/TTVwY1IByyuSkw/WZ0Pt0STaY
-W8SJfjphO3Bir7gPLMxm0q9K3pkePMAN9lo4y7N+bsiVHETjvFwM7zdcEd8zCyLd
-EFo8jrw6U/ncHUGrX1FSb/9o3r13eP2VNe1mg5twuLruVJ2ns6s=
-=Y2Wd
------END PGP SIGNATURE-----
-
---iBwuxWUsK/REspAd--
-
---===============2048549962799649618==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Would PCI folks be that willing to (allow to) revert it?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2048549962799649618==--
