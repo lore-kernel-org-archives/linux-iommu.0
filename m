@@ -6,59 +6,60 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1DBC4727C
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 12:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DD6C4727C
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 12:59:59 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 307C62075F
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 12:58:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 307C62075F
+	by mail.kernel.org (Postfix) with ESMTPS id 838D62075F
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 12:59:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 838D62075F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B5385204B0;
-	Thu,  1 Oct 2020 12:58:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3255E2049B;
+	Thu,  1 Oct 2020 12:59:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Yz2ibiJBxQ4v; Thu,  1 Oct 2020 12:58:46 +0000 (UTC)
+	with ESMTP id Ifl+CcLAg7WB; Thu,  1 Oct 2020 12:59:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2DB982049B;
-	Thu,  1 Oct 2020 12:58:46 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6C1B8204A9;
+	Thu,  1 Oct 2020 12:59:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A77BC0889;
-	Thu,  1 Oct 2020 12:58:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8F52C0051
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:58:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 56A03C0889;
+	Thu,  1 Oct 2020 12:59:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 792C9C0051
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:59:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9A706204A9
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:58:44 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6785387302
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:59:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uc8nZIZY3BHJ for <iommu@lists.linux-foundation.org>;
- Thu,  1 Oct 2020 12:58:44 +0000 (UTC)
+ with ESMTP id IWlmxBTAIANt for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 12:59:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id EF6C42049B
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:58:43 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E4D4087301
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 12:59:52 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 8451526F; Thu,  1 Oct 2020 14:58:42 +0200 (CEST)
-Date: Thu, 1 Oct 2020 14:58:41 +0200
+ id 24D1E26F; Thu,  1 Oct 2020 14:59:51 +0200 (CEST)
+Date: Thu, 1 Oct 2020 14:59:49 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Ashok Raj <ashok.raj@intel.com>
-Subject: Re: [Patch V8 0/3] iommu: Add support to change default domain of an
- iommu group
-Message-ID: <20201001125841.GF30426@8bytes.org>
-References: <20200925190620.18732-1-ashok.raj@intel.com>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH 00/13] iommu: amd: Add Generic IO Page Table Framework
+ Support
+Message-ID: <20201001125949.GG30426@8bytes.org>
+References: <20200923101442.73157-1-suravee.suthikulpanit@amd.com>
+ <20200924103448.GO27174@8bytes.org>
+ <c4b95103-8c66-6a9b-af18-a7c40d9dd943@amd.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200925190620.18732-1-ashok.raj@intel.com>
+In-Reply-To: <c4b95103-8c66-6a9b-af18-a7c40d9dd943@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,23 +77,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Ashok,
-
-On Fri, Sep 25, 2020 at 12:06:17PM -0700, Ashok Raj wrote:
-> Sai Praneeth Prakhya (3):
->   iommu: Add support to change default domain of an iommu group
->   iommu: Take lock before reading iommu group default domain type
->   iommu: Document usage of "/sys/kernel/iommu_groups/<grp_id>/type" file
+On Thu, Sep 24, 2020 at 05:50:37PM +0700, Suravee Suthikulpanit wrote:
 > 
->  .../ABI/testing/sysfs-kernel-iommu_groups          |  30 +++
->  drivers/iommu/iommu.c                              | 227 ++++++++++++++++++++-
->  2 files changed, 256 insertions(+), 1 deletion(-)
+> 
+> On 9/24/20 5:34 PM, Joerg Roedel wrote:
+> > Hi Suravee,
+> > 
+> > On Wed, Sep 23, 2020 at 10:14:29AM +0000, Suravee Suthikulpanit wrote:
+> > > The framework allows callable implementation of IO page table.
+> > > This allows AMD IOMMU driver to switch between different types
+> > > of AMD IOMMU page tables (e.g. v1 vs. v2).
+> > 
+> > Is there a reason you created your own framework, there is already an
+> > io-pgtable framework for ARM, maybe that can be reused?
+> > 
+> 
+> Actually, this is the same framework used by ARM codes.
+> Sorry if the description is not clear.
 
-Thanks for the repost, I can grab it just fine with b4. But this nees
-some more testing on my side and some time in linux-next, so it is too
-late now to queue it for v5.10. Can you please remind me after the next
-merge window? I'll pick it up then and do the testing and it will
-hopefully spend enough time in linux-next.
+Ah, right, thanks. I think this should spend some time in linux-next
+before going upstream. Can you please remind me after the next merge
+window to pick it up?
 
 Thanks,
 
