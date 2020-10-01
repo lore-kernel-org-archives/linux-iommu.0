@@ -2,85 +2,78 @@ Return-Path: <SRS0=MyXX=DI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C02C4727C
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 13:39:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CADDC4727C
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 13:51:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D59B22085B
-	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 13:39:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="TPHGplKH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D59B22085B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id D587D20B1F
+	for <iommu@archiver.kernel.org>; Thu,  1 Oct 2020 13:51:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D587D20B1F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 815DD2041D;
-	Thu,  1 Oct 2020 13:39:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cxrL-MxLeWH8; Thu,  1 Oct 2020 13:39:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BD73620408;
-	Thu,  1 Oct 2020 13:39:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F27EC016F;
-	Thu,  1 Oct 2020 13:39:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8424C0051
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:39:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C6C3886A3C
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:39:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7530286940;
+	Thu,  1 Oct 2020 13:51:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1-F+y4osVCq8; Thu,  1 Oct 2020 13:51:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5DB1E868DB;
+	Thu,  1 Oct 2020 13:51:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 40057C016F;
+	Thu,  1 Oct 2020 13:51:38 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60EDAC0051
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:51:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 3B27B2048F
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:51:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jjop3Ah3bcjW for <iommu@lists.linux-foundation.org>;
- Thu,  1 Oct 2020 13:39:46 +0000 (UTC)
+ with ESMTP id V6ka5WvcnQS3 for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Oct 2020 13:51:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
- [216.228.121.143])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 3B1B684540
- for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:39:46 +0000 (UTC)
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
- id <B5f75dbba0004>; Thu, 01 Oct 2020 06:38:02 -0700
-Received: from [10.2.161.39] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 1 Oct
- 2020 13:39:44 +0000
-From: Zi Yan <ziy@nvidia.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: Boot crash due to "x86/msi: Consolidate MSI allocation"
-Date: Thu, 1 Oct 2020 09:39:42 -0400
-X-Mailer: MailMate (1.13.2r5673)
-Message-ID: <2F4EC354-C0BB-44BD-86A5-07F321590C31@nvidia.com>
-In-Reply-To: <874knegxtg.fsf@nanos.tec.linutronix.de>
-References: <A838FF2B-11FC-42B9-87D7-A76CF46E0575@nvidia.com>
- <874knegxtg.fsf@nanos.tec.linutronix.de>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2BD16203D5
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Oct 2020 13:51:35 +0000 (UTC)
+IronPort-SDR: DEd1Wg/qZ+KHZOAeOMd8G6eirpiwMHxxFoBgsJeJl7gzO/OV7lezKQJN7vguYRkEPr20mRSMZ0
+ xOWghhDwCN0g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9760"; a="180882293"
+X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; d="scan'208";a="180882293"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Oct 2020 06:51:33 -0700
+IronPort-SDR: mR2L3z5zRXJ1Bt62W7wINSWAeyfZtQR1B3LD07WUocKjfA0aHsZtw8lAaOq9NFrZdfsAQBxVR9
+ deKYSIdv8YcQ==
+X-IronPort-AV: E=Sophos;i="5.77,323,1596524400"; d="scan'208";a="385535258"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Oct 2020 06:51:33 -0700
+Date: Thu, 1 Oct 2020 06:51:32 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [Patch V8 0/3] iommu: Add support to change default domain of an
+ iommu group
+Message-ID: <20201001135132.GA32553@otc-nc-03>
+References: <20200925190620.18732-1-ashok.raj@intel.com>
+ <20201001125841.GF30426@8bytes.org>
 MIME-Version: 1.0
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1601559483; bh=sFTfs2wKiAAdF9G/OK6dAZg/42/8CaV6qHMuyOsZ5z8=;
- h=From:To:CC:Subject:Date:X-Mailer:Message-ID:In-Reply-To:
- References:MIME-Version:Content-Type:X-Originating-IP:
- X-ClientProxiedBy;
- b=TPHGplKHkL8cUhcoay8Vx9C6+fu8GLE1UKqjQd6vyy68K1+6s48tbdNX4Ixo22ipS
- WefYfhwsODoZoqNxCtcVZ/XS1m+h9X/xjtquPVVQpptUXb5Hh1mzGojUag9Ifrx2yM
- CcLqu3+MWgws6V6CjhPPn9ZJhyfDmDIhYBRrnrapdfldkQiq9WH8eIbRbSJmK5xNor
- dl5stqBjUQfaHYUUSwlKTrVBRA5DwcHGVYv6iRlep5m8731W9A02mP3EqZsNIGJd5a
- lxBXeGTgYkTuEwRr9JMV6JIWe8/nGcC1wKDVdvQdQPL4dPrwKWpG9kAjTtUV3dZyor
- FntxzCcwEWz+Q==
-Cc: Wei Liu <wei.liu@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- linux-pci@vger.kernel.org, x86@kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org
+Content-Disposition: inline
+In-Reply-To: <20201001125841.GF30426@8bytes.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,86 +86,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5493738435889573525=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============5493738435889573525==
-Content-Type: multipart/signed;
-	boundary="=_MailMate_E37D7855-5714-45DB-89F0-E1847DF19DAF_=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+Hi Joerg
 
---=_MailMate_E37D7855-5714-45DB-89F0-E1847DF19DAF_=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, Oct 01, 2020 at 02:58:41PM +0200, Joerg Roedel wrote:
+> Hi Ashok,
+> 
+> On Fri, Sep 25, 2020 at 12:06:17PM -0700, Ashok Raj wrote:
+> > Sai Praneeth Prakhya (3):
+> >   iommu: Add support to change default domain of an iommu group
+> >   iommu: Take lock before reading iommu group default domain type
+> >   iommu: Document usage of "/sys/kernel/iommu_groups/<grp_id>/type" file
+> > 
+> >  .../ABI/testing/sysfs-kernel-iommu_groups          |  30 +++
+> >  drivers/iommu/iommu.c                              | 227 ++++++++++++++++++++-
+> >  2 files changed, 256 insertions(+), 1 deletion(-)
+> 
+> Thanks for the repost, I can grab it just fine with b4. But this nees
+> some more testing on my side and some time in linux-next, so it is too
+> late now to queue it for v5.10. Can you please remind me after the next
+> merge window? I'll pick it up then and do the testing and it will
+> hopefully spend enough time in linux-next.
 
-On 1 Oct 2020, at 4:22, Thomas Gleixner wrote:
+Yes, I'll try to remind you after the next merge window.
 
-> Yan,
->
-> On Wed, Sep 30 2020 at 21:29, Zi Yan wrote:
->> I am running linux-next on my Dell R630 and the system crashed at boot=
-
->> time. I bisected linux-next and got to your commit:
->>
->>     x86/msi: Consolidate MSI allocation
->>
->> The crash log is below and my .config is attached.
->>
->> [   11.840905]  intel_get_irq_domain+0x24/0xb0
->> [   11.840905]  native_setup_msi_irqs+0x3b/0x90
->
-> This is not really helpful because that's in the middle of the queue an=
-d
-> that code is gone at the very end. Yes, it's unfortunate that this
-> breaks bisection.
->
-> Can you please test:
->
->    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/irq
->
-> which contains fixes and if it still crashes provide the dmesg of it.
->
-
-My system boots without any problem using this tree. Thanks.
-
-=E2=80=94
-Best Regards,
-Yan Zi
-
---=_MailMate_E37D7855-5714-45DB-89F0-E1847DF19DAF_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAl913B4PHHppeUBudmlk
-aWEuY29tAAoJEJ2yUfNrYfqKh4EP+wa4YAP+3OSFbCe0zBYGBxknODe/+Ns2BfM/
-VWWcPZpcXCkaGo+f8EeYWM8tSgeYE42mDsJcG69uCRmKMJLM352iud3Kz1JRZm2Q
-vxl1pWEvmvbiYmoAYbzp8B9564jX0uWJy9zKOzXkuh/jmD2m58zviAK9adapw5b0
-PvVuTaa+FYYHVYxitrag3xgZsEXqK7bgJq3fCGTZ7+lRGrmM9atX616B6Dn/xx4F
-/qamJ3Ema0UE45AbrrIJ076P9RJEzaTmD6SzdDfJ0Ygc2quCjskTnm1pq+MSC9fc
-5Tm8IH+O+vGPeIXwZGMIj3hYWG93yDusIHPbLgTKxj1n6ygsvtEUteBB1tQ7jtKB
-dK/u/L37LOZsBwhmjN2vNjpxyawj8SmwbSOcsPhGRDNY+9vO5ZAyF0NL/42urRHD
-RP+m3xqp3PJOWZASZe6RNi7y1C92d9HbCHVZnc0zOz6/Ko2VtWImx9mDmsQEqD/N
-cq7tq04HF9FOGeVgrmfviH+68K/FdmZct454G2y4k7eJ3Nth6MzSVopV8PWzzqrP
-Jx+WQen0XUW7f1z+mf7ZmmjWpyooywgzCBHMSEoRCsA1TRgMN1pFaAfrX4LorzON
-Bl1HnvJTZH4yxyOAb1L+a+aIrqKJmwMIWT1Gm8e0FGSKuH6wPyE/CrQdXvQkbmub
-3YTfhW6e
-=3Jrz
------END PGP SIGNATURE-----
-
---=_MailMate_E37D7855-5714-45DB-89F0-E1847DF19DAF_=--
-
---===============5493738435889573525==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Cheers,
+Ashok
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5493738435889573525==--
