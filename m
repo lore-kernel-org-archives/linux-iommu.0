@@ -2,103 +2,114 @@ Return-Path: <SRS0=Fz8+=DJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12871C4363D
-	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 18:20:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FCCC4363D
+	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 18:23:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 864F020795
-	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 18:20:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 476DD20795
+	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 18:23:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TsanysFF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 864F020795
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="AaCjpbJC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 476DD20795
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 380EA868E7;
-	Fri,  2 Oct 2020 18:20:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xjK945Y7SEpr; Fri,  2 Oct 2020 18:20:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 87AC6868D5;
-	Fri,  2 Oct 2020 18:20:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 73571C016F;
-	Fri,  2 Oct 2020 18:20:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25E7CC0051
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:20:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 19F3B87398
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:20:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BDCD1873A8;
+	Fri,  2 Oct 2020 18:23:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qr7pNzzrJAA4; Fri,  2 Oct 2020 18:23:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1BD3887398;
+	Fri,  2 Oct 2020 18:23:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2E89C016F;
+	Fri,  2 Oct 2020 18:23:56 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18F6CC016F
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:23:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 04AF584837
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:23:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KKnKwe+6bQUF for <iommu@lists.linux-foundation.org>;
- Fri,  2 Oct 2020 18:20:47 +0000 (UTC)
+ with ESMTP id n0l7MksP89Wd for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Oct 2020 18:23:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
- [209.85.167.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 13D848738F
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:20:47 +0000 (UTC)
-Received: by mail-lf1-f67.google.com with SMTP id y2so2974634lfy.10
- for <iommu@lists.linux-foundation.org>; Fri, 02 Oct 2020 11:20:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=EJ8SUAQ3Ep8nykC7R4KdWG2ClAiUfrI8OV4YNM+FLtM=;
- b=TsanysFFkQ79U4TBm6nvg9Yo+quujpAx660+ZpuraPKrgpIpPOyjFfDJYatKidtSoB
- dObEpNaYrDN0/JvPfI4hT9ygTLkeq0Xt28Z7neft0jvPXt4jRYOqCabWnxneXblCUYdL
- bTG3UveiRP4GQAtl3x8rQL1/ckevLNq6JTsPT7PVNElPFZbQyzrDlCwxabW9Jm/2P0Sa
- MUKfA//i4fYSG6+MAS4MIxmtqMG1EB+pv+GtIC9wbeXwwQ8jZa2ujDI5QlKAdZdtgunB
- MM8G9hZzlZQ7vX9O5yaciiMf1MXshw2Uq7YpTOKIbvDIgfLRiI1oh6+VzObvARlx6Lbo
- KjNg==
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0B9B984647
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 18:23:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1601663032;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=K5o0jYIGnG/0f5zW82Cze4bYT081fEytdlidzckiyxk=;
+ b=AaCjpbJCNqEpnB0aER0qwg7daAd7pBl4IRZjJqv4WeS73E8C6mVssuD80eLVcchEBtoqPJ
+ TDbTRMow1aIQkPN3+mo0KTDDWUne5/j2UvncE5leADkomU7TMog0aDU1/1m9jAHkUuCtdt
+ qCwuDGE5BuWCsprwlHflwOK2K99/xZA=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-401-9ITpHIo9MYaC2M5uBS60aw-1; Fri, 02 Oct 2020 14:23:51 -0400
+X-MC-Unique: 9ITpHIo9MYaC2M5uBS60aw-1
+Received: by mail-il1-f198.google.com with SMTP id 18so1823830ilt.9
+ for <iommu@lists.linux-foundation.org>; Fri, 02 Oct 2020 11:23:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=EJ8SUAQ3Ep8nykC7R4KdWG2ClAiUfrI8OV4YNM+FLtM=;
- b=aOplmopqgSiNKFtLkBbD0wgaCxOQC3M0sA+HMtaP7UsnmvyV0xAAKf/b7TjlKrHXal
- AcOVtxPXAENgSqEuBALfoJ6MbCc8o3k5s9ESGKL4QwgncsEv2jnv6aKag20ZfKiiMKWb
- 053Uxjq6Qir3djyx2WQ9oKryxM2cwyli3QzTbMxpVJOMKtyHSoAulgSxuWoDkD/Axga8
- baSXoSXVqhPH98eL0W90blbf7soZv4PYcL3Ez3/zDAP2QJOx6Y33/n0c3uJGZ9SO+Xq2
- 9uFHXrZ2VAfL/gZsxzzRjExGsYzEZ4tzMSVA6RpK3ta7UZn0kLEEVfp5H6WuwXe5YENj
- YYjQ==
-X-Gm-Message-State: AOAM533giED6kXgcPX6FGmgZ8njhGuA0HFlVTdPFJguvw0dtAVMebz93
- jwsorHvJVfCiWFRrDmqLBxk=
-X-Google-Smtp-Source: ABdhPJxvQFlVxqSll8ZIGtobg/4XNVi83XCZGq9LKA9AmED3IrYKz0bS/913AI7QKU97HsYs7XJhRw==
-X-Received: by 2002:a19:7604:: with SMTP id c4mr1441873lff.132.1601662845192; 
- Fri, 02 Oct 2020 11:20:45 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-91-252.nat.spd-mgts.ru.
- [109.252.91.252])
- by smtp.googlemail.com with ESMTPSA id b197sm471451lfd.251.2020.10.02.11.20.43
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 02 Oct 2020 11:20:43 -0700 (PDT)
-Subject: Re: [PATCH v4 2/3] iommu/tegra-smmu: Rework tegra_smmu_probe_device()
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
- <20201002060807.32138-3-nicoleotsuka@gmail.com>
- <070a13b2-cde2-ab9e-7ee0-8fb71fb64d5d@gmail.com>
- <20201002180120.GB29706@Asurada-Nvidia>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <11aae4e2-6173-bf83-5970-a03f09e31c47@gmail.com>
-Date: Fri, 2 Oct 2020 21:20:43 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=K5o0jYIGnG/0f5zW82Cze4bYT081fEytdlidzckiyxk=;
+ b=IRel8YwjnKnbsge9rypOHQcs8vCRdyGZNlnmnkbXrhUzGXIh9E9HBL7JLVq8fJAC/7
+ DVkpwdP27y+Ijb7zGlvyDEeaTKnET1Uu71xlHuneXpsGcWlOX0jgK/qsDT3fCxCzryzr
+ gJSlJqFkCHrOH85YrnNE0UdR1s4xfU8l4sf5z7WfobBh/7HaZ2y9xG71GCM9vubkwFcu
+ v4xoGNpKbCanb3Ma9g3L1Amzk5XPAXUqkJbk8KP05LYvHq2qB4D8Nf5pv3lJsx24BNxa
+ t1vpUZt3Hh5JrAFnYkhEf4kUyaaCeICwOU4ZRd/IkMo9bM12p17t97S7fiDPFK0QPqJK
+ AAhA==
+X-Gm-Message-State: AOAM530g85HdgMkvju3jfuLMwNTBQzgVkVSXlMGzz/Vg8X5RsLu1ulnV
+ u6kNLf4MPyA+mkRgmTtQdPKQrHQQpquK1nlypErs/Dndv7FbmLVWIk7yeo4zePaNLzcG1LLQuq0
+ hhBXyzpV68vlMUWPIa7e9P9wYqOOo2g==
+X-Received: by 2002:a5e:dc04:: with SMTP id b4mr2936555iok.208.1601663030550; 
+ Fri, 02 Oct 2020 11:23:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJym7hhfSAz5RkroqhQVSDKIyKMh66KVDC7NYEDjTn8eT708NnRxui/FuJxqPH3RScDsgKVqBg==
+X-Received: by 2002:a5e:dc04:: with SMTP id b4mr2936537iok.208.1601663030343; 
+ Fri, 02 Oct 2020 11:23:50 -0700 (PDT)
+Received: from localhost (c-67-165-232-89.hsd1.co.comcast.net. [67.165.232.89])
+ by smtp.gmail.com with ESMTPSA id u15sm1052127ior.6.2020.10.02.11.23.49
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 02 Oct 2020 11:23:49 -0700 (PDT)
+Date: Fri, 2 Oct 2020 12:23:48 -0600
+From: Al Stone <ahs3@redhat.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
+Message-ID: <20201002182348.GO138842@redhat.com>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
+ <20200924045958-mutt-send-email-mst@kernel.org>
+ <20200924092129.GH27174@8bytes.org>
+ <20200924053159-mutt-send-email-mst@kernel.org>
+ <d54b674e-2626-fc73-d663-136573c32b8a@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201002180120.GB29706@Asurada-Nvidia>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org
+In-Reply-To: <d54b674e-2626-fc73-d663-136573c32b8a@redhat.com>
+User-Agent: Mutt/1.14.6 (2020-07-11)
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=ahs3@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
+ virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, bhelgaas@google.com, jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,40 +122,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MDIuMTAuMjAyMCAyMTowMSwgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gT24gRnJpLCBPY3Qg
-MDIsIDIwMjAgYXQgMDU6MjM6MTRQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+PiAw
-Mi4xMC4yMDIwIDA5OjA4LCBOaWNvbGluIENoZW4g0L/QuNGI0LXRgjoKPj4+ICBzdGF0aWMgc3Ry
-dWN0IGlvbW11X2RldmljZSAqdGVncmFfc21tdV9wcm9iZV9kZXZpY2Uoc3RydWN0IGRldmljZSAq
-ZGV2KQo+Pj4gIHsKPj4+IC0Jc3RydWN0IGRldmljZV9ub2RlICpucCA9IGRldi0+b2Zfbm9kZTsK
-Pj4+IC0Jc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXUgPSBOVUxMOwo+Pj4gLQlzdHJ1Y3Qgb2ZfcGhh
-bmRsZV9hcmdzIGFyZ3M7Cj4+PiAtCXVuc2lnbmVkIGludCBpbmRleCA9IDA7Cj4+PiAtCWludCBl
-cnI7Cj4+PiAtCj4+PiAtCXdoaWxlIChvZl9wYXJzZV9waGFuZGxlX3dpdGhfYXJncyhucCwgImlv
-bW11cyIsICIjaW9tbXUtY2VsbHMiLCBpbmRleCwKPj4+IC0JCQkJCSAgJmFyZ3MpID09IDApIHsK
-Pj4+IC0JCXNtbXUgPSB0ZWdyYV9zbW11X2ZpbmQoYXJncy5ucCk7Cj4+PiAtCQlpZiAoc21tdSkg
-ewo+Pj4gLQkJCWVyciA9IHRlZ3JhX3NtbXVfY29uZmlndXJlKHNtbXUsIGRldiwgJmFyZ3MpOwo+
-Pj4gLQkJCW9mX25vZGVfcHV0KGFyZ3MubnApOwo+Pj4gLQo+Pj4gLQkJCWlmIChlcnIgPCAwKQo+
-Pj4gLQkJCQlyZXR1cm4gRVJSX1BUUihlcnIpOwo+Pj4gLQo+Pj4gLQkJCS8qCj4+PiAtCQkJICog
-T25seSBhIHNpbmdsZSBJT01NVSBtYXN0ZXIgaW50ZXJmYWNlIGlzIGN1cnJlbnRseQo+Pj4gLQkJ
-CSAqIHN1cHBvcnRlZCBieSB0aGUgTGludXgga2VybmVsLCBzbyBhYm9ydCBhZnRlciB0aGUKPj4+
-IC0JCQkgKiBmaXJzdCBtYXRjaC4KPj4+IC0JCQkgKi8KPj4+IC0JCQlkZXZfaW9tbXVfcHJpdl9z
-ZXQoZGV2LCBzbW11KTsKPj4+IC0KPj4+IC0JCQlicmVhazsKPj4+IC0JCX0KPj4+IC0KPj4+IC0J
-CW9mX25vZGVfcHV0KGFyZ3MubnApOwo+Pj4gLQkJaW5kZXgrKzsKPj4+IC0JfQo+Pj4gKwlzdHJ1
-Y3QgdGVncmFfc21tdSAqc21tdSA9IGRldl9pb21tdV9wcml2X2dldChkZXYpOwo+Pj4gIAo+Pj4g
-IAlpZiAoIXNtbXUpCj4+PiAgCQlyZXR1cm4gRVJSX1BUUigtRU5PREVWKTsKPj4KPj4gVGhlICFz
-bW11IGNhbid0IGV2ZXIgYmUgdHJ1ZSBub3csIGlzbid0IGl0PyBUaGVuIHBsZWFzZSByZW1vdmUg
-aXQuCj4gCj4gSG93IGNhbiB5b3UgYmUgc28gc3VyZT8gSGF2ZSB5b3UgcmVhZCBteSBjb21taXQg
-bWVzc2FnZT8gVGhlIHdob2xlCj4gcG9pbnQgb2YgcmVtb3ZpbmcgdGhlIGhhY2sgaW4gdGVncmFf
-c21tdV9wcm9iZSgpIGlzIHRvIHJldHVybiB0aGUKPiBFUlJfUFRSKC1FTk9ERVYpIGhlcmUuIFRo
-ZSBidXNfc2V0X2lvbW11KCkgd2lsbCBjYWxsIHRoaXMgZnVuY3Rpb24KPiB3aGVuIG1jLT5zbW11
-IGlzIG5vdCBhc3NpZ25lZCBpdCwgYXMgaXQncyBhc3NpZ25lZCBhZnRlciB3ZSByZXR1cm4KPiB0
-ZWdyYV9zbW11X3Byb2JlKCkgd2hpbGUgYnVzX3NldF9pb21tdSgpIGlzIHN0aWxsIGluIHRoZSBt
-aWRkbGUgb2YKPiB0aGUgdGVncmFfc21tdV9wcm9iZSgpLgo+IAoKTXkgYmFkLCBJIHByb2JhYmx5
-IG1pc3NlZCB0aGF0IHdhcyBsb29raW5nIGF0IHRoZSBwcm9iZV9kZXZpY2UoKSwgbG9va3MKZ29v
-ZCB0aGVuLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 24 Sep 2020 11:54, Auger Eric wrote:
+> Hi,
+> 
+> Adding Al in the loop
+> 
+> On 9/24/20 11:38 AM, Michael S. Tsirkin wrote:
+> > On Thu, Sep 24, 2020 at 11:21:29AM +0200, Joerg Roedel wrote:
+> >> On Thu, Sep 24, 2020 at 05:00:35AM -0400, Michael S. Tsirkin wrote:
+> >>> OK so this looks good. Can you pls repost with the minor tweak
+> >>> suggested and all acks included, and I will queue this?
+> >>
+> >> My NACK still stands, as long as a few questions are open:
+> >>
+> >> 	1) The format used here will be the same as in the ACPI table? I
+> >> 	   think the answer to this questions must be Yes, so this leads
+> >> 	   to the real question:
+> > 
+> > I am not sure it's a must.
+> > We can always tweak the parser if there are slight differences
+> > between ACPI and virtio formats.
+> > 
+> > But we do want the virtio format used here to be approved by the virtio
+> > TC, so it won't change.
+> > 
+> > Eric, Jean-Philippe, does one of you intend to create a github issue
+> > and request a ballot for the TC? It's been posted end of August with no
+> > changes ...
+> Jean-Philippe, would you?
+> > 
+> >> 	2) Has the ACPI table format stabalized already? If and only if
+> >> 	   the answer is Yes I will Ack these patches. We don't need to
+> >> 	   wait until the ACPI table format is published in a
+> >> 	   specification update, but at least some certainty that it
+> >> 	   will not change in incompatible ways anymore is needed.
+> >>
+> 
+> Al, do you have any news about the the VIOT definition submission to
+> the UEFI ASWG?
+> 
+> Thank you in advance
+> 
+> Best Regards
+> 
+> Eric
+
+A follow-up to my earlier post ....
+
+Hearing no objection, I've submitted the VIOT table description to
+the ASWG for consideration under what they call the "code first"
+process.  The "first reading" -- a brief discussion on what the
+table is and why we would like to add it -- was held yesterday.
+No concerns have been raised as yet.  Given the discussions that
+have already occurred, I don't expect any, either.  I have been
+wrong at least once before, however.
+
+At this point, ASWG will revisit the request to add VIOT each
+week.  If there have been no comments in the prior week, and no
+further discussion during the meeting, then a vote will be taken.
+Otherwise, there will be discussion and we try again the next
+week.
+
+The ASWG was also told that the likelihood of this definition of
+the table changing is pretty low, and that it has been thought out
+pretty well already.  ASWG's consideration will therefore start
+from the assumption that it would be best _not_ to make changes.
+
+So, I'll let you know what happens next week.
+
+> 
+> > 
+> > Not that I know, but I don't see why it's a must.
+> > 
+> >> So what progress has been made with the ACPI table specification, is it
+> >> just a matter of time to get it approved or are there concerns?
+> >>
+> >> Regards,
+> >>
+> >> 	Joerg
+> > 
+> 
+
+-- 
+ciao,
+al
+-----------------------------------
+Al Stone
+Software Engineer
+Red Hat, Inc.
+ahs3@redhat.com
+-----------------------------------
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
