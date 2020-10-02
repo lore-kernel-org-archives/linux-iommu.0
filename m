@@ -2,92 +2,72 @@ Return-Path: <SRS0=Fz8+=DJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2265C4741F
-	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 11:15:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DA5C47423
+	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 11:55:50 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 35D0A206C3
-	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 11:15:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35D0A206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 611CB206B7
+	for <iommu@archiver.kernel.org>; Fri,  2 Oct 2020 11:55:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 611CB206B7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A3F33273CF;
-	Fri,  2 Oct 2020 11:15:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 04CBB872EA;
+	Fri,  2 Oct 2020 11:55:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Bub0ygLkqBIy; Fri,  2 Oct 2020 11:15:54 +0000 (UTC)
+	with ESMTP id kFuP-QU2KKeA; Fri,  2 Oct 2020 11:55:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9B39E204CA;
-	Fri,  2 Oct 2020 11:15:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 61291872DF;
+	Fri,  2 Oct 2020 11:55:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AFF5C0889;
-	Fri,  2 Oct 2020 11:15:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5260BC0889;
+	Fri,  2 Oct 2020 11:55:49 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C1981C0051
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:15:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5395AC0051
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:55:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 843A7273CF
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:15:52 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3853120002
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:55:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wc5wnVVmiWVq for <iommu@lists.linux-foundation.org>;
- Fri,  2 Oct 2020 11:15:48 +0000 (UTC)
+ with ESMTP id HPtZTmXjIK+j for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Oct 2020 11:55:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com
- [209.85.218.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 7E98F204CA
- for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:15:48 +0000 (UTC)
-Received: by mail-ej1-f66.google.com with SMTP id p15so1403885ejm.7
- for <iommu@lists.linux-foundation.org>; Fri, 02 Oct 2020 04:15:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=LHccXthzZpowujFlX/UIRlonuBGP7oxIKyYm0qA4pvg=;
- b=MWUu3rGAVicIgbKp7gMCe5ZvNy8WfqsWbpAvsXh0sisYv2z4Lg595oaplG3YTkDK/I
- xhL4Qy8ADy+cVNIDrn4yP+E859Y9hkb3YmEFq2ZNmKmcxg+Fq5p3IG19ICyjt7BmKGVo
- cjE4C3JgK+gVynAUwXUyOzgEg3384DHfhPscrmP9/Q/EvX+pPF4svne9n0lYPoXKaj1B
- t25Y7gZDWM5eLed2xDEAl0rUwzflDasc4SSTbWW8m6EucxTby+NWopUYrSWcfEBVltrm
- dVjUiVfmn3odYOtfZH+bfu+KDOpbDpSgtWtQRnow1cPcwwfNotMM72/nGbMNaquvea4l
- cjMg==
-X-Gm-Message-State: AOAM530QKzk2JEq0eLvGSL+ePV+Noa0CefQ7qtqk7MlYDyXpYX1WPhz3
- QxexiUT12GuqQJdgXZqePtA=
-X-Google-Smtp-Source: ABdhPJzSZOSHhDhVdKKucPu1ITBef6j4ONzNmUa9XEdo6BcAOHABAtdMC5eowTZhVkiFyKCfXv3VoQ==
-X-Received: by 2002:a17:906:cf9b:: with SMTP id
- um27mr1735440ejb.66.1601637347031; 
- Fri, 02 Oct 2020 04:15:47 -0700 (PDT)
-Received: from pi3 ([194.230.155.194])
- by smtp.googlemail.com with ESMTPSA id bt19sm934515ejb.44.2020.10.02.04.15.44
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 02 Oct 2020 04:15:45 -0700 (PDT)
-Date: Fri, 2 Oct 2020 13:15:43 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v3 24/24] memory: mtk-smi: Add mt8192 support
-Message-ID: <20201002111543.GA7227@pi3>
-References: <20200930070647.10188-1-yong.wu@mediatek.com>
- <20200930070647.10188-25-yong.wu@mediatek.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 424DB1FF98
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Oct 2020 11:55:46 +0000 (UTC)
+Received: from gaia (unknown [95.149.105.49])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 12001206B7;
+ Fri,  2 Oct 2020 11:55:43 +0000 (UTC)
+Date: Fri, 2 Oct 2020 12:55:41 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH 1/4] of/fdt: Update zone_dma_bits when running in bcm2711
+Message-ID: <20201002115541.GC7034@gaia>
+References: <20201001161740.29064-1-nsaenzjulienne@suse.de>
+ <20201001161740.29064-2-nsaenzjulienne@suse.de>
+ <20201001171500.GN21544@gaia> <20201001172320.GQ21544@gaia>
+ <b47232e2173e9e5ddf8f5be4c7b5a2f897f34eb7.camel@suse.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200930070647.10188-25-yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- kernel-team@android.com, Nicolas Boichat <drinkcat@chromium.org>,
- srv_heupstream@mediatek.com, chao.hao@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@google.com>,
- linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
- Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>, ming-fan.chen@mediatek.com,
- anan.sun@mediatek.com, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <b47232e2173e9e5ddf8f5be4c7b5a2f897f34eb7.camel@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-rpi-kernel@lists.infradead.org, will@kernel.org, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,19 +85,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 30, 2020 at 03:06:47PM +0800, Yong Wu wrote:
-> Add mt8192 smi support.
+On Thu, Oct 01, 2020 at 07:31:19PM +0200, Nicolas Saenz Julienne wrote:
+> On Thu, 2020-10-01 at 18:23 +0100, Catalin Marinas wrote:
+> > On Thu, Oct 01, 2020 at 06:15:01PM +0100, Catalin Marinas wrote:
+> > > On Thu, Oct 01, 2020 at 06:17:37PM +0200, Nicolas Saenz Julienne wrote:
+> > > > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> > > > index 4602e467ca8b..cd0d115ef329 100644
+> > > > --- a/drivers/of/fdt.c
+> > > > +++ b/drivers/of/fdt.c
+> > > > @@ -25,6 +25,7 @@
+> > > >  #include <linux/serial_core.h>
+> > > >  #include <linux/sysfs.h>
+> > > >  #include <linux/random.h>
+> > > > +#include <linux/dma-direct.h>	/* for zone_dma_bits */
+> > > >  
+> > > >  #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
+> > > >  #include <asm/page.h>
+> > > > @@ -1198,6 +1199,14 @@ void __init early_init_dt_scan_nodes(void)
+> > > >  	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+> > > >  }
+> > > >  
+> > > > +void __init early_init_dt_update_zone_dma_bits(void)
+> > > > +{
+> > > > +	unsigned long dt_root = of_get_flat_dt_root();
+> > > > +
+> > > > +	if (of_flat_dt_is_compatible(dt_root, "brcm,bcm2711"))
+> > > > +		zone_dma_bits = 30;
+> > > > +}
+> > > 
+> > > I think we could keep this entirely in the arm64 setup_machine_fdt() and
+> > > not pollute the core code with RPi4-specific code.
+> > 
+> > Actually, even better, could we not move the check to
+> > arm64_memblock_init() when we initialise zone_dma_bits?
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/memory/mtk-smi.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
+> I did it this way as I vaguely remembered Rob saying he wanted to centralise
+> all early boot fdt code in one place. But I'll be happy to move it there.
 
-Does it depend on any of the previous patches (so can it be applied
-independently)?
+I can see Rob replied and I'm fine if that's his preference. However,
+what I don't particularly like is that in the arm64 code, if
+zone_dma_bits == 24, we set it to 32 assuming that it wasn't touched by
+the early_init_dt_update_zone_dma_bits(). What if at some point we'll
+get a platform that actually needs 24 here (I truly hope not, but just
+the principle of relying on magic values)?
 
-Best regards,
-Krzysztof
+So rather than guessing, I'd prefer if the arch code can override
+ZONE_DMA_BITS_DEFAULT. Then, in arm64, we'll just set it to 32 and no
+need to explicitly touch the zone_dma_bits variable.
+
+-- 
+Catalin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
