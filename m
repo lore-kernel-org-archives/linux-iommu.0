@@ -6,89 +6,89 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BB8C4363D
-	for <iommu@archiver.kernel.org>; Sat,  3 Oct 2020 07:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5ECBC4727D
+	for <iommu@archiver.kernel.org>; Sat,  3 Oct 2020 07:06:13 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D88DC206B8
-	for <iommu@archiver.kernel.org>; Sat,  3 Oct 2020 07:06:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 664F3206B8
+	for <iommu@archiver.kernel.org>; Sat,  3 Oct 2020 07:06:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pHy0PuL7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D88DC206B8
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JZaZjrjq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 664F3206B8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 69C882036E;
-	Sat,  3 Oct 2020 07:06:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CB72520377;
+	Sat,  3 Oct 2020 07:06:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HYnWS2oNwfxb; Sat,  3 Oct 2020 07:06:04 +0000 (UTC)
+	with ESMTP id clrRSOlC9d7q; Sat,  3 Oct 2020 07:06:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C440720420;
-	Sat,  3 Oct 2020 07:06:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F22DB275A5;
+	Sat,  3 Oct 2020 07:06:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AE0F6C1AD4;
-	Sat,  3 Oct 2020 07:06:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5D963C0051
- for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:06:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DDBDAC0889;
+	Sat,  3 Oct 2020 07:06:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA23DC0051
+ for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:06:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 59FF2868A8
- for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:06:03 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 35CA62038D
+ for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:06:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wjGoP3tTTNtX for <iommu@lists.linux-foundation.org>;
- Sat,  3 Oct 2020 07:06:02 +0000 (UTC)
+ with ESMTP id j0DdfTUji3bK for <iommu@lists.linux-foundation.org>;
+ Sat,  3 Oct 2020 07:06:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com
  [209.85.216.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3CE788665F
- for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:06:02 +0000 (UTC)
-Received: by mail-pj1-f68.google.com with SMTP id a17so1787883pju.1
- for <iommu@lists.linux-foundation.org>; Sat, 03 Oct 2020 00:06:02 -0700 (PDT)
+ by silver.osuosl.org (Postfix) with ESMTPS id E4FB120382
+ for <iommu@lists.linux-foundation.org>; Sat,  3 Oct 2020 07:05:59 +0000 (UTC)
+Received: by mail-pj1-f68.google.com with SMTP id a17so1787862pju.1
+ for <iommu@lists.linux-foundation.org>; Sat, 03 Oct 2020 00:05:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=3PXF6Unc+l1IUCbIelHhHwgXAVYs8b+XwVuG2K0k6GQ=;
- b=pHy0PuL7omLy4ih8GOtsTuICUP772YVVOdNFUWGcvKlHEePtO9aywHJvzn7dP0KXU/
- WEW1S7rZiETjXKak9dkWx8rOlpVgY0YI0XVUy1e1FiKX32NP6scL0KOj+LsJT35ZNe3A
- o3LIdvmcXG8a+8iVS+rEZiMgkKpXy83Ec8rtg+Mr9KUIcHlOvoM+U6iMJvml/YroLfTw
- d/0wM82xgNyWQbgqSiOocgHbhurZytagxazwWX0WKjTphDlEl8ELVyeKqxXPiVBlXiwt
- KF6mh5hIXDVpy5ILIaBflou8TY2akbtboxQjRb1UtAxesPxa1pobS/bzSWnBzuG2K5v9
- nZcQ==
+ bh=ITcNsj0frcf6ba+U5N6YTBYHdy6jlF8yFmr3eDHiTDI=;
+ b=JZaZjrjqBurL37rT8S021dL+8ODBcTw+hEEigDuWhvzFUR3DTFAvp2g/aCiW21xrWn
+ tqPRtwDA2ue6X0BjSisRLDccOMhHaWTQx4Ip/XZlSAAWNJKedI69ZoiYq0VQtS5uZ/GQ
+ g9wRaUcsRzunzj17xEqVW+K8SFL8djbMcALr0EJs7lBWLZVGUzgwn3SL8PoAralmYdTz
+ /uFGAapYN25CUlHa4nTrOrHmIbZ8MgwvnPVJ5BggOWH3NjlwhSOERhKkcv9AurZSjzZ7
+ AU39vGQrZgqOZnWUoRbOjlmyi6ObvwYVwf1oZbvkLlpQ37fcuneOF700bQbZ7hm7FK/Q
+ 96lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=3PXF6Unc+l1IUCbIelHhHwgXAVYs8b+XwVuG2K0k6GQ=;
- b=sYEWh8EnrfAtYajMPUe3TqGchIuEUW9lN9/54dhWYyNyLwF7GTl/8eQ2UVRPqX4Fol
- FRjHHFreSWysxoOS5AmqPo5pjkzTDbmAPWCXFIW85QzrDhilVo8qMVYnTK+qGkVIXs7/
- wxLJmk5rhtPCLe53KqdGaWjlWhbTS7ZpahvEdeQRVY0/jzgTvtNpwpmx676qKoia+Xck
- y+wXog/oSSNvhb9sRoWa+DVr4YaE9nWtS0z0+1K0DJaCG4dYtOe4otOOcDfm4QuuebMM
- E99YJar4MR2O81PmmvbKf9YKp4fH9pOXZ0mm2FCvIYklo5AX0kmVJ8yL4i93PU8TDh3x
- FNtw==
-X-Gm-Message-State: AOAM5317loeDCa6C9rU14ueScVm6L6A7sEsA917Xg31JlR17pYEoO+/M
- m+8rU37jt15e0/sIDrVPqE0=
-X-Google-Smtp-Source: ABdhPJxIox5RHrFqR5hJPSA2WIstUsXbf+7RQUNblMWemn+U44s1lGzWruUEJbzhCz5WaeLpa0bHDg==
-X-Received: by 2002:a17:90a:6705:: with SMTP id
- n5mr6422902pjj.72.1601708761858; 
- Sat, 03 Oct 2020 00:06:01 -0700 (PDT)
+ bh=ITcNsj0frcf6ba+U5N6YTBYHdy6jlF8yFmr3eDHiTDI=;
+ b=iUQfhl9jdjIfY4304ymrFo7ocqfGU7mi/IcOkijvZiGG3EMqZ5ptFj4Tg8q+M6Q3Bo
+ gEPG6I7TqvGxBkMV91iNA3xGnKeW3YPpl4YbTVd+hVN3b94KUizBw2caVgF9HicN2TsW
+ rrqUH5x2FJx9LnVt81NK8U1/dpUovFEJEKKwcanY2MJTaqmDfwJiF3XwCjtV22MFxUxb
+ 10x9MJr58FkspI2RRokHidgKMVxwYRxe9HUJe4o4gLID7noF/5S7rzn5gugtkvJ/Mgt3
+ 3yI/xRxGKbjZokPHubq83cf1QKzOAm4XpVRRbyNy3Nnel9guHY0gZ17HRcjSC0f+vQWk
+ nt7A==
+X-Gm-Message-State: AOAM533vVxpodXRK2bZu9r3DprJmFc+d73qvlOTji/V592f+guQn9hhf
+ jX26xKTNEpXlzPKihH9qNJ4=
+X-Google-Smtp-Source: ABdhPJwZbx7Vvic7ZEDOtwSwFXE20lmDUjTs6AmR0cHM3vrfN1iJ42X+AYhc+/JM4XdspwwEiKMnKg==
+X-Received: by 2002:a17:90b:1804:: with SMTP id lw4mr345357pjb.9.1601708759488; 
+ Sat, 03 Oct 2020 00:05:59 -0700 (PDT)
 Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
  [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id d25sm3854498pgl.23.2020.10.03.00.06.01
+ by smtp.gmail.com with ESMTPSA id d25sm3854498pgl.23.2020.10.03.00.05.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 03 Oct 2020 00:06:01 -0700 (PDT)
+ Sat, 03 Oct 2020 00:05:58 -0700 (PDT)
 From: Nicolin Chen <nicoleotsuka@gmail.com>
 To: thierry.reding@gmail.com,
 	joro@8bytes.org,
 	digetx@gmail.com
-Subject: [PATCH v5 3/3] iommu/tegra-smmu: Add PCI support
-Date: Fri,  2 Oct 2020 23:59:47 -0700
-Message-Id: <20201003065947.18671-4-nicoleotsuka@gmail.com>
+Subject: [PATCH v5 1/3] iommu/tegra-smmu: Use fwspec in
+ tegra_smmu_(de)attach_dev
+Date: Fri,  2 Oct 2020 23:59:45 -0700
+Message-Id: <20201003065947.18671-2-nicoleotsuka@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201003065947.18671-1-nicoleotsuka@gmail.com>
 References: <20201003065947.18671-1-nicoleotsuka@gmail.com>
@@ -112,95 +112,117 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch simply adds support for PCI devices.
+In tegra_smmu_(de)attach_dev() functions, we poll DTB for each
+client's iommus property to get swgroup ID in order to prepare
+"as" and enable smmu. Actually tegra_smmu_configure() prepared
+an fwspec for each client, and added to the fwspec all swgroup
+IDs of client DT node in DTB.
+
+So this patch uses fwspec in tegra_smmu_(de)attach_dev() so as
+to replace the redundant DT polling code.
 
 Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
 ---
 
 Changelog
-v4->v5
- * Added Dmitry's Reviewed-by
-v3->v4
- * Dropped !iommu_present() check
- * Added CONFIG_PCI check in the exit path
-v2->v3
- * Replaced ternary conditional operator with if-else in .device_group()
- * Dropped change in tegra_smmu_remove()
-v1->v2
- * Added error-out labels in tegra_smmu_probe()
- * Dropped pci_request_acs() since IOMMU core would call it.
+v4->v5:
+ * Removed "index" and "err" assigning to 0
+v3->v4:
+ * Seperated the change, as a cleanup, from the rework patch
+v1->v3:
+ * N/A
 
- drivers/iommu/tegra-smmu.c | 35 +++++++++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 10 deletions(-)
+ drivers/iommu/tegra-smmu.c | 56 ++++++++++++++++----------------------
+ 1 file changed, 23 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 73b091facae0..babab6d51360 100644
+index 6a3ecc334481..297d49f3f80e 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-@@ -865,7 +866,11 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
- 	group->smmu = smmu;
- 	group->soc = soc;
+@@ -484,60 +484,50 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+-	struct device_node *np = dev->of_node;
+-	struct of_phandle_args args;
+-	unsigned int index = 0;
+-	int err = 0;
+-
+-	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+-					   &args)) {
+-		unsigned int swgroup = args.args[0];
+-
+-		if (args.np != smmu->dev->of_node) {
+-			of_node_put(args.np);
+-			continue;
+-		}
++	unsigned int index;
++	int err;
  
--	group->group = iommu_group_alloc();
-+	if (dev_is_pci(dev))
-+		group->group = pci_device_group(dev);
-+	else
-+		group->group = generic_device_group(dev);
+-		of_node_put(args.np);
++	if (!fwspec)
++		return -ENOENT;
+ 
++	for (index = 0; index < fwspec->num_ids; index++) {
+ 		err = tegra_smmu_as_prepare(smmu, as);
+-		if (err < 0)
+-			return err;
++		if (err)
++			goto disable;
+ 
+-		tegra_smmu_enable(smmu, swgroup, as->id);
+-		index++;
++		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
+ 	}
+ 
+ 	if (index == 0)
+ 		return -ENODEV;
+ 
+ 	return 0;
 +
- 	if (IS_ERR(group->group)) {
- 		devm_kfree(smmu->dev, group);
- 		mutex_unlock(&smmu->lock);
-@@ -1071,22 +1076,32 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
- 
- 	err = iommu_device_register(&smmu->iommu);
--	if (err) {
--		iommu_device_sysfs_remove(&smmu->iommu);
--		return ERR_PTR(err);
--	}
-+	if (err)
-+		goto err_sysfs;
- 
- 	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
--	if (err < 0) {
--		iommu_device_unregister(&smmu->iommu);
--		iommu_device_sysfs_remove(&smmu->iommu);
--		return ERR_PTR(err);
--	}
-+	if (err < 0)
-+		goto err_unregister;
++disable:
++	while (index--) {
++		tegra_smmu_disable(smmu, fwspec->ids[index], as->id);
++		tegra_smmu_as_unprepare(smmu, as);
++	}
 +
-+#ifdef CONFIG_PCI
-+	err = bus_set_iommu(&pci_bus_type, &tegra_smmu_ops);
-+	if (err < 0)
-+		goto err_bus_set;
-+#endif
- 
- 	if (IS_ENABLED(CONFIG_DEBUG_FS))
- 		tegra_smmu_debugfs_init(smmu);
- 
- 	return smmu;
-+
-+err_bus_set: __maybe_unused;
-+	bus_set_iommu(&platform_bus_type, NULL);
-+err_unregister:
-+	iommu_device_unregister(&smmu->iommu);
-+err_sysfs:
-+	iommu_device_sysfs_remove(&smmu->iommu);
-+
-+	return ERR_PTR(err);
++	return err;
  }
  
- void tegra_smmu_remove(struct tegra_smmu *smmu)
+ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
+ {
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct tegra_smmu_as *as = to_smmu_as(domain);
+-	struct device_node *np = dev->of_node;
+ 	struct tegra_smmu *smmu = as->smmu;
+-	struct of_phandle_args args;
+-	unsigned int index = 0;
+-
+-	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
+-					   &args)) {
+-		unsigned int swgroup = args.args[0];
++	unsigned int index;
+ 
+-		if (args.np != smmu->dev->of_node) {
+-			of_node_put(args.np);
+-			continue;
+-		}
+-
+-		of_node_put(args.np);
++	if (!fwspec)
++		return;
+ 
+-		tegra_smmu_disable(smmu, swgroup, as->id);
++	for (index = 0; index < fwspec->num_ids; index++) {
++		tegra_smmu_disable(smmu, fwspec->ids[index], as->id);
+ 		tegra_smmu_as_unprepare(smmu, as);
+-		index++;
+ 	}
+ }
+ 
 -- 
 2.17.1
 
