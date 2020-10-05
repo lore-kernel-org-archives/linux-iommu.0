@@ -2,73 +2,77 @@ Return-Path: <SRS0=BXsX=DM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDBFC4363A
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C02C4363A
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:03 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F00AD20637
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:28:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 666382173E
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="azF5mWxl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F00AD20637
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="UK75vErF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 666382173E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7B6D384DE1;
-	Mon,  5 Oct 2020 15:28:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 180CB866A8;
+	Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hUxucZUn8WWY; Mon,  5 Oct 2020 15:28:31 +0000 (UTC)
+	with ESMTP id BF4Jnz-fs-nB; Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 29C6284AB8;
-	Mon,  5 Oct 2020 15:28:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 50FD584AB8;
+	Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA78EC07FF;
-	Mon,  5 Oct 2020 15:28:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D171C0891;
+	Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0EE70C0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE2F9C0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 029B884BC2
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id DB0EC84D89
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jMJ9UFEFomdE for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 15:28:29 +0000 (UTC)
+ with ESMTP id R-krDcR0PlRC for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E5C7384AB8
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:28 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5512D84AB8
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:Date:Cc:To:
- From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=dFkgso4DV7mAFdVY77wdMaL2nqc+vFfAseQkT62QKIY=; b=azF5mWxlJrzpErgwCEWLNfLYXr
- YkAk6vHonHHNCW+5GFVc8Y0AvfGHMGT0Q1PdHV/OoIXDFZyBJ3Y7avI8aVx6GMWhPMj8WQnM+8pGk
- 55Q7BvnBYB+Z8gVvSQPaellG773V/aUWS4djpbdkwXzelgB1spHBfOdwA4/uVfzOOJ0Px8uglKekR
- bi32CnSwQJZaiyf88KslB3ZzTpPgVHeKxrRseZQkw87DPPsdV+05CT1x2oVcR6g4YQzmWoM3xnFQx
- s3C4vCGbMCXHwBvYJyG1+LFLH4bSeFPOZUp6H8QCZm29gljX9jQdCLMqJc+Bpls63Rz+pXo5OAhRh
- OGrWredQ==;
-Received: from 54-240-197-232.amazon.com ([54.240.197.232]
- helo=u3832b3a9db3152.ant.amazon.com)
+ d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+ MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+ Reply-To:Content-Type:Content-ID:Content-Description;
+ bh=AHXKkF//pg8HXvfEGdRvLZPd/GZADKu/SygTIEeX7dk=; b=UK75vErFXwrfBfdBqN7fE9wxXp
+ uJWOoKpVjyKY/YJOLsNub3BYpptK0ZdTEqZHrvucmPcphtJbBElLORZ1nN/5H9tajC+dB1mZwdEIQ
+ xWq7kuK1/Cbhlx+v03xE6nvXuUBXfmHHiXvO4uY3bgDrSdNum4u043yl/Rx//bBBTWuzzrS9fNbez
+ sMr+kFBLqkXU5EDz6rTBLDA3G41fuTLrLdH6Y3E/YQKnoaKG1kin+DLUtWusQDL99x6q/ZgkrvOcF
+ 5uxHQmFRoJKt5lVSiq2TvyiXfAW+2eKLFZSHB1xiHGeMmHwfqCShcxWl+cJ2xM5G8agTHkJaLpLcV
+ YCDhDUBA==;
+Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kPSPa-0004Fx-7o; Mon, 05 Oct 2020 15:28:26 +0000
-Message-ID: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
-Subject: [PATCH 0/13] Fix per-domain IRQ affinity, allow >255 CPUs on x86
- without IRQ remapping
+ id 1kPSQ5-0004MM-F1; Mon, 05 Oct 2020 15:28:57 +0000
+Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
+ Linux)) id 1kPSQ4-0045Qu-EZ; Mon, 05 Oct 2020 16:28:56 +0100
 From: David Woodhouse <dwmw2@infradead.org>
-To: x86 <x86@kernel.org>
-Date: Mon, 05 Oct 2020 16:28:24 +0100
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
+To: x86@kernel.org
+Subject: [PATCH 10/13] x86/irq: Limit IOAPIC and MSI domains' affinity without
+ IR
+Date: Mon,  5 Oct 2020 16:28:53 +0100
+Message-Id: <20201005152856.974112-10-dwmw2@infradead.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201005152856.974112-1-dwmw2@infradead.org>
+References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
+ <20201005152856.974112-1-dwmw2@infradead.org>
+MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
  merlin.infradead.org. See http://www.infradead.org/rpr.html
 Cc: Paolo Bonzini <pbonzini@redhat.com>,
@@ -86,194 +90,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3824489732207510239=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: David Woodhouse <dwmw@amazon.co.uk>
 
---===============3824489732207510239==
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-pl9UyMMd1jNvV8bNriR9"
+When interrupt remapping isn't enabled, only the first 255 CPUs can
+receive external interrupts. Set the appropriate max affinity for
+the IOAPIC and MSI IRQ domains accordingly.
 
+This also fixes the case where interrupt remapping is enabled but some
+devices are not within the scope of any active IOMMU.
 
---=-pl9UyMMd1jNvV8bNriR9
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+---
+ arch/x86/kernel/apic/io_apic.c | 2 ++
+ arch/x86/kernel/apic/msi.c     | 3 +++
+ 2 files changed, 5 insertions(+)
 
-Linux currently refuses to use >255 CPUs on x86 unless it has interrupt
-remapping. This is a bit gratuitous because it could use those extra
-CPUs just fine; it just can't target external interrupts at them.
-
-The only problem is that our generic IRQ domain code cann't cope with
-the concept of domains which can only target a subset of CPUs.
-
-The hyperv-iommu IRQ remapping driver works around this =E2=80=94 not by
-actually doing any remapping, but just returning -EINVAL if the
-affinity is ever set to an unreachable CPU. This almost works, but ends
-up being a bit late because irq_set_affinity_locked() doesn't call into
-the irqchip driver immediately; the error only happens later.
-
-This patch series implements a per-domain "maximum affinity" set and
-uses it for the non-remapped IOAPIC and MSI domains on x86. As well as
-allowing more CPUs to be used without interrupt remapping, this also
-fixes the case where some IOAPICs or PCI devices aren't actually in
-scope of any active IOMMU and are operating without remapping.
-
-While we're at it, recognise that the 8-bit limit is a bit gratuitous
-and a hypervisor could offer at least 15 bits of APIC ID in the IOAPIC
-RTE and MSI address bits 11-5 without even needing to use remapping.
-
-David Woodhouse (13):
-      x86/apic: Use x2apic in guest kernels even with unusable CPUs.
-      x86/msi: Only use high bits of MSI address for DMAR unit
-      x86/ioapic: Handle Extended Destination ID field in RTE
-      x86/apic: Support 15 bits of APIC ID in IOAPIC/MSI where available
-      genirq: Prepare for default affinity to be passed to __irq_alloc_desc=
-s()
-      genirq: Add default_affinity argument to __irq_alloc_descs()
-      irqdomain: Add max_affinity argument to irq_domain_alloc_descs()
-      genirq: Add irq_domain_set_affinity()
-      x86/irq: Add x86_non_ir_cpumask
-      x86/irq: Limit IOAPIC and MSI domains' affinity without IR
-      x86/smp: Allow more than 255 CPUs even without interrupt remapping
-      iommu/irq_remapping: Kill most of hyperv-iommu.c now it's redundant
-      x86/kvm: Add KVM_FEATURE_MSI_EXT_DEST_ID
-
- Documentation/virt/kvm/cpuid.rst     |   4 +
- arch/x86/include/asm/apic.h          |   1 +
- arch/x86/include/asm/io_apic.h       |   3 +-
- arch/x86/include/asm/mpspec.h        |   2 +
- arch/x86/include/asm/x86_init.h      |   2 +
- arch/x86/include/uapi/asm/kvm_para.h |   1 +
- arch/x86/kernel/apic/apic.c          |  41 +++++++++-
- arch/x86/kernel/apic/io_apic.c       |  23 ++++--
- arch/x86/kernel/apic/msi.c           |  44 +++++++++--
- arch/x86/kernel/apic/x2apic_phys.c   |   9 +++
- arch/x86/kernel/kvm.c                |   6 ++
- arch/x86/kernel/x86_init.c           |   1 +
- drivers/iommu/hyperv-iommu.c         | 149 +------------------------------=
-----
- include/linux/interrupt.h            |   2 +
- include/linux/irq.h                  |  10 ++-
- include/linux/irqdomain.h            |   7 +-
- kernel/irq/devres.c                  |   8 +-
- kernel/irq/ipi.c                     |   2 +-
- kernel/irq/irqdesc.c                 |  29 ++++---
- kernel/irq/irqdomain.c               |  69 ++++++++++++++--
- kernel/irq/manage.c                  |  19 ++++-
- 21 files changed, 240 insertions(+), 192 deletions(-)
-
---=-pl9UyMMd1jNvV8bNriR9
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
-MDA1MTUyODI0WjAvBgkqhkiG9w0BCQQxIgQgMrl71zw1Igkhw0DDWLQsjQAkG8lZh5gne9xX+zEa
-mxYwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBABHMCDszD2CvHb2hxCqGoACM/79coVb0Vt0km06xxVyqDdIjTgawkTLqa5p4Yw7Z
-iCkTUaOrncQWXskc9w3u9CqR/7JT8nzHbQoqxwhhrFt7Ng1I5gAkcRW93P0CWdZu6i2MGOns5nnr
-RxxHQnGGg1uHRxlVvrHd2afhDCY5LDaqs9STb10DJIbx4mOW+UxjSy48pzw+cQjTobn09SQyEZwp
-QWFlGsb0BnaDDizZfZGCJAdP+ibzx+dt8J+8cISQ10T6KkU2ATgK093iqgYG1zxC8ghZPZzatj7T
-y9PVt5n5Nl+Ppt/mlPpb6+ZO16NKiwYn1/k+Dzxai3fe5mTOJWoAAAAAAAA=
-
-
---=-pl9UyMMd1jNvV8bNriR9--
-
-
---===============3824489732207510239==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 4d0ef46fedb9..1c8ce7bc098f 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -2332,6 +2332,8 @@ static int mp_irqdomain_create(int ioapic)
+ 	}
+ 
+ 	ip->irqdomain->parent = parent;
++	if (parent == x86_vector_domain)
++		irq_domain_set_affinity(ip->irqdomain, &x86_non_ir_cpumask);
+ 
+ 	if (cfg->type == IOAPIC_DOMAIN_LEGACY ||
+ 	    cfg->type == IOAPIC_DOMAIN_STRICT)
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 4d891967bea4..af5ce5c4da02 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -259,6 +259,7 @@ struct irq_domain * __init native_create_pci_msi_domain(void)
+ 		pr_warn("Failed to initialize PCI-MSI irqdomain.\n");
+ 	} else {
+ 		d->flags |= IRQ_DOMAIN_MSI_NOMASK_QUIRK;
++		irq_domain_set_affinity(d, &x86_non_ir_cpumask);
+ 	}
+ 	return d;
+ }
+@@ -479,6 +480,8 @@ struct irq_domain *hpet_create_irq_domain(int hpet_id)
+ 		irq_domain_free_fwnode(fn);
+ 		kfree(domain_info);
+ 	}
++	if (parent == x86_vector_domain)
++		irq_domain_set_affinity(d, &x86_non_ir_cpumask);
+ 	return d;
+ }
+ 
+-- 
+2.26.2
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3824489732207510239==--
-
