@@ -7,66 +7,67 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1EFC4363D
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B1EC4741F
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:17 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AEDE72085B
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6AE8D20E65
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jGBK+e7j"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEDE72085B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="P1LxG0wb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AE8D20E65
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 90DBE8669E;
-	Mon,  5 Oct 2020 15:29:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5464F866C1;
+	Mon,  5 Oct 2020 15:29:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uAsOFqTXlu56; Mon,  5 Oct 2020 15:29:07 +0000 (UTC)
+	with ESMTP id afR+IDmKQgXt; Mon,  5 Oct 2020 15:29:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 35508866C1;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 841BF866D4;
 	Mon,  5 Oct 2020 15:29:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23524C0895;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E884C1AD4;
 	Mon,  5 Oct 2020 15:29:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C969BC0891
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51A5CC0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B309E204D1
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4A87F870CD
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g1stLhkzf9RH for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 15:29:00 +0000 (UTC)
+ with ESMTP id tITEJq5yvM4k for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 15:28:59 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id E450920447
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9D268870C6
  for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=fMb2jRZcwl6ZMvzoHQut4iOi+P6VzDgyIwZGzGlY6Xo=; b=jGBK+e7j5L+l5Xt1xkW003nw4w
- 3XfroHAZv7KJqHkPMT4F8qtpsfgMbXqc58WmCt11q+95DDI/cFkwZtItBgdqmzWdjXL+94VkGpkvP
- 7L2LzKTrSEQppLeMT+zwBH0ky9ZTbZUQ8V3PbkJj2atrSjWlqDfBAqpkQk+0d5avSYbA4xSxWqz3K
- EVwXW6Hj+5sdAORxUlBOB6XWRaO0nUAxVKBYrlO3XmIpnPmzdI1sydiVRRpbniE2LWYfuixOUEHfg
- tcZRW5smbBRp160xtOAhRmGC5gjZuGr+5qLdbafK6Ag1HexuyqnISiYZx4XkRRXODCZOe6PRbxkoV
- MGegVXuw==;
+ bh=3FOmkBv1Wgvw1BuIqjWYCJkYC/NtwagU3klyZLVG2gg=; b=P1LxG0wbD3/7CtYqpT441k6Feg
+ 2TnfQrJUH2NRjIonGGT2+YU74UZ7gPl/NZyfdDKv4Wh7IaNkyEGQezbGle/gunBL98p1G5HTzjbpf
+ QBSRJjlLz795xq+qrRxbo+cYklF7U/DzMW+4mXDvtqUiv5slS6BYSoEHfOpdG4TCaT3U63Lw9QdmB
+ jYwiGrKodX/Kdu+dA/m3QRLTBSi7QTV534mdlwCltL+KB7O5sCpWgkEXbLL16XOpdngNC7ihmeZPv
+ LXv6oEm85zzuJ0C4975UvEWikRUqC1RThNch2/iI1OCNqlM4cdmj++fV/85B8f95H2MPlJSYzNXm0
+ jyJYc8nw==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kPSQ5-0001mQ-1H; Mon, 05 Oct 2020 15:28:57 +0000
+ id 1kPSQ4-0001mJ-PD; Mon, 05 Oct 2020 15:28:57 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kPSQ4-0045R9-Gz; Mon, 05 Oct 2020 16:28:56 +0100
+ Linux)) id 1kPSQ4-0045QV-Ag; Mon, 05 Oct 2020 16:28:56 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH 13/13] x86/kvm: Add KVM_FEATURE_MSI_EXT_DEST_ID
-Date: Mon,  5 Oct 2020 16:28:56 +0100
-Message-Id: <20201005152856.974112-13-dwmw2@infradead.org>
+Subject: [PATCH 05/13] genirq: Prepare for default affinity to be passed to
+ __irq_alloc_descs()
+Date: Mon,  5 Oct 2020 16:28:48 +0100
+Message-Id: <20201005152856.974112-5-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201005152856.974112-1-dwmw2@infradead.org>
 References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
@@ -96,66 +97,135 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-This allows the host to indicate that IOAPIC and MSI emulation supports
-15-bit destination IDs, allowing up to 32Ki CPUs without remapping.
+Instead of plugging in irq_default_affinity at the lowest level in
+desc_smp_init() if the caller didn't specify an affinity for this
+specific IRQ in its array, allow the default affinity to be passed
+down from __irq_alloc_descs() instead.
+
+This is in preparation for irq domains having their own default (and
+indeed maximum) affinities.
+
+An alternative possibility would have been to make the caller allocate
+an entire array of struct irq_affinity_desc for the allocation, but
+that's a lot nastier than simply passing in an additional const cpumask.
+
+This commit has no visible API change outside static functions in
+irqdesc.c for now; the actual change will come later.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- Documentation/virt/kvm/cpuid.rst     | 4 ++++
- arch/x86/include/uapi/asm/kvm_para.h | 1 +
- arch/x86/kernel/kvm.c                | 6 ++++++
- 3 files changed, 11 insertions(+)
+ include/linux/interrupt.h |  2 ++
+ kernel/irq/irqdesc.c      | 21 +++++++++++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/virt/kvm/cpuid.rst b/Documentation/virt/kvm/cpuid.rst
-index a7dff9186bed..1726b5925d2b 100644
---- a/Documentation/virt/kvm/cpuid.rst
-+++ b/Documentation/virt/kvm/cpuid.rst
-@@ -92,6 +92,10 @@ KVM_FEATURE_ASYNC_PF_INT          14          guest checks this feature bit
-                                               async pf acknowledgment msr
-                                               0x4b564d07.
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index f9aee3538461..cd0ff293486a 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -364,6 +364,8 @@ unsigned int irq_calc_affinity_vectors(unsigned int minvec, unsigned int maxvec,
  
-+KVM_FEATURE_MSI_EXT_DEST_ID       15          guest checks this feature bit
-+                                              before using extended destination
-+                                              ID bits in MSI address bits 11-5.
+ #else /* CONFIG_SMP */
+ 
++#define irq_default_affinity (NULL)
 +
- KVM_FEATURE_CLOCSOURCE_STABLE_BIT 24          host will warn if no guest-side
-                                               per-cpu warps are expeced in
-                                               kvmclock
-diff --git a/arch/x86/include/uapi/asm/kvm_para.h b/arch/x86/include/uapi/asm/kvm_para.h
-index 812e9b4c1114..950afebfba88 100644
---- a/arch/x86/include/uapi/asm/kvm_para.h
-+++ b/arch/x86/include/uapi/asm/kvm_para.h
-@@ -32,6 +32,7 @@
- #define KVM_FEATURE_POLL_CONTROL	12
- #define KVM_FEATURE_PV_SCHED_YIELD	13
- #define KVM_FEATURE_ASYNC_PF_INT	14
-+#define KVM_FEATURE_MSI_EXT_DEST_ID	15
+ static inline int irq_set_affinity(unsigned int irq, const struct cpumask *m)
+ {
+ 	return -EINVAL;
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 1a7723604399..4ac91b9fc618 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -81,8 +81,6 @@ static int alloc_masks(struct irq_desc *desc, int node)
+ static void desc_smp_init(struct irq_desc *desc, int node,
+ 			  const struct cpumask *affinity)
+ {
+-	if (!affinity)
+-		affinity = irq_default_affinity;
+ 	cpumask_copy(desc->irq_common_data.affinity, affinity);
  
- #define KVM_HINTS_REALTIME      0
+ #ifdef CONFIG_GENERIC_PENDING_IRQ
+@@ -465,12 +463,16 @@ static void free_desc(unsigned int irq)
  
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 1b51b727b140..4986b4399aef 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -743,12 +743,18 @@ static void __init kvm_init_platform(void)
- 	x86_platform.apic_post_init = kvm_apic_init;
+ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
+ 		       const struct irq_affinity_desc *affinity,
++		       const struct cpumask *default_affinity,
+ 		       struct module *owner)
+ {
+ 	struct irq_desc *desc;
+ 	int i;
+ 
+ 	/* Validate affinity mask(s) */
++	if (!default_affinity || cpumask_empty(default_affinity))
++		return -EINVAL;
++
+ 	if (affinity) {
+ 		for (i = 0; i < cnt; i++) {
+ 			if (cpumask_empty(&affinity[i].mask))
+@@ -479,7 +481,7 @@ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
+ 	}
+ 
+ 	for (i = 0; i < cnt; i++) {
+-		const struct cpumask *mask = NULL;
++		const struct cpumask *mask = default_affinity;
+ 		unsigned int flags = 0;
+ 
+ 		if (affinity) {
+@@ -488,10 +490,10 @@ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
+ 					IRQD_MANAGED_SHUTDOWN;
+ 			}
+ 			mask = &affinity->mask;
+-			node = cpu_to_node(cpumask_first(mask));
+ 			affinity++;
+ 		}
+ 
++		node = cpu_to_node(cpumask_first(mask));
+ 		desc = alloc_desc(start + i, node, flags, mask, owner);
+ 		if (!desc)
+ 			goto err;
+@@ -538,7 +540,7 @@ int __init early_irq_init(void)
+ 		nr_irqs = initcnt;
+ 
+ 	for (i = 0; i < initcnt; i++) {
+-		desc = alloc_desc(i, node, 0, NULL, NULL);
++		desc = alloc_desc(i, node, 0, irq_default_affinity, NULL);
+ 		set_bit(i, allocated_irqs);
+ 		irq_insert_desc(i, desc);
+ 	}
+@@ -573,7 +575,8 @@ int __init early_irq_init(void)
+ 		raw_spin_lock_init(&desc[i].lock);
+ 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
+ 		mutex_init(&desc[i].request_mutex);
+-		desc_set_defaults(i, &desc[i], node, NULL, NULL);
++		desc_set_defaults(i, &desc[i], node, irq_default_affinity,
++				  NULL);
+ 	}
+ 	return arch_early_irq_init();
+ }
+@@ -590,12 +593,14 @@ static void free_desc(unsigned int irq)
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&desc->lock, flags);
+-	desc_set_defaults(irq, desc, irq_desc_get_node(desc), NULL, NULL);
++	desc_set_defaults(irq, desc, irq_desc_get_node(desc),
++			  irq_default_affinity, NULL);
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
  }
  
-+static bool __init kvm_msi_ext_dest_id(void)
-+{
-+	return kvm_para_has_feature(KVM_FEATURE_MSI_EXT_DEST_ID);
-+}
-+
- const __initconst struct hypervisor_x86 x86_hyper_kvm = {
- 	.name			= "KVM",
- 	.detect			= kvm_detect,
- 	.type			= X86_HYPER_KVM,
- 	.init.guest_late_init	= kvm_guest_init,
- 	.init.x2apic_available	= kvm_para_available,
-+	.init.msi_ext_dest_id	= kvm_msi_ext_dest_id,
- 	.init.init_platform	= kvm_init_platform,
- };
- 
+ static inline int alloc_descs(unsigned int start, unsigned int cnt, int node,
+ 			      const struct irq_affinity_desc *affinity,
++			      const struct cpumask *default_affinity,
+ 			      struct module *owner)
+ {
+ 	u32 i;
+@@ -803,7 +808,7 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
+ 		if (ret)
+ 			goto unlock;
+ 	}
+-	ret = alloc_descs(start, cnt, node, affinity, owner);
++	ret = alloc_descs(start, cnt, node, affinity, irq_default_affinity, owner);
+ unlock:
+ 	mutex_unlock(&sparse_irq_lock);
+ 	return ret;
 -- 
 2.26.2
 
