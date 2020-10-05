@@ -7,73 +7,73 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 545F7C4363D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58519C4727D
 	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:07 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F05D82184D
+	by mail.kernel.org (Postfix) with ESMTPS id EC9F72177B
 	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 15:29:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="0IVPH4+m"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F05D82184D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="wXaGlU4v"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC9F72177B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C2E5486693;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9001D857C1;
 	Mon,  5 Oct 2020 15:29:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5SCXo8xcr8x8; Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
+	with ESMTP id c8hMsJtGLJDT; Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 85B1186695;
-	Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4D62F857C5;
+	Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70253C0891;
-	Mon,  5 Oct 2020 15:29:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7F3EC0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 311DFC0891;
+	Mon,  5 Oct 2020 15:29:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3C23C0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B1735870C7
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:59 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CED0184D89
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:29:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HmTAcm3u6CyW for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
+ with ESMTP id PrJRjGQekPMw for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 15:29:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9196F865A1
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:58 +0000 (UTC)
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id CCCB384AB8
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 15:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+ d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=IVCSakrSwvBC/94Qs7X2IIppr71sOhGWu/QBQEBl22I=; b=0IVPH4+m+qk7v2uMU02/NMpO3B
- K3H1JlXjphg3LK3TPa7y6AUlxOKR6nYcU4HyGj4fmcXmdm+kTFsBdciKT1cGbUbyJb1kqnMxdT5zX
- s5sUqDR0KPloxduhUYQNUb0Auc9dnGxTWqCEAw6PPQJ0kot+pgsCiq/SJRVf1RcNh9HvWCq/iFENP
- DcI6CmVXe6hHtmwqedqqDXHbS7ikjt2+MvPIPOJ5pgN/WYfUosMPgm23Tevn3ThXWzlWJSdZOlPGe
- E86/1CDCZV8fwbx8UXF+ljYZZY6UCj+M00856oZjrfg/Af9ZTAz0doyKy7vdZkkPr+dw8D+JyxgXE
- r5wgcdiw==;
+ bh=gvAsnJJ1/zRcEGHp7vzyF/e1khe55jvd/2pvrS/D7RY=; b=wXaGlU4v1PypzRTV8kxQOkDho4
+ ZA/Xh7BtKtaoBaZ5D2+dMf+XUIXpp/5n6Bz5LnvQkT3m4FnBGwtyDO98Ls2HNWRCcFQf03c8dVvlW
+ P4QEbEeysbQBcqQFVvQgjIvBqQT33S2uIdedfGwhUR7hOF9ny84RAATU+LB4HZScR7u4H0+QPwh5B
+ P7bofAGMp0YXw75hC0hSDm06OIi/R7O0+UNcjpAp5rP8Sy8BdVDoPGD9E+mEQcqc7sGfpWPQjvH3u
+ pf7BQPVfzG2OGOoe7KhKyhDQkzIb6hlgF+IK3E6Ht+fu+5eguzCHolkSBbZs0GV/nWjqBmidX1PPP
+ 9ChKSXkg==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kPSQ5-0004MK-Dn; Mon, 05 Oct 2020 15:28:57 +0000
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kPSQ4-0001mG-Na; Mon, 05 Oct 2020 15:28:57 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kPSQ4-0045Qk-D3; Mon, 05 Oct 2020 16:28:56 +0100
+ Linux)) id 1kPSQ4-0045QK-99; Mon, 05 Oct 2020 16:28:56 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH 08/13] genirq: Add irq_domain_set_affinity()
-Date: Mon,  5 Oct 2020 16:28:51 +0100
-Message-Id: <20201005152856.974112-8-dwmw2@infradead.org>
+Subject: [PATCH 03/13] x86/ioapic: Handle Extended Destination ID field in RTE
+Date: Mon,  5 Oct 2020 16:28:46 +0100
+Message-Id: <20201005152856.974112-3-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201005152856.974112-1-dwmw2@infradead.org>
 References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
  <20201005152856.974112-1-dwmw2@infradead.org>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
+ casper.infradead.org. See http://www.infradead.org/rpr.html
 Cc: Paolo Bonzini <pbonzini@redhat.com>,
  iommu <iommu@lists.linux-foundation.org>, linux-hyperv@vger.kernel.org,
  kvm <kvm@vger.kernel.org>
@@ -96,161 +96,115 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: David Woodhouse <dwmw@amazon.co.uk>
 
-This allows a maximal affinity to be set, for IRQ domains which cannot
-target all CPUs in the system.
+The IOAPIC Redirection Table Entries contain an 8-bit Extended
+Destination ID field which maps to bits 11-4 of the MSI address.
+
+The lowest bit is used to indicate remappable format, when interrupt
+remapping is in use. A hypervisor can use the other 7 bits to permit
+guests to address up to 15 bits of APIC IDs, thus allowing 32768 vCPUs
+before having to expose a vIOMMU and interrupt remapping to the guest.
+
+No behavioural change in this patch, since nothing yet permits APIC IDs
+above 255 to be used with the non-IR IOAPIC domain.
 
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- include/linux/irqdomain.h |  4 ++++
- kernel/irq/irqdomain.c    | 28 ++++++++++++++++++++++++++--
- kernel/irq/manage.c       | 19 +++++++++++++++----
- 3 files changed, 45 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/io_apic.h |  3 ++-
+ arch/x86/kernel/apic/io_apic.c | 19 +++++++++++++------
+ 2 files changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index 6b5576da77f0..cf686f18c1fa 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -151,6 +151,7 @@ struct irq_domain_chip_generic;
-  *      drivers using the generic chip library which uses this pointer.
-  * @parent: Pointer to parent irq_domain to support hierarchy irq_domains
-  * @debugfs_file: dentry for the domain debugfs file
-+ * @max_affinity: mask of CPUs targetable by this IRQ domain
-  *
-  * Revmap data, used internally by irq_domain
-  * @revmap_direct_max_irq: The largest hwirq that can be set for controllers that
-@@ -177,6 +178,7 @@ struct irq_domain {
- #ifdef CONFIG_GENERIC_IRQ_DEBUGFS
- 	struct dentry		*debugfs_file;
- #endif
-+	const struct cpumask *max_affinity;
+diff --git a/arch/x86/include/asm/io_apic.h b/arch/x86/include/asm/io_apic.h
+index a1a26f6d3aa4..e65a0b7379d0 100644
+--- a/arch/x86/include/asm/io_apic.h
++++ b/arch/x86/include/asm/io_apic.h
+@@ -78,7 +78,8 @@ struct IO_APIC_route_entry {
+ 		mask		:  1,	/* 0: enabled, 1: disabled */
+ 		__reserved_2	: 15;
  
- 	/* reverse map data. The linear map gets appended to the irq_domain */
- 	irq_hw_number_t hwirq_max;
-@@ -453,6 +455,8 @@ extern void irq_domain_set_info(struct irq_domain *domain, unsigned int virq,
- 				void *chip_data, irq_flow_handler_t handler,
- 				void *handler_data, const char *handler_name);
- extern void irq_domain_reset_irq_data(struct irq_data *irq_data);
-+extern int irq_domain_set_affinity(struct irq_domain *domain,
-+				   const struct cpumask *affinity);
- #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
- extern struct irq_domain *irq_domain_create_hierarchy(struct irq_domain *parent,
- 			unsigned int flags, unsigned int size,
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index ffd41f21afca..0b298355be1b 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -661,7 +661,7 @@ unsigned int irq_create_mapping(struct irq_domain *domain,
+-	__u32	__reserved_3	: 24,
++	__u32	__reserved_3	: 17,
++		ext_dest	:  7,
+ 		dest		:  8;
+ } __attribute__ ((packed));
  
- 	/* Allocate a virtual interrupt number */
- 	virq = irq_domain_alloc_descs(-1, 1, hwirq, of_node_to_nid(of_node),
--				      NULL, NULL);
-+				      NULL, domain->max_affinity);
- 	if (virq <= 0) {
- 		pr_debug("-> virq allocation failed\n");
- 		return 0;
-@@ -1078,6 +1078,27 @@ void irq_domain_reset_irq_data(struct irq_data *irq_data)
- }
- EXPORT_SYMBOL_GPL(irq_domain_reset_irq_data);
- 
-+/**
-+ * irq_domain_set_affinity - Set maximum CPU affinity for domain
-+ * @parent:	Domain to set affinity for
-+ * @affinity:	Pointer to cpumask, consumed by domain
-+ *
-+ * Sets the maximal set of CPUs to which interrupts in this domain may
-+ * be delivered. Must only be called after creation, before any interrupts
-+ * have been in the domain.
-+ *
-+ * This function retains a pointer to the cpumask which is passed in.
-+ */
-+int irq_domain_set_affinity(struct irq_domain *domain,
-+			    const struct cpumask *affinity)
-+{
-+	if (cpumask_empty(affinity))
-+		return -EINVAL;
-+	domain->max_affinity = affinity;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(irq_domain_set_affinity);
-+
- #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
- /**
-  * irq_domain_create_hierarchy - Add a irqdomain into the hierarchy
-@@ -1110,6 +1131,9 @@ struct irq_domain *irq_domain_create_hierarchy(struct irq_domain *parent,
- 	if (domain) {
- 		domain->parent = parent;
- 		domain->flags |= flags;
-+		if (parent && parent->max_affinity)
-+			irq_domain_set_affinity(domain,
-+						parent->max_affinity);
- 	}
- 
- 	return domain;
-@@ -1375,7 +1399,7 @@ int __irq_domain_alloc_irqs(struct irq_domain *domain, int irq_base,
- 		virq = irq_base;
- 	} else {
- 		virq = irq_domain_alloc_descs(irq_base, nr_irqs, 0, node,
--					      affinity, NULL);
-+					      affinity, domain->max_affinity);
- 		if (virq < 0) {
- 			pr_debug("cannot allocate IRQ(base %d, count %d)\n",
- 				 irq_base, nr_irqs);
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 5df903fccb60..e8c5f8ecd306 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -345,6 +345,10 @@ int irq_set_affinity_locked(struct irq_data *data, const struct cpumask *mask,
- 	struct irq_desc *desc = irq_data_to_desc(data);
- 	int ret = 0;
- 
-+	if (data->domain && data->domain->max_affinity &&
-+	    !cpumask_subset(mask, data->domain->max_affinity))
-+		return -EINVAL;
-+
- 	if (!chip || !chip->irq_set_affinity)
- 		return -EINVAL;
- 
-@@ -484,13 +488,20 @@ int irq_setup_affinity(struct irq_desc *desc)
- 	struct cpumask *set = irq_default_affinity;
- 	int ret, node = irq_desc_get_node(desc);
- 	static DEFINE_RAW_SPINLOCK(mask_lock);
--	static struct cpumask mask;
-+	static struct cpumask mask, max_mask;
- 
- 	/* Excludes PER_CPU and NO_BALANCE interrupts */
- 	if (!__irq_can_set_affinity(desc))
- 		return 0;
- 
- 	raw_spin_lock(&mask_lock);
-+
-+	if (desc->irq_data.domain && desc->irq_data.domain->max_affinity)
-+		cpumask_and(&max_mask, cpu_online_mask,
-+			    desc->irq_data.domain->max_affinity);
-+	else
-+		cpumask_copy(&max_mask, cpu_online_mask);
-+
- 	/*
- 	 * Preserve the managed affinity setting and a userspace affinity
- 	 * setup, but make sure that one of the targets is online.
-@@ -498,15 +509,15 @@ int irq_setup_affinity(struct irq_desc *desc)
- 	if (irqd_affinity_is_managed(&desc->irq_data) ||
- 	    irqd_has_set(&desc->irq_data, IRQD_AFFINITY_SET)) {
- 		if (cpumask_intersects(desc->irq_common_data.affinity,
--				       cpu_online_mask))
-+				       &max_mask))
- 			set = desc->irq_common_data.affinity;
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index a33380059db6..aa9a3b54a96c 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -1239,10 +1239,10 @@ static void io_apic_print_entries(unsigned int apic, unsigned int nr_entries)
+ 			       buf, (ir_entry->index2 << 15) | ir_entry->index,
+ 			       ir_entry->zero);
  		else
- 			irqd_clear(&desc->irq_data, IRQD_AFFINITY_SET);
+-			printk(KERN_DEBUG "%s, %s, D(%02X), M(%1d)\n",
++			printk(KERN_DEBUG "%s, %s, D(%02X%02X), M(%1d)\n",
+ 			       buf,
+ 			       entry.dest_mode == IOAPIC_DEST_MODE_LOGICAL ?
+-			       "logical " : "physical",
++			       "logical " : "physical", entry.ext_dest,
+ 			       entry.dest, entry.delivery_mode);
  	}
+ }
+@@ -1410,6 +1410,7 @@ void native_restore_boot_irq_mode(void)
+ 	 */
+ 	if (ioapic_i8259.pin != -1) {
+ 		struct IO_APIC_route_entry entry;
++		u32 apic_id = read_apic_id();
  
--	cpumask_and(&mask, cpu_online_mask, set);
-+	cpumask_and(&mask, &max_mask, set);
- 	if (cpumask_empty(&mask))
--		cpumask_copy(&mask, cpu_online_mask);
-+		cpumask_copy(&mask, &max_mask);
+ 		memset(&entry, 0, sizeof(entry));
+ 		entry.mask		= IOAPIC_UNMASKED;
+@@ -1417,7 +1418,8 @@ void native_restore_boot_irq_mode(void)
+ 		entry.polarity		= IOAPIC_POL_HIGH;
+ 		entry.dest_mode		= IOAPIC_DEST_MODE_PHYSICAL;
+ 		entry.delivery_mode	= dest_ExtINT;
+-		entry.dest		= read_apic_id();
++		entry.dest		= apic_id & 0xff;
++		entry.ext_dest		= apic_id >> 8;
  
- 	if (node != NUMA_NO_NODE) {
- 		const struct cpumask *nodemask = cpumask_of_node(node);
+ 		/*
+ 		 * Add it to the IO-APIC irq-routing table:
+@@ -1861,7 +1863,8 @@ static void ioapic_configure_entry(struct irq_data *irqd)
+ 	 * ioapic chip to verify that.
+ 	 */
+ 	if (irqd->chip == &ioapic_chip) {
+-		mpd->entry.dest = cfg->dest_apicid;
++		mpd->entry.dest = cfg->dest_apicid & 0xff;
++		mpd->entry.ext_dest = cfg->dest_apicid >> 8;
+ 		mpd->entry.vector = cfg->vector;
+ 	}
+ 	for_each_irq_pin(entry, mpd->irq_2_pin)
+@@ -2027,6 +2030,7 @@ static inline void __init unlock_ExtINT_logic(void)
+ 	int apic, pin, i;
+ 	struct IO_APIC_route_entry entry0, entry1;
+ 	unsigned char save_control, save_freq_select;
++	u32 apic_id;
+ 
+ 	pin  = find_isa_irq_pin(8, mp_INT);
+ 	if (pin == -1) {
+@@ -2042,11 +2046,13 @@ static inline void __init unlock_ExtINT_logic(void)
+ 	entry0 = ioapic_read_entry(apic, pin);
+ 	clear_IO_APIC_pin(apic, pin);
+ 
++	apic_id = hard_smp_processor_id();
+ 	memset(&entry1, 0, sizeof(entry1));
+ 
+ 	entry1.dest_mode = IOAPIC_DEST_MODE_PHYSICAL;
+ 	entry1.mask = IOAPIC_UNMASKED;
+-	entry1.dest = hard_smp_processor_id();
++	entry1.dest = apic_id & 0xff;
++	entry1.ext_dest = apic_id >> 8;
+ 	entry1.delivery_mode = dest_ExtINT;
+ 	entry1.polarity = entry0.polarity;
+ 	entry1.trigger = IOAPIC_EDGE;
+@@ -2949,7 +2955,8 @@ static void mp_setup_entry(struct irq_cfg *cfg, struct mp_chip_data *data,
+ 	memset(entry, 0, sizeof(*entry));
+ 	entry->delivery_mode = apic->irq_delivery_mode;
+ 	entry->dest_mode     = apic->irq_dest_mode;
+-	entry->dest	     = cfg->dest_apicid;
++	entry->dest	     = cfg->dest_apicid & 0xff;
++	entry->ext_dest	     = cfg->dest_apicid >> 8;
+ 	entry->vector	     = cfg->vector;
+ 	entry->trigger	     = data->trigger;
+ 	entry->polarity	     = data->polarity;
 -- 
 2.26.2
 
