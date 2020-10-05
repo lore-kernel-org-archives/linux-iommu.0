@@ -2,97 +2,76 @@ Return-Path: <SRS0=BXsX=DM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9995C4363A
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 10:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A26C4363D
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 10:05:21 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 412C02078E
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 10:04:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YMGSZ4jX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 412C02078E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id F129A2080A
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 10:05:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F129A2080A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DC02D86406;
-	Mon,  5 Oct 2020 10:04:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8034B8622A;
+	Mon,  5 Oct 2020 10:05:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id E3dUWE4MQxzg; Mon,  5 Oct 2020 10:04:26 +0000 (UTC)
+	with ESMTP id T8-khULbhqh9; Mon,  5 Oct 2020 10:05:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0D4AF8610F;
-	Mon,  5 Oct 2020 10:04:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7CEDF863D9;
+	Mon,  5 Oct 2020 10:05:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED84CC07FF;
-	Mon,  5 Oct 2020 10:04:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CDE1C07FF;
+	Mon,  5 Oct 2020 10:05:19 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0988C0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:04:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 15992C0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:05:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8F25A86FA1
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:04:25 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id F06B486FA1
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:05:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IXaZRYL9M9gQ for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 10:04:24 +0000 (UTC)
+ with ESMTP id GSUEW4eEnJ1V for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 10:05:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
- [209.85.208.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 12ADB86CB6
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:04:24 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id t21so5874747eds.6
- for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 03:04:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=p3BM0kPaZyOPUQYWBvmUtL1qF+A5L+ek6VHw+7yxmPQ=;
- b=YMGSZ4jX8zZy/zJA+ymFeHemM9uTXw8KWpy+9+08a+s1kDuU+FLEHyOUFoHkq8CaJb
- VinWd4eIsN1NT7RSoqjueiIPYt6K50guGxOOeLU+hNIO3jW2Avr4mwvaXTNeVNYjOxmC
- hcx9QpFLQDk8ACHS9yPxfLlnN+JQT0Co0jVeL032FxGChFzsojq6wzwOzRB8wxws6PIg
- ThfJi+SYghZlg73IKb1qisxGHnkxezbWHSO3o0zD+9NyellUwFrg3sFVnyR2SEa+TMgo
- 81W9tYs8VlPs0UiVzP25lc+0FaDu1VnKXr/Iz3BpSzBdHgv0gMArSb7ui3aSVv+LzzSU
- ssFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=p3BM0kPaZyOPUQYWBvmUtL1qF+A5L+ek6VHw+7yxmPQ=;
- b=GgJX/GxfjfpvUaSYR+lOPZEEag4q4l6SDd+6oVckpCNGI7hFvoayhJTj/kZfiFU8x1
- PasEk4o3kfSrya1BMSCgYUEKibN8Jio/+X26S3urwSfDsnHyg8VfYLXN14bHBre/jWOx
- 6824wghI1TRiMWpXSOKlEij3fU3EJwiS7ETnImR2C28RoNk/kTBTR3nfou9souiPDHSR
- 0U26j3chEz2Yvwb17HAiY1Szd+IvNGtCPdHIGn37FC09mS3Ebo4HhVNjiwV/FGr4y0LI
- tfX8KA23+ajMt36WK17oERI6WGhIjFnlxCHFQBTcCh3YCx01KpNCkXU8eRt9XFi088QL
- m1Dw==
-X-Gm-Message-State: AOAM530QFXabC9NzqKjjPyCDtC+cNTkXmCOtnQK4srpBagAHGwmVcXv/
- 3qlb7/HerInFX6ulIBb2oAY=
-X-Google-Smtp-Source: ABdhPJynxv4HgFVq+YzG8NngdyxhCbkuUZlkdwXEwFycADMLdau1/kA3SvY2XMssurYI9UWUoDYGZg==
-X-Received: by 2002:a50:fe82:: with SMTP id d2mr15842040edt.86.1601892262334; 
- Mon, 05 Oct 2020 03:04:22 -0700 (PDT)
-Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id u9sm7675435eje.119.2020.10.05.03.04.20
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 05 Oct 2020 03:04:20 -0700 (PDT)
-Date: Mon, 5 Oct 2020 12:04:19 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v4 3/3] iommu/tegra-smmu: Add PCI support
-Message-ID: <20201005100419.GK425362@ulmo>
-References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
- <20201002060807.32138-4-nicoleotsuka@gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 46FAA86CB6
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 10:05:16 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7EB6F113E;
+ Mon,  5 Oct 2020 03:05:15 -0700 (PDT)
+Received: from [192.168.1.179] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E23D73F66B;
+ Mon,  5 Oct 2020 03:05:13 -0700 (PDT)
+From: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH 3/3] arm64: dts: meson: Describe G12b GPU as coherent
+To: Boris Brezillon <boris.brezillon@collabora.com>
+References: <cover.1600213517.git.robin.murphy@arm.com>
+ <ba61c76654349d3dfcd14c1e24c5aed39ebe3cf7.1600213517.git.robin.murphy@arm.com>
+ <e218b95e-39bc-e773-00fb-bcb5f1f835ea@baylibre.com>
+ <20201005101517.020c411a@collabora.com>
+ <21de320b-0c32-b15b-a97b-d9799cd5ca44@arm.com>
+ <20201005103939.667b3f42@collabora.com>
+Message-ID: <83bcecd6-f405-dae1-6bf9-fd1f44d74a00@arm.com>
+Date: Mon, 5 Oct 2020 11:05:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201002060807.32138-4-nicoleotsuka@gmail.com>
-User-Agent: Mutt/1.14.7 (2020-08-29)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org, digetx@gmail.com
+In-Reply-To: <20201005103939.667b3f42@collabora.com>
+Content-Language: en-GB
+Cc: robh@kernel.org, tomeu.vizoso@collabora.com,
+ Neil Armstrong <narmstrong@baylibre.com>, Robin Murphy <robin.murphy@arm.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ alyssa.rosenzweig@collabora.com, linux-amlogic@lists.infradead.org,
+ will@kernel.org, linux-arm-kernel@lists.infradead.org, jbrunet@baylibre.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,151 +84,150 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3957473822127680334=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 05/10/2020 09:39, Boris Brezillon wrote:
+> On Mon, 5 Oct 2020 09:34:06 +0100
+> Steven Price <steven.price@arm.com> wrote:
+> 
+>> On 05/10/2020 09:15, Boris Brezillon wrote:
+>>> Hi Robin, Neil,
+>>>
+>>> On Wed, 16 Sep 2020 10:26:43 +0200
+>>> Neil Armstrong <narmstrong@baylibre.com> wrote:
+>>>    
+>>>> Hi Robin,
+>>>>
+>>>> On 16/09/2020 01:51, Robin Murphy wrote:
+>>>>> According to a downstream commit I found in the Khadas vendor kernel,
+>>>>> the GPU on G12b is wired up for ACE-lite, so (now that Panfrost knows
+>>>>> how to handle this properly) we should describe it as such. Otherwise
+>>>>> the mismatch leads to all manner of fun with mismatched attributes and
+>>>>> inadvertently snooping stale data from caches, which would account for
+>>>>> at least some of the brokenness observed on this platform.
+>>>>>
+>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>>> ---
+>>>>>    arch/arm64/boot/dts/amlogic/meson-g12b.dtsi | 4 ++++
+>>>>>    1 file changed, 4 insertions(+)
+>>>>>
+>>>>> diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+>>>>> index 9b8548e5f6e5..ee8fcae9f9f0 100644
+>>>>> --- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+>>>>> +++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+>>>>> @@ -135,3 +135,7 @@ map1 {
+>>>>>    		};
+>>>>>    	};
+>>>>>    };
+>>>>> +
+>>>>> +&mali {
+>>>>> +	dma-coherent;
+>>>>> +};
+>>>>>       
+>>>>
+>>>> Thanks a lot for digging, I'll run a test to confirm it fixes the issue !
+>>>
+>>> Sorry for the late reply. I triggered a dEQP run with this patch applied
+>>> and I see a bunch of "panfrost ffe40000.gpu: matching BO is not heap type"
+>>> errors (see below for a full backtrace). That doesn't seem to happen when
+>>> we drop this dma-coherent property.
+>>>
+>>> [  690.945731] ------------[ cut here ]------------
+>>> [  690.950003] panfrost ffe40000.gpu: matching BO is not heap type (GPU VA = 319a000)
+>>> [  690.950051] WARNING: CPU: 0 PID: 120 at drivers/gpu/drm/panfrost/panfrost_mmu.c:465 panfrost_mmu_irq_handler_thread+0x47c/0x650
+>>> [  690.968854] Modules linked in:
+>>> [  690.971878] CPU: 0 PID: 120 Comm: irq/27-panfrost Tainted: G        W         5.9.0-rc5-02434-g7d8109ec5a42 #784
+>>> [  690.981964] Hardware name: Khadas VIM3 (DT)
+>>> [  690.986107] pstate: 60000005 (nZCv daif -PAN -UAO BTYPE=--)
+>>> [  690.991627] pc : panfrost_mmu_irq_handler_thread+0x47c/0x650
+>>> [  690.997232] lr : panfrost_mmu_irq_handler_thread+0x47c/0x650
+>>> [  691.002836] sp : ffff800011bcbcd0
+>>> [  691.006114] x29: ffff800011bcbcf0 x28: ffff0000f3fe3800
+>>> [  691.011375] x27: ffff0000ceaf5350 x26: ffff0000ca5fc500
+>>> [  691.016636] x25: ffff0000f32409c0 x24: 0000000000000001
+>>> [  691.021897] x23: ffff0000f3240880 x22: ffff0000f3e3a800
+>>> [  691.027159] x21: 0000000000000000 x20: 0000000000000000
+>>> [  691.032420] x19: 0000000000010001 x18: 0000000000000020
+>>> [  691.037681] x17: 0000000000000000 x16: 0000000000000000
+>>> [  691.042942] x15: ffff0000f3fe3c70 x14: ffffffffffffffff
+>>> [  691.048204] x13: ffff8000116c2428 x12: ffff8000116c2086
+>>> [  691.053466] x11: ffff800011bcbcd0 x10: ffff800011bcbcd0
+>>> [  691.058727] x9 : 00000000fffffffe x8 : 0000000000000000
+>>> [  691.063988] x7 : 7420706165682074 x6 : ffff8000116c1816
+>>> [  691.069249] x5 : 0000000000000000 x4 : 0000000000000000
+>>> [  691.074510] x3 : 00000000ffffffff x2 : ffff8000e348c000
+>>> [  691.079771] x1 : f1b91ff9af2df000 x0 : 0000000000000000
+>>> [  691.085033] Call trace:
+>>> [  691.087452]  panfrost_mmu_irq_handler_thread+0x47c/0x650
+>>> [  691.092712]  irq_thread_fn+0x2c/0xa0
+>>> [  691.096246]  irq_thread+0x184/0x208
+>>> [  691.099699]  kthread+0x140/0x160
+>>> [  691.102890]  ret_from_fork+0x10/0x34
+>>> [  691.106424] ---[ end trace b5dd8c2dfada8236 ]---
+>>>    
+>>
+>> It's quite possible this is caused by the GPU seeing a stale page table
+>> entry, so perhaps coherency isn't working as well as it should...
+>>
+>> Do you get an "Unhandled Page fault" message after this?
+> 
+> Yep (see below).
+> 
+> --->8---
+> 
+[...]
+> [  689.805864] panfrost ffe40000.gpu: Unhandled Page fault in AS0 at VA 0x0000000003146080
+> [  689.805864] Reason: TODO
+> [  689.805864] raw fault status: 0x10003C3
+> [  689.805864] decoded fault status: SLAVE FAULT
+> [  689.805864] exception type 0xC3: TRANSLATION_FAULT_LEVEL3
+> [  689.805864] access type 0x3: WRITE
+> [  689.805864] source id 0x100
+> [  690.170419] panfrost ffe40000.gpu: gpu sched timeout, js=1, config=0x7300, status=0x8, head=0x3101100, tail=0x3101100, sched_job=000000004b442768
+> [  690.770373] panfrost ffe40000.gpu: error powering up gpu shader
+> [  690.945123] panfrost ffe40000.gpu: error powering up gpu shader
+> [  690.945731] ------------[ cut here ]------------
+> 
 
---===============3957473822127680334==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="PEfPc/DjvCj+JzNg"
-Content-Disposition: inline
+That's a write fault from level 3 of the page table triggered by shader
+core 0 in a fragment job. So could be writing out the frame buffer.
 
+It would be interesting to see if a patch like below would work round
+it:
 
---PEfPc/DjvCj+JzNg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+----8<----
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index e8f7b11352d2..5144860afdea 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -460,9 +460,12 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
+  
+  	bo = bomapping->obj;
+  	if (!bo->is_heap) {
+-		dev_WARN(pfdev->dev, "matching BO is not heap type (GPU VA = %llx)",
++		dev_err(pfdev->dev, "matching BO is not heap type (GPU VA = %llx)",
+  			 bomapping->mmnode.start << PAGE_SHIFT);
+-		ret = -EINVAL;
++		/* Force a flush of the MMU to restart the transaction */
++		mmu_hw_do_operation(pfdev, bomapping->mmu, addr, 0,
++				    AS_COMMAND_FLUSH_MEM);
++		ret = 0;
+  		goto err_bo;
+  	}
+  	WARN_ON(bomapping->mmu->as != as);
+---8<---
 
-On Thu, Oct 01, 2020 at 11:08:07PM -0700, Nicolin Chen wrote:
-> This patch simply adds support for PCI devices.
->=20
-> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-> ---
->=20
-> Changelog
-> v3->v4
->  * Dropped !iommu_present() check
->  * Added CONFIG_PCI check in the exit path
-> v2->v3
->  * Replaced ternary conditional operator with if-else in .device_group()
->  * Dropped change in tegra_smmu_remove()
-> v1->v2
->  * Added error-out labels in tegra_smmu_probe()
->  * Dropped pci_request_acs() since IOMMU core would call it.
->=20
->  drivers/iommu/tegra-smmu.c | 37 +++++++++++++++++++++++++++----------
->  1 file changed, 27 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 02d02b0c55c4..b701a7b55e84 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -10,6 +10,7 @@
->  #include <linux/kernel.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> +#include <linux/pci.h>
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
->  #include <linux/spinlock.h>
-> @@ -865,7 +866,11 @@ static struct iommu_group *tegra_smmu_device_group(s=
-truct device *dev)
->  	group->smmu =3D smmu;
->  	group->soc =3D soc;
-> =20
-> -	group->group =3D iommu_group_alloc();
-> +	if (dev_is_pci(dev))
-> +		group->group =3D pci_device_group(dev);
-> +	else
-> +		group->group =3D generic_device_group(dev);
-> +
->  	if (IS_ERR(group->group)) {
->  		devm_kfree(smmu->dev, group);
->  		mutex_unlock(&smmu->lock);
-> @@ -1069,22 +1074,32 @@ struct tegra_smmu *tegra_smmu_probe(struct device=
- *dev,
->  	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
-> =20
->  	err =3D iommu_device_register(&smmu->iommu);
-> -	if (err) {
-> -		iommu_device_sysfs_remove(&smmu->iommu);
-> -		return ERR_PTR(err);
-> -	}
-> +	if (err)
-> +		goto err_sysfs;
-> =20
->  	err =3D bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
-> -	if (err < 0) {
-> -		iommu_device_unregister(&smmu->iommu);
-> -		iommu_device_sysfs_remove(&smmu->iommu);
-> -		return ERR_PTR(err);
-> -	}
-> +	if (err < 0)
-> +		goto err_unregister;
-> +
-> +#ifdef CONFIG_PCI
-> +	err =3D bus_set_iommu(&pci_bus_type, &tegra_smmu_ops);
-> +	if (err < 0)
-> +		goto err_bus_set;
-> +#endif
-> =20
->  	if (IS_ENABLED(CONFIG_DEBUG_FS))
->  		tegra_smmu_debugfs_init(smmu);
-> =20
->  	return smmu;
-> +
-> +err_bus_set: __maybe_unused;
-> +	bus_set_iommu(&platform_bus_type, NULL);
-> +err_unregister:
-> +	iommu_device_unregister(&smmu->iommu);
-> +err_sysfs:
-> +	iommu_device_sysfs_remove(&smmu->iommu);
+That's obviously not the correct solution (the fault shouldn't occur),
+but if flushing the GPU's caches and retrying works then we know it's
+a coherency issue. You can also try backing off from the big hammer of
+AS_COMMAND_FLUSH_MEM and trying AS_COMMAND_FLUSH_PT or
+AS_COMMAND_UNLOCK.
 
-Can you please switch to label names that are more consistent with the
-others in this driver? Notably the ones in tegra_smmu_domain_alloc().
-The idea is to describe in the name of the label what's happening at the
-label. Something like this, for example:
-
-unset_platform_bus:
-	bus_set_iommu(&platform_bus_type, NULL);
-unregister:
-	iommu_device_unregister(&smmu->iommu);
-remove_sysfs:
-	iommu_device_sysfs_remove(&smmu->iommu);
-
-Thierry
-
---PEfPc/DjvCj+JzNg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9676MACgkQ3SOs138+
-s6E57BAAt0AeCX/qjGZv2yu0JoZxyVMxx2y3P3p1t8cvhgWhppRMaXErd01bAZoA
-vh4HYhmi1vVbnfyDxtafYXY7jUKwwe1Kwo4zjAnNqzm1xYRTeeEtZ0f03xhMviDk
-G0y7pIXOZeMUozoR0cSruq8ZF7+tVmdmTL2A9ybZBwFXIuL7f1vhizd2Fk9aprvd
-lSwhz43OVmYWWPRAjM+1HBJ1R+klw3SUy/ZBg6kaQX/sBeFnQ3InmapFZ7B+iKt4
-ARXioQv0Kb935t1ABIYJZu26tunTZrMcdhekIOWyn345a7VuHtCOgaUYPSoDJsX4
-1Y+kDStZD9/FZ/EpvCt8saacx1gnJ+yChbiAM/gheIeK5D/42rp4GNElfxOC9Edy
-6qZGXMGCAcrvfCZjozsfNTAg7yG91BshhODi0vtR/ljoKtCdc6A6gGgPb7d6454j
-9KQSrgy0XdV1hI+UOhCVcCWAuY7niE57OHaLSLE58b84Y3q52kGEq8gq7eSVS2ug
-86V8ywHa/NQvE9bVMpwpqIKw5EX5cp3YEHHSmDQufaUlVHHw1kqcVGsDk7YjY7wM
-zJ15fJegbRpPTRKfNehb64hKemeSWjOSi+Ipgkxk8k5WirUp0PiGEUsNEozTBizL
-QMxkTR/VGoott/nWoAAEV+t50W8p/zgdc/ZXbwIq755B9qskBds=
-=E6uA
------END PGP SIGNATURE-----
-
---PEfPc/DjvCj+JzNg--
-
---===============3957473822127680334==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Steve
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3957473822127680334==--
