@@ -2,110 +2,100 @@ Return-Path: <SRS0=BXsX=DM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A4FC4363A
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:38:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFB6C4363A
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:48:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C35E2078E
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:38:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D583820795
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:48:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pgk0M12g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C35E2078E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jFFP2Tx+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D583820795
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 18B27203DB;
-	Mon,  5 Oct 2020 09:38:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8C50787014;
+	Mon,  5 Oct 2020 09:48:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ToIxZa6ueG0Q; Mon,  5 Oct 2020 09:38:26 +0000 (UTC)
+	with ESMTP id AbmSiYAtdRQH; Mon,  5 Oct 2020 09:47:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BA6F32002A;
-	Mon,  5 Oct 2020 09:38:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EA8B886F84;
+	Mon,  5 Oct 2020 09:47:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA9F1C07FF;
-	Mon,  5 Oct 2020 09:38:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58C5BC0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:38:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D7287C07FF;
+	Mon,  5 Oct 2020 09:47:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DCF11C0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:47:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 46B1B83F66
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:38:25 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D98F4855CB
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:47:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cwajhnmJdJWs for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 09:38:24 +0000 (UTC)
+ with ESMTP id BVGCFBk0aw9U for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 09:47:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f65.google.com (mail-lf1-f65.google.com
- [209.85.167.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 44A8183DC2
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:38:24 +0000 (UTC)
-Received: by mail-lf1-f65.google.com with SMTP id b22so9993321lfs.13
- for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 02:38:24 -0700 (PDT)
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+ [209.85.208.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1FF08851C2
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:47:57 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id k14so8585349edo.1
+ for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 02:47:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=QsaBfZFa2dvXngI+qikBeYVIehcnUn/8wXHfmURCQEA=;
- b=Pgk0M12g2DtRJ1kAa1PGSelgbsxYQlS2lso0eKSxlD4N1cVf5e20H+glqExrxAqrUI
- 9Nf6vAtoA4YEhEfnQnopMNWK72mArJ5RrpqbeYqVmC6P3cX5k744sYEV/PS5FqaLm7OA
- +wiU38Q3ioB+Hm6EiKqGBN9sGquqVgdGhu4XY7IEDQE6DZnfkat7Pt7hrcf+7xAJet9n
- MlATvl5Cj2DSe+EVz0BzED9ODORqqYSsjRWGTATd2sLePQt+qYY4A14HXi1mX07cXfrL
- umwgYoAWFk7Nm+x7gWS7G8Z2sS/3sxzTuNxWDEu1qQNknleKhir7JYA2xNJNWoXbxVID
- uCqA==
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=8FVfgUbPigKX8q6acs/usUL41ngU1LBGrHZ+WyTTHpU=;
+ b=jFFP2Tx+qnv8xeJv5u+m8BMlaEvC9R8HisLPC2n45BC78Gaj+EG538YmJx3bfIl9AG
+ FQbQCH56fruWaCLp0aoQBXR8s32E9BaTtJ7rMPUEJ07Y7kt2qDHFz4AlTBuUFk8SD6vK
+ gHPVFv041qFnDatTOgx8Q4luMBuDBdolJoIuJupQCt2EUmqc21uEpaWzMnMh3PLI/AnW
+ KGgqD442EcPSJzE4gJ9NmTwsxMgh7CKyuuFTkaE1p7oPrTaUwzLDEhhGs9vTWci2ushb
+ yQQz73y/GCHV6QzYV7/i1T5jg8a3SZHQ3aNC7L39z/PtC1f09iJn++mvtEeQjeC42WHP
+ /2fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=QsaBfZFa2dvXngI+qikBeYVIehcnUn/8wXHfmURCQEA=;
- b=WUwUAfjMUFzuVL8Bl+pny8DWOxI0Nghz9u/ZjBAXgsAmNT7lzsFnda1CZkHkXxZ3M3
- pzAifeKxuwctRUZHWfWo0a8GN2h1yxjchzYOhWnKWPI7uznatchMjiRPkVyEKLNJ2To7
- PlSrX8FkbdZOMw+8M95fc/OjnIv9VBbnxeZ21KeAorMJyWAGJLuEOxtYsgqFJyHdYsaf
- DJEvWKndWxOhVjKJcrJ0KO5R7+NzNIJk16hhV1NECzxEHzyl7DsMpCslwlS1uPq3QbdD
- WN8puMu8NVYsH7aLu5KwDn5kw2bWLlyGHnItdnN2sS5TfHrjvoaCEtqTstGX3MVW6wtl
- 9yNg==
-X-Gm-Message-State: AOAM533P75ViS/YEDPNmfpbPT+XOjqlRs0ULtdp1Ah5eM4RmyFlPGQes
- 2JMxigxaPYScoG2flvxords=
-X-Google-Smtp-Source: ABdhPJw9nOUB2K6tl/E249a5ebviDASlcj91s9oVh68i6PWqDc7YsQuI0RDXL8DV8yyicewQ2Gaj0w==
-X-Received: by 2002:ac2:4c88:: with SMTP id d8mr5071687lfl.428.1601890702324; 
- Mon, 05 Oct 2020 02:38:22 -0700 (PDT)
-Received: from [192.168.2.145] ([109.252.91.252])
- by smtp.googlemail.com with ESMTPSA id n3sm2627012lfq.274.2020.10.05.02.38.21
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 05 Oct 2020 02:38:21 -0700 (PDT)
-Subject: Re: [PATCH v3 2/3] iommu/tegra-smmu: Rework .probe_device and
- .attach_dev
-To: Thierry Reding <thierry.reding@gmail.com>
-References: <20200930084258.25493-1-nicoleotsuka@gmail.com>
- <20200930084258.25493-3-nicoleotsuka@gmail.com>
- <20200930153131.GB3833404@ulmo>
- <ece615ad-8d6b-96ae-d8b4-9667aef17281@gmail.com>
- <20200930160626.GD3833404@ulmo>
- <f11d7d8a-8ce6-a53c-6219-ceec05432002@gmail.com>
- <20200930164707.GB3852280@ulmo>
- <35115ac1-fb25-7226-7b50-61193669e696@gmail.com>
- <20201001075811.GA3919720@ulmo>
- <4dbf5bcb-76af-53c5-31cf-880debbcebf3@gmail.com>
- <20201005091610.GC425362@ulmo>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <1adede6e-ecbd-eea4-bd40-4969cd8719cc@gmail.com>
-Date: Mon, 5 Oct 2020 12:38:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=8FVfgUbPigKX8q6acs/usUL41ngU1LBGrHZ+WyTTHpU=;
+ b=QWdwK/ICaPmNiUDBpV/EGQAcDvM8/7JtzWZfKZkLBkXPjxNOIqhs90OUIgYqgPnJHQ
+ 1r/kotHLsZQB+Z3nvBIJNf3B0C4s18gu6kUXvgMFF6GAaHbypA4WuKnFJJXSLhUVdswu
+ bM2ZGy6hZojii0ZihrmIeYr+3NXOH3J/wx9V1LRbR3dirlSs3vi1vEFhjDN1d6kWBA+H
+ ZRvAFCfHzI+QYQreEFw4S2Ys8LVQ+RTeB4Cg+mEnMzU3TI2Msw121H+iH8RVmoiIRExU
+ 5VJLf27qcyCWr6AusDQxCqhRJLeLKKrqIZQnHlcnDulUyu+w1juO0TroWLyfjTgLlDTb
+ u+mA==
+X-Gm-Message-State: AOAM533W0j5HpfK691krh4PgLYL2qD3yMkl8xLKleHouAMNGY9el4qhz
+ raGBQLeDf9LJ55hiYKimAaE=
+X-Google-Smtp-Source: ABdhPJzj1lshRyTwroPH5unbnCt2C6kPU7UiCL8EBBHIsEdetc+VATQp5cQQopto3L7ArF3KqR3LXQ==
+X-Received: by 2002:aa7:c54f:: with SMTP id s15mr3575372edr.107.1601891275435; 
+ Mon, 05 Oct 2020 02:47:55 -0700 (PDT)
+Received: from localhost ([217.111.27.204])
+ by smtp.gmail.com with ESMTPSA id s1sm1950125edi.44.2020.10.05.02.47.53
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 05 Oct 2020 02:47:53 -0700 (PDT)
+Date: Mon, 5 Oct 2020 11:47:52 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: Re: [PATCH v4 2/3] iommu/tegra-smmu: Rework tegra_smmu_probe_device()
+Message-ID: <20201005094752.GG425362@ulmo>
+References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
+ <20201002060807.32138-3-nicoleotsuka@gmail.com>
+ <c42f1f51-9fa5-6503-91aa-3809f1f27d0c@gmail.com>
+ <0f186339-1e49-4878-834e-11ae8bf140f2@gmail.com>
+ <20201002195328.GE29706@Asurada-Nvidia>
 MIME-Version: 1.0
-In-Reply-To: <20201005091610.GC425362@ulmo>
-Content-Language: en-US
+In-Reply-To: <20201002195328.GE29706@Asurada-Nvidia>
+User-Agent: Mutt/1.14.7 (2020-08-29)
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- krzk@kernel.org, jonathanh@nvidia.com, linux-tegra@vger.kernel.org
+ jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+ Dmitry Osipenko <digetx@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,34 +108,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============6620063708743702642=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MDUuMTAuMjAyMCAxMjoxNiwgVGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKLi4uCj4+IEkgdGhp
-bmsgeW91IG1lYW50IHJlZ21hcCBpbiByZWdhcmRzIHRvIHByb3RlY3RpbmcgSU8gYWNjZXNzZXMs
-IGJ1dCB0aGlzCj4+IGlzIG5vdCB3aGF0IHJlZ21hcCBpcyBhYm91dCBpZiBJTyBhY2Nlc3NlcyBh
-cmUgYXRvbWljIGJ5IG5hdHVyZS4KPiAKPiBUaGVuIHdoeSBpcyB0aGVyZSByZWdtYXAtbW1pbz8K
-ClRvIHByb3RlY3QgcHJvZ3JhbW1pbmcgc2VxdWVuY2VzIGZvciBleGFtcGxlLCBhY3R1YWxseSB0
-aGF0J3MgdGhlIG9ubHkKcmVhbCB1c2UtY2FzZSBJIHNhdyBpbiBrZXJuZWwgZHJpdmVycyBvbmNl
-LiBJbiBvdXIgY2FzZSB0aGVyZSBhcmUgbm8Kc2VxdWVuY2VzIHRoYXQgcmVxdWlyZSBwcm90ZWN0
-aW9uLCBhdCBsZWFzdCBJJ20gbm90IGF3YXJlIGFib3V0IHRoYXQuCgo+PiBTZWNvbmRseSwgeW91
-J3JlIG1pc3NpbmcgdGhhdCB0ZWdyYTMwLWRldmZyZXEgZHJpdmVyIHdpbGwgYWxzbyBuZWVkIHRv
-Cj4+IHBlcmZvcm0gdGhlIE1DIGxvb2t1cCBbM10gYW5kIHRoZW4gZHJpdmVyIHdpbGwgbm8gbG9u
-Z2VyIHdvcmsgZm9yIHRoZQo+PiBvbGRlciBEVHMgaWYgcGhhbmRsZSBiZWNvbWVzIG1hbmRhdG9y
-eSBiZWNhdXNlIHRoZXNlIERUcyBkbyBub3QgaGF2ZSB0aGUKPj4gTUMgcGhhbmRsZSBpbiB0aGUg
-QUNUTU9OIG5vZGUuCj4+Cj4+IFszXQo+PiBodHRwczovL2dpdGh1Yi5jb20vZ3JhdGUtZHJpdmVy
-L2xpbnV4L2NvbW1pdC80NDFkMTkyODFmOWIzNDI4YTRkYjFlY2IzYTAyZTFlYzAyYThhZDdmCj4+
-Cj4+IFNvIHdlIHdpbGwgbmVlZCB0aGUgZmFsbCBiYWNrIGZvciBUMzAvMTI0IGFzIHdlbGwuCj4g
-Cj4gTm8sIHdlIGRvbid0IG5lZWQgdGhlIGZhbGxiYWNrIGJlY2F1c2UgdGhpcyBpcyBuZXcgZnVu
-Y3Rpb25hbGl0eSB3aGljaAo+IGNhbiBhbmQgc2hvdWxkIGJlIGdhdGVkIG9uIHRoZSBleGlzdGVu
-Y2Ugb2YgdGhlIG5ldyBwaGFuZGxlLiBJZiB0aGVyZSdzCj4gbm8gcGhhbmRsZSB0aGVuIHdlIGhh
-dmUgbm8gY2hvaWNlIGJ1dCB0byB1c2UgdGhlIG9sZCBjb2RlIHRvIGVuc3VyZSBvbGQKPiBiZWhh
-dmlvdXIuCgpZb3UganVzdCByZXBlYXRlZCB3aGF0IEkgd2FzIHRyeWluZyB0byBzYXk6KQoKUGVy
-aGFwcyBJIHNwZW50IGEgYml0IHRvbyBtdWNoIHRpbWUgdG91Y2hpbmcgdGhhdCBjb2RlIHRvIHRo
-ZSBwb2ludCB0aGF0Cmxvc3QgZmVlbGluZyB0aGF0IHRoZXJlIGlzIGEgbmVlZCB0byBjbGFyaWZ5
-IGV2ZXJ5dGhpbmcgaW4gZGV0YWlscy4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2lvbW11
+
+--===============6620063708743702642==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Y+xroYBkGM9OatJL"
+Content-Disposition: inline
+
+
+--Y+xroYBkGM9OatJL
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Oct 02, 2020 at 12:53:28PM -0700, Nicolin Chen wrote:
+> On Fri, Oct 02, 2020 at 05:58:29PM +0300, Dmitry Osipenko wrote:
+> > 02.10.2020 17:22, Dmitry Osipenko =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > > 02.10.2020 09:08, Nicolin Chen =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > >> -static void tegra_smmu_release_device(struct device *dev)
+> > >> -{
+> > >> -	dev_iommu_priv_set(dev, NULL);
+> > >> -}
+> > >> +static void tegra_smmu_release_device(struct device *dev) {}
+> > >=20
+> > > Please keep the braces as-is.
+> > >=20
+> >=20
+> > I noticed that you borrowed this style from the sun50i-iommu driver, but
+> > this is a bit unusual coding style for the c files. At least to me it's
+> > unusual to see header-style function stub in a middle of c file. But
+> > maybe it's just me.
+>=20
+> I don't see a rule in ./Documentation/process/coding-style.rst
+> against this, and there're plenty of drivers doing so. If you
+> feel uncomfortable with this style, you may add a rule to that
+> doc so everyone will follow :)
+
+I also prefer braces on separate lines. Even better would be to just
+drop this entirely and make ->release_device() optional. At least the
+following drivers could be cleaned up that way:
+
+    * fsl-pamu
+    * msm-iommu
+    * sun50i-iommu
+    * tegra-gart
+    * tegra-smmu
+
+And it looks like mtk-iommu and mtk-iommu-v1 do only iommu_fwspec_free()
+in their ->release_device() implementations, but that's already done via
+iommu_release_device().
+
+Thierry
+
+--Y+xroYBkGM9OatJL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl9668UACgkQ3SOs138+
+s6E2dg//V+pp9h+NZZeSpxS6ef49t6f3JNwWjeDDqOJXRqCkou8l/ocyhlvDyypT
+rk9YAef+4foynhex5mIEEeQ7KOSgG0wCv1FuH5AlIN5uo/H4NO1pyB4c/P0pSEb+
+aj6MfC5oV+ZTNpTTYWGsVv9naSRu6l47V99kv9B8pguq7aU9286Ef/oDTtqgp3bz
+xJoEmgiUOtzxkQQZX+//+VFoWzcxbEsNe16zPKxYU+EWH6aqYCK6d5teTROfujjO
+JfbsWm8/3/i3gRvhSNDc7bdM2NAx8f66RA15z3PAKiKSSoKAaKedJZOxINYCO2rx
+s0u9wQqo36mTujtIIsoq8L3mjcysi+FsInikeX1+FDusQKGOAFQMUHS+odMpi8/4
+uUXeGsWNdDBP4e61fLfG53dc2rvqHSvkycwqtXMTpSQc3ToXXoY8y/b6yyCEh+Rm
+2mUSe/9KyKaGTm1mvMyL+zAvfYsMbFPD8W6q12e9lpPBzdOSuSufBtvgJZTw9UUi
+tqO38VLE6TxhC2Z0x4Eoi/yVPmfgDl4F+XkeA2c4IN872hPrhjSDI4uCL32Rj37d
+th/YMvGIIGQ3btUqonM3/ghgFXJGhvR31IudFTLoa4qIhhtqF8bSqD8ZUGJMW9zR
+QUfY8opIepx9pdQ3ZDzDNnTNZjRXS1LdKqjM8cKZsctUB83ENyw=
+=vOdp
+-----END PGP SIGNATURE-----
+
+--Y+xroYBkGM9OatJL--
+
+--===============6620063708743702642==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6620063708743702642==--
