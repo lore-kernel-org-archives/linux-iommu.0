@@ -7,94 +7,95 @@ X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B87C4363A
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:53:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305EEC4363A
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:58:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C18F207F7
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:53:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AF7C320776
+	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 09:58:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WCC2gEff"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C18F207F7
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gBUQ0LSt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF7C320776
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B56CB86FCC;
-	Mon,  5 Oct 2020 09:53:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8299D863CE;
+	Mon,  5 Oct 2020 09:58:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SRVef1dciTsE; Mon,  5 Oct 2020 09:58:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id E137B8622A;
+	Mon,  5 Oct 2020 09:58:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C82D0C07FF;
+	Mon,  5 Oct 2020 09:58:00 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D9ADC0051
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:58:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0C44F85CDB
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:58:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pqfdTpiPGIJe; Mon,  5 Oct 2020 09:53:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2E62486FA1;
-	Mon,  5 Oct 2020 09:53:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A7E5C07FF;
-	Mon,  5 Oct 2020 09:53:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12E3EC0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:53:57 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0020220430
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:53:56 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rdLI6hYetRnk for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 09:53:55 +0000 (UTC)
+ with ESMTP id tiHoeqzva6Rb for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Oct 2020 09:57:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by silver.osuosl.org (Postfix) with ESMTPS id 763FB20021
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:53:55 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id md26so10973859ejb.10
- for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 02:53:55 -0700 (PDT)
+Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com
+ [209.85.218.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3B13085C8F
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 09:57:59 +0000 (UTC)
+Received: by mail-ej1-f65.google.com with SMTP id md26so10989496ejb.10
+ for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 02:57:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to:user-agent;
- bh=tSNvIJ6n/8PydPpekJ3sBZyLSmyQXmedjUmwZXMurMo=;
- b=WCC2gEffyxEhzVrQNJMtnmNTSoUUlpfjFkvf9eRqLzEJ9LA0ehw10XSgqvJx76A3ip
- kUazxGYkWWM0N7bRnnWYWQlXKslfVFRf4wvmPEK2JSFJIEfYoHnv9wlqtT/5h8h1KDEj
- qkxF1atxUk2xVIUzKvp0v+ORc4LYFEihJ+chWpuQtb3nFFQYZ8Lv1REbPLvp8jPlSM/o
- JjTJyceLbPgYy3s3ae88L6ngca5cL88GCs6eBAVJ8+DatuXO6dQYoZkO8ksmKthOuA8k
- d+wBWlESELfkIhwLFeIJYwRskd3V37LRuVyNmc5+OwBWpFN3r+vcYjH2eiMyniU4/PuM
- hLcQ==
+ bh=g7GU/AkNe3daV6icPj0oXO9lJvefNEYI/yjHaeqAgzE=;
+ b=gBUQ0LSt7aRNbGRSly36vsk68h5MeQHGUEn5PNiLM2tUNHqmKSTnY8ucIH9CGASvH9
+ rOJPQrzqJqSjm3vjFOrbslhgFs5YeoVz1zreVI5Gn6XBXNMw/d84OAP+qdX8kL/5r86P
+ 7glbh+AwxUOSfftniDaU0W2qVJt5k9afxilwP9Vy1tLVYK/RQkv84fzXbQVBr5MHJcP1
+ dwD6ae8+OT4dchO1S0XKYhHRZLYJ9/gH4QQuuWa7PnLn9Xgc3BL298FJgx0vpPuMAIp6
+ vUWdisshy3dX91w/R534wVAH9qQmaRONx5nTE7PWr1p6CyyDHyGoPmcpaa+xkQj2n296
+ xiNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to:user-agent;
- bh=tSNvIJ6n/8PydPpekJ3sBZyLSmyQXmedjUmwZXMurMo=;
- b=KQiH3AL4YK8/YN544zaO/saIxu5K/Ec46FE8qw0WcTkEt1mv/tLUWi8Iv8+XqHF4yM
- 6UGAYtUFsk3nkW3YFK6tM8GzlNGwr6ICkuboZ5S+XJK+Rgv2uFOcKWCybLmGmOW5T8vS
- 1iTrdVfnozmSw+aWyhN2E5t9I3eYHbOCZ98GxIvaZNJ2PWLR+bGH6v1nR9vmdT1vAgxk
- n4aacl3i7HWWjtPjj4gb7fF7cOr7uZ7HAdTFMsiD3Rp1hyaLxEzvqfvJ/A4GZAC5gN0T
- bMd67KBLQHK2CXGMl5I9mrc7c1bvZApKkAUikfVWoHrdmdDlzm3nA/8GaWIQes2MeADW
- w+ew==
-X-Gm-Message-State: AOAM532T26nFMNXCV9bMschjQeQ13V4ataK5YrJnZmz95cHsRf/84w5u
- xshFHAfSv33FaFXrA1N0RTM=
-X-Google-Smtp-Source: ABdhPJxgzAOZ4Qeah+nCeFuiSWn88H4ILEdKN/5a6C7QNL1MKO0q6rEqKvyjihuNnGDqmUMjqS+F8g==
-X-Received: by 2002:a17:907:7215:: with SMTP id
- dr21mr14431042ejc.239.1601891633938; 
- Mon, 05 Oct 2020 02:53:53 -0700 (PDT)
+ bh=g7GU/AkNe3daV6icPj0oXO9lJvefNEYI/yjHaeqAgzE=;
+ b=j/LxrLGMnEUX61W8uMCzY2iaHwdvXxsSdev/hcwEjhKLw9qAzvB5KLkKrwkvu6a1il
+ MueBNJnS9xPYq+hvGSGqlRrGABHCEUe2j3TyMXEAlmubJSSB8k+S8KRzgHHh+iXhQSrd
+ EaAkHshx9wMHLMNfVVBEV+JJ1wsvDFWG+sdtQq0Zw84sU8wjaRvypKSFnNBpTMgaKCF7
+ XBY99S9YUM+Sw6pV3CJfd9jr28RjWuUR693/NIuk+nXDMo3QYcKop6FFdYZ6/KgBcQKC
+ Gj2pVvAuwN+EMVanJeOnJJagiOOJCd9ASRrDLX9ZifnlgJ8KmefY+I9VJ9dAUMkqpinH
+ cxpg==
+X-Gm-Message-State: AOAM5320t/El6p9RB6/CwWkbsmKVKBwUF0j7k2+5Gub+cY61I+PTeElF
+ dOZza8DjVzm1xTyH20J3144=
+X-Google-Smtp-Source: ABdhPJwE+3FLZlVeIjhlYl7qJ/LCobtIjgHrzHX4wuV+T11HeCElPqVpYQH4SuMwe2PbUJy/LNTACw==
+X-Received: by 2002:a17:906:8399:: with SMTP id
+ p25mr14654502ejx.243.1601891877401; 
+ Mon, 05 Oct 2020 02:57:57 -0700 (PDT)
 Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id x2sm8286307edr.65.2020.10.05.02.53.52
+ by smtp.gmail.com with ESMTPSA id q10sm5385858ejb.117.2020.10.05.02.57.55
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 05 Oct 2020 02:53:52 -0700 (PDT)
-Date: Mon, 5 Oct 2020 11:53:51 +0200
+ Mon, 05 Oct 2020 02:57:56 -0700 (PDT)
+Date: Mon, 5 Oct 2020 11:57:54 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
+To: Nicolin Chen <nicoleotsuka@gmail.com>
 Subject: Re: [PATCH v4 2/3] iommu/tegra-smmu: Rework tegra_smmu_probe_device()
-Message-ID: <20201005095351.GI425362@ulmo>
+Message-ID: <20201005095754.GJ425362@ulmo>
 References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
  <20201002060807.32138-3-nicoleotsuka@gmail.com>
- <b1a195cf-0127-0531-f6d1-835367511f57@gmail.com>
- <0c66bab9-0132-d3fb-ea4e-de1278cf2b04@gmail.com>
+ <5542b314-f414-1e83-8cf6-2bf22a41ae9c@gmail.com>
+ <20201002185828.GC29706@Asurada-Nvidia>
 MIME-Version: 1.0
-In-Reply-To: <0c66bab9-0132-d3fb-ea4e-de1278cf2b04@gmail.com>
+In-Reply-To: <20201002185828.GC29706@Asurada-Nvidia>
 User-Agent: Mutt/1.14.7 (2020-08-29)
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org
+ jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+ Dmitry Osipenko <digetx@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,72 +108,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5395928575945298107=="
+Content-Type: multipart/mixed; boundary="===============5402873361227007193=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============5395928575945298107==
+--===============5402873361227007193==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="FUFe+yI/t+r3nyH4"
+	protocol="application/pgp-signature"; boundary="fKov5AqTsvseSZ0Z"
 Content-Disposition: inline
 
 
---FUFe+yI/t+r3nyH4
+--fKov5AqTsvseSZ0Z
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 02, 2020 at 05:50:08PM +0300, Dmitry Osipenko wrote:
-> 02.10.2020 17:22, Dmitry Osipenko =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> >>  static int tegra_smmu_of_xlate(struct device *dev,
-> >>  			       struct of_phandle_args *args)
-> >>  {
-> >> +	struct platform_device *iommu_pdev =3D of_find_device_by_node(args->=
-np);
-> >> +	struct tegra_mc *mc =3D platform_get_drvdata(iommu_pdev);
-> >>  	u32 id =3D args->args[0];
-> >> =20
-> >> +	of_node_put(args->np);
-> >> +
-> >> +	if (!mc || !mc->smmu)
-> >> +		return -EPROBE_DEFER;
-> > platform_get_drvdata(NULL) will crash.
+On Fri, Oct 02, 2020 at 11:58:29AM -0700, Nicolin Chen wrote:
+> On Fri, Oct 02, 2020 at 06:02:18PM +0300, Dmitry Osipenko wrote:
+> > 02.10.2020 09:08, Nicolin Chen =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > >  static int tegra_smmu_of_xlate(struct device *dev,
+> > >  			       struct of_phandle_args *args)
+> > >  {
+> > > +	struct platform_device *iommu_pdev =3D of_find_device_by_node(args-=
+>np);
+> > > +	struct tegra_mc *mc =3D platform_get_drvdata(iommu_pdev);
+> > >  	u32 id =3D args->args[0];
+> > > =20
+> > > +	of_node_put(args->np);
 > >=20
+> > of_find_device_by_node() takes device reference and not the np
+> > reference. This is a bug, please remove of_node_put().
 >=20
-> Actually, platform_get_drvdata(NULL) can't happen. I overlooked this.
+> Looks like so. Replacing it with put_device(&iommu_pdev->dev);
 
-How so? It's technically possible for the iommus property to reference a
-device tree node for which no platform device will ever be created, in
-which case of_find_device_by_node() will return NULL. That's very
-unlikely and perhaps worth just crashing on to make sure it gets fixed
-immediately.
+Putting the put_device() here is wrong, though. You need to make sure
+you keep a reference to it as long as you keep accessing the data that
+is owned by it.
+
+Like I said earlier, this is a bit weird in this case because we're
+self-referencing, so iommu_pdev->dev is going to stay around as long as
+the SMMU is. However, it might be worth to properly track the lifetime
+anyway just so that the code can serve as a good example of how to do
+things.
+
+If you decide to go for the shortcut and not track this reference
+properly, then at least you need to add a comment as to why it is safe
+to do in this case. This ensures that readers are away of the
+circumstances and don't copy this bad code into a context where the
+circumstances are different.
 
 Thierry
 
---FUFe+yI/t+r3nyH4
+--fKov5AqTsvseSZ0Z
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl967S8ACgkQ3SOs138+
-s6G50A/8CC2aziQWFWKu9/zGjy1UbL+zP8uXbPn3wZVQnWQ8kjRE5ip/HSI1QS+i
-sgafB0As25F0ajenDbidZFp0nJiZvFRlD3VQT6bj+5XwoxI7vA0Uzu5UiXLmxCXU
-CYA2NJZ/g6uCJ3ptk52YbG2gt1J49/GhgFuCPCaBxV2c8gIwo0eVs4daocjvK1mQ
-XqL7Nci3UcsY1oDgNnzzQAyUQ4ZEpEHdFzLUd9CSNZBxGDXA26d3J+RgJGXlnXbv
-eus6PtalK5okgodgvY60KLzyci/3Ph3k1aHJFNou0lmNxyJYW0PXTOVk5fn/wxY4
-E8rcGiUyNSmYxcZ9KVYr/EXhYW+ECM9drCGL1pM6InKeDtxa67vhOeW4RdbiGdzt
-/RjoUqPTUB4JYihBxpvkhUtYVZe4vtM+E3clPdKAqVig6pfZk5nacAPXj7KeJmNz
-2QNydAPLaBNiOclO7x1hneV9xHf0UBmp/Gp1P1OmaRe/eJ9bk8uymQVyG4QiX4MS
-dGPNMhW0lYgwy+a0K9omgh5RIInTaJpjIC5A9Z5N1um3sByGsk5HavPQHlZSqNjN
-CytLUR5MaSs0Zsfn/1OxszZtr1J/Kor3CC8Qxlv0pxQN1xSidAT7sWwL5ObEgHKt
-FoXOhaIeBvMp1DxmN6BHUDxA/p+Luf1GxGgZjsWIp4WUzw6XNNc=
-=0Ryz
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl967iIACgkQ3SOs138+
+s6FMlQ/+PI2U3e9+14M09UT7Av+BBmD/Af5CKPGXxy5A3EG9pX97uPO6q6kt30/1
+5VnVWJnXCZESSl2ZFNwXcTOrSZ6Pre5QUH8LTM7TG+QcJH3bSn1wk7jZj6snYOto
+z9scPx+zNCqw1lyMbiEd+GkI5DVrrGM6qFH2wESur0ZNn4VUO//DWhOUH62uM1tc
+SuByO6o1fcf66jjb6AHwd79BaIXn6E7rKEdQpRFdTmFhZVxCae2fVeETtQ7IPhBL
+t4K5SBNjdv/2bD1GEKvOgt2ZufQGqkmB52cCW4FFvv+sSzi3nlv3c1W8hMWGgptA
+l/wCei1ZGNU0bwM/Vk+f+/LYjveIarkYsVmZOoamvcliCtnpmpkhznqJy2MJf5GV
+jqYQqzG8WyU0JW3vO6jqTz421YmNqajs82APyv7wHn5/Vq4oicDEh67RQvSqxzV5
+t1gnQaS19CsoB8TLDJE8VYUGnnZ5mxcNwE+P4dy65O21KmyzjJSkwmzSSfaGklG9
+6xLedqfYr2c1YkEiPjYrwpDuLa5ID7A9ohk8x4dkd2OCz/80f4QBnJNt7uv5la1N
+U91E6tJ2cLMkQdxP3RQatyYRlkZk/IQTwtQ9LwuQkAmB/PGb9HcfhGc7cPz2UPZA
+QQ8+ZwFqEJrHlmVudKnjX1HU+FRSvzu3ComceNZjbqXaEd+F9NU=
+=jGLH
 -----END PGP SIGNATURE-----
 
---FUFe+yI/t+r3nyH4--
+--fKov5AqTsvseSZ0Z--
 
---===============5395928575945298107==
+--===============5402873361227007193==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -182,4 +192,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5395928575945298107==--
+--===============5402873361227007193==--
