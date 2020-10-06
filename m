@@ -1,64 +1,100 @@
-Return-Path: <SRS0=BXsX=DM=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=boqS=DN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3414DC4363A
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 17:05:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70855C4363A
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 01:00:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 63C3F20796
-	for <iommu@archiver.kernel.org>; Mon,  5 Oct 2020 17:05:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63C3F20796
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id F352E2076B
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 01:00:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tT2/p9kk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F352E2076B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C7A62204F1;
-	Mon,  5 Oct 2020 17:05:53 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A290686FE1;
+	Tue,  6 Oct 2020 01:00:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rj2jj-7hpRT6; Mon,  5 Oct 2020 17:05:52 +0000 (UTC)
+	with ESMTP id YMtcvrr1PRMK; Tue,  6 Oct 2020 01:00:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E19842047C;
-	Mon,  5 Oct 2020 17:05:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 310C286FD9;
+	Tue,  6 Oct 2020 01:00:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEED2C016F;
-	Mon,  5 Oct 2020 17:05:52 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 728E6C0051
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 17:05:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1723CC07FF;
+	Tue,  6 Oct 2020 01:00:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6E105C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 01:00:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 63947204C6
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 17:05:51 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 51642857A3
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 01:00:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7QhkR88xOxSJ for <iommu@lists.linux-foundation.org>;
- Mon,  5 Oct 2020 17:05:50 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 0B7122047C
- for <iommu@lists.linux-foundation.org>; Mon,  5 Oct 2020 17:05:50 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 64AA267373; Mon,  5 Oct 2020 19:05:46 +0200 (CEST)
-Date: Mon, 5 Oct 2020 19:05:46 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: Re: clean up the DMA mapping headers
-Message-ID: <20201005170546.GA18543@lst.de>
-References: <20200930085548.920261-1-hch@lst.de>
+ with ESMTP id wulbkzflXM4S for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Oct 2020 01:00:49 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
+ [209.85.214.196])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 18B408577F
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 01:00:49 +0000 (UTC)
+Received: by mail-pl1-f196.google.com with SMTP id o9so378900plx.10
+ for <iommu@lists.linux-foundation.org>; Mon, 05 Oct 2020 18:00:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=ULovZDh4nNXnrhAmYDekggZ1SAII9f678l5WRSniMjQ=;
+ b=tT2/p9kkQck2bPx0f4E5gQd74HIXbZmZcy2pFDMGyPLhRXmy2wbiGliiPX7/s0eYIX
+ Cu1p6oHsFYVAsEWt8c6zCG9P8iWrZHL4zue7+eSo67dvcqYXtOu1sLmdH8TypU9rx7zR
+ 1WTDLkQA2Zgqgy2XeqxsLBamJzJ9OXA/f7qvB4ptUL8EBzA8oY47z2gYY6D9X0mLv0ln
+ /keIq/rxiTYe5wdCkRor4AHg9wyoHuznv7VHMCMt2LUvnN69qhUn40TNg/M9sy4nAKXH
+ QxfnNeyEjWXT1nY9SGDDYAR9fiuokOgj6W3ypq+yX/ZRHgaSs6FeXhANWU0rNEuZCZTL
+ pN3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=ULovZDh4nNXnrhAmYDekggZ1SAII9f678l5WRSniMjQ=;
+ b=PDEOFousV1g87AF5aPEpkQ3YCJiIEOTmBpvwyGHnT50YrmAczGLQbcmh4JLrBZe6V/
+ M+8hYlCF8ELH78vfVRI4Zd77Ga0ruzPMVSpc6vk6U9TNCcXqnZmGmZhTL5h5R+dy9ar/
+ NsidQwnN1Yhk8gZMsVCEnSEpYBL/hk0MdIrp1zI7ynYLtBJsWgvZ9d/kh4gcryWPZptU
+ UhB73s7qF3AKXkdCVtEfus42JGzt5lKDymqSHSpPkn3wIgkLeM6b5k2GLBNj7ReCpqQ+
+ hFHe8DqdSZ6wb0VYnU1fkMGkCJMV7r8tc5210O2MaXXniVNWPpW3ENuodMwPl7Znpg7g
+ EFbA==
+X-Gm-Message-State: AOAM530/JHPnN9gYghdYjAEjN9OQFYfXqYdPIkeG+tvGtHmsvv8UuoUI
+ S3Nhx8zoTrOsSNsHEsF56NQ=
+X-Google-Smtp-Source: ABdhPJzIKzYvGywr9Xvoc+MvkW9hchVKOfUbteeoYw0WFYR6RIRBJDmZRDRkTuoxEOWd9qbYFOe+yQ==
+X-Received: by 2002:a17:902:eeca:b029:d3:d8dd:3e4b with SMTP id
+ h10-20020a170902eecab02900d3d8dd3e4bmr1030261plb.68.1601946048616; 
+ Mon, 05 Oct 2020 18:00:48 -0700 (PDT)
+Received: from Asurada-Nvidia (thunderhill.nvidia.com. [216.228.112.22])
+ by smtp.gmail.com with ESMTPSA id cs21sm3278844pjb.0.2020.10.05.18.00.48
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Mon, 05 Oct 2020 18:00:48 -0700 (PDT)
+Date: Mon, 5 Oct 2020 17:54:14 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v4 3/3] iommu/tegra-smmu: Add PCI support
+Message-ID: <20201006005414.GA28640@Asurada-Nvidia>
+References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
+ <20201002060807.32138-4-nicoleotsuka@gmail.com>
+ <20201005100419.GK425362@ulmo>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200930085548.920261-1-hch@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-arch@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
- Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20201005100419.GK425362@ulmo>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ jonathanh@nvidia.com, linux-tegra@vger.kernel.org, digetx@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,7 +112,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-I've pulled this into the dma-mapping for-next tree now.
+On Mon, Oct 05, 2020 at 12:04:19PM +0200, Thierry Reding wrote:
+> > +err_bus_set: __maybe_unused;
+> > +	bus_set_iommu(&platform_bus_type, NULL);
+> > +err_unregister:
+> > +	iommu_device_unregister(&smmu->iommu);
+> > +err_sysfs:
+> > +	iommu_device_sysfs_remove(&smmu->iommu);
+> 
+> Can you please switch to label names that are more consistent with the
+> others in this driver? Notably the ones in tegra_smmu_domain_alloc().
+> The idea is to describe in the name of the label what's happening at the
+> label. Something like this, for example:
+> 
+> unset_platform_bus:
+> 	bus_set_iommu(&platform_bus_type, NULL);
+> unregister:
+> 	iommu_device_unregister(&smmu->iommu);
+> remove_sysfs:
+> 	iommu_device_sysfs_remove(&smmu->iommu);
+
+Okay. Will update in v7.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
