@@ -6,76 +6,75 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4041FC4363D
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 21:26:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51014C4363D
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 21:32:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F89C20897
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 21:26:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C731B206BE
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 21:32:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cFZqIT7f";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="icOFZZbq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F89C20897
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="P2+AYqpz";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cZMJwnHd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C731B206BE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1295185E09;
-	Tue,  6 Oct 2020 21:26:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 529FF867E8;
+	Tue,  6 Oct 2020 21:32:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uSShsXPruLZj; Tue,  6 Oct 2020 21:26:28 +0000 (UTC)
+	with ESMTP id 3cLe-m4-81oW; Tue,  6 Oct 2020 21:32:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8721985DC0;
-	Tue,  6 Oct 2020 21:26:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 58D3E867E0;
+	Tue,  6 Oct 2020 21:32:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DF81C016F;
-	Tue,  6 Oct 2020 21:26:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D29BC016F;
+	Tue,  6 Oct 2020 21:32:10 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8772C0051
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:26:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C594C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:32:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 864612153E
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:26:27 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0A10A2155D
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:32:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ucY1LDmNPh1h for <iommu@lists.linux-foundation.org>;
- Tue,  6 Oct 2020 21:26:24 +0000 (UTC)
+ with ESMTP id 8y5mJQAxTV-s for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Oct 2020 21:32:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id 68842207A1
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:26:24 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 416682153E
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 21:32:07 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1602019582;
+ s=2020; t=1602019925;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=9tgJmD3H+kQvwmmqg/DvlciSq+QY0pyLjKsrBXUuu/A=;
- b=cFZqIT7fnWiav7/ztiQ2eAZrNezy6ROUKWOKBglQIHXDFoiq3KUUqCJCc5Wp39X9/Eg/h+
- 6DlYgVyjN9FUH/Z/swKRJ1r9WHK9/Wat8PDyz7jVThsRanPge08+fbZnY5oRymbD0eP6LT
- GsTabN4RzNPO0qgLhRxj8CmGRqE9UfFtO/PefUZd0Zis2ykaWtmw7jeg/rJEisMmQ726XB
- wHaOtOeTMSTZZD/TiVsJZGOGS8qcn/VaFUWw7A1ns2jX5CHxYeLPonhKtSMFIbgTUSP4fZ
- FTk2JISn0dEb5Ni3gQJz9230XCZuzW8A21AOyPT5rCiS+K4ngwGaMp28rWdfCg==
+ bh=RAllStXUlg+AiDlHucG15WJGldjEYpu7ef3AjJW7I7g=;
+ b=P2+AYqpzchLK62fKUQ80gjgTsbtfUS4zuhN8OtrqKS5LsYSssUAEmPRzflu1xgrPE0dMdJ
+ ZV/aISe4wuEFK1dQiRQEq7SFXLY6uiBTBV7y48PFmmIPclv/Y/wghICFjVAJ10uwyZHUWM
+ HwYQkGvdQioNgj6GeOvK0zp2lqtL/e/cTxOqZZKCi94GRGwItmCcau6a4mmrLNBvgW2Sp9
+ kN8mcDb7FUw/cHr0jswrovOlND7c2oyxePD6DklpaY43FYWTqbMl05tAs5+AtTcf+mTtGH
+ lJSvJB4TP2xiIGL+U7pmP5Y+e6KxAAILWh/wZiHSm3vGZK42NJBfKtw2uk48HQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1602019582;
+ s=2020e; t=1602019925;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=9tgJmD3H+kQvwmmqg/DvlciSq+QY0pyLjKsrBXUuu/A=;
- b=icOFZZbqoBxXqalrREJjpN5TJ4yXrK7d43bToBL6O7AO9brurovFGjOxPaxYzqSMXBxJMR
- QbIvBKtz5ojRUsBQ==
+ bh=RAllStXUlg+AiDlHucG15WJGldjEYpu7ef3AjJW7I7g=;
+ b=cZMJwnHd6tWgvwvZzxj4qBKC3MBLENnkZFUQuzgd9e7eFik0v56WN+Pdg8+u/ua4Q4EE2N
+ Ewghf2L76ZjpveBQ==
 To: David Woodhouse <dwmw2@infradead.org>, x86@kernel.org
-Subject: Re: [PATCH 07/13] irqdomain: Add max_affinity argument to
- irq_domain_alloc_descs()
-In-Reply-To: <20201005152856.974112-7-dwmw2@infradead.org>
+Subject: Re: [PATCH 08/13] genirq: Add irq_domain_set_affinity()
+In-Reply-To: <20201005152856.974112-8-dwmw2@infradead.org>
 References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
  <20201005152856.974112-1-dwmw2@infradead.org>
- <20201005152856.974112-7-dwmw2@infradead.org>
-Date: Tue, 06 Oct 2020 23:26:22 +0200
-Message-ID: <87lfgj59mp.fsf@nanos.tec.linutronix.de>
+ <20201005152856.974112-8-dwmw2@infradead.org>
+Date: Tue, 06 Oct 2020 23:32:05 +0200
+Message-ID: <87imbn59d6.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Cc: Paolo Bonzini <pbonzini@redhat.com>,
  iommu <iommu@lists.linux-foundation.org>, linux-hyperv@vger.kernel.org,
@@ -98,66 +97,32 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Mon, Oct 05 2020 at 16:28, David Woodhouse wrote:
-> From: David Woodhouse <dwmw@amazon.co.uk>
->
-> This is the maximum possible set of CPUs which can be used. Use it
-> to calculate the default affinity requested from __irq_alloc_descs()
-> by first attempting to find the intersection with irq_default_affinity,
-> or falling back to using just the max_affinity if the intersection
-> would be empty.
+> +/**
+> + * irq_domain_set_affinity - Set maximum CPU affinity for domain
+> + * @parent:	Domain to set affinity for
+> + * @affinity:	Pointer to cpumask, consumed by domain
+> + *
+> + * Sets the maximal set of CPUs to which interrupts in this domain may
+> + * be delivered. Must only be called after creation, before any interrupts
+> + * have been in the domain.
+> + *
+> + * This function retains a pointer to the cpumask which is passed in.
+> + */
+> +int irq_domain_set_affinity(struct irq_domain *domain,
+> +			    const struct cpumask *affinity)
+> +{
+> +	if (cpumask_empty(affinity))
+> +		return -EINVAL;
+> +	domain->max_affinity = affinity;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(irq_domain_set_affinity);
 
-And why do we need that as yet another argument?
+What the heck? Why does this need a setter function which is exported?
+So that random driver writers can fiddle with it?
 
-This is an optional property of the irq domain, really and no caller has
-any business with that. 
-
->  int irq_domain_alloc_descs(int virq, unsigned int cnt, irq_hw_number_t hwirq,
-> -			   int node, const struct irq_affinity_desc *affinity)
-> +			   int node, const struct irq_affinity_desc *affinity,
-> +			   const struct cpumask *max_affinity)
->  {
-> +	cpumask_var_t default_affinity;
->  	unsigned int hint;
-> +	int i;
-> +
-> +	/* Check requested per-IRQ affinities are in the possible range */
-> +	if (affinity && max_affinity) {
-> +		for (i = 0; i < cnt; i++)
-> +			if (!cpumask_subset(&affinity[i].mask, max_affinity))
-> +				return -EINVAL;
-
-https://lore.kernel.org/r/alpine.DEB.2.20.1701171956290.3645@nanos
-
-What is preventing the affinity spreading code from spreading the masks
-out to unusable CPUs? The changelog is silent about that part.
-
-> +	/*
-> +	 * Generate default affinity. Either the possible subset of
-> +	 * irq_default_affinity if such a subset is non-empty, or fall
-> +	 * back to the provided max_affinity if there is no intersection.
-..
-> +	 * And just a copy of irq_default_affinity in the
-> +	 * !CONFIG_CPUMASK_OFFSTACK case.
-
-We know that already...
-
-> +	 */
-> +	memset(&default_affinity, 0, sizeof(default_affinity));
-
-Right, memset() before allocating is useful.
-
-> +	if ((max_affinity &&
-> +	     !cpumask_subset(irq_default_affinity, max_affinity))) {
-> +		if (!alloc_cpumask_var(&default_affinity, GFP_KERNEL))
-> +			return -ENOMEM;
-> +		cpumask_and(default_affinity, max_affinity,
-> +			    irq_default_affinity);
-> +		if (cpumask_empty(default_affinity))
-> +			cpumask_copy(default_affinity, max_affinity);
-> +	} else if (cpumask_available(default_affinity))
-> +		cpumask_copy(default_affinity, irq_default_affinity);
-
-That's garbage and unreadable.
+The affinity mask restriction of an irq domain is already known when the
+domain is created.
 
 Thanks,
 
