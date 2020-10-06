@@ -2,64 +2,111 @@ Return-Path: <SRS0=boqS=DN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EE2C41604
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 08:27:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90F6C41604
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 14:29:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A2892078E
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 08:27:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A2892078E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 3CA99204EF
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 14:29:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=marek-ca.20150623.gappssmtp.com header.i=@marek-ca.20150623.gappssmtp.com header.b="BFD//pwA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CA99204EF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=marek.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A12A8854A7;
-	Tue,  6 Oct 2020 08:27:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8F95B8503D;
+	Tue,  6 Oct 2020 14:29:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hIysde8XTWh9; Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id D9AC684F6F;
+	Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD20AC07FF;
+	Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87405C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 680E78484B
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UPRh80abMXon; Tue,  6 Oct 2020 08:27:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8268C8531B;
-	Tue,  6 Oct 2020 08:27:04 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 674D2C016F;
-	Tue,  6 Oct 2020 08:27:04 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66A66C0051
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 08:27:02 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5ADCE86BC1
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 08:27:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b0tFJKAM6GPT for <iommu@lists.linux-foundation.org>;
- Tue,  6 Oct 2020 08:27:00 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6C2F7854D0
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 08:27:00 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id B855868AFE; Tue,  6 Oct 2020 10:26:56 +0200 (CEST)
-Date: Tue, 6 Oct 2020 10:26:56 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Stefano Stabellini <stefano.stabellini@xilinx.com>
-Subject: Re: xen-swiotlb vs phys_to_dma
-Message-ID: <20201006082656.GB10243@lst.de>
-References: <20201002123436.GA30329@lst.de>
- <alpine.DEB.2.21.2010021313010.10908@sstabellini-ThinkPad-T480s>
+ with ESMTP id 2jHnwtgqTLjP for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Oct 2020 14:28:58 +0000 (UTC)
+X-Greylist: delayed 01:01:05 by SQLgrey-1.7.6
+Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
+ [209.85.166.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3D4AE8362D
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:58 +0000 (UTC)
+Received: by mail-io1-f66.google.com with SMTP id y13so13222135iow.4
+ for <iommu@lists.linux-foundation.org>; Tue, 06 Oct 2020 07:28:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marek-ca.20150623.gappssmtp.com; s=20150623;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=YRYuE1oST5rCsSRo3ftJBgKrW6I4XszeRlUEeyGTNfA=;
+ b=BFD//pwAX/64KPt0LEII7XnZhATo+5u4Ci1QUGZnXAvcyoZpf216nBIukB8S0lNR+o
+ /SBnsKFNycdO4FaqhrrvOl8q9yUCUD0kMtxCFrm+T3BuOtGJqNoq/vuatu/yUwFaui3W
+ wG/q9rVWqGvQF3DH1sF8weJvvvE2/FsOJioQK368BV9SL2poAmn8GeN+if4sevucB6tf
+ 8BV+2/e4V/R+9zg6ETBTYxp+Q6woapII4/lMg/2r2Ql9+NA7asVIWxgARtsMmyYoMq2K
+ YKB5J7l4MgFdsyryEbJBhC2DmC2IwuvI3od1/Cu2zgJfsaaVHr58x1zSeFV0fZQiWrdf
+ Hg/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=YRYuE1oST5rCsSRo3ftJBgKrW6I4XszeRlUEeyGTNfA=;
+ b=qvihPruxR8w+AAawPpPsLGcvqOnMBe6jyNg+G29wZr3g074ynekcdN0JYTRLjEZLvm
+ wKZoAc8UesihK7UzzeuXBiOHNWxWVjqwlQycAw9VL5lDdd7gmxz6Cza1BTdNNt9cgYcG
+ o/XizCWAONSi/2DZ1BTKY5NyJPRzRM/+2geOw1GHGcHSbpnzvF9a/+vtCo5tKwAWZznZ
+ Ghrllse4nt2iVFys/ql6qu5bglarvdtRakg4IUe0iT+C+Z0tcwwi0AdSnuR1UArzzi68
+ iYhAXPndDHAdtOeKVDrTkxFYoZNSmh781fzPVG4DbVpkHVFwCgxaYv68YfH2L8a+r+MH
+ yOMA==
+X-Gm-Message-State: AOAM531ua6d+kN62uRLRpl9WGesDkM4nN2RmL4y6/LPO6+1wGwmuSp1q
+ U5ExZO5tp9CSg5hnXZ9dWblg+sNb46tN7v96
+X-Google-Smtp-Source: ABdhPJw4Z7YWS8t/L1IK8utu6wKe+vRmf2v1MdzI4qau8wJptX2TFHJ6aQoGZURrxgM6eCoWFpwqPw==
+X-Received: by 2002:a05:620a:1287:: with SMTP id
+ w7mr2490783qki.335.1601990468080; 
+ Tue, 06 Oct 2020 06:21:08 -0700 (PDT)
+Received: from [192.168.0.189] ([147.253.86.153])
+ by smtp.gmail.com with ESMTPSA id 192sm2477887qkm.110.2020.10.06.06.21.06
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 06 Oct 2020 06:21:07 -0700 (PDT)
+Subject: Re: [PATCH 2/3] drm/msm: add DRM_MSM_GEM_SYNC_CACHE for non-coherent
+ cache maintenance
+To: Christoph Hellwig <hch@infradead.org>
+References: <20201001002709.21361-1-jonathan@marek.ca>
+ <20201001002709.21361-3-jonathan@marek.ca>
+ <20201002075321.GA7547@infradead.org>
+ <b22fb797-67b0-a912-1d23-2b47c9a9e674@marek.ca>
+ <20201005082914.GA31702@infradead.org>
+ <3e0b91be-e4a4-4ea5-7d58-6e71b8d51932@marek.ca>
+ <20201006072306.GA12834@infradead.org>
+From: Jonathan Marek <jonathan@marek.ca>
+Message-ID: <148a1660-f0fc-7163-2240-6b94725342b5@marek.ca>
+Date: Tue, 6 Oct 2020 09:19:32 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2010021313010.10908@sstabellini-ThinkPad-T480s>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@lst.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+In-Reply-To: <20201006072306.GA12834@infradead.org>
+Content-Language: en-US
+Cc: David Airlie <airlied@linux.ie>, freedreno@lists.freedesktop.org,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:DRM DRIVER FOR MSM ADRENO GPU" <dri-devel@lists.freedesktop.org>,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ "open list:DRM DRIVER FOR MSM ADRENO GPU" <linux-arm-msm@vger.kernel.org>,
+ Sean Paul <sean@poorly.run>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,177 +119,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Oct 02, 2020 at 01:21:25PM -0700, Stefano Stabellini wrote:
-> On Fri, 2 Oct 2020, Christoph Hellwig wrote:
-> > Hi Stefano,
-> > 
-> > I've looked over xen-swiotlb in linux-next, that is with your recent
-> > changes to take dma offsets into account.  One thing that puzzles me
-> > is that xen_swiotlb_map_page passes virt_to_phys(xen_io_tlb_start) as
-> > the tbl_dma_addr argument to swiotlb_tbl_map_single, despite the fact
-> > that the argument is a dma_addr_t and both other callers translate
-> > from a physical to the dma address.  Was this an oversight?
+On 10/6/20 3:23 AM, Christoph Hellwig wrote:
+> On Mon, Oct 05, 2020 at 10:35:43AM -0400, Jonathan Marek wrote:
+>> The cache synchronization doesn't have anything to do with IOMMU (for
+>> example: cache synchronization would be useful in cases where drm/msm
+>> doesn't use IOMMU).
 > 
-> Hi Christoph,
+> It has to do with doing DMA.  And we have two frameworks for doing DMA:
+> either the DMA API which is for general driver use, and which as part of
+> the design includes cache maintainance hidden behind the concept of
+> ownership transfers.  And we have the much more bare bones IOMMU API.
 > 
-> It was not an oversight, it was done on purpose, although maybe I could
-> have been wrong. There was a brief discussion on this topic here: 
+> If people want to use the "raw" IOMMU API with not cache coherent
+> devices we'll need a cache maintainance API that goes along with it.
+> It could either be formally part of the IOMMU API or be separate.
 > 
-> https://marc.info/?l=linux-kernel&m=159011972107683&w=2
-> https://marc.info/?l=linux-kernel&m=159018047129198&w=2
+>> What is needed is to call arch_sync_dma_for_{cpu,device} (which is what I
+>> went with initially, but then decided to re-use drm/msm's
+>> sync_for_{cpu,device}). But you are also saying those functions aren't for
+>> driver use, and I doubt IOMMU maintainers will want to add wrappers for
+>> these functions just to satisfy this "not for driver use" requirement.
 > 
-> I'll repeat and summarize here for convenience. 
+> arch_sync_dma_for_{cpu,device} are low-level helpers (and not very
+> great ones at that).  The definitively should not be used by drivers.
+> They would be very useful buildblocks for a IOMMU cache maintainance
+> API.
 > 
-> swiotlb_init_with_tbl is called by xen_swiotlb_init, passing a virtual
-> address (xen_io_tlb_start), which gets converted to phys and stored in
-> io_tlb_start as a physical address at the beginning of swiotlb_init_with_tbl.
+> Of course the best outcome would be if we could find a way for the MSM
+> drm driver to just use DMA API and not deal with the lower level
+> abstractions.  Do you remember why the driver went for use of the IOMMU
+> API?
+> 
 
-Yes.
+One example why drm/msm can't use DMA API is multiple page table support 
+(that is landing in 5.10), which is something that definitely couldn't 
+work with DMA API.
 
-> Afterwards, xen_swiotlb_map_page calls swiotlb_tbl_map_single. The
-> second parameter, dma_addr_t tbl_dma_addr, is used to calculate the
-> right slot in the swiotlb buffer to use, comparing it against
-> io_tlb_start.
+Another one is being able to choose the address for mappings, which 
+AFAIK DMA API can't do (somewhat related to this: qcom hardware often 
+has ranges of allowed addresses, which the dma_mask mechanism fails to 
+represent, what I see is drivers using dma_mask as a "maximum address", 
+and since addresses are allocated from the top it generally works)
 
-It is not compared against io_tlb_start.  It is just used to pick
-a slot that fits the dma_get_seg_boundary limitation in a somewhat
-awkward way.
+But let us imagine drm/msm switches to using DMA API. a2xx GPUs have 
+their own very basic MMU (implemented by msm_gpummu.c), that will need 
+to implement dma_map_ops, which will have to call 
+arch_sync_dma_for_{cpu,device}. So drm/msm still needs to call 
+arch_sync_dma_for_{cpu,device} in that scenario.
 
-> Thus, I think it makes sense for xen_swiotlb_map_page to call
-> swiotlb_tbl_map_single passing an address meant to be compared with
-> io_tlb_start, which is __pa(xen_io_tlb_start), so
-> virt_to_phys(xen_io_tlb_start) seems to be what we want.
 
-No, it doesn't.  tlb_addr is used to ensure the picked slots satisfies
-the segment boundary, and for that you need a dma_addr_t.
 
-The index variable in swiotlb_tbl_map_single is derived from
-io_tlb_index, not io_tlb_start.
 
-> However, you are right that it is strange that tbl_dma_addr is a
-> dma_addr_t, and maybe it shouldn't be? Maybe the tbl_dma_addr parameter
-> to swiotlb_tbl_map_single should be a phys address instead?
-> Or it could be swiotlb_init_with_tbl to be wrong and it should take a
-> dma address to initialize the swiotlb buffer.
 
-No, it must be a dma_addr_t so that the dma_get_seg_boundary check works.
 
-I think we need something like this (against linux-next):
-
----
-From 07b39a62b235ed2d4b2215700d99968998fbf6c0 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Tue, 6 Oct 2020 10:22:19 +0200
-Subject: swiotlb: remove the tlb_addr argument to swiotlb_tbl_map_single
-
-The tlb_addr always must be the dma view of io_tlb_start so that the
-segment boundary checks work.  Remove the argument and do the right
-thing inside swiotlb_tbl_map_single.  This fixes the swiotlb-xen case
-that failed to take DMA offset into account.  The issue probably did
-not show up very much in practice as the typical dma offsets are
-large enough to not affect the segment boundaries for most devices.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/iommu/intel/iommu.c |  5 ++---
- drivers/xen/swiotlb-xen.c   |  3 +--
- include/linux/swiotlb.h     | 10 +++-------
- kernel/dma/swiotlb.c        | 16 ++++++----------
- 4 files changed, 12 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5ee0b7921b0b37..d473811fcfacd5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3815,9 +3815,8 @@ bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
- 	 * page aligned, we don't need to use a bounce page.
- 	 */
- 	if (!IS_ALIGNED(paddr | size, VTD_PAGE_SIZE)) {
--		tlb_addr = swiotlb_tbl_map_single(dev,
--				phys_to_dma_unencrypted(dev, io_tlb_start),
--				paddr, size, aligned_size, dir, attrs);
-+		tlb_addr = swiotlb_tbl_map_single(dev, paddr, size,
-+						  aligned_size, dir, attrs);
- 		if (tlb_addr == DMA_MAPPING_ERROR) {
- 			goto swiotlb_error;
- 		} else {
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 030a225624b060..953186f6d7d222 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -395,8 +395,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 	 */
- 	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
- 
--	map = swiotlb_tbl_map_single(dev, virt_to_phys(xen_io_tlb_start),
--				     phys, size, size, dir, attrs);
-+	map = swiotlb_tbl_map_single(dev, phys, size, size, dir, attrs);
- 	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
- 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 513913ff748626..3bb72266a75a1d 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -45,13 +45,9 @@ enum dma_sync_target {
- 	SYNC_FOR_DEVICE = 1,
- };
- 
--extern phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
--					  dma_addr_t tbl_dma_addr,
--					  phys_addr_t phys,
--					  size_t mapping_size,
--					  size_t alloc_size,
--					  enum dma_data_direction dir,
--					  unsigned long attrs);
-+phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
-+		size_t mapping_size, size_t alloc_size,
-+		enum dma_data_direction dir, unsigned long attrs);
- 
- extern void swiotlb_tbl_unmap_single(struct device *hwdev,
- 				     phys_addr_t tlb_addr,
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 995c1b4cb427ee..8d0b7c3971e81e 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -441,14 +441,11 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
- 	}
- }
- 
--phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
--				   dma_addr_t tbl_dma_addr,
--				   phys_addr_t orig_addr,
--				   size_t mapping_size,
--				   size_t alloc_size,
--				   enum dma_data_direction dir,
--				   unsigned long attrs)
-+phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
-+		size_t mapping_size, size_t alloc_size,
-+		enum dma_data_direction dir, unsigned long attrs)
- {
-+	dma_addr_t tbl_dma_addr = phys_to_dma_unencrypted(dev, io_tlb_start);
- 	unsigned long flags;
- 	phys_addr_t tlb_addr;
- 	unsigned int nslots, stride, index, wrap;
-@@ -667,9 +664,8 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
- 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size,
- 			      swiotlb_force);
- 
--	swiotlb_addr = swiotlb_tbl_map_single(dev,
--			phys_to_dma_unencrypted(dev, io_tlb_start),
--			paddr, size, size, dir, attrs);
-+	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, dir,
-+					      attrs);
- 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
- 
--- 
-2.28.0
 
 _______________________________________________
 iommu mailing list
