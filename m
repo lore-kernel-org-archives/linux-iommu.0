@@ -7,106 +7,93 @@ X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90F6C41604
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 14:29:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B04C4727D
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 15:23:51 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CA99204EF
-	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 14:29:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 867CF206DD
+	for <iommu@archiver.kernel.org>; Tue,  6 Oct 2020 15:23:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=marek-ca.20150623.gappssmtp.com header.i=@marek-ca.20150623.gappssmtp.com header.b="BFD//pwA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CA99204EF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=marek.ca
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UXK//kzc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 867CF206DD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8F95B8503D;
-	Tue,  6 Oct 2020 14:29:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 17EE587096;
+	Tue,  6 Oct 2020 15:23:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hIysde8XTWh9; Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+	with ESMTP id xc1ecNtxr4nk; Tue,  6 Oct 2020 15:23:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D9AC684F6F;
-	Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 86C4887042;
+	Tue,  6 Oct 2020 15:23:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BD20AC07FF;
-	Tue,  6 Oct 2020 14:29:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72E86C016F;
+	Tue,  6 Oct 2020 15:23:49 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87405C0051
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A3AB7C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 15:23:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 680E78484B
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:59 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9AABE844B2
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 15:23:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2jHnwtgqTLjP for <iommu@lists.linux-foundation.org>;
- Tue,  6 Oct 2020 14:28:58 +0000 (UTC)
-X-Greylist: delayed 01:01:05 by SQLgrey-1.7.6
-Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
- [209.85.166.66])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3D4AE8362D
- for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 14:28:58 +0000 (UTC)
-Received: by mail-io1-f66.google.com with SMTP id y13so13222135iow.4
- for <iommu@lists.linux-foundation.org>; Tue, 06 Oct 2020 07:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marek-ca.20150623.gappssmtp.com; s=20150623;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=YRYuE1oST5rCsSRo3ftJBgKrW6I4XszeRlUEeyGTNfA=;
- b=BFD//pwAX/64KPt0LEII7XnZhATo+5u4Ci1QUGZnXAvcyoZpf216nBIukB8S0lNR+o
- /SBnsKFNycdO4FaqhrrvOl8q9yUCUD0kMtxCFrm+T3BuOtGJqNoq/vuatu/yUwFaui3W
- wG/q9rVWqGvQF3DH1sF8weJvvvE2/FsOJioQK368BV9SL2poAmn8GeN+if4sevucB6tf
- 8BV+2/e4V/R+9zg6ETBTYxp+Q6woapII4/lMg/2r2Ql9+NA7asVIWxgARtsMmyYoMq2K
- YKB5J7l4MgFdsyryEbJBhC2DmC2IwuvI3od1/Cu2zgJfsaaVHr58x1zSeFV0fZQiWrdf
- Hg/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=YRYuE1oST5rCsSRo3ftJBgKrW6I4XszeRlUEeyGTNfA=;
- b=qvihPruxR8w+AAawPpPsLGcvqOnMBe6jyNg+G29wZr3g074ynekcdN0JYTRLjEZLvm
- wKZoAc8UesihK7UzzeuXBiOHNWxWVjqwlQycAw9VL5lDdd7gmxz6Cza1BTdNNt9cgYcG
- o/XizCWAONSi/2DZ1BTKY5NyJPRzRM/+2geOw1GHGcHSbpnzvF9a/+vtCo5tKwAWZznZ
- Ghrllse4nt2iVFys/ql6qu5bglarvdtRakg4IUe0iT+C+Z0tcwwi0AdSnuR1UArzzi68
- iYhAXPndDHAdtOeKVDrTkxFYoZNSmh781fzPVG4DbVpkHVFwCgxaYv68YfH2L8a+r+MH
- yOMA==
-X-Gm-Message-State: AOAM531ua6d+kN62uRLRpl9WGesDkM4nN2RmL4y6/LPO6+1wGwmuSp1q
- U5ExZO5tp9CSg5hnXZ9dWblg+sNb46tN7v96
-X-Google-Smtp-Source: ABdhPJw4Z7YWS8t/L1IK8utu6wKe+vRmf2v1MdzI4qau8wJptX2TFHJ6aQoGZURrxgM6eCoWFpwqPw==
-X-Received: by 2002:a05:620a:1287:: with SMTP id
- w7mr2490783qki.335.1601990468080; 
- Tue, 06 Oct 2020 06:21:08 -0700 (PDT)
-Received: from [192.168.0.189] ([147.253.86.153])
- by smtp.gmail.com with ESMTPSA id 192sm2477887qkm.110.2020.10.06.06.21.06
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 06 Oct 2020 06:21:07 -0700 (PDT)
-Subject: Re: [PATCH 2/3] drm/msm: add DRM_MSM_GEM_SYNC_CACHE for non-coherent
- cache maintenance
-To: Christoph Hellwig <hch@infradead.org>
-References: <20201001002709.21361-1-jonathan@marek.ca>
- <20201001002709.21361-3-jonathan@marek.ca>
- <20201002075321.GA7547@infradead.org>
- <b22fb797-67b0-a912-1d23-2b47c9a9e674@marek.ca>
- <20201005082914.GA31702@infradead.org>
- <3e0b91be-e4a4-4ea5-7d58-6e71b8d51932@marek.ca>
- <20201006072306.GA12834@infradead.org>
-From: Jonathan Marek <jonathan@marek.ca>
-Message-ID: <148a1660-f0fc-7163-2240-6b94725342b5@marek.ca>
-Date: Tue, 6 Oct 2020 09:19:32 -0400
+ with ESMTP id 3FiYE-oB9gyK for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Oct 2020 15:23:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5D4528402A
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Oct 2020 15:23:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1601997826;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=ySCeSs2lHG0zJMFNUJWe/o+SED3rw+cfxJDttvVzqbI=;
+ b=UXK//kzcGMZNCN74OHCstukX3zhNuDfEInm5N9lr51gOg16b9dgg6wu0NqCOCRmTYoDhLF
+ IyRn4Yvu86c8Wfyex55R6iDBVwk22ZcnMkHDcAJ1S6zvjWr9l2dKSmKITYuSMs4C7PKa3r
+ UehP/JuHn5xnVSMcYoEMG5wrO+Sv2yw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-508-jh5Gf5HfOXm18dGTE45rhg-1; Tue, 06 Oct 2020 11:23:42 -0400
+X-MC-Unique: jh5Gf5HfOXm18dGTE45rhg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1BF8B9CC07;
+ Tue,  6 Oct 2020 15:23:40 +0000 (UTC)
+Received: from [10.36.113.210] (ovpn-113-210.ams2.redhat.com [10.36.113.210])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 0F13660BFA;
+ Tue,  6 Oct 2020 15:23:33 +0000 (UTC)
+Subject: Re: [PATCH v3 0/6] Add virtio-iommu built-in topology
+To: Al Stone <ahs3@redhat.com>
+References: <20200821131540.2801801-1-jean-philippe@linaro.org>
+ <ab2a1668-e40c-c8f0-b77b-abadeceb4b82@redhat.com>
+ <20200924045958-mutt-send-email-mst@kernel.org>
+ <20200924092129.GH27174@8bytes.org>
+ <20200924053159-mutt-send-email-mst@kernel.org>
+ <d54b674e-2626-fc73-d663-136573c32b8a@redhat.com>
+ <20201002182348.GO138842@redhat.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <e8a37837-30d0-d7cc-496a-df4c12fff1da@redhat.com>
+Date: Tue, 6 Oct 2020 17:23:32 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20201006072306.GA12834@infradead.org>
+In-Reply-To: <20201002182348.GO138842@redhat.com>
 Content-Language: en-US
-Cc: David Airlie <airlied@linux.ie>, freedreno@lists.freedesktop.org,
- open list <linux-kernel@vger.kernel.org>,
- "open list:DRM DRIVER FOR MSM ADRENO GPU" <dri-devel@lists.freedesktop.org>,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- "open list:DRM DRIVER FOR MSM ADRENO GPU" <linux-arm-msm@vger.kernel.org>,
- Sean Paul <sean@poorly.run>, Robin Murphy <robin.murphy@arm.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
+ virtio-dev@lists.oasis-open.org, linux-pci@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, bhelgaas@google.com, jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,64 +106,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 10/6/20 3:23 AM, Christoph Hellwig wrote:
-> On Mon, Oct 05, 2020 at 10:35:43AM -0400, Jonathan Marek wrote:
->> The cache synchronization doesn't have anything to do with IOMMU (for
->> example: cache synchronization would be useful in cases where drm/msm
->> doesn't use IOMMU).
+Hello Al,
+
+On 10/2/20 8:23 PM, Al Stone wrote:
+> On 24 Sep 2020 11:54, Auger Eric wrote:
+>> Hi,
+>>
+>> Adding Al in the loop
+>>
+>> On 9/24/20 11:38 AM, Michael S. Tsirkin wrote:
+>>> On Thu, Sep 24, 2020 at 11:21:29AM +0200, Joerg Roedel wrote:
+>>>> On Thu, Sep 24, 2020 at 05:00:35AM -0400, Michael S. Tsirkin wrote:
+>>>>> OK so this looks good. Can you pls repost with the minor tweak
+>>>>> suggested and all acks included, and I will queue this?
+>>>>
+>>>> My NACK still stands, as long as a few questions are open:
+>>>>
+>>>> 	1) The format used here will be the same as in the ACPI table? I
+>>>> 	   think the answer to this questions must be Yes, so this leads
+>>>> 	   to the real question:
+>>>
+>>> I am not sure it's a must.
+>>> We can always tweak the parser if there are slight differences
+>>> between ACPI and virtio formats.
+>>>
+>>> But we do want the virtio format used here to be approved by the virtio
+>>> TC, so it won't change.
+>>>
+>>> Eric, Jean-Philippe, does one of you intend to create a github issue
+>>> and request a ballot for the TC? It's been posted end of August with no
+>>> changes ...
+>> Jean-Philippe, would you?
+>>>
+>>>> 	2) Has the ACPI table format stabalized already? If and only if
+>>>> 	   the answer is Yes I will Ack these patches. We don't need to
+>>>> 	   wait until the ACPI table format is published in a
+>>>> 	   specification update, but at least some certainty that it
+>>>> 	   will not change in incompatible ways anymore is needed.
+>>>>
+>>
+>> Al, do you have any news about the the VIOT definition submission to
+>> the UEFI ASWG?
+>>
+>> Thank you in advance
+>>
+>> Best Regards
+>>
+>> Eric
 > 
-> It has to do with doing DMA.  And we have two frameworks for doing DMA:
-> either the DMA API which is for general driver use, and which as part of
-> the design includes cache maintainance hidden behind the concept of
-> ownership transfers.  And we have the much more bare bones IOMMU API.
+> A follow-up to my earlier post ....
 > 
-> If people want to use the "raw" IOMMU API with not cache coherent
-> devices we'll need a cache maintainance API that goes along with it.
-> It could either be formally part of the IOMMU API or be separate.
+> Hearing no objection, I've submitted the VIOT table description to
+> the ASWG for consideration under what they call the "code first"
+> process.  The "first reading" -- a brief discussion on what the
+> table is and why we would like to add it -- was held yesterday.
+> No concerns have been raised as yet.  Given the discussions that
+> have already occurred, I don't expect any, either.  I have been
+> wrong at least once before, however.
 > 
->> What is needed is to call arch_sync_dma_for_{cpu,device} (which is what I
->> went with initially, but then decided to re-use drm/msm's
->> sync_for_{cpu,device}). But you are also saying those functions aren't for
->> driver use, and I doubt IOMMU maintainers will want to add wrappers for
->> these functions just to satisfy this "not for driver use" requirement.
+> At this point, ASWG will revisit the request to add VIOT each
+> week.  If there have been no comments in the prior week, and no
+> further discussion during the meeting, then a vote will be taken.
+> Otherwise, there will be discussion and we try again the next
+> week.
 > 
-> arch_sync_dma_for_{cpu,device} are low-level helpers (and not very
-> great ones at that).  The definitively should not be used by drivers.
-> They would be very useful buildblocks for a IOMMU cache maintainance
-> API.
+> The ASWG was also told that the likelihood of this definition of
+> the table changing is pretty low, and that it has been thought out
+> pretty well already.  ASWG's consideration will therefore start
+> from the assumption that it would be best _not_ to make changes.
 > 
-> Of course the best outcome would be if we could find a way for the MSM
-> drm driver to just use DMA API and not deal with the lower level
-> abstractions.  Do you remember why the driver went for use of the IOMMU
-> API?
+> So, I'll let you know what happens next week.
+
+Thank you very much for the updates and for your support backing the
+proposal in the best delays.
+
+Best Regards
+
+Eric
 > 
-
-One example why drm/msm can't use DMA API is multiple page table support 
-(that is landing in 5.10), which is something that definitely couldn't 
-work with DMA API.
-
-Another one is being able to choose the address for mappings, which 
-AFAIK DMA API can't do (somewhat related to this: qcom hardware often 
-has ranges of allowed addresses, which the dma_mask mechanism fails to 
-represent, what I see is drivers using dma_mask as a "maximum address", 
-and since addresses are allocated from the top it generally works)
-
-But let us imagine drm/msm switches to using DMA API. a2xx GPUs have 
-their own very basic MMU (implemented by msm_gpummu.c), that will need 
-to implement dma_map_ops, which will have to call 
-arch_sync_dma_for_{cpu,device}. So drm/msm still needs to call 
-arch_sync_dma_for_{cpu,device} in that scenario.
-
-
-
-
-
-
+>>
+>>>
+>>> Not that I know, but I don't see why it's a must.
+>>>
+>>>> So what progress has been made with the ACPI table specification, is it
+>>>> just a matter of time to get it approved or are there concerns?
+>>>>
+>>>> Regards,
+>>>>
+>>>> 	Joerg
+>>>
+>>
+> 
 
 _______________________________________________
 iommu mailing list
