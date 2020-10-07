@@ -4,88 +4,147 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2143C41604
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 17:35:04 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EEAC41604
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 17:48:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EDD632168B
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 17:35:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C7E0B2168B
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 17:48:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Pp7UE6qk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDD632168B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="j8WDry7w"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7E0B2168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xilinx.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 45FFE258A5;
-	Wed,  7 Oct 2020 17:35:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6E54386546;
+	Wed,  7 Oct 2020 17:48:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XDCFeSgbsfBh; Wed,  7 Oct 2020 17:35:00 +0000 (UTC)
+	with ESMTP id FvPFVKe3qCvm; Wed,  7 Oct 2020 17:48:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E253523735;
-	Wed,  7 Oct 2020 17:34:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0CAE18651C;
+	Wed,  7 Oct 2020 17:48:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9291C07FF;
-	Wed,  7 Oct 2020 17:34:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0857C07FF;
+	Wed,  7 Oct 2020 17:48:32 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 26EC0C0051
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:34:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F760C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:48:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 148B8864F2
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:34:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5E04D86546
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:48:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uqpK5e_RNQlu for <iommu@lists.linux-foundation.org>;
- Wed,  7 Oct 2020 17:34:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 39803864EE
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:34:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
- In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=Ech+3SdIgK40PMQymK8OIUZGCeNcFwee7TnsaVhapzk=; b=Pp7UE6qkMzChnjg4zxV2fA95vX
- fV8FvTowVu9pn3th+gCLK3C875gNwxx5qxDS4IdDk0Gb8NOt5tnzpXoo76aWswNia1kaoo/d2vX6s
- /hL1h2jvjkYPHeqc5hgCQGs1WkWea8pSeNixsr02ES5JA8VSiwk+xIxPfe8XxMq8LnXvsSYXlXfmj
- PUY4gN14hV5d+XoPxODQtkB0ONdv7spyrQ2+jD5N5bKcH05ul+ZJdeM9GlVHmvW70CtBq+lct80O3
- ax+QequYKFXb0DBi9wYLSnJM4hyjDGbMAYgqnoT56Dbb29BNa7sDQpjQQ2cxX5zWncELKkI8zJfvS
- tnzmZBYg==;
-Received: from [54.239.6.186] (helo=freeip.amazon.com)
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kQDL1-0000eS-Ni; Wed, 07 Oct 2020 17:34:52 +0000
-Message-ID: <dfa4bae7d298fa17dc427b5121b9ddc981fe0f49.camel@infradead.org>
-Subject: Re: [PATCH 10/13] x86/irq: Limit IOAPIC and MSI domains' affinity
- without IR
-From: David Woodhouse <dwmw2@infradead.org>
-To: Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
-Date: Wed, 07 Oct 2020 18:34:49 +0100
-In-Reply-To: <874kn63q7m.fsf@nanos.tec.linutronix.de>
-References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
- <20201005152856.974112-1-dwmw2@infradead.org>
- <20201005152856.974112-10-dwmw2@infradead.org>
- <87d01v58bw.fsf@nanos.tec.linutronix.de>
- <d34efce9ca5a4a9d8d8609f872143e306bf5ee98.camel@infradead.org>
- <874kn65h0r.fsf@nanos.tec.linutronix.de>
- <F9476D19-3D08-4CE6-A535-6C1D2E9BA88D@infradead.org>
- <87imbm3zdq.fsf@nanos.tec.linutronix.de>
- <f73340328712558c3329e11b75e32c364d01edf6.camel@infradead.org>
- <87d01u3vo6.fsf@nanos.tec.linutronix.de>
- <2f09a1f97d97e638e90c6eca3ebeebb4be852f58.camel@infradead.org>
- <874kn63q7m.fsf@nanos.tec.linutronix.de>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Paolo Bonzini <pbonzini@redhat.com>,
- iommu <iommu@lists.linux-foundation.org>, linux-hyperv@vger.kernel.org,
- kvm <kvm@vger.kernel.org>
+ with ESMTP id 19giba3k-cKA for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Oct 2020 17:48:31 +0000 (UTC)
+X-Greylist: delayed 21:02:11 by SQLgrey-1.7.6
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com
+ (mail-eopbgr750057.outbound.protection.outlook.com [40.107.75.57])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4649F8651C
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 17:48:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lrN2lXX+T7Udw7Z0jfKYJESY0W1XtHtoOOOgCTYYnkj90d34JIfQ8yyGHrkKROA6cjJADUbXKKu54NQNjtT1HhCUBK8y6fHSkOymiQRDHDrbU8U/t7o3Gv3CYdINF0eTlwkYSKCFaGD1OtOW25I0d/Pnu1XfaNMKP7/bLjA9DQWlC5Hk2/kJ3gTd4q4gKbu04covdHFT78kAEeLotvvM3eNQP9yoIULPqZFPstFK4lg1qK7g8KMnbF9xhdREqlzw0ITn4KkEzPThePRbn4JuSQZxBOvg8Tjk6wgLjte5Obg3wOqGafe7aS5h2zc0qrHeDk7L/rvPymCiCeQ3g+Yp9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jfuc7bfP8imoEchfCuXEL9P1/SHk38u2m1zaUF29b10=;
+ b=eSsyUMv6MdKEImZXw2X92gM/ebZ72/T1lqakTy1mVNuxF6JDfseRgvqKb4RD9v29EFnXuktTFeLUhfMSSBKSTBiYRn/foy/olPZseQq8mSGNFknYeChoRtRt83u0kXBMt9xhp5HG/D5qC4P5mzl15t2ysDkmemWNGUwKpa0Lx2DCPxekW4vkqEd7+X1gEzQ68VXYTUZqJjAYpYifDLWSb8w35otSAlxEnESLvwAgnirQM0KMsphLHPKy2Stbq56Nn7xZ+kaEvM1gfDc+YWYNc4JJGUlUXxeASwI7zX31yeEkkhURowCcN+SHa3fFIg5hNdC/3gEFUdzxGS8Z8qkdNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=lists.linux-foundation.org
+ smtp.mailfrom=xilinx.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jfuc7bfP8imoEchfCuXEL9P1/SHk38u2m1zaUF29b10=;
+ b=j8WDry7wxrykDfJOwuVRW0rhcHWutBcibIrL2FUMbX/ySoVO6DDsnk6sXjyX/JNxC0e1Ry5hILBKSLObGkC8MRtrS+HEo6EP2NlFIZ4jL6FVm47IfsLZMakQjIBlwxNpRpuduNEd11RqWBR5iVr5JMGOAsfkCT6OGeGYOw5oD0o=
+Received: from SN4PR0501CA0087.namprd05.prod.outlook.com
+ (2603:10b6:803:22::25) by MWHPR0201MB3484.namprd02.prod.outlook.com
+ (2603:10b6:301:77::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.39; Wed, 7 Oct
+ 2020 17:15:58 +0000
+Received: from SN1NAM02FT057.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:22:cafe::ab) by SN4PR0501CA0087.outlook.office365.com
+ (2603:10b6:803:22::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.15 via Frontend
+ Transport; Wed, 7 Oct 2020 17:15:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=bestguesspass
+ action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT057.mail.protection.outlook.com (10.152.73.105) with Microsoft SMTP
+ Server id 15.20.3433.39 via Frontend Transport; Wed, 7 Oct 2020 17:15:57
+ +0000
+Received: from [149.199.38.66] (port=59910 helo=smtp.xilinx.com)
+ by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
+ (envelope-from <stefano.stabellini@xilinx.com>)
+ id 1kQD29-0001sT-2M; Wed, 07 Oct 2020 10:15:21 -0700
+Received: from [127.0.0.1] (helo=localhost)
+ by smtp.xilinx.com with smtp (Exim 4.63)
+ (envelope-from <stefano.stabellini@xilinx.com>)
+ id 1kQD2j-00072d-BA; Wed, 07 Oct 2020 10:15:57 -0700
+Received: from xsj-pvapsmtp01 (mail.xilinx.com [149.199.38.66])
+ by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 097HFkS7009243; 
+ Wed, 7 Oct 2020 10:15:47 -0700
+Received: from [10.23.120.52] (helo=localhost)
+ by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+ (envelope-from <stefanos@xilinx.com>)
+ id 1kQD2Y-0006zR-Nc; Wed, 07 Oct 2020 10:15:46 -0700
+Date: Wed, 7 Oct 2020 10:15:46 -0700 (PDT)
+From: Stefano Stabellini <stefano.stabellini@xilinx.com>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: xen-swiotlb vs phys_to_dma
+In-Reply-To: <20201007060008.GA10125@lst.de>
+Message-ID: <alpine.DEB.2.21.2010071015220.23978@sstabellini-ThinkPad-T480s>
+References: <20201002123436.GA30329@lst.de>
+ <alpine.DEB.2.21.2010021313010.10908@sstabellini-ThinkPad-T480s>
+ <20201006082656.GB10243@lst.de>
+ <alpine.DEB.2.21.2010061325230.10908@sstabellini-ThinkPad-T480s>
+ <20201007060008.GA10125@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a6ca9106-6562-430c-564d-08d86ae4a7f4
+X-MS-TrafficTypeDiagnostic: MWHPR0201MB3484:
+X-Microsoft-Antispam-PRVS: <MWHPR0201MB34842EC02DEAA7D400D61E77A00A0@MWHPR0201MB3484.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yzYTur9nZ4FvMFeVhNmdtaTBjdXA3LM3bYkQWfibGQYBM9RZGRALHQSljY4k+FTY3Ym9raREQyJrUlr8gHYDk5+Ts2cDnyRRMGZvs5dhY6Z4CRHq14j+TT5cJ2mO5NyGx2MBoVAkwECQqIt51X/CIOHZL/ckzLHOoiiM7dV9nw6iE6jdPOjBFNbPOJgyBatuWE7zqs0zwhugbQGB0PS4Vp3D4edzK5LsQ95F1j1/scKlFIwTnWgK/2XS68JSJgLB0E22oAuTIEdVF1ZWPd8LFpn+3v0gnjq1TxoFH7291cjkJXEpQurhcXLgpqbJbpp3iBt4JYfrygzMfu77cGITM3CjzjE0ROOpvBS0JehbpPhoNqnbB4HkXoZiutz7z0p0T6aaAxDkLI/8gs8a9+Ohkg==
+X-Forefront-Antispam-Report: CIP:149.199.60.83; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:xsj-pvapsmtpgw01; PTR:unknown-60-83.xilinx.com; CAT:NONE;
+ SFS:(7916004)(39850400004)(396003)(136003)(346002)(376002)(46966005)(33716001)(2906002)(4326008)(82310400003)(478600001)(426003)(81166007)(5660300002)(336012)(70206006)(8676002)(316002)(47076004)(9786002)(44832011)(356005)(186003)(54906003)(4744005)(8936002)(9686003)(82740400003)(26005)(70586007)(6916009);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2020 17:15:57.5760 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6ca9106-6562-430c-564d-08d86ae4a7f4
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c; Ip=[149.199.60.83];
+ Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT057.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0201MB3484
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ Stefano Stabellini <stefano.stabellini@xilinx.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,168 +157,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5234367681938500521=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Wed, 7 Oct 2020, Christoph Hellwig wrote:
+> On Tue, Oct 06, 2020 at 01:46:12PM -0700, Stefano Stabellini wrote:
+> > OK, this makes a lot of sense, and I like the patch because it makes the
+> > swiotlb interface clearer.
+> > 
+> > Just one comment below.
+> > 
+> 
+> > > +phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+> > > +		size_t mapping_size, size_t alloc_size,
+> > > +		enum dma_data_direction dir, unsigned long attrs)
+> > >  {
+> > > +	dma_addr_t tbl_dma_addr = phys_to_dma_unencrypted(dev, io_tlb_start);
+> > 
+> > This is supposed to be hwdev, not dev
+> 
+> Yeah, te compiler would be rather unhappy oterwise.
+> 
+> I'll resend it after the dma-mapping and Xen trees are merged by Linus
+> to avoid a merge conflict.
 
---===============5234367681938500521==
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-aYAESOcOP5X7q2dyBwFR"
+Sounds good, thanks. Please add
 
-
---=-aYAESOcOP5X7q2dyBwFR
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, 2020-10-07 at 19:23 +0200, Thomas Gleixner wrote:
-> > It so happens that in Linux, we don't really architect the software
-> > like that. So each of the PCI MSI domain, HPET, and IOAPIC have their
-> > *own* message composer which has the same limits and composes basically
-> > the same messages as if it was *their* format, not dictated to them by
-> > the APIC upstream. And that's what we're both getting our panties in a
-> > knot about, I think.
->=20
-> Are you actually reading what I write and caring to look at the code?
->=20
-> PCI-MSI does not have a compose message callback in the irq chip. The
-> message is composed by the underlying parent domain. Same for HPET.
->=20
-> The only dogdy part is the IO/APIC for hysterical raisins and because
-> I did not come around yet to sort that out.
-
-Right. And the problem is that the "underlying parent domain" in this
-case is actually x86_vector_domain. Whereas it probably makes more
-sense, at least in theory, for there to be an *intermediate* domain
-responsible for composing the Compat MSI messages.
-
-Both the Compat-MSI and the IR-MSI domains would be children of the
-generic x86_vector_domain, and then any given HPET, IOAPIC or PCI-MSI
-domain would be a child of either one of those generic MSI domains.
-
-> > It really doesn't matter that much to the underlying generic irqdomain
-> > support for limited affinities. Except that you want to make the
-> > generic code support the concept of a child domain supporting *more*
-> > CPUs than its parent, which really doesn't make much sense if you think
-> > about it.
->=20
-> Right. So we really want to stick the restriction into a compat-MSI
-> domain to make stuff match reality and to avoid banging the head against
-> the wall sooner than later.
-
-Right.
-
---=-aYAESOcOP5X7q2dyBwFR
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
-MDA3MTczNDQ5WjAvBgkqhkiG9w0BCQQxIgQgNFUvwvE1i1zFH/NWQfkQ6BRw0bYH2E27OR1HlSQw
-7CEwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAKjQhhUJFZ8nfj5jCXMRQIaHFQmzJKLmY8Xpnq6N3wsHnDKXAeEO2RwGQvxlZh2f
-ei+/ceCiuCOFDe2OsNhnmckCKLL69Zij94RwdbTiKoO4WIxLPbkQ3+aiMNikHTyMwD2mwRWyJkeS
-tw+ptZEUmXmG6X1JTYzvoQwenrsU8HTaZA4ogpRDhDmr8vSIt+ssgA4atAdjoeMIbomJpcdafjLr
-feM4+ADldo1IYvlv4XGNjXzsfJYbWGSETTx0ZtmfmA6/n83WUDyEoQRUIkSrWmAaQvqiiBUX2s6H
-C3tZAm7D6J/CotPIfT/s29CqLAKEhx7q+tRWv3vPSjM+QfB3MoQAAAAAAAA=
-
-
---=-aYAESOcOP5X7q2dyBwFR--
-
-
---===============5234367681938500521==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5234367681938500521==--
-
