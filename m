@@ -7,69 +7,70 @@ X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109B7C4727E
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 07:26:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AC7C4727E
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 07:49:02 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2AC2F20870
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 07:26:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C1D2F20B1F
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 07:48:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="SzZq0Q02"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2AC2F20870
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="qENNS/4m"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1D2F20B1F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A4B6E86204;
-	Wed,  7 Oct 2020 07:26:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1A82F22D24;
+	Wed,  7 Oct 2020 07:48:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w8kaHRqdA6yP; Wed,  7 Oct 2020 07:26:04 +0000 (UTC)
+	with ESMTP id q7BSn77MiGQs; Wed,  7 Oct 2020 07:48:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0E38586160;
-	Wed,  7 Oct 2020 07:26:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 44C3C2011A;
+	Wed,  7 Oct 2020 07:48:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4B35C07FF;
-	Wed,  7 Oct 2020 07:26:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E2D9C07FF;
+	Wed,  7 Oct 2020 07:48:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79FE3C0051
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:26:02 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3E245C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:48:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5E08C86A32
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:26:02 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2CF3A86A72
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:48:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fjrHC3AvtGTA for <iommu@lists.linux-foundation.org>;
- Wed,  7 Oct 2020 07:26:01 +0000 (UTC)
+ with ESMTP id CovRVTc2yUVB for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Oct 2020 07:48:55 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4505386A31
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:26:01 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 536B486A6D
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 07:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
  In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=syUPKwqvv3fci5Hq35S7nX/yxZnCRe91ZJjttKg/EGo=; b=SzZq0Q027pjcgKN2Pgye+LowNv
- G674Vw8JM0+X4PRS/gV9Q1vWoY96ToLiYbJgLlUk/Hy0HLrdUbvB38LBHFhwe3FiPvEPnZp8Xvgci
- IoTM8SjbsAVVMFnCRPWGgsAMK7lov4TxmhW4AY2YhY1w909W4Iq0xHOc53Lr5MomdKuHfuTlGBOWR
- c7YvtOwrepp7A/+mP36gds3g+7txURI8wmGgFJ0pBooOyVL/mlzytHI0r97ZtFyak9sbL8IR68Fke
- IStrPa7Wc9LvQ4Ww7Q03Ljm695p7ebCxv++ydkMhVOVMLEeYaSwhs9MJtAoi+5XP1Ur66qgFHgiaK
- ukC/Godg==;
+ bh=ULNLuJX8ydiU99mozxAJU9DkyJYHanQB/3JYwBFyPoI=; b=qENNS/4mSczqO6CrQv8C19Fd1t
+ +a+VsSA4HiJd9PNRRFmEoHTC3xTZxEs1PXEViFhRTL0tkUcEz/e/i0z/gQALbuBrARFwKRaoZAZxe
+ tM5tXxv9hgOA3P05KaSyZFoEn18BWPoWZ1kv1zFjuPSqJSXHFtnPS7wPSWU5nbMeXTKWOCUZZXh6z
+ YsuoTzhfvfSZIBcZr6RoZurKfseGmBusIQHoTutByAEgLgadDZ8bcttvTPhaQVLorPLH2Co5MNKX7
+ 5yKB7MXAsLviwtPPWnyDOO01FwGqYPODnZvIQzLQ96xU3aJDgugKHcomCR5ttJOQZURbT29s1BUzW
+ aJJ5FYQw==;
 Received: from dyn-229.woodhou.se ([90.155.92.229])
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kQ3pm-0003j2-FW; Wed, 07 Oct 2020 07:25:58 +0000
-Message-ID: <3bc0d6d001b276f881310714fb59ea03ac0e5173.camel@infradead.org>
-Subject: Re: [PATCH 09/13] x86/irq: Add x86_non_ir_cpumask
+ id 1kQ4Bw-0005fk-Oe; Wed, 07 Oct 2020 07:48:52 +0000
+Message-ID: <d34efce9ca5a4a9d8d8609f872143e306bf5ee98.camel@infradead.org>
+Subject: Re: [PATCH 10/13] x86/irq: Limit IOAPIC and MSI domains' affinity
+ without IR
 From: David Woodhouse <dwmw2@infradead.org>
 To: Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
-Date: Wed, 07 Oct 2020 08:25:57 +0100
-In-Reply-To: <87ft6r58vy.fsf@nanos.tec.linutronix.de>
+Date: Wed, 07 Oct 2020 08:48:51 +0100
+In-Reply-To: <87d01v58bw.fsf@nanos.tec.linutronix.de>
 References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
  <20201005152856.974112-1-dwmw2@infradead.org>
- <20201005152856.974112-9-dwmw2@infradead.org>
- <87ft6r58vy.fsf@nanos.tec.linutronix.de>
+ <20201005152856.974112-10-dwmw2@infradead.org>
+ <87d01v58bw.fsf@nanos.tec.linutronix.de>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Mime-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
@@ -89,94 +90,115 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1517974047971287207=="
+Content-Type: multipart/mixed; boundary="===============9001604696759498712=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============1517974047971287207==
+--===============9001604696759498712==
 Content-Type: multipart/signed; micalg="sha-256";
 	protocol="application/x-pkcs7-signature";
-	boundary="=-rhvX1BHXNHKXOa8UeZf1"
+	boundary="=-dUCVxM/N5P8DL/Jxk0HJ"
 
 
---=-rhvX1BHXNHKXOa8UeZf1
+--=-dUCVxM/N5P8DL/Jxk0HJ
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2020-10-06 at 23:42 +0200, Thomas Gleixner wrote:
+On Tue, 2020-10-06 at 23:54 +0200, Thomas Gleixner wrote:
 > On Mon, Oct 05 2020 at 16:28, David Woodhouse wrote:
+>=20
 > > From: David Woodhouse <dwmw@amazon.co.uk>
 > >=20
-> > This is the mask of CPUs to which IRQs can be delivered without
-> > interrupt
-> > remapping.
-> > =20
-> > +/* Mask of CPUs which can be targeted by non-remapped interrupts.
-> > */
-> > +cpumask_t x86_non_ir_cpumask =3D { CPU_BITS_ALL };
+> > When interrupt remapping isn't enabled, only the first 255 CPUs can
 >=20
-> What?
+> No, only CPUs with an APICid < 255 ....
 
-By default, if we didn't hit any limits, all CPUs can be targeted by
-external interrupts. It's the default today.
+Ack.
 
-Or at least we pretend it is, modulo the bugs :)
-
-> >  #ifdef CONFIG_X86_32
-> > =20
-> >  /*
-> > @@ -1838,6 +1841,7 @@ static __init void x2apic_enable(void)
-> >  static __init void try_to_enable_x2apic(int remap_mode)
-> >  {
-> >  	u32 apic_limit =3D 0;
-> > +	int i;
-> > =20
-> >  	if (x2apic_state =3D=3D X2APIC_DISABLED)
-> >  		return;
-> > @@ -1880,6 +1884,14 @@ static __init void try_to_enable_x2apic(int rema=
-p_mode)
-> >  	if (apic_limit)
-> >  		x2apic_set_max_apicid(apic_limit);
-> > =20
-> > +	/* Build the affinity mask for interrupts that can't be remapped. */
-> > +	cpumask_clear(&x86_non_ir_cpumask);
-> > +	i =3D min_t(unsigned int, num_possible_cpus() - 1, apic_limit);
-> > +	for ( ; i >=3D 0; i--) {
-> > +		if (cpu_physical_id(i) <=3D apic_limit)
-> > +			cpumask_set_cpu(i, &x86_non_ir_cpumask);
-> > +	}
+> > receive external interrupts. Set the appropriate max affinity for
+> > the IOAPIC and MSI IRQ domains accordingly.
+> >=20
+> > This also fixes the case where interrupt remapping is enabled but some
+> > devices are not within the scope of any active IOMMU.
 >=20
-> Blink. If the APIC id is not linear with the cpu numbers then this
-> results in a reduced addressable set of CPUs. WHY?
-
-Hm, good question. That loop was cargo-culted from hyperv-iommu.c;
-perhaps it makes more sense there because Hyper-V really does promise
-that linearity, or perhaps it was already buggy. Will fix.
-
-In fact, in apic.c I could probably just use the cpuid_to_apicid array
-which is right there in the file.
-
-> > diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_a=
-pic.c
-> > index aa9a3b54a96c..4d0ef46fedb9 100644
-> > --- a/arch/x86/kernel/apic/io_apic.c
-> > +++ b/arch/x86/kernel/apic/io_apic.c
-> > @@ -2098,6 +2098,8 @@ static int mp_alloc_timer_irq(int ioapic, int pin=
-)
-> >  		struct irq_alloc_info info;
-> > =20
-> >  		ioapic_set_alloc_attr(&info, NUMA_NO_NODE, 0, 0);
-> > +		if (domain->parent =3D=3D x86_vector_domain)
-> > +			info.mask =3D &x86_non_ir_cpumask;
+> What? If this fixes an pre-existing problem then
 >=20
-> We are not going to sprinkle such domain checks all over the
-> place. Again, the mask is a property of the interrupt domain.
+>       1) Explain the problem proper
+>       2) Have a patch at the beginning of the series which fixes it
+>          independently of this pile
+>=20
+> If it's fixing a problem in your pile, then you got the ordering wrong.
 
-Yeah, that's a hangover from the first attempts which I forgot to
-delete.
+It's not that simple; there's not a single patch which fixes that and
+which can go first. I can, and do, fix the "no IR" case in a simple
+patch that goes first, simply by restricting the kernel to the APIC IDs
+which can be targeted.
 
---=-rhvX1BHXNHKXOa8UeZf1
+This is the case I called out in the cover letter:
+
+    This patch series implements a per-domain "maximum affinity" set and
+    uses it for the non-remapped IOAPIC and MSI domains on x86. As well as
+    allowing more CPUs to be used without interrupt remapping, this also
+    fixes the case where some IOAPICs or PCI devices aren't actually in
+    scope of any active IOMMU and are operating without remapping.
+
+To fix *that* case, we really do need the whole series giving us per-
+domain restricted affinity, and to use it for those MSIs/IOAPICs that
+the IRQ remapping doesn't cover.
+
+> You didn't start kernel programming as of yesterday, so you really know
+> how that works.
+>=20
+> >  	ip->irqdomain->parent =3D parent;
+> > +	if (parent =3D=3D x86_vector_domain)
+> > +		irq_domain_set_affinity(ip->irqdomain, &x86_non_ir_cpumask);
+>=20
+> OMG
+
+This IOAPIC function may or may not be behind remapping.
+
+>=20
+> >  	if (cfg->type =3D=3D IOAPIC_DOMAIN_LEGACY ||
+> >  	    cfg->type =3D=3D IOAPIC_DOMAIN_STRICT)
+> > diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+> > index 4d891967bea4..af5ce5c4da02 100644
+> > --- a/arch/x86/kernel/apic/msi.c
+> > +++ b/arch/x86/kernel/apic/msi.c
+> > @@ -259,6 +259,7 @@ struct irq_domain * __init native_create_pci_msi_do=
+main(void)
+> >  		pr_warn("Failed to initialize PCI-MSI irqdomain.\n");
+> >  	} else {
+> >  		d->flags |=3D IRQ_DOMAIN_MSI_NOMASK_QUIRK;
+> > +		irq_domain_set_affinity(d, &x86_non_ir_cpumask);
+>=20
+> So here it's unconditional
+
+Yes, this code is only for the non-remapped case and there's a separate
+arch_create_remap_msi_irq_domain() function a few lines further down
+which creates the IR-PCI-MSI IRQ domain. So no need for a condition
+here.
+
+> >  	}
+> >  	return d;
+> >  }
+> > @@ -479,6 +480,8 @@ struct irq_domain *hpet_create_irq_domain(int hpet_=
+id)
+> >  		irq_domain_free_fwnode(fn);
+> >  		kfree(domain_info);
+> >  	}
+> > +	if (parent =3D=3D x86_vector_domain)
+> > +		irq_domain_set_affinity(d, &x86_non_ir_cpumask);
+>=20
+> And here we need a condition again. Completely obvious and reviewable - N=
+OT.
+
+And HPET may or may not be behind remapping so again needs the
+condition. I had figured that part was fairly obvious but can note it
+in the commit comment.
+
+
+--=-dUCVxM/N5P8DL/Jxk0HJ
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -259,25 +281,25 @@ BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
 BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
 ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
 ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
-MDA3MDcyNTU3WjAvBgkqhkiG9w0BCQQxIgQg1lT13lbXopSfI3w3ERAB43Pw2dnoadFPGmz/BTdh
-ou0wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+MDA3MDc0ODUxWjAvBgkqhkiG9w0BCQQxIgQgI+nyHbMkXbJk1tERQCF2N6dv6qlQJzUcf27K0TKR
+ts0wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
 TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
 PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
 A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
 bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAAKUJzXoXbqTKSFmZzWs97oz0YCxNlWQVKJh6OAbeW8+LCfTcU9TpGscZ/Y4MK49
-uJ7mFxzCrWUAwUNLfjdKICXPO4XfzSb0CEwvwynIKtwr04XxHHLVbRcPfslTLWhbOvUCIQ7TVdJn
-LHxrHabveIBGA3HpNX5vx3ildtlrQMA1iTLlIHY0oAgT93mVV7qFGF91LWPNsvfr2Dy3KX2Xr3ns
-VE1S3R8Cmh9L/4EgFbXk+/XRILYIQ/2A65IKHAQFTlRxYZxcx5+dlMD74qbxKSfCRGnVO43h8cND
-By324TrplSSVjfPHSatJqAU+SVHUT2X4fCzbxXAvUqg0g7U9yvcAAAAAAAA=
+DQEBAQUABIIBAFgrK/16PL9DWN7S/N3QW1bwih20ENXdpyc3LeZ91SK8eHTsvs1Lvl25OWS7iwmE
+LF6o29GUC3uu4lkUZJnSZ471VKs6j5jwrR0B50zzrb0RsBnVqQBqAXcgtMJ9jiwCAqJMGmJABHtW
+W5Xm+PFaFiVg9VY4AWPh6XDA3ZoBKvVzCBPJV0MGsH7+HwQObn/SQQCUCi7DBTgOuGTaWalHVN1e
+ghEK1ZF2DrA4Q0Le3ZvfqyL2WKLlKJt4JezBrt8Y80bZ+0vNU41OhPWga8F7Z3+fdhY4J/0OXxus
+t02mjTt7/Pj3tZKFNLSzZHlcSZbHDrnIPpgvkm4LkHmsQXnjniEAAAAAAAA=
 
 
---=-rhvX1BHXNHKXOa8UeZf1--
+--=-dUCVxM/N5P8DL/Jxk0HJ--
 
 
---===============1517974047971287207==
+--===============9001604696759498712==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -287,5 +309,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1517974047971287207==--
+--===============9001604696759498712==--
 
