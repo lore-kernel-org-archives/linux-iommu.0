@@ -2,77 +2,79 @@ Return-Path: <SRS0=58s/=DO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79C7C41604
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 14:10:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A761CC41604
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 14:24:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E40720870
-	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 14:10:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 023442168B
+	for <iommu@archiver.kernel.org>; Wed,  7 Oct 2020 14:24:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fb/yM1It"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E40720870
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="uVCNsg8G"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 023442168B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 87521869C0;
-	Wed,  7 Oct 2020 14:10:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 751BF871DE;
+	Wed,  7 Oct 2020 14:24:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jW-cJ9UIFD4x; Wed,  7 Oct 2020 14:10:32 +0000 (UTC)
+	with ESMTP id zZQ9VfvpLJGz; Wed,  7 Oct 2020 14:24:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2CBFD8695F;
-	Wed,  7 Oct 2020 14:10:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E1709871CA;
+	Wed,  7 Oct 2020 14:24:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 155C6C016F;
-	Wed,  7 Oct 2020 14:10:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C3294C016F;
+	Wed,  7 Oct 2020 14:24:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60131C0051
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:10:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05352C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:24:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4677D862AB
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:10:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 00BC085C54
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:24:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id urwQyfQlgTyN for <iommu@lists.linux-foundation.org>;
- Wed,  7 Oct 2020 14:10:29 +0000 (UTC)
+ with ESMTP id yIbkpYxA48xj for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Oct 2020 14:23:59 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2F7F58478E
- for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:10:29 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8343F85BD1
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Oct 2020 14:23:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
  In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=JDKi/EZXwxLeFll5HbkHc/W2H31qQIezWmdXGAmzqaU=; b=fb/yM1ItD0DSsTWRYajsxmmAtH
- 6QRJ+941RR/DKJEoATD7cAxLYeiu5Qg953h6BbEL7tR7OO9/jCzeZXtCSkHLudWd5wVAsDEdtfAH3
- yo07NDneIvksKGqdntF4tIygdHH07wTPDpECBtSrTresWOwveTU3Ky/bdo9Ob6zc4QnbcQbwwEHZS
- XIyl1wXKEaCx0r8fqL2bL3avZZL5FQ36I9UhCtRBV5FjjucmUZmMp3ynzd+PBYQ4kSjFThfSPDAae
- 45bSk3BbH69GsRsfK6hu86TwRNkopg0wWCkQ+SgpVW3UWa/wt05PwU4JJmJNjL3YSGH5kc68rE2rn
- 0wZf+dhw==;
-Received: from [54.239.6.186] (helo=freeip.amazon.com)
+ bh=iGa3fvjef5Q+s/OFumvi/FNW5w/Xq4roYcwSo3au2uk=; b=uVCNsg8Go88yugrNEjTpVn/YdV
+ +QTa1oKDIWIzRzvCm6fBOC5DMFgOUUbZpStrEYeJc4178T8c31DlPdHLERLCjYGb0OAzSB9OWOvxb
+ g6gyYf2H4qHhxPKbnb3O3lQ8ykPQutGI31TCPwxUazqV++GwbdtJoUBcpqT00v5y3l3ZGTtmgdyJN
+ wYOMco1ST6wqHSnFbE7lpWRH3sHvK67flcTbVCHoOvmm1x/yyTnzAKa3hvayIP1pdnNr33bVYTJFU
+ Ibf39fwMB89w3MKNWSOilUP6aWE7w8JHwJ/TqIS4Npw4fYlvUULjw8KY+ShonadBnbfFShFjBILs3
+ FsG+p5pw==;
+Received: from [54.239.6.187] (helo=freeip.amazon.com)
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kQA9C-0001rF-DP; Wed, 07 Oct 2020 14:10:26 +0000
-Message-ID: <336029ca32524147a61b6fa1eb734debc9d51a00.camel@infradead.org>
-Subject: Re: [PATCH 07/13] irqdomain: Add max_affinity argument to
- irq_domain_alloc_descs()
+ id 1kQAMH-0003g0-1Q; Wed, 07 Oct 2020 14:23:57 +0000
+Message-ID: <1b1fda3079627748e1f5084ddae8a686258c78d9.camel@infradead.org>
+Subject: Re: [PATCH 10/13] x86/irq: Limit IOAPIC and MSI domains' affinity
+ without IR
 From: David Woodhouse <dwmw2@infradead.org>
 To: Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
-Date: Wed, 07 Oct 2020 15:10:24 +0100
-In-Reply-To: <87tuv640nw.fsf@nanos.tec.linutronix.de>
+Date: Wed, 07 Oct 2020 15:23:54 +0100
+In-Reply-To: <87imbm3zdq.fsf@nanos.tec.linutronix.de>
 References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
  <20201005152856.974112-1-dwmw2@infradead.org>
- <20201005152856.974112-7-dwmw2@infradead.org>
- <87lfgj59mp.fsf@nanos.tec.linutronix.de>
- <75d79c50d586c18f0b1509423ed673670fc76431.camel@infradead.org>
- <87tuv640nw.fsf@nanos.tec.linutronix.de>
+ <20201005152856.974112-10-dwmw2@infradead.org>
+ <87d01v58bw.fsf@nanos.tec.linutronix.de>
+ <d34efce9ca5a4a9d8d8609f872143e306bf5ee98.camel@infradead.org>
+ <874kn65h0r.fsf@nanos.tec.linutronix.de>
+ <F9476D19-3D08-4CE6-A535-6C1D2E9BA88D@infradead.org>
+ <87imbm3zdq.fsf@nanos.tec.linutronix.de>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Mime-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
@@ -92,150 +94,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7498742780736988556=="
+Content-Type: multipart/mixed; boundary="===============2204029658149713271=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============7498742780736988556==
+--===============2204029658149713271==
 Content-Type: multipart/signed; micalg="sha-256";
 	protocol="application/x-pkcs7-signature";
-	boundary="=-7VV/G4yHmSUDzWhLF4Z6"
+	boundary="=-x4/WWVJcTTdunN9okLGz"
 
 
---=-7VV/G4yHmSUDzWhLF4Z6
+--=-x4/WWVJcTTdunN9okLGz
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2020-10-07 at 15:37 +0200, Thomas Gleixner wrote:
-> On Wed, Oct 07 2020 at 08:19, David Woodhouse wrote:
-> > On Tue, 2020-10-06 at 23:26 +0200, Thomas Gleixner wrote:
-> > > On Mon, Oct 05 2020 at 16:28, David Woodhouse wrote:
-> > > > From: David Woodhouse <dwmw@amazon.co.uk>
-> > > >=20
-> > > > This is the maximum possible set of CPUs which can be used. Use it
-> > > > to calculate the default affinity requested from __irq_alloc_descs(=
-)
-> > > > by first attempting to find the intersection with irq_default_affin=
-ity,
-> > > > or falling back to using just the max_affinity if the intersection
-> > > > would be empty.
+On Wed, 2020-10-07 at 16:05 +0200, Thomas Gleixner wrote:
+> On Wed, Oct 07 2020 at 14:08, David Woodhouse wrote:
+> > On 7 October 2020 13:59:00 BST, Thomas Gleixner <tglx@linutronix.de> wr=
+ote:
+> > > On Wed, Oct 07 2020 at 08:48, David Woodhouse wrote:
+> > > > To fix *that* case, we really do need the whole series giving us pe=
+r-
+> > > > domain restricted affinity, and to use it for those MSIs/IOAPICs th=
+at
+> > > > the IRQ remapping doesn't cover.
 > > >=20
-> > > And why do we need that as yet another argument?
-> > >=20
-> > > This is an optional property of the irq domain, really and no caller =
-has
-> > > any business with that.=20
+> > > Which do not exist today.
 > >=20
-> > Because irq_domain_alloc_descs() doesn't actually *take* the domain as
-> > an argument. It's more of an internal function, which is only non-
-> > static because it's used from kernel/irq/ipi.c too for some reason. If
-> > we convert the IPI code to just call __irq_alloc_descs() directly,
-> > perhaps that we can actually make irq_domain_alloc_decs() static.
+> > Sure. But at patch 10/13 into this particular patch series, it *does*
+> > exist.
 >=20
-> What is preventing you to change the function signature? But handing
-> down irqdomain here is not cutting it. The right thing to do is to
-> replace 'struct irq_affinity_desc *affinity' with something more
-> flexible.
+> As I told you before: Your ordering is wrong. We do not introduce bugs
+> first and then fix them later ....
 
-Yeah, although I do think I want to ditch this part completely, and
-treat the "possible" mask for the domain very much more like we do
-cpu_online_mask. In that we can allow affinities to be *requested*
-which are outside it, and they can just never be *effective* while
-those CPUs aren't present and reachable.
+I didn't introduce that bug; it's been there for years. Fixing it
+properly requires per-irqdomain affinity limits.
 
-That way a lot of the nastiness about preparing an "acceptable" mask in
-advance can go away.
+There's a cute little TODO at least in the Intel irq-remapping driver,
+noting that we should probably check if there are any IOAPICs that
+aren't in the scope of any DRHD at all. But that's all.
 
-It's *also* driven, as I noted, by the realisation that on x86, the
-x86_non_ir_cpumask will only ever contain those CPUs which have been
-brought online so far and meet the criteria... but won't that be true
-on *any* system where CPU numbers are virtual and not 1:1 mapped with
-whatever determines reachability by the IRQ domain? It isn't *such* an
-x86ism, surely?
-
-> Fact is, that if there are CPUs which cannot be targeted by device
-> interrupts then the multiqueue affinity mechanism has to be fixed to
-> handle this. Right now it's just broken.
-
-I think part of the problem there is that I don't really understand how
-this part is *supposed* to work. I was focusing on getting the simple
-case working first, in the expectation that we'd come back to that part
-ansd you'd keep me honest. Is there some decent documentation on this
-that I'm missing?
-
-> It's pretty obvious that the irq domains are the right place to store
-> that information:
->=20
-> const struct cpumask *irqdomain_get_possible_affinity(struct irq_domain *=
-d)
-> {
->         while (d) {
->         	if (d->get_possible_affinity)
->                 	return d->get_possible_affinity(d);
->                 d =3D d->parent;
->         }
->         return cpu_possible_mask;
-> }
-
-Sure.
-
-> So if you look at X86 then you have either:
->=20
->    [VECTOR] ----------------- [IO/APIC]
->                           |-- [MSI]
->                           |-- [WHATEVER]
->=20
-> or
->=20
->    [VECTOR] ---[REMAP]------- [IO/APIC]
->              |            |-- [MSI]
->              |----------------[WHATEVER]
-
-Hierarchically, theoretically the IOAPIC and HPET really ought to be
-children of the MSI domain. It's the Compatibility MSI which has the
-restriction on destination ID, because of how many bits it interprets
-from the MSI address. HPET and IOAPIC are just generating MSIs that hit
-that upstream limit.
-
-> So if REMAP allows cpu_possible_mask and VECTOR some restricted subset
-> then irqdomain_get_possible_affinity() will return the correct result
-> independent whether remapping is enabled or not.
-
-Sure. Although VECTOR doesn't have the restriction. As noted, it's the
-Compatibility MSI that does. So the diagram looks something like this:
-
- [ VECTOR ] ---- [ REMAP ] ---- [ IR-MSI ] ---- [ IR-HPET ]
-              |                             |---[ IR-PCI-MSI ]
-              |                             |---[ IR-IOAPIC ]
-              |
-              |--[ COMPAT-MSI ] ---- [ HPET ]
-                                 |-- [ PCI-MSI ]
-                                 |-- [ IOAPIC ]
+If it happens, I think we'll end up doing the right thing and
+instantiating a non-IR IOAPIC domain for it, and if we *don't* have any
+CPU with an APIC ID above... (checks notes)... 7 ... then it'll just
+about work out. Over 7 and we're screwed (because logical mode; see
+also https://git.infradead.org/users/dwmw2/linux.git/commit/429f0c33f
+for a straw man but that's getting even further down the rabbit hole)
 
 
-In this diagram, it's COMPAT-MSI that has the affinity restriction,
-inherited by its children.
-
-Now, I understand that you're not keen on IOAPIC actually being a child
-of the MSI domain, and that's fine. In Linux right now, those generic
-'IR-MSI' and 'COMPAT-MSI' domains don't exist. So all three of the
-compatibility HPET, PCI-MSI and IOAPIC domains would have to add that
-same 8-bit affinity limit for themselves, as their parent is the VECTOR
-domain.
-
-I suppose it *might* not hurt to pretend that VECTOR does indeed have
-the limit, and to *remove* it in the remapping domain. And then the
-affinity limit could be removed in one place by the REMAP domain
-because even now in Linux's imprecise hierarchy, the IR-HPET, IR-PCI-
-MSI and IR-IOAPIC domains *are* children of that.
-
-But honestly, I'd rather iterate and get the generic irqdomain support
-for affinity limits into decent shape before I worry *too* much about
-precisely which was round it gets used by x86.
-
-
---=-7VV/G4yHmSUDzWhLF4Z6
+--=-x4/WWVJcTTdunN9okLGz
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -318,25 +226,25 @@ BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
 BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
 ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
 ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
-MDA3MTQxMDI0WjAvBgkqhkiG9w0BCQQxIgQgdi2KrB07xlpyB5W2i5HeUJes+t1b47yb/KvzxohA
-Pecwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+MDA3MTQyMzU1WjAvBgkqhkiG9w0BCQQxIgQgD/sgs2c5pqCJLtciwXt6DurJ3xObhSLk0lAUtwCd
+Dzcwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
 TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
 PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
 A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
 bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAIQFOmQ3mzy9eAXkV3EbmEcxm3reOOfEpibc+uHMh3Q4IcNBxd4bo78VHIV7vJFO
-yTihrbVEljRT67tyjJ4MqdQFwUU6pqt8BmeLLKrwdCIE8LoHC2m1N5GgNKnbZ2/pfqZjQ9GtWEnG
-uWZFF4CVtjnQO/kQPmWOW/MKAvxmxoxMKNcKuZt1rGb+mB9TasjYvnmVVhoxAIAck81X7kQLBBcX
-Y5GwdANnrNBlTe+A7jxr+eHEqk35kiVqQZxeOiMt0GLkpY/pNiKwoWx6C+DfISm6MTFIkIrBYhNb
-97zKuYPDcyJWsK0ncBgvkjF1kXICoECjXgO+ON6hpqDNTDbHozkAAAAAAAA=
+DQEBAQUABIIBAFTOwV2cAEXpV/vL6ZQiC5BvQ0z9J8HUL4VOnZK2tiqmp17shRP80c/fyVHMJKw7
+kp7sJ1ccFNmERPpFPlD8eYfKQj66/0DGiV4UzScc9aaemVjsAV+XRdB5RQfVqQk9C/cZcS8aWMU8
+2ZzuDVOTMIa/8ABvd32N+Lj25LH0l4tNZQEYsw4+m7kK4Cl/IJteF9nlQaYf49RHv1QVQYTqIL/a
+YTu8BU+DNoCS/zlXWCXrHddZ3CY876niv5SsGYEjMGl/jyxM0E4zGdH/vDC5Xv70CPKHBZwnOuIO
+DxD3tyqGiUqJ8ruoAJnQ+zzGieJlYJQ8k3T0a+pGne/ouDNAGaYAAAAAAAA=
 
 
---=-7VV/G4yHmSUDzWhLF4Z6--
+--=-x4/WWVJcTTdunN9okLGz--
 
 
---===============7498742780736988556==
+--===============2204029658149713271==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -346,5 +254,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7498742780736988556==--
+--===============2204029658149713271==--
 
