@@ -2,93 +2,94 @@ Return-Path: <SRS0=Q5Oi=DP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C62C4363A
-	for <iommu@archiver.kernel.org>; Thu,  8 Oct 2020 12:41:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF4DC43457
+	for <iommu@archiver.kernel.org>; Thu,  8 Oct 2020 19:43:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70ECE2184D
-	for <iommu@archiver.kernel.org>; Thu,  8 Oct 2020 12:41:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F3B30221FE
+	for <iommu@archiver.kernel.org>; Thu,  8 Oct 2020 19:43:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="JLDQ1enh";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="sPUfW/Dh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70ECE2184D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="IgDpgsIS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3B30221FE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 009CF86CDF;
-	Thu,  8 Oct 2020 12:41:06 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6ED1486F8A;
+	Thu,  8 Oct 2020 19:43:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r78IoLWE1a-Z; Thu,  8 Oct 2020 12:41:05 +0000 (UTC)
+	with ESMTP id 2MzeJeD6MR8m; Thu,  8 Oct 2020 19:43:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 337B686CBF;
-	Thu,  8 Oct 2020 12:41:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 300D986DD6;
+	Thu,  8 Oct 2020 19:43:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18511C07FF;
-	Thu,  8 Oct 2020 12:41:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20D1FC016F;
+	Thu,  8 Oct 2020 19:43:32 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1581CC0051
- for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 12:41:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51310C0051
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 19:43:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 0A2B486CBF
- for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 12:41:03 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4D42486A33
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 19:43:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P_7xQ_AyZAyC for <iommu@lists.linux-foundation.org>;
- Thu,  8 Oct 2020 12:41:01 +0000 (UTC)
+ with ESMTP id q35ZE6y3tIXh for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Oct 2020 19:43:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9B51C86CAE
- for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 12:41:01 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1602160858;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=kxroEkMT5O65MYaakoHs0S8A9ZmiZNNxOQXIf8c8848=;
- b=JLDQ1enhdPqwwGJ5u5iLQdncHS+AbvmH1KrMD2IlYekyh7j9CW12Hv2CPrmTOQsB1gbd7W
- WWCLTLCJNROx4TH73Ruqxh6TtIy+TjG6YEMz5J+oq09SAgqb/8IqGKwh6DBMRqPTKuc4IC
- GzCvN0BymNNn0pA8i80JsUVHKcuvNfNOOFXtDjUiOmkPWm6Y+gl6ZCImvNepV+zMyEFUOc
- QvuIJtXHF/tw3qCpqv5eYl/lqoQjjkQAeQEE5+P/VVyhYIZYun4GZvMhFuapuxp8Kt1GDb
- cLiTdIWfxLH+8uXndFnW5nBRR9HGYAjUxPYQr5v/SmL6d94vv8+72Eo+P3+nBw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1602160858;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=kxroEkMT5O65MYaakoHs0S8A9ZmiZNNxOQXIf8c8848=;
- b=sPUfW/DhvQqEeWAtPcFjW5eFspwuXzH2Lv6Nnhu3oJHl0XOqEDHX9HxfDANeYaLgerp4hl
- MCMG1lir+ZiOT6Bg==
-To: David Woodhouse <dwmw2@infradead.org>, x86@kernel.org
-Subject: Re: [PATCH 07/13] irqdomain: Add max_affinity argument to
- irq_domain_alloc_descs()
-In-Reply-To: <2c0712352812ab114cb711236703fd7c308a5bf2.camel@infradead.org>
-References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
- <20201005152856.974112-1-dwmw2@infradead.org>
- <20201005152856.974112-7-dwmw2@infradead.org>
- <87lfgj59mp.fsf@nanos.tec.linutronix.de>
- <75d79c50d586c18f0b1509423ed673670fc76431.camel@infradead.org>
- <87tuv640nw.fsf@nanos.tec.linutronix.de>
- <336029ca32524147a61b6fa1eb734debc9d51a00.camel@infradead.org>
- <87a6wy3u6n.fsf@nanos.tec.linutronix.de>
- <119c2f993cac5d57c54d4720addc9f32bf1daadd.camel@infradead.org>
- <87k0w12h8u.fsf@nanos.tec.linutronix.de>
- <2c0712352812ab114cb711236703fd7c308a5bf2.camel@infradead.org>
-Date: Thu, 08 Oct 2020 14:40:57 +0200
-Message-ID: <878scgx546.fsf@nanos.tec.linutronix.de>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B668886A84
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 19:43:30 +0000 (UTC)
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com
+ [209.85.210.54])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 10DDF21D7D
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Oct 2020 19:43:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1602186210;
+ bh=abWUHRGLWMGmX/Tv6KKz6D0f3Jzr7DwwCLBGA7BTaK8=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=IgDpgsISz/i/U6v23X6I0LY3rtH1P6r4x4kEd+A/bMj9jQK5p8HbFb8pktCVq8ZHq
+ Y+AWR2mZYCgGiXPou9EwU1cXkNg8Jl/HBTvar4UnXrVth71btDMQb8i8Y4HlMopcKx
+ m/T1/icTQfdMN6jfMNyvxig3wbmzxxgbffR6vWyE=
+Received: by mail-ot1-f54.google.com with SMTP id q21so6677677ota.8
+ for <iommu@lists.linux-foundation.org>; Thu, 08 Oct 2020 12:43:30 -0700 (PDT)
+X-Gm-Message-State: AOAM531bDqhqXn2npVZoi2KpWNP9VSzRv6o0GolJR8CbPBOG3JcSmHbv
+ /UzKYkx7HzcHK/arXwozPobJJ8az/G544EMyG9k=
+X-Google-Smtp-Source: ABdhPJxiXR12+R6StUgzqZLHBQ2OD2DN3gcO9/Bj3pCTbxT+SfYwTB2taOKJTWOAiJJf2sTaK+rb1sZ0PzCY7OValUA=
+X-Received: by 2002:a9d:6a85:: with SMTP id l5mr6658185otq.77.1602186209247;
+ Thu, 08 Oct 2020 12:43:29 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Paolo Bonzini <pbonzini@redhat.com>,
- iommu <iommu@lists.linux-foundation.org>, linux-hyperv@vger.kernel.org,
- kvm <kvm@vger.kernel.org>
+References: <20201001161740.29064-1-nsaenzjulienne@suse.de>
+ <20201001161740.29064-2-nsaenzjulienne@suse.de> <20201001171500.GN21544@gaia>
+ <20201001172320.GQ21544@gaia>
+ <b47232e2173e9e5ddf8f5be4c7b5a2f897f34eb7.camel@suse.de>
+ <20201002115541.GC7034@gaia>
+ <12f33d487eabd626db4c07ded5a1447795eed355.camel@suse.de>
+ <20201008101353.GE7661@gaia>
+In-Reply-To: <20201008101353.GE7661@gaia>
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Thu, 8 Oct 2020 21:43:18 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFDEdEJ_eaB=jb1m=tKBpVdskrC0fW67NvGNZFS5PVL=Q@mail.gmail.com>
+Message-ID: <CAMj1kXFDEdEJ_eaB=jb1m=tKBpVdskrC0fW67NvGNZFS5PVL=Q@mail.gmail.com>
+Subject: Re: [PATCH 1/4] of/fdt: Update zone_dma_bits when running in bcm2711
+To: Catalin Marinas <catalin.marinas@arm.com>,
+ Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-rpi-kernel@lists.infradead.org, Frank Rowand <frowand.list@gmail.com>,
+ Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,188 +107,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Oct 08 2020 at 12:10, David Woodhouse wrote:
-> On Thu, 2020-10-08 at 11:34 +0200, Thomas Gleixner wrote:
->> The overall conclusion for this is:
->> 
->>  1) X2APIC support on bare metal w/o irq remapping is not going to
->>     happen unless you:
->> 
->>       - added support in multi-queue devices which utilize managed
->>         interrupts
->>         
->>       - audited the whole tree for other assumptions related to the
->>         reachability of possible CPUs.
->> 
->>     I'm not expecting you to be done with that before I retire so for
->>     me it's just not going to happen :)
+(+ Lorenzo)
+
+On Thu, 8 Oct 2020 at 12:14, Catalin Marinas <catalin.marinas@arm.com> wrote:
 >
-> Makes sense. It probably does mean we should a BUG_ON for the case
-> where IRQ remapping *is* enabled but any device is found which isn't
-> behind it. But that's OK.
-
-We can kinda gracefully handle that. See the completely untested and
-incomplete patch below.
-
->>  2) X2APIC support on VIRT is possible if the extended ID magic is
->>     supported by the hypervisor because that does not make any CPU
->>     unreachable for MSI and therefore the multi-queue muck and
->>     everything else just works.
->> 
->>     This requires to have either the domain affinity limitation for HPET
->>     in place or just to force disable HPET or at least HPET-MSI which is
->>     a reasonable tradeoff.
->> 
->>     HPET is not required for guests which have kvmclock and
->>     APIC/deadline timer and known (hypervisor provided) frequencies.
+> On Thu, Oct 08, 2020 at 12:05:25PM +0200, Nicolas Saenz Julienne wrote:
+> > On Fri, 2020-10-02 at 12:55 +0100, Catalin Marinas wrote:
+> > > On Thu, Oct 01, 2020 at 07:31:19PM +0200, Nicolas Saenz Julienne wrote:
+> > > > On Thu, 2020-10-01 at 18:23 +0100, Catalin Marinas wrote:
+> > > > > On Thu, Oct 01, 2020 at 06:15:01PM +0100, Catalin Marinas wrote:
+> > > > > > On Thu, Oct 01, 2020 at 06:17:37PM +0200, Nicolas Saenz Julienne wrote:
+> > > > > > > diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+> > > > > > > index 4602e467ca8b..cd0d115ef329 100644
+> > > > > > > --- a/drivers/of/fdt.c
+> > > > > > > +++ b/drivers/of/fdt.c
+> > > > > > > @@ -25,6 +25,7 @@
+> > > > > > >  #include <linux/serial_core.h>
+> > > > > > >  #include <linux/sysfs.h>
+> > > > > > >  #include <linux/random.h>
+> > > > > > > +#include <linux/dma-direct.h>      /* for zone_dma_bits */
+> > > > > > >
+> > > > > > >  #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
+> > > > > > >  #include <asm/page.h>
+> > > > > > > @@ -1198,6 +1199,14 @@ void __init early_init_dt_scan_nodes(void)
+> > > > > > >     of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+> > > > > > >  }
+> > > > > > >
+> > > > > > > +void __init early_init_dt_update_zone_dma_bits(void)
+> > > > > > > +{
+> > > > > > > +   unsigned long dt_root = of_get_flat_dt_root();
+> > > > > > > +
+> > > > > > > +   if (of_flat_dt_is_compatible(dt_root, "brcm,bcm2711"))
+> > > > > > > +           zone_dma_bits = 30;
+> > > > > > > +}
+> > > > > >
+> > > > > > I think we could keep this entirely in the arm64 setup_machine_fdt() and
+> > > > > > not pollute the core code with RPi4-specific code.
+> > > > >
+> > > > > Actually, even better, could we not move the check to
+> > > > > arm64_memblock_init() when we initialise zone_dma_bits?
+> > > >
+> > > > I did it this way as I vaguely remembered Rob saying he wanted to centralise
+> > > > all early boot fdt code in one place. But I'll be happy to move it there.
+> > >
+> > > I can see Rob replied and I'm fine if that's his preference. However,
+> > > what I don't particularly like is that in the arm64 code, if
+> > > zone_dma_bits == 24, we set it to 32 assuming that it wasn't touched by
+> > > the early_init_dt_update_zone_dma_bits(). What if at some point we'll
+> > > get a platform that actually needs 24 here (I truly hope not, but just
+> > > the principle of relying on magic values)?
+> > >
+> > > So rather than guessing, I'd prefer if the arch code can override
+> > > ZONE_DMA_BITS_DEFAULT. Then, in arm64, we'll just set it to 32 and no
+> > > need to explicitly touch the zone_dma_bits variable.
+> >
+> > Yes, sonds like the way to go. TBH I wasn't happy with that solution either,
+> > but couldn't think of a nicer alternative.
+> >
+> > Sadly I just realised that the series is incomplete, we have RPi4 users that
+> > want to boot unsing ACPI, and this series would break things for them. I'll
+> > have a word with them to see what we can do for their use-case.
 >
-> HPET-MSI should work fine. Like the IOAPIC, it's just a child of the
-> *actual* MSI domain. The address/data in the MSI message are completely
-> opaque to it, and if the parent domain happens to put meaningful
-> information into bits 11-5 of the MSI address, the HPET won't even
-> notice.
+> Is there a way to get some SoC information from ACPI?
 >
-> The HPET's Tn_FSB_INT_ADDR register does have a full 32 bits of the MSI
-> address; it's not doing bit-swizzling like the IOAPIC does, which might
-> potentially *not* have been able to set certain bits in the MSI.
 
-Indeed. I thought it was crippled in some way, but you're right it has
-all the bits.
+This is unfortunate. We used ACPI _DMA methods as they were designed
+to communicate the DMA limit of the XHCI controller to the OS.
 
-Thanks,
-
-        tglx
----
-Subject: x86/iommu: Make interrupt remapping more robust
-From: Thomas Gleixner <tglx@linutronix.de>
-Date: Thu, 08 Oct 2020 14:09:44 +0200
-
-Needs to be split into pieces and cover PCI proper. Right now PCI gets a
-NULL pointer assigned which makes it explode at the wrong place
-later. Also hyperv iommu wants some love.
-
-NOT-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- arch/x86/kernel/apic/io_apic.c      |    4 +++-
- arch/x86/kernel/apic/msi.c          |   24 ++++++++++++++----------
- drivers/iommu/amd/iommu.c           |    6 +++---
- drivers/iommu/intel/irq_remapping.c |    4 ++--
- 4 files changed, 22 insertions(+), 16 deletions(-)
-
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2300,7 +2300,9 @@ static int mp_irqdomain_create(int ioapi
- 	info.type = X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT;
- 	info.devid = mpc_ioapic_id(ioapic);
- 	parent = irq_remapping_get_irq_domain(&info);
--	if (!parent)
-+	if (IS_ERR(parent))
-+		return PTR_ERR(parent);
-+	else if (!parent)
- 		parent = x86_vector_domain;
- 	else
- 		name = "IO-APIC-IR";
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -415,9 +415,9 @@ static struct msi_domain_info hpet_msi_d
- struct irq_domain *hpet_create_irq_domain(int hpet_id)
- {
- 	struct msi_domain_info *domain_info;
-+	struct fwnode_handle *fn = NULL;
- 	struct irq_domain *parent, *d;
- 	struct irq_alloc_info info;
--	struct fwnode_handle *fn;
- 
- 	if (x86_vector_domain == NULL)
- 		return NULL;
-@@ -432,25 +432,29 @@ struct irq_domain *hpet_create_irq_domai
- 	init_irq_alloc_info(&info, NULL);
- 	info.type = X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT;
- 	info.devid = hpet_id;
-+
- 	parent = irq_remapping_get_irq_domain(&info);
--	if (parent == NULL)
-+	if (IS_ERR(parent))
-+		goto fail;
-+	else if (!parent)
- 		parent = x86_vector_domain;
- 	else
- 		hpet_msi_controller.name = "IR-HPET-MSI";
- 
- 	fn = irq_domain_alloc_named_id_fwnode(hpet_msi_controller.name,
- 					      hpet_id);
--	if (!fn) {
--		kfree(domain_info);
--		return NULL;
--	}
-+	if (!fn)
-+		goto fail;
- 
- 	d = msi_create_irq_domain(fn, domain_info, parent);
--	if (!d) {
--		irq_domain_free_fwnode(fn);
--		kfree(domain_info);
--	}
-+	if (!d)
-+		goto fail;
- 	return d;
-+
-+fail:
-+	irq_domain_free_fwnode(fn);
-+	kfree(domain_info);
-+	return NULL;
- }
- 
- int hpet_assign_irq(struct irq_domain *domain, struct hpet_channel *hc,
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3557,7 +3557,7 @@ static struct irq_domain *get_irq_domain
- 	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
- 
- 	if (!iommu)
--		return NULL;
-+		return ERR_PTR(-ENODEV);
- 
- 	switch (info->type) {
- 	case X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT:
-@@ -3565,7 +3565,7 @@ static struct irq_domain *get_irq_domain
- 		return iommu->ir_domain;
- 	default:
- 		WARN_ON_ONCE(1);
--		return NULL;
-+		return ERR_PTR(-ENODEV);
- 	}
- }
- 
-@@ -3578,7 +3578,7 @@ static struct irq_domain *get_irq_domain
- 
- 	devid = get_devid(info);
- 	if (devid < 0)
--		return NULL;
-+		return ERR_PTR(-ENODEV);
- 	return get_irq_domain_for_devid(info, devid);
- }
- 
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -212,7 +212,7 @@ static struct irq_domain *map_hpet_to_ir
- 		if (ir_hpet[i].id == hpet_id && ir_hpet[i].iommu)
- 			return ir_hpet[i].iommu->ir_domain;
- 	}
--	return NULL;
-+	return ERR_PTR(-ENODEV);
- }
- 
- static struct intel_iommu *map_ioapic_to_iommu(int apic)
-@@ -230,7 +230,7 @@ static struct irq_domain *map_ioapic_to_
- {
- 	struct intel_iommu *iommu = map_ioapic_to_iommu(apic);
- 
--	return iommu ? iommu->ir_domain : NULL;
-+	return iommu ? iommu->ir_domain : ERR_PTR(-ENODEV);
- }
- 
- static struct irq_domain *map_dev_to_ir(struct pci_dev *dev)
+It shouldn't be too hard to match the OEM id field in the DSDT, and
+switch to the smaller mask. But it sucks to have to add a quirk like
+that.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
