@@ -6,75 +6,75 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8534C43457
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:55:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C53E6C433E7
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:56:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 342E7222C3
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:55:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 61062222B9
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:56:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hX9UyplG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 342E7222C3
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Hlz0T0HY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61062222B9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D6CB887734;
-	Fri,  9 Oct 2020 13:55:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 196068770B;
+	Fri,  9 Oct 2020 13:56:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NkNUMP6uK0Zj; Fri,  9 Oct 2020 13:55:09 +0000 (UTC)
+	with ESMTP id 9P9enu5wUT6n; Fri,  9 Oct 2020 13:56:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 31D1987723;
-	Fri,  9 Oct 2020 13:55:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 94CEB8770C;
+	Fri,  9 Oct 2020 13:56:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14AD4C07FF;
-	Fri,  9 Oct 2020 13:55:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78AF0C07FF;
+	Fri,  9 Oct 2020 13:56:40 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 07106C0051
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:55:07 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C948FC0051
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:56:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E51A32E27F
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:55:06 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id AD0302034A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:56:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C9oMhIRv4-l2 for <iommu@lists.linux-foundation.org>;
- Fri,  9 Oct 2020 13:55:06 +0000 (UTC)
+ with ESMTP id IRzsZxOlmxLg for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Oct 2020 13:56:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com
- [209.85.166.180])
- by silver.osuosl.org (Postfix) with ESMTPS id 26FBD20026
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:55:06 +0000 (UTC)
-Received: by mail-il1-f180.google.com with SMTP id r10so4344535ilm.11
- for <iommu@lists.linux-foundation.org>; Fri, 09 Oct 2020 06:55:06 -0700 (PDT)
+Received: from mail-il1-f196.google.com (mail-il1-f196.google.com
+ [209.85.166.196])
+ by silver.osuosl.org (Postfix) with ESMTPS id 7F3A620026
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:56:36 +0000 (UTC)
+Received: by mail-il1-f196.google.com with SMTP id p16so783894ilq.5
+ for <iommu@lists.linux-foundation.org>; Fri, 09 Oct 2020 06:56:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=2S3D9iYx51A87Z/QbgZ/692gZHGuP26oR+0wJ2UbLg8=;
- b=hX9UyplGhpPB5uZa13A2uK91raJ+XXjUWlWCULGthc4S0OtZCfMyA1Sc9MTHzTbgC4
- msSG67tcHwpsaaHcIcBIxD//0F918iRlSssC5PR4njAqbOOYLyKqyC5a8bmRJ+42fVIX
- m5szy0Q1jAgH4+eL9obnuOTNuNffxCrmelyiwXC67CEvoRL3Yl5tuCyUnJ8SRVUT/wwd
- h1sLQ8miFedqdQqlUJXnL3yQoAhnGJv523s7udQLzJJ8AiSS3EpjHJGGcxtnuYqvMEPB
- GokfmAsUWyD3jFdgVaVDlBKgdFPczycyRd6zaGtUR6Beyb3OEx622w4pKxPRyQvqURMf
- 1iJQ==
+ h=mime-version:references:from:date:message-id:subject:to:cc;
+ bh=6o6qPP8lMx7cYOKA/MqaKbaqIjCjGnaiLWr14rPl5P0=;
+ b=Hlz0T0HYpcI1RmYPyeOF014dP7wq6mto4JOO5AQX3su3fh95zbsrdvX+wsqbFQFmuk
+ o56RJq7SGR5KyYMNTqsQjirLof/hnJtOBvvKEwO9b1+TN3p0b4gl92toDcBj7VMPnn7/
+ 8tY2NMUR4+quoUAFnkcxw7tVy93kHmwxgOPAcTX7m1Uo+ZCdjtmxau9fhNb4E82Tq5ot
+ B5nJJa8LIH8PryvenpUGFLf4m8Kd88gjuibR7FbKT1TrjSS9oz09MR1uncgkH+1kLLzz
+ /FVRczFb6cSO2chHkoCGBoFXPEzehWoc1SQrPGaGcYlVCO8j83PhHkDjqmQt2j07l4cf
+ 0s7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=2S3D9iYx51A87Z/QbgZ/692gZHGuP26oR+0wJ2UbLg8=;
- b=Yw6h8bWr2k6EFYFJF7E6/CDJ70nFtKnxBgfZALXhGYxSl4quEE0JmoHds7DHL91BI4
- EeXLWkb2ErMGz39Je7Mjsitj+NiIlymuNCLS++coIjvbbqrXL3eaUQsG8RDbFXCM4mW8
- 2PGWNB1ZLcMuz74kyHvlzSOJYuqyG4Ty1amnIP30yItyhTQpYYIGz1AN2NxnGQ6xTUgc
- JrWvf/kx27Wu3DfBARjIIiMj8WTn4jVr9IAFmyRm0ze+yACitNhxFZHtBboL/qWIIrH0
- 9qnovlnKATjXg00oTK5+27JjutAF6whfwfCZ22hLVFm1AZm79O4H/No1uESWnk7RwOVq
- +Ytg==
-X-Gm-Message-State: AOAM533rPNn6Iqi65M8gPXcpmtgtYJfYzVEtPec+hjZ5xqQI6rLF35NY
- Nbbcqkmm8eeNYryUwpVa7pFUuatprZytumVGQNTxcQ==
-X-Google-Smtp-Source: ABdhPJwJSrz7eUwTvUf7DlETg6YMldEBYzcCV0k+8KYceSzIWftZL4GSM73AlaH1smsxWJNOo4qH2nJDd79/yrPumYg=
+ h=x-gm-message-state:mime-version:references:from:date:message-id
+ :subject:to:cc;
+ bh=6o6qPP8lMx7cYOKA/MqaKbaqIjCjGnaiLWr14rPl5P0=;
+ b=MjrZ9iJLny/Y0b/7rYUf/UNwaFPmC6elR8085byPZ/cMkuietmc60Xcg/j9KoOB0Pq
+ JaqFVo9QzuTBquW0j2iBFyGJdvvwqyS1tXttUfqyyF5J+MJwfTfIR/OrvsIUfZqmD5GS
+ LkaU37QxMlRbiLPYw2WWAFRK8Bj6RwoIb646aGiyAgI9hTBacVz+SDsJVEhi8bjl1HhH
+ H9IVRYxsn66XAo9TzVK88PJ9PXOWC4Yaqz0uNInHjSYWyeKPUWVXJ2FY/KLQVdmrmb+N
+ IB3vbiqH4dQ93a4FaSSD5pEcJcq4jY3xNyqqWU/MTFPvGh+BBD844mtkGfsuI9l2ALKy
+ +M9g==
+X-Gm-Message-State: AOAM532TY1YDA99j+U3YQAbHSlCdh4F9xW0mDW813fWmaMFalX6ik0eM
+ 0DcBgXSdluRth5HdfiFPapCUlqEcv06pDnSUtryQwA==
+X-Google-Smtp-Source: ABdhPJzUkvbAvYEa3k1BsUYozC/xotWpIsogjry89hwi8FrKRfRA/5IIZf6URsj+bAxUF2s9ybtiMe1E4JF5+OFqUys=
 X-Received: by 2002:a05:6e02:664:: with SMTP id
- l4mr11028746ilt.81.1602251705277; 
- Fri, 09 Oct 2020 06:55:05 -0700 (PDT)
+ l4mr11033643ilt.81.1602251795786; 
+ Fri, 09 Oct 2020 06:56:35 -0700 (PDT)
 MIME-Version: 1.0
 References: <CA+G9fYvuq58q+GsWnzni0sKSHbubuQz-UaK3TASX26V_a7yBVw@mail.gmail.com>
  <20200924090349.GF27174@8bytes.org>
@@ -82,10 +82,10 @@ References: <CA+G9fYvuq58q+GsWnzni0sKSHbubuQz-UaK3TASX26V_a7yBVw@mail.gmail.com>
  <20200924092546.GJ27174@8bytes.org>
  <e2186418-d4d6-e1f4-5eb4-3bfafb5cebb2@arm.com>
  <20200924095629.GL27174@8bytes.org>
-In-Reply-To: <20200924095629.GL27174@8bytes.org>
+ <CA+G9fYu42j_B+Rg2nq+KKBiKLqxVEqabQ15CujyJ+o6jqRj2uQ@mail.gmail.com>
 From: Naresh Kamboju <naresh.kamboju@linaro.org>
-Date: Fri, 9 Oct 2020 19:24:54 +0530
-Message-ID: <CA+G9fYu42j_B+Rg2nq+KKBiKLqxVEqabQ15CujyJ+o6jqRj2uQ@mail.gmail.com>
+Date: Fri, 9 Oct 2020 19:26:24 +0530
+Message-ID: <CA+G9fYtG6Ro-NdrP89ipDyUqVVT2=_8pTvjTSeFcWr795bp8AA@mail.gmail.com>
 Subject: Re: arm-smmu 5000000.iommu: Cannot accommodate DMA offset for IOMMU
  page tables
 To: Joerg Roedel <joro@8bytes.org>
@@ -116,18 +116,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 24 Sep 2020 at 15:26, Joerg Roedel <joro@8bytes.org> wrote:
+On Fri, 9 Oct 2020 at 19:24, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
 >
-> On Thu, Sep 24, 2020 at 10:36:47AM +0100, Robin Murphy wrote:
-> > Yes, the issue was introduced by one of the changes in "dma-mapping:
-> > introduce DMA range map, supplanting dma_pfn_offset", so it only existed in
-> > the dma-mapping/for-next branch anyway.
+>
+>
+> On Thu, 24 Sep 2020 at 15:26, Joerg Roedel <joro@8bytes.org> wrote:
+> >
+> > On Thu, Sep 24, 2020 at 10:36:47AM +0100, Robin Murphy wrote:
+> > > Yes, the issue was introduced by one of the changes in "dma-mapping:
+> > > introduce DMA range map, supplanting dma_pfn_offset", so it only existed in
+> > > the dma-mapping/for-next branch anyway.
+>
 
 FYI,
-The reported problem still exists
->
-> Okay, alright then.
->
+The reported problem still exists on 5.9.0-rc8-next-20201009.
+
+[    1.843814] Driver must set ecc.strength when using hardware ECC
+[    1.849847] WARNING: CPU: 4 PID: 1 at
+drivers/mtd/nand/raw/nand_base.c:5687 nand_scan_with_ids+0x1450/0x1470
+[    1.859676] Modules linked in:
+[    1.862730] CPU: 4 PID: 1 Comm: swapper/0 Not tainted
+5.9.0-rc8-next-20201009 #1
+[    1.870125] Hardware name: Freescale Layerscape 2088A RDB Board (DT)
+[    1.876478] pstate: 40000005 (nZcv daif -PAN -UAO -TCO BTYPE=--)
+[    1.882483] pc : nand_scan_with_ids+0x1450/0x1470
+[    1.887183] lr : nand_scan_with_ids+0x1450/0x1470
+
+full test log,
+https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20201009/testrun/3284876/suite/linux-log-parser/test/check-kernel-warning-92014/log
+
+> >
+> > Okay, alright then.
+> >
+
+- Naresh
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
