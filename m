@@ -2,104 +2,80 @@ Return-Path: <SRS0=yPDG=DQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B3EC43467
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 12:26:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97730C433DF
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:33:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B92F0222B8
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 12:26:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NwXhEoXG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B92F0222B8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1D37E22277
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 13:33:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D37E22277
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5AC3F86AE8;
-	Fri,  9 Oct 2020 12:26:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 70468203E9;
+	Fri,  9 Oct 2020 13:33:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8eD5eUqbfk-s; Fri,  9 Oct 2020 12:26:03 +0000 (UTC)
+	with ESMTP id 5DtsS4a5to8j; Fri,  9 Oct 2020 13:33:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AD01386A8F;
-	Fri,  9 Oct 2020 12:26:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5398820355;
+	Fri,  9 Oct 2020 13:33:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FA20C016F;
-	Fri,  9 Oct 2020 12:26:03 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0583C0051
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 12:26:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 347EAC07FF;
+	Fri,  9 Oct 2020 13:33:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8346FC0051
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:33:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 99792876C6
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 12:26:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 717478770D
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:33:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p++3hsLcRSyz for <iommu@lists.linux-foundation.org>;
- Fri,  9 Oct 2020 12:26:01 +0000 (UTC)
+ with ESMTP id QmU4r08ledtU for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Oct 2020 13:33:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 91625876B5
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 12:26:01 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id t25so12725920ejd.13
- for <iommu@lists.linux-foundation.org>; Fri, 09 Oct 2020 05:26:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=vxWvga10iK++hQGsOFVlXKsQyXZ7GztSMmrf028ztk4=;
- b=NwXhEoXGxC+R37EfS1lfuy3g8wbdrNmU1E77zfyzc9D/fJwROKORSsZfAQKLCnnOMk
- d5vWXwQRNB4Bi+3zTINWBL0LgydS59ZKZRYp40cKQvY8QiUfAY73FMiBfEWBIGw56R8y
- iS4a2hSi7xRdR5vj0D+RFTrOaiYJ7evxpNryiOknzByilQ9uNIGR+y0R5FUhcVptSfMM
- 63P7nk78F1hZKMy+TR1hNm9QyO+zYqHIC3cstDV2l2kqtjSuIyCxdIXx5aF63qupP1vn
- P+WHmPHGzAyyA1lXVqWwtitoHl7b4GiR/PsPmEYg76+c2mfqCWA9pNAP7fV4/QKiLCux
- D0BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=vxWvga10iK++hQGsOFVlXKsQyXZ7GztSMmrf028ztk4=;
- b=BwQhWbvjQsmmXyS2CJmFfP0hvw74sFAMpcGAmNBzM0j2xhU6kqYt3Se5US5Y1ACDKT
- YyguysDkkMeCtFMIPJ7ZlkHsL6HoGQ9BQPCwR2gB45mvUzoTYXEai3n0oLBgRRYZJfUT
- EiZkmkoR9h9dsBuYrwN3HHMCy7dIilL+oihPROctSawfu/0q37sAhdAo6gx+nO/1SnhL
- LypvBNl/vmN7eEfd5frGf5vxfJSQYEs+Ttgr0+JSNSwfoUnLdPE1v5qGII1jxBr7cs+I
- Rmleen/+e4MzhQiibdS/hhmxzy99ykAFuqX+pC+RXDiN+Z80uZ9kQ5X6sHhZZNucu5T3
- 9KHg==
-X-Gm-Message-State: AOAM531my1er4fkmew02q7/W4HGQUnvsQ3ZG7SfjFcPP6TEdpvdf2QGA
- 5DD2XnTWyROUqKuiHD00STA=
-X-Google-Smtp-Source: ABdhPJxkD3KtJ6bfK9EwnyjmX+Fl4PJjDDa08bzc4YEJmViDgYAtnI0ithJ1zzW1tf+4J5V2VWMRNQ==
-X-Received: by 2002:a17:906:490d:: with SMTP id
- b13mr13800241ejq.122.1602246359881; 
- Fri, 09 Oct 2020 05:25:59 -0700 (PDT)
-Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id lb11sm6271626ejb.27.2020.10.09.05.25.57
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 09 Oct 2020 05:25:58 -0700 (PDT)
-Date: Fri, 9 Oct 2020 14:25:56 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH v4 2/3] iommu/tegra-smmu: Rework tegra_smmu_probe_device()
-Message-ID: <20201009122556.GE458338@ulmo>
-References: <20201002060807.32138-1-nicoleotsuka@gmail.com>
- <20201002060807.32138-3-nicoleotsuka@gmail.com>
- <5542b314-f414-1e83-8cf6-2bf22a41ae9c@gmail.com>
- <20201002185828.GC29706@Asurada-Nvidia>
- <20201005095754.GJ425362@ulmo>
- <20201006010546.GB28640@Asurada-Nvidia>
- <20201008095343.GA2349275@ulmo>
- <20201008211209.GC32140@Asurada-Nvidia>
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DAC4D87707
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 13:33:49 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id E5225AC3F;
+ Fri,  9 Oct 2020 13:33:47 +0000 (UTC)
+Message-ID: <7b030a00d866f869acb4dea729df5fc93d561558.camel@suse.de>
+Subject: Re: [PATCH 1/4] of/fdt: Update zone_dma_bits when running in bcm2711
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Ard Biesheuvel <ardb@kernel.org>
+Date: Fri, 09 Oct 2020 15:33:46 +0200
+In-Reply-To: <CAMj1kXGP_OTKgqMT0-+t3=7EKDY26y9n9xjLodSF1E-mUCe9tg@mail.gmail.com>
+References: <20201001161740.29064-1-nsaenzjulienne@suse.de>
+ <20201001161740.29064-2-nsaenzjulienne@suse.de>
+ <20201001171500.GN21544@gaia> <20201001172320.GQ21544@gaia>
+ <b47232e2173e9e5ddf8f5be4c7b5a2f897f34eb7.camel@suse.de>
+ <20201002115541.GC7034@gaia>
+ <12f33d487eabd626db4c07ded5a1447795eed355.camel@suse.de>
+ <20201009071013.GA12208@lst.de>
+ <CAMj1kXG+7Lq=rgUfyU_XS9LrJwpUiC8nKsRPom+R0=phuXioHQ@mail.gmail.com>
+ <513833810c15b5efeab7c3cbae1963a78c71a79f.camel@suse.de>
+ <CAMj1kXGP_OTKgqMT0-+t3=7EKDY26y9n9xjLodSF1E-mUCe9tg@mail.gmail.com>
+User-Agent: Evolution 3.36.5 
 MIME-Version: 1.0
-In-Reply-To: <20201008211209.GC32140@Asurada-Nvidia>
-User-Agent: Mutt/1.14.7 (2020-08-29)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
- Dmitry Osipenko <digetx@gmail.com>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED
+ DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
+ Will Deacon <will@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-rpi-kernel@lists.infradead.org, Frank Rowand <frowand.list@gmail.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,125 +88,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6359188187697409744=="
+Content-Type: multipart/mixed; boundary="===============3339382150100124547=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============6359188187697409744==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="TD8GDToEDw0WLGOL"
-Content-Disposition: inline
+--===============3339382150100124547==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-QKDQqezONyqKzfC6bWKQ"
 
 
---TD8GDToEDw0WLGOL
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+--=-QKDQqezONyqKzfC6bWKQ
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 08, 2020 at 02:12:10PM -0700, Nicolin Chen wrote:
-> On Thu, Oct 08, 2020 at 11:53:43AM +0200, Thierry Reding wrote:
-> > On Mon, Oct 05, 2020 at 06:05:46PM -0700, Nicolin Chen wrote:
-> > > On Mon, Oct 05, 2020 at 11:57:54AM +0200, Thierry Reding wrote:
-> > > > On Fri, Oct 02, 2020 at 11:58:29AM -0700, Nicolin Chen wrote:
-> > > > > On Fri, Oct 02, 2020 at 06:02:18PM +0300, Dmitry Osipenko wrote:
-> > > > > > 02.10.2020 09:08, Nicolin Chen =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > > > > > >  static int tegra_smmu_of_xlate(struct device *dev,
-> > > > > > >  			       struct of_phandle_args *args)
-> > > > > > >  {
-> > > > > > > +	struct platform_device *iommu_pdev =3D of_find_device_by_no=
-de(args->np);
-> > > > > > > +	struct tegra_mc *mc =3D platform_get_drvdata(iommu_pdev);
-> > > > > > >  	u32 id =3D args->args[0];
-> > > > > > > =20
-> > > > > > > +	of_node_put(args->np);
-> > > > > >=20
-> > > > > > of_find_device_by_node() takes device reference and not the np
-> > > > > > reference. This is a bug, please remove of_node_put().
-> > > > >=20
-> > > > > Looks like so. Replacing it with put_device(&iommu_pdev->dev);
+On Fri, 2020-10-09 at 11:13 +0200, Ard Biesheuvel wrote:
+> On Fri, 9 Oct 2020 at 10:36, Nicolas Saenz Julienne
+> <nsaenzjulienne@suse.de> wrote:
+> > On Fri, 2020-10-09 at 09:37 +0200, Ard Biesheuvel wrote:
+> > > On Fri, 9 Oct 2020 at 09:11, Christoph Hellwig <hch@lst.de> wrote:
+> > > > On Thu, Oct 08, 2020 at 12:05:25PM +0200, Nicolas Saenz Julienne wr=
+ote:
+> > > > > Sadly I just realised that the series is incomplete, we have RPi4=
+ users that
+> > > > > want to boot unsing ACPI, and this series would break things for =
+them. I'll
+> > > > > have a word with them to see what we can do for their use-case.
 > > > >=20
-> > > > Putting the put_device() here is wrong, though. You need to make su=
-re
-> > > > you keep a reference to it as long as you keep accessing the data t=
-hat
-> > > > is owned by it.
+> > > > Stupid question:  why do these users insist on a totally unsuitable
+> > > > interface? And why would we as Linux developers care to support suc=
+h
+> > > > a aims?
 > > >=20
-> > > I am confused. You said in the other reply (to Dmitry) that we do
-> > > need to put_device(mc->dev), where mc->dev should be the same as
-> > > iommu_pdev->dev. But here your comments sounds that we should not
-> > > put_device at all since ->probe_device/group_device/attach_dev()
-> > > will use it later.
+> > > The point is really whether we want to revert changes in Linux that
+> > > made both DT and ACPI boot work without quirks on RPi4.
 > >=20
-> > You need to call put_device() at some point to release the reference
-> > that you acquired by calling of_find_device_by_node(). If you don't
-> > release it, you're leaking the reference and the kernel isn't going to
-> > know when it's safe to delete the device.
+> > Well, and broke a big amount of devices that were otherwise fine.
 > >=20
-> > So what I'm saying is that we either release it here, which isn't quite
-> > right because we do reference data relating to the device later on. And
 >=20
-> I see. A small question here by the way: By looking at other IOMMU
-> drivers that are calling driver_find_device_by_fwnode() function,
-> I found that most of them put_device right after the function call,
-> and dev_get_drvdata() after putting the device..
+> Yeah that was unfortunate.
 >=20
-> Feels like they are doing it wrongly?
-
-Well, like I said this is somewhat academic because these are all
-referencing the IOMMU that by definition still needs to be around
-when this code is called, and there's locks in place to ensure
-these don't go away. So it's not like these drivers are doing it
-wrong, they're just not doing it pedantically right.
-
->=20
-> > because it isn't quite right there should be a reason to justify it,
-> > which is that the SMMU parent device is the same as the MC, so the
-> > reference count isn't strictly necessary. But that's not quite obvious,
-> > so highlighting it in a comment makes sense.
+> > > Having to check the RPi4 compatible string or OEM id in core init cod=
+e is
+> > > awful, regardless of whether you boot via ACPI or via DT.
+> > >=20
+> > > The problem with this hardware is that it uses a DMA mask which is
+> > > narrower than 32, and the arm64 kernel is simply not set up to deal
+> > > with that at all. On DT, we have DMA ranges properties and the likes
+> > > to describe such limitations, on ACPI we have _DMA methods as well as
+> > > DMA range attributes in the IORT, both of which are now handled
+> > > correctly. So all the information is there, we just have to figure ou=
+t
+> > > how to consume it early on.
 > >=20
-> > The other alternative is to not call put_device() here and keep on to
-> > the reference as long as you keep using "mc". This might be difficult to
-> > implement because it may not be obvious where to release it. I think
-> > this is the better alternative, but if it's too complicated to implement
-> > it might not be worth it.
+> > Is it worth the effort just for a single board? I don't know about ACPI=
+ but
+> > parsing dma-ranges that early at boot time is not trivial. My intuition=
+ tells
+> > me that it'd be even harder for ACPI, being a more complex data structu=
+re.
+> >=20
 >=20
-> I feel so too. The dev is got at of_xlate() that does not have an
-> obvious counterpart function. So I'll just remove put_device() and
-> put a line of comments, as you suggested.
+> Yes, it will be harder, especially for the _DMA methods.
+>=20
+> > > Interestingly, this limitation always existed in the SoC, but it
+> > > wasn't until they started shipping it with more than 1 GB of DRAM tha=
+t
+> > > it became a problem. This means issues like this could resurface in
+> > > the future with existing SoCs when they get shipped with more memory,
+> > > and so I would prefer fixing this in a generic way.
+> >=20
+> > Actually what I proposed here is pretty generic. Specially from arm64's
+> > perspective. We call early_init_dt_scan(), which sets up zone_dma_bits =
+based on
+> > whatever it finds in DT. Both those operations are architecture indepen=
+dent.
+> > arm64 arch code doesn't care about the logic involved in ascertaining
+> > zone_dma_bits. I get that the last step isn't generic. But it's all set=
+up so as
+> > to make it as such whenever it's worth the effort.
+> >=20
+>=20
+> The problem is that, while we are providing a full description of the
+> SoC's capabilities, we short circuit this by inserting knowledge into
+> the code (that is shared between all DT architectures) that
+> "brcm,bcm2711" is special, and needs a DMA zone override.
 
-I think you misunderstood. Not calling put_device() would be wrong
-because that leaks a reference to the SMMU that you can't get back. My
-suggestion was rather to keep put_device() here, but add a comment as to
-why it's okay to call the put_device() here, even though you keep using
-its private data later beyond this point, which typically would be wrong
-to do.
+Yes I understand this and I sympathize with it, not the most beautiful thin=
+g
+out there :). But that's only half the issue, as I said, implementing this
+early at boot time is a tangible amount of work and a burden to maintain ju=
+st
+for one board. So this is the compromise we discussed with the DT maintaine=
+r
+(RobH). The series sets things up so as to be able to implement the right
+thing transparently to arm64's architecture when deemed worth the effort.
 
-Thierry
+Ultimately, if you're worried about inserting knowledge into the code, aren=
+'t
+we doing that, in a more extreme way, when imposing an extra unwarranted zo=
+ne
+to the whole arm64 ecosystem?
 
---TD8GDToEDw0WLGOL
+Note that I'm more that happy to work on alternative solutions, but let's f=
+irst
+settle on what would be acceptable to everyone.
+
+> I think for ACPI boot, we might be able to work around this by cold
+> plugging the memory above 1 GB, but I have to double check whether it
+> won't get pulled into ZONE_DMA32 anyway (unless anyone can answer that
+> for me here from the top of their head)
+
+Don't know much about what ACPI memory cold plugging involves, but we'll st=
+ill
+need a proper ZONE_DMA32 (i.e. spanning the whole 32-bit address space) for
+RPi4.
+
+Regards,
+Nicolas
+
+
+--=-QKDQqezONyqKzfC6bWKQ
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl+AVtQACgkQ3SOs138+
-s6FyaRAAkt3dP2DNCS6TI3/NevoBQ2IpMYqF1ex7aH/lNxsI1ES7OlWIkSvq7Nbp
-OdGJxPgxHA9kvYKCwk6u97yR8TX8erODLYov8YWeIYT4j5QcSS/axChfZJwYScEy
-TPMyMZrSoQz89AbZjJ1nXF7pafhPzc+9VI9oyouFL2kwJ5nG7oCmHM+oIswYy5gO
-ek1ARsPvwoQu1hBT19wRzaQMgE9TVc/HzaRtjaCbWBAXZSNlScjn3MxuWW4Teo6P
-5lG3qhBCof7r374RLMz/7bq5MUndj3R5MuwX1eOVzcJgxVYV+94fjTs4ysawaG7f
-vqetJ3RBUHia+rXWZx09T3F0ax+EErEs9cQ94OysiDqdnvMSxb/av8yS0j+rYN2u
-ZLOBqTMgfQaVLiTZgehSSYU1wGyId93lWNvH8oQ9VZ032x5ys37j8y5+9IOtufM7
-ebDWZwobYybBpr8qVA/odW6gStS5qj7gbUE9GBg06y+VB74UdN8K7YLzr4nYNFgz
-HEatjuW3kEIAB/Si2fB/yTBm62HAL7pZ2eGeIDxhFr9d0An5mhTkkUF4eN3GPIyA
-gfOkKq+Vfq+0JOFF4GJj1nGB5kV7CON90yy/lZ5Snt5ru2SdQNhhreFAo3v6QhgH
-IdtXPzcQLz/qJ+QceSHsqujPWojzkVLkGTJVkzojRKwOv6B1vVw=
-=8opr
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+AZroACgkQlfZmHno8
+x/5PlQf+P8QLXrJShl8jG/06exIg90GTMkjn9WMCdvUp6fq+rQCD/XEZW+RmqybB
+4hu4TrASI2evkAQUhOw3BuyxEblsrWJrM7ySV9t2bOIAQ+XP4/UVVDg+PP4z310h
+QCVHOSyB9OeKVgPMyrm16+Eb8C+cpHIP29TCjTbP/0hiJEWkIzrJE+h+9Vl/JNMs
+WBQmbxIzUZK8GlivpqbkbHXaPyo2Fa+Yf4NB/JJB11nRwLrFsA2Ka6yyu0ZVp/CF
+gZ2nu1pm9P4DVwpaTrqEdB7g4ghRjHjWH7qxYNLQPm98gB0LZjHrZSXm4sL3pBt3
+ZOjgS3QZ6gYgCZIwChD3fk/qcqtRXw==
+=tHjf
 -----END PGP SIGNATURE-----
 
---TD8GDToEDw0WLGOL--
+--=-QKDQqezONyqKzfC6bWKQ--
 
---===============6359188187697409744==
+
+--===============3339382150100124547==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -240,4 +238,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6359188187697409744==--
+--===============3339382150100124547==--
+
