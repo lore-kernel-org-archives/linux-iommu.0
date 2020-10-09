@@ -2,94 +2,91 @@ Return-Path: <SRS0=yPDG=DQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AB7C433E7
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 07:37:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A506C43457
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 07:54:19 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3FE182227E
-	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 07:37:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A6AAD22275
+	for <iommu@archiver.kernel.org>; Fri,  9 Oct 2020 07:54:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hr/EfPQd"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FE182227E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="xS55Rj7m"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6AAD22275
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9FE36876C5;
-	Fri,  9 Oct 2020 07:37:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3A42C8769A;
+	Fri,  9 Oct 2020 07:54:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3M-if-CWCX8U; Fri,  9 Oct 2020 07:37:55 +0000 (UTC)
+	with ESMTP id Gye75c5osmwO; Fri,  9 Oct 2020 07:54:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 22EED876B8;
-	Fri,  9 Oct 2020 07:37:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 081B187699;
+	Fri,  9 Oct 2020 07:54:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5B67C016F;
-	Fri,  9 Oct 2020 07:37:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30A15C0051
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:37:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EF53DC016F;
+	Fri,  9 Oct 2020 07:54:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1909FC0051
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:54:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1848F876C5
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:37:53 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 01B302E235
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:54:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JvW7YxVpIabA for <iommu@lists.linux-foundation.org>;
- Fri,  9 Oct 2020 07:37:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6DE38876B8
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:37:52 +0000 (UTC)
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com
- [209.85.210.41])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id C5F2F22282
- for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:37:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1602229071;
- bh=uwHGsExUwomnGZGAB9Ig2cy91/4zjXFRWuSoOtt/2uc=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=hr/EfPQdRr7YOMI/Ml+6/nicYKOq2pzsRkwJDK4QOWHasA7h3oiXAIpK8Icq9k0cv
- B+Pr4QjjAsu4RyNsMNzqa5+CA1tTcrgTjx2kn0DhJTQgTTn8izNoFlcMq6d6kgu0vn
- 6IJ/b+FrCQ4BlPeeC2xEElSxY1bwAgxst0UX0QZs=
-Received: by mail-ot1-f41.google.com with SMTP id m11so8129739otk.13
- for <iommu@lists.linux-foundation.org>; Fri, 09 Oct 2020 00:37:51 -0700 (PDT)
-X-Gm-Message-State: AOAM533Iytmv/B3/fj+QEqhQebxIHE5bT5sKKkyPBtnY1IbgJ4Kg6WxM
- /Z3/uOVDJY7Kyp4BuSWRZPhwPPl8/aCneiMBrCg=
-X-Google-Smtp-Source: ABdhPJwm7Itaee4mU5h+ix4hYGBefWmG86wT+rm9HR2eTuMvzP6PBTs811cyWxyuLFCA+ubq6YIJxYBgULsTYR7jHG8=
-X-Received: by 2002:a9d:6a85:: with SMTP id l5mr8311994otq.77.1602229071004;
- Fri, 09 Oct 2020 00:37:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201001161740.29064-1-nsaenzjulienne@suse.de>
- <20201001161740.29064-2-nsaenzjulienne@suse.de> <20201001171500.GN21544@gaia>
- <20201001172320.GQ21544@gaia>
- <b47232e2173e9e5ddf8f5be4c7b5a2f897f34eb7.camel@suse.de>
- <20201002115541.GC7034@gaia>
- <12f33d487eabd626db4c07ded5a1447795eed355.camel@suse.de>
- <20201009071013.GA12208@lst.de>
-In-Reply-To: <20201009071013.GA12208@lst.de>
-From: Ard Biesheuvel <ardb@kernel.org>
-Date: Fri, 9 Oct 2020 09:37:39 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXG+7Lq=rgUfyU_XS9LrJwpUiC8nKsRPom+R0=phuXioHQ@mail.gmail.com>
-Message-ID: <CAMj1kXG+7Lq=rgUfyU_XS9LrJwpUiC8nKsRPom+R0=phuXioHQ@mail.gmail.com>
-Subject: Re: [PATCH 1/4] of/fdt: Update zone_dma_bits when running in bcm2711
-To: Christoph Hellwig <hch@lst.de>
-Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Linux Memory Management List <linux-mm@kvack.org>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-rpi-kernel@lists.infradead.org, Frank Rowand <frowand.list@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>
+ with ESMTP id lkfO3ckNokAZ for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Oct 2020 07:54:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1542920432
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Oct 2020 07:54:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
+ In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=/D3lM8LHs5bY5ZQpbh/Q/shpuh7qEnpiOdd8wiKF75g=; b=xS55Rj7mPkZF+bVp8EzmiPI+lO
+ SlLs++deDNMwLT1eKWa/U+8SMNvZj1tL0NcU2iIGCiRny6+M3Q1Q9Hbz7QfA08Y8+387Zpx4zM56S
+ 8BUen3gP5TLI9zSOflPixWdikQqWQjFbAwmcJoWDkHVZcd3nBRyJwCr8RDZH+0VNDRjrTIa0UzJuc
+ Uf0T+grIE+uHT3HK4Q4igrlCdyqeboWEHeuxhDxwFskwl7weUbdCfJeoozx+oSC2hT3rdtNPkusrf
+ mFXjxXKoSLn/YF511NFRiFs+VpDrYWnAzqRSDwQi2TXFe6otYL2C4qIvSvH1ewiyH5oy/JwbLYdKX
+ Om1cfo7g==;
+Received: from 54-240-197-236.amazon.com ([54.240.197.236]
+ helo=freeip.amazon.com)
+ by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kQnE8-0000Az-SC; Fri, 09 Oct 2020 07:54:09 +0000
+Message-ID: <2e1aa9c1c2b01c570093fb8d59773d92ece1618a.camel@infradead.org>
+Subject: Re: [PATCH 07/13] irqdomain: Add max_affinity argument to
+ irq_domain_alloc_descs()
+From: David Woodhouse <dwmw2@infradead.org>
+To: Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
+Date: Fri, 09 Oct 2020 08:54:07 +0100
+In-Reply-To: <878scgx546.fsf@nanos.tec.linutronix.de>
+References: <77e64f977f559412f62b467fd062d051ea288f14.camel@infradead.org>
+ <20201005152856.974112-1-dwmw2@infradead.org>
+ <20201005152856.974112-7-dwmw2@infradead.org>
+ <87lfgj59mp.fsf@nanos.tec.linutronix.de>
+ <75d79c50d586c18f0b1509423ed673670fc76431.camel@infradead.org>
+ <87tuv640nw.fsf@nanos.tec.linutronix.de>
+ <336029ca32524147a61b6fa1eb734debc9d51a00.camel@infradead.org>
+ <87a6wy3u6n.fsf@nanos.tec.linutronix.de>
+ <119c2f993cac5d57c54d4720addc9f32bf1daadd.camel@infradead.org>
+ <87k0w12h8u.fsf@nanos.tec.linutronix.de>
+ <2c0712352812ab114cb711236703fd7c308a5bf2.camel@infradead.org>
+ <878scgx546.fsf@nanos.tec.linutronix.de>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
+ merlin.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Paolo Bonzini <pbonzini@redhat.com>,
+ iommu <iommu@lists.linux-foundation.org>, linux-hyperv@vger.kernel.org,
+ kvm <kvm@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,46 +99,221 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4665347475745547913=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 9 Oct 2020 at 09:11, Christoph Hellwig <hch@lst.de> wrote:
->
-> On Thu, Oct 08, 2020 at 12:05:25PM +0200, Nicolas Saenz Julienne wrote:
-> > Sadly I just realised that the series is incomplete, we have RPi4 users that
-> > want to boot unsing ACPI, and this series would break things for them. I'll
-> > have a word with them to see what we can do for their use-case.
->
-> Stupid question:  why do these users insist on a totally unsuitable
-> interface?  And why would we as Linux developers care to support such
-> a aims?
->
 
-The point is really whether we want to revert changes in Linux that
-made both DT and ACPI boot work without quirks on RPi4. Having to
-check the RPi4 compatible string or OEM id in core init code is awful,
-regardless of whether you boot via ACPI or via DT.
+--===============4665347475745547913==
+Content-Type: multipart/signed; micalg="sha-256";
+	protocol="application/x-pkcs7-signature";
+	boundary="=-0GfwHtoG2RA+qulB8XKG"
 
-The problem with this hardware is that it uses a DMA mask which is
-narrower than 32, and the arm64 kernel is simply not set up to deal
-with that at all. On DT, we have DMA ranges properties and the likes
-to describe such limitations, on ACPI we have _DMA methods as well as
-DMA range attributes in the IORT, both of which are now handled
-correctly. So all the information is there, we just have to figure out
-how to consume it early on.
 
-Interestingly, this limitation always existed in the SoC, but it
-wasn't until they started shipping it with more than 1 GB of DRAM that
-it became a problem. This means issues like this could resurface in
-the future with existing SoCs when they get shipped with more memory,
-and so I would prefer fixing this in a generic way.
+--=-0GfwHtoG2RA+qulB8XKG
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Also, I assume papering over the issue like this does not fix the
-kdump issue fundamentally, it just works around it, and so we might
-run into this again in the future.
+On Thu, 2020-10-08 at 14:40 +0200, Thomas Gleixner wrote:
+> Subject: x86/iommu: Make interrupt remapping more robust
+> From: Thomas Gleixner <tglx@linutronix.de>
+> Date: Thu, 08 Oct 2020 14:09:44 +0200
+>=20
+> Needs to be split into pieces and cover PCI proper. Right now PCI gets a
+> NULL pointer assigned which makes it explode at the wrong place
+> later. Also hyperv iommu wants some love.
+>=20
+> NOT-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  arch/x86/kernel/apic/io_apic.c      |    4 +++-
+>  arch/x86/kernel/apic/msi.c          |   24 ++++++++++++++----------
+>  drivers/iommu/amd/iommu.c           |    6 +++---
+>  drivers/iommu/intel/irq_remapping.c |    4 ++--
+>  4 files changed, 22 insertions(+), 16 deletions(-)
+>=20
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -2300,7 +2300,9 @@ static int mp_irqdomain_create(int ioapi
+>         info.type =3D X86_IRQ_ALLOC_TYPE_IOAPIC_GET_PARENT;
+>         info.devid =3D mpc_ioapic_id(ioapic);
+>         parent =3D irq_remapping_get_irq_domain(&info);
+> -       if (!parent)
+> +       if (IS_ERR(parent))
+> +               return PTR_ERR(parent);
+> +       else if (!parent)
+>                 parent =3D x86_vector_domain;
+>         else
+>                 name =3D "IO-APIC-IR";
+> --- a/arch/x86/kernel/apic/msi.c
+> +++ b/arch/x86/kernel/apic/msi.c
+> @@ -415,9 +415,9 @@ static struct msi_domain_info hpet_msi_d
+>  struct irq_domain *hpet_create_irq_domain(int hpet_id)
+>  {
+>         struct msi_domain_info *domain_info;
+> +       struct fwnode_handle *fn =3D NULL;
+>         struct irq_domain *parent, *d;
+>         struct irq_alloc_info info;
+> -       struct fwnode_handle *fn;
+> =20
+>         if (x86_vector_domain =3D=3D NULL)
+>                 return NULL;
+> @@ -432,25 +432,29 @@ struct irq_domain *hpet_create_irq_domai
+>         init_irq_alloc_info(&info, NULL);
+>         info.type =3D X86_IRQ_ALLOC_TYPE_HPET_GET_PARENT;
+>         info.devid =3D hpet_id;
+> +
+>         parent =3D irq_remapping_get_irq_domain(&info);
+> -       if (parent =3D=3D NULL)
+> +       if (IS_ERR(parent))
+> +               goto fail;
+> +       else if (!parent)
+>                 parent =3D x86_vector_domain;
+>         else
+>                 hpet_msi_controller.name =3D "IR-HPET-MSI";
+
+Hrm... this is the '-ENODEV changes' that you wanted me to pick up,
+right?
+
+I confess I don't like it very much.
+
+I'd much prefer to be able to use a generic foo_get_parent_irq_domain()
+function which just returns an answer or an error.
+
+Definitely none of this "if it returns NULL, caller fills it in for
+themselves with some magic global because we're special".
+
+And I don't much like abusing the irq_alloc_info for this either. I
+didn't like the irq_alloc_info very much in its *original* use cases,
+for actually allocating IRQs. Abusing it for this is worse.
+
+I'm more than happy to start digging into this, but once I do I fear
+I'm not going to stop until HPET and IOAPIC don't know *anything* about
+whether they're behind IR or not.
+
+And yes, I know that IOAPIC has a different EOI method for IR but
+AFAICT that's *already* hosed for Hyper-V because it doesn't *really*
+do remapping and so the RTEs *can* change there to move interrupts
+around. There's more differences between ioapic_ack_level() and
+ioapic_ir_ack_level() than the erratum workaround and whether we use
+data->entry.vector... aren't there?
+
+For the specific case you were targeting with this patch, you already
+successfully persuaded me it should never happen, and there's a WARN_ON
+which would trigger if it ever does (with too many CPUs in the system).
+
+Let's come back and tackle this can of worms in a separate cleanup
+series.
+
+--=-0GfwHtoG2RA+qulB8XKG
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
+MDA5MDc1NDA3WjAvBgkqhkiG9w0BCQQxIgQgN04aNJAwf21A7uqqEbzKTbWZOixRRuRUaJnHXEz7
+1d8wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBACd/3gL/ltltV9k4zzOL+hq1kJyVUVVWzQNDwNUfATCKgQOPK8TiW9Ye7sR/ZI81
+XVEF79YhxFXOQriIFlf7sty7lZCkbsXtoQ9Eg9akLAY8RgH5SpzpHiRbjhNYzKI9/mFuID0mzEEB
+FwRjPPHyp7MA2Q5PIEMUjNu+iAZxsZawLRcNJ93UPvmMcoHT2VvTVCesbEI5LLk+nZYlIJGdktEI
+9cabQ5ycIDq1oqtpcTOUIXqjMk3JSDYiPzl/YNqKIDGJW41nVb5J3BxC6oS3xaUrKoY+FH7kzWrR
+CcLbmW2scuXlVt2nMDVtgFJpAAxAzp48xWW5sq0ahrkrxL6bzuIAAAAAAAA=
+
+
+--=-0GfwHtoG2RA+qulB8XKG--
+
+
+--===============4665347475745547913==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============4665347475745547913==--
+
