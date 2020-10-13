@@ -2,107 +2,73 @@ Return-Path: <SRS0=IGn4=DU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58757C433DF
-	for <iommu@archiver.kernel.org>; Tue, 13 Oct 2020 16:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FEFC433E7
+	for <iommu@archiver.kernel.org>; Tue, 13 Oct 2020 16:48:06 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB9CC25271
-	for <iommu@archiver.kernel.org>; Tue, 13 Oct 2020 16:11:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nZ3kr1Zv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB9CC25271
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0DCFE252CF
+	for <iommu@archiver.kernel.org>; Tue, 13 Oct 2020 16:48:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0DCFE252CF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 409E28732F;
-	Tue, 13 Oct 2020 16:11:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 96A3487B0B;
+	Tue, 13 Oct 2020 16:48:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QDr8ESRIZWZA; Tue, 13 Oct 2020 16:11:42 +0000 (UTC)
+	with ESMTP id a3EEyh-kxIGa; Tue, 13 Oct 2020 16:48:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CCE09872C7;
-	Tue, 13 Oct 2020 16:11:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 62CEC87AF4;
+	Tue, 13 Oct 2020 16:48:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B2329C07FF;
-	Tue, 13 Oct 2020 16:11:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5FE3DC0051
- for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:11:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A1F9C07FF;
+	Tue, 13 Oct 2020 16:48:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8CB1C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:48:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4EC82872C7
- for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:11:42 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B7D7487578
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:48:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8rJDztdo1sNT for <iommu@lists.linux-foundation.org>;
- Tue, 13 Oct 2020 16:11:39 +0000 (UTC)
+ with ESMTP id bI7pu8q_KmP5 for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Oct 2020 16:48:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3952F87280
- for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:11:39 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id e18so24730039wrw.9
- for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 09:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=UHsDQCy295Hvw56mXeSaZ5ilmXgdKd81n9fHINsRJmg=;
- b=nZ3kr1ZvmphGw+hCXwxd1FBiNBdH15+XmV7uCx/N1aEPWdhltNbxfRJsOrYzCW5DYi
- p28N16Qv3CesL618NYcwzKJl8ExdPBSsAxEVpNuBjc2t7Y3vSDiCUCXqUsTPP3ri+xa3
- pYSiUdCkoFloRscJR5nF2nOA0n77jg0+DyulydlIg2O5dvN37b/KSTRSu0SrWqgYipLY
- Bv2SinElVWGIxKdfjR2keb0VyF7cTpeW4ZZMmz56ud2NUc4LXZYnfMSWKg7cjru34Jnt
- +3aGTZF5ErCoVoAaJUURuRybNuDUZmE1TuG1eiCC2mcWhrl0X3gWCU5HjivWDiRih7lu
- Lf+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=UHsDQCy295Hvw56mXeSaZ5ilmXgdKd81n9fHINsRJmg=;
- b=pxF0nYh+HTdOSEO7Ti6wDx+UUoDv0x+EoU8kZSkRjFqoAD1gb9TwnnfL8h0Ud0icQN
- p9K3EBpXL9XhKRgGHKyTqnwgcBh4td3XKw6OHgsw/FjlBTnUkdKR7dGhgQ7lgqYON3Nj
- 7x5r8AbUe6Ds9vw9pTEcVFKH78Ab5eDxEIVKTVqCG/Lk9lUkMpQJUC0Dp+Dsxt3uVw7u
- Zq58MSmo2MOnayN1r52ZAINPa1SHdhjnJZYW/Xgo82dgjz6qG+iaQztrp+RkXRkVD2X3
- LrnWIQB0DPqmKApqB7jIsAQOcilTp2oYuNyLesSogm0gRttTRw1ziNiSJjSYapCG4fTI
- QjDg==
-X-Gm-Message-State: AOAM531bjE6A7GUa7qw9ztzE9ZG/QNPYjNrLd1Lr03ja4ufEDbqGT2wN
- +ZxKG5mUPhb51P/BIMr4CYEW3dE+qcWaaVALTVs=
-X-Google-Smtp-Source: ABdhPJxoD/2hTBypyfQGrCSNRV+Y6GtVMvHZ5uXUCdqyEiDvm0aXKSn04M6vBj6fqcnsx8/6ebXXeOA3cJnZw688USo=
-X-Received: by 2002:a5d:4987:: with SMTP id r7mr377398wrq.327.1602605497546;
- Tue, 13 Oct 2020 09:11:37 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4BBC08756E
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Oct 2020 16:48:00 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87E2331B;
+ Tue, 13 Oct 2020 09:47:58 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D0E823F719;
+ Tue, 13 Oct 2020 09:47:56 -0700 (PDT)
+Subject: Re: [PATCH v3 6/8] iommu/arm-smmu: Add impl hook for inherit boot
+ mappings
+To: Bjorn Andersson <bjorn.andersson@linaro.org>, Will Deacon <will@kernel.org>
+References: <20200904155513.282067-1-bjorn.andersson@linaro.org>
+ <20200904155513.282067-7-bjorn.andersson@linaro.org>
+ <0bfcc8f7-d054-616b-834b-319461b1ecb9@arm.com> <20200913032559.GT3715@yoga>
+ <20200921210814.GE3811@willie-the-truck> <20201012073152.GA2998@yoga>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <40b24ccc-8dc4-8bbe-3a85-68a6b62b448d@arm.com>
+Date: Tue, 13 Oct 2020 17:47:55 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-References: <20201001002709.21361-1-jonathan@marek.ca>
- <20201001002709.21361-3-jonathan@marek.ca>
- <20201002075321.GA7547@infradead.org>
- <b22fb797-67b0-a912-1d23-2b47c9a9e674@marek.ca>
- <20201005082914.GA31702@infradead.org>
- <3e0b91be-e4a4-4ea5-7d58-6e71b8d51932@marek.ca>
- <20201006072306.GA12834@infradead.org>
- <148a1660-f0fc-7163-2240-6b94725342b5@marek.ca>
- <20201007062519.GA23519@infradead.org>
- <c3baadae-8e20-86a6-44f5-4571a8d3035e@arm.com>
-In-Reply-To: <c3baadae-8e20-86a6-44f5-4571a8d3035e@arm.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 13 Oct 2020 09:11:26 -0700
-Message-ID: <CAF6AEGtyczviULunw0tQK0Q9M22vkib19j=R_jTT2EtP5aqRCw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] drm/msm: add DRM_MSM_GEM_SYNC_CACHE for non-coherent
- cache maintenance
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jonathan Marek <jonathan@marek.ca>, David Airlie <airlied@linux.ie>,
- freedreno <freedreno@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:DRM DRIVER FOR MSM ADRENO GPU" <dri-devel@lists.freedesktop.org>,
- Christoph Hellwig <hch@infradead.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Daniel Vetter <daniel@ffwll.ch>,
- "open list:DRM DRIVER FOR MSM ADRENO GPU" <linux-arm-msm@vger.kernel.org>,
- Sean Paul <sean@poorly.run>
+In-Reply-To: <20201012073152.GA2998@yoga>
+Content-Language: en-GB
+Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Sibi Sankar <sibis@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,41 +81,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Oct 13, 2020 at 6:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2020-10-07 07:25, Christoph Hellwig wrote:
-> > On Tue, Oct 06, 2020 at 09:19:32AM -0400, Jonathan Marek wrote:
-> >> One example why drm/msm can't use DMA API is multiple page table support
-> >> (that is landing in 5.10), which is something that definitely couldn't work
-> >> with DMA API.
-> >>
-> >> Another one is being able to choose the address for mappings, which AFAIK
-> >> DMA API can't do (somewhat related to this: qcom hardware often has ranges
-> >> of allowed addresses, which the dma_mask mechanism fails to represent, what
-> >> I see is drivers using dma_mask as a "maximum address", and since addresses
-> >> are allocated from the top it generally works)
-> >
-> > That sounds like a good enough rason to use the IOMMU API.  I just
-> > wanted to make sure this really makes sense.
->
-> I still think this situation would be best handled with a variant of
-> dma_ops_bypass that also guarantees to bypass SWIOTLB, and can be set
-> automatically when attaching to an unmanaged IOMMU domain. That way the
-> device driver can make DMA API calls in the appropriate places that do
-> the right thing either way, and only needs logic to decide whether to
-> use the returned DMA addresses directly or ignore them if it knows
-> they're overridden by its own IOMMU mapping.
->
+On 2020-10-12 08:31, Bjorn Andersson wrote:
+> On Mon 21 Sep 23:08 CEST 2020, Will Deacon wrote:
+> 
+>> On Sat, Sep 12, 2020 at 10:25:59PM -0500, Bjorn Andersson wrote:
+>>> On Fri 11 Sep 12:13 CDT 2020, Robin Murphy wrote:
+>>>> On 2020-09-04 16:55, Bjorn Andersson wrote:
+>>>>> Add a new operation to allow platform implementations to inherit any
+>>>>> stream mappings from the boot loader.
+>>>>
+>>>> Is there a reason we need an explicit step for this? The aim of the
+>>>> cfg_probe hook is that the SMMU software state should all be set up by then,
+>>>> and you can mess about with it however you like before arm_smmu_reset()
+>>>> actually commits anything to hardware. I would have thought you could
+>>>> permanently steal a context bank, configure it as your bypass hole, read out
+>>>> the previous SME configuration and tweak smmu->smrs and smmu->s2crs
+>>>> appropriately all together "invisibly" at that point.
+>>>
+>>> I did this because as of 6a79a5a3842b ("iommu/arm-smmu: Call
+>>> configuration impl hook before consuming features") we no longer have
+>>> setup pgsize_bitmap as we hit cfg_probe, which means that I need to
+>>> replicate this logic to set up the iommu_domain.
+>>>
+>>> If I avoid setting up an iommu_domain for the identity context, as you
+>>> request in patch 8, this shouldn't be needed anymore.
+>>>
+>>>> If that can't work, I'm very curious as to what I've overlooked.
+>>>>
+>>>
+>>> I believe that will work, I will rework the patches and try it out.
+>>
+>> Did you get a chance to rework this?
+>>
+> 
+> Finally got a chance to dig through this properly.
+> 
+> Initial results where positive and with an implementation of cfg_probe
+> in qcom_smmu_impl I'm able to probe the arm-smmu driver just fine - and
+> display (e.g. efifb) stays alive.
+> 
+> Unfortunately as the display driver (drivers/gpu/drm/msm) is about to
+> probe a new iommu domain is created, which due to its match against
+> qcom_smmu_client_of_match[] becomes of type IOMMU_DOMAIN_IDENTITY.
+> This results in a S2CR of BYPASS type, which the firmware intercepts and
+> turns the stream into a type FAULT.
+> 
+> So while the cfg_probe looks very reasonable we're still in need of a
+> mechanism to use the fake identity context for the iommu domain
+> associated with the display controller.
 
-That would be pretty ideal from my PoV
+Yes, we'll still need some kind of hook somewhere to make identity 
+domains work at all - my point about cfg_probe was to keep the 
+reservation and configuration of the special identity context, plus the 
+handling of the initial SME state, simple and entirely internal to the 
+impl. In terms of where said hook should be, TBH it might actually work 
+out pretty clean to simply hook GR0 register accesses so you can rewrite 
+between S2CR bypass entries and translation entries targeting your 
+reserved context on-the-fly. Failing that, something to massage "type" 
+and "cbndx" in arm_smmu_domain_add_master() would be the next best 
+option, I think.
 
-BR,
--R
+Robin.
+
+> The workings of the display driver is that it gets the iommu domain
+> setup for byass and then after that creates a translation context for
+> this same stream where it maps the framebuffer.
+> 
+> For testing purposes I made def_domain_type always return 0 in the qcom
+> impl and the result is that we get a few page faults while probing the
+> display driver, but these are handled somewhat gracefully and the
+> initialization did proceed and the system comes up nicely (but in the
+> case that the display driver would probe defer this leads to an storm of
+> faults as the screen continues to be refreshed).
+> 
+> TL;DR I think we still need to have a way to get the arm-smmu driver to
+> allow the qcom implementation to configure identity domains to use
+> translation - but we can make the setup of the identity context a detail
+> of the qcom driver.
+> 
+> Regards,
+> Bjorn
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
