@@ -2,164 +2,94 @@ Return-Path: <SRS0=zShu=DV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA18CC433DF
-	for <iommu@archiver.kernel.org>; Wed, 14 Oct 2020 03:16:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A742FC433E7
+	for <iommu@archiver.kernel.org>; Wed, 14 Oct 2020 07:19:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5BC1420723
-	for <iommu@archiver.kernel.org>; Wed, 14 Oct 2020 03:16:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C7A6C2078A
+	for <iommu@archiver.kernel.org>; Wed, 14 Oct 2020 07:19:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="KP/OdPTs"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5BC1420723
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="0LYJQWdo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7A6C2078A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1D4548795B;
-	Wed, 14 Oct 2020 03:16:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 44B9D2E249;
+	Wed, 14 Oct 2020 07:19:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rp51z5zbY95e; Wed, 14 Oct 2020 03:16:32 +0000 (UTC)
+	with ESMTP id XzL3cS4CHal8; Wed, 14 Oct 2020 07:19:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 46ABB87650;
-	Wed, 14 Oct 2020 03:16:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C55B8203AB;
+	Wed, 14 Oct 2020 07:19:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 289DBC0052;
-	Wed, 14 Oct 2020 03:16:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8161C07FF;
+	Wed, 14 Oct 2020 07:19:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 02C2EC0051
- for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 03:16:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37C1DC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 07:19:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DFD3E2E207
- for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 03:16:30 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 25BC5203AB
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 07:19:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JjJLcFClhLA4 for <iommu@lists.linux-foundation.org>;
- Wed, 14 Oct 2020 03:16:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by silver.osuosl.org (Postfix) with ESMTPS id D9E892E203
- for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 03:16:28 +0000 (UTC)
-IronPort-SDR: hc0LKGC6w0A0pOpZDpHOX3HzpLESm/XS/flKcRQFbkFuO7tAKyBkHdIZpJjt1/ZbYBRZfOl3qY
- p/rFxzuv3RlQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="145886595"
-X-IronPort-AV: E=Sophos;i="5.77,373,1596524400"; d="scan'208";a="145886595"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Oct 2020 20:16:28 -0700
-IronPort-SDR: 6QCFfIZ128vB61U1C+aj3TZPFYr7NkXBD2B4QKX5OJQAL5CB348XvFnzNsyPopLzJs+klu2Dmr
- EwgP23Oq6ekA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,373,1596524400"; d="scan'208";a="299813896"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
- by fmsmga007.fm.intel.com with ESMTP; 13 Oct 2020 20:16:28 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 13 Oct 2020 20:16:28 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 13 Oct 2020 20:16:27 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 13 Oct 2020 20:16:27 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Tue, 13 Oct 2020 20:16:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CiuOUieHfdHKZJwIpIBUURu+NZPzy0Vnvt0JFKad8pgBamNYlybBATXSHA7nn8Ew2BfBnt4+UfdO0b7KgkkDdwkHZyf/s19gvw/9KDiXwSTtvkF8T0SgKxugn8++bsRCCkjZuL/ghIepIQoDRDFoIj0yPXP/pZhi8Fcj8fTrKvNhT/rkcTs1IGXDfoIftMj0i905NwDr1I/IK1iZRG/GuOpiyeUL0fJTH2L4FyEyaAMqQ3tQyIeYG8PvWlGF5bknwud4CYhX67Oj/FfQiJT/1kfbZEvc2AkbVnJK+PUNN11uFO5Vu7mk66daFyYI7iGCzQnNmyaka28QUu3GXFKjYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OyP74VFb83xsN+co1DLSiZl3jyOmtX15n15xQPVZHpY=;
- b=NuIsfK/7SVC/Ii6joQgSorCTgB0b98pMKxZaJq4w8sN+gifTagO2tWmgwYNHHIp9rYcTaiOpt8WmS9TU/L3Nkf0eq1pZnKQO5EzA0fPnL0ZZu2YTzMNiCQeBWSpUeV8pSJt2PAQZQH/S60AF2N0gIemqFb+KLo1LT/Q+rlcCoXw2KC1UFvwbu5bxItm0XtreXJ2E2qoVwHNMNYtp/Fz6ajxxs6wjOcoHJTR79TyTEne4A+ItzrxlcPNPYcDzsM91i8B9HMgw7lDpeiRY+QciMe8a+3gqqjJ7Y/fAx5Vu235ptVDnz8AscCUqMPNHZwLNxOeVyRg0rac/HJJ5PY3RdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OyP74VFb83xsN+co1DLSiZl3jyOmtX15n15xQPVZHpY=;
- b=KP/OdPTsNoGbS6iioZeimHhLB0X/s5StnCCte7tOfPT30OqejIdWCkJa9Owz9f5qrpYjJONKgyJchVTehdbehktgs5sanM8JsAxFq+iYctbESeVvLPqLhTDJxWHym/+EQcemwlP+8AZQ484EhUcMzjdo4Rgb8GE+zM37AdPYol0=
-Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
- by MW3PR11MB4603.namprd11.prod.outlook.com (2603:10b6:303:5e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22; Wed, 14 Oct
- 2020 03:16:22 +0000
-Received: from MWHPR11MB1645.namprd11.prod.outlook.com
- ([fe80::c88f:585f:f117:930b]) by MWHPR11MB1645.namprd11.prod.outlook.com
- ([fe80::c88f:585f:f117:930b%8]) with mapi id 15.20.3455.032; Wed, 14 Oct 2020
- 03:16:22 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Wang <jasowang@redhat.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>, "eric.auger@redhat.com"
- <eric.auger@redhat.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
-Subject: RE: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
- Virtual Addressing to VMs
-Thread-Topic: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
- Virtual Addressing to VMs
-Thread-Index: AdagceQQLvqwjRCrQOaq1hZ7MgDUUABZWmqg
-Date: Wed, 14 Oct 2020 03:16:22 +0000
-Message-ID: <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
-References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
-In-Reply-To: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.147.215]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1c738281-2b06-4952-544c-08d86fef8726
-x-ms-traffictypediagnostic: MW3PR11MB4603:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW3PR11MB460339A11309AD66746F1D868C050@MW3PR11MB4603.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Id3HbMu/SuNBhG1EnSJ9qyya97VYQQYsgdXeJonVgmo8TmaBqLobfN3md/aq99KE2Kvu2fbqCtckyLgl9Fi+mDof2rysNfK61sYfrYoUlqtAU2KKsXkL2Hf18BybXFIsXrQXEcGvkfIVQAincMg3gK1xKJXHSomxxlD5G6Y67mUH7eWYR+6vILqcVn+v5y3DGuIlPcG3gUKXQPX48gx2UQcdFDy8dI1nvVlpybdjdxzWjhFKaT0uxYf2R7k4hOQ4mEsMa1eu0bze/Y5zzDdKU0NL3WTmWUef+4ECv2jzk8c14QpcKoQ2g5A2v1iNw9Z0OQ0tsBJ/FFzUTgHb3CpDIA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(7696005)(83380400001)(55016002)(71200400001)(8676002)(8936002)(86362001)(478600001)(6506007)(9686003)(7416002)(186003)(26005)(33656002)(2906002)(54906003)(110136005)(66476007)(316002)(4326008)(76116006)(66946007)(52536014)(64756008)(66446008)(5660300002)(66556008);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: MN9Ec4pZ0mNKgmyoedTd+EvBtiLNhLSjZrgBdTy+spGmxKuCZay4ncwLpYcjazLGZCb17Gvdnqh8xmjnm2UiWl3C8XzXTBazWZBbvnsP/hYDbL+OS6jrUl+yZL2Vn0QA9Qk98+l2vCXsrX671gswJK4SGMkosgFRAwCliNRZJYb2egGwSGfedK0Vc26WAL4KQxMzONhKroUkPOSzO6zbnQVsHIzs+YWBd1Jt1DqIugq9naedfBUsT92UhESHa9do2hkvfZfnR+ShDyEOgl5yiqyav5YSRIbuYscoZ8OJ5HT+CIbcoDUP/PtzSSpojW+Mkd95RqkldkYVUGU6I8esQWuQdsNkhc72vEIxoEfdZcNyqHcqoh1GcV0E0HCGTRQr/WGpWHt6ZNVQO0vw4axfL/3Y8Gx0C3/+l9CQm+4wx0JZaG2J124mKt4qoQjtyF3m/jOQrKicm/R9IlofZYFczcIrfBYqkdoKzIunBLkSmO8zA62ilH6XjWeNiIei60dsvG5IqWz+mOAgwwiGv6VFe72PZbE9VG31P2l9ApWgiG37fu1PMAImmsrjBNiffQ/E6me/rZm8LntnX9hHz8fagM6EXhszQTnDDwkPZefDQ7DxK1Eq3OA82i0OqgLJLwkKnOqqzbx7RbhVKwYFuJr9lg==
+ with ESMTP id UuJuKZsubfMX for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Oct 2020 07:19:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-il1-f193.google.com (mail-il1-f193.google.com
+ [209.85.166.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 686DA2E256
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 07:19:08 +0000 (UTC)
+Received: by mail-il1-f193.google.com with SMTP id k1so758992ilc.10
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Oct 2020 00:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=dzOJ/swm9JGAByIHn/wEgfUebM+eNtx9/pR8X+4E4is=;
+ b=0LYJQWdozCaK1EN3ItjEZqoVtwC5Y2vmWWI7cXZLqMIOGaE3Q3jLXN8eefIqw18imc
+ 63Np64Sl5g0aPt1Ww6Jl5YY6rmP1CRkWofUimrjqFpp26+KrkUebuTn7xmZcUrNF0awL
+ JeMYF9NkGKH8Va2+YfH8wZEqMW+4JSww+jPMIQcSbU1Im9Dk4sdzY/94eMcBXZ4qC+ME
+ q0+bCKzUu8LUBrmZmBHBKC1RMDNqEQxfDg/H1twem6upQPVY7le1b4e5NwXSfDipxsXY
+ gCPrqO0LQ1fZpDTtYZhHxBV6UGf4bDWxvArR/1uZAFGSA3/jLlEfsNHni7e1ByMlhNMv
+ ocYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=dzOJ/swm9JGAByIHn/wEgfUebM+eNtx9/pR8X+4E4is=;
+ b=jCQfexZPOdI1osAYen6GxWZNsjMgoshIl4j38RG9l+jbaZ9CB9BFjOOLUozOdTJ+c9
+ pjVHIn+uHeFGGJCElC/v1LtD6JKy9TKxL98MAZTG42L4tojjLlgZZWY4HmJ6t/EHA7l6
+ aM68MXPE53U0EpDavzWh5q8k3ZvlNsukq+RTmZ9TOhOSnK/EsiVnTmaurzS5AYME5vsc
+ j1QRzjikvfNZ/cQnlOXyYxOu+S/Mpkuk3YH4xY6gZpwEQhlgJPeidWACJaCXLbwNYFcC
+ KGutkJd5eeI5B8YcCeaVfHiFe2A6b/dOxbw0Wu23NF1XklDjfvuB1UkepaBD+vtM4kKl
+ rl3w==
+X-Gm-Message-State: AOAM532H8/0Y/sZHdCa8GjyP1py7Vv9nxsQQ7T48gLBaFFZgJCJcxlLf
+ zrmbc+hAjuxHFZbsxBz+kjHRafpVuAqFGUbasZAUtQ==
+X-Google-Smtp-Source: ABdhPJwuTnKmbtckmY7mH0qDFEjoARiEYUtMovUJ9OGm8LgOhAhHFufHuSKcRL3BGBlZP3QHEXQ0W7kvI1j4bFo1uv4=
+X-Received: by 2002:a92:bb58:: with SMTP id w85mr2963629ili.40.1602659947570; 
+ Wed, 14 Oct 2020 00:19:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1645.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c738281-2b06-4952-544c-08d86fef8726
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Oct 2020 03:16:22.5679 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Me+X5cVm6eETQQW/Fger3Ew2U6Kh61t85SsXth2c4umIJXoMmeFq8aajFp1HmH+VbGUtqm+/gsCN8xHQbMHoxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4603
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Michael S. Tsirkin" <mst@redhat.com>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, Jason Gunthorpe <jgg@nvidia.com>, "Wu,
- Hao" <hao.wu@intel.com>
+References: <20201013073055.11262-1-brgl@bgdev.pl>
+ <abd717c9-9eaa-d4bb-3fd8-ff7250d97ab7@linux.intel.com>
+In-Reply-To: <abd717c9-9eaa-d4bb-3fd8-ff7250d97ab7@linux.intel.com>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Wed, 14 Oct 2020 09:18:56 +0200
+Message-ID: <CAMRc=MdLXaPNUwbUPGJS1AY0pq5je9zsGM7eHShLT=f6mT5Dww@mail.gmail.com>
+Subject: Re: [PATCH next] iommu: intel: don't dereference iommu_device if
+ IOMMU_API is not built
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -172,143 +102,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Alex and Jason (G),
-
-How about your opinion for this new proposal? For now looks both
-Jason (W) and Jean are OK with this direction and more discussions
-are possibly required for the new /dev/ioasid interface. Internally 
-we're doing a quick prototype to see any unforeseen issue with this
-separation. 
-
-Please let us know your thoughts.
-
-Thanks
-Kevin
-
-> From: Tian, Kevin <kevin.tian@intel.com>
-> Sent: Monday, October 12, 2020 4:39 PM
-> 
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Monday, September 14, 2020 12:20 PM
-> >
-> [...]
->  > If it's possible, I would suggest a generic uAPI instead of a VFIO
-> > specific one.
-> >
-> > Jason suggest something like /dev/sva. There will be a lot of other
-> > subsystems that could benefit from this (e.g vDPA).
-> >
-> > Have you ever considered this approach?
-> >
-> 
-> Hi, Jason,
-> 
-> We did some study on this approach and below is the output. It's a
-> long writing but I didn't find a way to further abstract w/o losing
-> necessary context. Sorry about that.
-> 
-> Overall the real purpose of this series is to enable IOMMU nested
-> translation capability with vSVA as one major usage, through
-> below new uAPIs:
-> 	1) Report/enable IOMMU nested translation capability;
-> 	2) Allocate/free PASID;
-> 	3) Bind/unbind guest page table;
-> 	4) Invalidate IOMMU cache;
-> 	5) Handle IOMMU page request/response (not in this series);
-> 1/3/4) is the minimal set for using IOMMU nested translation, with
-> the other two optional. For example, the guest may enable vSVA on
-> a device without using PASID. Or, it may bind its gIOVA page table
-> which doesn't require page fault support. Finally, all operations can
-> be applied to either physical device or subdevice.
-> 
-> Then we evaluated each uAPI whether generalizing it is a good thing
-> both in concept and regarding to complexity.
-> 
-> First, unlike other uAPIs which are all backed by iommu_ops, PASID
-> allocation/free is through the IOASID sub-system. From this angle
-> we feel generalizing PASID management does make some sense.
-> First, PASID is just a number and not related to any device before
-> it's bound to a page table and IOMMU domain. Second, PASID is a
-> global resource (at least on Intel VT-d), while having separate VFIO/
-> VDPA allocation interfaces may easily cause confusion in userspace,
-> e.g. which interface to be used if both VFIO/VDPA devices exist.
-> Moreover, an unified interface allows centralized control over how
-> many PASIDs are allowed per process.
-> 
-> One unclear part with this generalization is about the permission.
-> Do we open this interface to any process or only to those which
-> have assigned devices? If the latter, what would be the mechanism
-> to coordinate between this new interface and specific passthrough
-> frameworks? A more tricky case, vSVA support on ARM (Eric/Jean
-> please correct me) plans to do per-device PASID namespace which
-> is built on a bind_pasid_table iommu callback to allow guest fully
-> manage its PASIDs on a given passthrough device. I'm not sure
-> how such requirement can be unified w/o involving passthrough
-> frameworks, or whether ARM could also switch to global PASID
-> style...
-> 
-> Second, IOMMU nested translation is a per IOMMU domain
-> capability. Since IOMMU domains are managed by VFIO/VDPA
->  (alloc/free domain, attach/detach device, set/get domain attribute,
-> etc.), reporting/enabling the nesting capability is an natural
-> extension to the domain uAPI of existing passthrough frameworks.
-> Actually, VFIO already includes a nesting enable interface even
-> before this series. So it doesn't make sense to generalize this uAPI
-> out.
-> 
-> Then the tricky part comes with the remaining operations (3/4/5),
-> which are all backed by iommu_ops thus effective only within an
-> IOMMU domain. To generalize them, the first thing is to find a way
-> to associate the sva_FD (opened through generic /dev/sva) with an
-> IOMMU domain that is created by VFIO/VDPA. The second thing is
-> to replicate {domain<->device/subdevice} association in /dev/sva
-> path because some operations (e.g. page fault) is triggered/handled
-> per device/subdevice. Therefore, /dev/sva must provide both per-
-> domain and per-device uAPIs similar to what VFIO/VDPA already
-> does. Moreover, mapping page fault to subdevice requires pre-
-> registering subdevice fault data to IOMMU layer when binding
-> guest page table, while such fault data can be only retrieved from
-> parent driver through VFIO/VDPA.
-> 
-> However, we failed to find a good way even at the 1st step about
-> domain association. The iommu domains are not exposed to the
-> userspace, and there is no 1:1 mapping between domain and device.
-> In VFIO, all devices within the same VFIO container share the address
-> space but they may be organized in multiple IOMMU domains based
-> on their bus type. How (should we let) the userspace know the
-> domain information and open an sva_FD for each domain is the main
-> problem here.
-> 
-> In the end we just realized that doing such generalization doesn't
-> really lead to a clear design and instead requires tight coordination
-> between /dev/sva and VFIO/VDPA for almost every new uAPI
-> (especially about synchronization when the domain/device
-> association is changed or when the device/subdevice is being reset/
-> drained). Finally it may become a usability burden to the userspace
-> on proper use of the two interfaces on the assigned device.
-> 
-> Based on above analysis we feel that just generalizing PASID mgmt.
-> might be a good thing to look at while the remaining operations are
-> better being VFIO/VDPA specific uAPIs. anyway in concept those are
-> just a subset of the page table management capabilities that an
-> IOMMU domain affords. Since all other aspects of the IOMMU domain
-> is managed by VFIO/VDPA already, continuing this path for new nesting
-> capability sounds natural. There is another option by generalizing the
-> entire IOMMU domain management (sort of the entire vfio_iommu_
-> type1), but it's unclear whether such intrusive change is worthwhile
-> (especially when VFIO/VDPA already goes different route even in legacy
-> mapping uAPI: map/unmap vs. IOTLB).
-> 
-> Thoughts?
-> 
-> Thanks
-> Kevin
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gV2VkLCBPY3QgMTQsIDIwMjAgYXQgMjo0OSBBTSBMdSBCYW9sdSA8YmFvbHUubHVAbGludXgu
+aW50ZWwuY29tPiB3cm90ZToKPgo+IE9uIDEwLzEzLzIwIDM6MzAgUE0sIEJhcnRvc3ogR29sYXN6
+ZXdza2kgd3JvdGU6Cj4gPiBGcm9tOiBCYXJ0b3N6IEdvbGFzemV3c2tpIDxiZ29sYXN6ZXdza2lA
+YmF5bGlicmUuY29tPgo+ID4KPiA+IFNpbmNlIGNvbW1pdCBjNDBhYWFhYzEwMTggKCJpb21tdS92
+dC1kOiBHcmFjZWZ1bGx5IGhhbmRsZSBETUFSIHVuaXRzCj4gPiB3aXRoIG5vIHN1cHBvcnRlZCBh
+ZGRyZXNzIHdpZHRocyIpIGRtYXIuYyBuZWVkcyBzdHJ1Y3QgaW9tbXVfZGV2aWNlIHRvCj4gPiBi
+ZSBzZWxlY3RlZC4gV2UgY2FuIGRyb3AgdGhpcyBkZXBlbmRlbmN5IGJ5IG5vdCBkZXJlZmVyZW5j
+aW5nIHN0cnVjdAo+ID4gaW9tbXVfZGV2aWNlIGlmIElPTU1VX0FQSSBpcyBub3Qgc2VsZWN0ZWQg
+YW5kIGJ5IHJldXNpbmcgdGhlIGluZm9ybWF0aW9uCj4gPiBzdG9yZWQgaW4gaW9tbXUtPmRyaGQt
+Pmlnbm9yZWQgaW5zdGVhZC4KPiA+Cj4gPiBUaGlzIGZpeGVzIHRoZSBmb2xsb3dpbmcgYnVpbGQg
+ZXJyb3Igd2hlbiBJT01NVV9BUEkgaXMgbm90IHNlbGVjdGVkOgo+ID4KPiA+IGRyaXZlcnMvaW9t
+bXUvaW50ZWwvZG1hci5jOiBJbiBmdW5jdGlvbiDigJhmcmVlX2lvbW114oCZOgo+ID4gZHJpdmVy
+cy9pb21tdS9pbnRlbC9kbWFyLmM6MTEzOTo0MTogZXJyb3I6IOKAmHN0cnVjdCBpb21tdV9kZXZp
+Y2XigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhvcHPigJkKPiA+ICAgMTEzOSB8ICBpZiAoaW50
+ZWxfaW9tbXVfZW5hYmxlZCAmJiBpb21tdS0+aW9tbXUub3BzKSB7Cj4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXgo+ID4KPiA+IEZpeGVzOiBjNDBh
+YWFhYzEwMTggKCJpb21tdS92dC1kOiBHcmFjZWZ1bGx5IGhhbmRsZSBETUFSIHVuaXRzIHdpdGgg
+bm8gc3VwcG9ydGVkIGFkZHJlc3Mgd2lkdGhzIikKPiA+IFNpZ25lZC1vZmYtYnk6IEJhcnRvc3og
+R29sYXN6ZXdza2kgPGJnb2xhc3pld3NraUBiYXlsaWJyZS5jb20+Cj4KPiBXaXRoIGNvbW1pdCB0
+aXRsZSBhZGp1c3RlZCB0byAiaW9tbXUvdnQtZDogRG9uJ3QgZGVyZWZlcmVuY2UKPiBpb21tdV9k
+ZXZpY2UgaWYgSU9NTVVfQVBJIGlzIG5vdCBidWlsdCIsCj4KPiBBY2tlZC1ieTogTHUgQmFvbHUg
+PGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4KPgoKRG8geW91IHdhbnQgbWUgdG8gcmVzZW5kIGl0
+IGFnYWluIHdpdGggYSBjaGFuZ2VkIHRpdGxlIG9yIGNhbiB5b3UgZml4Cml0IHVwIHdoZW4gYXBw
+bHlpbmc/IE9yIHNob3VsZCBzb21lb25lIGVsc2UgcGljayBpdCB1cD8KCkJhcnRvc3oKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
