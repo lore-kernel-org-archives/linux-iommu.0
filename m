@@ -6,69 +6,75 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B79C433E7
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 18:03:55 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F70C433DF
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 18:22:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70B2520797
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 18:03:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70B2520797
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 20C6020760
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 18:22:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20C6020760
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 175D58849E;
-	Thu, 15 Oct 2020 18:03:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FXt3BpxXo3bo; Thu, 15 Oct 2020 18:03:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id ED3CF8849B;
-	Thu, 15 Oct 2020 18:03:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D4E5AC0052;
-	Thu, 15 Oct 2020 18:03:52 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0C406C0051
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:03:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 91B5C1FEAB
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:03:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7D23D203CC;
+	Thu, 15 Oct 2020 18:22:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FLrj3QLwQ3qZ; Thu, 15 Oct 2020 18:22:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 3070D20352;
+	Thu, 15 Oct 2020 18:22:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 222EBC07FF;
+	Thu, 15 Oct 2020 18:22:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C0C8C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:22:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 06CA7877DE
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:22:15 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RqJKa62fbd+Y for <iommu@lists.linux-foundation.org>;
- Thu, 15 Oct 2020 18:03:48 +0000 (UTC)
+ with ESMTP id 9z6dQkHv+L4V for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Oct 2020 18:22:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id F40492E317
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:03:47 +0000 (UTC)
-Received: from gaia (unknown [95.149.105.49])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id DCEC820797;
- Thu, 15 Oct 2020 18:03:43 +0000 (UTC)
-Date: Thu, 15 Oct 2020 19:03:41 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Hanjun Guo <guohanjun@huawei.com>
-Subject: Re: [PATCH v3 7/8] arm64: mm: Set ZONE_DMA size based on early IORT
- scan
-Message-ID: <20201015180340.GB2624@gaia>
-References: <20201014191211.27029-1-nsaenzjulienne@suse.de>
- <20201014191211.27029-8-nsaenzjulienne@suse.de>
- <1a3df60a-4568-cb72-db62-36127d0ffb7e@huawei.com>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D618A877DA
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 18:22:13 +0000 (UTC)
+IronPort-SDR: RFTYqgdMW5APddBfIko2a9qh1KY9u0bCm6tegt+p6sMOUGSYM1FyKt1/Sq4LtkWe2Iu4l3BIip
+ hiSzd29OnLYQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9775"; a="162955879"
+X-IronPort-AV: E=Sophos;i="5.77,379,1596524400"; d="scan'208";a="162955879"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Oct 2020 11:22:13 -0700
+IronPort-SDR: ttF7ZwHPrxPuTc6JfEHnZrBd7RNp2hy47u3std+EIzNHXG//TdQcJesemkY2F0ldWMI6WSCjVV
+ JSI/CEeCn87Q==
+X-IronPort-AV: E=Sophos;i="5.77,379,1596524400"; d="scan'208";a="521941595"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Oct 2020 11:22:12 -0700
+Date: Thu, 15 Oct 2020 11:22:11 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [RFC PATCH 0/2] iommu: Avoid unnecessary PRI queue flushes
+Message-ID: <20201015182211.GA54780@otc-nc-03>
+References: <20201015090028.1278108-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1a3df60a-4568-cb72-db62-36127d0ffb7e@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>,
- Will Deacon <will@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org, jeremy.linton@arm.com, ardb@kernel.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
- Sudeep Holla <sudeep.holla@arm.com>, Len Brown <lenb@kernel.org>,
- robin.murphy@arm.com, hch@lst.de, linux-rpi-kernel@lists.infradead.org
+In-Reply-To: <20201015090028.1278108-1-jean-philippe@linaro.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: kevin.tian@intel.com, Ashok Raj <ashok.raj@intel.com>, arnd@arndb.de,
+ gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, "Lu, Baolu" <baolu.lu@intel.com>,
+ Jacon Jun Pan <jacob.jun.pan@intel.com>, linux-pci@vger.kernel.org,
+ zhangfei.gao@linaro.org, dwmw2@infradead.org,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,53 +92,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Oct 15, 2020 at 10:26:18PM +0800, Hanjun Guo wrote:
-> On 2020/10/15 3:12, Nicolas Saenz Julienne wrote:
-> > From: Ard Biesheuvel <ardb@kernel.org>
-> > 
-> > We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
-> > incorporating masters that can address less than 32 bits of DMA, in
-> > particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
-> > peripherals that can only address up to 1 GB (and its PCIe host
-> > bridge can only access the bottom 3 GB)
-> > 
-> > Instructing the DMA layer about these limitations is straight-forward,
-> > even though we had to fix some issues regarding memory limits set in
-> > the IORT for named components, and regarding the handling of ACPI _DMA
-> > methods. However, the DMA layer also needs to be able to allocate
-> > memory that is guaranteed to meet those DMA constraints, for bounce
-> > buffering as well as allocating the backing for consistent mappings.
-> > 
-> > This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
-> > it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
-> > problems with kdump, and potentially in other places where allocations
-> > cannot cross zone boundaries. Therefore, we should avoid having two
-> > separate DMA zones when possible.
-> > 
-> > So let's do an early scan of the IORT, and only create the ZONE_DMA
-> > if we encounter any devices that need it. This puts the burden on
-> > the firmware to describe such limitations in the IORT, which may be
-> > redundant (and less precise) if _DMA methods are also being provided.
-> > However, it should be noted that this situation is highly unusual for
-> > arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
-> > the _DMA method if implemented, and so we will not lose the ability to
-> > perform streaming DMA outside the ZONE_DMA if the _DMA method permits
-> > it.
+Hi Jean
+
++ Baolu who is looking into this.
+
+
+On Thu, Oct 15, 2020 at 11:00:27AM +0200, Jean-Philippe Brucker wrote:
+> Add a parameter to iommu_sva_unbind_device() that tells the IOMMU driver
+> whether the PRI queue needs flushing. When looking at the PCIe spec
+> again I noticed that most of the time the SMMUv3 driver doesn't actually
+> need to flush the PRI queue. Does this make sense for Intel VT-d as well
+> or did I overlook something?
 > 
-> Sorry, I'm still a little bit confused. With this patch, if we have
-> a device which set the right _DMA method (DMA size >= 32), but with the
-> wrong DMA size in IORT, we still have the ZONE_DMA created which
-> is actually not needed?
+> Before calling iommu_sva_unbind_device(), device drivers must stop the
+> device from using the PASID. For PCIe devices, that consists of
+> completing any pending DMA, and completing any pending page request
+> unless the device uses Stop Markers. So unless the device uses Stop
+> Markers, we don't need to flush the PRI queue. For SMMUv3, stopping DMA
+> means completing all stall events, so we never need to flush the event
+> queue.
 
-With the current kernel, we get a ZONE_DMA already with an arbitrary
-size of 1GB that matches what RPi4 needs. We are trying to eliminate
-such unnecessary ZONE_DMA based on some heuristics (well, something that
-looks "better" than a OEM ID based quirk). Now, if we learn that IORT
-for platforms in the field is that broken as to describe few bits-wide
-DMA masks, we may have to go back to the OEM ID quirk.
+I don't think this is true. Baolu is working on an enhancement to this,
+I'll quickly summarize this below:
 
--- 
-Catalin
+Stop markers are weird, I'm not certain there is any device today that
+sends STOP markers. Even if they did, markers don't have a required
+response, they are fire and forget from the device pov.
+
+I'm not sure about other IOMMU's how they behave, When there is no space in
+the PRQ, IOMMU auto-responds to the device. This puts the device in a
+while (1) loop. The fake successful response will let the device do a ATS
+lookup, and that would fail forcing the device to do another PRQ. The idea
+is somewhere there the OS has repeated the others and this will find a way
+in the PRQ. The point is this is less reliable and can't be the only
+indication. PRQ draining has a specific sequence. 
+
+The detailed steps are outlined in 
+"Chapter 7.10 "Software Steps to Drain Page Requests & Responses"
+
+- Submit invalidation wait with fence flag to ensure all prior
+  invalidations are processed.
+- submit iotlb followed by devtlb invalidation
+- Submit invalidation wait with page-drain to make sure any page-requests
+  issued by the device are flushed when this invalidation wait completes.
+- If during the above process there was a queue overflow SW can assume no
+  outstanding page-requests are there. If we had a queue full condition,
+  then sw must repeat step 2,3 above.
+
+
+To that extent the proposal is as follows: names are suggestive :-) I'm
+making this up as I go!
+
+- iommu_stop_page_req() - Kernel needs to make sure we respond to all
+  outstanding requests (since we can't drop responses) 
+  - Ensure we respond immediatly for anything that comes before the drain
+    sequence completes
+- iommu_drain_page_req() - Which does the above invalidation with
+  Page_drain set.
+
+Once the driver has performed a reset and before issuing any new request,
+it does iommu_resume_page_req() this will ensure we start processing
+incoming page-req after this point.
+
+
+> 
+> First patch adds flags to unbind(), and the second one lets device
+> drivers tell whether the PRI queue needs to be flushed.
+> 
+> Other remarks:
+> 
+> * The PCIe spec (see quote on patch 2), says that the device signals
+>   whether it has sent a Stop Marker or not during Stop PASID. In reality
+>   it's unlikely that a given device will sometimes use one stop method
+>   and sometimes the other, so it could be a device-wide flag rather than
+>   passing it at each unbind(). I don't want to speculate too much about
+>   future implementation so I prefer having the flag in unbind().
+> 
+> * In patch 1, uacce passes 0 to unbind(). To pass the right flag I'm
+>   thinking that uacce->ops->stop_queue(), which tells the device driver
+>   to stop DMA, should return whether faults are pending. This can be
+>   added later once uacce has an actual PCIe user, but we need to
+>   remember to do it.
+
+I think intel iommmu driver does this today for SVA when pasid is being
+freed. Its still important to go through the drain before that PASID can be
+re-purposed.
+
+Cheers,
+Ashok
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
