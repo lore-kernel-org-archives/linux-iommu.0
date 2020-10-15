@@ -2,73 +2,72 @@ Return-Path: <SRS0=+Hy+=DW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C745C433E7
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 09:51:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C862C433DF
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 09:56:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 03B0222250
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 09:51:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03B0222250
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 7B10F206D4
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 09:56:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B10F206D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6D1908850C;
-	Thu, 15 Oct 2020 09:51:35 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AB17D2E610;
+	Thu, 15 Oct 2020 09:56:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PJhBRQBrrzyj; Thu, 15 Oct 2020 09:55:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 7349C20432;
+	Thu, 15 Oct 2020 09:55:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F1F7C0052;
+	Thu, 15 Oct 2020 09:55:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 261C5C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:55:56 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1A38188508
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:55:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2AxIhZQh5+VT; Thu, 15 Oct 2020 09:51:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B41E788508;
-	Thu, 15 Oct 2020 09:51:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 856E3C0052;
-	Thu, 15 Oct 2020 09:51:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F394CC0051
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:51:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EB9708826C
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:51:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8pRHYohJPrQ1 for <iommu@lists.linux-foundation.org>;
- Thu, 15 Oct 2020 09:51:31 +0000 (UTC)
+ with ESMTP id EGeGcatLBx4U for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Oct 2020 09:55:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 8A2A288266
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:51:31 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 22A4FB228;
- Thu, 15 Oct 2020 09:51:30 +0000 (UTC)
-Message-ID: <165ca8621058696f7df8e8f894cf647b3171d6fd.camel@suse.de>
-Subject: Re: [PATCH v3 4/8] of: unittest: Add test for
- of_dma_get_max_cpu_address()
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Rob Herring <robh+dt@kernel.org>
-Date: Thu, 15 Oct 2020 11:51:28 +0200
-In-Reply-To: <CAL_JsqLC5vAnPjCrr4H3ik_Gh_7vW6+uzyrnjd8WnDxtwypgyQ@mail.gmail.com>
-References: <20201014191211.27029-1-nsaenzjulienne@suse.de>
- <20201014191211.27029-5-nsaenzjulienne@suse.de>
- <CAL_JsqLC5vAnPjCrr4H3ik_Gh_7vW6+uzyrnjd8WnDxtwypgyQ@mail.gmail.com>
-User-Agent: Evolution 3.36.5 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 17BC18850C
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 09:55:55 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5ED2FD6E;
+ Thu, 15 Oct 2020 02:55:54 -0700 (PDT)
+Received: from [10.57.48.76] (unknown [10.57.48.76])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 01A7C3F66B;
+ Thu, 15 Oct 2020 02:55:52 -0700 (PDT)
+Subject: Re: [PATCH v7 3/3] iommu/tegra-smmu: Add PCI support
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+References: <20201009161936.23122-1-nicoleotsuka@gmail.com>
+ <20201009161936.23122-4-nicoleotsuka@gmail.com>
+ <cbc6e3bf-eedc-195c-c4d6-52d3cd24c257@arm.com>
+ <20201015041346.GA13936@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <340afbc0-5513-0742-d2d2-1ab908248af3@arm.com>
+Date: Thu, 15 Oct 2020 10:55:52 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- Catalin Marinas <catalin.marinas@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jeremy Linton <jeremy.linton@arm.com>, Ard Biesheuvel <ardb@kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated
- list:BROADCOM BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20201015041346.GA13936@Asurada-Nvidia>
+Content-Language: en-GB
+Cc: linux-kernel@vger.kernel.org, jonathanh@nvidia.com,
+ iommu@lists.linux-foundation.org, thierry.reding@gmail.com,
+ linux-tegra@vger.kernel.org, digetx@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,117 +80,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0770334641772734027=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2020-10-15 05:13, Nicolin Chen wrote:
+> On Wed, Oct 14, 2020 at 06:42:36PM +0100, Robin Murphy wrote:
+>> On 2020-10-09 17:19, Nicolin Chen wrote:
+>>> This patch simply adds support for PCI devices.
+>>>
+>>> Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+>>> Tested-by: Dmitry Osipenko <digetx@gmail.com>
+>>> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+>>> ---
+>>>
+>>> Changelog
+>>> v6->v7
+>>>    * Renamed goto labels, suggested by Thierry.
+>>> v5->v6
+>>>    * Added Dmitry's Reviewed-by and Tested-by.
+>>> v4->v5
+>>>    * Added Dmitry's Reviewed-by
+>>> v3->v4
+>>>    * Dropped !iommu_present() check
+>>>    * Added CONFIG_PCI check in the exit path
+>>> v2->v3
+>>>    * Replaced ternary conditional operator with if-else in .device_group()
+>>>    * Dropped change in tegra_smmu_remove()
+>>> v1->v2
+>>>    * Added error-out labels in tegra_smmu_probe()
+>>>    * Dropped pci_request_acs() since IOMMU core would call it.
+>>>
+>>>    drivers/iommu/tegra-smmu.c | 35 +++++++++++++++++++++++++----------
+>>>    1 file changed, 25 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+>>> index be29f5977145..2941d6459076 100644
+>>> --- a/drivers/iommu/tegra-smmu.c
+>>> +++ b/drivers/iommu/tegra-smmu.c
+>>> @@ -10,6 +10,7 @@
+>>>    #include <linux/kernel.h>
+>>>    #include <linux/of.h>
+>>>    #include <linux/of_device.h>
+>>> +#include <linux/pci.h>
+>>>    #include <linux/platform_device.h>
+>>>    #include <linux/slab.h>
+>>>    #include <linux/spinlock.h>
+>>> @@ -865,7 +866,11 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
+>>>    	group->smmu = smmu;
+>>>    	group->soc = soc;
+>>> -	group->group = iommu_group_alloc();
+>>> +	if (dev_is_pci(dev))
+>>> +		group->group = pci_device_group(dev);
+>>
+>> Just to check, is it OK to have two or more swgroups "owning" the same
+>> iommu_group if an existing one gets returned here? It looks like that might
+>> not play nice with the use of iommu_group_set_iommudata().
+> 
+> Do you mean by "gets returned here" the "IS_ERR" check below?
 
---===============0770334641772734027==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-X8qOX67+76GtlnxqUBk7"
+I mean that unlike iommu_group_alloc()/generic_device_group(), 
+pci_device_group() may give you back a group that already contains 
+another device and has already been set up from that device's 
+perspective. This can happen for topological reasons like requester ID 
+aliasing through a PCI-PCIe bridge or lack of isolation between functions.
 
+Robin.
 
---=-X8qOX67+76GtlnxqUBk7
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, 2020-10-14 at 17:04 -0500, Rob Herring wrote:
-> On Wed, Oct 14, 2020 at 2:12 PM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > Introduce a test for of_dma_get_max_cup_address(), it uses the same DT
-> > data as the rest of dma-ranges unit tests.
-> >=20
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > ---
-> >  drivers/of/unittest.c | 20 ++++++++++++++++++++
-> >  1 file changed, 20 insertions(+)
-> >=20
-> > diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-> > index 06cc988faf78..2cbf2a585c9f 100644
-> > --- a/drivers/of/unittest.c
-> > +++ b/drivers/of/unittest.c
-> > @@ -869,6 +869,25 @@ static void __init of_unittest_changeset(void)
-> >  #endif
-> >  }
-> >=20
-> > +static void __init of_unittest_dma_get_max_cpu_address(void)
-> > +{
-> > +#ifdef CONFIG_HAS_DMA
->=20
-> Can't the unittest run without this? I run the unittests under UML.
-
-It was cargo culted from its sibling of_unittest_dma_ranges_one(), now that=
- you
-mention it, I can't seem to find the reason why it's here in the first plac=
-e,
-nor for other similar usages in OF code.
-
-I ran the test in UML with all HAS_DMA conditionals removed from OF code an=
-d
-things went well. I'll prepare a fix for that.
-
-> > +       struct device_node *np;
-> > +       phys_addr_t cpu_addr;
-> > +
-> > +       np =3D of_find_node_by_path("/testcase-data/address-tests");
-> > +       if (!np) {
-> > +               pr_err("missing testcase data\n");
-> > +               return;
-> > +       }
-> > +
-> > +       cpu_addr =3D of_dma_get_max_cpu_address(np);
-> > +       unittest(cpu_addr =3D=3D 0x50000000ULL,
-> > +                "of_dma_get_max_cpu_address: wrong CPU addr %pad (expe=
-cting %llx)\n",
-> > +                &cpu_addr, 0x50000000ULL);
-> > +#endif
-> > +}
-> > +
-> >  static void __init of_unittest_dma_ranges_one(const char *path,
-> >                 u64 expect_dma_addr, u64 expect_paddr)
-> >  {
-> > @@ -3266,6 +3285,7 @@ static int __init of_unittest(void)
-> >         of_unittest_changeset();
-> >         of_unittest_parse_interrupts();
-> >         of_unittest_parse_interrupts_extended();
-> > +       of_unittest_dma_get_max_cpu_address();
-> >         of_unittest_parse_dma_ranges();
-> >         of_unittest_pci_dma_ranges();
-> >         of_unittest_match_node();
-> > --
-> > 2.28.0
-> >=20
-
-
---=-X8qOX67+76GtlnxqUBk7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+IG6AACgkQlfZmHno8
-x/4LMAf/QcDwrq8xC+sEW6qMg3hpF9bfJCqcr+hehJmADyEcCDmz8TevhzumZXeM
-RtlVB67o7Z2bAeSpOqTlQGQHYLdWu3zZ+Zqu0PRjUdQ6CE1l9qzLj1TSIME93HrV
-kSSiqWLmOlbyISGAb1pFKbzsVqIX4t+Zn6CuH+BBLl4YimWi0Fj2aCNXSobo/K9J
-aOkm5VtaIWCYbrv44+KHzpP+pJZIPl0Ya0NOzH2c2YgmL7nj7meneGEWaiRX7p8d
-A/5dnYZRj/HJ+VOYW36zDfzsp5nHZxJVMXG76QJYFSleD36Skl2IyjfYQS+XwMEb
-rKyrJ54T41B/RpMYjTMKcmO+x/BUMQ==
-=Nev7
------END PGP SIGNATURE-----
-
---=-X8qOX67+76GtlnxqUBk7--
-
-
---===============0770334641772734027==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+>>> +	else
+>>> +		group->group = generic_device_group(dev);
+>>> +
+>>>    	if (IS_ERR(group->group)) {
+>>>    		devm_kfree(smmu->dev, group);
+>>>    		mutex_unlock(&smmu->lock);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0770334641772734027==--
-
