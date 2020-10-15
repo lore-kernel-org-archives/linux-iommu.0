@@ -6,67 +6,65 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A594C433DF
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 08:54:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D6BC433E7
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 08:55:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A6DF20BED
-	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 08:54:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A6DF20BED
+	by mail.kernel.org (Postfix) with ESMTPS id B170C20BED
+	for <iommu@archiver.kernel.org>; Thu, 15 Oct 2020 08:55:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B170C20BED
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2A3E587567;
-	Thu, 15 Oct 2020 08:54:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 19B9120450;
+	Thu, 15 Oct 2020 08:55:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id o+EilNUdl-hG; Thu, 15 Oct 2020 08:54:18 +0000 (UTC)
+	with ESMTP id 7VkHrZ94BJy0; Thu, 15 Oct 2020 08:55:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 918528790E;
-	Thu, 15 Oct 2020 08:54:18 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DFA6C2044F;
+	Thu, 15 Oct 2020 08:55:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70AD3C07FF;
-	Thu, 15 Oct 2020 08:54:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BAA2C0051
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:54:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2102C07FF;
+	Thu, 15 Oct 2020 08:55:43 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A4188C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:55:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id EAC8787567
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:54:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 91F58876BB
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:55:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZlwSbbS+7xIs for <iommu@lists.linux-foundation.org>;
- Thu, 15 Oct 2020 08:54:15 +0000 (UTC)
+ with ESMTP id kfuKkKy4xgw4 for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Oct 2020 08:55:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 00E24877F8
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:54:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id ED071876B0
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 08:55:41 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id E0BDEAEC2;
- Thu, 15 Oct 2020 08:54:12 +0000 (UTC)
-Message-ID: <de5e33352782331cf0a6ee32c1c8c6bdfe20b6af.camel@suse.de>
-Subject: Re: [PATCH v3 3/8] of/address: Introduce of_dma_get_max_cpu_address()
+ by mx2.suse.de (Postfix) with ESMTP id 8886BAD07;
+ Thu, 15 Oct 2020 08:55:40 +0000 (UTC)
+Message-ID: <d2b9b819c3245d80964959ab9544ae83aee470de.camel@suse.de>
+Subject: Re: [PATCH v3 1/8] arm64: mm: Move reserve_crashkernel() into
+ mem_init()
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Rob Herring <robh+dt@kernel.org>
-Date: Thu, 15 Oct 2020 10:54:11 +0200
-In-Reply-To: <CAL_JsqKMGSCTmKF2Lt8GQFx0DVFFH1bLVBw=bRDM7upahGvKDQ@mail.gmail.com>
+To: Will Deacon <will@kernel.org>
+Date: Thu, 15 Oct 2020 10:55:39 +0200
+In-Reply-To: <20201015084008.GB4537@willie-the-truck>
 References: <20201014191211.27029-1-nsaenzjulienne@suse.de>
- <20201014191211.27029-4-nsaenzjulienne@suse.de>
- <CAL_JsqKMGSCTmKF2Lt8GQFx0DVFFH1bLVBw=bRDM7upahGvKDQ@mail.gmail.com>
+ <20201014191211.27029-2-nsaenzjulienne@suse.de>
+ <20201015084008.GB4537@willie-the-truck>
 User-Agent: Evolution 3.36.5 
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
- Catalin Marinas <catalin.marinas@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jeremy Linton <jeremy.linton@arm.com>, Ard Biesheuvel <ardb@kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, "moderated
- list:BROADCOM BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Cc: devicetree@vger.kernel.org, catalin.marinas@arm.com,
+ linux-kernel@vger.kernel.org, jeremy.linton@arm.com, ardb@kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-rpi-kernel@lists.infradead.org, robin.murphy@arm.com, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,86 +77,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3253946582533421974=="
+Content-Type: multipart/mixed; boundary="===============5763373995075466817=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============3253946582533421974==
+--===============5763373995075466817==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-YUQJ5U+i4xNz/NZrjBJR"
+	protocol="application/pgp-signature"; boundary="=-LqkvVPGxKWHS4SdfYKKx"
 
 
---=-YUQJ5U+i4xNz/NZrjBJR
+--=-LqkvVPGxKWHS4SdfYKKx
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2020-10-14 at 17:02 -0500, Rob Herring wrote:
-> On Wed, Oct 14, 2020 at 2:12 PM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > Introduce of_dma_get_max_cpu_address(), which provides the highest CPU
-> > physical address addressable by all DMA masters in the system. It's
-> > specially useful for setting memory zones sizes at early boot time.
+On Thu, 2020-10-15 at 09:40 +0100, Will Deacon wrote:
+> On Wed, Oct 14, 2020 at 09:12:03PM +0200, Nicolas Saenz Julienne wrote:
+> > crashkernel might reserve memory located in ZONE_DMA. We plan to delay
+> > ZONE_DMA's initialization after unflattening the devicetree and ACPI's
+> > boot table initialization, so move it later in the boot process.
+> > Specifically into mem_init(), this is the last place crashkernel will b=
+e
+> > able to reserve the memory before the page allocator kicks in and there=
+ is
+> > no need to do it earlier.
 > >=20
 > > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> >=20
 > > ---
-
-[...]
-
-> > +       struct of_range_parser parser;
-> > +       phys_addr_t subtree_max_addr;
-> > +       struct device_node *child;
-> > +       phys_addr_t cpu_end =3D 0;
-> > +       struct of_range range;
-> > +       const __be32 *ranges;
-> > +       int len;
-> > +
-> > +       if (!np)
-> > +               np =3D of_root;
-> > +
-> > +       ranges =3D of_get_property(np, "dma-ranges", &len);
+> >  arch/arm64/mm/init.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 >=20
-> I'm not really following why you changed the algorithm here. You're
-> skipping disabled nodes which is good. Was there some other reason?
+> Please can you cc me on the whole series next time? I know different
+> maintainers have different preferences here, but I find it much easier to
+> figure out what's happening when I can see all of the changes together.
 
-Yes, it's a little more complex. But I had to change it in order to be able=
- to
-start parsing down from an arbitrary device node, which is needed for the u=
-nit
-tests.
-
-for_each_of_allnodes() and friends will traverse the whole tree, regardless=
- of
-the starting point. I couldn't find a similar function that would just iter=
-ate
-over a subsection of the tree, so I went with this recursive approach.
+Will do.
 
 Regards,
 Nicolas
 
 
---=-YUQJ5U+i4xNz/NZrjBJR
+
+--=-LqkvVPGxKWHS4SdfYKKx
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+IDjMACgkQlfZmHno8
-x/7rjAf+KrPaZm2zT8XfzDn5CDIf7492No2jTgiouPN9YLIyCBwWqNc3j9ApACr0
-Boxl6eP0BL49yAtVQJz+hq86/9a1TTbqs+xj1mdUG0KruCrKQvSm8sd8DexTFBaV
-zw7F1cvFs6HgYqAmNfK5ybVBoDy1Br0LVK5E05S2baUkID/HZDVSGEwhS3FSaRQP
-WcMPbmIvPgxNg1/Tk16wi9rX2FToZCJymwwil45nHAFnc4hSsudcTHFmX4Td8J01
-jd51b5qeWQ1mX3LY7a4xo0YiR18m69VB0ToPRpQKQvAb24nxMatXip9NtseykiQs
-4jVbFSQAT/FxsnzgjJRMVHJOBZFvAQ==
-=1G9v
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+IDosACgkQlfZmHno8
+x/5b8gf/WNSZvoD1xtpKjt8jTMpQspe3cPPxx3dpnpf7yyIFDV2xDx1fyq+Mpgad
+krP9EbmaQcdA3u87hnSWp1EdJ0b1fGQQooiORSHOG+aQk4sfG/pOtFMt0WtxPyPf
+r5KkkqLrh0x+ro0UB1BjEThi48JfY3mXrBjsohVFeytePlBk0HetZtyfWf5JxyCY
+ZEHDUqbeYqhpWS3CfAfu5R3o5QFD4j4duokshFeptOcz2qFULFMKDFhVPbIIQE8x
+Oydt2nCcFSDExbev7dHLEh0QmSY3vSd9F2c3nN0cw1y7M1MB2xc5XKLfLSgPgpY8
+LQ4wQNIocmuUtgHQR8Blet63XHBeNw==
+=Fb5G
 -----END PGP SIGNATURE-----
 
---=-YUQJ5U+i4xNz/NZrjBJR--
+--=-LqkvVPGxKWHS4SdfYKKx--
 
 
---===============3253946582533421974==
+--===============5763373995075466817==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -168,5 +148,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3253946582533421974==--
+--===============5763373995075466817==--
 
