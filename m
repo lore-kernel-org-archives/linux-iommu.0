@@ -2,103 +2,80 @@ Return-Path: <SRS0=AOw0=DX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F8CCC43457
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 04:02:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85525C43467
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:51:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E917D207F7
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 04:02:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fUnr49tv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E917D207F7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id B2B7720848
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:51:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2B7720848
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6D8A788839;
-	Fri, 16 Oct 2020 04:02:14 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XoPyp13ZLi3W; Fri, 16 Oct 2020 04:02:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 97E0E88823;
-	Fri, 16 Oct 2020 04:02:12 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BCA8C0052;
-	Fri, 16 Oct 2020 04:02:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3799AC0051
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 04:02:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1CA0088179
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 04:02:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CD0AE8730D;
+	Fri, 16 Oct 2020 06:51:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EgBozFe9MCRN; Fri, 16 Oct 2020 06:51:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 37936882C3;
+	Fri, 16 Oct 2020 06:51:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D1CEC07FF;
+	Fri, 16 Oct 2020 06:51:28 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC612C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:51:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id D2A3188B34
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:51:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GGPCymXiQT+y for <iommu@lists.linux-foundation.org>;
- Fri, 16 Oct 2020 04:02:09 +0000 (UTC)
+ with ESMTP id DEOgOV2Y6Asa for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Oct 2020 06:51:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f194.google.com (mail-pf1-f194.google.com
- [209.85.210.194])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7C86687E8B
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 04:02:09 +0000 (UTC)
-Received: by mail-pf1-f194.google.com with SMTP id a200so694725pfa.10
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 21:02:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=C9/au9NmuAjbAcpNdJ/iNR3JJfxaIrQJHGtDNhivldY=;
- b=fUnr49tvI2n8Bt8NbcB9EuFZXeZSkEm0m3HKZpMJQNWe1MqKl04RBFrb2f1epAFdf+
- la4hswFSfMQ+QyQ3YcImGcU1wpeC3mZh/5Pk7kSDKWmg7hz3aR2Jkj6hXGUr/lvBOolV
- vQCAO05qsArss6AZMqm1OJzYrp2WsasKMfy4DuDRcZxo7KuQAfeLczazVfX0zpyWLtVh
- mhbDAz4bd8OPnx9fQMJ+H7lz+F51UfQZDiE6F5Ry4Ya/clJd8EfIzGRbPa2kgxe5gy8n
- P2LLP/iSGXrLTqUn2MF7rmekQd88zpnFoLmFIYaLcsZuJGzn8AnjDPgP7uC5SgIJC50d
- Jx7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=C9/au9NmuAjbAcpNdJ/iNR3JJfxaIrQJHGtDNhivldY=;
- b=PffgmtFmIVGEg158ylLCE7FH0zlZ7BGRsoPZ4gHaU4aTQ/UTVoHE8dfSv1hOloQ2IJ
- DqspuAyHTBk9VRPYxEGNkLHaBFFgaosvTxXHYn6gcSfdOkcWgDfr215eOwizKDMngqrS
- X6up0A7JMgTMXR1VtWtijgGDCYMeTs5eQf/xKr/Gti8Rg+ocAHriCK/sPDkNj+OobZB9
- kahmv5CYkHkDsqplwEgHBpZnygeJj0qkdpSwt+AS8S8C2ZszT7Zd4wBXdmkgzylBaXjY
- TkMGO4v4qeRCaosX4gUvzZwFuC6kRFMBIL0BGJgIwPeOpvtFh4W2lzqK39CeBQfytcxt
- B8cA==
-X-Gm-Message-State: AOAM530edaV/TG0ym3HEToFLTmnhPOtzQbpdrYhz3m01bQVwfl1kPa5j
- ageT3W/ZEjzau5CEa472yqQ=
-X-Google-Smtp-Source: ABdhPJxi8B6Bs2WRpPkDMeAnj8BXHgnjQ/A9MDIaKhIjybBlGt4xg5ji7MXBKq7c8ilm/fIZeed10w==
-X-Received: by 2002:a05:6a00:150a:b029:159:53cd:86db with SMTP id
- q10-20020a056a00150ab029015953cd86dbmr1667035pfu.11.1602820928943; 
- Thu, 15 Oct 2020 21:02:08 -0700 (PDT)
-Received: from Asurada-Nvidia (thunderhill.nvidia.com. [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id b6sm943638pjq.42.2020.10.15.21.02.08
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Thu, 15 Oct 2020 21:02:08 -0700 (PDT)
-Date: Thu, 15 Oct 2020 20:53:47 -0700
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 3/3] iommu/tegra-smmu: Add PCI support
-Message-ID: <20201016035347.GA28140@Asurada-Nvidia>
-References: <20201009161936.23122-1-nicoleotsuka@gmail.com>
- <20201009161936.23122-4-nicoleotsuka@gmail.com>
- <cbc6e3bf-eedc-195c-c4d6-52d3cd24c257@arm.com>
- <20201015041346.GA13936@Asurada-Nvidia>
- <340afbc0-5513-0742-d2d2-1ab908248af3@arm.com>
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 94F3888AE4
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:51:23 +0000 (UTC)
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+ by Forcepoint Email with ESMTP id 419B7DF0B12213270867;
+ Fri, 16 Oct 2020 14:51:17 +0800 (CST)
+Received: from [10.174.179.182] (10.174.179.182) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 16 Oct 2020 14:51:09 +0800
+Subject: Re: [PATCH v3 7/8] arm64: mm: Set ZONE_DMA size based on early IORT
+ scan
+To: Catalin Marinas <catalin.marinas@arm.com>
+References: <20201014191211.27029-1-nsaenzjulienne@suse.de>
+ <20201014191211.27029-8-nsaenzjulienne@suse.de>
+ <1a3df60a-4568-cb72-db62-36127d0ffb7e@huawei.com>
+ <20201015180340.GB2624@gaia>
+From: Hanjun Guo <guohanjun@huawei.com>
+Message-ID: <35faab1c-5c32-6cd3-0a14-77057dd223f5@huawei.com>
+Date: Fri, 16 Oct 2020 14:51:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <340afbc0-5513-0742-d2d2-1ab908248af3@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: linux-kernel@vger.kernel.org, jonathanh@nvidia.com,
- iommu@lists.linux-foundation.org, thierry.reding@gmail.com,
- linux-tegra@vger.kernel.org, digetx@gmail.com
+In-Reply-To: <20201015180340.GB2624@gaia>
+Content-Language: en-GB
+X-Originating-IP: [10.174.179.182]
+X-CFilter-Loop: Reflected
+Cc: devicetree@vger.kernel.org, Anshuman
+ Khandual <anshuman.khandual@arm.com>, Will Deacon <will@kernel.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org,
+ jeremy.linton@arm.com, ardb@kernel.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ Linuxarm <linuxarm@huawei.com>, linux-arm-kernel@lists.infradead.org,
+ Sudeep Holla <sudeep.holla@arm.com>, Len Brown <lenb@kernel.org>,
+ robin.murphy@arm.com, hch@lst.de, linux-rpi-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,80 +88,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Oct 15, 2020 at 10:55:52AM +0100, Robin Murphy wrote:
-> On 2020-10-15 05:13, Nicolin Chen wrote:
-> > On Wed, Oct 14, 2020 at 06:42:36PM +0100, Robin Murphy wrote:
-> > > On 2020-10-09 17:19, Nicolin Chen wrote:
-> > > > This patch simply adds support for PCI devices.
-> > > > 
-> > > > Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
-> > > > Tested-by: Dmitry Osipenko <digetx@gmail.com>
-> > > > Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-> > > > ---
-> > > > 
-> > > > Changelog
-> > > > v6->v7
-> > > >    * Renamed goto labels, suggested by Thierry.
-> > > > v5->v6
-> > > >    * Added Dmitry's Reviewed-by and Tested-by.
-> > > > v4->v5
-> > > >    * Added Dmitry's Reviewed-by
-> > > > v3->v4
-> > > >    * Dropped !iommu_present() check
-> > > >    * Added CONFIG_PCI check in the exit path
-> > > > v2->v3
-> > > >    * Replaced ternary conditional operator with if-else in .device_group()
-> > > >    * Dropped change in tegra_smmu_remove()
-> > > > v1->v2
-> > > >    * Added error-out labels in tegra_smmu_probe()
-> > > >    * Dropped pci_request_acs() since IOMMU core would call it.
-> > > > 
-> > > >    drivers/iommu/tegra-smmu.c | 35 +++++++++++++++++++++++++----------
-> > > >    1 file changed, 25 insertions(+), 10 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> > > > index be29f5977145..2941d6459076 100644
-> > > > --- a/drivers/iommu/tegra-smmu.c
-> > > > +++ b/drivers/iommu/tegra-smmu.c
-> > > > @@ -10,6 +10,7 @@
-> > > >    #include <linux/kernel.h>
-> > > >    #include <linux/of.h>
-> > > >    #include <linux/of_device.h>
-> > > > +#include <linux/pci.h>
-> > > >    #include <linux/platform_device.h>
-> > > >    #include <linux/slab.h>
-> > > >    #include <linux/spinlock.h>
-> > > > @@ -865,7 +866,11 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
-> > > >    	group->smmu = smmu;
-> > > >    	group->soc = soc;
-> > > > -	group->group = iommu_group_alloc();
-> > > > +	if (dev_is_pci(dev))
-> > > > +		group->group = pci_device_group(dev);
-> > > 
-> > > Just to check, is it OK to have two or more swgroups "owning" the same
-> > > iommu_group if an existing one gets returned here? It looks like that might
-> > > not play nice with the use of iommu_group_set_iommudata().
-> > 
-> > Do you mean by "gets returned here" the "IS_ERR" check below?
+On 2020/10/16 2:03, Catalin Marinas wrote:
+> On Thu, Oct 15, 2020 at 10:26:18PM +0800, Hanjun Guo wrote:
+>> On 2020/10/15 3:12, Nicolas Saenz Julienne wrote:
+>>> From: Ard Biesheuvel <ardb@kernel.org>
+>>>
+>>> We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
+>>> incorporating masters that can address less than 32 bits of DMA, in
+>>> particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
+>>> peripherals that can only address up to 1 GB (and its PCIe host
+>>> bridge can only access the bottom 3 GB)
+>>>
+>>> Instructing the DMA layer about these limitations is straight-forward,
+>>> even though we had to fix some issues regarding memory limits set in
+>>> the IORT for named components, and regarding the handling of ACPI _DMA
+>>> methods. However, the DMA layer also needs to be able to allocate
+>>> memory that is guaranteed to meet those DMA constraints, for bounce
+>>> buffering as well as allocating the backing for consistent mappings.
+>>>
+>>> This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
+>>> it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
+>>> problems with kdump, and potentially in other places where allocations
+>>> cannot cross zone boundaries. Therefore, we should avoid having two
+>>> separate DMA zones when possible.
+>>>
+>>> So let's do an early scan of the IORT, and only create the ZONE_DMA
+>>> if we encounter any devices that need it. This puts the burden on
+>>> the firmware to describe such limitations in the IORT, which may be
+>>> redundant (and less precise) if _DMA methods are also being provided.
+>>> However, it should be noted that this situation is highly unusual for
+>>> arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
+>>> the _DMA method if implemented, and so we will not lose the ability to
+>>> perform streaming DMA outside the ZONE_DMA if the _DMA method permits
+>>> it.
+>>
+>> Sorry, I'm still a little bit confused. With this patch, if we have
+>> a device which set the right _DMA method (DMA size >= 32), but with the
+>> wrong DMA size in IORT, we still have the ZONE_DMA created which
+>> is actually not needed?
 > 
-> I mean that unlike iommu_group_alloc()/generic_device_group(),
-> pci_device_group() may give you back a group that already contains another
-> device and has already been set up from that device's perspective. This can
-> happen for topological reasons like requester ID aliasing through a PCI-PCIe
-> bridge or lack of isolation between functions.
+> With the current kernel, we get a ZONE_DMA already with an arbitrary
+> size of 1GB that matches what RPi4 needs. We are trying to eliminate
+> such unnecessary ZONE_DMA based on some heuristics (well, something that
+> looks "better" than a OEM ID based quirk). Now, if we learn that IORT
+> for platforms in the field is that broken as to describe few bits-wide
+> DMA masks, we may have to go back to the OEM ID quirk.
 
-Okay..but we don't really have two swgroups owning the same groups
-in case of PCI devices. For Tegra210, all PCI devices inherit the
-same swgroup from the PCI controller. And I'd think previous chips
-do the same. The only use case currently of 2+ swgroups owning the
-same iommu_group is for display controller.
+Some platforms using 0 as the memory size limit, for example D05 [0] and
+D06 [1], I think we need to go back to the OEM ID quirk.
 
-Or do you suggest we need an additional check for pci_device_group?
+For D05/D06, there are multi interrupt controllers named as mbigen,
+mbigen is using the named component to describe the mappings with
+the ITS controller, and mbigen is using 0 as the memory size limit.
+
+Also since the memory size limit for PCI RC was introduced by later
+IORT revision, so firmware people may think it's fine to set that
+as 0 because the system works without it.
+
+Thanks
+Hanjun
+
+[0]:
+https://github.com/tianocore/edk2-platforms/blob/master/Silicon/Hisilicon/Hi1616/D05AcpiTables/D05Iort.asl
+[1]:
+https://github.com/tianocore/edk2-platforms/blob/master/Silicon/Hisilicon/Hi1620/Hi1620AcpiTables/Hi1620Iort.asl
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
