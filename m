@@ -6,91 +6,90 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F97C43467
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF05C4363A
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:56:31 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C3A4820829
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:55:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 907F82080A
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 06:56:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="OnEMUDtf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3A4820829
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="kW25M9o0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 907F82080A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7E8C9882CB;
-	Fri, 16 Oct 2020 06:55:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A9D6487402;
+	Fri, 16 Oct 2020 06:56:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AKkIZSORMBb9; Fri, 16 Oct 2020 06:55:11 +0000 (UTC)
+	with ESMTP id 0oRihGVnmHX3; Fri, 16 Oct 2020 06:56:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C64B4882A7;
-	Fri, 16 Oct 2020 06:55:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2513F81E31;
+	Fri, 16 Oct 2020 06:56:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADB00C07FF;
-	Fri, 16 Oct 2020 06:55:11 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53E33C0051
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:55:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C693C07FF;
+	Fri, 16 Oct 2020 06:56:29 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BDEF0C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:56:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4E509882C3
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:55:10 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id ABB0088B43
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:56:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jAx2r5YnZOVe for <iommu@lists.linux-foundation.org>;
- Fri, 16 Oct 2020 06:55:09 +0000 (UTC)
+ with ESMTP id n1P4AXeOEUWm for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Oct 2020 06:56:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7D8FE882A7
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:55:09 +0000 (UTC)
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com
- [209.85.210.53])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0484F88AE4
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:56:27 +0000 (UTC)
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com
+ [209.85.167.171])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 0D6DE212CC
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:55:09 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 6142F20848
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 06:56:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1602831309;
- bh=b3qDwjjAp5PHcyt8IPdk4OZdAwmA08qCD89V2qvJHaU=;
+ s=default; t=1602831386;
+ bh=Qt5cK4GbMy1zYjzp9yoahcnNoGCra0PWF0mygx/BzDY=;
  h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=OnEMUDtfzK0gADScZPt2n5h2HkDxjKlzfLcIFiT2z0pNHcWCzFlaM+Gg9CdaS49Cm
- GGa4rRxzT6s4z6RPwHyrwBHNffZ87P0maEvRUvVl6a9/aOKYXpqaTL3rvmlz1Kr4M4
- OpYcEVUMGGBhILJAXeRULNbnv58Scz98UscOGpEM=
-Received: by mail-ot1-f53.google.com with SMTP id d28so1548955ote.1
- for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 23:55:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532G/rrOBy0+N+qXg4k0TeeVfK3nrNve9Ps5HQPbP4oQXXeX0JYN
- 5oS6BUzoYHvCzH4XsPaSmSRn59TA5N9SJpk1iKo=
-X-Google-Smtp-Source: ABdhPJzFVaXBGl8dFNX52YrC8SMcHfjR/tZskK4YIqFusTZj+VMKn9rDGBEcRadGWaZ6KZRA07DaMJyrRkA2/apa6EA=
-X-Received: by 2002:a9d:6a85:: with SMTP id l5mr1646843otq.77.1602831308155;
- Thu, 15 Oct 2020 23:55:08 -0700 (PDT)
+ b=kW25M9o0mHtPxHMea8yV80oWEA7vsMtr2BnXS+nM5/3MQhqUaPvN+MhMXTh+FopX7
+ uX5bRbMj4YsNF7JnVpLGJ8bkygcEu+ZEiqZ/YvRS766TMA7DF9cF/fcUls1f6GBkDC
+ KZugE4D2A0tX8R0wG7oMBjzYLxgCNaiu0dmN+tRI=
+Received: by mail-oi1-f171.google.com with SMTP id h10so1330231oie.5
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Oct 2020 23:56:26 -0700 (PDT)
+X-Gm-Message-State: AOAM53041FSRLk2BftmrY5Nc78AyjYKt35XN/SzjxlwYd9Lts3VHk1te
+ VTtKiRRQWIeuaNf/XDLUOXleubSV2PtI32k9NUw=
+X-Google-Smtp-Source: ABdhPJz06rV6WAWm42aN14z1C+ajNWUQE5kD2qLfjxAdRc9MpB29T/PNIdoPGp5uO2oI3ZIgGfWCv7Dbtg/8qUfzXjc=
+X-Received: by 2002:aca:d64f:: with SMTP id n76mr1596675oig.174.1602831385656; 
+ Thu, 15 Oct 2020 23:56:25 -0700 (PDT)
 MIME-Version: 1.0
 References: <20201014191211.27029-1-nsaenzjulienne@suse.de>
  <20201014191211.27029-8-nsaenzjulienne@suse.de>
- <1a3df60a-4568-cb72-db62-36127d0ffb7e@huawei.com>
- <20201015180340.GB2624@gaia> <35faab1c-5c32-6cd3-0a14-77057dd223f5@huawei.com>
-In-Reply-To: <35faab1c-5c32-6cd3-0a14-77057dd223f5@huawei.com>
+ <20201015103106.GA24739@e121166-lin.cambridge.arm.com>
+In-Reply-To: <20201015103106.GA24739@e121166-lin.cambridge.arm.com>
 From: Ard Biesheuvel <ardb@kernel.org>
-Date: Fri, 16 Oct 2020 08:54:56 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFzYbr_mYm-zhsio2XV+KGgDBjtgy_NWNYnanyfU-U-Nw@mail.gmail.com>
-Message-ID: <CAMj1kXFzYbr_mYm-zhsio2XV+KGgDBjtgy_NWNYnanyfU-U-Nw@mail.gmail.com>
+Date: Fri, 16 Oct 2020 08:56:14 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXGRcP_8OMHAdjTLNod40N_8dzqrX9=F+s7pd0EXy8O6DQ@mail.gmail.com>
+Message-ID: <CAMj1kXGRcP_8OMHAdjTLNod40N_8dzqrX9=F+s7pd0EXy8O6DQ@mail.gmail.com>
 Subject: Re: [PATCH v3 7/8] arm64: mm: Set ZONE_DMA size based on early IORT
  scan
-To: Hanjun Guo <guohanjun@huawei.com>
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
  <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
  Anshuman Khandual <anshuman.khandual@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
  "Rafael J. Wysocki" <rjw@rjwysocki.net>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Jeremy Linton <jeremy.linton@arm.com>, Linuxarm <linuxarm@huawei.com>,
+ Jeremy Linton <jeremy.linton@arm.com>,
  ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
  Linux IOMMU <iommu@lists.linux-foundation.org>,
  Rob Herring <robh+dt@kernel.org>,
  Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Sudeep Holla <sudeep.holla@arm.com>, Len Brown <lenb@kernel.org>,
+ Hanjun Guo <guohanjun@huawei.com>, Len Brown <lenb@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
  "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE"
  <linux-rpi-kernel@lists.infradead.org>
@@ -111,74 +110,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 16 Oct 2020 at 08:51, Hanjun Guo <guohanjun@huawei.com> wrote:
+On Thu, 15 Oct 2020 at 12:31, Lorenzo Pieralisi
+<lorenzo.pieralisi@arm.com> wrote:
 >
-> On 2020/10/16 2:03, Catalin Marinas wrote:
-> > On Thu, Oct 15, 2020 at 10:26:18PM +0800, Hanjun Guo wrote:
-> >> On 2020/10/15 3:12, Nicolas Saenz Julienne wrote:
-> >>> From: Ard Biesheuvel <ardb@kernel.org>
-> >>>
-> >>> We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
-> >>> incorporating masters that can address less than 32 bits of DMA, in
-> >>> particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
-> >>> peripherals that can only address up to 1 GB (and its PCIe host
-> >>> bridge can only access the bottom 3 GB)
-> >>>
-> >>> Instructing the DMA layer about these limitations is straight-forward,
-> >>> even though we had to fix some issues regarding memory limits set in
-> >>> the IORT for named components, and regarding the handling of ACPI _DMA
-> >>> methods. However, the DMA layer also needs to be able to allocate
-> >>> memory that is guaranteed to meet those DMA constraints, for bounce
-> >>> buffering as well as allocating the backing for consistent mappings.
-> >>>
-> >>> This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
-> >>> it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
-> >>> problems with kdump, and potentially in other places where allocations
-> >>> cannot cross zone boundaries. Therefore, we should avoid having two
-> >>> separate DMA zones when possible.
-> >>>
-> >>> So let's do an early scan of the IORT, and only create the ZONE_DMA
-> >>> if we encounter any devices that need it. This puts the burden on
-> >>> the firmware to describe such limitations in the IORT, which may be
-> >>> redundant (and less precise) if _DMA methods are also being provided.
-> >>> However, it should be noted that this situation is highly unusual for
-> >>> arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
-> >>> the _DMA method if implemented, and so we will not lose the ability to
-> >>> perform streaming DMA outside the ZONE_DMA if the _DMA method permits
-> >>> it.
-> >>
-> >> Sorry, I'm still a little bit confused. With this patch, if we have
-> >> a device which set the right _DMA method (DMA size >= 32), but with the
-> >> wrong DMA size in IORT, we still have the ZONE_DMA created which
-> >> is actually not needed?
-> >
-> > With the current kernel, we get a ZONE_DMA already with an arbitrary
-> > size of 1GB that matches what RPi4 needs. We are trying to eliminate
-> > such unnecessary ZONE_DMA based on some heuristics (well, something that
-> > looks "better" than a OEM ID based quirk). Now, if we learn that IORT
-> > for platforms in the field is that broken as to describe few bits-wide
-> > DMA masks, we may have to go back to the OEM ID quirk.
+> On Wed, Oct 14, 2020 at 09:12:09PM +0200, Nicolas Saenz Julienne wrote:
 >
-> Some platforms using 0 as the memory size limit, for example D05 [0] and
-> D06 [1], I think we need to go back to the OEM ID quirk.
+> [...]
 >
-> For D05/D06, there are multi interrupt controllers named as mbigen,
-> mbigen is using the named component to describe the mappings with
-> the ITS controller, and mbigen is using 0 as the memory size limit.
+> > +unsigned int __init acpi_iort_get_zone_dma_size(void)
+> > +{
+> > +     struct acpi_table_iort *iort;
+> > +     struct acpi_iort_node *node, *end;
+> > +     acpi_status status;
+> > +     u8 limit = 32;
+> > +     int i;
+> > +
+> > +     if (acpi_disabled)
+> > +             return limit;
+> > +
+> > +     status = acpi_get_table(ACPI_SIG_IORT, 0,
+> > +                             (struct acpi_table_header **)&iort);
+> > +     if (ACPI_FAILURE(status))
+> > +             return limit;
+> > +
+> > +     node = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->node_offset);
+> > +     end = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->header.length);
+> > +
+> > +     for (i = 0; i < iort->node_count; i++) {
+> > +             if (node >= end)
+> > +                     break;
+> > +
+> > +             switch (node->type) {
+> > +                     struct acpi_iort_named_component *ncomp;
+> > +                     struct acpi_iort_root_complex *rc;
+> > +
+> > +             case ACPI_IORT_NODE_NAMED_COMPONENT:
+> > +                     ncomp = (struct acpi_iort_named_component *)node->node_data;
+> > +                     if (ncomp->memory_address_limit)
+> > +                             limit = min(limit, ncomp->memory_address_limit);
+> > +                     break;
+> > +
+> > +             case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
+> > +                     rc = (struct acpi_iort_root_complex *)node->node_data;
+> > +                     if (rc->memory_address_limit)
 >
-> Also since the memory size limit for PCI RC was introduced by later
-> IORT revision, so firmware people may think it's fine to set that
-> as 0 because the system works without it.
+> You need to add a node revision check here, see rc_dma_get_range() in
+> drivers/acpi/arm64/iort.c, otherwise we may be reading junk data
+> in older IORT tables - acpica structures are always referring to the
+> latest specs.
 >
 
-Hello Hanjun,
+Indeed - apologies for not mentioning that when handing over the patch.
 
-The patch only takes the address limit field into account if its value > 0.
-
-Also, before commit 7fb89e1d44cb6aec ("ACPI/IORT: take _DMA methods
-into account for named components"), the _DMA method was not taken
-into account for named components at all, and only the IORT limit was
-used, so I do not anticipate any problems with that.
+Also, we could use min_not_zero() here instead of the if ()
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
