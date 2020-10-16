@@ -3,120 +3,104 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12855C433DF
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 15:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D993CC433DF
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 20:51:59 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 79BFB207C4
-	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 15:36:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3EB7F2222B
+	for <iommu@archiver.kernel.org>; Fri, 16 Oct 2020 20:51:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="Uj45kIE0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79BFB207C4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DTKxfLT9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3EB7F2222B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=alum.mit.edu
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DB2F688BC5;
-	Fri, 16 Oct 2020 15:36:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 94D5588F1A;
+	Fri, 16 Oct 2020 20:51:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7Xj4Migat1L1; Fri, 16 Oct 2020 15:36:50 +0000 (UTC)
+	with ESMTP id gYfjAecB3J0A; Fri, 16 Oct 2020 20:51:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2D57888BB9;
-	Fri, 16 Oct 2020 15:36:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 944B188E96;
+	Fri, 16 Oct 2020 20:51:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1525BC0052;
-	Fri, 16 Oct 2020 15:36:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77CC5C07FF;
+	Fri, 16 Oct 2020 20:51:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6DB69C0051
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 15:36:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F534C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 20:51:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4E63288BB9
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 15:36:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0DA3288F19
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 20:51:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id afIwrvLb7tuA for <iommu@lists.linux-foundation.org>;
- Fri, 16 Oct 2020 15:36:47 +0000 (UTC)
+ with ESMTP id ZGJTg-PECmaa for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Oct 2020 20:51:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D257F88BB4
- for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 15:36:46 +0000 (UTC)
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.9]) by
- nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
- id <B5f89be0c0000>; Fri, 16 Oct 2020 23:36:44 +0800
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 16 Oct
- 2020 15:36:38 +0000
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
- HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS)
- id
- 15.0.1473.3 via Frontend Transport; Fri, 16 Oct 2020 15:36:38 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d4bko2oDAxuk30+Wikl298Na6lS54+bmHLn9fYgVrMwRNN3DrJbXgN3AKTMauo43cEO0biVOJ7ZB72l33IxvHig40A9vqL+NNMzuiKvFZQc7B9eE85uG3sbf+h9VRfjj3cFrBVB6U9fr/a7tFFVW8ZGNbD1doveZM6sUzJS4bkylDwAgfgkljX5zyWBmGx5EZdBGejQCm+MY33g1A9kN77Z6Dvfca2Z42ObPhq7+2QLhoD0/RbuQe/ujqhn9VkCi2qHIdUT0xO5ZfN0eorbW3w4aE5Xj/YrstURE06rPvM1j0Yql3s+Uy0jWPQN6NHlB84NgZWGjxgW+p4Pa3xW8ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O4rbdQKXBBpViSWygi4YiuROMOqRyK4yCPHWgOJJmz8=;
- b=J8ENXYqSr75sVlW1gLIFSCaHilThTyufx7ETXte7NY0r/e5vkWiKKLI9EgqBJkz7VQl7nJtj22HGCjkiSPQmnj7SndvBMNfPFrR2HC7WY/ffKtmd2bIhj9jdXLqA7I7xCcBYtBTId/VcKDlihVXF8NGJMmWHS6z6xR59GRmXvtk9Lano4E2tKj76ptdO/RxmxYJJw69UX/2hIMyyzvOuTPpE/3dbc/lq+c5XZi9nwQbkBwftDKi2eDS4wbA8xghLHO3kwvflI2KeHJahoPE6Abrxg14PSjs12yceFIcTBhdxwE6DJKtVPp5YcekXFC/Xq9R0SGGS5TT8d946IQPerQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3211.namprd12.prod.outlook.com (2603:10b6:5:15c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.27; Fri, 16 Oct
- 2020 15:36:34 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3477.020; Fri, 16 Oct 2020
- 15:36:34 +0000
-Date: Fri, 16 Oct 2020 12:36:32 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
- Virtual Addressing to VMs
-Message-ID: <20201016153632.GM6219@nvidia.com>
-References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
- <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
-X-ClientProxiedBy: YT1PR01CA0001.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01::14)
- To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
+ [209.85.166.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 266B688E96
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 20:51:55 +0000 (UTC)
+Received: by mail-io1-f67.google.com with SMTP id y20so5576349iod.5
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Oct 2020 13:51:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:from:date:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=3iRQz1Y4EjtL/zm7xtJOoKw/y4Z4fC/UfX5G2HjfOfA=;
+ b=DTKxfLT9qPTRmpVDMyjjStu8lMoH5InFR7MMemOpvmXyhEszgMkAhgTAPhVHrIHNqV
+ 2zb7xJg7Jq9RpxkgmbE/E4NYuZ9atcNIc/rhJuXl/KS7jEI1wO5t70USNS/Pgr6PsyME
+ /PAWKsmW+27lOTpLSpH0wFqeDm4dZ8vaune/XiCk6DBUZwKen1Mns5qd4W+YWeikcVx/
+ UfPh8h5ZHdKVFMg39pSE+YS6LfofroyEZbF9NE9TwPacH4qwsi8kq1esfkSwitNyGa/F
+ AbDeUgzROTPQQ0155OVmO4E7UNj4M/6cH8Wl2sIyIAulO0FOuL5LnMXqYNq50pEs7tn8
+ 0atA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=3iRQz1Y4EjtL/zm7xtJOoKw/y4Z4fC/UfX5G2HjfOfA=;
+ b=IDwvV0CSLbOR2STS0t4uHuskrEC5sVc3dNmFAHnNaWRbHxg4aNflgPsqfPLo2a2t2y
+ 4+GfLZzxHWcP6nogxP3zjeCxGGmcdTAKRMMvOY2tRi14P1PpTs3582FOoNffcLavWrbk
+ ZUGQos9ThbH6++K4KguP3vkDGYT6TDH5qnen7xjL4iRqnvhzOzvbkJTrzZMOY+V7WKEY
+ TbvF+Uf6MwlrnhNE/2f0IR4hgOWh30meQ2LbpYgf30p7qpr8cxbNyvDp2pKh2bpc04K5
+ Sho/YUYlJ0LfYeYqBWNQx7cau2ZOyOgyneF3+/uB7vNcsnl1qBHoXH+BNsbGAJpB4GMM
+ DBmw==
+X-Gm-Message-State: AOAM5334aDnhU0z9WHsS/tnrE9LEtsh+4r6+aUfMMqXCdSBk79mDhDyq
+ GjBVUKLhxE7qroGa4LdF/9Q=
+X-Google-Smtp-Source: ABdhPJzztWiZTCGYMZtjZZ8pBvCLaA7A2d0XRv+qhOiv2muZA//Rjui/vVkVwPn3uUY6NW2zcQc4sg==
+X-Received: by 2002:a02:1cc1:: with SMTP id c184mr4196277jac.29.1602881514264; 
+ Fri, 16 Oct 2020 13:51:54 -0700 (PDT)
+Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
+ by smtp.gmail.com with ESMTPSA id p12sm3929524ili.14.2020.10.16.13.51.52
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 16 Oct 2020 13:51:53 -0700 (PDT)
+From: Arvind Sankar <nivedita@alum.mit.edu>
+X-Google-Original-From: Arvind Sankar <arvind@rani.riverdale.lan>
+Date: Fri, 16 Oct 2020 16:51:51 -0400
+To: Daniel Kiper <daniel.kiper@oracle.com>
+Subject: Re: [PATCH 07/13] x86: Secure Launch kernel early boot stub
+Message-ID: <20201016205151.GA1618249@rani.riverdale.lan>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <1600959521-24158-8-git-send-email-ross.philipson@oracle.com>
+ <20200924173801.GA103726@rani.riverdale.lan>
+ <c9ab2edf-1aaf-a1c9-92d5-2d37382a3163@oracle.com>
+ <20200925191842.GA643740@rani.riverdale.lan>
+ <d34c189c-4528-0458-0b84-cfd36dc068b3@oracle.com>
+ <20201015182654.lgtht5fd2aaunczu@tomti.i.net-space.pl>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by
- YT1PR01CA0001.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3477.20 via Frontend Transport; Fri, 16 Oct 2020 15:36:33 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1kTRmS-000WqL-Co; Fri, 16 Oct 2020 12:36:32 -0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1602862604; bh=O4rbdQKXBBpViSWygi4YiuROMOqRyK4yCPHWgOJJmz8=;
- h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
- From:To:CC:Subject:Message-ID:References:Content-Type:
- Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType;
- b=Uj45kIE0muDt8uJaerN4V1/pykr2eeqpYY+SSpCTUIXUJgQHFLH+Xq7P0tn+2RL3S
- 6NOiuvotJBSPMY490p9eBLWQfPUkYx+p09+/+ipck5ziJOWe7dDwNlH7QSiNgMgtFg
- ZLIY25zWpoQPKjtPbRZJSQblRmR9cPLguxGaHsvglNjETfSZ+LkYGLa9MCJK53X4iE
- fOfBrYyWcSERmfxkRKo+N0+etJt7ylRcec3I5tzLX8GkHkYemPNfZp+jjtKtzBqGKS
- mPA653U/EMX3EoXqyFv1LnKDJd/FebN/GiUbwk6k5nC0GkreE9Nq8wq4ek4j+zwMA/
- mLYpEu5Eij82Q==
-Cc: "Tian, Jun J" <jun.j.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Wu,
- Hao" <hao.wu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20201015182654.lgtht5fd2aaunczu@tomti.i.net-space.pl>
+Cc: linux-doc@vger.kernel.org, dpsmith@apertussolutions.com,
+ Ross Philipson <ross.philipson@oracle.com>, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ luto@amacapital.net, Arvind Sankar <nivedita@alum.mit.edu>, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,91 +118,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Oct 14, 2020 at 03:16:22AM +0000, Tian, Kevin wrote:
-> Hi, Alex and Jason (G),
+On Thu, Oct 15, 2020 at 08:26:54PM +0200, Daniel Kiper wrote:
 > 
-> How about your opinion for this new proposal? For now looks both
-> Jason (W) and Jean are OK with this direction and more discussions
-> are possibly required for the new /dev/ioasid interface. Internally 
-> we're doing a quick prototype to see any unforeseen issue with this
-> separation. 
+> I am discussing with Ross the other option. We can create
+> .rodata.mle_header section and put it at fixed offset as
+> kernel_info is. So, we would have, e.g.:
+> 
+> arch/x86/boot/compressed/vmlinux.lds.S:
+>         .rodata.kernel_info KERNEL_INFO_OFFSET : {
+>                 *(.rodata.kernel_info)
+>         }
+>         ASSERT(ABSOLUTE(kernel_info) == KERNEL_INFO_OFFSET, "kernel_info at bad address!")
+> 
+>         .rodata.mle_header MLE_HEADER_OFFSET : {
+>                 *(.rodata.mle_header)
+>         }
+>         ASSERT(ABSOLUTE(mle_header) == MLE_HEADER_OFFSET, "mle_header at bad address!")
+> 
+> arch/x86/boot/compressed/sl_stub.S:
+> #define mleh_rva(X) (((X) - mle_header) + MLE_HEADER_OFFSET)
+> 
+>         .section ".rodata.mle_header", "a"
+> 
+> SYM_DATA_START(mle_header)
+>         .long   0x9082ac5a    /* UUID0 */
+>         .long   0x74a7476f    /* UUID1 */
+>         .long   0xa2555c0f    /* UUID2 */
+>         .long   0x42b651cb    /* UUID3 */
+>         .long   0x00000034    /* MLE header size */
+>         .long   0x00020002    /* MLE version 2.2 */
+>         .long   mleh_rva(sl_stub_entry)    /* Linear entry point of MLE (virt. address) */
+>         .long   0x00000000    /* First valid page of MLE */
+>         .long   0x00000000    /* Offset within binary of first byte of MLE */
+>         .long   0x00000000    /* Offset within binary of last byte + 1 of MLE */
+>         .long   0x00000223    /* Bit vector of MLE-supported capabilities */
+>         .long   0x00000000    /* Starting linear address of command line (unused) */
+>         .long   0x00000000    /* Ending linear address of command line (unused) */
+> SYM_DATA_END(mle_header)
+> 
+> Of course MLE_HEADER_OFFSET has to be defined as a constant somewhere.
+> Anyway, is it acceptable?
+> 
+> There is also another problem. We have to put into mle_header size of
+> the Linux kernel image. Currently it is done by the bootloader but
+> I think it is not a role of the bootloader. The kernel image should
+> provide all data describing its properties and do not rely on the
+> bootloader to do that. Ross and I investigated various options but we
+> did not find a good/simple way to do that. Could you suggest how we
+> should do that or at least where we should take a look to get some
+> ideas?
+> 
+> Daniel
 
-Assuming VDPA and VFIO will be the only two users so duplicating
-everything only twice sounds pretty restricting to me.
+What exactly is the size you need here? Is it just the size of the
+protected mode image, that's startup_32 to _edata. Or is it the size of
+the whole bzImage file, or something else? I guess the same question
+applies to "first valid page of MLE" and "first byte of MLE", and the
+linear entry point -- are those all relative to startup_32 or do they
+need to be relative to the start of the bzImage, i.e. you have to add
+the size of the real-mode boot stub?
 
-> > Second, IOMMU nested translation is a per IOMMU domain
-> > capability. Since IOMMU domains are managed by VFIO/VDPA
-> >  (alloc/free domain, attach/detach device, set/get domain attribute,
-> > etc.), reporting/enabling the nesting capability is an natural
-> > extension to the domain uAPI of existing passthrough frameworks.
-> > Actually, VFIO already includes a nesting enable interface even
-> > before this series. So it doesn't make sense to generalize this uAPI
-> > out.
-
-The subsystem that obtains an IOMMU domain for a device would have to
-register it with an open FD of the '/dev/sva'. That is the connection
-between the two subsystems. It would be some simple kernel internal
-stuff:
-
-  sva = get_sva_from_file(fd);
-  sva_register_device_to_pasid(sva, pasid, pci_device, iommu_domain);
-
-Not sure why this is a roadblock?
-
-How would this be any different from having some kernel libsva that
-VDPA and VFIO would both rely on?
-
-You don't plan to just open code all this stuff in VFIO, do you?
-
-> > Then the tricky part comes with the remaining operations (3/4/5),
-> > which are all backed by iommu_ops thus effective only within an
-> > IOMMU domain. To generalize them, the first thing is to find a way
-> > to associate the sva_FD (opened through generic /dev/sva) with an
-> > IOMMU domain that is created by VFIO/VDPA. The second thing is
-> > to replicate {domain<->device/subdevice} association in /dev/sva
-> > path because some operations (e.g. page fault) is triggered/handled
-> > per device/subdevice. Therefore, /dev/sva must provide both per-
-> > domain and per-device uAPIs similar to what VFIO/VDPA already
-> > does. 
-
-Yes, the point here was to move the general APIs out of VFIO and into
-a sharable location. So, of course one would expect some duplication
-during the transition period.
-
-> > Moreover, mapping page fault to subdevice requires pre-
-> > registering subdevice fault data to IOMMU layer when binding
-> > guest page table, while such fault data can be only retrieved from
-> > parent driver through VFIO/VDPA.
-
-Not sure what this means, page fault should be tied to the PASID, any
-hookup needed for that should be done in-kernel when the device is
-connected to the PASID.
-
-> > space but they may be organized in multiple IOMMU domains based
-> > on their bus type. How (should we let) the userspace know the
-> > domain information and open an sva_FD for each domain is the main
-> > problem here.
-
-Why is one sva_FD per iommu domain required? The HW can attach the
-same PASID to multiple iommu domains, right?
-
-> > In the end we just realized that doing such generalization doesn't
-> > really lead to a clear design and instead requires tight coordination
-> > between /dev/sva and VFIO/VDPA for almost every new uAPI
-> > (especially about synchronization when the domain/device
-> > association is changed or when the device/subdevice is being reset/
-> > drained). Finally it may become a usability burden to the userspace
-> > on proper use of the two interfaces on the assigned device.
-
-If you have a list of things that needs to be done to attach a PCI
-device to a PASID then of course they should be tidy kernel APIs
-already, and not just hard wired into VFIO.
-
-The worst outcome would be to have VDPA and VFIO have to different
-ways to do all of this with a different set of bugs. Bug fixes/new
-features in VFIO won't flow over to VDPA.
-
-Jason
+If you need to include the size of the bzImage file, that's not known
+when the files in boot/compressed are built. It's only known after the
+real-mode stub is linked. arch/x86/boot/tools/build.c fills in various
+details in the setup header and creates the bzImage file, but it does
+not currently modify anything in the protected-mode portion of the
+compressed kernel (i.e. arch/x86/boot/compressed/vmlinux, which then
+gets converted to binary format as arch/x86/boot/vmlinux.bin), so it
+would need to be extended if you need to modify the MLE header to
+include the bzImage size or anything depending on the size of the
+real-mode stub.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
