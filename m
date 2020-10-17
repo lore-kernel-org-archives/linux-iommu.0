@@ -2,84 +2,81 @@ Return-Path: <SRS0=0/ZC=DY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1A5C433DF
-	for <iommu@archiver.kernel.org>; Sat, 17 Oct 2020 10:27:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325A6C433E7
+	for <iommu@archiver.kernel.org>; Sat, 17 Oct 2020 11:25:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B7F620714
-	for <iommu@archiver.kernel.org>; Sat, 17 Oct 2020 10:27:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="X5gm5zS0"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B7F620714
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 96FE920704
+	for <iommu@archiver.kernel.org>; Sat, 17 Oct 2020 11:25:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96FE920704
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1E6B188469;
-	Sat, 17 Oct 2020 10:27:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k4wfBTQqBQd5; Sat, 17 Oct 2020 10:27:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 61C198841D;
-	Sat, 17 Oct 2020 10:27:43 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FE39C0052;
-	Sat, 17 Oct 2020 10:27:43 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1CB89C0051
- for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 10:27:42 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F3CBE88679
- for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 10:27:41 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3F54488668;
+	Sat, 17 Oct 2020 11:25:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Zz1Kli9lynxz; Sat, 17 Oct 2020 11:25:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5D9DF8865B;
+	Sat, 17 Oct 2020 11:25:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4060BC07FF;
+	Sat, 17 Oct 2020 11:25:31 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49DF4C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 11:25:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3526886C74
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 11:25:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AxE64MRJfUm4 for <iommu@lists.linux-foundation.org>;
- Sat, 17 Oct 2020 10:27:40 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C65688866E
- for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 10:27:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
- In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=VSpqnJv/ZctlurtgKyw6lvBDtndrQOoOl7Somg1BdJo=; b=X5gm5zS0bdh3EwJ/kmp6DDd1Q9
- 2uC1FW/59WfjCXZpwmNcYUtkgdDMBUD/40agu2FFsRLISj9tQvIjVOVaqZHeYvrnW4ZQDGcLpseT7
- VKUOR3WqbJtQOvzml+VbrXdeEGn17xR1z9GMN3TGSsUXDqgSIONQD8WjfllpPcwEVVDwQERcatiY+
- cKl13rVVV4RJ9xA7sTA42Q1LD6hWdiDQljI99W7KXmm1QKJc4BBvpI+8QSLopQyDtAb7bL4iQJEMe
- HUqAvY7RKFyUX3mVd79g8KOiDvf0eES/1+9E0Mw6Wk0RRb7OGtOUhKz/H1EavSuX73YZOYyZU8x3F
- VtIST5Dg==;
-Received: from 54-240-197-236.amazon.com ([54.240.197.236]
- helo=freeip.amazon.com)
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kTjQt-0001hn-Ge; Sat, 17 Oct 2020 10:27:27 +0000
-Message-ID: <c83c6814cdc8f9d11aedb188dbb9d2d5466b6979.camel@infradead.org>
-Subject: Re: [PATCH next] iommu: intel: don't dereference iommu_device if
- IOMMU_API is not built
-From: David Woodhouse <dwmw2@infradead.org>
-To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Date: Sat, 17 Oct 2020 11:27:25 +0100
-In-Reply-To: <20201014125704.GB3635@8bytes.org>
-References: <20201013073055.11262-1-brgl@bgdev.pl>
- <abd717c9-9eaa-d4bb-3fd8-ff7250d97ab7@linux.intel.com>
- <CAMRc=MdLXaPNUwbUPGJS1AY0pq5je9zsGM7eHShLT=f6mT5Dww@mail.gmail.com>
- <dc6f3226-c6e5-b361-601b-afa91540144e@linux.intel.com>
- <20201014125704.GB3635@8bytes.org>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- Bartosz Golaszewski <brgl@bgdev.pl>, iommu@lists.linux-foundation.org,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+ with ESMTP id fDONjiqVJXAL for <iommu@lists.linux-foundation.org>;
+ Sat, 17 Oct 2020 11:25:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 3A3C38694B
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Oct 2020 11:25:28 +0000 (UTC)
+IronPort-SDR: RuL0lko5Sv2giNLKYnsVoKCOeXlcnWv9W0QE0VykC0xEcQLBb+etWjFVbhCm/lz7e1VVY3CYHW
+ reQE6w6wpkXQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9776"; a="228428009"
+X-IronPort-AV: E=Sophos;i="5.77,386,1596524400"; d="scan'208";a="228428009"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Oct 2020 04:25:27 -0700
+IronPort-SDR: fJYorjHmM8rSDgf+AxOo8DQPaNgLXY2tWkNpbZAoBerP99MSi411fEqxxCXwYO+Iv27hZtjlge
+ nyFknD9/+HXQ==
+X-IronPort-AV: E=Sophos;i="5.77,386,1596524400"; d="scan'208";a="532052790"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Oct 2020 04:25:26 -0700
+Date: Sat, 17 Oct 2020 04:25:25 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [RFC PATCH 0/2] iommu: Avoid unnecessary PRI queue flushes
+Message-ID: <20201017112525.GA47206@otc-nc-03>
+References: <20201015090028.1278108-1-jean-philippe@linaro.org>
+ <20201015182211.GA54780@otc-nc-03>
+ <20201016075923.GB1309464@myrica>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20201016075923.GB1309464@myrica>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: kevin.tian@intel.com, "Lu, Baolu" <baolu.lu@intel.com>, arnd@arndb.de,
+ gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Jacon Jun Pan <jacob.jun.pan@intel.com>,
+ linux-pci@vger.kernel.org, zhangfei.gao@linaro.org,
+ Ashok Raj <ashok.raj@intel.com>, dwmw2@infradead.org,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,140 +89,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2243442169314555670=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Jean
 
---===============2243442169314555670==
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-u4U2frx2q/6FuGb5L2Dm"
+On Fri, Oct 16, 2020 at 09:59:23AM +0200, Jean-Philippe Brucker wrote:
+> On Thu, Oct 15, 2020 at 11:22:11AM -0700, Raj, Ashok wrote:
+> > Hi Jean
+> > 
+> > + Baolu who is looking into this.
+> > 
+> > 
+> > On Thu, Oct 15, 2020 at 11:00:27AM +0200, Jean-Philippe Brucker wrote:
+> > > Add a parameter to iommu_sva_unbind_device() that tells the IOMMU driver
+> > > whether the PRI queue needs flushing. When looking at the PCIe spec
+> > > again I noticed that most of the time the SMMUv3 driver doesn't actually
+> > > need to flush the PRI queue. Does this make sense for Intel VT-d as well
+> > > or did I overlook something?
+> > > 
+> > > Before calling iommu_sva_unbind_device(), device drivers must stop the
+> > > device from using the PASID. For PCIe devices, that consists of
+> > > completing any pending DMA, and completing any pending page request
+> > > unless the device uses Stop Markers. So unless the device uses Stop
+> > > Markers, we don't need to flush the PRI queue. For SMMUv3, stopping DMA
+> > > means completing all stall events, so we never need to flush the event
+> > > queue.
+> > 
+> > I don't think this is true. Baolu is working on an enhancement to this,
+> > I'll quickly summarize this below:
+> > 
+> > Stop markers are weird, I'm not certain there is any device today that
+> > sends STOP markers. Even if they did, markers don't have a required
+> > response, they are fire and forget from the device pov.
+> 
+> Definitely agree with this, and I hope none will implement stop marker.
+> For devices that *don't* use a stop marker, the PCIe spec says (10.4.1.2):
+> 
+>   To stop [using a PASID] without using a Stop Marker Message, the
+>   function shall:
+>   1. Stop queueing new Page Request Messages for this PASID.
 
+The device driver would need to tell stop sending any new PR's.
 
---=-u4U2frx2q/6FuGb5L2Dm
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+>   2. Finish transmitting any multi-page Page Request Messages for this
+>      PASID (i.e. send the Page Request Message with the L bit Set).
+>   3. Wait for PRG Response Messages associated any outstanding Page
+>      Request Messages for the PASID.
+> 
+> So they have to flush their PR themselves. And since the device driver
+> completes this sequence before calling unbind(), then there shouldn't be
+> any oustanding PR for the PASID, and unbind() doesn't need to flush,
+> right?
 
-On Wed, 2020-10-14 at 14:57 +0200, Joerg Roedel wrote:
-> On Wed, Oct 14, 2020 at 03:25:08PM +0800, Lu Baolu wrote:
-> > I suppose Joerg will pick this up. I guess you don't need to resend it
-> > unless Joerg asks you to do.
->=20
-> Yes, will pick this up soon, no need to re-send.
+I can see how the device can complete #2,3 above. But the device driver
+isn't the one managing page-responses right. So in order for the device to
+know the above sequence is complete, it would need to get some assist from
+IOMMU driver?
 
-Please could it, and the commit it fixes, both go to stable@
+How does the driver know that everything host received has been responded
+back to device?
 
---=-u4U2frx2q/6FuGb5L2Dm
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+> 
+> > I'm not sure about other IOMMU's how they behave, When there is no space in
+> > the PRQ, IOMMU auto-responds to the device. This puts the device in a
+> > while (1) loop. The fake successful response will let the device do a ATS
+> > lookup, and that would fail forcing the device to do another PRQ.
+> 
+> But in the sequence above, step 1 should ensure that the device will not
+> send another PR for any successful response coming back at step 3.
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjAx
-MDE3MTAyNzI1WjAvBgkqhkiG9w0BCQQxIgQgtwS3Eb/WtMX/mFDAJw5r5PJnNvkI5WCOyM28cy52
-0QYwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAKAzHyuhgiDfVTx3zZUp7xSIZ/5PgUHljVzOg7FR1qKjAoHo5CP4RW/exR5qa1q8
-snR/dE2G6T+Cv9+uLrBAT13/b0aDYagm8Yo8SdGSAQoyE+Hv0Pijs5ARneiZhgJTlgh0VOVy6u0q
-QpyipmoWkEvj1L58rRNoqq+memjEwxMYQak/VbiIv3olaNifB27Fy7rLWUZ9cMLsPX7Y+B/1FrWn
-Scwc54IlgXPiLcN+1i/y2YKxnEzgo2dx4MQIfMFjHvaxCI9qkwi2LqBQxEStOcBKpdw+qoS6nn2z
-x7Chcf/7Ga8+iz4vkyVT7+LcMiqirDZj0bR2KyfD5pdTor4n9C0AAAAAAAA=
+True, but there could be some page-request in flight on its way to the
+IOMMU. By draining and getting that round trip back to IOMMU we gaurantee
+things in flight are flushed to PRQ after that Drain completes.
+> 
+> So I agree with the below if we suspect there could be pending PR, but
+> given that pending PR are a stop marker thing and we don't know any device
+> using stop markers, I wondered why I bothered implementing PRIq flush at
+> all for SMMUv3, hence this RFC.
+> 
 
-
---=-u4U2frx2q/6FuGb5L2Dm--
-
-
---===============2243442169314555670==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Cheers,
+Ashok
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2243442169314555670==--
-
