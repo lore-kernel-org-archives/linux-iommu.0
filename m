@@ -7,74 +7,73 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D5AC43457
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 11:37:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDF0C433DF
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 11:37:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 343C922263
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 11:37:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6E32322268
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 11:37:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Sxh+t9zh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 343C922263
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="HXZ8cWTS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6E32322268
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id DE9472011B;
-	Mon, 19 Oct 2020 11:37:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F32B0875D7;
+	Mon, 19 Oct 2020 11:37:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZHE3E+O3T2Ka; Mon, 19 Oct 2020 11:37:40 +0000 (UTC)
+	with ESMTP id ulnIL4EmM0FZ; Mon, 19 Oct 2020 11:37:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 216FD27400;
-	Mon, 19 Oct 2020 11:37:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5CC13875CC;
+	Mon, 19 Oct 2020 11:37:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DD54C0052;
-	Mon, 19 Oct 2020 11:37:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D1F6C0052;
+	Mon, 19 Oct 2020 11:37:43 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D64F7C1AD7
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A26CC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CE94A20343
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:38 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 42AB9228F1
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7gteCH5UvhTz for <iommu@lists.linux-foundation.org>;
- Mon, 19 Oct 2020 11:37:38 +0000 (UTC)
+ with ESMTP id Hx1XJgnZ7Gp9 for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Oct 2020 11:37:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by silver.osuosl.org (Postfix) with ESMTP id 0E83B2011B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:37 +0000 (UTC)
-X-UUID: 0b0649bb0e4e4b019d8a9564f7c74225-20201019
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by silver.osuosl.org (Postfix) with ESMTP id DDA402011B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:37:38 +0000 (UTC)
+X-UUID: b3b3baa3f08f48268656f28fb3156f1b-20201019
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=nq1q5ymd+yj5qa0zLYvxc1ugCnh17/vad98CZb1TrEs=; 
- b=Sxh+t9zhgrLe/2IeSnM1bdinFoHRY0gXh3q45pkD1EkuEwNfS7hO0BoCsdm43crnIY/AfmfiUBnFx2ekeaUC+QCfCgTBM+GYXWPJAL1eIP/tqzlQqzSU9tB43/BAOeT2HjNbHTpgsQWf7xhzCJj8+ypyfe9qk5UUZ6Er4E1ZrUc=;
-X-UUID: 0b0649bb0e4e4b019d8a9564f7c74225-20201019
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
- (envelope-from <chao.hao@mediatek.com>)
+ bh=PgytRVtoOdd6B5kIyJtkERoueoWC2+wKUHTBlw26xos=; 
+ b=HXZ8cWTSqGFlS/i1RulNlId+JvaBEyIU0zdnd3yEQCYJEZfYZkKg0QLgg1U0e3d40vYzW+j4o2psu/8wIrS9KXAy54s6rB1B/WRXqZT8EhLqDbFUB4hefGNPQ+l3lQ/0VnApK4hKa/0Bc5V/CFpjyW2B50ATfZDSZEjeTnOhQD4=;
+X-UUID: b3b3baa3f08f48268656f28fb3156f1b-20201019
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw01.mediatek.com (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 11951798; Mon, 19 Oct 2020 19:37:35 +0800
+ with ESMTP id 145608279; Mon, 19 Oct 2020 19:37:36 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 19 Oct 2020 19:37:32 +0800
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 19 Oct 2020 19:37:35 +0800
 Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 19 Oct 2020 19:37:32 +0800
+ Transport; Mon, 19 Oct 2020 19:37:34 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH 2/4] iommu/mediatek: Add iotlb_sync_range() support
-Date: Mon, 19 Oct 2020 19:30:58 +0800
-Message-ID: <20201019113100.23661-3-chao.hao@mediatek.com>
+Subject: [PATCH 3/4] iommu/mediatek: Remove unnecessary tlb sync
+Date: Mon, 19 Oct 2020 19:30:59 +0800
+Message-ID: <20201019113100.23661-4-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20201019113100.23661-1-chao.hao@mediatek.com>
 References: <20201019113100.23661-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 717F35B2F2DF99D09382480E4E971BD9E3C50ED567C833254E6EB0A43D02A93A2000:8
 X-MTK: N
 Cc: Jun Wen <jun.wen@mediatek.com>, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -98,45 +97,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MTK_IOMMU driver writes one page entry and does tlb flush at a time
-currently. More optimal would be to aggregate the writes and flush
-BUS buffer in the end.
-For 50MB buffer mapping, if mtk_iommu driver use iotlb_sync_range()
-instead of tlb_add_range() and tlb_flush_walk/leaf(), it can increase
-50% performance or more(depending on size of every page size) in
-comparison to flushing after each page entry update. So we prefer to
-use iotlb_sync_range() to replace iotlb_sync(), tlb_add_range() and
-tlb_flush_walk/leaf() for MTK platforms.
+As is "[PATCH 2/4]" described, we will use iotlb_sync_range() to replace
+iotlb_sync(), tlb_add_range() and tlb_flush_walk/leaf() to enhance
+performance. So we will remove the implementation of iotlb_sync(),
+tlb_add_range() and tlb_flush_walk/leaf().
 
 Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/mtk_iommu.c | 28 ++++------------------------
+ 1 file changed, 4 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 785b228d39a6..d3400c15ff7b 100644
+index d3400c15ff7b..bca1f53c0ab9 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -224,6 +224,11 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
- 	}
+@@ -229,21 +229,15 @@ static void __mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size)
+ 	mtk_iommu_tlb_flush_range_sync(iova, size, 0, NULL)
  }
  
-+static void __mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size)
-+{
-+	mtk_iommu_tlb_flush_range_sync(iova, size, 0, NULL)
-+}
-+
- static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
- 					    unsigned long iova, size_t granule,
- 					    void *cookie)
-@@ -536,6 +541,7 @@ static const struct iommu_ops mtk_iommu_ops = {
- 	.map		= mtk_iommu_map,
+-static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
+-					    unsigned long iova, size_t granule,
+-					    void *cookie)
++static void mtk_iommu_tlb_flush_skip(unsigned long iova, size_t size,
++				     size_t granule, void *cookie)
+ {
+-	struct mtk_iommu_data *data = cookie;
+-	struct iommu_domain *domain = &data->m4u_dom->domain;
+-
+-	iommu_iotlb_gather_add_page(domain, gather, iova, granule);
+ }
+ 
+ static const struct iommu_flush_ops mtk_iommu_flush_ops = {
+ 	.tlb_flush_all = mtk_iommu_tlb_flush_all,
+-	.tlb_flush_walk = mtk_iommu_tlb_flush_range_sync,
+-	.tlb_flush_leaf = mtk_iommu_tlb_flush_range_sync,
+-	.tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
++	.tlb_flush_walk = mtk_iommu_tlb_flush_skip,
++	.tlb_flush_leaf = mtk_iommu_tlb_flush_skip,
+ };
+ 
+ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+@@ -443,19 +437,6 @@ static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
+ 	mtk_iommu_tlb_flush_all(mtk_iommu_get_m4u_data());
+ }
+ 
+-static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+-				 struct iommu_iotlb_gather *gather)
+-{
+-	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+-	size_t length = gather->end - gather->start;
+-
+-	if (gather->start == ULONG_MAX)
+-		return;
+-
+-	mtk_iommu_tlb_flush_range_sync(gather->start, length, gather->pgsize,
+-				       data);
+-}
+-
+ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t iova)
+ {
+@@ -542,7 +523,6 @@ static const struct iommu_ops mtk_iommu_ops = {
  	.unmap		= mtk_iommu_unmap,
  	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
-+	.iotlb_sync_range = __mtk_iommu_tlb_flush_range_sync,
- 	.iotlb_sync	= mtk_iommu_iotlb_sync,
+ 	.iotlb_sync_range = __mtk_iommu_tlb_flush_range_sync,
+-	.iotlb_sync	= mtk_iommu_iotlb_sync,
  	.iova_to_phys	= mtk_iommu_iova_to_phys,
  	.probe_device	= mtk_iommu_probe_device,
+ 	.release_device	= mtk_iommu_release_device,
 -- 
 2.18.0
 _______________________________________________
