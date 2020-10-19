@@ -2,105 +2,162 @@ Return-Path: <SRS0=3ib5=D2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68ECC433E7
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 02:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF986C43457
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 08:39:15 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1F0DB22269
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 02:33:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4711422257
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 08:39:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="nyHrX6Bz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F0DB22269
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="mMHcyOVZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4711422257
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A59188760C;
-	Mon, 19 Oct 2020 02:33:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BFADC874EF;
+	Mon, 19 Oct 2020 08:39:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oitgOlS+6Fna; Mon, 19 Oct 2020 02:33:26 +0000 (UTC)
+	with ESMTP id qSyLHaV2z6ow; Mon, 19 Oct 2020 08:39:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CF46987606;
-	Mon, 19 Oct 2020 02:33:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 02D07874F2;
+	Mon, 19 Oct 2020 08:39:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADB31C088B;
-	Mon, 19 Oct 2020 02:33:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2DFEEC0051
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 02:33:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9408C0052;
+	Mon, 19 Oct 2020 08:39:13 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 425CEC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 08:39:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 16FB0236B5
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 02:33:25 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 28D458702D
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 08:39:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RghQf4y3VVxV for <iommu@lists.linux-foundation.org>;
- Mon, 19 Oct 2020 02:33:22 +0000 (UTC)
-X-Greylist: delayed 00:08:12 by SQLgrey-1.7.6
-Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com
- [209.85.216.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 9D43123504
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 02:33:22 +0000 (UTC)
-Received: by mail-pj1-f66.google.com with SMTP id gm14so4502751pjb.2
- for <iommu@lists.linux-foundation.org>; Sun, 18 Oct 2020 19:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=oycxUIbLy+GIbZrwsw2OQtaFMAps2/oYqPAOhn7npOA=;
- b=nyHrX6Bz4WwkqbqiR/vRLgDN5Nf2qD+eCq/9RPg69Z+QDLI3x3zRHiK2coez0exlv6
- zdHELzx/XATemLh2Q2AzRWCPBzw+46geJ9K+P99PzY2InT4dguRLN6KrFiXrxnkqU4WX
- 8yRXFTLV4qkK4Kp1C3xTjMApVgGns6nZYWGsAcMNY6vQIphSydfEX6Ea/dnPK/F9Cur6
- P8CTuTWQ1iWdEkEM0vREzQmH6Z0VEWL746fqxnWZzcNK70UX857l0NwM1ZTpjirWYqzM
- rZROGJ2BE0TI+r/g8IA/2sfI59Uxeuw6+qBVrNvTzkXgb8DMDsVh8DIq4sdg2SHPo6FN
- i7Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=oycxUIbLy+GIbZrwsw2OQtaFMAps2/oYqPAOhn7npOA=;
- b=UNoNQgkyHC0I5aeXKH7augKunzZM1iJG9lw+pctYRH7H015fzXxBlqAyKGgWsAU+06
- 9d5lGxHyCDSDVAjNSTFWqePinpkEp0OMqbWgdDLXyTMy+6r1bncsrlAybrI1uqgBoHQd
- ZTwnVhJ4q9kbLlxkbEj4LaM5rzly/BmUKERmzt/iTBaDN3oWNTlMMfp/1LWfv6PFkDGP
- nR0HnmMtMQY0Ldi0DdwxmRx+I3BojGN4377wESVvAZ10GZkR+4/A6QVMD5IYkwo9VlhP
- uITVKwoXJxnIScYJsVJD2FNlpWz8G5hnLm3Bp3yt2HTmJwh9nHwt8oKZq++3H2RWrspx
- +RRw==
-X-Gm-Message-State: AOAM533fi+qEgOp6bvx3lM5Ce1nRU8FocCq/C3LSV89IC5ccpF3jlLPz
- aAEDFdYki5ngwAHv/OxF3DgJusID0o2RttSS
-X-Google-Smtp-Source: ABdhPJxPKX080BiV5v4tnkaa4400x4k3rK1j5sWpdbJiqRkeH+/9Uq3FM5Vb9dMKmDOh5ZtI6PGX5A==
-X-Received: by 2002:a17:902:bb8c:b029:d2:2503:e458 with SMTP id
- m12-20020a170902bb8cb02900d22503e458mr14936892pls.18.1603074309433; 
- Sun, 18 Oct 2020 19:25:09 -0700 (PDT)
-Received: from [192.168.10.88] (124-171-83-152.dyn.iinet.net.au.
- [124.171.83.152])
- by smtp.gmail.com with UTF8SMTPSA id fh19sm6948594pjb.38.2020.10.18.19.25.05
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 18 Oct 2020 19:25:08 -0700 (PDT)
-Subject: Re: [PATCH 8/9] dma-mapping: move large parts of <linux/dma-direct.h>
- to kernel/dma
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-References: <20200930085548.920261-1-hch@lst.de>
- <20200930085548.920261-9-hch@lst.de>
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-Message-ID: <afaf49d9-5465-4b1a-dac1-91688ba4abbf@ozlabs.ru>
-Date: Mon, 19 Oct 2020 13:25:02 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:82.0) Gecko/20100101
- Thunderbird/82.0
-MIME-Version: 1.0
-In-Reply-To: <20200930085548.920261-9-hch@lst.de>
+ with ESMTP id t9W9fpeo9R5u for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Oct 2020 08:39:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0954D87019
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 08:39:10 +0000 (UTC)
+IronPort-SDR: 4PS0lhNWXGVfNUYkH3xPDEE+kulkR9Kn2wsu6gPvPeni++0e9TIm7RYE/K7wtGVOz0bG8doIYh
+ essBUyvYr5Pw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9778"; a="228625322"
+X-IronPort-AV: E=Sophos;i="5.77,394,1596524400"; d="scan'208";a="228625322"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 Oct 2020 01:39:10 -0700
+IronPort-SDR: SsBi3BWk3Ipj4qUs3doUykY9IZajErQk63kzu3twvpUcVujzbzCxjfFHMeNzBg6S41DwAqJTuM
+ Da6ntlXQYM8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,394,1596524400"; d="scan'208";a="532541641"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by orsmga005.jf.intel.com with ESMTP; 19 Oct 2020 01:39:10 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 19 Oct 2020 01:39:09 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 19 Oct 2020 01:39:08 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 19 Oct 2020 01:39:08 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.59) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Mon, 19 Oct 2020 01:39:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ck/RBE1pjbICfVkZ99gJ6/9BDRDwPk9S1LnjZ/X1zGAVMcjBjR0E5Cjbj4l1hKqQGrE5f78o+mFQHEFlGeHY0zWqLaAkd920PjH008rNdMlCN78ImBYk3FiGCUPRGg3Z2Ht0Qsoce+5+OQHcGAqCILzxzuF+X3CPgZgNVYzay3SB6gFnvnxYtx5Hoe47Mut97Jaoczsb7pEQ6a5TZZWY3FCaIP7OR0GFmqRksaFI6TOWFl3Y36g34vpuy4EXWSgpt+FjbZfZ9IvbwNV0zDXxaAKbrqSKpICbbfWgROCuVeoAOik4DBt4ajd/Z3ZMj7KCIO2jnMERjrPCUjUEnhjQbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LmSAepqYF/pPC5gZiNd9Ffs4Br7w51RWwDow8eWxobk=;
+ b=DAhckdsO1FN3o3pyj+OGCHaXwSIqTPk/sOF87VqV8eQSNaF8EPTeVD9F2mr6LgSIEPh53g4wpAR+agxPFadgITm9HN4eeF/L3t51k8JZnLR1QR6WOePkpv7ENDMPJ05FJTRXwWFimhOuJ1q7xlmokw8aEWAWttZPB9UXlqnFDyv5PQFCd5rD0m46UpmtiG/MSdtv8U2No9PzlKCKu6f7CoI6l7KG8uHP6DG0wZlbKBO2C+H5urd/ySy7hqwSJDxalNdefGvVpnGBYWVpsxbDfJnvitEU0bN9yHdFxtC5ZCCxQgCYa2UdEaGrTEsSLAPaPArWPSOhPmvytMPgMcmbOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LmSAepqYF/pPC5gZiNd9Ffs4Br7w51RWwDow8eWxobk=;
+ b=mMHcyOVZlF4+At5GF5Lxa6UWbakjmGaAa+8BKFh0yD1QQ6884F36VGUb4yE39Wq36R8ysVE0wbQNMzNjySEAOWDQvCbWrlmb3wpEV68zEIOwdTQSDxHlrab9vFBhnST8miTguN3AYHl8P4zi6uFZN2fTnTQKVNN5rNkEXAPkoJw=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB2857.namprd11.prod.outlook.com (2603:10b6:5:cb::18) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.23; Mon, 19 Oct 2020 08:39:04 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f%11]) with mapi id 15.20.3477.028; Mon, 19 Oct
+ 2020 08:39:04 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
+ Virtual Addressing to VMs
+Thread-Topic: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
+ Virtual Addressing to VMs
+Thread-Index: AdagceQQLvqwjRCrQOaq1hZ7MgDUUABZWmqgAH60bgAAh22vsA==
+Date: Mon, 19 Oct 2020 08:39:03 +0000
+Message-ID: <DM5PR11MB1435A3AEC0637C4531F2FE92C31E0@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <20201016153632.GM6219@nvidia.com>
+In-Reply-To: <20201016153632.GM6219@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: linux-arch@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
- Sekhar Nori <nsekhar@ti.com>, Russell King <linux@armlinux.org.uk>,
- linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [221.220.190.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8791266a-f74b-45aa-36f9-08d8740a6f6d
+x-ms-traffictypediagnostic: DM6PR11MB2857:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB28578DFF31CF4434B2D021ABC31E0@DM6PR11MB2857.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: glSu/bh0k3Nvbgk8GNyxKvPCWgtq8TEdsBXANlRLuqUYGKh0BdtFK0MbYXub1Fuu+ek28r/Xz/4ujqHXPtX7HDI4jopTmshhaY84yYO/pqAuRfStNPc+XY3OF/cjZ4MCxM75AO5WyPPUrcgEzNHz06RggtJkIXuKDLnVut5IBPX1+XJyvDmaByQfuJPoyDooLdlXsjnn7RlhNT31UCfHQO4022Lui5LR6PNSJhiqCAwwWjrefQb/cCdNPAaVya9FOnW3GDIJ7KzqshfNCJ88FN3hr5hfF9KcPUAQMMowR1F4ejH9eQbVV2pWNW74nDu0qqLv78XWj9JddK3eQhlqWw==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(39860400002)(376002)(366004)(396003)(346002)(136003)(64756008)(66556008)(110136005)(66446008)(76116006)(54906003)(55016002)(66946007)(7416002)(316002)(66476007)(2906002)(83380400001)(86362001)(5660300002)(52536014)(71200400001)(8676002)(478600001)(4326008)(6636002)(7696005)(186003)(9686003)(33656002)(6506007)(8936002)(26005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: Q1a/jVnmdE9L0gQ32ell9nkuP5N1++oQGnFKhD1XuNlT618HEm/JlnjObBgk+NIEEwGYShZ1e7Itjnl9GgZo+LdSlqUa7xCXgoYPWyVAxxV6dddZQ/tJnV9lVIOSgQjIofcbxEGLZGkblUVqG9y/Sd9eJs9tpbJob47lFTmtLfvXHekibPUFQQu9VHwuSB7Fj2oEVI2tfPGHJnMkTcuqczDeV0kBhXWgt3oBrvjTWYjOsLqkL30AdA5O83XlQxvOSTnJIRjHENcllk7ccHT17yeGssb5PUpr6LZytMabKuTOwjOjj5jsqWZ6yTbsi5v7DVfYCDW3r0LNsTuhv8/DwA+cRUgDvLDTwb1BCBjApWD+pijhFgwdpraT5Pe7du5xOl3V1OhNCDaj0qdIRdyMTu/noKkpxv2bn82A41+/EOPxWHuj7aRRu8zYlgJNayOLikiVE8SCfLkgQlykj7u1Z6bRG1YCPs14v6zYLMc+sZEUfKR/4O2Kj/uftyzFzteX8jZkVr6oyhnfMwfKQ6ybFfnqoygqHjmtVXJeUSAs+hvjM75DVoa9sp0opDUUM98TdmzeAFtZ/aK0MMlJeHjDOVPx6UY3/xqau6y+Vz+uyi4CGPcWhMGBsmnTyiLS7GZtFvbwpX5ZmJTw40UcKGcO6A==
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8791266a-f74b-45aa-36f9-08d8740a6f6d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2020 08:39:03.8609 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nCftJPlY7Xz90ZdFnCY9RtDKsfufoGx7z8B8LctJWSY0P/uHBysSaDGTdISO4AtWdhE6VBWi7NbNc+VseulxOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2857
+X-OriginatorOrg: intel.com
+Cc: "Tian, Jun J" <jun.j.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,325 +170,123 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Jason,
 
+Good to see your response.
 
-On 30/09/2020 18:55, Christoph Hellwig wrote:
-> Most of the dma_direct symbols should only be used by direct.c and
-> mapping.c, so move them to kernel/dma.  In fact more of dma-direct.h
-> should eventually move, but that will require more coordination with
-> other subsystems.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Friday, October 16, 2020 11:37 PM
+> 
+> On Wed, Oct 14, 2020 at 03:16:22AM +0000, Tian, Kevin wrote:
+> > Hi, Alex and Jason (G),
+> >
+> > How about your opinion for this new proposal? For now looks both
+> > Jason (W) and Jean are OK with this direction and more discussions
+> > are possibly required for the new /dev/ioasid interface. Internally
+> > we're doing a quick prototype to see any unforeseen issue with this
+> > separation.
+> 
+> Assuming VDPA and VFIO will be the only two users so duplicating
+> everything only twice sounds pretty restricting to me.
+> 
+> > > Second, IOMMU nested translation is a per IOMMU domain
+> > > capability. Since IOMMU domains are managed by VFIO/VDPA
+> > >  (alloc/free domain, attach/detach device, set/get domain attribute,
+> > > etc.), reporting/enabling the nesting capability is an natural
+> > > extension to the domain uAPI of existing passthrough frameworks.
+> > > Actually, VFIO already includes a nesting enable interface even
+> > > before this series. So it doesn't make sense to generalize this uAPI
+> > > out.
+> 
+> The subsystem that obtains an IOMMU domain for a device would have to
+> register it with an open FD of the '/dev/sva'. That is the connection
+> between the two subsystems. It would be some simple kernel internal
+> stuff:
+> 
+>   sva = get_sva_from_file(fd);
 
-Because of this change, 
-http://patchwork.ozlabs.org/project/linuxppc-dev/patch/20200713062348.100552-1-aik@ozlabs.ru/ 
-does not work anymore.
+Is this fd provided by userspace? I suppose the /dev/sva has a set of uAPIs
+which will finally program page table to host iommu driver. As far as I know,
+it's weird for VFIO user. Why should VFIO user connect to a /dev/sva fd after
+it sets a proper iommu type to the opened container. VFIO container already
+stands for an iommu context with which userspace could program page mapping
+to host iommu.
 
-Should I send a patch moving 
-dma_direct_map_sg/dma_direct_map_page/+unmap back to include/ or there 
-is a better idea? thanks,
+>   sva_register_device_to_pasid(sva, pasid, pci_device, iommu_domain);
 
+So this is supposed to be called by VFIO/VDPA to register the info to /dev/sva.
+right? And in dev/sva, it will also maintain the device/iommu_domain and pasid
+info? will it be duplicated with VFIO/VDPA?
+
+> Not sure why this is a roadblock?
+> 
+> How would this be any different from having some kernel libsva that
+> VDPA and VFIO would both rely on?
+> 
+> You don't plan to just open code all this stuff in VFIO, do you?
+> 
+> > > Then the tricky part comes with the remaining operations (3/4/5),
+> > > which are all backed by iommu_ops thus effective only within an
+> > > IOMMU domain. To generalize them, the first thing is to find a way
+> > > to associate the sva_FD (opened through generic /dev/sva) with an
+> > > IOMMU domain that is created by VFIO/VDPA. The second thing is
+> > > to replicate {domain<->device/subdevice} association in /dev/sva
+> > > path because some operations (e.g. page fault) is triggered/handled
+> > > per device/subdevice. Therefore, /dev/sva must provide both per-
+> > > domain and per-device uAPIs similar to what VFIO/VDPA already
+> > > does.
+> 
+> Yes, the point here was to move the general APIs out of VFIO and into
+> a sharable location. So, of course one would expect some duplication
+> during the transition period.
+> 
+> > > Moreover, mapping page fault to subdevice requires pre-
+> > > registering subdevice fault data to IOMMU layer when binding
+> > > guest page table, while such fault data can be only retrieved from
+> > > parent driver through VFIO/VDPA.
+> 
+> Not sure what this means, page fault should be tied to the PASID, any
+> hookup needed for that should be done in-kernel when the device is
+> connected to the PASID.
+
+you may refer to chapter 7.4.1.1 of VT-d spec. Page request is reported to
+software together with the requestor id of the device. For the page request
+injects to guest, it should have the device info.
+
+Regards,
+Yi Liu
 
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   include/linux/dma-direct.h | 106 ---------------------------------
->   kernel/dma/direct.c        |   2 +-
->   kernel/dma/direct.h        | 119 +++++++++++++++++++++++++++++++++++++
->   kernel/dma/mapping.c       |   2 +-
->   4 files changed, 121 insertions(+), 108 deletions(-)
->   create mode 100644 kernel/dma/direct.h
+> > > space but they may be organized in multiple IOMMU domains based
+> > > on their bus type. How (should we let) the userspace know the
+> > > domain information and open an sva_FD for each domain is the main
+> > > problem here.
 > 
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index 38ed3b55034d50..a2d6640c42c04e 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -120,114 +120,8 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->   void dma_direct_free_pages(struct device *dev, size_t size,
->   		struct page *page, dma_addr_t dma_addr,
->   		enum dma_data_direction dir);
-> -int dma_direct_get_sgtable(struct device *dev, struct sg_table *sgt,
-> -		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> -		unsigned long attrs);
-> -bool dma_direct_can_mmap(struct device *dev);
-> -int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
-> -		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> -		unsigned long attrs);
->   int dma_direct_supported(struct device *dev, u64 mask);
-> -bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr);
-> -int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
-> -		enum dma_data_direction dir, unsigned long attrs);
->   dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
->   		size_t size, enum dma_data_direction dir, unsigned long attrs);
-> -size_t dma_direct_max_mapping_size(struct device *dev);
->   
-> -#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-> -    defined(CONFIG_SWIOTLB)
-> -void dma_direct_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-> -		int nents, enum dma_data_direction dir);
-> -#else
-> -static inline void dma_direct_sync_sg_for_device(struct device *dev,
-> -		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-> -{
-> -}
-> -#endif
-> -
-> -#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-> -    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL) || \
-> -    defined(CONFIG_SWIOTLB)
-> -void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-> -		int nents, enum dma_data_direction dir, unsigned long attrs);
-> -void dma_direct_sync_sg_for_cpu(struct device *dev,
-> -		struct scatterlist *sgl, int nents, enum dma_data_direction dir);
-> -#else
-> -static inline void dma_direct_unmap_sg(struct device *dev,
-> -		struct scatterlist *sgl, int nents, enum dma_data_direction dir,
-> -		unsigned long attrs)
-> -{
-> -}
-> -static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
-> -		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-> -{
-> -}
-> -#endif
-> -
-> -static inline void dma_direct_sync_single_for_device(struct device *dev,
-> -		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-> -{
-> -	phys_addr_t paddr = dma_to_phys(dev, addr);
-> -
-> -	if (unlikely(is_swiotlb_buffer(paddr)))
-> -		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_DEVICE);
-> -
-> -	if (!dev_is_dma_coherent(dev))
-> -		arch_sync_dma_for_device(paddr, size, dir);
-> -}
-> -
-> -static inline void dma_direct_sync_single_for_cpu(struct device *dev,
-> -		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-> -{
-> -	phys_addr_t paddr = dma_to_phys(dev, addr);
-> -
-> -	if (!dev_is_dma_coherent(dev)) {
-> -		arch_sync_dma_for_cpu(paddr, size, dir);
-> -		arch_sync_dma_for_cpu_all();
-> -	}
-> -
-> -	if (unlikely(is_swiotlb_buffer(paddr)))
-> -		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
-> -
-> -	if (dir == DMA_FROM_DEVICE)
-> -		arch_dma_mark_clean(paddr, size);
-> -}
-> -
-> -static inline dma_addr_t dma_direct_map_page(struct device *dev,
-> -		struct page *page, unsigned long offset, size_t size,
-> -		enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	phys_addr_t phys = page_to_phys(page) + offset;
-> -	dma_addr_t dma_addr = phys_to_dma(dev, phys);
-> -
-> -	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
-> -		return swiotlb_map(dev, phys, size, dir, attrs);
-> -
-> -	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
-> -		if (swiotlb_force != SWIOTLB_NO_FORCE)
-> -			return swiotlb_map(dev, phys, size, dir, attrs);
-> -
-> -		dev_WARN_ONCE(dev, 1,
-> -			     "DMA addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
-> -			     &dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);
-> -		return DMA_MAPPING_ERROR;
-> -	}
-> -
-> -	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> -		arch_sync_dma_for_device(phys, size, dir);
-> -	return dma_addr;
-> -}
-> -
-> -static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
-> -		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	phys_addr_t phys = dma_to_phys(dev, addr);
-> -
-> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> -		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
-> -
-> -	if (unlikely(is_swiotlb_buffer(phys)))
-> -		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
-> -}
->   #endif /* _LINUX_DMA_DIRECT_H */
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 87697c86f0b82a..bf9f77623022bb 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -7,13 +7,13 @@
->   #include <linux/memblock.h> /* for max_pfn */
->   #include <linux/export.h>
->   #include <linux/mm.h>
-> -#include <linux/dma-direct.h>
->   #include <linux/dma-map-ops.h>
->   #include <linux/scatterlist.h>
->   #include <linux/pfn.h>
->   #include <linux/vmalloc.h>
->   #include <linux/set_memory.h>
->   #include <linux/slab.h>
-> +#include "direct.h"
->   
->   /*
->    * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use it
-> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-> new file mode 100644
-> index 00000000000000..b9861557873768
-> --- /dev/null
-> +++ b/kernel/dma/direct.h
-> @@ -0,0 +1,119 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright (C) 2018 Christoph Hellwig.
-> + *
-> + * DMA operations that map physical memory directly without using an IOMMU.
-> + */
-> +#ifndef _KERNEL_DMA_DIRECT_H
-> +#define _KERNEL_DMA_DIRECT_H
-> +
-> +#include <linux/dma-direct.h>
-> +
-> +int dma_direct_get_sgtable(struct device *dev, struct sg_table *sgt,
-> +		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> +		unsigned long attrs);
-> +bool dma_direct_can_mmap(struct device *dev);
-> +int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
-> +		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> +		unsigned long attrs);
-> +bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr);
-> +int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
-> +		enum dma_data_direction dir, unsigned long attrs);
-> +size_t dma_direct_max_mapping_size(struct device *dev);
-> +
-> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-> +    defined(CONFIG_SWIOTLB)
-> +void dma_direct_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-> +		int nents, enum dma_data_direction dir);
-> +#else
-> +static inline void dma_direct_sync_sg_for_device(struct device *dev,
-> +		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-> +{
-> +}
-> +#endif
-> +
-> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL) || \
-> +    defined(CONFIG_SWIOTLB)
-> +void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs);
-> +void dma_direct_sync_sg_for_cpu(struct device *dev,
-> +		struct scatterlist *sgl, int nents, enum dma_data_direction dir);
-> +#else
-> +static inline void dma_direct_unmap_sg(struct device *dev,
-> +		struct scatterlist *sgl, int nents, enum dma_data_direction dir,
-> +		unsigned long attrs)
-> +{
-> +}
-> +static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
-> +		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
-> +{
-> +}
-> +#endif
-> +
-> +static inline void dma_direct_sync_single_for_device(struct device *dev,
-> +		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-> +{
-> +	phys_addr_t paddr = dma_to_phys(dev, addr);
-> +
-> +	if (unlikely(is_swiotlb_buffer(paddr)))
-> +		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_DEVICE);
-> +
-> +	if (!dev_is_dma_coherent(dev))
-> +		arch_sync_dma_for_device(paddr, size, dir);
-> +}
-> +
-> +static inline void dma_direct_sync_single_for_cpu(struct device *dev,
-> +		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-> +{
-> +	phys_addr_t paddr = dma_to_phys(dev, addr);
-> +
-> +	if (!dev_is_dma_coherent(dev)) {
-> +		arch_sync_dma_for_cpu(paddr, size, dir);
-> +		arch_sync_dma_for_cpu_all();
-> +	}
-> +
-> +	if (unlikely(is_swiotlb_buffer(paddr)))
-> +		swiotlb_tbl_sync_single(dev, paddr, size, dir, SYNC_FOR_CPU);
-> +
-> +	if (dir == DMA_FROM_DEVICE)
-> +		arch_dma_mark_clean(paddr, size);
-> +}
-> +
-> +static inline dma_addr_t dma_direct_map_page(struct device *dev,
-> +		struct page *page, unsigned long offset, size_t size,
-> +		enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	phys_addr_t phys = page_to_phys(page) + offset;
-> +	dma_addr_t dma_addr = phys_to_dma(dev, phys);
-> +
-> +	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
-> +		return swiotlb_map(dev, phys, size, dir, attrs);
-> +
-> +	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
-> +		if (swiotlb_force != SWIOTLB_NO_FORCE)
-> +			return swiotlb_map(dev, phys, size, dir, attrs);
-> +
-> +		dev_WARN_ONCE(dev, 1,
-> +			     "DMA addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
-> +			     &dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);
-> +		return DMA_MAPPING_ERROR;
-> +	}
-> +
-> +	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> +		arch_sync_dma_for_device(phys, size, dir);
-> +	return dma_addr;
-> +}
-> +
-> +static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
-> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	phys_addr_t phys = dma_to_phys(dev, addr);
-> +
-> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> +		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
-> +
-> +	if (unlikely(is_swiotlb_buffer(phys)))
-> +		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
-> +}
-> +#endif /* _KERNEL_DMA_DIRECT_H */
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 335ba183e0956a..51bb8fa8eb8948 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -7,7 +7,6 @@
->    */
->   #include <linux/memblock.h> /* for max_pfn */
->   #include <linux/acpi.h>
-> -#include <linux/dma-direct.h>
->   #include <linux/dma-map-ops.h>
->   #include <linux/export.h>
->   #include <linux/gfp.h>
-> @@ -15,6 +14,7 @@
->   #include <linux/slab.h>
->   #include <linux/vmalloc.h>
->   #include "debug.h"
-> +#include "direct.h"
->   
->   /*
->    * Managed DMA API
+> Why is one sva_FD per iommu domain required? The HW can attach the
+> same PASID to multiple iommu domains, right?
 > 
-
--- 
-Alexey
+> > > In the end we just realized that doing such generalization doesn't
+> > > really lead to a clear design and instead requires tight coordination
+> > > between /dev/sva and VFIO/VDPA for almost every new uAPI
+> > > (especially about synchronization when the domain/device
+> > > association is changed or when the device/subdevice is being reset/
+> > > drained). Finally it may become a usability burden to the userspace
+> > > on proper use of the two interfaces on the assigned device.
+> 
+> If you have a list of things that needs to be done to attach a PCI
+> device to a PASID then of course they should be tidy kernel APIs
+> already, and not just hard wired into VFIO.
+> 
+> The worst outcome would be to have VDPA and VFIO have to different
+> ways to do all of this with a different set of bugs. Bug fixes/new
+> features in VFIO won't flow over to VDPA.
+> 
+> Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
