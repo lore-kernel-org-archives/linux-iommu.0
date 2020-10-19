@@ -2,82 +2,107 @@ Return-Path: <SRS0=3ib5=D2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F378C433DF
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 16:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6AAC43457
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 17:06:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8699222260
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 16:49:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8699222260
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3483C22314
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 17:06:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TSfCaGE5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3483C22314
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=alum.mit.edu
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0EB7886F80;
-	Mon, 19 Oct 2020 16:49:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8185087242;
+	Mon, 19 Oct 2020 17:06:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N+XouXcNpHVn; Mon, 19 Oct 2020 16:49:14 +0000 (UTC)
+	with ESMTP id pSAnEXdUFivg; Mon, 19 Oct 2020 17:06:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 02AEE86F78;
-	Mon, 19 Oct 2020 16:49:13 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DE8D286DED;
+	Mon, 19 Oct 2020 17:06:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9D77C088B;
-	Mon, 19 Oct 2020 16:49:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 44A97C0051
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 16:49:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7F2CC0052;
+	Mon, 19 Oct 2020 17:06:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3A77C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 17:06:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2D2E620035
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 16:49:12 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BA04486D9A
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 17:06:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3MNHa2ACiXSm for <iommu@lists.linux-foundation.org>;
- Mon, 19 Oct 2020 16:49:10 +0000 (UTC)
+ with ESMTP id qavg7-sCmJz0 for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Oct 2020 17:06:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by silver.osuosl.org (Postfix) with ESMTPS id B6C802E0F2
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 16:49:07 +0000 (UTC)
-IronPort-SDR: 9s2X3+0Kuhh8PLBwLVB/Xe6Wa5wHv6uI/8/SWBLN+NqH9hip7jluoiVMFIH4c5Shw1hmEYxxUy
- ndKyEqhnxtFA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9779"; a="167176521"
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; d="scan'208";a="167176521"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Oct 2020 09:49:06 -0700
-IronPort-SDR: oiK2RFjYHsNVVqZa6B8pgPwSyVV0MbY1DxgphPSU3WzJPjycIhZxMhTyTE6I4R+NIZUgpRmeqd
- wQ4uJo9Bj3EQ==
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; d="scan'208";a="320336768"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Oct 2020 09:49:06 -0700
-Date: Mon, 19 Oct 2020 09:51:25 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jacob Pan <jacob.pan.linux@gmail.com>
-Subject: Re: [PATCH v3 00/14] IOASID extensions for guest SVA
-Message-ID: <20201019095125.291915b2@jacob-builder>
-In-Reply-To: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
+ [209.85.160.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1873786D95
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 17:06:19 +0000 (UTC)
+Received: by mail-qt1-f195.google.com with SMTP id h19so335967qtq.4
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 10:06:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:from:date:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=QlZ9jQiPI8wiI9R/8Eu0+GjPBdTOfIetM3KH+KtgMXI=;
+ b=TSfCaGE5nALMYvm6jXC7miu7tdEMeBbQ/oo3OvVvTIzuhQs5UqEpBSvY5xi8Zva1Or
+ OEmq6yA8Xwttc6yR4yh/GzBqDWS/8vZ3OcawGCl2JSSGA5gmjBcBPOQKJ/l6phRk5knh
+ bZrFVjTIQoVxXaD/4aONZoqa0BchWNbGQ3vHn6IzPxldgquacqdFtfT06wDMoNJybhmx
+ xPmSczVEDJjvs4T8ePUIE79ol1KcwWM1r7inus1jwbZ3OuU2qM9o2IZgDfQspyVEGjGY
+ IG+D8+VldXK00eD5H9N2rSitkxqWC0fjHNr3zM6elj0WNiqh0gePl/DqLCMcfgLOO93L
+ JsDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:from:date:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=QlZ9jQiPI8wiI9R/8Eu0+GjPBdTOfIetM3KH+KtgMXI=;
+ b=CcmB4SVEhX1dTy1DuLikP1pZgvUXOoS79z+NexTwfmUfVUVil3FH+0nZ/aE+i3d2GN
+ C5+7FHR6I7Fhwq65fMcKD53px5IMz19pwT42Dsqd7RuqMOyEfFNrh2hMBYp+lPIFv+Zp
+ CWRC1BjSd0g5tHSIx69OL/x+xRpOgnS4zI8LLOpPHRSytKQu7D6ngpwIbFc87LfmmrzO
+ WfqnfWkV+1cOLEDxtjuncK9AViTXg8I/tiPIslbi+1acdU9rU/oVa3COIgce7vKK4kr5
+ V55Cs64VzmZpK+N3qLSS/OcBH3Y7uE+9h/YHWrUYGANQMqruM8cRl7KW6e05Y5H/WS+e
+ mznQ==
+X-Gm-Message-State: AOAM533jkw8O119tIHamgJ3KLbKdbQL5xJn3hyqzGmZD1A+rwLnz2UWM
+ iF9wOQdvSy+nZSRTILm6NPg=
+X-Google-Smtp-Source: ABdhPJwoZOuQWDFVA3DgogqmZ+TbE08fVV8ZWC3ILvYzlMSC4BsTgymar/lGVLzLn2+P+AQ6+IEIsA==
+X-Received: by 2002:ac8:5b82:: with SMTP id a2mr424004qta.176.1603127177979;
+ Mon, 19 Oct 2020 10:06:17 -0700 (PDT)
+Received: from rani.riverdale.lan ([2001:470:1f07:5f3::b55f])
+ by smtp.gmail.com with ESMTPSA id v14sm180923qta.44.2020.10.19.10.06.16
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 19 Oct 2020 10:06:16 -0700 (PDT)
+From: Arvind Sankar <nivedita@alum.mit.edu>
+X-Google-Original-From: Arvind Sankar <arvind@rani.riverdale.lan>
+Date: Mon, 19 Oct 2020 13:06:15 -0400
+To: Ross Philipson <ross.philipson@oracle.com>
+Subject: Re: [PATCH 07/13] x86: Secure Launch kernel early boot stub
+Message-ID: <20201019170615.GB2701355@rani.riverdale.lan>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <1600959521-24158-8-git-send-email-ross.philipson@oracle.com>
+ <20200924173801.GA103726@rani.riverdale.lan>
+ <c9ab2edf-1aaf-a1c9-92d5-2d37382a3163@oracle.com>
+ <20200925191842.GA643740@rani.riverdale.lan>
+ <d34c189c-4528-0458-0b84-cfd36dc068b3@oracle.com>
+ <20201015182654.lgtht5fd2aaunczu@tomti.i.net-space.pl>
+ <20201016205151.GA1618249@rani.riverdale.lan>
+ <7529a1e7-4dd6-ab3a-6363-23fd2de6c338@oracle.com>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- linux-api@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, Wu Hao <hao.wu@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Yi Sun <yi.y.sun@intel.com>
+Content-Disposition: inline
+In-Reply-To: <7529a1e7-4dd6-ab3a-6363-23fd2de6c338@oracle.com>
+Cc: linux-doc@vger.kernel.org, dpsmith@apertussolutions.com,
+ Daniel Kiper <daniel.kiper@oracle.com>, x86@kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Arvind Sankar <nivedita@alum.mit.edu>, mingo@redhat.com, bp@alien8.de,
+ hpa@zytor.com, linux-integrity@vger.kernel.org, luto@amacapital.net,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,111 +120,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-Any comments on this? I know we have some opens w.r.t. PASID management
-UAPI, but I think having this common kernel API features should be
-justified.
-
-Thanks!
-
-Jacob
-
-
-On Mon, 28 Sep 2020 14:38:27 -0700, Jacob Pan <jacob.pan.linux@gmail.com>
-wrote:
-
-> IOASID was introduced in v5.5 as a generic kernel allocator service for
-> both PCIe Process Address Space ID (PASID) and ARM SMMU's Sub Stream
-> ID. In addition to basic ID allocation, ioasid_set was defined as a
-> token that is shared by a group of IOASIDs. This set token can be used
-> for permission checking, but lack of some features to address the
-> following needs by guest Shared Virtual Address (SVA).
-> - Manage IOASIDs by group, group ownership, quota, etc.
-> - State synchronization among IOASID users
-> - Non-identity guest-host IOASID mapping
-> - Lifecycle management across many users
+On Mon, Oct 19, 2020 at 10:38:08AM -0400, Ross Philipson wrote:
+> On 10/16/20 4:51 PM, Arvind Sankar wrote:
+> > On Thu, Oct 15, 2020 at 08:26:54PM +0200, Daniel Kiper wrote:
+> >>
+> >> I am discussing with Ross the other option. We can create
+> >> .rodata.mle_header section and put it at fixed offset as
+> >> kernel_info is. So, we would have, e.g.:
+> >>
+> >> arch/x86/boot/compressed/vmlinux.lds.S:
+> >>         .rodata.kernel_info KERNEL_INFO_OFFSET : {
+> >>                 *(.rodata.kernel_info)
+> >>         }
+> >>         ASSERT(ABSOLUTE(kernel_info) == KERNEL_INFO_OFFSET, "kernel_info at bad address!")
+> >>
+> >>         .rodata.mle_header MLE_HEADER_OFFSET : {
+> >>                 *(.rodata.mle_header)
+> >>         }
+> >>         ASSERT(ABSOLUTE(mle_header) == MLE_HEADER_OFFSET, "mle_header at bad address!")
+> >>
+> >> arch/x86/boot/compressed/sl_stub.S:
+> >> #define mleh_rva(X) (((X) - mle_header) + MLE_HEADER_OFFSET)
+> >>
+> >>         .section ".rodata.mle_header", "a"
+> >>
+> >> SYM_DATA_START(mle_header)
+> >>         .long   0x9082ac5a    /* UUID0 */
+> >>         .long   0x74a7476f    /* UUID1 */
+> >>         .long   0xa2555c0f    /* UUID2 */
+> >>         .long   0x42b651cb    /* UUID3 */
+> >>         .long   0x00000034    /* MLE header size */
+> >>         .long   0x00020002    /* MLE version 2.2 */
+> >>         .long   mleh_rva(sl_stub_entry)    /* Linear entry point of MLE (virt. address) */
+> >>         .long   0x00000000    /* First valid page of MLE */
+> >>         .long   0x00000000    /* Offset within binary of first byte of MLE */
+> >>         .long   0x00000000    /* Offset within binary of last byte + 1 of MLE */
+> >>         .long   0x00000223    /* Bit vector of MLE-supported capabilities */
+> >>         .long   0x00000000    /* Starting linear address of command line (unused) */
+> >>         .long   0x00000000    /* Ending linear address of command line (unused) */
+> >> SYM_DATA_END(mle_header)
+> >>
+> >> Of course MLE_HEADER_OFFSET has to be defined as a constant somewhere.
+> >> Anyway, is it acceptable?
+> >>
+> >> There is also another problem. We have to put into mle_header size of
+> >> the Linux kernel image. Currently it is done by the bootloader but
+> >> I think it is not a role of the bootloader. The kernel image should
+> >> provide all data describing its properties and do not rely on the
+> >> bootloader to do that. Ross and I investigated various options but we
+> >> did not find a good/simple way to do that. Could you suggest how we
+> >> should do that or at least where we should take a look to get some
+> >> ideas?
+> >>
+> >> Daniel
+> > 
+> > What exactly is the size you need here? Is it just the size of the
+> > protected mode image, that's startup_32 to _edata. Or is it the size of
 > 
-> This patchset introduces the following extensions as solutions to the
-> problems above.
-> - Redefine and extend IOASID set such that IOASIDs can be managed by
-> groups.
-> - Add notifications for IOASID state synchronization
-> - Add reference counting for life cycle alignment among users
-> - Support ioasid_set private IDs, which can be used as guest IOASIDs
-> Please refer to Documentation/ioasid.rst in enclosed patch 1/9 for more
-> details.
-> 
-> This patchset only included VT-d driver as users of some of the new APIs.
-> VFIO and KVM patches are coming up to fully utilize the APIs introduced
-> here.
-> 
-> You can find this series at:
-> https://github.com/jacobpan/linux.git ioasid_v3
-> (VFIO and KVM patches will be available at this branch when published.)
-> 
-> This work is a result of collaboration with many people:
-> Liu, Yi L <yi.l.liu@intel.com>
-> Wu Hao <hao.wu@intel.com>
-> Ashok Raj <ashok.raj@intel.com>
-> Kevin Tian <kevin.tian@intel.com>
-> 
-> Thanks,
-> 
-> Jacob
-> 
-> Changelog:
-> 
-> V3:
-> - Use consistent ioasid_set_ prefix for ioasid_set level APIs
-> - Make SPID and private detach/attach APIs symmetric
-> - Use the same ioasid_put semantics as Jean-Phillippe IOASID reference
-> patch
-> - Take away the public ioasid_notify() function, notifications are now
-> emitted by IOASID core as a result of certain IOASID APIs
-> - Partition into finer incremental patches
-> - Miscellaneous cleanup, locking, exception handling fixes based on v2
-> reviews
-> 
-> V2:
-> - Redesigned ioasid_set APIs, removed set ID
-> - Added set private ID (SPID) for guest PASID usage.
-> - Add per ioasid_set notification and priority support.
-> - Back to use spinlocks and atomic notifications.
-> - Added async work in VT-d driver to perform teardown outside atomic
-> context
-> 
-> Jacob Pan (14):
->   docs: Document IO Address Space ID (IOASID) APIs
->   iommu/ioasid: Rename ioasid_set_data()
->   iommu/ioasid: Add a separate function for detach data
->   iommu/ioasid: Support setting system-wide capacity
->   iommu/ioasid: Redefine IOASID set and allocation APIs
->   iommu/ioasid: Introduce API to adjust the quota of an ioasid_set
->   iommu/ioasid: Add an iterator API for ioasid_set
->   iommu/ioasid: Add reference couting functions
->   iommu/ioasid: Introduce ioasid_set private ID
->   iommu/ioasid: Introduce notification APIs
->   iommu/ioasid: Support mm type ioasid_set notifications
->   iommu/vt-d: Remove mm reference for guest SVA
->   iommu/vt-d: Listen to IOASID notifications
->   iommu/vt-d: Store guest PASID during bind
-> 
->  Documentation/driver-api/ioasid.rst | 648 ++++++++++++++++++++++++++
->  drivers/iommu/intel/iommu.c         |  29 +-
->  drivers/iommu/intel/pasid.h         |   1 +
->  drivers/iommu/intel/svm.c           | 132 +++++-
->  drivers/iommu/ioasid.c              | 890
-> ++++++++++++++++++++++++++++++++++-- include/linux/intel-iommu.h
-> |   2 + include/linux/ioasid.h              | 197 +++++++-
->  7 files changed, 1830 insertions(+), 69 deletions(-)
->  create mode 100644 Documentation/driver-api/ioasid.rst
+> It is the size of the protected mode image. Though how to reference
+> those symbols to get the size might all more relocation issues.
 > 
 
-
-Thanks,
-
-Jacob
+Ok, then I think mleh_rva(_edata) should get you that -- I assume you
+don't want to include the uninitialized data in the size? The kernel
+will access memory beyond _edata (upto the init_size in the setup
+header), but that's not part of the image itself.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
