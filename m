@@ -2,96 +2,98 @@ Return-Path: <SRS0=3ib5=D2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4108BC433E7
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 18:22:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC54C433DF
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 18:22:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C2FD92231B
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 18:22:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 08809223AE
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 18:22:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zs9NWLNI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2FD92231B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OTz9mUw0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08809223AE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 20B0F20354;
-	Mon, 19 Oct 2020 18:22:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7B4A1864DA;
+	Mon, 19 Oct 2020 18:22:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eOcYmzGYfXg2; Mon, 19 Oct 2020 18:22:48 +0000 (UTC)
+	with ESMTP id UgxgWDBoocLC; Mon, 19 Oct 2020 18:22:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 836CB2E0EE;
-	Mon, 19 Oct 2020 18:22:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 14E11864C3;
+	Mon, 19 Oct 2020 18:22:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 58B0AC088B;
-	Mon, 19 Oct 2020 18:22:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53552C0051
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E65A2C1AD7;
+	Mon, 19 Oct 2020 18:22:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D66DC0051
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4190087478
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:46 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0BCDD864D6
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6Qif7aAzo3AV for <iommu@lists.linux-foundation.org>;
- Mon, 19 Oct 2020 18:22:45 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oo1-f66.google.com (mail-oo1-f66.google.com
- [209.85.161.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 892B987472
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:45 +0000 (UTC)
-Received: by mail-oo1-f66.google.com with SMTP id f26so89184oou.11
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:22:45 -0700 (PDT)
+ with ESMTP id KxC1SqMgzdCA for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Oct 2020 18:22:48 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
+ [209.85.210.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E84F480859
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 18:22:47 +0000 (UTC)
+Received: by mail-ot1-f67.google.com with SMTP id m22so558990ots.4
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 11:22:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=VpsiELiguu+j+d75TlHy7UatTKslEhtvU0VNkiyQTHE=;
- b=zs9NWLNI035QlA/VBI7c1W2y029/5QTx9et8nFbd2vTWzWmoW13w6gut5QKiSLyOcv
- /iVj0TrBKUDnDE5OOK6vn+u60m6BrHtX1IRsXHLSviusPu5cfGfTElzcPftNUTIyqb+5
- E+su2boKZjvNwFFmNS8aqEDOo0Jjbtg1gtVyM2FL7Ms+J9RzDLhxfGSWfp834QlaIY1m
- ijmyO8/Y7KSAJINJ4woLIJF1CDp4YRJ16sEY7erjyyciGpT1sF22495HxPKYwvnZZs7I
- +KkR94uCA3tX2dGV2S1EAS/MB6Zq605p5Z8vOgZ8QAa8Vw1VqM/BsgZyAnHlOwoamCvs
- nngg==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=Y5fNqoL1fwVXzRoGLdhjgGjKn0H5ZhfiH9MEwllD/6E=;
+ b=OTz9mUw0OYOkF+/xpWHYVhItGhBW6akviDkDx1yCTgro7wI2gTIkIonv6xdt4B4uuw
+ gslPeIfjwSYj39iPXBJZAhq9tJruKkYVR5wwfJV1IzfXuat2vAQGzRQw+D94UU/BHXrt
+ anK2LjGHLKW1i17ayHJh3wwgG8K8VTsZwP4vzNvCKrQwXq/2cHt8ldkIqSgXz4P8lOTp
+ 20q8teCg7ioBGrKxxo24rhD/R02SS7Tj5vr4kJAFoS6HvIHKZ0fLjCD7BIPN2eph2BB+
+ zHL3pVc+idQf+fYjuc+FLxmnc9JvxuLOMQw6u8U2BR4TevDJnbKT7Gduugq+W1ZYotXV
+ P6ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=VpsiELiguu+j+d75TlHy7UatTKslEhtvU0VNkiyQTHE=;
- b=Tw+3fpZGIHWGKIZh82i1zZYbYdqbdjK2Bg0FjuWKyE3KWFvV5XsvONBGt9Ic8jLBEx
- b57071qxQXwQyfM0li/rZwWqzDyCftRRL5jjMGnFtSgt6yJT5Y5QdpJBQsuPA9OsyE2i
- CV9vmY0MdZyat1eYUkakCWKcPsE6GSj87tl+8aPTDXVJuEgnetmwEjUMcEgX1bNgiN8S
- FcXQrteZOOjmYoIceQ9YgIW9SWWm2y9FFXdS1XiXJofsrGYV0JP1BRfxGwKtb/hnDvFA
- uJWOOYKzOmg1wlOo3QcZ9GeStz8PpItKSlvlsTkUmDUGU4O9qsh1ZbMd655t/vWG4bRD
- x+LQ==
-X-Gm-Message-State: AOAM531EPOB4PZvJjSyTKrfuen8mbe5tXUop/7+GLQS6H9AUACs9NgK8
- JVkZ51yxH/QaQ2OUmMbqjLlb3A==
-X-Google-Smtp-Source: ABdhPJxsCpy/TBGLYx5Vl3+4B9L49mmC4/H7jkek9a/kPGO0kiKyGGtmak7p5gL4UV1db2SW7QYkbA==
-X-Received: by 2002:a4a:972c:: with SMTP id u41mr931370ooi.10.1603131764686;
- Mon, 19 Oct 2020 11:22:44 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=Y5fNqoL1fwVXzRoGLdhjgGjKn0H5ZhfiH9MEwllD/6E=;
+ b=fRBa/uCOfJeU1wNlI6INsKipGkD5qA8pbCZUtChIYXIh2xK9CCcHKCSTQsaEj9TZHx
+ mD0O9CXGHe4cKmLmXRgPx3eY9tEnZ5lM8F6ruvNGM4HONMJogox0z/Oe3kb5OuLITzng
+ OnszBXDWJAszDmSdvf3L8F20SlIYBzWDYYCtxCeLWtIS0LS3Y4dzU7UilPKVBPan3NvT
+ PNk5u7EDPYgnbJZltB+9Np2PQZLRSCbcLhEb+0ldQVwyHXgYhhh4RdZjPdWXbkpt1MKW
+ kOo3meYVWon6I0fa+sISqRRJdQtCG8VHCirlEKF2EYrX5PddDHwLhBzdG9J0+CT7n1pI
+ RPBQ==
+X-Gm-Message-State: AOAM530i+o0fyTowaWYxqvqxgWZlQyLsZ10Bs69AZBZZk+XvDbj3BIlc
+ iSJ5tI+NkDnFN9FGpC+vI1mPaw==
+X-Google-Smtp-Source: ABdhPJz3wQQ65x7rCRGuRiOD/lEinJpwbkX3sUptNu3HmaIQTCVTBlcQfpdKY5yqjTfNAFucQx80DQ==
+X-Received: by 2002:a05:6830:19fd:: with SMTP id
+ t29mr868207ott.307.1603131767028; 
+ Mon, 19 Oct 2020 11:22:47 -0700 (PDT)
 Received: from localhost.localdomain
  (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
- by smtp.gmail.com with ESMTPSA id o8sm175296oog.47.2020.10.19.11.22.43
+ by smtp.gmail.com with ESMTPSA id o8sm175296oog.47.2020.10.19.11.22.45
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 19 Oct 2020 11:22:44 -0700 (PDT)
+ Mon, 19 Oct 2020 11:22:46 -0700 (PDT)
 From: Bjorn Andersson <bjorn.andersson@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>,
  Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
  Jordan Crouse <jcrouse@codeaurora.org>,
  Thierry Reding <treding@nvidia.com>, Rob Clark <robdclark@chromium.org>
-Subject: [PATCH v5 0/3] iommu/arm-smmu-qcom: Support maintaining bootloader
- mappings
-Date: Mon, 19 Oct 2020 11:23:20 -0700
-Message-Id: <20201019182323.3162386-1-bjorn.andersson@linaro.org>
+Subject: [PATCH v5 2/3] iommu/arm-smmu-qcom: Read back stream mappings
+Date: Mon, 19 Oct 2020 11:23:22 -0700
+Message-Id: <20201019182323.3162386-3-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201019182323.3162386-1-bjorn.andersson@linaro.org>
+References: <20201019182323.3162386-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -112,28 +114,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is the revised fourth attempt of inheriting the stream mapping for
-the framebuffer on many Qualcomm platforms, in order to not hit
-catastrophic faults during arm-smmu initialization.
+The Qualcomm boot loader configures stream mapping for the peripherals
+that it accesses and in particular it sets up the stream mapping for the
+display controller to be allowed to scan out a splash screen or EFI
+framebuffer.
 
-The new approach does, based on Robin's suggestion, take a much more
-direct approach with the allocation of a context bank for bypass
-emulation and use of this context bank pretty much isolated to the
-Qualcomm specific implementation.
+Read back the stream mappings during initialization and make the
+arm-smmu driver maintain the streams in bypass mode.
 
-The patchset has been tested to boot DB845c and RB5 (with splash screen)
-and Lenovo Yoga C630 (with EFI framebuffer).
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
-Bjorn Andersson (3):
-  iommu/arm-smmu: Allow implementation specific write_s2cr
-  iommu/arm-smmu-qcom: Read back stream mappings
-  iommu/arm-smmu-qcom: Implement S2CR quirk
+Changes since v4:
+- Don't increment s2cr[i]->count, as this is not actually needed to survive
+  probe deferral
 
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 90 ++++++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.c      | 13 +++-
- drivers/iommu/arm/arm-smmu/arm-smmu.h      |  1 +
- 3 files changed, 101 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index be4318044f96..48627fcf6bed 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -23,6 +23,28 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ }
+ };
+ 
++static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
++{
++	u32 smr;
++	int i;
++
++	for (i = 0; i < smmu->num_mapping_groups; i++) {
++		smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
++
++		if (FIELD_GET(ARM_SMMU_SMR_VALID, smr)) {
++			smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
++			smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
++			smmu->smrs[i].valid = true;
++
++			smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
++			smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
++			smmu->s2crs[i].cbndx = 0xff;
++		}
++	}
++
++	return 0;
++}
++
+ static int qcom_smmu_def_domain_type(struct device *dev)
+ {
+ 	const struct of_device_id *match =
+@@ -61,6 +83,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+ }
+ 
+ static const struct arm_smmu_impl qcom_smmu_impl = {
++	.cfg_probe = qcom_smmu_cfg_probe,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+ 	.reset = qcom_smmu500_reset,
+ };
 -- 
 2.28.0
 
