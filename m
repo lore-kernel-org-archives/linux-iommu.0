@@ -3,99 +3,123 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 957A6C43457
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 14:08:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB3FC433DF
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 14:25:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F41D322263
-	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 14:08:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 48A42221FC
+	for <iommu@archiver.kernel.org>; Mon, 19 Oct 2020 14:25:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NdZ9UN+y"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F41D322263
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="r+KBEeHd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 48A42221FC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A46BF87647;
-	Mon, 19 Oct 2020 14:08:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AB1261FF11;
+	Mon, 19 Oct 2020 14:25:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8tc75k8fGDCw; Mon, 19 Oct 2020 14:08:49 +0000 (UTC)
+	with ESMTP id ytEYs0Q3bbaz; Mon, 19 Oct 2020 14:25:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9085C875D8;
-	Mon, 19 Oct 2020 14:08:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 82C3A20363;
+	Mon, 19 Oct 2020 14:25:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8332AC0052;
-	Mon, 19 Oct 2020 14:08:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 88416C0051
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:08:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53C47C088B;
+	Mon, 19 Oct 2020 14:25:36 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94482C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:25:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6DE8087646
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:08:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 82A2B86F84
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:25:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qtmC-ABNhuTw for <iommu@lists.linux-foundation.org>;
- Mon, 19 Oct 2020 14:08:47 +0000 (UTC)
+ with ESMTP id qjKpvTEfHLjF for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Oct 2020 14:25:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
- [209.85.218.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 03536875D8
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:08:47 +0000 (UTC)
-Received: by mail-ej1-f67.google.com with SMTP id md26so14060686ejb.10
- for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 07:08:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=/KfoISsApaN0NSURJOvvfJb6dwcjjrFUhXMB/UsO5u8=;
- b=NdZ9UN+yHyzobun2pSlu10EnMwdoI5kP57Dg+V9m5zdFRPjXDmTawgoX/3q3hFLOr7
- TR5GP/k/Lp6kZRQsnuow8o3X97atocZ1Gg0S7CVRhxF9sCC+PDl3TXsHlCw5ZYr214ny
- d39+ustjfCO8YQY2hsjzo1g621AuJAVzgi+iHCt05Y95N7+cvHBoiwfmQS5qyExSnd6U
- VNNSXIdBmX7tr2OAhm0mMmhtrkIqePNqGUavbKyC7caHTGUlbxS42DsK58B8keW2wtLJ
- 66lBN8ZAkgIhKatEKaGFAMpbsGtj/WH3lUykXJ8SFQGCrlYHkigOufghId9ptnzODJmi
- c9Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=/KfoISsApaN0NSURJOvvfJb6dwcjjrFUhXMB/UsO5u8=;
- b=FyMC1JPsEwqB6gNTtKr89PCmUpo/1q+6F8iqOIMBcI9TEIgm4q8Xy1nyzzcyJUbkGc
- K2lrX0Et/ujDBtVRCc8IEq5AXYyMgJlF48ELHNNFym2EHhw2CQOSdgbhHPtXYtdn3oPm
- rMaLlCThCEzRaYSdAZtTk0solHm0tbdjoOQBpZDWlIbeWmKM5WdYN6uP9tbrklwKADgH
- XSTwT84NtLLiQrb9d9BzYqv74IUzbDq0YU3MUnB+l/wYeobDtZL837P8U1ZNuMM97w6G
- RHkqrkEdowLbIJZO0l0ToF7vFuZEg1niylaINUUa2g1IZTpnNbXbTQNdWX54eKYkUaiw
- Pncw==
-X-Gm-Message-State: AOAM533w7G2TVX2rhsbd2c/Pwh8ZJFnz0+f5QW3Tv+mDn4vzVK21oqLy
- 24QiD9bW+d5hqMefAvC/XlSKrA==
-X-Google-Smtp-Source: ABdhPJwA7uw6+ZE3RVnaAj9H96KR8FzN4UrEVEZS6aUBgtDdquQPDfuzZYCFSozbMOV5OyjLm10zow==
-X-Received: by 2002:a17:906:1150:: with SMTP id i16mr96740eja.82.1603116524907; 
- Mon, 19 Oct 2020 07:08:44 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id f25sm10868868edy.52.2020.10.19.07.08.43
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 19 Oct 2020 07:08:44 -0700 (PDT)
-Date: Mon, 19 Oct 2020 16:08:24 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [RFC PATCH 0/2] iommu: Avoid unnecessary PRI queue flushes
-Message-ID: <20201019140824.GA1478235@myrica>
-References: <20201015090028.1278108-1-jean-philippe@linaro.org>
- <20201015182211.GA54780@otc-nc-03>
- <20201016075923.GB1309464@myrica>
- <20201017112525.GA47206@otc-nc-03>
-MIME-Version: 1.0
+Received: from hqnvemgate26.nvidia.com (hqnvemgate26.nvidia.com
+ [216.228.121.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id BBE6986899
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Oct 2020 14:25:33 +0000 (UTC)
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B5f8da1d00001>; Mon, 19 Oct 2020 07:25:20 -0700
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 19 Oct
+ 2020 14:25:28 +0000
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.172)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 19 Oct 2020 14:25:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NYmZt8cW18+JwjMy+GQbwEW0ySFfLFO8bVKWo+jiOeoh0jgrjDraWu9En2UjMyOv6huHCzGmyVmRYAY4V7E9aV/4xdTqSYoX6ltPjcnSplCvFdDkeZJC+VNa9T38UsJ2sXRpFfJjTm5Ni14eXF7xn4I8GIcqjW5svFEBMqyR5hp0mP+EpacV8qQCxg4OdH7UYxeKaO9U7aDkUC8oj7HUZKGiQ7vGRzqjqiCqlC0XWoRFZ5+Ov+5X4xMqApauk6BNfraeRbIywGAlbLvlM0XCQ9gtBNwx3PjSOHZqZZFzBekQJ23ZjvSOHmEkZfH0+kN6QIYZQG/ltPWbFOESF9MWng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l7heJhWZiRdJe3QvqJwE9qFLQ8jVxZedxVyZAhCNH7o=;
+ b=OWXQPKAxKj9/8gAiAYmynyAy0Ynd5U+Jo2gPfVUnVeQoPcb+WxeQRlNOU9k47eZcSbDgnSR5ITQrX08n1zkX9H4zeY7STxPoldFvqaXLEK7kJK3jgMliNkHEvhVYgLo70i4nltJIB+JkVmJZChQawvHSNpP8nNh1+D9xRLuiavx43kFIypPy+fpFRgKvcactOHzjq+ufRxGBDN2K6t0Xgnpgnfw9SZaHSG2XzP2w/U3Eb27pvkC27w9UlwrlspQv/oJIjiQmeb8OJ0Sb+wSvvvHwilrkzqit1ACYFwbtOxouta6nmwmq/LqwNhc4TpiiizS+vWZX5weHbEz4Ujmiyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3513.namprd12.prod.outlook.com (2603:10b6:5:18a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Mon, 19 Oct
+ 2020 14:25:27 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 14:25:27 +0000
+Date: Mon, 19 Oct 2020 11:25:26 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
+ Virtual Addressing to VMs
+Message-ID: <20201019142526.GJ6219@nvidia.com>
+References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <20201016153632.GM6219@nvidia.com>
+ <DM5PR11MB1435A3AEC0637C4531F2FE92C31E0@DM5PR11MB1435.namprd11.prod.outlook.com>
 Content-Disposition: inline
-In-Reply-To: <20201017112525.GA47206@otc-nc-03>
-Cc: kevin.tian@intel.com, "Lu, Baolu" <baolu.lu@intel.com>, arnd@arndb.de,
- gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Jacon Jun Pan <jacob.jun.pan@intel.com>,
- linux-pci@vger.kernel.org, zhangfei.gao@linaro.org, dwmw2@infradead.org,
- linux-accelerators@lists.ozlabs.org
+In-Reply-To: <DM5PR11MB1435A3AEC0637C4531F2FE92C31E0@DM5PR11MB1435.namprd11.prod.outlook.com>
+X-ClientProxiedBy: MN2PR01CA0020.prod.exchangelabs.com (2603:10b6:208:10c::33)
+ To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by
+ MN2PR01CA0020.prod.exchangelabs.com (2603:10b6:208:10c::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.23 via Frontend Transport; Mon, 19 Oct 2020 14:25:27 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1kUW6I-002KXy-1K; Mon, 19 Oct 2020 11:25:26 -0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1603117521; bh=l7heJhWZiRdJe3QvqJwE9qFLQ8jVxZedxVyZAhCNH7o=;
+ h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+ From:To:CC:Subject:Message-ID:References:Content-Type:
+ Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType;
+ b=r+KBEeHdeRhhqG0B1PEH1a4TKr956YqEMS6yiV1Zz9VafMsNs3CsZRn0eE0C1mMAh
+ lWONIlNd2hgm6i2YEjmeX+4ooeuFTpdZ/xxM+rALV6KSh12t8JIY3sPqJOyjsQH9gr
+ tO8a5bJHfVukmmHYoawxYuidq4bGIRgmtZzkSguRuRar+/0aMrc62o3GQvxq+R/zFh
+ jxEdBdTHTkVXMxtqf4sECm4E3bc/GZ9+wS+zwZfFemo2QCS2pb2kEC3bkqnOpKvi9F
+ +oSgBVOQPQ3aIJJMEOoE8mSbmkjXvJEAqxr8fvIRRS0A2S8Bc4kqA90a2R+4o+GXwn
+ qRYRqP7tt471g==
+Cc: "Tian, Jun J" <jun.j.tian@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,78 +137,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Oct 17, 2020 at 04:25:25AM -0700, Raj, Ashok wrote:
-> > For devices that *don't* use a stop marker, the PCIe spec says (10.4.1.2):
-> > 
-> >   To stop [using a PASID] without using a Stop Marker Message, the
-> >   function shall:
-> >   1. Stop queueing new Page Request Messages for this PASID.
+On Mon, Oct 19, 2020 at 08:39:03AM +0000, Liu, Yi L wrote:
+> Hi Jason,
 > 
-> The device driver would need to tell stop sending any new PR's.
-> 
-> >   2. Finish transmitting any multi-page Page Request Messages for this
-> >      PASID (i.e. send the Page Request Message with the L bit Set).
-> >   3. Wait for PRG Response Messages associated any outstanding Page
-> >      Request Messages for the PASID.
-> > 
-> > So they have to flush their PR themselves. And since the device driver
-> > completes this sequence before calling unbind(), then there shouldn't be
-> > any oustanding PR for the PASID, and unbind() doesn't need to flush,
-> > right?
-> 
-> I can see how the device can complete #2,3 above. But the device driver
-> isn't the one managing page-responses right. So in order for the device to
-> know the above sequence is complete, it would need to get some assist from
-> IOMMU driver?
+> Good to see your response.
 
-No the device driver just waits for the device to indicate that it has
-completed the sequence. That's what the magic stop-PASID mechanism
-described by PCIe does. In 6.20.1 "Managing PASID TLP Prefix Usage" it
-says:
+Ah, I was away
 
-"A Function must have a mechanism to request that it gracefully stop using
- a specific PASID. This mechanism is device specific but must satisfy the
- following rules:
- [...]
- * When the stop request mechanism indicates completion, the Function has:
-   [...]
-   * Complied with additional rules described in Address Translation
-     Services (Chapter 10 [10.4.1.2 quoted above]) if Address Translations
-     or Page Requests were issued on the behalf of this PASID."
+> > > > Second, IOMMU nested translation is a per IOMMU domain
+> > > > capability. Since IOMMU domains are managed by VFIO/VDPA
+> > > >  (alloc/free domain, attach/detach device, set/get domain attribute,
+> > > > etc.), reporting/enabling the nesting capability is an natural
+> > > > extension to the domain uAPI of existing passthrough frameworks.
+> > > > Actually, VFIO already includes a nesting enable interface even
+> > > > before this series. So it doesn't make sense to generalize this uAPI
+> > > > out.
+> > 
+> > The subsystem that obtains an IOMMU domain for a device would have to
+> > register it with an open FD of the '/dev/sva'. That is the connection
+> > between the two subsystems. It would be some simple kernel internal
+> > stuff:
+> > 
+> >   sva = get_sva_from_file(fd);
+> 
+> Is this fd provided by userspace? I suppose the /dev/sva has a set of uAPIs
+> which will finally program page table to host iommu driver. As far as I know,
+> it's weird for VFIO user. Why should VFIO user connect to a /dev/sva fd after
+> it sets a proper iommu type to the opened container. VFIO container already
+> stands for an iommu context with which userspace could program page mapping
+> to host iommu.
 
-So after the device driver initiates this mechanism in the device, the
-device must be able to indicate completion of the mechanism, which
-includes completing all in-flight Page Requests. At that point the device
-driver can call unbind() knowing there is no pending PR for this PASID.
+Again the point is to dis-aggregate the vIOMMU related stuff from VFIO
+so it can be shared between more subsystems that need it. I'm sure
+there will be some weird overlaps because we can't delete any of the
+existing VFIO APIs, but that should not be a blocker.
 
-Thanks,
-Jean
+Having VFIO run in a mode where '/dev/sva' provides all the IOMMU
+handling is a possible path.
 
+If your plan is to just opencode everything into VFIO then I don't see
+how VDPA will work well, and if proper in-kernel abstractions are
+built I fail to see how routing some of it through userspace is a
+fundamental problem.
+
+> >   sva_register_device_to_pasid(sva, pasid, pci_device, iommu_domain);
 > 
-> How does the driver know that everything host received has been responded
-> back to device?
+> So this is supposed to be called by VFIO/VDPA to register the info to /dev/sva.
+> right? And in dev/sva, it will also maintain the device/iommu_domain and pasid
+> info? will it be duplicated with VFIO/VDPA?
+
+Each part needs to have the information it needs? 
+
+> > > > Moreover, mapping page fault to subdevice requires pre-
+> > > > registering subdevice fault data to IOMMU layer when binding
+> > > > guest page table, while such fault data can be only retrieved from
+> > > > parent driver through VFIO/VDPA.
+> > 
+> > Not sure what this means, page fault should be tied to the PASID, any
+> > hookup needed for that should be done in-kernel when the device is
+> > connected to the PASID.
 > 
-> > 
-> > > I'm not sure about other IOMMU's how they behave, When there is no space in
-> > > the PRQ, IOMMU auto-responds to the device. This puts the device in a
-> > > while (1) loop. The fake successful response will let the device do a ATS
-> > > lookup, and that would fail forcing the device to do another PRQ.
-> > 
-> > But in the sequence above, step 1 should ensure that the device will not
-> > send another PR for any successful response coming back at step 3.
-> 
-> True, but there could be some page-request in flight on its way to the
-> IOMMU. By draining and getting that round trip back to IOMMU we gaurantee
-> things in flight are flushed to PRQ after that Drain completes.
-> > 
-> > So I agree with the below if we suspect there could be pending PR, but
-> > given that pending PR are a stop marker thing and we don't know any device
-> > using stop markers, I wondered why I bothered implementing PRIq flush at
-> > all for SMMUv3, hence this RFC.
-> > 
-> 
-> Cheers,
-> Ashok
+> you may refer to chapter 7.4.1.1 of VT-d spec. Page request is reported to
+> software together with the requestor id of the device. For the page request
+> injects to guest, it should have the device info.
+
+Whoever provides the vIOMMU emulation and relays the page fault to the
+guest has to translate the RID - what does that have to do with VFIO?
+
+How will VPDA provide the vIOMMU emulation?
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
