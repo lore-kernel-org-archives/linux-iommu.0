@@ -2,74 +2,165 @@ Return-Path: <SRS0=/c0m=D3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D12FC433DF
-	for <iommu@archiver.kernel.org>; Tue, 20 Oct 2020 10:13:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF8AC433E7
+	for <iommu@archiver.kernel.org>; Tue, 20 Oct 2020 10:21:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1B77B22253
-	for <iommu@archiver.kernel.org>; Tue, 20 Oct 2020 10:13:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 51D182222D
+	for <iommu@archiver.kernel.org>; Tue, 20 Oct 2020 10:21:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="BiZaYQYB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B77B22253
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="KgvS3N3E"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51D182222D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BADEA86BA9;
-	Tue, 20 Oct 2020 10:13:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B984786F69;
+	Tue, 20 Oct 2020 10:21:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0B5jEnArj9b0; Tue, 20 Oct 2020 10:13:15 +0000 (UTC)
+	with ESMTP id Rz9MdeU8p2g6; Tue, 20 Oct 2020 10:21:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A3A2985ADC;
-	Tue, 20 Oct 2020 10:13:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E1D0786DDC;
+	Tue, 20 Oct 2020 10:21:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B758C0891;
-	Tue, 20 Oct 2020 10:13:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C67B6C0891;
+	Tue, 20 Oct 2020 10:21:48 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4597C0052
- for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:13:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2BF4AC0052
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:21:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D08AF87259
- for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:13:14 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 26A7486F69
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:21:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZY1LncLEGwNt for <iommu@lists.linux-foundation.org>;
- Tue, 20 Oct 2020 10:13:13 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2213987258
- for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:13:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=D/RvI4LWbrZwsiSjJJo2DHUUz1oHhAH4Mpvl8+a6/bk=; b=BiZaYQYBgG6saj6Vf5ZvkKcfTr
- +ylxFFHRzJW7d3Cyb/orGh+ndqpFsWWsVLhmcDMHabdHoH+x1HoQUInDSnlQOkTqax45XvBIYs39u
- CAUnU4eqV7qS6TE6vL77oYXZbhJoyDs3cAE4v33Rt3jzipV/sldMXwsNBoTLbf9AdjG1hZQ+7jiio
- a3DTVclh7ZnHjhG89jKuHaiWs1M/zJWZ0roQzvfdtj/U1qeueyRgH213fmVQLN3DdDFI6AbWF1Ogl
- QfrV4QCSfVKSd3e2GMj7GkIaduAMz9wuUPWr/PhD/vVGQP71RpsJoRi3UeTODuzxpPgfZN73bTm3y
- WS/YGdIA==;
-Received: from [2001:4bb8:18c:20bd:6f0d:ddd6:25e1:36fe] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kUodi-0005am-Pz
- for iommu@lists.linux-foundation.org; Tue, 20 Oct 2020 10:13:11 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] dma-mapping: move more functions to dma-map-ops.h
-Date: Tue, 20 Oct 2020 12:13:09 +0200
-Message-Id: <20201020101309.3338444-1-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
+ with ESMTP id axlG7O69QiXu for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Oct 2020 10:21:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 312C186DDC
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Oct 2020 10:21:46 +0000 (UTC)
+IronPort-SDR: JNRKvHEJS5y5m5igLe8sCKkmviJfcIH+VZj5AoNkxejXcJNrCYURg2W2AT+FYEFda5NoqNhmvu
+ Z9H5YXYWoU/Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9779"; a="163695664"
+X-IronPort-AV: E=Sophos;i="5.77,396,1596524400"; d="scan'208";a="163695664"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Oct 2020 03:21:45 -0700
+IronPort-SDR: r40myvL2itJdxS9+tZJFQz/Jv6lN7SAb5UC2m8xhgL2kaphLu+r0zew0nqRXQX2rqQOclz9KsP
+ SjrvqxxLdqaw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,396,1596524400"; d="scan'208";a="358477134"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+ by FMSMGA003.fm.intel.com with ESMTP; 20 Oct 2020 03:21:45 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 20 Oct 2020 03:21:44 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 20 Oct 2020 03:21:44 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 20 Oct 2020 03:21:44 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Tue, 20 Oct 2020 03:21:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l0MXRPgM+c/fIRyjevI4WKP8z5wUA4JVMHNoMr0DJwPL5vDRbk2KkTP6ni/eHxaA72QCCkEwajmxxCEs6BvYhkCSmvSyukf8g0hvchWtbtF/QyH2fYvAPgJc9rO0mPOGR+Kt9FiHMcoARyCds3NNqDm6ueCQHMlnJcae8TdalNTtRuohiFpeYCuVsjkAZDOB64Pl5K18hOvlgdiGLfoDF+8H4TemsxcGKF6zXz4p7UvGT3QNAKUdjdEuTyoTdpwX3M4Vcbb2+7gZvo4UR5qsS7YCnfCBCUSpnKRKlPs7b8u/JS+6RSDwWnfrX3PdVuGZhiBrPe9WOjp8oR7dhhCTIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AbOETCATVdzhroDhfFt1SgltQIElXfTqbRk5gQtb8sA=;
+ b=V7bm8/xZd15IDASU5VGBRqDAzBZds8fWw8Ahzdgo62sdHIf48o5r4XIkr1ZbGNYc/E6tMDl0KL6GDPO0p8kVBlZW3HjvJvcgnQ+L/aMLb+wpq7o9eWGSB1VkHBFXPpyO5dfkpuafxRtv7fSYfjA4CgqFShbVqbPYm1ryDax6TYGmCG7+xl2FDJGDGVCY6v9kzNT/pVfha0Y838UdFHuCijBVkOjBko6WN2hPy0J6DXyAK0787Ue+Z5x2nNr/WKC+rHLmkqHY3mBwDqE+Ge8xSIQ6jCjYxUK2aZxNo8RzoWNb+gXFIG0WfeGym1g8F6W5Zo576+hRP8ANjnOshfPdUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AbOETCATVdzhroDhfFt1SgltQIElXfTqbRk5gQtb8sA=;
+ b=KgvS3N3E3EF4UoIbE+iDCpzff/WEtLMamx4cIL1rG/KLwtgf1DylmQKqvyFoGbm0GRjVmMWMNDG/9wpIzoAzl1O2Owo6W9khS+i6cZWFTSCks9MXONKBaBVzOsJCyKlq7gQic9Vp84aMQRAnhNllPz9ex2mD1CcP3snlTIwh6KY=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB4595.namprd11.prod.outlook.com (2603:10b6:5:2ac::16) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.25; Tue, 20 Oct 2020 10:21:41 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f%11]) with mapi id 15.20.3477.028; Tue, 20 Oct
+ 2020 10:21:41 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
+ Virtual Addressing to VMs
+Thread-Topic: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
+ Virtual Addressing to VMs
+Thread-Index: AdagceQQLvqwjRCrQOaq1hZ7MgDUUABZWmqgAH60bgAAh22vsAAM9nEAACSNTfA=
+Date: Tue, 20 Oct 2020 10:21:41 +0000
+Message-ID: <DM5PR11MB14354A8A126E686A5F20FEC2C31F0@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <MWHPR11MB1645AE971BD8DAF72CE3E1198C050@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <20201016153632.GM6219@nvidia.com>
+ <DM5PR11MB1435A3AEC0637C4531F2FE92C31E0@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <20201019142526.GJ6219@nvidia.com>
+In-Reply-To: <20201019142526.GJ6219@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [221.220.190.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 698d30c5-99d1-42e2-b84d-08d874e1f01f
+x-ms-traffictypediagnostic: DM6PR11MB4595:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB459592AEABB98B22A35E7531C31F0@DM6PR11MB4595.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8qWj1Thd8MeM2esjikI9QYocYnKiKEz8JtS2MG8PM1SlvahJV22DPi0aZ/vXlPdvU20QPSIvF+gY+845rKX7j5S8TWAWrW2TCHd3ISY0NhReB6+pI8BaqWW9VQwLqRgoQDqorZpTzSG9fGAqxyT8XofG9zEylsw3AJAgVdU9i92hyNp9Ey/0Jlbs1rStL8eQjPFPJe6WI/IzWg76KSZcYP+8iyhNEUOcvW4ARRm4i7w+LC1db+/6JVyAc0Q3cjvq2LrjPOFhX+j5I6MJZRZVnZDVjt+GqwuZMhtC3sDR1ShGqV3FXFt6E9AD40kbVgVbWVw9ct0Ny8oQMn6X+eD163BN6mzAtVlF8mZvXK0/gtxluWDpKcITvbsr6A44w8tSD4R98GvTJN9Xirsg7QokYA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(376002)(366004)(39860400002)(396003)(136003)(26005)(86362001)(8936002)(4326008)(6506007)(966005)(66556008)(54906003)(64756008)(316002)(186003)(66946007)(66476007)(76116006)(33656002)(66446008)(45080400002)(8676002)(478600001)(5660300002)(71200400001)(9686003)(83380400001)(55016002)(52536014)(7416002)(2906002)(6916009)(7696005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: 7HnQvj+GhogPpmpJCOAVJsxmTSLwzasyAPQskDA7mVGbuzVkzOGAWufxXeElzORUg1RLZRge6754Ovo3vyIz3O5ks5GtpRdgOI/2UiE2edeUGVsE6gvyhLSuSONhqIUPdYobsmL+sU/Wpu0OtiPTaP6iEUoNNnqDOX1H7XXBxByIPunRCHjicFi1e7RhrvtZ7I3Gcs5m7EgQuy1Mk3YZ/YqEm1TnUuh8p5mK4QWc1cj+AZ5Tiq6p54oUoIdskoEegFHn5lVItt6VDu5Tqz2jpFf3lbIIei9sYAUAj1SFOItg2gmh4vB4RMB4vjFOvfhvw/d+8H7LAYWgpR1hOadZXU1zU8UGKfIC6L0p1OmTgASn2cOW3AFWjNVMJ5XDAj9kHdkP8X1YnrStltCudcw+v8PWNKnBjevREImIynL9WY658zENLjKHTCuKbI3UJ8g/HCyJ7Z2war2UGHx/W01I8awxR77IJlA1Uu9rLbgP1tqwG5WFHS55tQ4j3BA1QaEoxGR4b2yVf5HF1riM+zxm/lKYoCPIJe5jMMxBoVoKgymwf6MnJMZFPZqKi0Iqm7t/sXJR1fYflO0gDf3+w0IDlto4O8Lcny4IG4wC1zFJsxYCOxUHHBWvP6v+KjIdZDHyNOv8Js206s0poCiYrsQ1sQ==
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 698d30c5-99d1-42e2-b84d-08d874e1f01f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2020 10:21:41.6020 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uObo6kRoIaVrNjnziC/1ko8/Bfp1iuLf5cWBmwiJslpu7DFaIlJ4IW8UtaAxHTYJhdicLrz2lAqrajkER46PUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4595
+X-OriginatorOrg: intel.com
+Cc: "Tian, Jun J" <jun.j.tian@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Zhu,
+ Lingshan" <lingshan.zhu@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,101 +178,145 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Due to a mismerge a bunch of prototypes that should have moved to
-dma-map-ops.h are still in dma-mapping.h, fix that up.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Monday, October 19, 2020 10:25 PM
+> 
+> On Mon, Oct 19, 2020 at 08:39:03AM +0000, Liu, Yi L wrote:
+> > Hi Jason,
+> >
+> > Good to see your response.
+> 
+> Ah, I was away
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/dma-map-ops.h | 23 +++++++++++++++++++++++
- include/linux/dma-mapping.h | 24 ------------------------
- kernel/dma/remap.c          |  2 +-
- 3 files changed, 24 insertions(+), 25 deletions(-)
+got it. :-)
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 8029f7e0414521..a5f89fc4d6df16 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -203,6 +203,29 @@ static inline int dma_mmap_from_global_coherent(struct vm_area_struct *vma,
- }
- #endif /* CONFIG_DMA_DECLARE_COHERENT */
- 
-+int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
-+		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		unsigned long attrs);
-+int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
-+		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		unsigned long attrs);
-+struct page *dma_common_alloc_pages(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp);
-+void dma_common_free_pages(struct device *dev, size_t size, struct page *vaddr,
-+		dma_addr_t dma_handle, enum dma_data_direction dir);
-+
-+struct page **dma_common_find_pages(void *cpu_addr);
-+void *dma_common_contiguous_remap(struct page *page, size_t size, pgprot_t prot,
-+		const void *caller);
-+void *dma_common_pages_remap(struct page **pages, size_t size, pgprot_t prot,
-+		const void *caller);
-+void dma_common_free_remap(void *cpu_addr, size_t size);
-+
-+struct page *dma_alloc_from_pool(struct device *dev, size_t size,
-+		void **cpu_addr, gfp_t flags,
-+		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t));
-+bool dma_free_from_pool(struct device *dev, void *start, size_t size);
-+
- #ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
- #include <asm/dma-coherence.h>
- #elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 3f029afdc9dc6a..956151052d4542 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -389,30 +389,6 @@ static inline void dma_sync_sgtable_for_device(struct device *dev,
- #define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, 0)
- #define dma_mmap_coherent(d, v, c, h, s) dma_mmap_attrs(d, v, c, h, s, 0)
- 
--extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
--		void *cpu_addr, dma_addr_t dma_addr, size_t size,
--		unsigned long attrs);
--struct page *dma_common_alloc_pages(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp);
--void dma_common_free_pages(struct device *dev, size_t size, struct page *vaddr,
--		dma_addr_t dma_handle, enum dma_data_direction dir);
--struct page **dma_common_find_pages(void *cpu_addr);
--void *dma_common_contiguous_remap(struct page *page, size_t size,
--			pgprot_t prot, const void *caller);
--
--void *dma_common_pages_remap(struct page **pages, size_t size,
--			pgprot_t prot, const void *caller);
--void dma_common_free_remap(void *cpu_addr, size_t size);
--
--struct page *dma_alloc_from_pool(struct device *dev, size_t size,
--		void **cpu_addr, gfp_t flags,
--		bool (*phys_addr_ok)(struct device *, phys_addr_t, size_t));
--bool dma_free_from_pool(struct device *dev, void *start, size_t size);
--
--int
--dma_common_get_sgtable(struct device *dev, struct sg_table *sgt, void *cpu_addr,
--		dma_addr_t dma_addr, size_t size, unsigned long attrs);
--
- static inline void *dma_alloc_coherent(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
- {
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index 78b23f089cf1c2..905c3fa005f107 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -2,7 +2,7 @@
- /*
-  * Copyright (c) 2014 The Linux Foundation
-  */
--#include <linux/dma-mapping.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- 
--- 
-2.28.0
+> > > > > Second, IOMMU nested translation is a per IOMMU domain
+> > > > > capability. Since IOMMU domains are managed by VFIO/VDPA
+> > > > > (alloc/free domain, attach/detach device, set/get domain
+> > > > > attribute, etc.), reporting/enabling the nesting capability is
+> > > > > an natural extension to the domain uAPI of existing passthrough
+> frameworks.
+> > > > > Actually, VFIO already includes a nesting enable interface even
+> > > > > before this series. So it doesn't make sense to generalize this
+> > > > > uAPI out.
+> > >
+> > > The subsystem that obtains an IOMMU domain for a device would have
+> > > to register it with an open FD of the '/dev/sva'. That is the
+> > > connection between the two subsystems. It would be some simple
+> > > kernel internal
+> > > stuff:
+> > >
+> > >   sva = get_sva_from_file(fd);
+> >
+> > Is this fd provided by userspace? I suppose the /dev/sva has a set of
+> > uAPIs which will finally program page table to host iommu driver. As
+> > far as I know, it's weird for VFIO user. Why should VFIO user connect
+> > to a /dev/sva fd after it sets a proper iommu type to the opened
+> > container. VFIO container already stands for an iommu context with
+> > which userspace could program page mapping to host iommu.
+> 
+> Again the point is to dis-aggregate the vIOMMU related stuff from VFIO so it
+> can
+> be shared between more subsystems that need it.
 
+I understand you here. :-)
+
+> I'm sure there will be some
+> weird overlaps because we can't delete any of the existing VFIO APIs, but
+> that
+> should not be a blocker.
+
+but the weird thing is what we should consider. And it perhaps not just
+overlap, it may be a re-definition of VFIO container. As I mentioned, VFIO
+container is IOMMU context from the day it was defined. It could be the
+blocker. :-(
+
+> Having VFIO run in a mode where '/dev/sva' provides all the IOMMU handling is
+> a possible path.
+
+This looks to be similar with the proposal from Jason Wang and Kevin Tian.
+It is an idea to add "/dev/iommu" and delegate the IOMMU domain alloc,
+device attach/detach which is no in passthru framework to an independent
+kernel driver. Just as Jason Wang said replace vfio iommu type1 driver.
+
+Jason Wang:
+ "And all the proposal in this series is to reuse the container fd. It 
+ should be possible to replace e.g type1 IOMMU with a unified module."
+link: https://lore.kernel.org/kvm/20201019142526.GJ6219@nvidia.com/T/#md49fe9ac9d9eff6ddf5b8c2ee2f27eb2766f66f3
+
+Kevin Tian:
+ "Based on above, I feel a more reasonable way is to first make a 
+ /dev/iommu uAPI supporting DMA map/unmap usages and then 
+ introduce vSVA to it. Doing this order is because DMA map/unmap 
+ is widely used thus can better help verify the core logic with 
+ many existing devices."
+link: https://lore.kernel.org/kvm/MWHPR11MB1645C702D148A2852B41FCA08C230@MWHPR11MB1645.namprd11.prod.outlook.com/
+
+> 
+> If your plan is to just opencode everything into VFIO then I don't
+> see how VDPA will work well, and if proper in-kernel abstractions are built I
+> fail to see how
+> routing some of it through userspace is a fundamental problem.
+
+I'm not expert on vDPA for now, but I saw you three open source
+veterans have a similar idea for a place to cover IOMMU handling,
+I think it may be a valuable thing to do. I said "may be" as I'm not
+sure about Alex's opinion on such idea. But the sure thing is this
+idea may introduce weird overlap even re-definition of existing
+thing as I replied above. We need to evaluate the impact and mature
+the idea step by step. That means it would take time, so perhaps we
+may do it in a staging way. First having a "/dev/iommu" be ready to
+handle page MAP/UNMAP which can be used by both VFIO and vDPA, mean-
+while let VFIO grow up (adding features) by itself and consider to
+adopt the new /dev/iommu later once /dev/iommu is competent. Of
+course this needs Alex's approval. And then adding new features
+to /dev/iommu, like SVA.
+
+> 
+> > >   sva_register_device_to_pasid(sva, pasid, pci_device,
+> > > iommu_domain);
+> >
+> > So this is supposed to be called by VFIO/VDPA to register the info to
+> > /dev/sva.
+> > right? And in dev/sva, it will also maintain the device/iommu_domain
+> > and pasid info? will it be duplicated with VFIO/VDPA?
+> 
+> Each part needs to have the information it needs?
+
+yeah, but it's the duplication which I'm not very much in. Perhaps the idea
+from Jason Wang and Kevin would avoid such duplication.
+
+> > > > > Moreover, mapping page fault to subdevice requires pre-
+> > > > > registering subdevice fault data to IOMMU layer when binding
+> > > > > guest page table, while such fault data can be only retrieved
+> > > > > from parent driver through VFIO/VDPA.
+> > >
+> > > Not sure what this means, page fault should be tied to the PASID,
+> > > any hookup needed for that should be done in-kernel when the device
+> > > is connected to the PASID.
+> >
+> > you may refer to chapter 7.4.1.1 of VT-d spec. Page request is
+> > reported to software together with the requestor id of the device. For
+> > the page request injects to guest, it should have the device info.
+> 
+> Whoever provides the vIOMMU emulation and relays the page fault to the guest
+> has to translate the RID -
+
+that's the point. But the device info (especially the sub-device info) is
+within the passthru framework (e.g. VFIO). So page fault reporting needs
+to go through passthru framework.
+
+> what does that have to do with VFIO?
+> 
+> How will VPDA provide the vIOMMU emulation?
+
+a pardon here. I believe vIOMMU emulation should be based on IOMMU vendor
+specification, right? you may correct me if I'm missing anything.
+
+> Jason
+
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
