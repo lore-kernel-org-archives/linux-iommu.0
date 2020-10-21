@@ -2,85 +2,121 @@ Return-Path: <SRS0=cHqw=D4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2705C55179
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 17:51:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B96C388F9
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 18:24:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08F7B2242F
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 17:51:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08F7B2242F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9E12C22464
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 18:24:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="bdy3zt3U"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E12C22464
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 70559874A4;
-	Wed, 21 Oct 2020 17:51:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 131E187510;
+	Wed, 21 Oct 2020 18:24:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6tPjJwJ-Rjip; Wed, 21 Oct 2020 17:51:50 +0000 (UTC)
+	with ESMTP id zKCgI-XFCVzz; Wed, 21 Oct 2020 18:24:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CE92087469;
-	Wed, 21 Oct 2020 17:51:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4FB1687502;
+	Wed, 21 Oct 2020 18:24:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BB44C088B;
-	Wed, 21 Oct 2020 17:51:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 405C5C08A1;
+	Wed, 21 Oct 2020 18:24:50 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3071AC0051
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 17:51:49 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87670C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 18:24:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1D76187480
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 17:51:49 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7E036870C8
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 18:24:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q2Jizt9OZc8Q for <iommu@lists.linux-foundation.org>;
- Wed, 21 Oct 2020 17:51:48 +0000 (UTC)
+ with ESMTP id QT0Y95IWcjHY for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Oct 2020 18:24:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4781487469
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 17:51:48 +0000 (UTC)
-IronPort-SDR: Oxq4FbQzUzo+YnBikxNUzl+pPuaws+IVIvlYiJ64QKrpPmxtHz3egp0FssL1c5SZ0EuzaOJRQc
- MQgtpO+44SXg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9780"; a="252108040"
-X-IronPort-AV: E=Sophos;i="5.77,401,1596524400"; d="scan'208";a="252108040"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Oct 2020 10:51:47 -0700
-IronPort-SDR: nFaU7IqUVQFKNumGJ/O1yc0Mzip0lJxesUnBPBkk77D+dGCEh3jTfpKDy3QXKu79tSmu7h0pjr
- Y6Np+1E56OMA==
-X-IronPort-AV: E=Sophos;i="5.77,401,1596524400"; d="scan'208";a="359584998"
-Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
- by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Oct 2020 10:51:47 -0700
-Date: Wed, 21 Oct 2020 10:51:46 -0700
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
+Received: from hqnvemgate26.nvidia.com (hqnvemgate26.nvidia.com
+ [216.228.121.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E67BC870BB
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 18:24:47 +0000 (UTC)
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B5f907ce30000>; Wed, 21 Oct 2020 11:24:35 -0700
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 21 Oct
+ 2020 18:24:46 +0000
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.46) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server
+ (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 21 Oct 2020 18:24:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rm+V9mype58dG1Zn3Q4vYCV8+Cxb1ZJ2Akx9ftuPjv1hRx1RFYGJqBe2sZ8H7SYfg/8OJRTUIsDSsfBxshzLpw4eEqBVCij5lxHJwYfy/zHkzg263oJsG+qwakMumaovffBoOdGN/YjELH/SSZ8ep1hLR9M9TTFjkpviZkGypA3ASKKcw4Rz/BC97HwPO3iCkxCigUJuw6n7Lf+c/Nlg5dKnBjPOkUwqrIAZSwIE8s+CHfVgPMFmVTAT31CIAw4r8LQiO56FJP5sdtVUn2wN4D4yZ3P79l56LUIvTH6ZNJZhfn9LkFZMiK0FWO3k3Ni1fhDgNmfJ5xVdFEDI4zz8lw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0NgPxzLNUZzeKlTpQJekvGEV1+nt/QXlzaHcwUJQt5Y=;
+ b=GjfJZ6SJUmFVhiODdyVSwA4hdPb23uJ1Yiei1mJG83BkkUvj0UORM5oXKeW9lLaStg0sLX6NTgG+pfFfDMTBcFlFCTN5bq1+9NcDWl6aA5LEDXzeTBk/On08kAEwJzdj/3SqskRUFMq5IM2qbqLkIgl0yoLLriXK+MQo72wWEAbPp67cvyBIe2sxXB9/dk8akzYd3GSqoeKDUz7mYJBHaBr0yQw+mvXmRPCBRHkbEn2FIWDPNczrHW/NVc4NDf0qFc8/qP3kTc64MVyTaxtMHVCmiMRIeFLg+r3H1EL46wr25SJIFggBXd+GwVTQawKXhxnDdGsqfPAMGKM4Z05YUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB2488.namprd12.prod.outlook.com (2603:10b6:4:b5::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.27; Wed, 21 Oct
+ 2020 18:24:43 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3477.028; Wed, 21 Oct 2020
+ 18:24:43 +0000
+Date: Wed, 21 Oct 2020 15:24:42 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Raj, Ashok" <ashok.raj@intel.com>
 Subject: Re: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
  Virtual Addressing to VMs
-Message-ID: <20201021175146.GA92867@otc-nc-03>
-References: <DM5PR11MB14354A8A126E686A5F20FEC2C31F0@DM5PR11MB1435.namprd11.prod.outlook.com>
- <20201020140217.GI6219@nvidia.com>
- <20201020162430.GA85321@otc-nc-03>
- <20201020170336.GK6219@nvidia.com>
- <20201020195146.GA86371@otc-nc-03>
- <20201020195557.GO6219@nvidia.com>
- <20201020200844.GC86371@otc-nc-03>
- <20201020201403.GP6219@nvidia.com>
- <20201020202713.GF86371@otc-nc-03>
- <20201021114829.GR6219@nvidia.com>
-MIME-Version: 1.0
+Message-ID: <20201021182442.GU6219@nvidia.com>
+References: <20201020140217.GI6219@nvidia.com>
+ <20201020162430.GA85321@otc-nc-03> <20201020170336.GK6219@nvidia.com>
+ <20201020195146.GA86371@otc-nc-03> <20201020195557.GO6219@nvidia.com>
+ <20201020200844.GC86371@otc-nc-03> <20201020201403.GP6219@nvidia.com>
+ <20201020202713.GF86371@otc-nc-03> <20201021114829.GR6219@nvidia.com>
+ <20201021175146.GA92867@otc-nc-03>
 Content-Disposition: inline
-In-Reply-To: <20201021114829.GR6219@nvidia.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20201021175146.GA92867@otc-nc-03>
+X-ClientProxiedBy: MN2PR13CA0026.namprd13.prod.outlook.com
+ (2603:10b6:208:160::39) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by
+ MN2PR13CA0026.namprd13.prod.outlook.com (2603:10b6:208:160::39) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.8 via Frontend
+ Transport; Wed, 21 Oct 2020 18:24:43 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1kVImw-003eNU-FQ; Wed, 21 Oct 2020 15:24:42 -0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1603304675; bh=0NgPxzLNUZzeKlTpQJekvGEV1+nt/QXlzaHcwUJQt5Y=;
+ h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+ From:To:CC:Subject:Message-ID:References:Content-Type:
+ Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType;
+ b=bdy3zt3UXZqrIG7p7ZaOsWwJgj7Rz3bgeb7w1uBKL6anURiWOqhzAXWNf44TP3U+j
+ 8vmsREk9wfrTVW0pqV9NRMUnUyn7WL21bO9pgsHpgg0ifGZCm46RR+ogXkQGXbNxeQ
+ oJmYDbDLxJJhi41LhZLu70elIlyLtC8CU0wNfcI+eHnUldWFxTwFo51l8CTTLRl0oW
+ PUZQAySfiBkCCcJqba2LEEanr2O6F0FlLoOHMiVgFk4+B8XsS2SUL8r5qo0nhF92p8
+ ZUGy3C6CqL7EPkHlx2YygPmr1tgCg6u18RkaUI4L8zeBh2K2O7Z7DqgUAfZjYF1HsE
+ 5/ECpbV+gfrLQ==
 Cc: "Tian, Jun J" <jun.j.tian@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
  "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
  "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
@@ -104,67 +140,35 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Oct 21, 2020 at 08:48:29AM -0300, Jason Gunthorpe wrote:
-> On Tue, Oct 20, 2020 at 01:27:13PM -0700, Raj, Ashok wrote:
-> > On Tue, Oct 20, 2020 at 05:14:03PM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Oct 20, 2020 at 01:08:44PM -0700, Raj, Ashok wrote:
-> > > > On Tue, Oct 20, 2020 at 04:55:57PM -0300, Jason Gunthorpe wrote:
-> > > > > On Tue, Oct 20, 2020 at 12:51:46PM -0700, Raj, Ashok wrote:
-> > > > > > I think we agreed (or agree to disagree and commit) for device types that 
-> > > > > > we have for SIOV, VFIO based approach works well without having to re-invent 
-> > > > > > another way to do the same things. Not looking for a shortcut by any means, 
-> > > > > > but we need to plan around existing hardware though. Looks like vDPA took 
-> > > > > > some shortcuts then to not abstract iommu uAPI instead :-)? When all
-> > > > > > necessary hardware was available.. This would be a solved puzzle. 
-> > > > > 
-> > > > > I think it is the opposite, vIOMMU and related has outgrown VFIO as
-> > > > > the "home" and needs to stand alone.
-> > > > > 
-> > > > > Apparently the HW that will need PASID for vDPA is Intel HW, so if
-> > > > 
-> > > > So just to make this clear, I did check internally if there are any plans
-> > > > for vDPA + SVM. There are none at the moment. 
-> > > 
-> > > Not SVM, SIOV.
-> > 
-> > ... And that included.. I should have said vDPA + PASID, No current plans. 
-> > I have no idea who set expectations with you. Can you please put me in touch 
-> > with that person, privately is fine.
+On Wed, Oct 21, 2020 at 10:51:46AM -0700, Raj, Ashok wrote:
+
+> > If they didn't plan to use it, bit of a strawman argument, right?
 > 
-> It was the team that aruged VDPA had to be done through VFIO - SIOV
-> and PASID was one of their reasons it had to be VFIO, check the list
-> archives
-
-Humm... I could search the arhives, but the point is I'm confirming that
-there is no forward looking plan!
-
-And who ever did was it was based on probably strawman hypothetical argument that wasn't
-grounded in reality. 
-
+> This doesn't need to continue like the debates :-) Pun intended :-)
 > 
-> If they didn't plan to use it, bit of a strawman argument, right?
+> I don't think it makes any sense to have an abstract strawman argument
+> design discussion. Yi is looking into for pasid management alone. Rest 
+> of the IOMMU related topics should wait until we have another 
+> *real* use requiring consolidation. 
 
-This doesn't need to continue like the debates :-) Pun intended :-)
+Actually I'm really annoyed right now that the other Intel team wasted
+quiet a lot of the rest of our time on arguing about vDPA and vfio
+with no actual interest in this technology.
 
-I don't think it makes any sense to have an abstract strawman argument
-design discussion. Yi is looking into for pasid management alone. Rest 
-of the IOMMU related topics should wait until we have another 
-*real* use requiring consolidation. 
+So you'll excuse me if I'm not particularly enamored with this
+discussion right now.
 
-Contrary to your argument, vDPA went with a half blown device only 
-iommu user without considering existing abstractions like containers 
-and such in VFIO is part of the reason the gap is big at the moment.
-And you might not agree, but that's beside the point. 
+> Contrary to your argument, vDPA went with a half blown device only 
+> iommu user without considering existing abstractions like containers
 
-Rather than pivot ourselves around hypothetical, strawman,
-non-intersecting, suggesting architecture without having done a proof of
-concept to validate the proposal should stop. We have to ground ourselves
-in reality.
+VDPA IOMMU was done *for Intel*, as the kind of half-architected thing
+you are advocating should be allowed for IDXD here. Not sure why you
+think bashing that work is going to help your case here.
 
-The use cases we have so far for SIOV, VFIO and mdev seem to be the right
-candidates and addresses them well. Now you might disagree, but as noted we
-all agreed to move past this.
+I'm saying Intel needs to get its architecture together and stop
+ceating this mess across the kernel to support Intel devices.
 
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
