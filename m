@@ -2,80 +2,148 @@ Return-Path: <SRS0=cHqw=D4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9F7C4363A
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 19:41:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F214CC4363A
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 20:36:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BF56124171
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 19:41:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF56124171
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 30BB722249
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 20:36:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Gxrp99jy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30BB722249
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4CF8587606;
-	Wed, 21 Oct 2020 19:41:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 95CA58745E;
+	Wed, 21 Oct 2020 20:36:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FVc3EgSxjFBT; Wed, 21 Oct 2020 19:41:35 +0000 (UTC)
+	with ESMTP id uEkba-5p7G2H; Wed, 21 Oct 2020 20:36:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A1B6186C8A;
-	Wed, 21 Oct 2020 19:41:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D8B54872AC;
+	Wed, 21 Oct 2020 20:36:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8536CC088B;
-	Wed, 21 Oct 2020 19:41:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C255AC08A1;
+	Wed, 21 Oct 2020 20:36:55 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F588C0051
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 19:03:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28CA5C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 20:36:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8E17186B28
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 19:03:21 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 249F186E1D
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 20:36:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aGtCEjWiTp+A for <iommu@lists.linux-foundation.org>;
- Wed, 21 Oct 2020 19:03:20 +0000 (UTC)
+ with ESMTP id tcwejoaFQ2I8 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Oct 2020 20:36:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C3C7186B0E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 19:03:20 +0000 (UTC)
-Received: by mail-io1-f71.google.com with SMTP id y19so2288859iow.23
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 12:03:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
- bh=UZ+enrykDZn0RBAehZWXA0bKtfaNR6wmh3gkDAdQ0qU=;
- b=UKXQ858ploQr6R55k2v7dcBrIaWc/mvpVlNum5rBM+U+gXPIlT3ngSHgLR/qLsOZc7
- IiDLEHtN44KwoVeQs6a7i3eKglWKAMI3+7KjjsTm5AO98c7TaC4UxvBpjIzoNlSjjhql
- Wb9f0RNIjNo3SzQL4MPDoHbit/x+rgYwCm6b3AeJNnd9FJpWT+89kZXqskk7nGsbJ76/
- nrfO8r5+o69TtdWqcpEmjPAjsuodGHRiKJI4Jt5S2ImYs2Zbb5gNskQSaCIoY4T/8HMr
- 5mBdCOmZCf1hEHK34LbkOHLxgs+b00FGzjvJ3fNuCXYWqvYElo7/Cl1+QlA3TY9Rjf3c
- LtUQ==
-X-Gm-Message-State: AOAM530faJS+2BC6EVVyNDvZFon3cIZpN22VkrW75vwdPlCoKKYHQMi1
- pHg3sO/dyivj7bt1lVRtPYWBf4akyYM9E8ZtpxHAJtlW4elt
-X-Google-Smtp-Source: ABdhPJz2DS8buf571WovUNMKHuSLSF76DGgezNV/agArJmCbhllMoFPN7q2PFS7kA5XVwafLNLZkSOV+4eJYXHkyl2WL1jnLWRkI
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 31D2686DC1
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 20:36:54 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09LKEhPn103150;
+ Wed, 21 Oct 2020 20:36:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=ZVPoJnV7ys/S2zhaIuNFlC/M5y606GF+69f28P/G54s=;
+ b=Gxrp99jyobldIjG+CoFPmp4ItSH4F1qDM9mJRMedqqKTOzRWxR9zm5PR+jOwd6cJwhA5
+ Op41xcukQ81GLKmgk0FrYyyLaUbmKZeVhz/nYUXhcVqwUmy1E3m8WpsjJ80mNJfiHkaC
+ /r1uGYwvc8CXZF8cC7Eb3Q35HwpJL5Wfp/Tkz6LN9qnvXu8M6SrmLUyOQtmTnJJjNXdx
+ zEzoppZmZJ/1X89z2BinkW2ZUNOviT2TkHADExPwJ0AoBa+n3XI+uQF+K4cUaKMQSUYV
+ YE1EKuts4hIDwcXMi849RlpPBF6uYEykr3knBq6W5X0HkeEIazdmZw8rAChfiEg+kVcH aA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2120.oracle.com with ESMTP id 34ak16k20t-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Wed, 21 Oct 2020 20:36:39 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09LKZ0fK100071;
+ Wed, 21 Oct 2020 20:36:38 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+ by userp3030.oracle.com with ESMTP id 348ahy15my-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 21 Oct 2020 20:36:38 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+ by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09LKaYZR031899;
+ Wed, 21 Oct 2020 20:36:34 GMT
+Received: from [10.39.200.42] (/10.39.200.42)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Wed, 21 Oct 2020 13:36:33 -0700
+Subject: Re: [PATCH 07/13] x86: Secure Launch kernel early boot stub
+To: Arvind Sankar <nivedita@alum.mit.edu>,
+ Daniel Kiper <daniel.kiper@oracle.com>
+References: <1600959521-24158-8-git-send-email-ross.philipson@oracle.com>
+ <20200924173801.GA103726@rani.riverdale.lan>
+ <c9ab2edf-1aaf-a1c9-92d5-2d37382a3163@oracle.com>
+ <20200925191842.GA643740@rani.riverdale.lan>
+ <d34c189c-4528-0458-0b84-cfd36dc068b3@oracle.com>
+ <20201015182654.lgtht5fd2aaunczu@tomti.i.net-space.pl>
+ <20201016205151.GA1618249@rani.riverdale.lan>
+ <20201019145153.7b6cg3rzj7g4njz6@tomti.i.net-space.pl>
+ <20201019171822.GD2701355@rani.riverdale.lan>
+ <20201021152833.b3oys643ckcl5evq@tomti.i.net-space.pl>
+ <20201021161837.GA3795579@rani.riverdale.lan>
+From: Ross Philipson <ross.philipson@oracle.com>
+Autocrypt: addr=ross.philipson@oracle.com; keydata=
+ mQENBFtHZ04BCADHhtvMImplKfIEOytU7ZH4haZ9eFAqZpGeIpG9D+pzTCuReM2/49bvgNoI
+ e1xuiQFO+UEJ8FjedFjDdqY7fSw3xVdX9gLwD1Rmw0Dadc1w6sGbcoOQLHcglesu+BmcKBtU
+ tWQZkzCpEShN4etgZThk8469YnAvO08vNZsrizgrpD90T7mEYiNXxIkX87sPGbnBrL1X7RvZ
+ TaRXfE8174W+XVwGEpSiO/GjRgLW8+DFZB5MgXpCR993+U1YT9Lz97/MRzr4hqcOYry6LBYi
+ s8dOly4oP7gK15oW8Xap9+ur0Jd8Vy8o99Axq+7yunF+2KE2SwP3/w8H3VDpx7EeDhWDABEB
+ AAG0KlJvc3MgUGhpbGlwc29uIDxyb3NzLnBoaWxpcHNvbkBvcmFjbGUuY29tPokBVAQTAQgA
+ PgIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBFsN7r6v0OZTCaJ1wdpHdTZHiMYcBQJb
+ R2eBBQkJZgGzAAoJENpHdTZHiMYcPYcH/Rlp3/F3P4/2i/W0F4yQDVD6rAkejCws4KlbgC5D
+ Slkdvk6j8jOW/HNeIY3n+a3mW0iyyhZlipgYAqkK1loDiDxJjc2eUaHxiYWNLQ4CwIj2EC27
+ AWCp6hgwHNWmZrdeNbM/Z6LTFQILx5xzgX+86KNqzFV7gOcAaS2qBVz1D83dgrFZaGaao918
+ nvfe+SnImo0GaEf8nVDKgsD2zfzMBkk4q/E0mrEADFXwBHSvNCnVyrCN6Ve0dHWgI7SszUDt
+ 7v01zbGPR5mRfGuyC9gykd2SDCw5/Q27RMWfaPFL/dtiZBljUzb2yW5jicZAz7zNdDcBSUGR
+ r//wxtG4k/dBrMW5AQ0EW0dnTwEIAPelEnLDnfJnHdFR+1Thrvv3Udt/1cjqQfHqH4F8zef/
+ MsIcPV1skL7qPUYD+CrbasvmqhlPxtJAtN68inPa70fA2g0PtNmLUH1NBb2e6EjOoVZg9ais
+ BWfdYUITZouOXs2zCTFsoNWjTJANnXxexbTf1ZEqfzlVtQK+xAnXl3kiL4Y47VMbgDkGedhw
+ 3ZMWQ2zMMZqYJkPYhtlTXtedhV91DL1347ULwHsvkUJDZ0gL+WU6tYhsCOOiD61x58PfUiFb
+ /WkZEPxb96dSSSWrTlLlBWSSD24RnhfbJjfsXeSu9s4XldmGTDkj7jclMVU1xV0BUfqEwhVn
+ xR8FlC+dZvkAEQEAAYkBPAQYAQgAJgIbDBYhBFsN7r6v0OZTCaJ1wdpHdTZHiMYcBQJbR2eB
+ BQkJZgGyAAoJENpHdTZHiMYcDIAIAIRJrKjIStRvLsOOCX92s9XJPUjrC/xmtVsqVviyFWIC
+ QRPQzDE+bDSvRazudBHmcPW+BOOB5B+p7zKZzOGoZV2peG8oA/Y8oCxOYBtpbBaZ5KJexm/g
+ BbnJUwb3uhmKtDShHGUCmtq8MZBJBr6Q6xHprOU8Qnzs9Jea8NVwaz9O226Rrg4XVv/sK1Lh
+ ++xZfhi7YqKWdx5vdfdnX1xWe8ma0eXLeCDh3V6Ys+Habw1jEbMuafrcVzAbp1rMt2Lju1ls
+ BNAoxeViK7QXWfwGTmGJP++jHmo99gMqEtiohf+37N0oS6uYu6kaE7PxsEcOjWKJxW/DdgwO
+ eFq+D6xuiKk=
+Message-ID: <a4f999cf-733e-d5a9-254e-3829439dcb2d@oracle.com>
+Date: Wed, 21 Oct 2020 16:36:29 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:8661:: with SMTP id e88mr4055127jai.43.1603306999991; 
- Wed, 21 Oct 2020 12:03:19 -0700 (PDT)
-Date: Wed, 21 Oct 2020 12:03:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000335adc05b23300f6@google.com>
-Subject: WARNING in dma_map_page_attrs
-From: syzbot <syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com>
-To: christian.koenig@amd.com, dri-devel@lists.freedesktop.org, hch@lst.de, 
- iommu@lists.linux-foundation.org, linaro-mm-sig@lists.linaro.org, 
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
- m.szyprowski@samsung.com, robin.murphy@arm.com, sumit.semwal@linaro.org, 
- syzkaller-bugs@googlegroups.com
-X-Mailman-Approved-At: Wed, 21 Oct 2020 19:41:35 +0000
+In-Reply-To: <20201021161837.GA3795579@rani.riverdale.lan>
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9781
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ phishscore=0 bulkscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010210142
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9781
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ phishscore=0
+ priorityscore=1501 clxscore=1015 malwarescore=0 mlxscore=0 adultscore=0
+ lowpriorityscore=0 impostorscore=0 spamscore=0 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010210141
+Cc: linux-doc@vger.kernel.org, dpsmith@apertussolutions.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, luto@amacapital.net,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+ hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,89 +161,90 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello,
+On 10/21/20 12:18 PM, Arvind Sankar wrote:
+> On Wed, Oct 21, 2020 at 05:28:33PM +0200, Daniel Kiper wrote:
+>> On Mon, Oct 19, 2020 at 01:18:22PM -0400, Arvind Sankar wrote:
+>>> On Mon, Oct 19, 2020 at 04:51:53PM +0200, Daniel Kiper wrote:
+>>>> On Fri, Oct 16, 2020 at 04:51:51PM -0400, Arvind Sankar wrote:
+>>>>> On Thu, Oct 15, 2020 at 08:26:54PM +0200, Daniel Kiper wrote:
+>>>>>>
+>>>>>> I am discussing with Ross the other option. We can create
+>>>>>> .rodata.mle_header section and put it at fixed offset as
+>>>>>> kernel_info is. So, we would have, e.g.:
+>>>>>>
+>>>>>> arch/x86/boot/compressed/vmlinux.lds.S:
+>>>>>>         .rodata.kernel_info KERNEL_INFO_OFFSET : {
+>>>>>>                 *(.rodata.kernel_info)
+>>>>>>         }
+>>>>>>         ASSERT(ABSOLUTE(kernel_info) == KERNEL_INFO_OFFSET, "kernel_info at bad address!")
+>>>>>>
+>>>>>>         .rodata.mle_header MLE_HEADER_OFFSET : {
+>>>>>>                 *(.rodata.mle_header)
+>>>>>>         }
+>>>>>>         ASSERT(ABSOLUTE(mle_header) == MLE_HEADER_OFFSET, "mle_header at bad address!")
+>>>>>>
+>>>>>> arch/x86/boot/compressed/sl_stub.S:
+>>>>>> #define mleh_rva(X) (((X) - mle_header) + MLE_HEADER_OFFSET)
+>>>>>>
+>>>>>>         .section ".rodata.mle_header", "a"
+>>>>>>
+>>>>>> SYM_DATA_START(mle_header)
+>>>>>>         .long   0x9082ac5a    /* UUID0 */
+>>>>>>         .long   0x74a7476f    /* UUID1 */
+>>>>>>         .long   0xa2555c0f    /* UUID2 */
+>>>>>>         .long   0x42b651cb    /* UUID3 */
+>>>>>>         .long   0x00000034    /* MLE header size */
+>>>>>>         .long   0x00020002    /* MLE version 2.2 */
+>>>>>>         .long   mleh_rva(sl_stub_entry)    /* Linear entry point of MLE (virt. address) */
+>>>>>>         .long   0x00000000    /* First valid page of MLE */
+>>>>>>         .long   0x00000000    /* Offset within binary of first byte of MLE */
+>>>>>>         .long   0x00000000    /* Offset within binary of last byte + 1 of MLE */
+>>>>>>         .long   0x00000223    /* Bit vector of MLE-supported capabilities */
+>>>>>>         .long   0x00000000    /* Starting linear address of command line (unused) */
+>>>>>>         .long   0x00000000    /* Ending linear address of command line (unused) */
+>>>>>> SYM_DATA_END(mle_header)
+>>>>>>
+>>>>>> Of course MLE_HEADER_OFFSET has to be defined as a constant somewhere.
+>>>>>> Anyway, is it acceptable?
+>>>>
+>>>> What do you think about my MLE_HEADER_OFFSET and related stuff proposal?
+>>>>
+>>>
+>>> I'm wondering if it would be easier to just allow relocations in these
+>>> special "header" sections. I need to check how easy/hard it is to do
+>>> that without triggering linker warnings.
+>>
+>> Ross and I still bouncing some ideas. We came to the conclusion that
+>> putting mle_header into kernel .rodata.kernel_info section or even
+>> arch/x86/boot/compressed/kernel_info.S file would be the easiest thing
+>> to do at this point. Of course I would suggest some renaming too. E.g.
+>> .rodata.kernel_info to .rodata.kernel_headers, etc. Does it make sense
+>> for you?
+>>
+>> Daniel
+> 
+> I haven't been able to come up with any different options that don't
+> require post-processing of the kernel image. Allowing relocations in
+> specific sections seems to not be possible with lld, and anyway would
+> require the fields to be 64-bit sized so it doesn't really help.
+> 
+> Putting mle_header into kernel_info seems like a reasonable thing to me,
+> and if you do that, putting it into kernel_info.S would seem to be
+> necessary?  Would you also have a fixed field with the offset of the
 
-syzbot found the following issue on:
+That seems like a reasonable place for it to go.
 
-HEAD commit:    c4d6fe73 Merge tag 'xarray-5.9' of git://git.infradead.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14862ff0500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7d790573d3e379c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=34dc2fea3478e659af01
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+> mle_header from kernel_info?  That seems nicer than having the
+> bootloader scan the variable data for magic strings.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Yes kernel_info will have a field to the offset of the mle_header. I
+agree that would be nicer.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com
+Thanks
+Ross
 
-infiniband syz1: set active
-infiniband syz1: added vcan0
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 9851 at kernel/dma/mapping.c:149 dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Modules linked in:
-CPU: 1 PID: 9851 Comm: syz-executor.1 Not tainted 5.9.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-RIP: 0010:dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Code: 80 3c 10 00 0f 85 ed 01 00 00 48 8b 1d 36 c3 fa 0c e9 2d fc ff ff 48 89 c3 e9 d1 fd ff ff e8 04 12 12 00 0f 0b e8 fd 11 12 00 <0f> 0b 49 c7 c4 ff ff ff ff e9 d5 fd ff ff e8 ea 11 12 00 48 8d 7b
-RSP: 0018:ffffc90001546c68 EFLAGS: 00010246
-RAX: 0000000000040000 RBX: ffffffff894d0040 RCX: ffffc9000dbe4000
-RDX: 0000000000040000 RSI: ffffffff815d3b03 RDI: ffff88806a988b00
-RBP: ffff8880236cc400 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000000 R12: ffffea00008db300
-R13: ffff88806a9886e8 R14: 00000000000004b8 R15: 0000000000000002
-FS:  00007f678fae2700(0000) GS:ffff88802ce00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f299a39b190 CR3: 0000000069f31000 CR4: 0000000000350ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- dma_map_single_attrs include/linux/dma-mapping.h:279 [inline]
- ib_dma_map_single include/rdma/ib_verbs.h:3967 [inline]
- ib_mad_post_receive_mads+0x23f/0xd60 drivers/infiniband/core/mad.c:2715
- ib_mad_port_start drivers/infiniband/core/mad.c:2862 [inline]
- ib_mad_port_open drivers/infiniband/core/mad.c:3016 [inline]
- ib_mad_init_device+0x72b/0x1400 drivers/infiniband/core/mad.c:3092
- add_client_context+0x405/0x5e0 drivers/infiniband/core/device.c:680
- enable_device_and_get+0x1d5/0x3c0 drivers/infiniband/core/device.c:1301
- ib_register_device drivers/infiniband/core/device.c:1376 [inline]
- ib_register_device+0x7a7/0xa40 drivers/infiniband/core/device.c:1335
- rxe_register_device+0x46d/0x570 drivers/infiniband/sw/rxe/rxe_verbs.c:1182
- rxe_add+0x12fe/0x16d0 drivers/infiniband/sw/rxe/rxe.c:247
- rxe_net_add+0x8c/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:507
- rxe_newlink drivers/infiniband/sw/rxe/rxe.c:269 [inline]
- rxe_newlink+0xb7/0xe0 drivers/infiniband/sw/rxe/rxe.c:250
- nldev_newlink+0x30e/0x540 drivers/infiniband/core/nldev.c:1555
- rdma_nl_rcv_msg+0x367/0x690 drivers/infiniband/core/netlink.c:195
- rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
- rdma_nl_rcv+0x2f2/0x440 drivers/infiniband/core/netlink.c:259
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45d9f9
-Code: bd b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 8b b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f678fae1c88 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000071f480 RCX: 000000000045d9f9
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 00000000004aab13 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000075bf00
-R13: 00007ffc6f9b8bbf R14: 00007f678fac2000 R15: 0000000000000003
+> 
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
