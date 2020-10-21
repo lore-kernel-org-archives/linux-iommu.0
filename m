@@ -7,91 +7,90 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9116C55179
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 14:55:04 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EE8C55179
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 14:55:22 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 11B982224E
-	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 14:55:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 976CD2224E
+	for <iommu@archiver.kernel.org>; Wed, 21 Oct 2020 14:55:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gtraypYY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11B982224E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tnlFBdD6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 976CD2224E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8A82886D39;
-	Wed, 21 Oct 2020 14:55:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 07KrBm0+sZ1m; Wed, 21 Oct 2020 14:55:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 820B886CFC;
-	Wed, 21 Oct 2020 14:55:02 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7616FC0052;
-	Wed, 21 Oct 2020 14:55:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E86E3C0051
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:55:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D23F0870EB
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:55:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 17B52870EF;
+	Wed, 21 Oct 2020 14:55:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EeT+mit9h-jo; Wed, 21 Oct 2020 14:55:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id CCEED870EB;
+	Wed, 21 Oct 2020 14:55:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ADFD0C0052;
+	Wed, 21 Oct 2020 14:55:19 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED0D1C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:55:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DC460863D9
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:55:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1jnA1PJ0IbEf for <iommu@lists.linux-foundation.org>;
- Wed, 21 Oct 2020 14:54:59 +0000 (UTC)
+ with ESMTP id eeizBfo55PcK for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Oct 2020 14:55:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C4F09870EF
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:54:58 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id u8so3701928ejg.1
- for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 07:54:58 -0700 (PDT)
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+ [209.85.208.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C34CE863C5
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 14:55:17 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id dg9so2843402edb.12
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Oct 2020 07:55:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=BFCPvM2IrIxIbO/NAcdmKF4cshlij12nw9Eb0WJDBag=;
- b=gtraypYYX1Ts6KvEYPbWTw38IGVzD3hSarSd3/Gs5PLsvUR0OJ0quvcAk1qwBnB4eV
- E6qili6MZI8oOMOUenDUtlxhJb7rLtMhImtFofl3fq/Na6Udq4wr+05g5K2MG7pmP/Fk
- RIHSA1rm2s1ZRNmzGRZNvWpdiQSwFlRvi6DermMxq3byJLg7xzP9CMBhShZCDU1o8M1T
- GUWKNZwGtrolIY/ZUpP470LmDY13GXicW2Bv5diWJg+EykFuwV+jXR7apuP4VOJLEUAZ
- hTJYD2Y4TV4wKdvro4O4firrBitP8OqhnYCK6S4JlxRC0w9Q1lfqmkNteDpRRdVtOu0M
- xhBw==
+ bh=TT/hPDcCjkJCenk8sLHU1Sek4T/MxX3FitCsX0otRRc=;
+ b=tnlFBdD60NP1j8CKi3rq0v7z4WCacFdpguP+kTr9uz2MOzLrWy6v9UfR2aViCYoEs4
+ KNgexySZD6t48QEV0KYpCSCJQr1dAfmO5L3JY6/orVfiif1vNz6RTPCvO2z9suGyggQw
+ ZP7CkNfToa3mHdlDo9xnCOF8GRwUleHlkUAmIJY9zZHgUqvebiMZjqJ95PTq4lJptC93
+ 7btioFs3fVFwa26j3dBRkvE3qpbk/irVE/8cZeZbxswjcfy1LhRk2cTmiwobkzVVMqki
+ nhvW//0XltzV4dYBqGiG2MrKzCNIfn0BDtzQ4Z1etG4sws1lKittG2ZNKnfwqBjJhYBx
+ izcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=BFCPvM2IrIxIbO/NAcdmKF4cshlij12nw9Eb0WJDBag=;
- b=p5uQBxkyp+VpUxml6l6+GMuT5hr7WvsmTEr/59VhqkGv56DEsN2W/RcU/7Qn13998f
- 9I02CtgXJTrXZhVvhNLAJFSJUkzX+nFcG3+Yp4bEdOLNXQ0bvDnbjvbVCqmfRUPSNrJ8
- ih1XtCu2ScQUaHpbcU5XWmbwyeBZPHBHWqjPrZU0AefpO7KkxCn4d2QsL6tqqxPOztP8
- rIDaFd+IuiX0hfEZxs5sIdKwS5tHR2k0qJr2VdKGl4AHAMtpOaKPJnu2p8ngm/cOZFvD
- Ye1SYqyMCfRpS2b3xMi2uMC6+BoA3gTHIJ+4tNsxUavObyDZLp5TTDiXvHWpMJJXu+eC
- vquA==
-X-Gm-Message-State: AOAM533NKtk5rYoysp5lPv5FWBDPhW8t95jtQMv17GOkKFy7Hhg3LxK8
- q01clhAiXsQ60qFO1N+Tzz1C5g==
-X-Google-Smtp-Source: ABdhPJzhzTRYyOOgZYy1AMK6rSQ1NL+2tSuKTUBIqZvdQLncyfEHZsHZ7BDLcE7Yw9HNN5D2QgbCQg==
-X-Received: by 2002:a17:906:d292:: with SMTP id
- ay18mr4038597ejb.244.1603292097022; 
- Wed, 21 Oct 2020 07:54:57 -0700 (PDT)
+ bh=TT/hPDcCjkJCenk8sLHU1Sek4T/MxX3FitCsX0otRRc=;
+ b=MYDFc+Ke1dxEcCSDZv0aEZb9ITVyCbSWsvROrUvo0Hf4cc5a5KWSQheVi5MWyCXem3
+ JWblym/u8HDiCxTwuhVX7ue3N1Rl8R5SzTc3dSKOOwydCTY3pTGIkJf2wLHcY5Ee2cYg
+ 5CnPsd/6gPK3et5XaQORU+UhQ9UwSM1r3/daa+lXKPhozrHpSctODBSnvZCGAk/scsxL
+ VpUjTXZSC/pV3dmyanKrgiSEstIvo1UdbeWtv2y82RvXTVF2vfeR1O7xoiiw81ZhyjU4
+ Pyi3X8F1ALo69e6bRtv5CJNZ+OAkumethSmUHwDh905Sa8vy8wgddodnq96wztiWktFE
+ 0pZg==
+X-Gm-Message-State: AOAM532NBXIbmHfl3x84OMJ7OoJZY4216q4caRKeNd53zjFAQIsIsJQT
+ zXPRpXAPMUIUqDkUStbi8ARNYg==
+X-Google-Smtp-Source: ABdhPJxO/uNuN/kb6YExIPr9kYKJ7e7ROpNtyXJhX1g05ieAZquuDAeeEqFw/4xdqCfGl12l+fr2xw==
+X-Received: by 2002:a50:8acf:: with SMTP id k15mr3413516edk.351.1603292116012; 
+ Wed, 21 Oct 2020 07:55:16 -0700 (PDT)
 Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id y1sm2226896edj.76.2020.10.21.07.54.55
+ by smtp.gmail.com with ESMTPSA id lb11sm2406579ejb.27.2020.10.21.07.55.14
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 21 Oct 2020 07:54:56 -0700 (PDT)
-Date: Wed, 21 Oct 2020 16:54:36 +0200
+ Wed, 21 Oct 2020 07:55:15 -0700 (PDT)
+Date: Wed, 21 Oct 2020 16:54:56 +0200
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: Jacob Pan <jacob.pan.linux@gmail.com>
-Subject: Re: [PATCH v3 03/14] iommu/ioasid: Add a separate function for
- detach data
-Message-ID: <20201021145436.GA1653231@myrica>
+Subject: Re: [PATCH v3 04/14] iommu/ioasid: Support setting system-wide
+ capacity
+Message-ID: <20201021145456.GB1653231@myrica>
 References: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1601329121-36979-4-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1601329121-36979-5-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1601329121-36979-4-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1601329121-36979-5-git-send-email-jacob.jun.pan@linux.intel.com>
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
  Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
  linux-api@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
@@ -117,151 +116,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Sep 28, 2020 at 02:38:30PM -0700, Jacob Pan wrote:
-> IOASID private data can be cleared by ioasid_attach_data() with a NULL
-> data pointer. A common use case is for a caller to free the data
-> afterward. ioasid_attach_data() calls synchronize_rcu() before return
-> such that free data can be sure without outstanding readers.
-> However, since synchronize_rcu() may sleep, ioasid_attach_data() cannot
-> be used under spinlocks.
-> 
-> This patch adds ioasid_detach_data() as a separate API where
-> synchronize_rcu() is called only in this case. ioasid_attach_data() can
-> then be used under spinlocks. In addition, this change makes the API
-> symmetrical.
+On Mon, Sep 28, 2020 at 02:38:31PM -0700, Jacob Pan wrote:
+> IOASID is a system-wide resource that could vary on different systems.
+> The default capacity is 20 bits as defined in the PCI-E specifications.
+> This patch adds a function to allow adjusting system IOASID capacity.
+> For VT-d this is set during boot as part of the Intel IOMMU
+> initialization.
 > 
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-
-A typo below, but
 
 Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
 > ---
->  drivers/iommu/intel/svm.c |  4 ++--
->  drivers/iommu/ioasid.c    | 54 ++++++++++++++++++++++++++++++++++++++---------
->  include/linux/ioasid.h    |  5 ++++-
->  3 files changed, 50 insertions(+), 13 deletions(-)
+>  drivers/iommu/intel/iommu.c |  5 +++++
+>  drivers/iommu/ioasid.c      | 20 ++++++++++++++++++++
+>  include/linux/ioasid.h      | 11 +++++++++++
+>  3 files changed, 36 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 2c5645f0737a..06a16bee7b65 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -398,7 +398,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
->  	list_add_rcu(&sdev->list, &svm->devs);
->   out:
->  	if (!IS_ERR_OR_NULL(svm) && list_empty(&svm->devs)) {
-> -		ioasid_attach_data(data->hpasid, NULL);
-> +		ioasid_detach_data(data->hpasid);
->  		kfree(svm);
->  	}
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 18ed3b3c70d7..e7bcb299e51e 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -42,6 +42,7 @@
+>  #include <linux/crash_dump.h>
+>  #include <linux/numa.h>
+>  #include <linux/swiotlb.h>
+> +#include <linux/ioasid.h>
+
+(not in alphabetical order)
+
+>  #include <asm/irq_remapping.h>
+>  #include <asm/cacheflush.h>
+>  #include <asm/iommu.h>
+> @@ -3331,6 +3332,10 @@ static int __init init_dmars(void)
+>  	if (ret)
+>  		goto free_iommu;
 >  
-> @@ -441,7 +441,7 @@ int intel_svm_unbind_gpasid(struct device *dev, int pasid)
->  				 * the unbind, IOMMU driver will get notified
->  				 * and perform cleanup.
->  				 */
-> -				ioasid_attach_data(pasid, NULL);
-> +				ioasid_detach_data(pasid);
->  				kfree(svm);
->  			}
->  		}
+> +	/* PASID is needed for scalable mode irrespective to SVM */
+> +	if (intel_iommu_sm)
+> +		ioasid_install_capacity(intel_pasid_max_id);
+> +
+>  	/*
+>  	 * for each drhd
+>  	 *   enable fault log
 > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> index 5f63af07acd5..6cfbdfb492e0 100644
+> index 6cfbdfb492e0..4277cb17e15b 100644
 > --- a/drivers/iommu/ioasid.c
 > +++ b/drivers/iommu/ioasid.c
-> @@ -272,24 +272,58 @@ int ioasid_attach_data(ioasid_t ioasid, void *data)
+> @@ -10,6 +10,10 @@
+>  #include <linux/spinlock.h>
+>  #include <linux/xarray.h>
 >  
->  	spin_lock(&ioasid_allocator_lock);
->  	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-> -	if (ioasid_data)
-> -		rcu_assign_pointer(ioasid_data->private, data);
-> -	else
-> +
-> +	if (!ioasid_data) {
->  		ret = -ENOENT;
-> -	spin_unlock(&ioasid_allocator_lock);
-> +		goto done_unlock;
-> +	}
+> +/* Default to PCIe standard 20 bit PASID */
+> +#define PCI_PASID_MAX 0x100000
+> +static ioasid_t ioasid_capacity = PCI_PASID_MAX;
+> +static ioasid_t ioasid_capacity_avail = PCI_PASID_MAX;
+>  struct ioasid_data {
+>  	ioasid_t id;
+>  	struct ioasid_set *set;
+> @@ -17,6 +21,22 @@ struct ioasid_data {
+>  	struct rcu_head rcu;
+>  };
 >  
-> -	/*
-> -	 * Wait for readers to stop accessing the old private data, so the
-> -	 * caller can free it.
-> -	 */
-> -	if (!ret)
-> -		synchronize_rcu();
-> +	if (ioasid_data->private) {
-> +		ret = -EBUSY;
-> +		goto done_unlock;
-> +	}
-> +	rcu_assign_pointer(ioasid_data->private, data);
-> +
-> +done_unlock:
-> +	spin_unlock(&ioasid_allocator_lock);
->  
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(ioasid_attach_data);
->  
->  /**
-> + * ioasid_detach_data - Clear the private data of an ioasid
-> + *
-> + * @ioasid: the IOASIDD to clear private data
-
-IOASID
-
-> + */
-> +void ioasid_detach_data(ioasid_t ioasid)
+> +void ioasid_install_capacity(ioasid_t total)
 > +{
-> +	struct ioasid_data *ioasid_data;
-> +
-> +	spin_lock(&ioasid_allocator_lock);
-> +	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-> +
-> +	if (!ioasid_data) {
-> +		pr_warn("IOASID %u not found to detach data from\n", ioasid);
-> +		goto done_unlock;
+> +	if (ioasid_capacity && ioasid_capacity != PCI_PASID_MAX) {
+> +		pr_warn("IOASID capacity is already set.\n");
+> +		return;
 > +	}
-> +
-> +	if (ioasid_data->private) {
-> +		rcu_assign_pointer(ioasid_data->private, NULL);
-> +		goto done_unlock;
-> +	}
-> +
-> +done_unlock:
-> +	spin_unlock(&ioasid_allocator_lock);
-> +	/*
-> +	 * Wait for readers to stop accessing the old private data,
-> +	 * so the caller can free it.
-> +	 */
-> +	synchronize_rcu();
+> +	ioasid_capacity = ioasid_capacity_avail = total;
 > +}
-> +EXPORT_SYMBOL_GPL(ioasid_detach_data);
+> +EXPORT_SYMBOL_GPL(ioasid_install_capacity);
 > +
-> +/**
->   * ioasid_alloc - Allocate an IOASID
->   * @set: the IOASID set
->   * @min: the minimum ID (inclusive)
+> +ioasid_t ioasid_get_capacity(void)
+> +{
+> +	return ioasid_capacity;
+> +}
+> +EXPORT_SYMBOL_GPL(ioasid_get_capacity);
+> +
+>  /*
+>   * struct ioasid_allocator_data - Internal data structure to hold information
+>   * about an allocator. There are two types of allocators:
 > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> index 9c44947a68c8..c7f649fa970a 100644
+> index c7f649fa970a..7fc320656be2 100644
 > --- a/include/linux/ioasid.h
 > +++ b/include/linux/ioasid.h
-> @@ -40,7 +40,7 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
->  int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
->  void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
->  int ioasid_attach_data(ioasid_t ioasid, void *data);
-> -
-> +void ioasid_detach_data(ioasid_t ioasid);
->  #else /* !CONFIG_IOASID */
->  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
->  				    ioasid_t max, void *private)
-> @@ -72,5 +72,8 @@ static inline int ioasid_attach_data(ioasid_t ioasid, void *data)
->  	return -ENOTSUPP;
->  }
+> @@ -32,6 +32,8 @@ struct ioasid_allocator_ops {
+>  #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
 >  
-> +static inline void ioasid_detach_data(ioasid_t ioasid)
+>  #if IS_ENABLED(CONFIG_IOASID)
+> +void ioasid_install_capacity(ioasid_t total);
+> +ioasid_t ioasid_get_capacity(void);
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private);
+>  void ioasid_free(ioasid_t ioasid);
+> @@ -42,6 +44,15 @@ void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+>  int ioasid_attach_data(ioasid_t ioasid, void *data);
+>  void ioasid_detach_data(ioasid_t ioasid);
+>  #else /* !CONFIG_IOASID */
+> +static inline void ioasid_install_capacity(ioasid_t total)
 > +{
 > +}
->  #endif /* CONFIG_IOASID */
->  #endif /* __LINUX_IOASID_H */
+> +
+> +static inline ioasid_t ioasid_get_capacity(void)
+> +{
+> +	return 0;
+> +}
+> +
+>  static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+>  				    ioasid_t max, void *private)
+>  {
 > -- 
 > 2.7.4
 > 
