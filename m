@@ -2,104 +2,91 @@ Return-Path: <SRS0=at/m=D5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1585BC388F7
-	for <iommu@archiver.kernel.org>; Thu, 22 Oct 2020 04:39:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE35C388F2
+	for <iommu@archiver.kernel.org>; Thu, 22 Oct 2020 12:23:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7FCB7223C7
-	for <iommu@archiver.kernel.org>; Thu, 22 Oct 2020 04:39:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AC183221FB
+	for <iommu@archiver.kernel.org>; Thu, 22 Oct 2020 12:23:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JSKciWcx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7FCB7223C7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qojjYkQq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC183221FB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D5AEC204B4;
-	Thu, 22 Oct 2020 04:39:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2DD6D8710D;
+	Thu, 22 Oct 2020 12:23:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6TlD9iCR7Ff0; Thu, 22 Oct 2020 04:39:20 +0000 (UTC)
+	with ESMTP id hypEgs2kerRP; Thu, 22 Oct 2020 12:23:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CDBE820482;
-	Thu, 22 Oct 2020 04:39:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5B90E86C90;
+	Thu, 22 Oct 2020 12:23:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92F49C0052;
-	Thu, 22 Oct 2020 04:39:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43C33C0052;
+	Thu, 22 Oct 2020 12:23:53 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98601C0051
- for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 04:39:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A3D1C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 12:23:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7FD428605E
- for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 04:39:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 42DDC8700F
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 12:23:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qG0IWt7v3qhU for <iommu@lists.linux-foundation.org>;
- Thu, 22 Oct 2020 04:39:17 +0000 (UTC)
+ with ESMTP id V90c2vaIX9hx for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Oct 2020 12:23:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 410BE86054
- for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 04:39:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1603341556;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=siwhUMxivlmLeH5TYIGXWvfv+mhOu6A9HUz7iMu8arY=;
- b=JSKciWcxELgegAi0ZQjOeCC1dohOvWZUz2ssZEj4pcNhPdSd9nfqpy95smH2y2Ftv42/4t
- UDrP5h6wq/XoVMWmcs9qBbLs8SjlQv50XOJRPG1D0DFJwSCSsZSQeGwCJeBIgFcNWGNym0
- dK1CL6SzQP5U5ZdDhMF4dplcxQqrGPs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-495--A9e5AmfMW2W1pglcPqElA-1; Thu, 22 Oct 2020 00:39:12 -0400
-X-MC-Unique: -A9e5AmfMW2W1pglcPqElA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6F67F87009
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 12:23:49 +0000 (UTC)
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com
+ [209.85.210.53])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A47CA1007462;
- Thu, 22 Oct 2020 04:39:09 +0000 (UTC)
-Received: from [10.72.13.119] (ovpn-13-119.pek2.redhat.com [10.72.13.119])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 7700B60C04;
- Thu, 22 Oct 2020 04:38:44 +0000 (UTC)
-Subject: Re: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
- Virtual Addressing to VMs
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-References: <DM5PR11MB14354A8A126E686A5F20FEC2C31F0@DM5PR11MB1435.namprd11.prod.outlook.com>
- <20201020140217.GI6219@nvidia.com> <20201020162430.GA85321@otc-nc-03>
- <20201020170336.GK6219@nvidia.com> <20201020195146.GA86371@otc-nc-03>
- <20201020195557.GO6219@nvidia.com> <20201020200844.GC86371@otc-nc-03>
- <20201020201403.GP6219@nvidia.com> <20201020202713.GF86371@otc-nc-03>
- <20201021114829.GR6219@nvidia.com> <20201021175146.GA92867@otc-nc-03>
- <816799a0-49e4-a384-8990-eae9e67d4425@redhat.com>
- <DM5PR11MB14351121729909028D6EB365C31D0@DM5PR11MB1435.namprd11.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <047c28cb-95f5-5b58-d5b5-153c069818fc@redhat.com>
-Date: Thu, 22 Oct 2020 12:38:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ by mail.kernel.org (Postfix) with ESMTPSA id B83C5223FB
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 12:23:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1603369428;
+ bh=gFUO9/jr1NGmcSup6f9HJPZXgJ9BgTXZE7zsdNPQVi4=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=qojjYkQq8wwxNEyfqUP8JGvud2JfsDcJi5zR36v9o7gMAdlAGWQZO82j20Lc6U1vB
+ Eh3BRLTVoQht2Ac4xpSlY1mj/1iE+ijLKk25xArVkm5R1fWJfXJSjKiE3R10CAuQFS
+ LTuvM04QGXciadqYm9iswhMC638pc2oy1rUaLyzw=
+Received: by mail-ot1-f53.google.com with SMTP id m22so1290650ots.4
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Oct 2020 05:23:48 -0700 (PDT)
+X-Gm-Message-State: AOAM530SPBRV8lx3MvZfFYZT7SHwBxhch6NdMsdRS36UnolrqqzlGiiC
+ sHvj4OHg2QsM8Ig6mwAeWCO/Yx3vuE0gBymg87s=
+X-Google-Smtp-Source: ABdhPJxt9LSXVEywyIzGmHFLorZcX5jGT+8e1UeINkXR1Ln9Mj13c0gwDJmF9PMI6zWnbKCdusuBtu5X8LYczt2JBns=
+X-Received: by 2002:a9d:6c92:: with SMTP id c18mr1604110otr.108.1603369427884; 
+ Thu, 22 Oct 2020 05:23:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB14351121729909028D6EB365C31D0@DM5PR11MB1435.namprd11.prod.outlook.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Michael S. Tsirkin" <mst@redhat.com>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Zhu,
- Lingshan" <lingshan.zhu@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>
+References: <20201021123437.21538-1-nsaenzjulienne@suse.de>
+ <20201021123437.21538-4-nsaenzjulienne@suse.de>
+In-Reply-To: <20201021123437.21538-4-nsaenzjulienne@suse.de>
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Thu, 22 Oct 2020 14:23:37 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEV846XaZWGFmmq4-1UQBb3kw+E_xQf7tGZG7=wQp9xUQ@mail.gmail.com>
+Message-ID: <CAMj1kXEV846XaZWGFmmq4-1UQBb3kw+E_xQf7tGZG7=wQp9xUQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/7] of/address: Introduce of_dma_get_max_cpu_address()
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+ Jeremy Linton <jeremy.linton@arm.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE"
+ <linux-rpi-kernel@lists.infradead.org>, Hanjun Guo <guohanjun@huawei.com>,
+ Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,27 +99,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Ck9uIDIwMjAvMTAvMjIg5LiK5Y2IMTE6NTQsIExpdSwgWWkgTCB3cm90ZToKPiBIaSBKYXNvbiwK
-Pgo+PiBGcm9tOiBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPgo+PiBTZW50OiBUaHVy
-c2RheSwgT2N0b2JlciAyMiwgMjAyMCAxMDo1NiBBTQo+Pgo+IFsuLi5dCj4+IElmIHlvdShJbnRl
-bCkgZG9uJ3QgaGF2ZSBwbGFuIHRvIGRvIHZEUEEsIHlvdSBzaG91bGQgbm90IHByZXZlbnQgb3Ro
-ZXIgdmVuZG9ycwo+PiBmcm9tIGltcGxlbWVudGluZyBQQVNJRCBjYXBhYmxlIGhhcmR3YXJlIHRo
-cm91Z2ggbm9uLVZGSU8gc3Vic3lzdGVtL3VBUEkKPj4gb24gdG9wIG9mIHlvdXIgU0lPViBhcmNo
-aXRlY3R1cmUuIElzbid0IGl0Pwo+IHllcywgdGhhdCdzIHRydWUuCj4KPj4gU28gaWYgSW50ZWwg
-aGFzIHRoZSB3aWxsaW5nIHRvIGNvbGxhYm9yYXRlIG9uIHRoZSBQT0MsIEknZCBoYXBweSB0byBo
-ZWxwLiBFLmcgaXQncyBub3QKPj4gaGFyZCB0byBoYXZlIGEgUEFTSUQgY2FwYWJsZSB2aXJ0aW8g
-ZGV2aWNlIHRocm91Z2ggcWVtdSwgYW5kIHdlIGNhbiBzdGFydCBmcm9tCj4+IHRoZXJlLgo+IGFj
-dHVhbGx5LCBJJ20gYWxyZWFkeSBkb2luZyBhIHBvYyB0byBtb3ZlIHRoZSBQQVNJRCBhbGxvY2F0
-aW9uL2ZyZWUgaW50ZXJmYWNlCj4gb3V0IG9mIFZGSU8uIFNvIHRoYXQgb3RoZXIgdXNlcnMgY291
-bGQgdXNlIGl0IGFzIHdlbGwuIEkgdGhpbmsgdGhpcyBpcyBhbHNvCj4gd2hhdCB5b3UgcmVwbGll
-ZCBwcmV2aW91c2x5LiA6LSkgSSdsbCBzZW5kIG91dCB3aGVuIGl0J3MgcmVhZHkgYW5kIHNlZWsg
-Zm9yCj4geW91ciBoZWxwIG9uIG1hdHVyZSBpdC4gZG9lcyBpdCBzb3VuZCBnb29kIHRvIHlvdT8K
-CgpZZXMsIGZpbmUgd2l0aCBtZS4KClRoYW5rcwoKCj4KPiBSZWdhcmRzLAo+IFlpIExpdQo+Cj4+
-IFRoYW5rcwo+Pgo+PgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, 21 Oct 2020 at 14:35, Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
+>
+> Introduce of_dma_get_max_cpu_address(), which provides the highest CPU
+> physical address addressable by all DMA masters in the system. It's
+> specially useful for setting memory zones sizes at early boot time.
+>
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+>
+> ---
+>
+> Changes since v3:
+>  - use u64 with cpu_end
+>
+> Changes since v2:
+>  - Use PHYS_ADDR_MAX
+>  - return phys_dma_t
+>  - Rename function
+>  - Correct subject
+>  - Add support to start parsing from an arbitrary device node in order
+>    for the function to work with unit tests
+>
+>  drivers/of/address.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/of.h   |  7 +++++++
+>  2 files changed, 49 insertions(+)
+>
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index eb9ab4f1e80b..47dfe5881e18 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -1024,6 +1024,48 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
+>  }
+>  #endif /* CONFIG_HAS_DMA */
+>
+> +/**
+> + * of_dma_get_max_cpu_address - Gets highest CPU address suitable for DMA
+> + * @np: The node to start searching from or NULL to start from the root
+> + *
+> + * Gets the highest CPU physical address that is addressable by all DMA masters
+> + * in the sub-tree pointed by np, or the whole tree if NULL is passed. If no
+> + * DMA constrained device is found, it returns PHYS_ADDR_MAX.
+> + */
+> +phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
+> +{
+> +       phys_addr_t max_cpu_addr = PHYS_ADDR_MAX;
+> +       struct of_range_parser parser;
+> +       phys_addr_t subtree_max_addr;
+> +       struct device_node *child;
+> +       struct of_range range;
+> +       const __be32 *ranges;
+> +       u64 cpu_end = 0;
+> +       int len;
+> +
+> +       if (!np)
+> +               np = of_root;
+> +
+> +       ranges = of_get_property(np, "dma-ranges", &len);
+> +       if (ranges && len) {
+> +               of_dma_range_parser_init(&parser, np);
+> +               for_each_of_range(&parser, &range)
+> +                       if (range.cpu_addr + range.size > cpu_end)
+> +                               cpu_end = range.cpu_addr + range.size;
+
+Shouldn't this be 'range.cpu_addr + range.size - 1' ?
+
+> +
+> +               if (max_cpu_addr > cpu_end)
+> +                       max_cpu_addr = cpu_end;
+> +       }
+> +
+> +       for_each_available_child_of_node(np, child) {
+> +               subtree_max_addr = of_dma_get_max_cpu_address(child);
+> +               if (max_cpu_addr > subtree_max_addr)
+> +                       max_cpu_addr = subtree_max_addr;
+> +       }
+> +
+> +       return max_cpu_addr;
+> +}
+> +
+>  /**
+>   * of_dma_is_coherent - Check if device is coherent
+>   * @np:        device node
+> diff --git a/include/linux/of.h b/include/linux/of.h
+> index 481ec0467285..db8db8f2c967 100644
+> --- a/include/linux/of.h
+> +++ b/include/linux/of.h
+> @@ -558,6 +558,8 @@ int of_map_id(struct device_node *np, u32 id,
+>                const char *map_name, const char *map_mask_name,
+>                struct device_node **target, u32 *id_out);
+>
+> +phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
+> +
+>  #else /* CONFIG_OF */
+>
+>  static inline void of_core_init(void)
+> @@ -995,6 +997,11 @@ static inline int of_map_id(struct device_node *np, u32 id,
+>         return -EINVAL;
+>  }
+>
+> +static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
+> +{
+> +       return PHYS_ADDR_MAX;
+> +}
+> +
+>  #define of_match_ptr(_ptr)     NULL
+>  #define of_match_node(_matches, _node) NULL
+>  #endif /* CONFIG_OF */
+> --
+> 2.28.0
+>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
