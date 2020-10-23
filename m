@@ -2,87 +2,76 @@ Return-Path: <SRS0=xWGd=D6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82618C5517A
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 06:11:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 613ABC55178
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 06:33:23 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D3E762192A
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 06:11:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EBEF6241A3
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 06:33:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="hsuw3fVt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3E762192A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="F21OlX9R"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBEF6241A3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 71AAB876D2;
-	Fri, 23 Oct 2020 06:11:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3EC1C86FAE;
+	Fri, 23 Oct 2020 06:33:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7EMUB2IsnN4n; Fri, 23 Oct 2020 06:33:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0CA8186F4D;
+	Fri, 23 Oct 2020 06:33:20 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE615C0052;
+	Fri, 23 Oct 2020 06:33:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A288CC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:33:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7F02287716
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:33:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ELfLt+dhrcnM; Fri, 23 Oct 2020 06:11:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 831F0872A4;
-	Fri, 23 Oct 2020 06:11:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 42F5DC0893;
-	Fri, 23 Oct 2020 06:11:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD48AC0052
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:11:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 810B3203C7
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:11:05 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nmupAlD-pVpV for <iommu@lists.linux-foundation.org>;
- Fri, 23 Oct 2020 06:11:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by silver.osuosl.org (Postfix) with ESMTP id 9D1BC2036E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:11:03 +0000 (UTC)
-X-UUID: be932c73ffe54b3d8d46c5418962f501-20201023
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=lE1AaRbp7IlJWDDgqTmejQzZzwuR5fT51G6JynHVeJ4=; 
- b=hsuw3fVt1w54pKwXaTtt9H2NhjLMJjDfNEgAHjjQzhryqu0AmYgsTkOpnTKXHBAWW2AzP3ICyse0Qivy2TN30tzqZ9v4XRyLpblyzruEY1EBPf2I6h2T0Vto7tXLrTBgjjjzUKdCMMIcOwAeXns3ZiTCvhr3yoHiMjjbIz7uYFA=;
-X-UUID: be932c73ffe54b3d8d46c5418962f501-20201023
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
- (envelope-from <chao.hao@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
- ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 275060813; Fri, 23 Oct 2020 14:11:01 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 23 Oct 2020 14:11:00 +0800
-Received: from [10.15.20.246] (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 23 Oct 2020 14:10:59 +0800
-Message-ID: <1603433064.2024.6.camel@mbjsdccf07>
-Subject: Re: [PATCH 2/4] iommu/mediatek: Add iotlb_sync_range() support
-From: chao hao <Chao.Hao@mediatek.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Date: Fri, 23 Oct 2020 14:04:24 +0800
-In-Reply-To: <1603432677.2024.3.camel@mbjsdccf07>
-References: <20201019113100.23661-1-chao.hao@mediatek.com>
- <20201019113100.23661-3-chao.hao@mediatek.com>
- <7fbe0305-91e4-949e-7d84-bf91e81d6b27@arm.com>
- <1603432677.2024.3.camel@mbjsdccf07>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+ with ESMTP id C-OpGxPKcqcC for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Oct 2020 06:33:17 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A4C73876E3
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 06:33:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+ Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=VgaUDy/MYBhcMGNLTA5dcYkNxjEeOYucsAXgukb+9OE=; b=F21OlX9RTzKj2RyK9S1jOONSVX
+ fBGHNAfoEYPDghf73ahvw01VvwR8PBi1lgexR2AR9oXWJ8uVIwb97yh6lOectRl76KlmCZaRD7CZB
+ Ne0xWy9GBkkZrB0i0jyH0wgEx7a71zWxL5vUy7EJQ0Y/eO9C5hS6Ecpx9DEFTJOx+t7KW8Cf+A9wz
+ KjFNSkhJly6lhDd+duxQgCu1UbcPA+t2i5M9NdOsDKaAI4qr1LABguhWCwhXX8rdvsbJJE/VUbkbG
+ mIkn/UOMzSrskutaE903B6fgNIIN4QFDY3iMmZhu6C/TArJvku+4c7lzLjoRYMzNsxXu8Tc01GkSV
+ d+cOoHsQ==;
+Received: from [2001:4bb8:18c:20bd:c70:4a89:bc61:3] (helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kVqdU-0005Dv-O2; Fri, 23 Oct 2020 06:33:13 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: konrad.wilk@oracle.com
+Subject: [PATCH for-5.10] swiotlb: remove the tbl_dma_addr argument to
+ swiotlb_tbl_map_single
+Date: Fri, 23 Oct 2020 08:33:09 +0200
+Message-Id: <20201023063309.3472987-1-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-X-MTK: N
-Cc: Jun Wen <jun.wen@mediatek.com>, FY Yang <fy.yang@mediatek.com>,
- wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
- Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- Mingyuan Ma <mingyuan.ma@mediatek.com>, linux-arm-kernel@lists.infradead.org
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ Stefano Stabellini <sstabellini@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,104 +89,110 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2020-10-23 at 13:57 +0800, chao hao wrote:
-> On Wed, 2020-10-21 at 17:55 +0100, Robin Murphy wrote:
-> > On 2020-10-19 12:30, Chao Hao wrote:
-> > > MTK_IOMMU driver writes one page entry and does tlb flush at a time
-> > > currently. More optimal would be to aggregate the writes and flush
-> > > BUS buffer in the end.
-> > 
-> > That's exactly what iommu_iotlb_gather_add_page() is meant to achieve. 
-> > Rather than jumping straight into hacking up a new API to go round the 
-> > back of the existing API design, it would be far better to ask the 
-> > question of why that's not behaving as expected.
-> 
-> Thanks for you review!
-> 
-> iommu_iotlb_gather_add_page is put in io_pgtable_tlb_add_page().
-> io_pgtable_tlb_add_page() only be called in
-> unmapping and mapping flow doesn't have it in linux iommu driver, but
-> mtk iommu needs to do tlb sync in mapping
-> and unmapping to avoid old data being in the iommu tlb.
-> 
-> In addtion, we hope to do tlb sync once when all the pages mapping done.
-> iommu_iotlb_gather_add_page maybe do
-> tlb sync more than once. because one whole buffer consists of different
-> page size(1MB/64K/4K).
-> 
-> Based on the previous considerations,  don't find more appropriate the
-> way of tlb sync for mtk iommu, so we add a new API.
-> 
-> > 
-> > > For 50MB buffer mapping, if mtk_iommu driver use iotlb_sync_range()
-> > > instead of tlb_add_range() and tlb_flush_walk/leaf(), it can increase
-> > > 50% performance or more(depending on size of every page size) in
-> > > comparison to flushing after each page entry update. So we prefer to
-> > > use iotlb_sync_range() to replace iotlb_sync(), tlb_add_range() and
-> > > tlb_flush_walk/leaf() for MTK platforms.
-> > 
-> > In the case of mapping, it sounds like what you actually want to do is 
-> > hook up .iotlb_sync_map and generally make IO_PGTABLE_QUIRK_TLBI_ON_MAP 
-> > cleverer, because the current implementation is as dumb as it could 
-> > possibly be. 
-> 
-> iotlb_sync_map only has one parameter(iommu_domain), but mtk
-> iommu_domain maybe include the whole iova space, if mtk_iommu to do tlb
-> sync based on iommu_domain, it is equivalent to do tlb flush all in
-> fact.
-> iommu driver will do tlb sync in every mapping page when mtk iommu sets
-> IO_PGTABLE_QUIRK_TLBI_ON_MAP(io_pgtable_tlb_flush_walk),
-> as is the commit message mentioned, it will drop mapping performance in
-> mtk platform.
-> 
-> 
-> > In fact if we simply passed an address range to 
-> > .iotlb_sync_map, io-pgtable probably wouldn't need to be involved at all 
-> > any more.
-Sorry, I forget to reply the question in previous mail.
-Do you mean we need to modify iotlb_sync_map() input parameter(ex: add
-start/end iova)?
+The tbl_dma_addr argument is used to check the DMA boundary for the
+allocations, and thus needs to be a dma_addr_t.  swiotlb-xen instead
+passed a physical address, which could lead to incorrect results for
+strange offsets.  Fix this by removing the parameter entirely and hard
+code the DMA address for io_tlb_start instead.
 
-> 
-> I know it is not a good idea probably by adding a new api, but I found
-> out that tlb sync only to be done after mapping one page, so if
-> mtk_iommu hope to do tlb sync once after all the pages map done, could
-> you give me some advices? thanks!
-> 
-> > 
-> > Robin.
-> > 
-> > > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
-> > > ---
-> > >   drivers/iommu/mtk_iommu.c | 6 ++++++
-> > >   1 file changed, 6 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > > index 785b228d39a6..d3400c15ff7b 100644
-> > > --- a/drivers/iommu/mtk_iommu.c
-> > > +++ b/drivers/iommu/mtk_iommu.c
-> > > @@ -224,6 +224,11 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
-> > >   	}
-> > >   }
-> > >   
-> > > +static void __mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size)
-> > > +{
-> > > +	mtk_iommu_tlb_flush_range_sync(iova, size, 0, NULL)
-> > > +}
-> > > +
-> > >   static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
-> > >   					    unsigned long iova, size_t granule,
-> > >   					    void *cookie)
-> > > @@ -536,6 +541,7 @@ static const struct iommu_ops mtk_iommu_ops = {
-> > >   	.map		= mtk_iommu_map,
-> > >   	.unmap		= mtk_iommu_unmap,
-> > >   	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
-> > > +	.iotlb_sync_range = __mtk_iommu_tlb_flush_range_sync,
-> > >   	.iotlb_sync	= mtk_iommu_iotlb_sync,
-> > >   	.iova_to_phys	= mtk_iommu_iova_to_phys,
-> > >   	.probe_device	= mtk_iommu_probe_device,
-> > > 
-> 
+Fixes: 91ffe4ad534a ("swiotlb-xen: introduce phys_to_dma/dma_to_phys translations")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+---
+ drivers/iommu/intel/iommu.c |  5 ++---
+ drivers/xen/swiotlb-xen.c   |  3 +--
+ include/linux/swiotlb.h     | 10 +++-------
+ kernel/dma/swiotlb.c        | 16 ++++++----------
+ 4 files changed, 12 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 8651f6d4dfa032..6b560e6f193096 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3815,9 +3815,8 @@ bounce_map_single(struct device *dev, phys_addr_t paddr, size_t size,
+ 	 * page aligned, we don't need to use a bounce page.
+ 	 */
+ 	if (!IS_ALIGNED(paddr | size, VTD_PAGE_SIZE)) {
+-		tlb_addr = swiotlb_tbl_map_single(dev,
+-				phys_to_dma_unencrypted(dev, io_tlb_start),
+-				paddr, size, aligned_size, dir, attrs);
++		tlb_addr = swiotlb_tbl_map_single(dev, paddr, size,
++				aligned_size, dir, attrs);
+ 		if (tlb_addr == DMA_MAPPING_ERROR) {
+ 			goto swiotlb_error;
+ 		} else {
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 71ce1b7a23d1cc..2b385c1b4a99cb 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -395,8 +395,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 	 */
+ 	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
+ 
+-	map = swiotlb_tbl_map_single(dev, virt_to_phys(xen_io_tlb_start),
+-				     phys, size, size, dir, attrs);
++	map = swiotlb_tbl_map_single(dev, phys, size, size, dir, attrs);
+ 	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+ 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 513913ff748626..3bb72266a75a1d 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -45,13 +45,9 @@ enum dma_sync_target {
+ 	SYNC_FOR_DEVICE = 1,
+ };
+ 
+-extern phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+-					  dma_addr_t tbl_dma_addr,
+-					  phys_addr_t phys,
+-					  size_t mapping_size,
+-					  size_t alloc_size,
+-					  enum dma_data_direction dir,
+-					  unsigned long attrs);
++phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
++		size_t mapping_size, size_t alloc_size,
++		enum dma_data_direction dir, unsigned long attrs);
+ 
+ extern void swiotlb_tbl_unmap_single(struct device *hwdev,
+ 				     phys_addr_t tlb_addr,
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index b4eea0abc3f002..92e2f54f24c01b 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -441,14 +441,11 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ 	}
+ }
+ 
+-phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+-				   dma_addr_t tbl_dma_addr,
+-				   phys_addr_t orig_addr,
+-				   size_t mapping_size,
+-				   size_t alloc_size,
+-				   enum dma_data_direction dir,
+-				   unsigned long attrs)
++phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
++		size_t mapping_size, size_t alloc_size,
++		enum dma_data_direction dir, unsigned long attrs)
+ {
++	dma_addr_t tbl_dma_addr = phys_to_dma_unencrypted(hwdev, io_tlb_start);
+ 	unsigned long flags;
+ 	phys_addr_t tlb_addr;
+ 	unsigned int nslots, stride, index, wrap;
+@@ -667,9 +664,8 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
+ 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size,
+ 			      swiotlb_force);
+ 
+-	swiotlb_addr = swiotlb_tbl_map_single(dev,
+-			phys_to_dma_unencrypted(dev, io_tlb_start),
+-			paddr, size, size, dir, attrs);
++	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, dir,
++			attrs);
+ 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+ 
+-- 
+2.28.0
 
 _______________________________________________
 iommu mailing list
