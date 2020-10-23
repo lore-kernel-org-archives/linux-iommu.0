@@ -2,67 +2,85 @@ Return-Path: <SRS0=xWGd=D6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B61C388F9
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 10:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F80C56201
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 11:17:53 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7927B221F9
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 10:01:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7927B221F9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4C9792084C
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 11:17:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hULYTVvL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C9792084C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E01D987133;
-	Fri, 23 Oct 2020 10:01:39 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C621A87850;
+	Fri, 23 Oct 2020 11:17:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gXnmXJsRGd38; Fri, 23 Oct 2020 10:01:38 +0000 (UTC)
+	with ESMTP id BkD55-hOhaOt; Fri, 23 Oct 2020 11:17:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 69F7587132;
-	Fri, 23 Oct 2020 10:01:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EF3BF87841;
+	Fri, 23 Oct 2020 11:17:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D384C088B;
-	Fri, 23 Oct 2020 10:01:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D295BC088B;
+	Fri, 23 Oct 2020 11:17:51 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F448C0051
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 10:01:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1FBF3C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:17:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E41A22050D
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 10:01:36 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id F393820774
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:17:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 28AosOZ8v9M3 for <iommu@lists.linux-foundation.org>;
- Fri, 23 Oct 2020 10:01:35 +0000 (UTC)
+ with ESMTP id L+HSXPp+UzMY for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Oct 2020 11:17:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 0A5312035C
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 10:01:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1AAF831B;
- Fri, 23 Oct 2020 03:01:34 -0700 (PDT)
-Received: from [10.57.50.191] (unknown [10.57.50.191])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A3B9F3F66E;
- Fri, 23 Oct 2020 03:01:33 -0700 (PDT)
-Subject: Re: [PATCH] dma-mapping: document dma_{alloc,free}_pages
-To: Christoph Hellwig <hch@lst.de>
-References: <20201023064520.3473905-1-hch@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a5ab5d21-4ce4-66f8-a83d-cf0df369adff@arm.com>
-Date: Fri, 23 Oct 2020 11:01:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.3.3
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id A1F5F2036C
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:17:48 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 99D83207BB;
+ Fri, 23 Oct 2020 11:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1603451868;
+ bh=FMY1pwU92BhVoBdk6p1+lhsYf8oY2OspVIzwsdBME40=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=hULYTVvLFl4f+Cpv5lt8polFR0TAAUl17U/ruVVcZpILx6kRHx3YJpFAxHaF/TdfF
+ bcUfdlnYX9W4ehIxlXHqLUrnouA5UJIvo6J/CjFUer4nwlY8Ivwwl0vCRsQhSgP66H
+ xlIc9+GM6ulIV4o9PEs1acazSYt7uer0MMAv371o=
+Date: Fri, 23 Oct 2020 12:17:41 +0100
+From: Will Deacon <will@kernel.org>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v3 08/24] iommu/io-pgtable-arm-v7s: Use ias to check the
+ valid iova in unmap
+Message-ID: <20201023111740.GA20933@willie-the-truck>
+References: <20200930070647.10188-1-yong.wu@mediatek.com>
+ <20200930070647.10188-9-yong.wu@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <20201023064520.3473905-1-hch@lst.de>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20200930070647.10188-9-yong.wu@mediatek.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, kernel-team@android.com,
+ Greg Kroah-Hartman <gregkh@google.com>, linux-kernel@vger.kernel.org,
+ Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, ming-fan.chen@mediatek.com,
+ anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,103 +93,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-10-23 07:45, Christoph Hellwig wrote:
-> Document the new dma_alloc_pages and dma_free_pages APIs, and fix
-> up the documentation for dma_alloc_noncoherent and dma_free_noncoherent.
+On Wed, Sep 30, 2020 at 03:06:31PM +0800, Yong Wu wrote:
+> Use the ias for the valid iova checking in arm_v7s_unmap. This is a
+> preparing patch for supporting iova 34bit for MediaTek.
+> BTW, change the ias/oas checking format in arm_v7s_map.
 > 
-> Reported-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->   Documentation/core-api/dma-api.rst | 49 ++++++++++++++++++++++++++----
->   1 file changed, 43 insertions(+), 6 deletions(-)
+>  drivers/iommu/io-pgtable-arm-v7s.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
-> index ea0413276ddb70..209d7978cdaa1b 100644
-> --- a/Documentation/core-api/dma-api.rst
-> +++ b/Documentation/core-api/dma-api.rst
-> @@ -519,10 +519,9 @@ routines, e.g.:::
->   Part II - Non-coherent DMA allocations
->   --------------------------------------
->   
-> -These APIs allow to allocate pages in the kernel direct mapping that are
-> -guaranteed to be DMA addressable.  This means that unlike dma_alloc_coherent,
-> -virt_to_page can be called on the resulting address, and the resulting
-> -struct page can be used for everything a struct page is suitable for.
-> +These APIs allow to allocate pages that are guranteed to be DMA addressable
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index a688f22cbe3b..4c9d8dccfc5a 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -526,8 +526,7 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
+>  	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+>  		return 0;
+>  
+> -	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
+> -		    paddr >= (1ULL << data->iop.cfg.oas)))
+> +	if (WARN_ON(iova >> data->iop.cfg.ias || paddr >> data->iop.cfg.oas))
+>  		return -ERANGE;
 
-Typo: guaranteed
+As discussed when reviewing these for Android, please leave this code as-is.
 
-Otherwise,
+>  
+>  	ret = __arm_v7s_map(data, iova, paddr, size, prot, 1, data->pgd, gfp);
+> @@ -717,7 +716,7 @@ static size_t arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>  {
+>  	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>  
+> -	if (WARN_ON(upper_32_bits(iova)))
+> +	if (WARN_ON(iova >> data->iop.cfg.ias))
+>  		return 0;
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+And avoid the UB here for 32-bit machines by comparing with 1ULL <<
+iop.cfg.ias instead.
 
-> +by the passed in device, but which need explicit management of memory
-> +ownership for the kernel vs the device.
->   
->   If you don't understand how cache line coherency works between a processor and
->   an I/O device, you should not be using this part of the API.
-> @@ -537,7 +536,7 @@ an I/O device, you should not be using this part of the API.
->   This routine allocates a region of <size> bytes of consistent memory.  It
->   returns a pointer to the allocated region (in the processor's virtual address
->   space) or NULL if the allocation failed.  The returned memory may or may not
-> -be in the kernels direct mapping.  Drivers must not call virt_to_page on
-> +be in the kernel direct mapping.  Drivers must not call virt_to_page on
->   the returned memory region.
->   
->   It also returns a <dma_handle> which may be cast to an unsigned integer the
-> @@ -565,7 +564,45 @@ reused.
->   Free a region of memory previously allocated using dma_alloc_noncoherent().
->   dev, size and dma_handle and dir must all be the same as those passed into
->   dma_alloc_noncoherent().  cpu_addr must be the virtual address returned by
-> -the dma_alloc_noncoherent().
-> +dma_alloc_noncoherent().
-> +
-> +::
-> +
-> +	struct page *
-> +	dma_alloc_pages(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +			enum dma_data_direction dir, gfp_t gfp)
-> +
-> +This routine allocates a region of <size> bytes of non-coherent memory.  It
-> +returns a pointer to first struct page for the region, or NULL if the
-> +allocation failed. The resulting struct page can be used for everything a
-> +struct page is suitable for.
-> +
-> +It also returns a <dma_handle> which may be cast to an unsigned integer the
-> +same width as the bus and given to the device as the DMA address base of
-> +the region.
-> +
-> +The dir parameter specified if data is read and/or written by the device,
-> +see dma_map_single() for details.
-> +
-> +The gfp parameter allows the caller to specify the ``GFP_`` flags (see
-> +kmalloc()) for the allocation, but rejects flags used to specify a memory
-> +zone such as GFP_DMA or GFP_HIGHMEM.
-> +
-> +Before giving the memory to the device, dma_sync_single_for_device() needs
-> +to be called, and before reading memory written by the device,
-> +dma_sync_single_for_cpu(), just like for streaming DMA mappings that are
-> +reused.
-> +
-> +::
-> +
-> +	void
-> +	dma_free_pages(struct device *dev, size_t size, struct page *page,
-> +			dma_addr_t dma_handle, enum dma_data_direction dir)
-> +
-> +Free a region of memory previously allocated using dma_alloc_pages().
-> +dev, size and dma_handle and dir must all be the same as those passed into
-> +dma_alloc_noncoherent().  page must be the pointer returned by
-> +dma_alloc_pages().
->   
->   ::
->   
-> 
+Thanks,
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
