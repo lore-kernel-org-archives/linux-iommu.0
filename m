@@ -2,105 +2,111 @@ Return-Path: <SRS0=xWGd=D6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C56B4C56201
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 11:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5569BC4363A
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 12:28:14 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3A9C72225F
-	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 11:43:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AB28F20829
+	for <iommu@archiver.kernel.org>; Fri, 23 Oct 2020 12:28:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cJLW7KXh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A9C72225F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=semihalf-com.20150623.gappssmtp.com header.i=@semihalf-com.20150623.gappssmtp.com header.b="Aci/DNmZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB28F20829
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=semihalf.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B9B2487855;
-	Fri, 23 Oct 2020 11:43:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 48CD187881;
+	Fri, 23 Oct 2020 12:28:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 36a-3oq4gVTj; Fri, 23 Oct 2020 11:43:57 +0000 (UTC)
+	with ESMTP id yHtYBxtRAZ5y; Fri, 23 Oct 2020 12:28:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E684F87854;
-	Fri, 23 Oct 2020 11:43:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2E58F8787F;
+	Fri, 23 Oct 2020 12:28:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBDC1C088B;
-	Fri, 23 Oct 2020 11:43:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1476FC0051
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:43:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03D23C0893;
+	Fri, 23 Oct 2020 12:28:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9DBD0C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 12:28:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0F6D386842
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:43:56 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8EBB0872CA
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 12:28:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RgGF4mwtT7aJ for <iommu@lists.linux-foundation.org>;
- Fri, 23 Oct 2020 11:43:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com
- [209.85.218.66])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 83BBE86767
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 11:43:54 +0000 (UTC)
-Received: by mail-ej1-f66.google.com with SMTP id p9so1953756eji.4
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 04:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:content-transfer-encoding:in-reply-to;
- bh=w1hT410pcvPp1e/jISfMDxaGMiE6qEWo/7L0amMfRgU=;
- b=cJLW7KXhZrozobsjIxLY2+buIwLvxqKyr27AnZ7HYQWa0uUdukWbasKJ2czJU24TAv
- +xOQlWLO6+S1xUJvXWypAbTgXaMAaueeDEY79s+fzRprkFavmAc4GWPNEArbGHty9Gen
- X9E+dVy9ofbqsgurh6cROggxU5YEL5D66l3f384zkftR4EosrgAMXRSRkMByyTKWVveo
- biP2CbDeOAiFRBbE/JyiUlPoN3H+aGVTUr5eNfYhM/yyLuc32ibRrp/B5bQyt08h6B4O
- hCYerAR9pgUKtxCUaLnWYi4cGUe26zmp9KDA1qKweDdurQd8Oe3cqfTdLeoeKCXXyOJv
- G7Zw==
+ with ESMTP id IRneD-rshDv9 for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Oct 2020 12:28:06 +0000 (UTC)
+X-Greylist: delayed 00:08:16 by SQLgrey-1.7.6
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6ABBF872C7
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 12:28:06 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id d78so1246419wmd.3
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 05:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=Y/GfJ9csAvfz01MS4Yn4Vgi/f+7eaIOIFC90GAIpUwE=;
+ b=Aci/DNmZebnhV4C16EppF+h3LtGgs6kLpDOfugo37Yy1//0UN7ZOS0arxKB9wYhewc
+ VvozNpORLF/GhbfC9hfJg9qxrVTMlenxx9QGqrk7dgQDo9LL/8OvIogxyMaa6CqDKsn6
+ 1ZEBss0QEptkNk9N/R1f5K8SZQgpK7gMRfxUEKGfW3qmButhbH8lZ/60lfWxSYQlmn5R
+ a9AC6P++p5ihu8aGLrpbtoxTodk2JQybsluL2wO2D/G4Gor0wdawRTbBEM2bizxjntU9
+ 2j0xo6WW5rIxXSNc66oNvp6GAWSj822y+Gg4FNc9e4bqo7/fcn1KGSEdZyBlGehlYhga
+ 3iPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to;
- bh=w1hT410pcvPp1e/jISfMDxaGMiE6qEWo/7L0amMfRgU=;
- b=uX+zCDtRN224QnSUZLdaA9myt2odPg38qE6kngVGY8Isjr830FP3sEc8mfE57abwAZ
- L31ilKq8eYiGsy7QadNl3XA9eN/cWsmPnaEez427x7i6go+pexzd4wWhcUUlQuRZxCbM
- OOQtcxs8lB0sp+6F3rzmQO8nwF+JrL5MGCppIbGR3BdCLh82X/Se1foPcoIqiQ8/V+Df
- SVrqzwo9n56oPw3pcx7uK6Ke72ZylqRiBx/NsFJUIKogAKuN7QSSdnEWneD+pa9g9P/F
- 7HHFvXpZHHVg1j0GqMnnwDgF242Gmy6ORZghPw92PUttcZ3FtsnUc4DGZclMEyHpv1MG
- ASmw==
-X-Gm-Message-State: AOAM530NFoyd3EKW2d+fWfO7Ay48srSy9E21Xs9y9T9bYGiKEYF20jTk
- 9MsOswZy3zRZS3GSz3sgpuBtTw==
-X-Google-Smtp-Source: ABdhPJwVjOkSax5nJV5uOP3pmNaE8Fo5w1uLm4eJe7FAqS8w5MKoOR0dfzix1SVIRw2yiVXX9NDP/Q==
-X-Received: by 2002:a17:906:66d2:: with SMTP id
- k18mr1469410ejp.113.1603453432716; 
- Fri, 23 Oct 2020 04:43:52 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id sb29sm678261ejb.76.2020.10.23.04.43.51
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 23 Oct 2020 04:43:52 -0700 (PDT)
-Date: Fri, 23 Oct 2020 13:43:32 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.pan.linux@gmail.com>
-Subject: Re: [PATCH v3 11/14] iommu/ioasid: Support mm type ioasid_set
- notifications
-Message-ID: <20201023114332.GD2265982@myrica>
-References: <1601329121-36979-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1601329121-36979-12-git-send-email-jacob.jun.pan@linux.intel.com>
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=Y/GfJ9csAvfz01MS4Yn4Vgi/f+7eaIOIFC90GAIpUwE=;
+ b=kgeiP+WgGozfto1ChCgCGYvsbgvgGitONlPNZVUB7Qfi5H8cKpfSLuJ06zA83bfJfx
+ LFL2JwAUu0zJZnLN2R9NMGPCs7vSvcMbyQpkAAJVAGp3lHpjSagkIVi3ualyuUWrzZA3
+ OHZgA83riKx+rCloWZHMHCu7bdy7BuZiofTEks4zt8LvGT22RBLLuUzIAcmIOuJsupA5
+ mkVOkcnl6R69Pa0bNeBABfxxIJBgSAvDBvnn8aEqlJqfg56A/pAlqgMj8xZePphXx3w8
+ WVcUTvqyUt9WfOkC8r5FWvRz3QOk1u8F4UJMBOUEOTsm0fKWm+gloOvo0JwKA2TtLh6F
+ a3uA==
+X-Gm-Message-State: AOAM531iAIMj2hNAnnol0x7VkJxuSb2ZuhKbI8V7xnpkFvUrmlC4Z0Vy
+ 2M1WWPIQ/lyXrFdR/WMX549/hCeZbo3MNg==
+X-Google-Smtp-Source: ABdhPJwWD1gWpwQ2e1XVk2aDU+s9cpkEk5nS/AIqufoggM/l57jtLHvu/lSzSa5cCA4Djv/bz8+kOA==
+X-Received: by 2002:a05:600c:25a:: with SMTP id
+ 26mr1643531wmj.39.1603455588466; 
+ Fri, 23 Oct 2020 05:19:48 -0700 (PDT)
+Received: from tnowicki.c.googlers.com
+ (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
+ by smtp.gmail.com with ESMTPSA id m1sm2754479wme.48.2020.10.23.05.19.47
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 23 Oct 2020 05:19:47 -0700 (PDT)
+Subject: Re: [PATCH v4 0/4] Add system mmu support for Armada-806
+To: Denis Odintsov <d.odintsov@traviangames.com>
+References: <20200715070649.18733-1-tn@semihalf.com>
+ <517BB937-1F18-4CCF-81BF-11777BB99779@traviangames.com>
+From: Tomasz Nowicki <tn@semihalf.com>
+Message-ID: <9ff9682f-c165-2ad4-6edd-9e56d7ec7424@semihalf.com>
+Date: Fri, 23 Oct 2020 12:19:46 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1601329121-36979-12-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- linux-api@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, Wu Hao <hao.wu@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Yi Sun <yi.y.sun@intel.com>
+In-Reply-To: <517BB937-1F18-4CCF-81BF-11777BB99779@traviangames.com>
+Content-Language: en-US
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+ "will@kernel.org" <will@kernel.org>, "hannah@marvell.com" <hannah@marvell.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "nadavh@marvell.com" <nadavh@marvell.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "mw@semihalf.com" <mw@semihalf.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,145 +119,145 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gTW9uLCBTZXAgMjgsIDIwMjAgYXQgMDI6Mzg6MzhQTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3Rl
-Ogo+IEFzIGEgc3lzdGVtLXdpZGUgcmVzb3VyY2UsIElPQVNJRCBpcyBvZnRlbiBzaGFyZWQgYnkg
-bXVsdGlwbGUga2VybmVsCj4gc3Vic3lzdGVtcyB0aGF0IGFyZSBpbmRlcGVuZGVudCBvZiBlYWNo
-IG90aGVyLiBIb3dldmVyLCBhdCB0aGUKPiBpb2FzaWRfc2V0IGxldmVsLCB0aGVzZSBrZXJuZWwg
-c3Vic3lzdGVtcyBtdXN0IGNvbW11bmljYXRlIHdpdGggZWFjaAo+IG90aGVyIGZvciBvd25lcnNo
-aXAgY2hlY2tpbmcsIGV2ZW50IG5vdGlmaWNhdGlvbnMsIGV0Yy4gRm9yIGV4YW1wbGUsIG9uCj4g
-SW50ZWwgU2NhbGFibGUgSU8gVmlydHVhbGl6YXRpb24gKFNJT1YpIGVuYWJsZWQgcGxhdGZvcm1z
-LCBLVk0gYW5kIFZGSU8KPiBpbnN0YW5jZXMgdW5kZXIgdGhlIHNhbWUgcHJvY2Vzcy9ndWVzdCBt
-dXN0IGJlIGF3YXJlIG9mIGEgc2hhcmVkIElPQVNJRAo+IHNldC4KPiBJT0FTSURfU0VUX1RZUEVf
-TU0gdG9rZW4gdHlwZSB3YXMgaW50cm9kdWNlZCB0byBleHBsaWNpdGx5IG1hcmsgYW4KPiBJT0FT
-SUQgc2V0IHRoYXQgYmVsb25ncyB0byBhIHByb2Nlc3MsIHRodXMgdXNlIHRoZSBzYW1lIG1tX3N0
-cnVjdAo+IHBvaW50ZXIgYXMgYSB0b2tlbi4gVXNlcnMgb2YgdGhlIHNhbWUgcHJvY2VzcyBjYW4g
-dGhlbiBpZGVudGlmeSB3aXRoCj4gZWFjaCBvdGhlciBiYXNlZCBvbiB0aGlzIHRva2VuLgo+IAo+
-IFRoaXMgcGF0Y2ggaW50cm9kdWNlcyBNTSB0b2tlbiBzcGVjaWZpYyBldmVudCByZWdpc3RyYXRp
-b24gQVBJcy4gRXZlbnQKPiBzdWJzY3JpYmVycyBzdWNoIGFzIEtWTSBpbnN0YW5jZXMgY2FuIHJl
-Z2lzdGVyIElPQVNJRCBldmVudCBoYW5kbGVyCj4gd2l0aG91dCB0aGUga25vd2xlZGdlIG9mIGl0
-cyBpb2FzaWRfc2V0LiBFdmVudCBoYW5kbGVycyBhcmUgcmVnaXN0ZXJlZAo+IGJhc2VkIG9uIGl0
-cyBtbV9zdHJ1Y3QgcG9pbnRlciBhcyBhIHRva2VuLiBJbiBjYXNlIHdoZW4gc3Vic2NyaWJlcnMK
-PiByZWdpc3RlciBoYW5kbGVyICpwcmlvciogdG8gdGhlIGNyZWF0aW9uIG9mIHRoZSBpb2FzaWRf
-c2V0LCB0aGUKPiBoYW5kbGVy4oCZcyBub3RpZmljYXRpb24gYmxvY2sgaXMgc3RvcmVkIGluIGEg
-cGVuZGluZyBsaXN0IHdpdGhpbiBJT0FTSUQKPiBjb3JlLiBPbmNlIHRoZSBpb2FzaWRfc2V0IG9m
-IHRoZSBNTSB0b2tlbiBpcyBjcmVhdGVkLCB0aGUgbm90aWZpY2F0aW9uCj4gYmxvY2sgd2lsbCBi
-ZSByZWdpc3RlcmVkIGJ5IHRoZSBJT0FTSUQgY29yZS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBMaXUg
-WWkgTCA8eWkubC5saXVAaW50ZWwuY29tPgo+IFNpZ25lZC1vZmYtYnk6IFd1IEhhbyA8aGFvLnd1
-QGludGVsLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGlu
-dXguaW50ZWwuY29tPgo+IC0tLQo+ICBkcml2ZXJzL2lvbW11L2lvYXNpZC5jIHwgMTE3ICsrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPiAgaW5jbHVkZS9s
-aW51eC9pb2FzaWQuaCB8ICAxNSArKysrKysrCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTMyIGluc2Vy
-dGlvbnMoKykKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb2FzaWQuYyBiL2RyaXZl
-cnMvaW9tbXUvaW9hc2lkLmMKPiBpbmRleCA4OTRiMTdjMDZlYWQuLmQ1ZmFlYjU1OWE0MyAxMDA2
-NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvYXNpZC5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9p
-b2FzaWQuYwo+IEBAIC04ODksNiArODg5LDI5IEBAIHZvaWQgaW9hc2lkX3NldF9wdXQoc3RydWN0
-IGlvYXNpZF9zZXQgKnNldCkKPiAgfQo+ICBFWFBPUlRfU1lNQk9MX0dQTChpb2FzaWRfc2V0X3B1
-dCk7Cj4gIAo+ICsvKgo+ICsgKiBpb2FzaWRfZmluZF9tbV9zZXQgLSBSZXRyaWV2ZSBJT0FTSUQg
-c2V0IHdpdGggbW0gdG9rZW4KPiArICogVGFrZSBhIHJlZmVyZW5jZSBvZiB0aGUgc2V0IGlmIGZv
-dW5kLgo+ICsgKi8KPiArc3RhdGljIHN0cnVjdCBpb2FzaWRfc2V0ICppb2FzaWRfZmluZF9tbV9z
-ZXQoc3RydWN0IG1tX3N0cnVjdCAqdG9rZW4pCj4gK3sKPiArCXN0cnVjdCBpb2FzaWRfc2V0ICpz
-ZXQ7Cj4gKwl1bnNpZ25lZCBsb25nIGluZGV4Owo+ICsKPiArCXNwaW5fbG9jaygmaW9hc2lkX2Fs
-bG9jYXRvcl9sb2NrKTsKClRoaXMgY291bGQgZGVhZGxvY2sgc2luY2UgaW9hc2lkX3NldF9wdXQo
-KSB0YWtlcyB0aGUgbmJfbG9jayB3aGlsZSBob2xkaW5nCnRoZSBhbGxvY2F0b3JfbG9jay4KCj4g
-Kwo+ICsJeGFfZm9yX2VhY2goJmlvYXNpZF9zZXRzLCBpbmRleCwgc2V0KSB7Cj4gKwkJaWYgKHNl
-dC0+dHlwZSA9PSBJT0FTSURfU0VUX1RZUEVfTU0gJiYgc2V0LT50b2tlbiA9PSB0b2tlbikgewo+
-ICsJCQlyZWZjb3VudF9pbmMoJnNldC0+cmVmKTsKPiArCQkJZ290byBleGl0X3VubG9jazsKPiAr
-CQl9Cj4gKwl9Cj4gKwlzZXQgPSBOVUxMOwo+ICtleGl0X3VubG9jazoKPiArCXNwaW5fdW5sb2Nr
-KCZpb2FzaWRfYWxsb2NhdG9yX2xvY2spOwo+ICsJcmV0dXJuIHNldDsKPiArfQo+ICsKPiAgLyoq
-Cj4gICAqIGlvYXNpZF9hZGp1c3Rfc2V0IC0gQWRqdXN0IHRoZSBxdW90YSBvZiBhbiBJT0FTSUQg
-c2V0Cj4gICAqIEBzZXQ6CUlPQVNJRCBzZXQgdG8gYmUgYXNzaWduZWQKPiBAQCAtMTEyMSw2ICsx
-MTQ0LDEwMCBAQCB2b2lkIGlvYXNpZF91bnJlZ2lzdGVyX25vdGlmaWVyKHN0cnVjdCBpb2FzaWRf
-c2V0ICpzZXQsCj4gIH0KPiAgRVhQT1JUX1NZTUJPTF9HUEwoaW9hc2lkX3VucmVnaXN0ZXJfbm90
-aWZpZXIpOwo+ICAKPiArLyoqCj4gKyAqIGlvYXNpZF9yZWdpc3Rlcl9ub3RpZmllcl9tbSAtIFJl
-Z2lzdGVyIGEgbm90aWZpZXIgYmxvY2sgb24gdGhlIElPQVNJRCBzZXQKPiArICogICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgY3JlYXRlZCBieSB0aGUgbW1fc3RydWN0IHBvaW50ZXIgYXMg
-dGhlIHRva2VuCj4gKyAqCj4gKyAqIEBtbTogdGhlIG1tX3N0cnVjdCB0b2tlbiBvZiB0aGUgaW9h
-c2lkX3NldAo+ICsgKiBAbmI6IG5vdGZpZXIgYmxvY2sgdG8gYmUgcmVnaXN0ZXJlZCBvbiB0aGUg
-aW9hc2lkX3NldAoKTWF5YmUgYWRkIHRoYXQgdGhlIHByaW9yaXR5IGluIEBuYiBuZWVkcyB0byBi
-ZSBzZXQgYnkgdGhlIGNhbGxlciB1c2luZyBhCmlvYXNpZF9ub3RpZmllcl9wcmlvcml0eSB2YWx1
-ZQoKPiArICoKPiArICogVGhpcyBhIHZhcmlhbnQgb2YgaW9hc2lkX3JlZ2lzdGVyX25vdGlmaWVy
-KCkgd2hlcmUgdGhlIGNhbGxlciBpbnRlbmRzIHRvCj4gKyAqIGxpc3RlbiB0byBJT0FTSUQgZXZl
-bnRzIGJlbG9uZyB0aGUgaW9hc2lkX3NldCBjcmVhdGVkIHVuZGVyIHRoZSBzYW1lCgogICAgICAg
-ICAgICAgICAgICAgICAgICAgdGhhdCBiZWxvbmcgdG8KCj4gKyAqIHByb2Nlc3MuIENhbGxlciBp
-cyBub3QgYXdhcmUgb2YgdGhlIGlvYXNpZF9zZXQsIG5vIG5lZWQgdG8gaG9sZCByZWZlcmVuY2UK
-PiArICogb2YgdGhlIGlvYXNpZF9zZXQuCj4gKyAqLwo+ICtpbnQgaW9hc2lkX3JlZ2lzdGVyX25v
-dGlmaWVyX21tKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5i
-KQo+ICt7Cj4gKwlzdHJ1Y3QgaW9hc2lkX3NldF9uYiAqY3VycjsKPiArCXN0cnVjdCBpb2FzaWRf
-c2V0ICpzZXQ7Cj4gKwlpbnQgcmV0ID0gMDsKPiArCj4gKwlpZiAoIW1tKQo+ICsJCXJldHVybiAt
-RUlOVkFMOwo+ICsKPiArCXNwaW5fbG9jaygmaW9hc2lkX25iX2xvY2spOwo+ICsKPiArCS8qIENo
-ZWNrIGZvciBkdXBsaWNhdGVzLCBuYiBpcyB1bmlxdWUgcGVyIHNldCAqLwo+ICsJbGlzdF9mb3Jf
-ZWFjaF9lbnRyeShjdXJyLCAmaW9hc2lkX25iX3BlbmRpbmdfbGlzdCwgbGlzdCkgewo+ICsJCWlm
-IChjdXJyLT50b2tlbiA9PSBtbSAmJiBjdXJyLT5uYiA9PSBuYikgewo+ICsJCQlyZXQgPSAtRUJV
-U1k7Cj4gKwkJCWdvdG8gZXhpdF91bmxvY2s7Cj4gKwkJfQo+ICsJfQo+ICsKPiArCS8qIENoZWNr
-IGlmIHRoZSB0b2tlbiBoYXMgYW4gZXhpc3Rpbmcgc2V0ICovCj4gKwlzZXQgPSBpb2FzaWRfZmlu
-ZF9tbV9zZXQobW0pOwo+ICsJaWYgKCFzZXQpIHsKPiArCQkvKiBBZGQgdG8gdGhlIHJzdmQgbGlz
-dCBhcyBpbmFjdGl2ZSAqLwo+ICsJCWN1cnItPmFjdGl2ZSA9IGZhbHNlOwoKY3VyciBpcyBpbnZh
-bGlkIGhlcmUKCj4gKwl9IGVsc2Ugewo+ICsJCS8qIFJFVklTSVQ6IE9ubHkgcmVnaXN0ZXIgZW1w
-dHkgc2V0IGZvciBub3cuIENhbiBhZGQgYW4gb3B0aW9uCj4gKwkJICogaW4gdGhlIGZ1dHVyZSB0
-byBwbGF5YmFjayBleGlzdGluZyBQQVNJRHMuCj4gKwkJICovCgpZb3UgY2FuIGRyb3AgdGhpcyBj
-b21tZW50Cgo+ICsJCWlmIChzZXQtPm5yX2lvYXNpZHMpIHsKPiArCQkJcHJfd2FybigiSU9BU0lE
-IHNldCAlZCBub3QgZW1wdHlcbiIsIHNldC0+aWQpOwo+ICsJCQlyZXQgPSAtRUJVU1k7Cj4gKwkJ
-CWdvdG8gZXhpdF91bmxvY2s7Cj4gKwkJfQo+ICsJCWN1cnIgPSBremFsbG9jKHNpemVvZigqY3Vy
-ciksIEdGUF9BVE9NSUMpOwoKTmVlZHMgdG8gYmUgaW4gdGhlIGNvbW1vbiBwYXRoLCBiZWZvcmUg
-dGhpcyBibG9jawoKPiArCQlpZiAoIWN1cnIpIHsKPiArCQkJcmV0ID0gLUVOT01FTTsKPiArCQkJ
-Z290byBleGl0X3VubG9jazsKPiArCQl9Cj4gKwkJY3Vyci0+dG9rZW4gPSBtbTsKPiArCQljdXJy
-LT5uYiA9IG5iOwo+ICsJCWN1cnItPmFjdGl2ZSA9IHRydWU7Cj4gKwkJY3Vyci0+c2V0ID0gc2V0
-Owo+ICsKPiArCQkvKiBTZXQgYWxyZWFkeSBjcmVhdGVkLCBhZGQgdG8gdGhlIG5vdGlmaWVyIGNo
-YWluICovCj4gKwkJYXRvbWljX25vdGlmaWVyX2NoYWluX3JlZ2lzdGVyKCZzZXQtPm5oLCBuYik7
-Cj4gKwkJLyoKPiArCQkgKiBEbyBub3QgaG9sZCBhIHJlZmVyZW5jZSwgaWYgdGhlIHNldCBnZXRz
-IGRlc3Ryb3llZCwgdGhlIG5iCj4gKwkJICogZW50cnkgd2lsbCBiZSBtYXJrZWQgaW5hY3RpdmUu
-Cj4gKwkJICovCj4gKwkJaW9hc2lkX3NldF9wdXQoc2V0KTsKPiArCX0KPiArCj4gKwlsaXN0X2Fk
-ZCgmY3Vyci0+bGlzdCwgJmlvYXNpZF9uYl9wZW5kaW5nX2xpc3QpOwo+ICsKPiArZXhpdF91bmxv
-Y2s6Cj4gKwlzcGluX3VubG9jaygmaW9hc2lkX25iX2xvY2spOwo+ICsJcmV0dXJuIHJldDsKPiAr
-fQo+ICtFWFBPUlRfU1lNQk9MX0dQTChpb2FzaWRfcmVnaXN0ZXJfbm90aWZpZXJfbW0pOwo+ICsK
-PiArdm9pZCBpb2FzaWRfdW5yZWdpc3Rlcl9ub3RpZmllcl9tbShzdHJ1Y3QgbW1fc3RydWN0ICpt
-bSwgc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpuYikKPiArewo+ICsJc3RydWN0IGlvYXNpZF9zZXRf
-bmIgKmN1cnI7Cj4gKwo+ICsJc3Bpbl9sb2NrKCZpb2FzaWRfbmJfbG9jayk7Cj4gKwlsaXN0X2Zv
-cl9lYWNoX2VudHJ5KGN1cnIsICZpb2FzaWRfbmJfcGVuZGluZ19saXN0LCBsaXN0KSB7Cj4gKwkJ
-aWYgKGN1cnItPnRva2VuID09IG1tICYmIGN1cnItPm5iID09IG5iKSB7Cj4gKwkJCWxpc3RfZGVs
-KCZjdXJyLT5saXN0KTsKPiArCQkJc3Bpbl91bmxvY2soJmlvYXNpZF9uYl9sb2NrKTsKPiArCQkJ
-aWYgKGN1cnItPmFjdGl2ZSkgewo+ICsJCQkJYXRvbWljX25vdGlmaWVyX2NoYWluX3VucmVnaXN0
-ZXIoJmN1cnItPnNldC0+bmgsCj4gKwkJCQkJCQkJIG5iKTsKCkkgdGhpbmsgaXQncyBwb3NzaWJs
-ZSBmb3IgaW9hc2lkX3NldF9wdXRfbG9ja2VkKCkgdG8gZnJlZSB0aGUgc2V0IHJpZ2h0CmFmdGVy
-IHdlIHJlbGVhc2UgdGhlIGxvY2ssIHRoZW4gdGhpcyB1bnJlZ2lzdGVyKCkgd2lsbCBiZSB1c2Ut
-YWZ0ZXItZnJlZS4KQmVzdCBrZWVwIGhvbGRpbmcgdGhlIGxvY2sgZm9yIHRoaXMuCgo+ICsJCQl9
-Cj4gKwkJCWtmcmVlKGN1cnIpOwo+ICsJCQlyZXR1cm47Cj4gKwkJfQo+ICsJfQo+ICsJcHJfd2Fy
-bigiTm8gaW9hc2lkIHNldCBmb3VuZCBmb3IgbW0gdG9rZW4gJWxseFxuIiwgICh1NjQpbW0pOwoK
-VXNlICVwCgpPdmVyYWxsIEkgdGhpbmsgZXJyb3IgbWVzc2FnZXMgaW4gdGhpcyBzZXJpZXMgY291
-bGQgYmUgZGVtb3RlZCB0bwpwcl9kZWJ1Zywgc2luY2UgdGhleSdyZSB1c2VmdWwgd2hlbiBkZXZl
-bG9waW5nIHVzZXJzIHRvIHRoaXMgQVBJLCBidXQKZmlndXJpbmcgb3V0IHdoZXRoZXIgdGhleSBj
-YW4gYmUgdXNlci10cmlnZ2VyZWQgYW5kIG5lZWQgY2FyZSBpcyB0b28gbXVjaAp3b3JrLgoKVGhh
-bmtzLApKZWFuCgo+ICsJc3Bpbl91bmxvY2soJmlvYXNpZF9uYl9sb2NrKTsKPiArfQo+ICtFWFBP
-UlRfU1lNQk9MX0dQTChpb2FzaWRfdW5yZWdpc3Rlcl9ub3RpZmllcl9tbSk7Cj4gKwo+ICBNT0RV
-TEVfQVVUSE9SKCJKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBh
-cm0uY29tPiIpOwo+ICBNT0RVTEVfQVVUSE9SKCJKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGlu
-dXguaW50ZWwuY29tPiIpOwo+ICBNT0RVTEVfREVTQ1JJUFRJT04oIklPIEFkZHJlc3MgU3BhY2Ug
-SUQgKElPQVNJRCkgYWxsb2NhdG9yIik7Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW9h
-c2lkLmggYi9pbmNsdWRlL2xpbnV4L2lvYXNpZC5oCj4gaW5kZXggMWI1NTFjOTlkNTY4Li5jNmNj
-ODU1YWFkYjYgMTAwNjQ0Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9pb2FzaWQuaAo+ICsrKyBiL2lu
-Y2x1ZGUvbGludXgvaW9hc2lkLmgKPiBAQCAtMTMyLDYgKzEzMiw5IEBAIHZvaWQgaW9hc2lkX3Vu
-cmVnaXN0ZXJfbm90aWZpZXIoc3RydWN0IGlvYXNpZF9zZXQgKnNldCwKPiAgdm9pZCBpb2FzaWRf
-c2V0X2Zvcl9lYWNoX2lvYXNpZChzdHJ1Y3QgaW9hc2lkX3NldCAqc2RhdGEsCj4gIAkJCQl2b2lk
-ICgqZm4pKGlvYXNpZF90IGlkLCB2b2lkICpkYXRhKSwKPiAgCQkJCXZvaWQgKmRhdGEpOwo+ICtp
-bnQgaW9hc2lkX3JlZ2lzdGVyX25vdGlmaWVyX21tKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCBzdHJ1
-Y3Qgbm90aWZpZXJfYmxvY2sgKm5iKTsKPiArdm9pZCBpb2FzaWRfdW5yZWdpc3Rlcl9ub3RpZmll
-cl9tbShzdHJ1Y3QgbW1fc3RydWN0ICptbSwgc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpuYik7Cj4g
-Kwo+ICAjZWxzZSAvKiAhQ09ORklHX0lPQVNJRCAqLwo+ICBzdGF0aWMgaW5saW5lIHZvaWQgaW9h
-c2lkX2luc3RhbGxfY2FwYWNpdHkoaW9hc2lkX3QgdG90YWwpCj4gIHsKPiBAQCAtMjM4LDUgKzI0
-MSwxNyBAQCBzdGF0aWMgaW5saW5lIHZvaWQgaW9hc2lkX3NldF9mb3JfZWFjaF9pb2FzaWQoc3Ry
-dWN0IGlvYXNpZF9zZXQgKnNkYXRhLAo+ICAJCQkJCSAgICAgIHZvaWQgKmRhdGEpCj4gIHsKPiAg
-fQo+ICsKPiArc3RhdGljIGlubGluZSBpbnQgaW9hc2lkX3JlZ2lzdGVyX25vdGlmaWVyX21tKHN0
-cnVjdCBtbV9zdHJ1Y3QgKm1tLAo+ICsJCQkJCSAgICAgIHN0cnVjdCBub3RpZmllcl9ibG9jayAq
-bmIpCj4gK3sKPiArCXJldHVybiAtRU5PVFNVUFA7Cj4gK30KPiArCj4gK3N0YXRpYyBpbmxpbmUg
-dm9pZCBpb2FzaWRfdW5yZWdpc3Rlcl9ub3RpZmllcl9tbShzdHJ1Y3QgbW1fc3RydWN0ICptbSwK
-PiArCQkJCQkJIHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpCj4gK3sKPiArfQo+ICsKPiAgI2Vu
-ZGlmIC8qIENPTkZJR19JT0FTSUQgKi8KPiAgI2VuZGlmIC8qIF9fTElOVVhfSU9BU0lEX0ggKi8K
-PiAtLSAKPiAyLjcuNAo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+Hi Denis,
+
+Sorry for late response, we had to check few things. Please see comments 
+inline.
+
+On 10/6/20 3:16 PM, Denis Odintsov wrote:
+> Hi,
+> 
+>> Am 15.07.2020 um 09:06 schrieb Tomasz Nowicki <tn@semihalf.com>:
+>>
+>> The series is meant to support SMMU for AP806 and a workaround
+>> for accessing ARM SMMU 64bit registers is the gist of it.
+>>
+>> For the record, AP-806 can't access SMMU registers with 64bit width.
+>> This patches split the readq/writeq into two 32bit accesses instead
+>> and update DT bindings.
+>>
+>> The series was successfully tested on a vanilla v5.8-rc3 kernel and
+>> Intel e1000e PCIe NIC. The same for platform devices like SATA and USB.
+>>
+>> For reference, previous versions are listed below:
+>> V1: https://lkml.org/lkml/2018/10/15/373
+>> V2: https://lkml.org/lkml/2019/7/11/426
+>> V3: https://lkml.org/lkml/2020/7/2/1114
+>>
+> 
+> 1) After enabling SMMU on Armada 8040, and ARM_SMMU_DISABLE_BYPASS_BY_DEFAUL=y by default in kernel since 954a03be033c7cef80ddc232e7cbdb17df735663,
+> internal eMMC is prevented from being initialised (as there is no iommus property for ap_sdhci0)
+> Disabling "Disable bypass by default" make it work, but the patch highly suggest doing it properly.
+> I wasn't able to find correct path for ap_sdhci for iommus in any publicly available documentation,
+> would be highly appreciated addressed properly, thank you!
+> 
+> 2) Second issue I got (btw I have ClearFog GT 8k armada-8040 based board) is mpci ath10k card.
+> It is found, it is enumerated, it is visible in lspci, but it fails to be initialised. Here is the log:
+
+Firmware has to configure and assign device StreamIDs. Most of the 
+devices are configured properly and supported in public FW. However, for 
+both these cases (ap_sdhci0 and PCIe) some extra (u-boot/UEFI/ATF) 
+patches are required which are not available yet. Sorry we let that happen.
+
+Since we have dependency on custom FW and we cannot enforce people to 
+patch their FW we will send the follow up fix patch (v5.9+) and revert 
+respective DTS changes.
+
+The most important Armada-806 SMMU driver enhancements were merged so 
+people who still willing to use SMMU need to provide proper DTB and use 
+ARM_SMMU_DISABLE_BYPASS_BY_DEFAUL=n (or via kernel command line) with 
+extra cautious.
+
+Thanks,
+Tomasz
+
+> 
+> [    1.743754] armada8k-pcie f2600000.pcie: host bridge /cp0/pcie@f2600000 ranges:
+> [    1.751116] armada8k-pcie f2600000.pcie:      MEM 0x00f6000000..0x00f6efffff -> 0x00f6000000
+> [    1.964690] armada8k-pcie f2600000.pcie: Link up
+> [    1.969379] armada8k-pcie f2600000.pcie: PCI host bridge to bus 0000:00
+> [    1.976026] pci_bus 0000:00: root bus resource [bus 00-ff]
+> [    1.981537] pci_bus 0000:00: root bus resource [mem 0xf6000000-0xf6efffff]
+> [    1.988462] pci 0000:00:00.0: [11ab:0110] type 01 class 0x060400
+> [    1.994504] pci 0000:00:00.0: reg 0x10: [mem 0x00000000-0x000fffff]
+> [    2.000843] pci 0000:00:00.0: supports D1 D2
+> [    2.005132] pci 0000:00:00.0: PME# supported from D0 D1 D3hot
+> [    2.011853] pci 0000:01:00.0: [168c:003c] type 00 class 0x028000
+> [    2.018001] pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x001fffff 64bit]
+> [    2.025002] pci 0000:01:00.0: reg 0x30: [mem 0x00000000-0x0000ffff pref]
+> [    2.032111] pci 0000:01:00.0: supports D1 D2
+> [    2.049409] pci 0000:00:00.0: BAR 14: assigned [mem 0xf6000000-0xf61fffff]
+> [    2.056322] pci 0000:00:00.0: BAR 0: assigned [mem 0xf6200000-0xf62fffff]
+> [    2.063142] pci 0000:00:00.0: BAR 15: assigned [mem 0xf6300000-0xf63fffff pref]
+> [    2.070484] pci 0000:01:00.0: BAR 0: assigned [mem 0xf6000000-0xf61fffff 64bit]
+> [    2.077880] pci 0000:01:00.0: BAR 6: assigned [mem 0xf6300000-0xf630ffff pref]
+> [    2.085135] pci 0000:00:00.0: PCI bridge to [bus 01-ff]
+> [    2.090384] pci 0000:00:00.0:   bridge window [mem 0xf6000000-0xf61fffff]
+> [    2.097202] pci 0000:00:00.0:   bridge window [mem 0xf6300000-0xf63fffff pref]
+> [    2.104539] pcieport 0000:00:00.0: Adding to iommu group 4
+> [    2.110232] pcieport 0000:00:00.0: PME: Signaling with IRQ 38
+> [    2.116141] pcieport 0000:00:00.0: AER: enabled with IRQ 38
+> [    8.131135] ath10k_pci 0000:01:00.0: Adding to iommu group 4
+> [    8.131874] ath10k_pci 0000:01:00.0: enabling device (0000 -> 0002)
+> [    8.132203] ath10k_pci 0000:01:00.0: pci irq msi oper_irq_mode 2 irq_mode 0 reset_mode 0
+> 
+> up to that point the log is the same as without SMMU enabled, except "Adding to iommu group N" lines, and IRQ being 37
+> 
+> [    8.221328] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.313362] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.409373] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.553433] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.641370] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.737979] ath10k_pci 0000:01:00.0: failed to poke copy engine: -16
+> [    8.807356] ath10k_pci 0000:01:00.0: Failed to get pcie state addr: -16
+> [    8.814032] ath10k_pci 0000:01:00.0: failed to setup init config: -16
+> [    8.820605] ath10k_pci 0000:01:00.0: could not power on hif bus (-16)
+> [    8.827111] ath10k_pci 0000:01:00.0: could not probe fw (-16)
+> 
+> Thank you!
+> 
+>> v3 -> v4
+>> - call cfg_probe() impl hook a bit earlier which simplifies errata handling
+>> - use hi_lo_readq_relaxed() and hi_lo_writeq_relaxed() for register accessors
+>> - keep SMMU status disabled by default and enable where possible (DTS changes)
+>> - commit logs improvements and other minor fixes
+>>
+>> Hanna Hawa (1):
+>>   iommu/arm-smmu: Workaround for Marvell Armada-AP806 SoC erratum
+>>     #582743
+>>
+>> Marcin Wojtas (1):
+>>   arm64: dts: marvell: add SMMU support
+>>
+>> Tomasz Nowicki (2):
+>>   iommu/arm-smmu: Call configuration impl hook before consuming features
+>>   dt-bindings: arm-smmu: add compatible string for Marvell Armada-AP806
+>>     SMMU-500
+>>
+>> Documentation/arm64/silicon-errata.rst        |  3 ++
+>> .../devicetree/bindings/iommu/arm,smmu.yaml   |  4 ++
+>> arch/arm64/boot/dts/marvell/armada-7040.dtsi  | 28 ++++++++++++
+>> arch/arm64/boot/dts/marvell/armada-8040.dtsi  | 40 +++++++++++++++++
+>> arch/arm64/boot/dts/marvell/armada-ap80x.dtsi | 18 ++++++++
+>> drivers/iommu/arm-smmu-impl.c                 | 45 +++++++++++++++++++
+>> drivers/iommu/arm-smmu.c                      | 11 +++--
+>> 7 files changed, 145 insertions(+), 4 deletions(-)
+>>
+>> -- 
+>> 2.17.1
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
