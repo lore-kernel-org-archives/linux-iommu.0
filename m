@@ -5,69 +5,68 @@ X-Spam-Level:
 X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899B3C55178
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39E0C55179
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:31 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 27F3F223AC
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4CC2F24692
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="r9db4GP3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27F3F223AC
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PDezbMGP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CC2F24692
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 30FAA86DD6;
-	Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5429486DC0;
+	Sat, 24 Oct 2020 21:35:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D1Hv4qA1Ncsd; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+	with ESMTP id 705m2by-Gvps; Sat, 24 Oct 2020 21:35:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A476B86D7F;
-	Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F32A086E71;
+	Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FD9BC1AD9;
-	Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A9853C0051
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9EDDC1AD9;
+	Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7CD97C1AD7
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 91BD986A6B
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6A34A86DE4
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o+sLrNOM880Y for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+ with ESMTP id 0CWXl1Sk2RsS for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1A92F86A32
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:46 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0FA6D86DB0
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=8TaiqqYUSgEw+NzR3JQBSjax7MA1MOxCn8TG1p+kRr4=; b=r9db4GP31D5p/054Y24Ez72LKS
- N/XaCYLdz1IDFNPBCkSOAKU7WLYUZRrZ33nc3F+OubHzk0l8JLVOEHBhLRZPA+VRdRKm5zujhfzGP
- Fjn8wQPuhP3DvWmINE/z3rE/6vpAa39evTXgxQ7hW2b9UgpIBj5ALBxL5Wv96wY3z7uzqCYtS6854
- txGAhWYokXAbn4UhmlOwswzn7iUjrPO+vYlD/y3noSji8HMVqP5cr2lO84541xHxpNReS4c8vG0/i
- 0fnygyXXe1Tn7loE2gXIWpPIkB5P/UEVN+hca48B26Ym3OpZOIlw0C1vUokmyP45mIDlzs/pKQ4ZK
- FRxIwBfw==;
+ bh=JW78knbqw7EYlsJkBZcRrOydz/oXelrB7ardJZkkdqY=; b=PDezbMGPDWtFQXHB+z5YGGVwLN
+ zhLBtlAB6feibtgg4eZNFkMHrHmcZq9SSnLxL6dz/yGWZaAxjGJfHl6v5ZgVCzPLx50aWH/3ms3nc
+ GsLcLCVvoKVE1xH15H2z/U1dXe6rJI9ZtCFuTJk6N36otUqtnu+pvC4tfF+kZhrGdE8SGXCIVXpSH
+ 5LCoGCRTCSO+TrYjBEjAev+qpIJ/sbQhCMlkoj0k4FH2enFmpSKvxbfGqX89igqJPI02szLf56AJR
+ FmlDK+SiUwPF4WfhqkIYeGokwj0XLGoqe4swfWKDqgeAv8e9/9jmMjrZJgljMaA0SNeH+XaB4+Lh3
+ 8BhwKgxQ==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCN-0006Gf-V2; Sat, 24 Oct 2020 21:35:41 +0000
+ id 1kWRCS-0006HD-Gm; Sat, 24 Oct 2020 21:35:46 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCN-001rPe-FR; Sat, 24 Oct 2020 22:35:39 +0100
+ Linux)) id 1kWRCN-001rOf-1P; Sat, 24 Oct 2020 22:35:39 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 32/35] x86/apic: Support 15 bits of APIC ID in MSI where
- available
-Date: Sat, 24 Oct 2020 22:35:32 +0100
-Message-Id: <20201024213535.443185-33-dwmw2@infradead.org>
+Subject: [PATCH v3 17/35] x86/pci/xen: Use msi_msg shadow structs
+Date: Sat, 24 Oct 2020 22:35:17 +0100
+Message-Id: <20201024213535.443185-18-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
@@ -96,140 +95,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Some hypervisors can allow the guest to use the Extended Destination ID
-field in the MSI address to address up to 32768 CPUs.
+Use the msi_msg shadow structs and compose the message with named bitfields
+instead of the unreadable macro maze.
 
-This applies to all downstream devices which generate MSI cycles,
-including HPET, I/OAPIC and PCI MSI.
-
-HPET and PCI MSI use the same __irq_msi_compose_msg() function, while
-I/OAPIC generates its own and had support for the extended bits added in
-a previous commit.
-
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20201009104616.1314746-6-dwmw2@infradead.org
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/x86/include/asm/msi.h      |  3 ++-
- arch/x86/include/asm/x86_init.h |  2 ++
- arch/x86/kernel/apic/apic.c     | 26 ++++++++++++++++++++++++--
- arch/x86/kernel/x86_init.c      |  1 +
- 4 files changed, 29 insertions(+), 3 deletions(-)
+ arch/x86/pci/xen.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
-index 322fd905da9c..b85147d75626 100644
---- a/arch/x86/include/asm/msi.h
-+++ b/arch/x86/include/asm/msi.h
-@@ -29,7 +29,8 @@ typedef struct x86_msi_addr_lo {
- 			u32	reserved_0		:  2,
- 				dest_mode_logical	:  1,
- 				redirect_hint		:  1,
--				reserved_1		:  8,
-+				reserved_1		:  1,
-+				virt_destid_8_14	:  7,
- 				destid_0_7		:  8,
- 				base_address		: 12;
- 		};
-diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
-index dde5b3f1e7cd..5c69f7eb5d47 100644
---- a/arch/x86/include/asm/x86_init.h
-+++ b/arch/x86/include/asm/x86_init.h
-@@ -116,6 +116,7 @@ struct x86_init_pci {
-  * @init_platform:		platform setup
-  * @guest_late_init:		guest late init
-  * @x2apic_available:		X2APIC detection
-+ * @msi_ext_dest_id:		MSI supports 15-bit APIC IDs
-  * @init_mem_mapping:		setup early mappings during init_mem_mapping()
-  * @init_after_bootmem:		guest init after boot allocator is finished
-  */
-@@ -123,6 +124,7 @@ struct x86_hyper_init {
- 	void (*init_platform)(void);
- 	void (*guest_late_init)(void);
- 	bool (*x2apic_available)(void);
-+	bool (*msi_ext_dest_id)(void);
- 	void (*init_mem_mapping)(void);
- 	void (*init_after_bootmem)(void);
- };
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index f7196ee0f005..6bd20c0de8bc 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -93,6 +93,11 @@ static unsigned int disabled_cpu_apicid __ro_after_init = BAD_APICID;
-  */
- static int apic_extnmi __ro_after_init = APIC_EXTNMI_BSP;
+diff --git a/arch/x86/pci/xen.c b/arch/x86/pci/xen.c
+index c552cd2d0632..3d41a09c2c14 100644
+--- a/arch/x86/pci/xen.c
++++ b/arch/x86/pci/xen.c
+@@ -152,7 +152,6 @@ static int acpi_register_gsi_xen(struct device *dev, u32 gsi,
  
-+/*
-+ * Hypervisor supports 15 bits of APIC ID in MSI Extended Destination ID
-+ */
-+static bool virt_ext_dest_id __ro_after_init;
-+
- /*
-  * Map cpu index to physical APIC ID
-  */
-@@ -1841,6 +1846,8 @@ static __init void try_to_enable_x2apic(int remap_mode)
- 		return;
+ #if defined(CONFIG_PCI_MSI)
+ #include <linux/msi.h>
+-#include <asm/msidef.h>
  
- 	if (remap_mode != IRQ_REMAP_X2APIC_MODE) {
-+		u32 apic_limit = 255;
-+
- 		/*
- 		 * Using X2APIC without IR is not architecturally supported
- 		 * on bare metal but may be supported in guests.
-@@ -1851,12 +1858,22 @@ static __init void try_to_enable_x2apic(int remap_mode)
- 			return;
- 		}
- 
-+		/*
-+		 * If the hypervisor supports extended destination ID in
-+		 * MSI, that increases the maximum APIC ID that can be
-+		 * used for non-remapped IRQ domains.
-+		 */
-+		if (x86_init.hyper.msi_ext_dest_id()) {
-+			virt_ext_dest_id = 1;
-+			apic_limit = 32767;
-+		}
-+
- 		/*
- 		 * Without IR, all CPUs can be addressed by IOAPIC/MSI only
- 		 * in physical mode, and CPUs with an APIC ID that cannnot
- 		 * be addressed must not be brought online.
- 		 */
--		x2apic_set_max_apicid(255);
-+		x2apic_set_max_apicid(apic_limit);
- 		x2apic_phys = 1;
- 	}
- 	x2apic_enable();
-@@ -2497,10 +2514,15 @@ void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
- 	 * Only the IOMMU itself can use the trick of putting destination
- 	 * APIC ID into the high bits of the address. Anything else would
- 	 * just be writing to memory if it tried that, and needs IR to
--	 * address higher APIC IDs.
-+	 * address APICs which can't be addressed in the normal 32-bit
-+	 * address range at 0xFFExxxxx. That is typically just 8 bits, but
-+	 * some hypervisors allow the extended destination ID field in bits
-+	 * 5-11 to be used, giving support for 15 bits of APIC IDs in total.
- 	 */
- 	if (dmar)
- 		msg->arch_addr_hi.destid_8_31 = cfg->dest_apicid >> 8;
-+	else if (virt_ext_dest_id && cfg->dest_apicid < 0x8000)
-+		msg->arch_addr_lo.virt_destid_8_14 = cfg->dest_apicid >> 8;
- 	else
- 		WARN_ON_ONCE(cfg->dest_apicid > 0xFF);
+ struct xen_pci_frontend_ops *xen_pci_frontend;
+ EXPORT_SYMBOL_GPL(xen_pci_frontend);
+@@ -210,23 +209,20 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+ 	return ret;
  }
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index a3038d8deb6a..8b395821cb8d 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -110,6 +110,7 @@ struct x86_init_ops x86_init __initdata = {
- 		.init_platform		= x86_init_noop,
- 		.guest_late_init	= x86_init_noop,
- 		.x2apic_available	= bool_x86_init_noop,
-+		.msi_ext_dest_id	= bool_x86_init_noop,
- 		.init_mem_mapping	= x86_init_noop,
- 		.init_after_bootmem	= x86_init_noop,
- 	},
+ 
+-#define XEN_PIRQ_MSI_DATA  (MSI_DATA_TRIGGER_EDGE | \
+-		MSI_DATA_LEVEL_ASSERT | (3 << 8) | MSI_DATA_VECTOR(0))
+-
+ static void xen_msi_compose_msg(struct pci_dev *pdev, unsigned int pirq,
+ 		struct msi_msg *msg)
+ {
+-	/* We set vector == 0 to tell the hypervisor we don't care about it,
+-	 * but we want a pirq setup instead.
+-	 * We use the dest_id field to pass the pirq that we want. */
+-	msg->address_hi = MSI_ADDR_BASE_HI | MSI_ADDR_EXT_DEST_ID(pirq);
+-	msg->address_lo =
+-		MSI_ADDR_BASE_LO |
+-		MSI_ADDR_DEST_MODE_PHYSICAL |
+-		MSI_ADDR_REDIRECTION_CPU |
+-		MSI_ADDR_DEST_ID(pirq);
+-
+-	msg->data = XEN_PIRQ_MSI_DATA;
++	/*
++	 * We set vector == 0 to tell the hypervisor we don't care about
++	 * it, but we want a pirq setup instead.  We use the dest_id fields
++	 * to pass the pirq that we want.
++	 */
++	memset(msg, 0, sizeof(*msg));
++	msg->address_hi = X86_MSI_BASE_ADDRESS_HIGH;
++	msg->arch_addr_hi.destid_8_31 = pirq >> 8;
++	msg->arch_addr_lo.destid_0_7 = pirq & 0xFF;
++	msg->arch_addr_lo.base_address = X86_MSI_BASE_ADDRESS_LOW;
++	msg->arch_data.delivery_mode = APIC_DELIVERY_MODE_EXTINT;
+ }
+ 
+ static int xen_hvm_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 -- 
 2.26.2
 
