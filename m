@@ -7,67 +7,66 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FDCC2D0A3
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:00 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8B8C55178
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0AA722226B
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E480622210
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="dhk9piWO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0AA722226B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Nf+PHswm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E480622210
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5690586E07;
-	Sat, 24 Oct 2020 21:35:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AE2A822FF0;
+	Sat, 24 Oct 2020 21:36:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yg5gS9zVDTHr; Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
+	with ESMTP id cCl64qaLSAxr; Sat, 24 Oct 2020 21:35:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1685986DF2;
-	Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6F078230FB;
+	Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EDBD2C1AD9;
-	Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E64FC0051
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A5EDC0893;
+	Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB9F5C0893
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0D1428749A
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E7CFB86AD7
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jQ2d0PSABB4m for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
+ with ESMTP id J9tfCcjoJXQV for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 51E6487353
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A2E0786A3F
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=2JkDAu+vSiSLfTGnxct94wTATgbmXr+ywebpMNCsh14=; b=dhk9piWOyuBysV0UwXx38nfUr2
- CQyBNE7yCisQMdfZIFGQJcVIgO5KLVmo+yZQqDhFLtoQSO6rbIKIMCol+R4YZihz6WCxczCRik3c7
- UzhuFqeikh2kB/ZF+rCLhxNHCYrCb1IJJO9F8IpCpMYhN3gw2rk2TEJGGidDlUMOTazN1Dy/GsfHf
- AIK7Dw1P1+vm6ObrUR+BFSqamjinUNRLzBDifO4z99QTimTEBNV/nEQiQ45ujtHIxefekX6wyrd95
- 9CBgHlDPYfXd2XQSVZS5tLxSG4MfQmbFnocMFKrKBWzvjZI6tYMtZFT6SFraTbXH5zBP1JXcEvh+H
- LoHlQgxw==;
+ bh=xw8zaOeRQ0PU1xVwW5DvZdQHD7uzCjkfoD1bMKNPBpw=; b=Nf+PHswmeNBSVP2YBC76Apqd+l
+ gT7BFpXNM4GYFCjeEkSQ7NBhCZLNa1ipyvPdXVYLaQWzaDRGjQ5HlV26dFb9Rg36hzmcmgNiGrUMi
+ Z8RqbROdeStx4MJ5jG2VtXnJ9dkNIWtqfYExAVNTzodCIAP8J0fMnM9mA532lZt6UtLJfqcJKAJp+
+ 2OcCR7qZ4jrUcGMkddeVij01kIX/v0w69MN0rgu00qDYhypW+K2yvpgfaK8dPyYyuKRI8cgC0ykdw
+ FxLmmp8DWDct0OXcWtJMsSYTAaVHTrBUeNXmqjT6gKRjT2WEot7lv0+eZmAICyeXIGix9zSc1wTHr
+ z1Qh1jBA==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCS-0008BU-RO; Sat, 24 Oct 2020 21:35:45 +0000
+ id 1kWRCT-0008BZ-1u; Sat, 24 Oct 2020 21:35:45 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCM-001rO9-QO; Sat, 24 Oct 2020 22:35:38 +0100
+ Linux)) id 1kWRCN-001rOb-0e; Sat, 24 Oct 2020 22:35:39 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 09/35] x86/apic: Always provide irq_compose_msi_msg()
- method for vector domain
-Date: Sat, 24 Oct 2020 22:35:09 +0100
-Message-Id: <20201024213535.443185-10-dwmw2@infradead.org>
+Subject: [PATCH v3 16/35] x86/kvm: Use msi_msg shadow structs
+Date: Sat, 24 Oct 2020 22:35:16 +0100
+Message-Id: <20201024213535.443185-17-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
@@ -96,162 +95,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-This shouldn't be dependent on PCI_MSI. HPET and I/O-APIC can deliver
-interrupts through MSI without having any PCI in the system at all.
+Use the bitfields in the x86 shadow structs instead of decomposing the
+32bit value with macros.
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/x86/include/asm/apic.h   |  8 +++-----
- arch/x86/kernel/apic/apic.c   | 32 ++++++++++++++++++++++++++++++
- arch/x86/kernel/apic/msi.c    | 37 -----------------------------------
- arch/x86/kernel/apic/vector.c |  6 ++++++
- 4 files changed, 41 insertions(+), 42 deletions(-)
+ arch/x86/kvm/irq_comm.c | 31 +++++++++++++------------------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 652f62252349..b489bb9894ae 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -520,12 +520,10 @@ static inline void apic_smt_update(void) { }
- #endif
+diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
+index 4aa1c2e00e2a..8a4de3f12820 100644
+--- a/arch/x86/kvm/irq_comm.c
++++ b/arch/x86/kvm/irq_comm.c
+@@ -16,8 +16,6 @@
  
- struct msi_msg;
-+struct irq_cfg;
+ #include <trace/events/kvm.h>
  
--#ifdef CONFIG_PCI_MSI
--void x86_vector_msi_compose_msg(struct irq_data *data, struct msi_msg *msg);
--#else
--# define x86_vector_msi_compose_msg NULL
--#endif
-+extern void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
-+				  bool dmar);
- 
- extern void ioapic_zap_locks(void);
- 
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 54f04355aaa2..4c15bf29ea2c 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -50,6 +50,7 @@
- #include <asm/io_apic.h>
- #include <asm/desc.h>
- #include <asm/hpet.h>
-+#include <asm/msidef.h>
- #include <asm/mtrr.h>
- #include <asm/time.h>
- #include <asm/smp.h>
-@@ -2480,6 +2481,37 @@ int hard_smp_processor_id(void)
- 	return read_apic_id();
- }
- 
-+void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
-+			   bool dmar)
-+{
-+	msg->address_hi = MSI_ADDR_BASE_HI;
-+
-+	msg->address_lo =
-+		MSI_ADDR_BASE_LO |
-+		(apic->dest_mode_logical ?
-+			MSI_ADDR_DEST_MODE_LOGICAL :
-+			MSI_ADDR_DEST_MODE_PHYSICAL) |
-+		MSI_ADDR_REDIRECTION_CPU |
-+		MSI_ADDR_DEST_ID(cfg->dest_apicid);
-+
-+	msg->data =
-+		MSI_DATA_TRIGGER_EDGE |
-+		MSI_DATA_LEVEL_ASSERT |
-+		MSI_DATA_DELIVERY_FIXED |
-+		MSI_DATA_VECTOR(cfg->vector);
-+
-+	/*
-+	 * Only the IOMMU itself can use the trick of putting destination
-+	 * APIC ID into the high bits of the address. Anything else would
-+	 * just be writing to memory if it tried that, and needs IR to
-+	 * address higher APIC IDs.
-+	 */
-+	if (dmar)
-+		msg->address_hi |= MSI_ADDR_EXT_DEST_ID(cfg->dest_apicid);
-+	else
-+		WARN_ON_ONCE(MSI_ADDR_EXT_DEST_ID(cfg->dest_apicid));
-+}
-+
- /*
-  * Override the generic EOI implementation with an optimized version.
-  * Only called during early boot when only one CPU is active and with
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 46ffd41a4238..4eda617eda1e 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -15,7 +15,6 @@
- #include <linux/hpet.h>
- #include <linux/msi.h>
- #include <asm/irqdomain.h>
 -#include <asm/msidef.h>
- #include <asm/hpet.h>
- #include <asm/hw_irq.h>
- #include <asm/apic.h>
-@@ -23,42 +22,6 @@
+-
+ #include "irq.h"
  
- struct irq_domain *x86_pci_msi_default_domain __ro_after_init;
- 
--static void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
--				  bool dmar)
--{
--	msg->address_hi = MSI_ADDR_BASE_HI;
--
--	msg->address_lo =
--		MSI_ADDR_BASE_LO |
--		(apic->dest_mode_logical ?
--			MSI_ADDR_DEST_MODE_LOGICAL :
--			MSI_ADDR_DEST_MODE_PHYSICAL) |
--		MSI_ADDR_REDIRECTION_CPU |
--		MSI_ADDR_DEST_ID(cfg->dest_apicid);
--
--	msg->data =
--		MSI_DATA_TRIGGER_EDGE |
--		MSI_DATA_LEVEL_ASSERT |
--		MSI_DATA_DELIVERY_FIXED |
--		MSI_DATA_VECTOR(cfg->vector);
--
--	/*
--	 * Only the IOMMU itself can use the trick of putting destination
--	 * APIC ID into the high bits of the address. Anything else would
--	 * just be writing to memory if it tried that, and needs IR to
--	 * address higher APIC IDs.
--	 */
--	if (dmar)
--		msg->address_hi |= MSI_ADDR_EXT_DEST_ID(cfg->dest_apicid);
--	else
--		WARN_ON_ONCE(MSI_ADDR_EXT_DEST_ID(cfg->dest_apicid));
--}
--
--void x86_vector_msi_compose_msg(struct irq_data *data, struct msi_msg *msg)
--{
--	__irq_msi_compose_msg(irqd_cfg(data), msg, false);
--}
--
- static void irq_msi_update_msg(struct irq_data *irqd, struct irq_cfg *cfg)
+ #include "ioapic.h"
+@@ -104,22 +102,19 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
+ void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+ 		     struct kvm_lapic_irq *irq)
  {
- 	struct msi_msg msg[2] = { [1] = { }, };
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index 1eac53632786..bb2e2a2488a5 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -818,6 +818,12 @@ void apic_ack_edge(struct irq_data *irqd)
- 	apic_ack_irq(irqd);
- }
- 
-+static void x86_vector_msi_compose_msg(struct irq_data *data,
-+				       struct msi_msg *msg)
-+{
-+       __irq_msi_compose_msg(irqd_cfg(data), msg, false);
-+}
+-	trace_kvm_msi_set_irq(e->msi.address_lo | (kvm->arch.x2apic_format ?
+-	                                     (u64)e->msi.address_hi << 32 : 0),
+-	                      e->msi.data);
+-
+-	irq->dest_id = (e->msi.address_lo &
+-			MSI_ADDR_DEST_ID_MASK) >> MSI_ADDR_DEST_ID_SHIFT;
+-	if (kvm->arch.x2apic_format)
+-		irq->dest_id |= MSI_ADDR_EXT_DEST_ID(e->msi.address_hi);
+-	irq->vector = (e->msi.data &
+-			MSI_DATA_VECTOR_MASK) >> MSI_DATA_VECTOR_SHIFT;
+-	irq->dest_mode = kvm_lapic_irq_dest_mode(
+-	    !!((1 << MSI_ADDR_DEST_MODE_SHIFT) & e->msi.address_lo));
+-	irq->trig_mode = (1 << MSI_DATA_TRIGGER_SHIFT) & e->msi.data;
+-	irq->delivery_mode = e->msi.data & 0x700;
+-	irq->msi_redir_hint = ((e->msi.address_lo
+-		& MSI_ADDR_REDIRECTION_LOWPRI) > 0);
++	struct msi_msg msg = { .address_lo = e->msi.address_lo,
++			       .address_hi = e->msi.address_hi,
++			       .data = e->msi.data };
 +
- static struct irq_chip lapic_controller = {
- 	.name			= "APIC",
- 	.irq_ack		= apic_ack_edge,
++	trace_kvm_msi_set_irq(msg.address_lo | (kvm->arch.x2apic_format ?
++			      (u64)msg.address_hi << 32 : 0), msg.data);
++
++	irq->dest_id = x86_msi_msg_get_destid(&msg, kvm->arch.x2apic_format);
++	irq->vector = msg.arch_data.vector;
++	irq->dest_mode = kvm_lapic_irq_dest_mode(msg.arch_addr_lo.dest_mode_logical);
++	irq->trig_mode = msg.arch_data.is_level;
++	irq->delivery_mode = msg.arch_data.delivery_mode << 8;
++	irq->msi_redir_hint = msg.arch_addr_lo.redirect_hint;
+ 	irq->level = 1;
+ 	irq->shorthand = APIC_DEST_NOSHORT;
+ }
 -- 
 2.26.2
 
