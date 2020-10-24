@@ -7,73 +7,73 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAB2C2D0A3
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE45C55179
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2327A24687
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B4DCF223BE
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TwEX9h4a"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2327A24687
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jZBsmV1Z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4DCF223BE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C7D222288F;
-	Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VyUOn56TwF2e; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1268222E96;
-	Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB2EAC0052;
-	Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8DCB1C0051
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 80FDD87449
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 346BB874F4;
+	Sat, 24 Oct 2020 21:36:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9XJiflchNxgq; Sat, 24 Oct 2020 21:36:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 65AC481B63;
+	Sat, 24 Oct 2020 21:36:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E8DAC0893;
+	Sat, 24 Oct 2020 21:36:08 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D7CAC0052
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 2BE1B23039
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eAelyclmWTZL for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:46 +0000 (UTC)
+ with ESMTP id NU4+beTV-IkG for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7CD8887353
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:46 +0000 (UTC)
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id A40E42305A
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+ d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=C0ceQD7RpCrLmfkKsXqDNRC608zY/4Bwc4glHhGbq80=; b=TwEX9h4adZHoXwYi8vmInLnsVN
- +L00VhuxtBSQRwLUTSJ5jmMYv/ofpq6xWavAf2eLtMgt0QerE2T6qWmlGIPDOYYUoXErC5wT7MW6J
- OC3nYqgXSRYuxPwEPXglZnUB/2RMNn2oWJNVb1sOKN+TmcTG6+YkCmW2KvstC6FwMIFj0W2uU7oUO
- tq2zyrZwt3lZfapPP3J3Uxixizj72G6QEJQ2AhuyKyhF6MJER9cH/0ylydQ+wdoXyp6eB7M+co4/g
- vtQz3atVW+BnhGqrD1RuATTwH9Fu5W0er2CXYIFso+7o8LQ1S10Um/57zMAu8buVBVlL3QoKdVQPa
- H63NuUvg==;
+ bh=tXaDtA8AlDHiJo6CID7MBLTJkVhL6ZWrEjYFDhbVSOc=; b=jZBsmV1Z+bZLBc+Bv0OcQk1yef
+ CKmEMas2B7A5j3beajSBIcV3jUI8nv06JyRiKITWOjYMlyKmHV7yfctYhASQLYyYtjpv7GvSqjgTd
+ 2XPp9rtOnNrgqMz9HJI0N+J4bdHxClCzP3uWonEY3zD+/gamBIaj+rWRtbYZ+8N8J2PpOaLTGzenR
+ nC7PH4cfSTCUeZKQi7q4xZBvDGUlAe+HZiOC7eDamrdwzSfrnqS2u+CQtJKXsrFt8npaAoOYI4fnr
+ qU2sCYEYBteXJi9yGKTr2CDmD/JBPsQMR9rUO1G9yv/jyuQFiKpDoEhWtDRY1PcKj+EhH6P0aVwjz
+ PeEYAtRA==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCO-0008B4-Gj; Sat, 24 Oct 2020 21:35:40 +0000
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kWRCS-0006HB-Cl; Sat, 24 Oct 2020 21:35:46 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCM-001rNo-Lh; Sat, 24 Oct 2020 22:35:38 +0100
+ Linux)) id 1kWRCM-001rOP-UR; Sat, 24 Oct 2020 22:35:38 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 04/35] x86/devicetree: Fix the ioapic interrupt type table
-Date: Sat, 24 Oct 2020 22:35:04 +0100
-Message-Id: <20201024213535.443185-5-dwmw2@infradead.org>
+Subject: [PATCH v3 13/35] iommu/intel: Use msi_msg shadow structs
+Date: Sat, 24 Oct 2020 22:35:13 +0100
+Message-Id: <20201024213535.443185-14-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
  <20201024213535.443185-1-dwmw2@infradead.org>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
+ casper.infradead.org. See http://www.infradead.org/rpr.html
 Cc: linux-hyperv@vger.kernel.org, kvm <kvm@vger.kernel.org>,
  Dexuan Cui <decui@microsoft.com>, linux-kernel <linux-kernel@vger.kernel.org>,
  iommu@lists.linux-foundation.org, maz@misterjones.org,
@@ -97,86 +97,70 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-The ioapic interrupt type table is wrong as it assumes that polarity in
-IO/APIC context means active high when set. But the IO/APIC polarity is
-working the other way round. This works because the ordering of the entries
-is consistent with the device tree and the type information is not used by
-the IO/APIC interrupt chip.
-
-The whole trigger and polarity business of IO/APIC is misleading and the
-corresponding constants which are defined as 0/1 are not used consistently
-and are going to be removed.
-
-Rename the type table members to 'is_level' and 'active_low' and adjust the
-type information for consistency sake.
-
-No functional change.
+Use the bitfields in the x86 shadow struct to compose the MSI message.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/x86/kernel/devicetree.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/iommu/intel/irq_remapping.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kernel/devicetree.c b/arch/x86/kernel/devicetree.c
-index ddffd80f5c52..6a4cb71c2498 100644
---- a/arch/x86/kernel/devicetree.c
-+++ b/arch/x86/kernel/devicetree.c
-@@ -184,31 +184,31 @@ static unsigned int ioapic_id;
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 5628d43b795e..30269b738fa5 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -20,7 +20,6 @@
+ #include <asm/cpu.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/pci-direct.h>
+-#include <asm/msidef.h>
  
- struct of_ioapic_type {
- 	u32 out_type;
--	u32 trigger;
--	u32 polarity;
-+	u32 is_level;
-+	u32 active_low;
+ #include "../irq_remapping.h"
+ 
+@@ -1260,6 +1259,21 @@ static struct irq_chip intel_ir_chip = {
+ 	.irq_set_vcpu_affinity	= intel_ir_set_vcpu_affinity,
  };
  
- static struct of_ioapic_type of_ioapic_type[] =
++static void fill_msi_msg(struct msi_msg *msg, u32 index, u32 subhandle)
++{
++	memset(msg, 0, sizeof(*msg));
++
++	msg->arch_addr_lo.dmar_base_address = X86_MSI_BASE_ADDRESS_LOW;
++	msg->arch_addr_lo.dmar_subhandle_valid = true;
++	msg->arch_addr_lo.dmar_format = true;
++	msg->arch_addr_lo.dmar_index_0_14 = index & 0x7FFF;
++	msg->arch_addr_lo.dmar_index_15 = !!(index & 0x8000);
++
++	msg->address_hi = X86_MSI_BASE_ADDRESS_HIGH;
++
++	msg->arch_data.dmar_subhandle = subhandle;
++}
++
+ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
+ 					     struct irq_cfg *irq_cfg,
+ 					     struct irq_alloc_info *info,
+@@ -1267,7 +1281,6 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
  {
- 	{
--		.out_type	= IRQ_TYPE_EDGE_RISING,
--		.trigger	= IOAPIC_EDGE,
--		.polarity	= 1,
-+		.out_type	= IRQ_TYPE_EDGE_FALLING,
-+		.is_level	= 0,
-+		.active_low	= 1,
- 	},
- 	{
--		.out_type	= IRQ_TYPE_LEVEL_LOW,
--		.trigger	= IOAPIC_LEVEL,
--		.polarity	= 0,
-+		.out_type	= IRQ_TYPE_LEVEL_HIGH,
-+		.is_level	= 1,
-+		.active_low	= 0,
- 	},
- 	{
--		.out_type	= IRQ_TYPE_LEVEL_HIGH,
--		.trigger	= IOAPIC_LEVEL,
--		.polarity	= 1,
-+		.out_type	= IRQ_TYPE_LEVEL_LOW,
-+		.is_level	= 1,
-+		.active_low	= 1,
- 	},
- 	{
--		.out_type	= IRQ_TYPE_EDGE_FALLING,
--		.trigger	= IOAPIC_EDGE,
--		.polarity	= 0,
-+		.out_type	= IRQ_TYPE_EDGE_RISING,
-+		.is_level	= 0,
-+		.active_low	= 0,
- 	},
- };
+ 	struct IR_IO_APIC_route_entry *entry;
+ 	struct irte *irte = &data->irte_entry;
+-	struct msi_msg *msg = &data->msi_entry;
  
-@@ -228,7 +228,7 @@ static int dt_irqdomain_alloc(struct irq_domain *domain, unsigned int virq,
- 		return -EINVAL;
+ 	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
+ 	switch (info->type) {
+@@ -1308,12 +1321,7 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
+ 		else
+ 			set_msi_sid(irte, msi_desc_to_pci_dev(info->desc));
  
- 	it = &of_ioapic_type[type_index];
--	ioapic_set_alloc_attr(&tmp, NUMA_NO_NODE, it->trigger, it->polarity);
-+	ioapic_set_alloc_attr(&tmp, NUMA_NO_NODE, it->is_level, it->active_low);
- 	tmp.devid = mpc_ioapic_id(mp_irqdomain_ioapic_idx(domain));
- 	tmp.ioapic.pin = fwspec->param[0];
+-		msg->address_hi = MSI_ADDR_BASE_HI;
+-		msg->data = sub_handle;
+-		msg->address_lo = MSI_ADDR_BASE_LO | MSI_ADDR_IR_EXT_INT |
+-				  MSI_ADDR_IR_SHV |
+-				  MSI_ADDR_IR_INDEX1(index) |
+-				  MSI_ADDR_IR_INDEX2(index);
++		fill_msi_msg(&data->msi_entry, index, sub_handle);
+ 		break;
  
+ 	default:
 -- 
 2.26.2
 
