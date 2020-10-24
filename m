@@ -2,71 +2,71 @@ Return-Path: <SRS0=QuKU=D7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8B8C55178
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:04 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F76C2D0A3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E480622210
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 173D922365
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Nf+PHswm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E480622210
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EF70Kway"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 173D922365
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AE2A822FF0;
-	Sat, 24 Oct 2020 21:36:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E6E2F86EC0;
+	Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cCl64qaLSAxr; Sat, 24 Oct 2020 21:35:57 +0000 (UTC)
+	with ESMTP id p9W-AMusD1tT; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6F078230FB;
-	Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 667E086DAD;
+	Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A5EDC0893;
-	Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB9F5C0893
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 52F77C0052;
+	Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB89FC0893
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E7CFB86AD7
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 861C486DA1
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id J9tfCcjoJXQV for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+ with ESMTP id hbQ6F6-TNGLu for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A2E0786A3F
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 9F31F8638E
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=xw8zaOeRQ0PU1xVwW5DvZdQHD7uzCjkfoD1bMKNPBpw=; b=Nf+PHswmeNBSVP2YBC76Apqd+l
- gT7BFpXNM4GYFCjeEkSQ7NBhCZLNa1ipyvPdXVYLaQWzaDRGjQ5HlV26dFb9Rg36hzmcmgNiGrUMi
- Z8RqbROdeStx4MJ5jG2VtXnJ9dkNIWtqfYExAVNTzodCIAP8J0fMnM9mA532lZt6UtLJfqcJKAJp+
- 2OcCR7qZ4jrUcGMkddeVij01kIX/v0w69MN0rgu00qDYhypW+K2yvpgfaK8dPyYyuKRI8cgC0ykdw
- FxLmmp8DWDct0OXcWtJMsSYTAaVHTrBUeNXmqjT6gKRjT2WEot7lv0+eZmAICyeXIGix9zSc1wTHr
- z1Qh1jBA==;
+ bh=NLhFJTTd2ekmHJlOdAESXZniD9dUaevnRbr1BsqATkw=; b=EF70KwaycpmQNfTAJyGTT6ea73
+ XgryeUoCCTaDnb1gpRuIKEzO2AAlDAfGT2IEEqPYXvaMewHo2FK1R8c1GMRn6r2+HjBGg/xF9aMHl
+ 4PjjR5qksLMfMSdKWeqXNnZv3c+8lJX7kthPhpVYalFRa5U/HOcQyaZIEDH6Stmk27vF7ffWnGdW2
+ SJ3YTtF47hHuIb/CEomSchlOESARDYQkvHd8FVvHWiTHViLRnstOyld5KBtcq15CF/QXS28oxzO+G
+ uAek7hy0+OvPEJZsLacPMoo/fa5YUxycFOZIVnp11Sq3kzxGiJG85U4FT7tn4O2X2fz1rkSMq84EP
+ 48QKSK1A==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCT-0008BZ-1u; Sat, 24 Oct 2020 21:35:45 +0000
+ id 1kWRCT-0008BY-0B; Sat, 24 Oct 2020 21:35:45 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCN-001rOb-0e; Sat, 24 Oct 2020 22:35:39 +0100
+ Linux)) id 1kWRCM-001rOT-VA; Sat, 24 Oct 2020 22:35:38 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 16/35] x86/kvm: Use msi_msg shadow structs
-Date: Sat, 24 Oct 2020 22:35:16 +0100
-Message-Id: <20201024213535.443185-17-dwmw2@infradead.org>
+Subject: [PATCH v3 14/35] iommu/amd: Use msi_msg shadow structs
+Date: Sat, 24 Oct 2020 22:35:14 +0100
+Message-Id: <20201024213535.443185-15-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
@@ -97,64 +97,140 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Use the bitfields in the x86 shadow structs instead of decomposing the
-32bit value with macros.
+Get rid of the macro mess and use the shadow structs for the x86 specific
+MSI message format. Convert the intcapxt setup to use named bitfields as
+well while touching it anyway.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- arch/x86/kvm/irq_comm.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+ drivers/iommu/amd/init.c  | 46 ++++++++++++++++++++++-----------------
+ drivers/iommu/amd/iommu.c | 14 +++++++-----
+ 2 files changed, 35 insertions(+), 25 deletions(-)
 
-diff --git a/arch/x86/kvm/irq_comm.c b/arch/x86/kvm/irq_comm.c
-index 4aa1c2e00e2a..8a4de3f12820 100644
---- a/arch/x86/kvm/irq_comm.c
-+++ b/arch/x86/kvm/irq_comm.c
-@@ -16,8 +16,6 @@
- 
- #include <trace/events/kvm.h>
- 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 82e4af8f09bb..263670d36fed 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -23,7 +23,6 @@
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/apic.h>
 -#include <asm/msidef.h>
--
- #include "irq.h"
- 
- #include "ioapic.h"
-@@ -104,22 +102,19 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
- void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
- 		     struct kvm_lapic_irq *irq)
- {
--	trace_kvm_msi_set_irq(e->msi.address_lo | (kvm->arch.x2apic_format ?
--	                                     (u64)e->msi.address_hi << 32 : 0),
--	                      e->msi.data);
--
--	irq->dest_id = (e->msi.address_lo &
--			MSI_ADDR_DEST_ID_MASK) >> MSI_ADDR_DEST_ID_SHIFT;
--	if (kvm->arch.x2apic_format)
--		irq->dest_id |= MSI_ADDR_EXT_DEST_ID(e->msi.address_hi);
--	irq->vector = (e->msi.data &
--			MSI_DATA_VECTOR_MASK) >> MSI_DATA_VECTOR_SHIFT;
--	irq->dest_mode = kvm_lapic_irq_dest_mode(
--	    !!((1 << MSI_ADDR_DEST_MODE_SHIFT) & e->msi.address_lo));
--	irq->trig_mode = (1 << MSI_DATA_TRIGGER_SHIFT) & e->msi.data;
--	irq->delivery_mode = e->msi.data & 0x700;
--	irq->msi_redir_hint = ((e->msi.address_lo
--		& MSI_ADDR_REDIRECTION_LOWPRI) > 0);
-+	struct msi_msg msg = { .address_lo = e->msi.address_lo,
-+			       .address_hi = e->msi.address_hi,
-+			       .data = e->msi.data };
-+
-+	trace_kvm_msi_set_irq(msg.address_lo | (kvm->arch.x2apic_format ?
-+			      (u64)msg.address_hi << 32 : 0), msg.data);
-+
-+	irq->dest_id = x86_msi_msg_get_destid(&msg, kvm->arch.x2apic_format);
-+	irq->vector = msg.arch_data.vector;
-+	irq->dest_mode = kvm_lapic_irq_dest_mode(msg.arch_addr_lo.dest_mode_logical);
-+	irq->trig_mode = msg.arch_data.is_level;
-+	irq->delivery_mode = msg.arch_data.delivery_mode << 8;
-+	irq->msi_redir_hint = msg.arch_addr_lo.redirect_hint;
- 	irq->level = 1;
- 	irq->shorthand = APIC_DEST_NOSHORT;
+ #include <asm/gart.h>
+ #include <asm/x86_init.h>
+ #include <asm/iommu_table.h>
+@@ -1966,10 +1965,16 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
+ 	return 0;
  }
+ 
+-#define XT_INT_DEST_MODE(x)	(((x) & 0x1ULL) << 2)
+-#define XT_INT_DEST_LO(x)	(((x) & 0xFFFFFFULL) << 8)
+-#define XT_INT_VEC(x)		(((x) & 0xFFULL) << 32)
+-#define XT_INT_DEST_HI(x)	((((x) >> 24) & 0xFFULL) << 56)
++union intcapxt {
++	u64	capxt;
++	u64	reserved_0		:  2,
++		dest_mode_logical	:  1,
++		reserved_1		:  5,
++		destid_0_23		: 24,
++		vector			:  8,
++		reserved_2		: 16,
++		destid_24_31		:  8;
++} __attribute__ ((packed));
+ 
+ /*
+  * Setup the IntCapXT registers with interrupt routing information
+@@ -1978,28 +1983,29 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
+  */
+ static void iommu_update_intcapxt(struct amd_iommu *iommu)
+ {
+-	u64 val;
+-	u32 addr_lo = readl(iommu->mmio_base + MMIO_MSI_ADDR_LO_OFFSET);
+-	u32 addr_hi = readl(iommu->mmio_base + MMIO_MSI_ADDR_HI_OFFSET);
+-	u32 data    = readl(iommu->mmio_base + MMIO_MSI_DATA_OFFSET);
+-	bool dm     = (addr_lo >> MSI_ADDR_DEST_MODE_SHIFT) & 0x1;
+-	u32 dest    = ((addr_lo >> MSI_ADDR_DEST_ID_SHIFT) & 0xFF);
++	struct msi_msg msg;
++	union intcapxt xt;
++	u32 destid;
+ 
+-	if (x2apic_enabled())
+-		dest |= MSI_ADDR_EXT_DEST_ID(addr_hi);
++	msg.address_lo = readl(iommu->mmio_base + MMIO_MSI_ADDR_LO_OFFSET);
++	msg.address_hi = readl(iommu->mmio_base + MMIO_MSI_ADDR_HI_OFFSET);
++	msg.data = readl(iommu->mmio_base + MMIO_MSI_DATA_OFFSET);
+ 
+-	val = XT_INT_VEC(data & 0xFF) |
+-	      XT_INT_DEST_MODE(dm) |
+-	      XT_INT_DEST_LO(dest) |
+-	      XT_INT_DEST_HI(dest);
++	destid = x86_msi_msg_get_destid(&msg, x2apic_enabled());
++
++	xt.capxt = 0ULL;
++	xt.dest_mode_logical = msg.arch_data.dest_mode_logical;
++	xt.vector = msg.arch_data.vector;
++	xt.destid_0_23 = destid & GENMASK(23, 0);
++	xt.destid_24_31 = destid >> 24;
+ 
+ 	/**
+ 	 * Current IOMMU implemtation uses the same IRQ for all
+ 	 * 3 IOMMU interrupts.
+ 	 */
+-	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_EVT_OFFSET);
+-	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_PPR_OFFSET);
+-	writeq(val, iommu->mmio_base + MMIO_INTCAPXT_GALOG_OFFSET);
++	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_EVT_OFFSET);
++	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_PPR_OFFSET);
++	writeq(xt.capxt, iommu->mmio_base + MMIO_INTCAPXT_GALOG_OFFSET);
+ }
+ 
+ static void _irq_notifier_notify(struct irq_affinity_notify *notify,
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index d7f0c8908602..473de0920b64 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -35,7 +35,6 @@
+ #include <asm/io_apic.h>
+ #include <asm/apic.h>
+ #include <asm/hw_irq.h>
+-#include <asm/msidef.h>
+ #include <asm/proto.h>
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+@@ -3656,13 +3655,20 @@ struct irq_remap_ops amd_iommu_irq_ops = {
+ 	.get_irq_domain		= get_irq_domain,
+ };
+ 
++static void fill_msi_msg(struct msi_msg *msg, u32 index)
++{
++	msg->data = index;
++	msg->address_lo = 0;
++	msg->arch_addr_lo.base_address = X86_MSI_BASE_ADDRESS_LOW;
++	msg->address_hi = X86_MSI_BASE_ADDRESS_HIGH;
++}
++
+ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
+ 				       struct irq_cfg *irq_cfg,
+ 				       struct irq_alloc_info *info,
+ 				       int devid, int index, int sub_handle)
+ {
+ 	struct irq_2_irte *irte_info = &data->irq_2_irte;
+-	struct msi_msg *msg = &data->msi_entry;
+ 	struct IO_APIC_route_entry *entry;
+ 	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
+ 
+@@ -3693,9 +3699,7 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
+ 	case X86_IRQ_ALLOC_TYPE_HPET:
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+-		msg->address_hi = MSI_ADDR_BASE_HI;
+-		msg->address_lo = MSI_ADDR_BASE_LO;
+-		msg->data = irte_info->index;
++		fill_msi_msg(&data->msi_entry, irte_info->index);
+ 		break;
+ 
+ 	default:
 -- 
 2.26.2
 
