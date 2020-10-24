@@ -7,73 +7,74 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB1FC55178
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94390C55179
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:28 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 612D924673
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 56F4B222C3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="mBxWyRIY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 612D924673
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="V66eUBuW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56F4B222C3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4D35386DA3;
-	Sat, 24 Oct 2020 21:36:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 15B6786E59;
+	Sat, 24 Oct 2020 21:36:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RkEMBSNiIYSr; Sat, 24 Oct 2020 21:36:05 +0000 (UTC)
+	with ESMTP id cr95ts6FTxda; Sat, 24 Oct 2020 21:36:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BB28D86DD7;
-	Sat, 24 Oct 2020 21:36:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 80A5686EEB;
+	Sat, 24 Oct 2020 21:35:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8B5AC0052;
-	Sat, 24 Oct 2020 21:36:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9E91C1AD7
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E4A6C0052;
+	Sat, 24 Oct 2020 21:35:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AAF6CC0893
  for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9A82823042
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8A91286E66
  for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M10sCK3z7HzS for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
+ with ESMTP id IHIP1AFGdE37 for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by silver.osuosl.org (Postfix) with ESMTPS id 0764D22E8C
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A8A5386DB2
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+ d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=S1lvl/DC/gyjaWPsgXg2h0mDGLQP5glXEoxBO6BZaJY=; b=mBxWyRIY35nZLEt2obNxgVRpuS
- iZwkZJsQhBYgKuOXTUeqUCNCYMg5LxrEy9feRdC6M/kZMGnoIv4lGhjuLsbLToiwlZ7M28opkRqoE
- C1H9YELtVkBjLe3PQGpvHEJDGn0tVI4aH3U8oXQbz3zlSDxBIITY+9Q8NSxeXJFgad01lUai2okah
- xwhR+Rsd77rje6c/JlvU8I611eNhrd3s9bcvWDUZ0CPPfiNQr/lcnhFq24IBTNpLnMsF4LAJoAx7E
- pybixXVkSFG/b2HXScQJsp7JOPiTZUmXQhfCNJTvZ/yuuLoBQY7rhnnzIffFCVFM9abSXV8cCIk8/
- tt5WMiig==;
+ bh=sMMy3wXS54uijk4JH5h3J7a4vVaW9RZ2xz4PorGmAdc=; b=V66eUBuWO4rf6hZdw+dIrvBEom
+ 6ghRQagZ472dGOfBPsSM+j2XG/Npz8Q5rFD6FRcIj0XP5I/rN0GS5Cc/ty2kBdbSZVLJXyCQ355Vz
+ 80E33MCeXrBP871hJmda8b46XjejL84Qhm3XyUAGMp6lSY3PtZqBSabd2HPdvZrM/qlNlCvXxI7jN
+ 867hMv150JWpcevvEWqw6dwecZpDT7HzrfaozBsG18H1Sz+GnF+OlkYoT9w4p7QvqVVJg81/VEpYa
+ Npx+OZtLDkTIcf1btcw2Z2W7UfcloK0jGCOgo7xT3axgO+P1DZ8ERe/E/N+0CEZR/1Tv3GRP4un9j
+ hu20adpA==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
- by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCS-0008BS-OV; Sat, 24 Oct 2020 21:35:44 +0000
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kWRCS-0006HI-P8; Sat, 24 Oct 2020 21:35:46 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCM-001rNw-NW; Sat, 24 Oct 2020 22:35:38 +0100
+ Linux)) id 1kWRCN-001rPC-9N; Sat, 24 Oct 2020 22:35:39 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 06/35] x86/apic: Replace pointless apic::dest_logical usage
-Date: Sat, 24 Oct 2020 22:35:06 +0100
-Message-Id: <20201024213535.443185-7-dwmw2@infradead.org>
+Subject: [PATCH v3 25/35] iommu/vt-d: Implement select() method on remapping
+ irqdomain
+Date: Sat, 24 Oct 2020 22:35:25 +0100
+Message-Id: <20201024213535.443185-26-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
  <20201024213535.443185-1-dwmw2@infradead.org>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- merlin.infradead.org. See http://www.infradead.org/rpr.html
+ casper.infradead.org. See http://www.infradead.org/rpr.html
 Cc: linux-hyperv@vger.kernel.org, kvm <kvm@vger.kernel.org>,
  Dexuan Cui <decui@microsoft.com>, linux-kernel <linux-kernel@vger.kernel.org>,
  iommu@lists.linux-foundation.org, maz@misterjones.org,
@@ -95,77 +96,41 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-All these functions are only used for logical destination mode. So reading
-the destination mode mask from the apic structure is a pointless
-exercise. Just hand in the proper constant: APIC_DEST_LOGICAL.
+Preparatory for removing irq_remapping_get_irq_domain()
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/kernel/apic/apic_flat_64.c   | 2 +-
- arch/x86/kernel/apic/ipi.c            | 6 +++---
- arch/x86/kernel/apic/x2apic_cluster.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/irq_remapping.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/x86/kernel/apic/apic_flat_64.c b/arch/x86/kernel/apic/apic_flat_64.c
-index fdd38a17f835..6df837fd5081 100644
---- a/arch/x86/kernel/apic/apic_flat_64.c
-+++ b/arch/x86/kernel/apic/apic_flat_64.c
-@@ -53,7 +53,7 @@ static void _flat_send_IPI_mask(unsigned long mask, int vector)
- 	unsigned long flags;
- 
- 	local_irq_save(flags);
--	__default_send_IPI_dest_field(mask, vector, apic->dest_logical);
-+	__default_send_IPI_dest_field(mask, vector, APIC_DEST_LOGICAL);
- 	local_irq_restore(flags);
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 96c84b19940e..b3b079c0b51e 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1431,7 +1431,20 @@ static void intel_irq_remapping_deactivate(struct irq_domain *domain,
+ 	modify_irte(&data->irq_2_iommu, &entry);
  }
  
-diff --git a/arch/x86/kernel/apic/ipi.c b/arch/x86/kernel/apic/ipi.c
-index 387154e39e08..d1fb874fbe64 100644
---- a/arch/x86/kernel/apic/ipi.c
-+++ b/arch/x86/kernel/apic/ipi.c
-@@ -260,7 +260,7 @@ void default_send_IPI_mask_sequence_logical(const struct cpumask *mask,
- 	for_each_cpu(query_cpu, mask)
- 		__default_send_IPI_dest_field(
- 			early_per_cpu(x86_cpu_to_logical_apicid, query_cpu),
--			vector, apic->dest_logical);
-+			vector, APIC_DEST_LOGICAL);
- 	local_irq_restore(flags);
- }
- 
-@@ -279,7 +279,7 @@ void default_send_IPI_mask_allbutself_logical(const struct cpumask *mask,
- 			continue;
- 		__default_send_IPI_dest_field(
- 			early_per_cpu(x86_cpu_to_logical_apicid, query_cpu),
--			vector, apic->dest_logical);
-+			vector, APIC_DEST_LOGICAL);
- 		}
- 	local_irq_restore(flags);
- }
-@@ -297,7 +297,7 @@ void default_send_IPI_mask_logical(const struct cpumask *cpumask, int vector)
- 
- 	local_irq_save(flags);
- 	WARN_ON(mask & ~cpumask_bits(cpu_online_mask)[0]);
--	__default_send_IPI_dest_field(mask, vector, apic->dest_logical);
-+	__default_send_IPI_dest_field(mask, vector, APIC_DEST_LOGICAL);
- 	local_irq_restore(flags);
- }
- 
-diff --git a/arch/x86/kernel/apic/x2apic_cluster.c b/arch/x86/kernel/apic/x2apic_cluster.c
-index 82fb43d807f7..f77e9fb7aac1 100644
---- a/arch/x86/kernel/apic/x2apic_cluster.c
-+++ b/arch/x86/kernel/apic/x2apic_cluster.c
-@@ -61,7 +61,7 @@ __x2apic_send_IPI_mask(const struct cpumask *mask, int vector, int apic_dest)
- 		if (!dest)
- 			continue;
- 
--		__x2apic_send_IPI_dest(dest, vector, apic->dest_logical);
-+		__x2apic_send_IPI_dest(dest, vector, APIC_DEST_LOGICAL);
- 		/* Remove cluster CPUs from tmpmask */
- 		cpumask_andnot(tmpmsk, tmpmsk, &cmsk->mask);
- 	}
++static int intel_irq_remapping_select(struct irq_domain *d,
++				      struct irq_fwspec *fwspec,
++				      enum irq_domain_bus_token bus_token)
++{
++	if (x86_fwspec_is_ioapic(fwspec))
++		return d == map_ioapic_to_ir(fwspec->param[0]);
++	else if (x86_fwspec_is_hpet(fwspec))
++		return d == map_hpet_to_ir(fwspec->param[0]);
++
++	return 0;
++}
++
+ static const struct irq_domain_ops intel_ir_domain_ops = {
++	.select = intel_irq_remapping_select,
+ 	.alloc = intel_irq_remapping_alloc,
+ 	.free = intel_irq_remapping_free,
+ 	.activate = intel_irq_remapping_activate,
 -- 
 2.26.2
 
