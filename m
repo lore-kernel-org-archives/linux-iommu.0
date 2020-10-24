@@ -2,75 +2,83 @@ Return-Path: <SRS0=QuKU=D7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30BA8C55178
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 19:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1746C2D0A3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD1F0222EB
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 19:37:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 93CA62468A
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ewdkq1HH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD1F0222EB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="c4PrqY0S"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93CA62468A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5F8FB868A9;
-	Sat, 24 Oct 2020 19:37:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6E17986E28;
+	Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1bUiYQq4dyW7; Sat, 24 Oct 2020 19:37:23 +0000 (UTC)
+	with ESMTP id qH_qHpWe1MLw; Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D9AB48688A;
-	Sat, 24 Oct 2020 19:37:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 48C8386D8F;
+	Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB96AC0052;
-	Sat, 24 Oct 2020 19:37:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 27F87C1AD8;
+	Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C5D42C0051
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 19:37:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC818C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9BF5722DDB
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 19:37:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 94F0B22E96
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 54l6i05-YrSe for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 19:37:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 6DA5822E8C
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 19:37:21 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for 5.10
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1603568241;
- bh=nNMvH4+UmBjeC/7DRNagbhqqIqRv/Uo4MYVju0/JHfQ=;
- h=From:In-Reply-To:References:Date:To:Cc:From;
- b=Ewdkq1HH2dTj8++IfW5Ofp6sezrJrlQL5wPtQjY3o1ctljjFIj9M9dq29FHi9USm9
- Tq81aXMzbvdwe7fnr+cbPNeY5Efo/XcR0ZoT4DIq7VrMHSlpPknD3GEoyP7XQgMs+Y
- Kj2tGPxJ5uwxibuUCZpTASa9g6Z2nA2WQ7hLvpkA=
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20201024141935.GA3556641@infradead.org>
-References: <20201024141935.GA3556641@infradead.org>
-X-PR-Tracked-List-Id: Development issues for Linux IOMMU support
- <iommu.lists.linux-foundation.org>
-X-PR-Tracked-Message-Id: <20201024141935.GA3556641@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
- tags/dma-mapping-5.10-1
-X-PR-Tracked-Commit-Id: 6857a5ebaabc5b9d989872700b4b71dd2a6d6453
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1b307ac87075c3207c345822ea276fe4f28481d7
-Message-Id: <160356824105.4617.8041494852223115716.pr-tracker-bot@kernel.org>
-Date: Sat, 24 Oct 2020 19:37:21 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: iommu@lists.linux-foundation.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
+ with ESMTP id AzDuAbseWrqP for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id CBCD22288F
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
+ MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+ Reply-To:Content-Type:Content-ID:Content-Description;
+ bh=j8yx8UZGkkgJFZytyZ6qp2N6IE4R2j2WOfRw0cU2eg0=; b=c4PrqY0Sw2gyT5FhUqzJHyXFpX
+ 9RfjAP4Dhw2AKcmR9PtzNHMnOf5hPAi+yquiWwoNlA871X+qNPC/7SpDCBNx3xz/wsqG/iB+wjd0Y
+ jAkl2FAD4QTDHF3k48QuLt+fAKwOssUFb3bEfec5cQwhmnSgMU726YLLNoyitQgqEBsrzcRqKIDs+
+ tPuno7XMj3Ae77yIDTJ5I80NPe1LQNQx5P9ztCppsD9OaHWpgogD7l1MoszYtaNGJlldzolP3tkYF
+ /ZiuY4JC9JmxQwTaimrifxv6lu3Pa9Cu3ZreP2dE9sljzvfb6Q0eeFBfjnm+JNg2Z15w+jjag0b3N
+ PTUC5J9Q==;
+Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kWRCN-0006Ge-Uw; Sat, 24 Oct 2020 21:35:41 +0000
+Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
+ Linux)) id 1kWRCM-001rNc-JR; Sat, 24 Oct 2020 22:35:38 +0100
+From: David Woodhouse <dwmw2@infradead.org>
+To: x86@kernel.org
+Subject: [PATCH v3 01/35] x86/apic: Fix x2apic enablement without interrupt
+ remapping
+Date: Sat, 24 Oct 2020 22:35:01 +0100
+Message-Id: <20201024213535.443185-2-dwmw2@infradead.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
+References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
+ <20201024213535.443185-1-dwmw2@infradead.org>
+MIME-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: linux-hyperv@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, linux-kernel <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, maz@misterjones.org,
+ Paolo Bonzini <pbonzini@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,24 +91,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pull request you sent on Sat, 24 Oct 2020 16:19:35 +0200:
+From: David Woodhouse <dwmw@amazon.co.uk>
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.10-1
+Currently, Linux as a hypervisor guest will enable x2apic only if there are
+no CPUs present at boot time with an APIC ID above 255.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1b307ac87075c3207c345822ea276fe4f28481d7
+Hotplugging a CPU later with a higher APIC ID would result in a CPU which
+cannot be targeted by external interrupts.
 
-Thank you!
+Add a filter in x2apic_apic_id_valid() which can be used to prevent such
+CPUs from coming online, and allow x2apic to be enabled even if they are
+present at boot time.
 
+Fixes: ce69a784504 ("x86/apic: Enable x2APIC without interrupt remapping under KVM")
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/include/asm/apic.h        |  1 +
+ arch/x86/kernel/apic/apic.c        | 14 ++++++++------
+ arch/x86/kernel/apic/x2apic_phys.c |  9 +++++++++
+ 3 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 1c129abb7f09..b0fd204e0023 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -259,6 +259,7 @@ static inline u64 native_x2apic_icr_read(void)
+ 
+ extern int x2apic_mode;
+ extern int x2apic_phys;
++extern void __init x2apic_set_max_apicid(u32 apicid);
+ extern void __init check_x2apic(void);
+ extern void x2apic_setup(void);
+ static inline int x2apic_enabled(void)
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index b3eef1d5c903..113f6ca7b828 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -1841,20 +1841,22 @@ static __init void try_to_enable_x2apic(int remap_mode)
+ 		return;
+ 
+ 	if (remap_mode != IRQ_REMAP_X2APIC_MODE) {
+-		/* IR is required if there is APIC ID > 255 even when running
+-		 * under KVM
++		/*
++		 * Using X2APIC without IR is not architecturally supported
++		 * on bare metal but may be supported in guests.
+ 		 */
+-		if (max_physical_apicid > 255 ||
+-		    !x86_init.hyper.x2apic_available()) {
++		if (!x86_init.hyper.x2apic_available()) {
+ 			pr_info("x2apic: IRQ remapping doesn't support X2APIC mode\n");
+ 			x2apic_disable();
+ 			return;
+ 		}
+ 
+ 		/*
+-		 * without IR all CPUs can be addressed by IOAPIC/MSI
+-		 * only in physical mode
++		 * Without IR, all CPUs can be addressed by IOAPIC/MSI only
++		 * in physical mode, and CPUs with an APIC ID that cannnot
++		 * be addressed must not be brought online.
+ 		 */
++		x2apic_set_max_apicid(255);
+ 		x2apic_phys = 1;
+ 	}
+ 	x2apic_enable();
+diff --git a/arch/x86/kernel/apic/x2apic_phys.c b/arch/x86/kernel/apic/x2apic_phys.c
+index bc9693841353..e14eae6d6ea7 100644
+--- a/arch/x86/kernel/apic/x2apic_phys.c
++++ b/arch/x86/kernel/apic/x2apic_phys.c
+@@ -8,6 +8,12 @@
+ int x2apic_phys;
+ 
+ static struct apic apic_x2apic_phys;
++static u32 x2apic_max_apicid __ro_after_init;
++
++void __init x2apic_set_max_apicid(u32 apicid)
++{
++	x2apic_max_apicid = apicid;
++}
+ 
+ static int __init set_x2apic_phys_mode(char *arg)
+ {
+@@ -98,6 +104,9 @@ static int x2apic_phys_probe(void)
+ /* Common x2apic functions, also used by x2apic_cluster */
+ int x2apic_apic_id_valid(u32 apicid)
+ {
++	if (x2apic_max_apicid && apicid > x2apic_max_apicid)
++		return 0;
++
+ 	return 1;
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.26.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
