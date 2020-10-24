@@ -2,78 +2,78 @@ Return-Path: <SRS0=QuKU=D7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEEAC5DF9D
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44212C2D0A3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 67331223BE
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CC1A924694
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fWt8dGKh"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67331223BE
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="3Zk5cnG6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC1A924694
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8687D86DF8;
-	Sat, 24 Oct 2020 21:36:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lMHwMgnlt9Mh; Sat, 24 Oct 2020 21:35:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BB3BB86DE9;
-	Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AEC45C1AD8;
-	Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 618DFC0052
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A9301874BB
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5B53287555;
+	Sat, 24 Oct 2020 21:36:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JEaFKPTZX0dg; Sat, 24 Oct 2020 21:36:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 081448735D;
+	Sat, 24 Oct 2020 21:36:06 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CF93CC1AD8;
+	Sat, 24 Oct 2020 21:36:05 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2EA9C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 94FD386A77
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5yWLkz0VBw3Y for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:50 +0000 (UTC)
+ with ESMTP id EogwivUemqwW for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:47 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B272D87484
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:49 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 19501867CF
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
- MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
- Reply-To:Content-Type:Content-ID:Content-Description;
- bh=zijc/whkOmfLXIiirWH/gYILveEHShuI4ufUQxZE7qw=; b=fWt8dGKh7QTvP+OygUJewhm3u3
- U+nM12D9bRE5TDcVFQZQ7CvgupliaH6XLDlLzuaRe+oFKwMtHdwxJ90q1QXSdsHTHtp8I2XASVMJH
- zpYJrktcyQD78RM1USH+Jv/EzT5SA5o2+pR94AeKuaKxJG39oRdFzcQgBUER8/acKL3uNSNNH/ihR
- TGO19pNXmPwH1dNF0g9hi+bgw0iQDqUrNggvHMJNOXV8AXijNXeCqy1rJ3JNIH4fYFFjA2kibXi6J
- NbDaUK9QDnhfi63eDDjOyZhjh8GbWLtpS5IPLLNJdPr5GFm/qmheWsXfG0Y60kdmpPHkWOWcDSxkP
- akmrQgNg==;
+ d=infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+ Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
+ To:From:Reply-To:Content-ID:Content-Description;
+ bh=BB0rtOqqhF/O+4Eyi+jPOjXIPrc5yFSdnqnIg/CmQXM=; b=3Zk5cnG6/nm0qE6vEP5tNuuvKL
+ FLwPSenwz6cySsnsI/i4ie8PSqyWUnjLgI25kG+98FxyD1nyee567XX7S6dwocmjdruxLkkMb3vYI
+ GlvHkiy4hE1FgEAH14b0gaADbnRoQ+MJwuqcZjV38y6M7nSv6e1KIMPK7o/zwomzABdP/3RhvNnXy
+ er4F+f9OPWoe3KlH4RPvBEtg/ZuvqR5CTUowY9JaUd0geghKIQTdIb7TTfbCz0WQ6KnhUXOVidmbX
+ IxvTCcHaTCqSien6sc03PRyh/99ZBPUAgi5n1mDsu1aCdzAEdH0J+L62RbK/f+CAiM9vTLcWBGfQ1
+ Zri9K4fQ==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
- by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCS-0006HA-8N; Sat, 24 Oct 2020 21:35:45 +0000
+ by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kWRCO-0008B1-GY; Sat, 24 Oct 2020 21:35:40 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCM-001rO4-PJ; Sat, 24 Oct 2020 22:35:38 +0100
+ Linux)) id 1kWRCM-001rNZ-IO; Sat, 24 Oct 2020 22:35:38 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 08/35] x86/apic: Cleanup destination mode
-Date: Sat, 24 Oct 2020 22:35:08 +0100
-Message-Id: <20201024213535.443185-9-dwmw2@infradead.org>
+Subject: [PATCH v3 00/35] Fix x2apic enablement and allow more CPUs,
+ clean up I/OAPIC and MSI bitfields
+Date: Sat, 24 Oct 2020 22:35:00 +0100
+Message-Id: <20201024213535.443185-1-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
+In-Reply-To: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
- <20201024213535.443185-1-dwmw2@infradead.org>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
+ merlin.infradead.org. See http://www.infradead.org/rpr.html
 Cc: linux-hyperv@vger.kernel.org, kvm <kvm@vger.kernel.org>,
  Dexuan Cui <decui@microsoft.com>, linux-kernel <linux-kernel@vger.kernel.org>,
  iommu@lists.linux-foundation.org, maz@misterjones.org,
@@ -90,352 +90,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
-
-apic::irq_dest_mode is actually a boolean, but defined as u32 and named in
-a way which does not explain what it means.
-
-Make it a boolean and rename it to 'dest_mode_logical'
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
----
- arch/x86/include/asm/apic.h           | 2 +-
- arch/x86/kernel/apic/apic.c           | 2 +-
- arch/x86/kernel/apic/apic_flat_64.c   | 4 ++--
- arch/x86/kernel/apic/apic_noop.c      | 4 +---
- arch/x86/kernel/apic/apic_numachip.c  | 4 ++--
- arch/x86/kernel/apic/bigsmp_32.c      | 3 +--
- arch/x86/kernel/apic/io_apic.c        | 2 +-
- arch/x86/kernel/apic/msi.c            | 6 +++---
- arch/x86/kernel/apic/probe_32.c       | 3 +--
- arch/x86/kernel/apic/x2apic_cluster.c | 2 +-
- arch/x86/kernel/apic/x2apic_phys.c    | 2 +-
- arch/x86/kernel/apic/x2apic_uv_x.c    | 2 +-
- arch/x86/kernel/smpboot.c             | 7 ++-----
- arch/x86/platform/uv/uv_irq.c         | 2 +-
- arch/x86/xen/apic.c                   | 3 +--
- drivers/iommu/amd/amd_iommu_types.h   | 2 +-
- drivers/iommu/amd/iommu.c             | 8 ++++----
- drivers/iommu/intel/irq_remapping.c   | 2 +-
- 18 files changed, 26 insertions(+), 34 deletions(-)
-
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 019d7ac3b16e..652f62252349 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -309,7 +309,7 @@ struct apic {
- 	u32	disable_esr;
- 
- 	enum apic_delivery_modes delivery_mode;
--	u32	irq_dest_mode;
-+	bool	dest_mode_logical;
- 
- 	u32	(*calc_dest_apicid)(unsigned int cpu);
- 
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 29d28b34cb2f..54f04355aaa2 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -1591,7 +1591,7 @@ static void setup_local_APIC(void)
- 	apic->init_apic_ldr();
- 
- #ifdef CONFIG_X86_32
--	if (apic->irq_dest_mode == 1) {
-+	if (apic->dest_mode_logical) {
- 		int logical_apicid, ldr_apicid;
- 
- 		/*
-diff --git a/arch/x86/kernel/apic/apic_flat_64.c b/arch/x86/kernel/apic/apic_flat_64.c
-index bbb1b89fe711..8f72b4351c9f 100644
---- a/arch/x86/kernel/apic/apic_flat_64.c
-+++ b/arch/x86/kernel/apic/apic_flat_64.c
-@@ -114,7 +114,7 @@ static struct apic apic_flat __ro_after_init = {
- 	.apic_id_registered		= flat_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 1, /* logical */
-+	.dest_mode_logical		= true,
- 
- 	.disable_esr			= 0,
- 
-@@ -205,7 +205,7 @@ static struct apic apic_physflat __ro_after_init = {
- 	.apic_id_registered		= flat_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 0, /* physical */
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/apic/apic_noop.c b/arch/x86/kernel/apic/apic_noop.c
-index 38f167ce5031..fe78319e0f7a 100644
---- a/arch/x86/kernel/apic/apic_noop.c
-+++ b/arch/x86/kernel/apic/apic_noop.c
-@@ -96,8 +96,7 @@ struct apic apic_noop __ro_after_init = {
- 	.apic_id_registered		= noop_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	/* logical delivery broadcast to all CPUs: */
--	.irq_dest_mode			= 1,
-+	.dest_mode_logical		= true,
- 
- 	.disable_esr			= 0,
- 
-@@ -105,7 +104,6 @@ struct apic apic_noop __ro_after_init = {
- 	.init_apic_ldr			= noop_init_apic_ldr,
- 	.ioapic_phys_id_map		= default_ioapic_phys_id_map,
- 	.setup_apic_routing		= NULL,
--
- 	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
- 	.apicid_to_cpu_present		= physid_set_mask_of_physid,
- 
-diff --git a/arch/x86/kernel/apic/apic_numachip.c b/arch/x86/kernel/apic/apic_numachip.c
-index 4ebf9fe2c95d..a54d817eb4b6 100644
---- a/arch/x86/kernel/apic/apic_numachip.c
-+++ b/arch/x86/kernel/apic/apic_numachip.c
-@@ -247,7 +247,7 @@ static const struct apic apic_numachip1 __refconst = {
- 	.apic_id_registered		= numachip_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 0, /* physical */
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 0,
- 
-@@ -294,7 +294,7 @@ static const struct apic apic_numachip2 __refconst = {
- 	.apic_id_registered		= numachip_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 0, /* physical */
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/apic/bigsmp_32.c b/arch/x86/kernel/apic/bigsmp_32.c
-index 64c375b8c54e..77555f66c14d 100644
---- a/arch/x86/kernel/apic/bigsmp_32.c
-+++ b/arch/x86/kernel/apic/bigsmp_32.c
-@@ -128,8 +128,7 @@ static struct apic apic_bigsmp __ro_after_init = {
- 	.apic_id_registered		= bigsmp_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	/* phys delivery to target CPU: */
--	.irq_dest_mode			= 0,
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 1,
- 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index cff6cbc3d183..c6d92d2570d0 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2950,7 +2950,7 @@ static void mp_setup_entry(struct irq_cfg *cfg, struct mp_chip_data *data,
- {
- 	memset(entry, 0, sizeof(*entry));
- 	entry->delivery_mode = apic->delivery_mode;
--	entry->dest_mode     = apic->irq_dest_mode;
-+	entry->dest_mode     = apic->dest_mode_logical;
- 	entry->dest	     = cfg->dest_apicid;
- 	entry->vector	     = cfg->vector;
- 	entry->trigger	     = data->trigger;
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 516df47bde73..46ffd41a4238 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -30,9 +30,9 @@ static void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
- 
- 	msg->address_lo =
- 		MSI_ADDR_BASE_LO |
--		((apic->irq_dest_mode == 0) ?
--			MSI_ADDR_DEST_MODE_PHYSICAL :
--			MSI_ADDR_DEST_MODE_LOGICAL) |
-+		(apic->dest_mode_logical ?
-+			MSI_ADDR_DEST_MODE_LOGICAL :
-+			MSI_ADDR_DEST_MODE_PHYSICAL) |
- 		MSI_ADDR_REDIRECTION_CPU |
- 		MSI_ADDR_DEST_ID(cfg->dest_apicid);
- 
-diff --git a/arch/x86/kernel/apic/probe_32.c b/arch/x86/kernel/apic/probe_32.c
-index 97652aacf3e1..a61f642b1b90 100644
---- a/arch/x86/kernel/apic/probe_32.c
-+++ b/arch/x86/kernel/apic/probe_32.c
-@@ -70,8 +70,7 @@ static struct apic apic_default __ro_after_init = {
- 	.apic_id_registered		= default_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	/* logical delivery broadcast to all CPUs: */
--	.irq_dest_mode			= 1,
-+	.dest_mode_logical		= true,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/apic/x2apic_cluster.c b/arch/x86/kernel/apic/x2apic_cluster.c
-index 53390fc9f51e..df6adc5674c9 100644
---- a/arch/x86/kernel/apic/x2apic_cluster.c
-+++ b/arch/x86/kernel/apic/x2apic_cluster.c
-@@ -185,7 +185,7 @@ static struct apic apic_x2apic_cluster __ro_after_init = {
- 	.apic_id_registered		= x2apic_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 1, /* logical */
-+	.dest_mode_logical		= true,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/apic/x2apic_phys.c b/arch/x86/kernel/apic/x2apic_phys.c
-index ee0c4d08092c..0e4e81971567 100644
---- a/arch/x86/kernel/apic/x2apic_phys.c
-+++ b/arch/x86/kernel/apic/x2apic_phys.c
-@@ -158,7 +158,7 @@ static struct apic apic_x2apic_phys __ro_after_init = {
- 	.apic_id_registered		= x2apic_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 0, /* physical */
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/apic/x2apic_uv_x.c b/arch/x86/kernel/apic/x2apic_uv_x.c
-index d21a6853afee..de94181f4d0c 100644
---- a/arch/x86/kernel/apic/x2apic_uv_x.c
-+++ b/arch/x86/kernel/apic/x2apic_uv_x.c
-@@ -808,7 +808,7 @@ static struct apic apic_x2apic_uv_x __ro_after_init = {
- 	.apic_id_registered		= uv_apic_id_registered,
- 
- 	.delivery_mode			= APIC_DELIVERY_MODE_FIXED,
--	.irq_dest_mode			= 0, /* Physical */
-+	.dest_mode_logical		= false,
- 
- 	.disable_esr			= 0,
- 
-diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 6c14f1091f60..d133d6580f41 100644
---- a/arch/x86/kernel/smpboot.c
-+++ b/arch/x86/kernel/smpboot.c
-@@ -747,7 +747,7 @@ static void __init smp_quirk_init_udelay(void)
- int
- wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
- {
--	u32 dm = apic->irq_dest_mode ? APIC_DEST_LOGICAL : APIC_DEST_PHYSICAL;
-+	u32 dm = apic->dest_mode_logical ? APIC_DEST_LOGICAL : APIC_DEST_PHYSICAL;
- 	unsigned long send_status, accept_status = 0;
- 	int maxlvt;
- 
-@@ -981,10 +981,7 @@ wakeup_cpu_via_init_nmi(int cpu, unsigned long start_ip, int apicid,
- 	if (!boot_error) {
- 		enable_start_cpu0 = 1;
- 		*cpu0_nmi_registered = 1;
--		if (apic->irq_dest_mode)
--			id = cpu0_logical_apicid;
--		else
--			id = apicid;
-+		id = apic->dest_mode_logical ? cpu0_logical_apicid : apicid;
- 		boot_error = wakeup_secondary_cpu_via_nmi(id, start_ip);
- 	}
- 
-diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-index e7020d162949..1a536a187d74 100644
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -36,7 +36,7 @@ static void uv_program_mmr(struct irq_cfg *cfg, struct uv_irq_2_mmr_pnode *info)
- 	entry = (struct uv_IO_APIC_route_entry *)&mmr_value;
- 	entry->vector		= cfg->vector;
- 	entry->delivery_mode	= apic->delivery_mode;
--	entry->dest_mode	= apic->irq_dest_mode;
-+	entry->dest_mode	= apic->dest_mode_logical;
- 	entry->polarity		= 0;
- 	entry->trigger		= 0;
- 	entry->mask		= 0;
-diff --git a/arch/x86/xen/apic.c b/arch/x86/xen/apic.c
-index c35c24b5bc01..0d46cc283cf5 100644
---- a/arch/x86/xen/apic.c
-+++ b/arch/x86/xen/apic.c
-@@ -148,8 +148,7 @@ static struct apic xen_pv_apic = {
- 	.apic_id_valid 			= xen_id_always_valid,
- 	.apic_id_registered 		= xen_id_always_registered,
- 
--	/* .irq_delivery_mode - used in native_compose_msi_msg only */
--	/* .irq_dest_mode     - used in native_compose_msi_msg only */
-+	/* .delivery_mode and .dest_mode_logical not used by XENPV */
- 
- 	.disable_esr			= 0,
- 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index f696ac7c5f89..ba74a722a400 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -893,7 +893,7 @@ struct amd_ir_data {
- };
- 
- struct amd_irte_ops {
--	void (*prepare)(void *, u32, u32, u8, u32, int);
-+	void (*prepare)(void *, u32, bool, u8, u32, int);
- 	void (*activate)(void *, u16, u16);
- 	void (*deactivate)(void *, u16, u16);
- 	void (*set_affinity)(void *, u16, u16, u8, u32);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index bc81b91f89fe..d7f0c8908602 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3466,7 +3466,7 @@ static void free_irte(u16 devid, int index)
- }
- 
- static void irte_prepare(void *entry,
--			 u32 delivery_mode, u32 dest_mode,
-+			 u32 delivery_mode, bool dest_mode,
- 			 u8 vector, u32 dest_apicid, int devid)
- {
- 	union irte *irte = (union irte *) entry;
-@@ -3480,7 +3480,7 @@ static void irte_prepare(void *entry,
- }
- 
- static void irte_ga_prepare(void *entry,
--			    u32 delivery_mode, u32 dest_mode,
-+			    u32 delivery_mode, bool dest_mode,
- 			    u8 vector, u32 dest_apicid, int devid)
- {
- 	struct irte_ga *irte = (struct irte_ga *) entry;
-@@ -3672,7 +3672,7 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
- 	data->irq_2_irte.devid = devid;
- 	data->irq_2_irte.index = index + sub_handle;
- 	iommu->irte_ops->prepare(data->entry, apic->delivery_mode,
--				 apic->irq_dest_mode, irq_cfg->vector,
-+				 apic->dest_mode_logical, irq_cfg->vector,
- 				 irq_cfg->dest_apicid, devid);
- 
- 	switch (info->type) {
-@@ -3943,7 +3943,7 @@ int amd_iommu_deactivate_guest_mode(void *data)
- 	entry->hi.val = 0;
- 
- 	entry->lo.fields_remap.valid       = valid;
--	entry->lo.fields_remap.dm          = apic->irq_dest_mode;
-+	entry->lo.fields_remap.dm          = apic->dest_mode_logical;
- 	entry->lo.fields_remap.int_type    = apic->delivery_mode;
- 	entry->hi.fields.vector            = cfg->vector;
- 	entry->lo.fields_remap.destination =
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index d44e719d1984..5628d43b795e 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -1113,7 +1113,7 @@ static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
- 	memset(irte, 0, sizeof(*irte));
- 
- 	irte->present = 1;
--	irte->dst_mode = apic->irq_dest_mode;
-+	irte->dst_mode = apic->dest_mode_logical;
- 	/*
- 	 * Trigger mode in the IRTE will always be edge, and for IO-APIC, the
- 	 * actual level or edge trigger will be setup in the IO-APIC
--- 
-2.26.2
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CkZpeCB0aGUgY29uZGl0aW9ucyBmb3IgZW5hYmxpbmcgeDJhcGljIG9uIGd1ZXN0cyB3aXRob3V0
+IGludGVycnVwdCAKcmVtYXBwaW5nLCBhbmQgc3VwcG9ydCAxNS1iaXQgRXh0ZW5kZWQgRGVzdGlu
+YXRpb24gSUQgdG8gYWxsb3cgMzI3NjggCkNQVXMgd2l0aG91dCBJUiBvbiBoeXBlcnZpc29ycyB0
+aGF0IHN1cHBvcnQgaXQuCgpNYWtlIHRoZSBJL09BUElDIGNvZGUgZ2VuZXJhdGUgaXRzIFJURSBk
+aXJlY3RseSBmcm9tIHRoZSBNU0kgbWVzc2FnZQpjcmVhdGVkIGJ5IHRoZSBwYXJlbnQgaXJxY2hp
+cCwgYW5kIGZpeCB1cCBhIGJ1bmNoIG9mIG1hZ2ljIG1hc2svc2hpZnQKbWFjcm9zIHRvIHVzZSBi
+aXRmaWVsZHMgZm9yIE1TSSBtZXNzYWdlcyBhbmQgSS9PQVBJQyBSVEVzIHdoaWxlIHdlJ3JlCmF0
+IGl0LgoKdjM6CiDigKIgTG90cyBvZiBiaXRmaWVsZCBjbGVhbnVwcyBmcm9tIFRob21hcy4KIOKA
+oiBEaXNhYmxlIGh5cGVydi1pb21tdSBpZiAxNS1iaXQgZXh0ZW5zaW9uIGlzIHByZXNlbnQuCiDi
+gKIgRml4IGluY29uc2lzdGVudCBDT05GSUdfUENJX01TSS9DT05GSUdfR0VORVJJQ19NU0lfSVJR
+IGluIGhwZXQuYwog4oCiIFNwbGl0IEtWTV9GRUFUVVJFX01TSV9FWFRfREVTVF9JRCBwYXRjaCwg
+aGFsZiBvZiB3aGljaCBpcyBnb2luZyB1cHN0cmVhbQogICB0aHJvdWdoIEtWTSB0cmVlIChhbmQg
+dGhlIG90aGVyIGhhbGYgbmVlZHMgdG8gd2FpdCwgb3IgaGF2ZSBhbiAjaWZkZWYpIHNvCiAgIGlz
+IGxlZnQgYXQgdGhlIHRvcCBvZiB0aGUgdHJlZS4KCnYyOgog4oCiIE1pbm9yIGNsZWFudXBzLgog
+4oCiIE1vdmUgX19pcnFfbXNpX2NvbXBvc2VfbXNnKCkgdG8gYXBpYy5jLCBtYWtlIHZpcnRfZXh0
+X2Rlc3RfaWQgc3RhdGljLgog4oCiIEdlbmVyYXRlIEkvT0FQSUMgUlRFIGRpcmVjdGx5IGZyb20g
+cGFyZW50IGlycWNoaXAncyBNU0kgbWVzc2FnZXMuCiDigKIgQ2xlYW4gdXAgSFBFVCBNU0kgc3Vw
+cG9ydCBpbnRvIGhwZXQuYyBub3cgdGhhdCB3ZSBjYW4uCgpEYXZpZCBXb29kaG91c2UgKDE5KToK
+ICAgICAgeDg2L2FwaWM6IEZpeCB4MmFwaWMgZW5hYmxlbWVudCB3aXRob3V0IGludGVycnVwdCBy
+ZW1hcHBpbmcKICAgICAgeDg2L21zaTogT25seSB1c2UgaGlnaCBiaXRzIG9mIE1TSSBhZGRyZXNz
+IGZvciBETUFSIHVuaXQKICAgICAgeDg2L2FwaWM6IEFsd2F5cyBwcm92aWRlIGlycV9jb21wb3Nl
+X21zaV9tc2coKSBtZXRob2QgZm9yIHZlY3RvciBkb21haW4KICAgICAgeDg2L2hwZXQ6IE1vdmUg
+TVNJIHN1cHBvcnQgaW50byBocGV0LmMKICAgICAgeDg2L2lvYXBpYzogR2VuZXJhdGUgUlRFIGRp
+cmVjdGx5IGZyb20gcGFyZW50IGlycWNoaXAncyBNU0kgbWVzc2FnZQogICAgICBnZW5pcnEvaXJx
+ZG9tYWluOiBJbXBsZW1lbnQgZ2V0X25hbWUoKSBtZXRob2Qgb24gaXJxY2hpcCBmd25vZGVzCiAg
+ICAgIHg4Ni9hcGljOiBBZGQgc2VsZWN0KCkgbWV0aG9kIG9uIHZlY3RvciBpcnFkb21haW4KICAg
+ICAgaW9tbXUvYW1kOiBJbXBsZW1lbnQgc2VsZWN0KCkgbWV0aG9kIG9uIHJlbWFwcGluZyBpcnFk
+b21haW4KICAgICAgaW9tbXUvdnQtZDogSW1wbGVtZW50IHNlbGVjdCgpIG1ldGhvZCBvbiByZW1h
+cHBpbmcgaXJxZG9tYWluCiAgICAgIGlvbW11L2h5cGVyLXY6IEltcGxlbWVudCBzZWxlY3QoKSBt
+ZXRob2Qgb24gcmVtYXBwaW5nIGlycWRvbWFpbgogICAgICB4ODYvaHBldDogVXNlIGlycV9maW5k
+X21hdGNoaW5nX2Z3c3BlYygpIHRvIGZpbmQgcmVtYXBwaW5nIGlycWRvbWFpbgogICAgICB4ODYv
+aW9hcGljOiBVc2UgaXJxX2ZpbmRfbWF0Y2hpbmdfZndzcGVjKCkgdG8gZmluZCByZW1hcHBpbmcg
+aXJxZG9tYWluCiAgICAgIHg4NjogS2lsbCBhbGwgdHJhY2VzIG9mIGlycV9yZW1hcHBpbmdfZ2V0
+X2lycV9kb21haW4oKQogICAgICBpb21tdS92dC1kOiBTaW1wbGlmeSBpbnRlbF9pcnFfcmVtYXBw
+aW5nX3NlbGVjdCgpCiAgICAgIHg4Ni9pb2FwaWM6IEhhbmRsZSBFeHRlbmRlZCBEZXN0aW5hdGlv
+biBJRCBmaWVsZCBpbiBSVEUKICAgICAgeDg2L2FwaWM6IFN1cHBvcnQgMTUgYml0cyBvZiBBUElD
+IElEIGluIE1TSSB3aGVyZSBhdmFpbGFibGUKICAgICAgaW9tbXUvaHlwZXItdjogRGlzYWJsZSBJ
+UlEgcHNldWRvLXJlbWFwcGluZyBpZiAxNSBiaXQgQVBJQyBJRHMgYXJlIGF2YWlsYWJsZQogICAg
+ICB4ODYva3ZtOiBSZXNlcnZlIEtWTV9GRUFUVVJFX01TSV9FWFRfREVTVF9JRAogICAgICB4ODYv
+a3ZtOiBFbmFibGUgMTUtYml0IGV4dGVuc2lvbiB3aGVuIEtWTV9GRUFUVVJFX01TSV9FWFRfREVT
+VF9JRCBkZXRlY3RlZAoKVGhvbWFzIEdsZWl4bmVyICgxNik6CiAgICAgIHg4Ni9hcGljL3V2OiBG
+aXggaW5jb25zaXN0ZW50IGRlc3RpbmF0aW9uIG1vZGUKICAgICAgeDg2L2RldmljZXRyZWU6IEZp
+eCB0aGUgaW9hcGljIGludGVycnVwdCB0eXBlIHRhYmxlCiAgICAgIHg4Ni9hcGljOiBDbGVhbnVw
+IGRlbGl2ZXJ5IG1vZGUgZGVmaW5lcwogICAgICB4ODYvYXBpYzogUmVwbGFjZSBwb2ludGxlc3Mg
+YXBpYzo6ZGVzdF9sb2dpY2FsIHVzYWdlCiAgICAgIHg4Ni9hcGljOiBHZXQgcmlkIG9mIGFwaWM6
+OmRlc3RfbG9naWNhbAogICAgICB4ODYvYXBpYzogQ2xlYW51cCBkZXN0aW5hdGlvbiBtb2RlCiAg
+ICAgIGdlbmlycS9tc2k6IEFsbG93IHNoYWRvdyBkZWNsYXJhdGlvbnMgb2YgbXNpX21zZzo6JG1l
+bWJlcgogICAgICB4ODYvbXNpOiBQcm92aWRlIG1zaSBtZXNzYWdlIHNoYWRvdyBzdHJ1Y3RzCiAg
+ICAgIGlvbW11L2ludGVsOiBVc2UgbXNpX21zZyBzaGFkb3cgc3RydWN0cwogICAgICBpb21tdS9h
+bWQ6IFVzZSBtc2lfbXNnIHNoYWRvdyBzdHJ1Y3RzCiAgICAgIFBDSTogdm1kOiBVc2UgbXNpX21z
+ZyBzaGFkb3cgc3RydWN0cwogICAgICB4ODYva3ZtOiBVc2UgbXNpX21zZyBzaGFkb3cgc3RydWN0
+cwogICAgICB4ODYvcGNpL3hlbjogVXNlIG1zaV9tc2cgc2hhZG93IHN0cnVjdHMKICAgICAgeDg2
+L21zaTogUmVtb3ZlIG1zaWRlZi5oCiAgICAgIHg4Ni9pb19hcGljOiBDbGVhbnVwIHRyaWdnZXIv
+cG9sYXJpdHkgaGVscGVycwogICAgICB4ODYvaW9hcGljOiBDbGVhbnVwIElPL0FQSUMgcm91dGUg
+ZW50cnkgc3RydWN0cwoKIERvY3VtZW50YXRpb24vdmlydC9rdm0vY3B1aWQucnN0ICAgICAgfCAg
+IDQgKwogYXJjaC94ODYvaW5jbHVkZS9hc20vYXBpYy5oICAgICAgICAgICB8ICAxNiArLQogYXJj
+aC94ODYvaW5jbHVkZS9hc20vYXBpY2RlZi5oICAgICAgICB8ICAxNiArLQogYXJjaC94ODYvaW5j
+bHVkZS9hc20vaHBldC5oICAgICAgICAgICB8ICAxMSAtCiBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9o
+d19pcnEuaCAgICAgICAgIHwgIDEzICstCiBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9pb19hcGljLmgg
+ICAgICAgIHwgIDc5ICsrLS0tLQogYXJjaC94ODYvaW5jbHVkZS9hc20vaXJxX3JlbWFwcGluZy5o
+ICB8ICAgOSAtCiBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9pcnFkb21haW4uaCAgICAgIHwgICAzICsK
+IGFyY2gveDg2L2luY2x1ZGUvYXNtL21zaS5oICAgICAgICAgICAgfCAgNTAgKysrKwogYXJjaC94
+ODYvaW5jbHVkZS9hc20vbXNpZGVmLmggICAgICAgICB8ICA1NyAtLS0tCiBhcmNoL3g4Ni9pbmNs
+dWRlL2FzbS94ODZfaW5pdC5oICAgICAgIHwgICAyICsKIGFyY2gveDg2L2luY2x1ZGUvdWFwaS9h
+c20va3ZtX3BhcmEuaCAgfCAgIDEgKwogYXJjaC94ODYva2VybmVsL2FwaWMvYXBpYy5jICAgICAg
+ICAgICB8ICA3MyArKysrLQogYXJjaC94ODYva2VybmVsL2FwaWMvYXBpY19mbGF0XzY0LmMgICB8
+ICAxOCArLQogYXJjaC94ODYva2VybmVsL2FwaWMvYXBpY19ub29wLmMgICAgICB8ICAxMCArLQog
+YXJjaC94ODYva2VybmVsL2FwaWMvYXBpY19udW1hY2hpcC5jICB8ICAxNiArLQogYXJjaC94ODYv
+a2VybmVsL2FwaWMvYmlnc21wXzMyLmMgICAgICB8ICAgOSArLQogYXJjaC94ODYva2VybmVsL2Fw
+aWMvaW9fYXBpYy5jICAgICAgICB8IDUwMyArKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0t
+LS0tCiBhcmNoL3g4Ni9rZXJuZWwvYXBpYy9pcGkuYyAgICAgICAgICAgIHwgICA2ICstCiBhcmNo
+L3g4Ni9rZXJuZWwvYXBpYy9tc2kuYyAgICAgICAgICAgIHwgMTUzICstLS0tLS0tLS0tCiBhcmNo
+L3g4Ni9rZXJuZWwvYXBpYy9wcm9iZV8zMi5jICAgICAgIHwgICA5ICstCiBhcmNoL3g4Ni9rZXJu
+ZWwvYXBpYy92ZWN0b3IuYyAgICAgICAgIHwgIDQ5ICsrKysKIGFyY2gveDg2L2tlcm5lbC9hcGlj
+L3gyYXBpY19jbHVzdGVyLmMgfCAgMTAgKy0KIGFyY2gveDg2L2tlcm5lbC9hcGljL3gyYXBpY19w
+aHlzLmMgICAgfCAgMTcgKy0KIGFyY2gveDg2L2tlcm5lbC9hcGljL3gyYXBpY191dl94LmMgICAg
+fCAgMTIgKy0KIGFyY2gveDg2L2tlcm5lbC9kZXZpY2V0cmVlLmMgICAgICAgICAgfCAgMzAgKy0K
+IGFyY2gveDg2L2tlcm5lbC9ocGV0LmMgICAgICAgICAgICAgICAgfCAxMjIgKysrKysrKystCiBh
+cmNoL3g4Ni9rZXJuZWwva3ZtLmMgICAgICAgICAgICAgICAgIHwgICA2ICsKIGFyY2gveDg2L2tl
+cm5lbC9zbXBib290LmMgICAgICAgICAgICAgfCAgIDggKy0KIGFyY2gveDg2L2tlcm5lbC94ODZf
+aW5pdC5jICAgICAgICAgICAgfCAgIDEgKwogYXJjaC94ODYva3ZtL2lycV9jb21tLmMgICAgICAg
+ICAgICAgICB8ICAzMSArLS0KIGFyY2gveDg2L3BjaS9pbnRlbF9taWRfcGNpLmMgICAgICAgICAg
+fCAgIDggKy0KIGFyY2gveDg2L3BjaS94ZW4uYyAgICAgICAgICAgICAgICAgICAgfCAgMjYgKy0K
+IGFyY2gveDg2L3BsYXRmb3JtL3V2L3V2X2lycS5jICAgICAgICAgfCAgIDQgKy0KIGFyY2gveDg2
+L3hlbi9hcGljLmMgICAgICAgICAgICAgICAgICAgfCAgIDcgKy0KIGRyaXZlcnMvaW9tbXUvYW1k
+L2FtZF9pb21tdV90eXBlcy5oICAgfCAgIDIgKy0KIGRyaXZlcnMvaW9tbXUvYW1kL2luaXQuYyAg
+ICAgICAgICAgICAgfCAgNDYgKystLQogZHJpdmVycy9pb21tdS9hbWQvaW9tbXUuYyAgICAgICAg
+ICAgICB8ICA5MyArKystLS0tCiBkcml2ZXJzL2lvbW11L2h5cGVydi1pb21tdS5jICAgICAgICAg
+IHwgIDQ0ICstLQogZHJpdmVycy9pb21tdS9pbnRlbC9pcnFfcmVtYXBwaW5nLmMgICB8IDEwMiAr
+KystLS0tCiBkcml2ZXJzL2lvbW11L2lycV9yZW1hcHBpbmcuYyAgICAgICAgIHwgIDE0IC0KIGRy
+aXZlcnMvaW9tbXUvaXJxX3JlbWFwcGluZy5oICAgICAgICAgfCAgIDMgLQogZHJpdmVycy9wY2kv
+Y29udHJvbGxlci9wY2ktaHlwZXJ2LmMgICB8ICAgNiArLQogZHJpdmVycy9wY2kvY29udHJvbGxl
+ci92bWQuYyAgICAgICAgICB8ICAgOSArLQogaW5jbHVkZS9hc20tZ2VuZXJpYy9tc2kuaCAgICAg
+ICAgICAgICB8ICAgNCArCiBpbmNsdWRlL2xpbnV4L21zaS5oICAgICAgICAgICAgICAgICAgIHwg
+IDQ2ICsrKy0KIGtlcm5lbC9pcnEvaXJxZG9tYWluLmMgICAgICAgICAgICAgICAgfCAgMTEgKy0K
+IDQ3IGZpbGVzIGNoYW5nZWQsIDg5MCBpbnNlcnRpb25zKCspLCA4NzkgZGVsZXRpb25zKC0pCgoK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
