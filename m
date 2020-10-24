@@ -7,67 +7,66 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CACC55179
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C17C56201
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:13 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 076BE2469B
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4A4A4246B3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 21:36:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="CgD2OtSg"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 076BE2469B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Dkh17TxM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A4A4246B3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B68128720F;
-	Sat, 24 Oct 2020 21:36:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BFCC5873EC;
+	Sat, 24 Oct 2020 21:36:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h5n45S5Im1iW; Sat, 24 Oct 2020 21:36:09 +0000 (UTC)
+	with ESMTP id RyZJk-qdWFhk; Sat, 24 Oct 2020 21:36:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 87F07874F4;
+	by hemlock.osuosl.org (Postfix) with ESMTP id CC58D8752F;
 	Sat, 24 Oct 2020 21:36:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F80AC0893;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C791EC0893;
 	Sat, 24 Oct 2020 21:36:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD7E0C0052
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 773A3C0052
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7E30086EC0
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5995B86A62
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SavTGwLOh-_t for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+ with ESMTP id 1BdSYBkjglkj for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 21:35:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2D00486DA3
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:51 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 1FF9286A7C
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 21:35:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
  Reply-To:Content-Type:Content-ID:Content-Description;
- bh=DBXQeOdNuSbK9uNqJUHpNvc0pB1QrhBTIryIhIif25g=; b=CgD2OtSg5phvJF0lzasncrO8uK
- xA3V4sVprblWZiPp63cQPaMPcYuLnJGTih31/fVNFD1rH+tIIRwvVaPEG1LvZ5nllrQ4EcQpOvLUR
- ceZy7a+JEuxUda0Q4m+WCpk78ZgOvQoDs9GnJfNdjUKuD9aJebLjkCl9LjpzBP9/T4wdJGePVbaJW
- dg/UhMqKHT287Dbnj1d5E8ewf+s8+XRKjlEk5khlLpraUmK+PIjYTuEtCu3EoKK0tPU6hkrzdQ62U
- RP58JV+MMOm6BNkIvg2mqE0h6s9X9HcC4qZnFzePZ1PXXfLyOKwsbhETxfoepVki0OSGjBjBZIFj+
- Wge9wkrw==;
+ bh=bqgZykzwAPXMrTL6XB1bI9Gxco+0bYxPyO2LqSSlo5E=; b=Dkh17TxM3AUC42PghbBYxdE3Ju
+ UVOYQmwEIWGw7aZi0y372jPSh2722BiY2HcmFoJpNFZSqloYP75HbFr57nyFZqT7EpOJuUnslAb0m
+ kzUVuHA58ImsH/+NZqGaTC4qqEho/TEooA4PYwQ9tpTFoRirLKguS113JRPdKUkCRvd/pjmsxXPW7
+ xUMpqqEwKe2hWLvL1i9TlCyGtN2qUZucYN+YFIhPfRuz1rD6mot0Y+QulytqyfQT8T9KxJrIJ3GWS
+ feHiTIFCzz4pH5DSJ3lGvj33g1w0sfSNTMCrRfwmONdTQYy3pOdfP76xLPJQZc/ftc3P+ijpYIYB7
+ CG2s2EbQ==;
 Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
  by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kWRCS-0006HH-Ne; Sat, 24 Oct 2020 21:35:47 +0000
+ id 1kWRCS-0006HE-GT; Sat, 24 Oct 2020 21:35:47 +0000
 Received: from dwoodhou by i7.infradead.org with local (Exim 4.93 #3 (Red Hat
- Linux)) id 1kWRCN-001rP8-8j; Sat, 24 Oct 2020 22:35:39 +0100
+ Linux)) id 1kWRCN-001rOj-26; Sat, 24 Oct 2020 22:35:39 +0100
 From: David Woodhouse <dwmw2@infradead.org>
 To: x86@kernel.org
-Subject: [PATCH v3 24/35] iommu/amd: Implement select() method on remapping
- irqdomain
-Date: Sat, 24 Oct 2020 22:35:24 +0100
-Message-Id: <20201024213535.443185-25-dwmw2@infradead.org>
+Subject: [PATCH v3 18/35] x86/msi: Remove msidef.h
+Date: Sat, 24 Oct 2020 22:35:18 +0100
+Message-Id: <20201024213535.443185-19-dwmw2@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024213535.443185-1-dwmw2@infradead.org>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
@@ -96,47 +95,80 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Preparatory change to remove irq_remapping_get_irq_domain().
+Nothing uses the macro maze anymore.
 
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
- drivers/iommu/amd/iommu.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ arch/x86/include/asm/msidef.h | 57 -----------------------------------
+ 1 file changed, 57 deletions(-)
+ delete mode 100644 arch/x86/include/asm/msidef.h
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 9744cdbefd88..31b22244e9c2 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3882,7 +3882,26 @@ static void irq_remapping_deactivate(struct irq_domain *domain,
- 					    irte_info->index);
- }
- 
-+static int irq_remapping_select(struct irq_domain *d, struct irq_fwspec *fwspec,
-+				enum irq_domain_bus_token bus_token)
-+{
-+	struct amd_iommu *iommu;
-+	int devid = -1;
-+
-+	if (x86_fwspec_is_ioapic(fwspec))
-+		devid = get_ioapic_devid(fwspec->param[0]);
-+	else if (x86_fwspec_is_hpet(fwspec))
-+		devid = get_hpet_devid(fwspec->param[0]);
-+
-+	if (devid < 0)
-+		return 0;
-+
-+	iommu = amd_iommu_rlookup_table[devid];
-+	return iommu && iommu->ir_domain == d;
-+}
-+
- static const struct irq_domain_ops amd_ir_domain_ops = {
-+	.select = irq_remapping_select,
- 	.alloc = irq_remapping_alloc,
- 	.free = irq_remapping_free,
- 	.activate = irq_remapping_activate,
+diff --git a/arch/x86/include/asm/msidef.h b/arch/x86/include/asm/msidef.h
+deleted file mode 100644
+index ee2f8ccc32d0..000000000000
+--- a/arch/x86/include/asm/msidef.h
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _ASM_X86_MSIDEF_H
+-#define _ASM_X86_MSIDEF_H
+-
+-/*
+- * Constants for Intel APIC based MSI messages.
+- */
+-
+-/*
+- * Shifts for MSI data
+- */
+-
+-#define MSI_DATA_VECTOR_SHIFT		0
+-#define  MSI_DATA_VECTOR_MASK		0x000000ff
+-#define	 MSI_DATA_VECTOR(v)		(((v) << MSI_DATA_VECTOR_SHIFT) & \
+-					 MSI_DATA_VECTOR_MASK)
+-
+-#define MSI_DATA_DELIVERY_MODE_SHIFT	8
+-#define  MSI_DATA_DELIVERY_FIXED	(0 << MSI_DATA_DELIVERY_MODE_SHIFT)
+-#define  MSI_DATA_DELIVERY_LOWPRI	(1 << MSI_DATA_DELIVERY_MODE_SHIFT)
+-
+-#define MSI_DATA_LEVEL_SHIFT		14
+-#define	 MSI_DATA_LEVEL_DEASSERT	(0 << MSI_DATA_LEVEL_SHIFT)
+-#define	 MSI_DATA_LEVEL_ASSERT		(1 << MSI_DATA_LEVEL_SHIFT)
+-
+-#define MSI_DATA_TRIGGER_SHIFT		15
+-#define  MSI_DATA_TRIGGER_EDGE		(0 << MSI_DATA_TRIGGER_SHIFT)
+-#define  MSI_DATA_TRIGGER_LEVEL		(1 << MSI_DATA_TRIGGER_SHIFT)
+-
+-/*
+- * Shift/mask fields for msi address
+- */
+-
+-#define MSI_ADDR_BASE_HI		0
+-#define MSI_ADDR_BASE_LO		0xfee00000
+-
+-#define MSI_ADDR_DEST_MODE_SHIFT	2
+-#define  MSI_ADDR_DEST_MODE_PHYSICAL	(0 << MSI_ADDR_DEST_MODE_SHIFT)
+-#define	 MSI_ADDR_DEST_MODE_LOGICAL	(1 << MSI_ADDR_DEST_MODE_SHIFT)
+-
+-#define MSI_ADDR_REDIRECTION_SHIFT	3
+-#define  MSI_ADDR_REDIRECTION_CPU	(0 << MSI_ADDR_REDIRECTION_SHIFT)
+-					/* dedicated cpu */
+-#define  MSI_ADDR_REDIRECTION_LOWPRI	(1 << MSI_ADDR_REDIRECTION_SHIFT)
+-					/* lowest priority */
+-
+-#define MSI_ADDR_DEST_ID_SHIFT		12
+-#define	 MSI_ADDR_DEST_ID_MASK		0x00ffff0
+-#define  MSI_ADDR_DEST_ID(dest)		(((dest) << MSI_ADDR_DEST_ID_SHIFT) & \
+-					 MSI_ADDR_DEST_ID_MASK)
+-#define MSI_ADDR_EXT_DEST_ID(dest)	((dest) & 0xffffff00)
+-
+-#define MSI_ADDR_IR_EXT_INT		(1 << 4)
+-#define MSI_ADDR_IR_SHV			(1 << 3)
+-#define MSI_ADDR_IR_INDEX1(index)	((index & 0x8000) >> 13)
+-#define MSI_ADDR_IR_INDEX2(index)	((index & 0x7fff) << 5)
+-#endif /* _ASM_X86_MSIDEF_H */
 -- 
 2.26.2
 
