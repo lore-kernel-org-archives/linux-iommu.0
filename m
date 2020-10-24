@@ -2,83 +2,74 @@ Return-Path: <SRS0=QuKU=D7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BABDC388F9
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 03:40:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D080C2D0A3
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 14:19:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A2B7022201
-	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 03:40:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2B7022201
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 508D12176B
+	for <iommu@archiver.kernel.org>; Sat, 24 Oct 2020 14:19:48 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="D5r/Kwk8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 508D12176B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3C7D08748F;
-	Sat, 24 Oct 2020 03:40:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E2F9C86AED;
+	Sat, 24 Oct 2020 14:19:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 78VMRRdcd90z; Sat, 24 Oct 2020 03:40:04 +0000 (UTC)
+	with ESMTP id 6fX6aq9HdzZw; Sat, 24 Oct 2020 14:19:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1799087466;
-	Sat, 24 Oct 2020 03:40:04 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B531B86AEE;
+	Sat, 24 Oct 2020 14:19:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE319C088B;
-	Sat, 24 Oct 2020 03:40:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 72DFEC0051
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 03:07:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E411C088B;
+	Sat, 24 Oct 2020 14:19:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1AB0C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 14:19:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6493387440
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 03:07:18 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 95B27204D2
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 14:19:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZDjwUyvcpqji for <iommu@lists.linux-foundation.org>;
- Sat, 24 Oct 2020 03:07:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BE8AD8723E
- for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 03:07:17 +0000 (UTC)
-Received: by mail-il1-f200.google.com with SMTP id r12so3139614iln.3
- for <iommu@lists.linux-foundation.org>; Fri, 23 Oct 2020 20:07:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
- :from:to;
- bh=+f5KaRkMNp2H9YTKaVRIxMmnVKmfIt7q48LvCaRF0Ns=;
- b=NWgGhAVxMX/2hoEPN3LFgNFvrddXn9xTAluqJpKMw1+/kuelVqIjMaGQq9kXChujtj
- 8dI0/HOb3OcDCdKDqtOpt4UKOTbse14Fe7g0c3XaLbI6DNN2LYU3VTR5xnESxq969JKU
- oBR+Y65tr4lVc2ITGyj8K6JpJnP24UHJF2Fvsfm4Xuj7Fmi0wrWUCBp1S/YS/kbk7CL9
- IUlAKAP5qa/g86cBLFR/YxTs6aTUu0Cw6EYGjHrHFXYnwFuaErh6TPp2uIqApiUtFx4G
- SbRHNKcDdBBJv5RdMTS8Axx4L7kDsCmmM/df+K3x7c6wX6Qz6zJxlvxZNrd3CKnxt62E
- t6aQ==
-X-Gm-Message-State: AOAM533wl9XDowYH4uWsbBzAeQ85HhLGfa7MJTvaYsTGP5RaEtr7v6st
- /4SWqISYLJUvzeXVwNijf8yd3nHNEZF534wr95ulxvLcJahv
-X-Google-Smtp-Source: ABdhPJyX5CGjMWLoP15isE4qEaNneI+lMoj529yEcMzeMQUaUvz6w9wzt3J5qhiARVu2523YJ/lzwBOs4QaY8mpAEsQOou9UfSXn
+ with ESMTP id YypMihgkYlp1 for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Oct 2020 14:19:44 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1086220466
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Oct 2020 14:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+ Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=sEUK5AB+cZzLDZ8v3U1z1qBO8qdntzRB3qX7knShG1Q=; b=D5r/Kwk8dGKkS/BjOJEZiZnad2
+ +LF/d27dOMNIpkFvt7V5U1zrwb7OFLkQBMNohXeq6n9WU6Pi6XCrVH67IMSsVXOdLr1EzXeHHC28m
+ 0ObND1AL4AN/fjWLjdgJ/74mEKr+s06w/CKCWVNOvTOwzzy2PL0859//spuQADB/mIWGwrssvk0A+
+ EL6DbZB1B9oEv9CmPXzp5CPivm0lf6HTYnXPuyM5j/W3oxGPco6i7oLDstlmv3+SK2jIz46DxTGHz
+ qWSYxknswglGxqiTpQzU9esibOGiVi9OVs9djIvPwt8Lc+vr4MqI/gBC7UI+rzSF2xtBsU9WIiZkn
+ 49uVIS3Q==;
+Received: from [2001:4bb8:18c:20bd:dc4a:c0cd:d943:64ae] (helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kWKOQ-0007gM-OL; Sat, 24 Oct 2020 14:19:39 +0000
+Date: Sat, 24 Oct 2020 16:19:35 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping fixes for 5.10
+Message-ID: <20201024141935.GA3556641@infradead.org>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9618:: with SMTP id a24mr4169239ioq.27.1603508837084; 
- Fri, 23 Oct 2020 20:07:17 -0700 (PDT)
-Date: Fri, 23 Oct 2020 20:07:17 -0700
-In-Reply-To: <000000000000335adc05b23300f6@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0f8a305b261fe4a@google.com>
-Subject: Re: WARNING in dma_map_page_attrs
-From: syzbot <syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com>
-To: christian.koenig@amd.com, dri-devel@lists.freedesktop.org, hch@lst.de, 
- iommu@lists.linux-foundation.org, linaro-mm-sig-owner@lists.linaro.org, 
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
- linux-media@vger.kernel.org, m.szyprowski@samsung.com, netdev@vger.kernel.org, 
- robin.murphy@arm.com, sumit.semwal@linaro.org, 
- syzkaller-bugs@googlegroups.com
-X-Mailman-Approved-At: Sat, 24 Oct 2020 03:40:03 +0000
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,82 +87,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-syzbot has found a reproducer for the following issue on:
+The following changes since commit 270315b8235e3d10c2e360cff56c2f9e0915a252:
 
-HEAD commit:    3cb12d27 Merge tag 'net-5.10-rc1' of git://git.kernel.org/..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13125390500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46c6fea3eb827ae1
-dashboard link: https://syzkaller.appspot.com/bug?extid=34dc2fea3478e659af01
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16858664500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f402ef900000
+  Merge tag 'riscv-for-linus-5.10-mw0' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux (2020-10-19 18:18:30 -0700)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com
+are available in the Git repository at:
 
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-infiniband syz2: set active
-infiniband syz2: added macvlan0
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8488 at kernel/dma/mapping.c:149 dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Modules linked in:
-CPU: 1 PID: 8488 Comm: syz-executor144 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Code: 80 3c 10 00 0f 85 ed 01 00 00 48 8b 1d 86 38 e9 0c e9 2d fc ff ff 48 89 c3 e9 d1 fd ff ff e8 04 11 12 00 0f 0b e8 fd 10 12 00 <0f> 0b 49 c7 c4 ff ff ff ff e9 d5 fd ff ff e8 ea 10 12 00 48 8d 7b
-RSP: 0018:ffffc90000fdec68 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffffff894d1060 RCX: ffffffff815df1e3
-RDX: ffff8880208c1a40 RSI: ffffffff815df5b3 RDI: ffff8880196f8b00
-RBP: ffff88801412d800 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000000 R12: ffffea0000504b40
-R13: ffff8880196f86e8 R14: 00000000000008b8 R15: 0000000000000002
-FS:  0000000001b26880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200002c0 CR3: 0000000022446000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- dma_map_single_attrs include/linux/dma-mapping.h:279 [inline]
- ib_dma_map_single include/rdma/ib_verbs.h:3967 [inline]
- ib_mad_post_receive_mads+0x23f/0xd60 drivers/infiniband/core/mad.c:2715
- ib_mad_port_start drivers/infiniband/core/mad.c:2862 [inline]
- ib_mad_port_open drivers/infiniband/core/mad.c:3016 [inline]
- ib_mad_init_device+0x72b/0x1400 drivers/infiniband/core/mad.c:3092
- add_client_context+0x405/0x5e0 drivers/infiniband/core/device.c:680
- enable_device_and_get+0x1d5/0x3c0 drivers/infiniband/core/device.c:1301
- ib_register_device drivers/infiniband/core/device.c:1376 [inline]
- ib_register_device+0x7a7/0xa40 drivers/infiniband/core/device.c:1335
- rxe_register_device+0x46d/0x570 drivers/infiniband/sw/rxe/rxe_verbs.c:1182
- rxe_add+0x12fe/0x16d0 drivers/infiniband/sw/rxe/rxe.c:247
- rxe_net_add+0x8c/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:507
- rxe_newlink drivers/infiniband/sw/rxe/rxe.c:269 [inline]
- rxe_newlink+0xb7/0xe0 drivers/infiniband/sw/rxe/rxe.c:250
- nldev_newlink+0x30e/0x540 drivers/infiniband/core/nldev.c:1555
- rdma_nl_rcv_msg+0x367/0x690 drivers/infiniband/core/netlink.c:195
- rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
- rdma_nl_rcv+0x2f2/0x440 drivers/infiniband/core/netlink.c:259
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x443699
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc067db418 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443699
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000003
-RBP: 00007ffc067db420 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc067db430
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.10-1
 
+for you to fetch changes up to 6857a5ebaabc5b9d989872700b4b71dd2a6d6453:
+
+  dma-mapping: document dma_{alloc,free}_pages (2020-10-23 12:07:46 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for 5.10:
+
+ - document the new document dma_{alloc,free}_pages API
+ - two fixups for the dma-mapping.h split
+
+----------------------------------------------------------------
+Christoph Hellwig (3):
+      ARM/sa1111: add a missing include of dma-map-ops.h
+      dma-mapping: move more functions to dma-map-ops.h
+      dma-mapping: document dma_{alloc,free}_pages
+
+ Documentation/core-api/dma-api.rst | 49 +++++++++++++++++++++++++++++++++-----
+ arch/arm/common/sa1111.c           |  2 +-
+ include/linux/dma-map-ops.h        | 23 ++++++++++++++++++
+ include/linux/dma-mapping.h        | 24 -------------------
+ kernel/dma/remap.c                 |  2 +-
+ 5 files changed, 68 insertions(+), 32 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
