@@ -2,95 +2,88 @@ Return-Path: <SRS0=pgZ9=EA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB039C56201
-	for <iommu@archiver.kernel.org>; Sun, 25 Oct 2020 09:41:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9359CC388F7
+	for <iommu@archiver.kernel.org>; Sun, 25 Oct 2020 09:49:13 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6DFDD22314
-	for <iommu@archiver.kernel.org>; Sun, 25 Oct 2020 09:41:17 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="oCaPHBEX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DFDD22314
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1E72A22284
+	for <iommu@archiver.kernel.org>; Sun, 25 Oct 2020 09:49:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E72A22284
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ACULAB.COM
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1A07F87182;
-	Sun, 25 Oct 2020 09:41:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F003587564;
+	Sun, 25 Oct 2020 09:49:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NZy9W-77Ak3e; Sun, 25 Oct 2020 09:41:16 +0000 (UTC)
+	with ESMTP id NjgtL35BvNzr; Sun, 25 Oct 2020 09:49:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7BAE881E55;
-	Sun, 25 Oct 2020 09:41:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 727E287455;
+	Sun, 25 Oct 2020 09:49:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FF65C0893;
-	Sun, 25 Oct 2020 09:41:16 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F7FEC0859
- for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:41:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 64DD1C0893;
+	Sun, 25 Oct 2020 09:49:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C00EAC0859
+ for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:49:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 0B71D86B18
- for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:41:15 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A41DB2011A
+ for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:49:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RA6vieaWb-bY for <iommu@lists.linux-foundation.org>;
- Sun, 25 Oct 2020 09:41:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 92C8686B11
- for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:41:14 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 2871D22284;
- Sun, 25 Oct 2020 09:41:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1603618874;
- bh=kp4tBzl/d322MshJi6IkrrrXZvkCUwynlItkWMiT3Rw=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=oCaPHBEX3SsSOsHUpk8UYzj5Q8oNDyjyYS1LhIINzZxiO2tYBGUlz3E3QZ+tAxc0T
- xgcCbqnJjLmZl3Q5N9rNRqZkjymnMrXPhsshz71ridpu6/XVl8lp0wsOmv5k+WBHCC
- KwRznIn9UWwOLolXoF/D+YwDRH0Ty/rxjfBPdh7Y=
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=wait-a-minute.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa
- (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
- (envelope-from <maz@kernel.org>)
- id 1kWcWW-0041qC-4M; Sun, 25 Oct 2020 09:41:12 +0000
-Date: Sun, 25 Oct 2020 09:41:11 +0000
-Message-ID: <873622prrc.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH v3 22/35] genirq/irqdomain: Implement get_name() method on
- irqchip fwnodes
-In-Reply-To: <20201024213535.443185-23-dwmw2@infradead.org>
+ with ESMTP id gGns5J0TK3F9 for <iommu@lists.linux-foundation.org>;
+ Sun, 25 Oct 2020 09:49:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from eu-smtp-delivery-151.mimecast.com
+ (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+ by silver.osuosl.org (Postfix) with ESMTPS id C86B927400
+ for <iommu@lists.linux-foundation.org>; Sun, 25 Oct 2020 09:49:08 +0000 (UTC)
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-79-APpQa5EwNZOHyfX3wdwU4Q-1; Sun, 25 Oct 2020 09:49:04 +0000
+X-MC-Unique: APpQa5EwNZOHyfX3wdwU4Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Sun, 25 Oct 2020 09:49:03 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000; 
+ Sun, 25 Oct 2020 09:49:03 +0000
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'David Woodhouse' <dwmw2@infradead.org>, "x86@kernel.org" <x86@kernel.org>
+Subject: RE: [PATCH v3 17/35] x86/pci/xen: Use msi_msg shadow structs
+Thread-Topic: [PATCH v3 17/35] x86/pci/xen: Use msi_msg shadow structs
+Thread-Index: AQHWqk3aux8nicxw2kqi6TJIJCakiamoEtJw
+Date: Sun, 25 Oct 2020 09:49:03 +0000
+Message-ID: <3e69326016524d97bcdea35d0765cc68@AcuMS.aculab.com>
 References: <e6601ff691afb3266e365a91e8b221179daf22c2.camel@infradead.org>
  <20201024213535.443185-1-dwmw2@infradead.org>
- <20201024213535.443185-23-dwmw2@infradead.org>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: dwmw2@infradead.org, x86@kernel.org, kvm@vger.kernel.org,
- iommu@lists.linux-foundation.org, joro@8bytes.org, tglx@linutronix.de,
- pbonzini@redhat.com, linux-kernel@vger.kernel.org,
- linux-hyperv@vger.kernel.org, decui@microsoft.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: linux-hyperv@vger.kernel.org, kvm <kvm@vger.kernel.org>, x86@kernel.org,
- Dexuan Cui <decui@microsoft.com>, linux-kernel <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Paolo Bonzini <pbonzini@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>
+ <20201024213535.443185-18-dwmw2@infradead.org>
+In-Reply-To: <20201024213535.443185-18-dwmw2@infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Cc: "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ kvm <kvm@vger.kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "maz@misterjones.org" <maz@misterjones.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,53 +101,81 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi David,
-
-nit: please use my kernel.org address for kernel related stuff.
-
-On Sat, 24 Oct 2020 22:35:22 +0100,
-David Woodhouse <dwmw2@infradead.org> wrote:
+From: David Woodhouse
+> Sent: 24 October 2020 22:35
 > 
-> From: David Woodhouse <dwmw@amazon.co.uk>
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-> Prerequesite to make x86 more irqdomain compliant.
-
-Prerequisite?
-
+> Use the msi_msg shadow structs and compose the message with named bitfields
+> instead of the unreadable macro maze.
 > 
-> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 > ---
->  kernel/irq/irqdomain.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+>  arch/x86/pci/xen.c | 26 +++++++++++---------------
+>  1 file changed, 11 insertions(+), 15 deletions(-)
 > 
-> diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-> index cf8b374b892d..673fa64c1c44 100644
-> --- a/kernel/irq/irqdomain.c
-> +++ b/kernel/irq/irqdomain.c
-> @@ -42,7 +42,16 @@ static inline void debugfs_add_domain_dir(struct irq_domain *d) { }
->  static inline void debugfs_remove_domain_dir(struct irq_domain *d) { }
->  #endif
->  
-> -const struct fwnode_operations irqchip_fwnode_ops;
-> +static const char *irqchip_fwnode_get_name(const struct fwnode_handle *fwnode)
-> +{
-> +	struct irqchip_fwid *fwid = container_of(fwnode, struct irqchip_fwid, fwnode);
-> +
-> +	return fwid->name;
-> +}
-> +
-> +const struct fwnode_operations irqchip_fwnode_ops = {
-> +	.get_name = irqchip_fwnode_get_name,
-> +};
->  EXPORT_SYMBOL_GPL(irqchip_fwnode_ops);
->  
->  /**
+> diff --git a/arch/x86/pci/xen.c b/arch/x86/pci/xen.c
+> index c552cd2d0632..3d41a09c2c14 100644
+> --- a/arch/x86/pci/xen.c
+> +++ b/arch/x86/pci/xen.c
+> @@ -152,7 +152,6 @@ static int acpi_register_gsi_xen(struct device *dev, u32 gsi,
+> 
+>  #if defined(CONFIG_PCI_MSI)
+>  #include <linux/msi.h>
+> -#include <asm/msidef.h>
+> 
+>  struct xen_pci_frontend_ops *xen_pci_frontend;
+>  EXPORT_SYMBOL_GPL(xen_pci_frontend);
+> @@ -210,23 +209,20 @@ static int xen_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+>  	return ret;
+>  }
+> 
+> -#define XEN_PIRQ_MSI_DATA  (MSI_DATA_TRIGGER_EDGE | \
+> -		MSI_DATA_LEVEL_ASSERT | (3 << 8) | MSI_DATA_VECTOR(0))
+> -
+>  static void xen_msi_compose_msg(struct pci_dev *pdev, unsigned int pirq,
+>  		struct msi_msg *msg)
+>  {
+> -	/* We set vector == 0 to tell the hypervisor we don't care about it,
+> -	 * but we want a pirq setup instead.
+> -	 * We use the dest_id field to pass the pirq that we want. */
+> -	msg->address_hi = MSI_ADDR_BASE_HI | MSI_ADDR_EXT_DEST_ID(pirq);
+> -	msg->address_lo =
+> -		MSI_ADDR_BASE_LO |
+> -		MSI_ADDR_DEST_MODE_PHYSICAL |
+> -		MSI_ADDR_REDIRECTION_CPU |
+> -		MSI_ADDR_DEST_ID(pirq);
+> -
+> -	msg->data = XEN_PIRQ_MSI_DATA;
+> +	/*
+> +	 * We set vector == 0 to tell the hypervisor we don't care about
+> +	 * it, but we want a pirq setup instead.  We use the dest_id fields
+> +	 * to pass the pirq that we want.
+> +	 */
+> +	memset(msg, 0, sizeof(*msg));
+> +	msg->address_hi = X86_MSI_BASE_ADDRESS_HIGH;
+> +	msg->arch_addr_hi.destid_8_31 = pirq >> 8;
+> +	msg->arch_addr_lo.destid_0_7 = pirq & 0xFF;
+> +	msg->arch_addr_lo.base_address = X86_MSI_BASE_ADDRESS_LOW;
+> +	msg->arch_data.delivery_mode = APIC_DELIVERY_MODE_EXTINT;
+>  }
 
-Acked-by: Marc Zyngier <maz@kernel.org>
+Just looking at a random one of these patches...
 
--- 
-Without deviation from the norm, progress is not possible.
+Does the compiler manage to optimise that reasonably?
+Or does it generate a lot of shifts and masks as each
+bitfield is set?
+
+The code generation for bitfields is often a lot worse
+that that for |= setting bits in a word.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
