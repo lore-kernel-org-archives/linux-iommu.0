@@ -7,72 +7,72 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D76CEC4363A
-	for <iommu@archiver.kernel.org>; Mon, 26 Oct 2020 11:55:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C21C2D0A3
+	for <iommu@archiver.kernel.org>; Mon, 26 Oct 2020 11:55:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7FD96241A4
-	for <iommu@archiver.kernel.org>; Mon, 26 Oct 2020 11:55:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4CE8F22281
+	for <iommu@archiver.kernel.org>; Mon, 26 Oct 2020 11:55:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="HOcPUw6z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7FD96241A4
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="iP3bsqRT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CE8F22281
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0BFD98723C;
-	Mon, 26 Oct 2020 11:55:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 130F22DE3B;
+	Mon, 26 Oct 2020 11:55:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6ztEzi8DcVRL; Mon, 26 Oct 2020 11:55:05 +0000 (UTC)
+	with ESMTP id a2JTSkAauywd; Mon, 26 Oct 2020 11:55:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 32F0D87236;
-	Mon, 26 Oct 2020 11:55:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 570F52E0E0;
+	Mon, 26 Oct 2020 11:55:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13822C088B;
-	Mon, 26 Oct 2020 11:55:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D9D26C0051
- for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C0E2C088B;
+	Mon, 26 Oct 2020 11:55:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F30C4C0051
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C67CC85701
- for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E1F1F867A7
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WPUa50O-VJqQ for <iommu@lists.linux-foundation.org>;
- Mon, 26 Oct 2020 11:55:03 +0000 (UTC)
+ with ESMTP id Ek5A387jvfNU for <iommu@lists.linux-foundation.org>;
+ Mon, 26 Oct 2020 11:55:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m42-4.mailgun.net (m42-4.mailgun.net [69.72.42.4])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B03EB85641
- for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:00 +0000 (UTC)
+Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id F1602867A1
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Oct 2020 11:55:21 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1603713303; h=Content-Transfer-Encoding: MIME-Version:
+ s=smtp; t=1603713325; h=Content-Transfer-Encoding: MIME-Version:
  References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=vrgQ8RVETWUH1hQjD/0ggJjHA8S6VTYAIs13Idv4bzY=;
- b=HOcPUw6zkGUaIh1d/dXGZY0TPacJwXPoQBeK/rT8WfVRO+v1rCqUKdWjNNTbY7HtaasGPyAY
- G9/0tChgmI5S7gn8XVAlgMqLnevyK0aHugX2yvIfrywZIXDQFVOHXNp1HYohtAK7Mn8P5nC6
- /tphT9LJl+aCgcBP9M7USHTlQM8=
-X-Mailgun-Sending-Ip: 69.72.42.4
+ Sender; bh=F5WbtFXNYasHm3DkTz7boOrEycyNzj6ImMrOzRsPD5s=;
+ b=iP3bsqRT5Mqx5/gKGdJrFGvtP+I0KlzrVJLv2uM1qgJPDhv+P+1PUw4QeRUCB2VL4zTfaQG3
+ Pb58G9szpHSf6CbfG/r1pSF328JPrjbc3XaJ4OkWhntIspeXgpdbm1QixmbuBGw0QMjP3ydx
+ BkqxOPeAPbo+elFycL8vdYTs6F0=
+X-Mailgun-Sending-Ip: 104.130.96.5
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5f96b8fbd6826c2dbd6d1dff (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 26 Oct 2020 11:54:35
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 5f96b906fcd46a2b7688d952 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 26 Oct 2020 11:54:46
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id C55AEC433A1; Mon, 26 Oct 2020 11:54:34 +0000 (UTC)
+ id 1FFE1C43382; Mon, 26 Oct 2020 11:54:45 +0000 (UTC)
 Received: from blr-ubuntu-253.qualcomm.com
  (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 617DEC433C9;
- Mon, 26 Oct 2020 11:54:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 617DEC433C9
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 242A3C433B7;
+ Mon, 26 Oct 2020 11:54:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 242A3C433B7
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
@@ -81,16 +81,17 @@ From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
  Rob Clark <robdclark@gmail.com>
-Subject: [PATCHv6 3/6] drm/msm: rearrange the gpu_rmw() function
-Date: Mon, 26 Oct 2020 17:24:02 +0530
-Message-Id: <863b0eb175fb2a4ebfefca09344e0055722190cf.1603448364.git.saiprakash.ranjan@codeaurora.org>
+Subject: [PATCHv6 5/6] iommu: arm-smmu-impl: Use table to list QCOM
+ implementations
+Date: Mon, 26 Oct 2020 17:24:04 +0530
+Message-Id: <8b8f31fcf283124deee335012affe5bc527f6694.1603448364.git.saiprakash.ranjan@codeaurora.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1603448364.git.saiprakash.ranjan@codeaurora.org>
 References: <cover.1603448364.git.saiprakash.ranjan@codeaurora.org>
 MIME-Version: 1.0
-Cc: linux-arm-msm@vger.kernel.org, Sharat Masetty <smasetty@codeaurora.org>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- Akhil P Oommen <akhilpo@codeaurora.org>, iommu@lists.linux-foundation.org,
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, Akhil P Oommen <akhilpo@codeaurora.org>,
+ iommu@lists.linux-foundation.org,
  "Kristian H . Kristensen" <hoegsberg@google.com>,
  freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -110,69 +111,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Sharat Masetty <smasetty@codeaurora.org>
+Use table and of_match_node() to match qcom implementation
+instead of multiple of_device_compatible() calls for each
+QCOM SMMU implementation.
 
-The register read-modify-write construct is generic enough
-that it can be used by other subsystems as needed, create
-a more generic rmw() function and have the gpu_rmw() use
-this new function.
-
-Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
-Reviewed-by: Jordan Crouse <jcrouse@codeaurora.org>
 Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c | 8 ++++++++
- drivers/gpu/drm/msm/msm_drv.h | 1 +
- drivers/gpu/drm/msm/msm_gpu.h | 5 +----
- 3 files changed, 10 insertions(+), 4 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c |  9 +--------
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 21 ++++++++++++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  1 -
+ 3 files changed, 17 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index 49685571dc0e..a1e22b974b77 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -180,6 +180,14 @@ u32 msm_readl(const void __iomem *addr)
- 	return val;
- }
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index d199b4bff15d..ffaf3f91ba52 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -217,14 +217,7 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+ 	if (of_device_is_compatible(np, "nvidia,tegra194-smmu"))
+ 		return nvidia_smmu_impl_init(smmu);
  
-+void msm_rmw(void __iomem *addr, u32 mask, u32 or)
-+{
-+	u32 val = msm_readl(addr);
-+
-+	val &= ~mask;
-+	msm_writel(val | or, addr);
-+}
-+
- struct msm_vblank_work {
- 	struct work_struct work;
- 	int crtc_id;
-diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-index b9dd8f8f4887..655b3b0424a1 100644
---- a/drivers/gpu/drm/msm/msm_drv.h
-+++ b/drivers/gpu/drm/msm/msm_drv.h
-@@ -478,6 +478,7 @@ void __iomem *msm_ioremap_quiet(struct platform_device *pdev, const char *name,
- 		const char *dbgname);
- void msm_writel(u32 data, void __iomem *addr);
- u32 msm_readl(const void __iomem *addr);
-+void msm_rmw(void __iomem *addr, u32 mask, u32 or);
- 
- struct msm_gpu_submitqueue;
- int msm_submitqueue_init(struct drm_device *drm, struct msm_file_private *ctx);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 6c9e1fdc1a76..b2b419277953 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -246,10 +246,7 @@ static inline u32 gpu_read(struct msm_gpu *gpu, u32 reg)
- 
- static inline void gpu_rmw(struct msm_gpu *gpu, u32 reg, u32 mask, u32 or)
- {
--	uint32_t val = gpu_read(gpu, reg);
+-	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
+-	    of_device_is_compatible(np, "qcom,sc7180-smmu-500") ||
+-	    of_device_is_compatible(np, "qcom,sm8150-smmu-500") ||
+-	    of_device_is_compatible(np, "qcom,sm8250-smmu-500"))
+-		return qcom_smmu_impl_init(smmu);
 -
--	val &= ~mask;
--	gpu_write(gpu, reg, val | or);
-+	msm_rmw(gpu->mmio + (reg << 2), mask, or);
+-	if (of_device_is_compatible(smmu->dev->of_node, "qcom,adreno-smmu"))
+-		return qcom_adreno_smmu_impl_init(smmu);
++	smmu = qcom_smmu_impl_init(smmu);
+ 
+ 	if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
+ 		smmu->impl = &mrvl_mmu500_impl;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 0663d7d26908..9c40fb7a2241 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -224,12 +224,23 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+ 	return &qsmmu->smmu;
  }
  
- static inline u64 gpu_read64(struct msm_gpu *gpu, u32 lo, u32 hi)
++static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
++	{ .compatible = "qcom,sc7180-smmu-500" },
++	{ .compatible = "qcom,sdm845-smmu-500" },
++	{ .compatible = "qcom,sm8150-smmu-500" },
++	{ .compatible = "qcom,sm8250-smmu-500" },
++	{ }
++};
++
+ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+ {
+-	return qcom_smmu_create(smmu, &qcom_smmu_impl);
+-}
++	const struct device_node *np = smmu->dev->of_node;
+ 
+-struct arm_smmu_device *qcom_adreno_smmu_impl_init(struct arm_smmu_device *smmu)
+-{
+-	return qcom_smmu_create(smmu, &qcom_adreno_smmu_impl);
++	if (of_match_node(qcom_smmu_impl_of_match, np))
++		return qcom_smmu_create(smmu, &qcom_smmu_impl);
++
++	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
++		return qcom_smmu_create(smmu, &qcom_adreno_smmu_impl);
++
++	return smmu;
+ }
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 93593e164e44..94f3e439c082 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -524,7 +524,6 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
+ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
+-struct arm_smmu_device *qcom_adreno_smmu_impl_init(struct arm_smmu_device *smmu);
+ 
+ void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx);
+ int arm_mmu500_reset(struct arm_smmu_device *smmu);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
 of Code Aurora Forum, hosted by The Linux Foundation
