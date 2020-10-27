@@ -2,69 +2,76 @@ Return-Path: <SRS0=PKzM=EC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0229C55179
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:28:25 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C491C388F9
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:50:22 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 186ED2072D
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:28:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 186ED2072D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0F98722258
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:50:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F98722258
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C8168866D6;
-	Tue, 27 Oct 2020 11:28:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7F39D87186;
+	Tue, 27 Oct 2020 11:50:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 65W4-y6YLYnz; Tue, 27 Oct 2020 11:28:22 +0000 (UTC)
+	with ESMTP id L5i+lSUG-SXw; Tue, 27 Oct 2020 11:50:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C141B866B9;
-	Tue, 27 Oct 2020 11:28:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7B45187113;
+	Tue, 27 Oct 2020 11:50:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BA8EAC0859;
-	Tue, 27 Oct 2020 11:28:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F78DC0859;
+	Tue, 27 Oct 2020 11:50:19 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2C418C0051
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2FA32C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:50:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 25C5F20497
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:21 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D01E02044C
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:50:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DOmU7oPQnsfw for <iommu@lists.linux-foundation.org>;
- Tue, 27 Oct 2020 11:28:19 +0000 (UTC)
+ with ESMTP id KLOiqd-dSZOQ for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Oct 2020 11:50:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by silver.osuosl.org (Postfix) with ESMTPS id F142B203DF
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:18 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CL8b36LVczkZs1;
- Tue, 27 Oct 2020 19:28:15 +0800 (CST)
-Received: from S00345302A-PC.china.huawei.com (10.47.24.15) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 27 Oct 2020 19:28:05 +0800
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
- <iommu@lists.linux-foundation.org>, <devel@acpica.org>
-Subject: [RFC PATCH 3/4] ACPI/IORT: Add RMR memory regions reservation helper
-Date: Tue, 27 Oct 2020 11:26:45 +0000
-Message-ID: <20201027112646.44680-4-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
-References: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 38FD82043B
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:50:15 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E802F1FB;
+ Tue, 27 Oct 2020 04:50:14 -0700 (PDT)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
+ [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 984063F66E;
+ Tue, 27 Oct 2020 04:50:12 -0700 (PDT)
+Date: Tue, 27 Oct 2020 11:50:10 +0000
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH v4 6/7] arm64: mm: Set ZONE_DMA size based on early IORT
+ scan
+Message-ID: <20201027115010.GB32062@e121166-lin.cambridge.arm.com>
+References: <20201021123437.21538-1-nsaenzjulienne@suse.de>
+ <20201021123437.21538-7-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-X-Originating-IP: [10.47.24.15]
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, guohanjun@huawei.com, robin.murphy@arm.com,
- wanghuiqiang@huawei.com
+Content-Disposition: inline
+In-Reply-To: <20201021123437.21538-7-nsaenzjulienne@suse.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: devicetree@vger.kernel.org, will@kernel.org,
+ Anshuman Khandual <anshuman.khandual@arm.com>, catalin.marinas@arm.com,
+ Sudeep Holla <sudeep.holla@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, jeremy.linton@arm.com, ardb@kernel.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, linux-rpi-kernel@lists.infradead.org,
+ Hanjun Guo <guohanjun@huawei.com>, robin.murphy@arm.com, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,74 +84,177 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-QWRkIGEgaGVscGVyIGZ1bmN0aW9uIHRoYXQgcmV0cmlldmVzIFJNUiBtZW1vcnkgZGVzY3JpcHRv
-cnMKYXNzb2NpYXRlZCB3aXRoIGEgZ2l2ZW4gZW5kcG9pbnQgZGV2LiBUaGVzZSBtZW1vcnkgcmVn
-aW9ucwpzaG91bGQgaGF2ZSBhIHVuaXR5wqBtYXBwaW5nIGluIHRoZSBTTU1VLiBTbyByZXNlcnZl
-IHRoZW0gYXMKSU9NTVVfUkVTVl9ESVJFQ1QuCgpTaWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtvbG90
-aHVtIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+Ci0tLQogZHJpdmVycy9h
-Y3BpL2FybTY0L2lvcnQuYyB8IDU2ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKwogaW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaCB8ICA0ICsrKwogMiBmaWxlcyBjaGFuZ2Vk
-LCA2MCBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQu
-YyBiL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMKaW5kZXggYjMyY2Q1M2NjYTA4Li5jMDcwMDE0
-OWU2MGIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMKKysrIGIvZHJpdmVy
-cy9hY3BpL2FybTY0L2lvcnQuYwpAQCAtODQyLDYgKzg0Miw2MCBAQCBzdGF0aWMgaW5saW5lIGlu
-dCBpb3J0X2FkZF9kZXZpY2VfcmVwbGF5KHN0cnVjdCBkZXZpY2UgKmRldikKIAlyZXR1cm4gZXJy
-OwogfQogCitzdGF0aWMgYm9vbCBpb3J0X2Rldl9oYXNfcm1yKHN0cnVjdCBkZXZpY2UgKmRldiwg
-c3RydWN0IGlvcnRfcm1yX2VudHJ5ICplKQoreworCXN0cnVjdCBpb21tdV9md3NwZWMgKmZ3c3Bl
-YyA9IGRldl9pb21tdV9md3NwZWNfZ2V0KGRldik7CisJc3RydWN0IGFjcGlfaW9ydF9ub2RlICpp
-b21tdTsKKwlzdHJ1Y3QgaW9ydF9ybXJfaWQgKnJtcl9pZHMgPSBlLT5ybXJfaWRzOworCWludCBp
-LCBqOworCisJaW9tbXUgPSBpb3J0X2dldF9pb3J0X25vZGUoZndzcGVjLT5pb21tdV9md25vZGUp
-OworCisJZm9yIChpID0gMDsgaSA8IGUtPnJtcl9pZHNfbnVtOyBpKyssIHJtcl9pZHMrKykgewor
-CQlmb3IgKGogPSAwOyBqIDwgZndzcGVjLT5udW1faWRzOyBqKyspIHsKKwkJCWlmIChybXJfaWRz
-LT5zaWQgPT0gZndzcGVjLT5pZHNbal0gJiYKKwkJCSAgICBybXJfaWRzLT5zbW11ID09IGlvbW11
-KQorCQkJCXJldHVybiB0cnVlOworCQl9CisJfQorCisJcmV0dXJuIGZhbHNlOworfQorCisvKioK
-KyAqIGlvcnRfZGV2X3Jtcl9nZXRfcmVzdl9yZWdpb25zIC0gUk1SIFJlc2VydmVkIHJlZ2lvbiBk
-cml2ZXIgaGVscGVyCisgKiBAZGV2OiBEZXZpY2UgZnJvbSBpb21tdV9nZXRfcmVzdl9yZWdpb25z
-KCkKKyAqIEBoZWFkOiBSZXNlcnZlZCByZWdpb24gbGlzdCBmcm9tIGlvbW11X2dldF9yZXN2X3Jl
-Z2lvbnMoKQorICoKKyAqIFJldHVybnM6IDAgb24gc3VjY2VzcywgPDAgZmFpbHVyZQorICovCitp
-bnQgaW9ydF9kZXZfcm1yX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1
-Y3QgbGlzdF9oZWFkICpoZWFkKQoreworCXN0cnVjdCBpb3J0X3Jtcl9lbnRyeSAqZTsKKworCWxp
-c3RfZm9yX2VhY2hfZW50cnkoZSwgJmlvcnRfcm1yX2xpc3QsIGxpc3QpIHsKKwkJc3RydWN0IGlv
-bW11X3Jlc3ZfcmVnaW9uICpyZWdpb247CisJCXN0cnVjdCBhY3BpX2lvcnRfcm1yX2Rlc2MgKnJt
-cjsKKwkJaW50IHByb3QgPSBJT01NVV9SRUFEIHwgSU9NTVVfV1JJVEUgfAorCQkJICAgSU9NTVVf
-Tk9FWEVDIHwgSU9NTVVfTU1JTzsKKworCQlpZiAoIWlvcnRfZGV2X2hhc19ybXIoZGV2LCBlKSkK
-KwkJCWNvbnRpbnVlOworCisJCXJtciA9IGUtPnJtcl9kZXNjOworCQlyZWdpb24gPSBpb21tdV9h
-bGxvY19yZXN2X3JlZ2lvbihybXItPmJhc2VfYWRkcmVzcywKKwkJCQkJCSBybXItPmxlbmd0aCwg
-cHJvdCwKKwkJCQkJCSBJT01NVV9SRVNWX0RJUkVDVCk7CisJCWlmICghcmVnaW9uKSB7CisJCQlk
-ZXZfZXJyKGRldiwgIk91dCBvZiBtZW1vcnkgYWxsb2NhdGluZyBSTVIgcmVnaW9uc1xuIik7CisJ
-CQlyZXR1cm4gLUVOT01FTTsKKwkJfQorCQlsaXN0X2FkZF90YWlsKCZyZWdpb24tPmxpc3QsIGhl
-YWQpOworCX0KKworCXJldHVybiAwOworfQorCiAvKioKICAqIGlvcnRfaW9tbXVfbXNpX2dldF9y
-ZXN2X3JlZ2lvbnMgLSBSZXNlcnZlZCByZWdpb24gZHJpdmVyIGhlbHBlcgogICogQGRldjogRGV2
-aWNlIGZyb20gaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucygpCkBAIC0xMTEyLDYgKzExNjYsOCBAQCBp
-bnQgaW9ydF9pb21tdV9tc2lfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0
-cnVjdCBsaXN0X2hlYWQgKmhlYWQpCiBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICppb3J0X2lvbW11
-X2NvbmZpZ3VyZV9pZChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJCQkJCQljb25zdCB1MzIgKmlucHV0
-X2lkKQogeyByZXR1cm4gTlVMTDsgfQoraW50IGlvcnRfZGV2X3Jtcl9nZXRfcmVzdl9yZWdpb25z
-KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKK3sgcmV0dXJuIDA7
-IH0KICNlbmRpZgogCiBzdGF0aWMgaW50IG5jX2RtYV9nZXRfcmFuZ2Uoc3RydWN0IGRldmljZSAq
-ZGV2LCB1NjQgKnNpemUpCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2FjcGlfaW9ydC5oIGIv
-aW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaAppbmRleCAyMGEzMjEyMGJiODguLjZkZDg5ZmFmMzQw
-YyAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaAorKysgYi9pbmNsdWRlL2xp
-bnV4L2FjcGlfaW9ydC5oCkBAIC0zOCw2ICszOCw3IEBAIHZvaWQgaW9ydF9kbWFfc2V0dXAoc3Ry
-dWN0IGRldmljZSAqZGV2LCB1NjQgKmRtYV9hZGRyLCB1NjQgKnNpemUpOwogY29uc3Qgc3RydWN0
-IGlvbW11X29wcyAqaW9ydF9pb21tdV9jb25maWd1cmVfaWQoc3RydWN0IGRldmljZSAqZGV2LAog
-CQkJCQkJY29uc3QgdTMyICppZF9pbik7CiBpbnQgaW9ydF9pb21tdV9tc2lfZ2V0X3Jlc3ZfcmVn
-aW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpOworaW50IGlv
-cnRfZGV2X3Jtcl9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxp
-c3RfaGVhZCAqaGVhZCk7CiAjZWxzZQogc3RhdGljIGlubGluZSB2b2lkIGFjcGlfaW9ydF9pbml0
-KHZvaWQpIHsgfQogc3RhdGljIGlubGluZSB1MzIgaW9ydF9tc2lfbWFwX2lkKHN0cnVjdCBkZXZp
-Y2UgKmRldiwgdTMyIGlkKQpAQCAtNTUsNiArNTYsOSBAQCBzdGF0aWMgaW5saW5lIGNvbnN0IHN0
-cnVjdCBpb21tdV9vcHMgKmlvcnRfaW9tbXVfY29uZmlndXJlX2lkKAogc3RhdGljIGlubGluZQog
-aW50IGlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0IGRldmljZSAqZGV2LCBz
-dHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQogeyByZXR1cm4gMDsgfQorc3RhdGljIGlubGluZQoraW50
-IGlvcnRfZGV2X3Jtcl9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0
-IGxpc3RfaGVhZCAqaGVhZCkKK3sgcmV0dXJuIDA7IH0KICNlbmRpZgogCiAjZW5kaWYgLyogX19B
-Q1BJX0lPUlRfSF9fICovCi0tIAoyLjE3LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+On Wed, Oct 21, 2020 at 02:34:36PM +0200, Nicolas Saenz Julienne wrote:
+> From: Ard Biesheuvel <ardb@kernel.org>
+> 
+> We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
+> incorporating masters that can address less than 32 bits of DMA, in
+> particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
+> peripherals that can only address up to 1 GB (and its PCIe host
+> bridge can only access the bottom 3 GB)
+> 
+> Instructing the DMA layer about these limitations is straight-forward,
+> even though we had to fix some issues regarding memory limits set in
+> the IORT for named components, and regarding the handling of ACPI _DMA
+> methods. However, the DMA layer also needs to be able to allocate
+> memory that is guaranteed to meet those DMA constraints, for bounce
+> buffering as well as allocating the backing for consistent mappings.
+> 
+> This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
+> it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
+> problems with kdump, and potentially in other places where allocations
+> cannot cross zone boundaries. Therefore, we should avoid having two
+> separate DMA zones when possible.
+> 
+> So let's do an early scan of the IORT, and only create the ZONE_DMA
+> if we encounter any devices that need it. This puts the burden on
+> the firmware to describe such limitations in the IORT, which may be
+> redundant (and less precise) if _DMA methods are also being provided.
+> However, it should be noted that this situation is highly unusual for
+> arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
+> the _DMA method if implemented, and so we will not lose the ability to
+> perform streaming DMA outside the ZONE_DMA if the _DMA method permits
+> it.
+> 
+> Cc: Jeremy Linton <jeremy.linton@arm.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Hanjun Guo <guohanjun@huawei.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> [nsaenz: Rebased, removed documentation change and add declaration in acpi_iort.h]
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> 
+> ---
+> 
+> Changes since v3:
+>  - Use min_not_zero()
+>  - Check ACPI revision
+>  - Remove unnecessary #ifdef in zone_sizes_init()
+> 
+>  arch/arm64/mm/init.c      |  3 ++-
+>  drivers/acpi/arm64/iort.c | 52 +++++++++++++++++++++++++++++++++++++++
+>  include/linux/acpi_iort.h |  4 +++
+>  3 files changed, 58 insertions(+), 1 deletion(-)
+
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 94e38f99748b..f5d4f85506e4 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/kexec.h>
+>  #include <linux/crash_dump.h>
+>  #include <linux/hugetlb.h>
+> +#include <linux/acpi_iort.h>
+>  
+>  #include <asm/boot.h>
+>  #include <asm/fixmap.h>
+> @@ -190,7 +191,7 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
+>  
+>  #ifdef CONFIG_ZONE_DMA
+>  	dt_zone_dma_bits = ilog2(of_dma_get_max_cpu_address(NULL));
+> -	zone_dma_bits = min(32U, dt_zone_dma_bits);
+> +	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_iort_get_zone_dma_size());
+>  	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
+>  	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+>  #endif
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 9929ff50c0c0..05fe4a076bab 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1718,3 +1718,55 @@ void __init acpi_iort_init(void)
+>  
+>  	iort_init_platform_devices();
+>  }
+> +
+> +#ifdef CONFIG_ZONE_DMA
+> +/*
+> + * Check the IORT whether any devices exist whose DMA mask is < 32 bits.
+> + * If so, return the smallest value encountered, or 32 otherwise.
+> + */
+> +unsigned int __init acpi_iort_get_zone_dma_size(void)
+> +{
+> +	struct acpi_table_iort *iort;
+> +	struct acpi_iort_node *node, *end;
+> +	acpi_status status;
+> +	u8 limit = 32;
+> +	int i;
+> +
+> +	if (acpi_disabled)
+> +		return limit;
+> +
+> +	status = acpi_get_table(ACPI_SIG_IORT, 0,
+> +				(struct acpi_table_header **)&iort);
+> +	if (ACPI_FAILURE(status))
+> +		return limit;
+> +
+> +	node = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->node_offset);
+> +	end = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->header.length);
+> +
+> +	for (i = 0; i < iort->node_count; i++) {
+> +		if (node >= end)
+> +			break;
+> +
+> +		switch (node->type) {
+> +			struct acpi_iort_named_component *ncomp;
+> +			struct acpi_iort_root_complex *rc;
+> +
+> +		case ACPI_IORT_NODE_NAMED_COMPONENT:
+> +			ncomp = (struct acpi_iort_named_component *)node->node_data;
+> +			limit = min_not_zero(limit, ncomp->memory_address_limit);
+> +			break;
+> +
+> +		case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
+> +			if (node->revision < 1)
+> +				break;
+> +
+> +			rc = (struct acpi_iort_root_complex *)node->node_data;
+> +			limit = min_not_zero(limit, rc->memory_address_limit);
+> +			break;
+> +		}
+> +		node = ACPI_ADD_PTR(struct acpi_iort_node, node, node->length);
+> +	}
+> +	acpi_put_table(&iort->header);
+> +	return limit;
+> +}
+> +#endif
+> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> index 20a32120bb88..7d2e184f0d4d 100644
+> --- a/include/linux/acpi_iort.h
+> +++ b/include/linux/acpi_iort.h
+> @@ -38,6 +38,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
+>  const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+>  						const u32 *id_in);
+>  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+> +unsigned int acpi_iort_get_zone_dma_size(void);
+>  #else
+>  static inline void acpi_iort_init(void) { }
+>  static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+> @@ -55,6 +56,9 @@ static inline const struct iommu_ops *iort_iommu_configure_id(
+>  static inline
+>  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>  { return 0; }
+> +
+> +static inline unsigned int acpi_iort_get_zone_dma_size(void)
+> +{ return 32; }
+>  #endif
+>  
+>  #endif /* __ACPI_IORT_H__ */
+> -- 
+> 2.28.0
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
