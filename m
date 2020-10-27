@@ -2,63 +2,69 @@ Return-Path: <SRS0=PKzM=EC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE19C55179
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 10:26:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06595C55179
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:28:13 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9465A22264
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 10:26:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9465A22264
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
+	by mail.kernel.org (Postfix) with ESMTPS id 57C2A2072D
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 11:28:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57C2A2072D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 1928220243;
-	Tue, 27 Oct 2020 10:26:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D34E684FD5;
+	Tue, 27 Oct 2020 11:28:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p1wQHEyaWDw6; Tue, 27 Oct 2020 10:26:01 +0000 (UTC)
+	with ESMTP id 4M6RK8uzLMu0; Tue, 27 Oct 2020 11:28:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B5BB52043B;
-	Tue, 27 Oct 2020 10:26:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3E90E84FF9;
+	Tue, 27 Oct 2020 11:28:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BA78C1AD5;
-	Tue, 27 Oct 2020 10:26:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D1FE4C0051
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 10:26:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F288C0859;
+	Tue, 27 Oct 2020 11:28:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A2FBC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C055485DA0
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 10:26:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0DCAF871DB
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wx8-nwAZVSVX for <iommu@lists.linux-foundation.org>;
- Tue, 27 Oct 2020 10:25:58 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.ru (ozlabs.ru [107.174.27.60])
- by whitealder.osuosl.org (Postfix) with ESMTP id F3A8786519
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 10:25:57 +0000 (UTC)
-Received: from fstn1-p1.ozlabs.ibm.com (localhost [IPv6:::1])
- by ozlabs.ru (Postfix) with ESMTP id 51269AE80279;
- Tue, 27 Oct 2020 06:18:13 -0400 (EDT)
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-To: linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH kernel v2 2/2] powerpc/dma: Fallback to dma_ops when
- persistent memory present
-Date: Tue, 27 Oct 2020 21:18:41 +1100
-Message-Id: <20201027101841.96056-3-aik@ozlabs.ru>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201027101841.96056-1-aik@ozlabs.ru>
-References: <20201027101841.96056-1-aik@ozlabs.ru>
-Cc: Michael Ellerman <mpe@ellerman.id.au>, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
+ with ESMTP id Dnza7yVWtyWQ for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Oct 2020 11:28:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 73828871C2
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 11:28:07 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CL8Zt1Yshz6wN3;
+ Tue, 27 Oct 2020 19:28:06 +0800 (CST)
+Received: from S00345302A-PC.china.huawei.com (10.47.24.15) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 27 Oct 2020 19:27:54 +0800
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
+ <iommu@lists.linux-foundation.org>, <devel@acpica.org>
+Subject: [RFC PATCH 1/4] ACPICA: IORT: Update for revision E
+Date: Tue, 27 Oct 2020 11:26:43 +0000
+Message-ID: <20201027112646.44680-2-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
+References: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
+MIME-Version: 1.0
+X-Originating-IP: [10.47.24.15]
+X-CFilter-Loop: Reflected
+Cc: linuxarm@huawei.com, guohanjun@huawei.com, robin.murphy@arm.com,
+ wanghuiqiang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,182 +77,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-So far we have been using huge DMA windows to map all the RAM available.
-The RAM is normally mapped to the VM address space contiguously, and
-there is always a reasonable upper limit for possible future hot plugged
-RAM which makes it easy to map all RAM via IOMMU.
-
-Now there is persistent memory ("ibm,pmemory" in the FDT) which (unlike
-normal RAM) can map anywhere in the VM space beyond the maximum RAM size
-and since it can be used for DMA, it requires extending the huge window
-up to MAX_PHYSMEM_BITS which requires hypervisor support for:
-1. huge TCE tables;
-2. multilevel TCE tables;
-3. huge IOMMU pages.
-
-Certain hypervisors cannot do either so the only option left is
-restricting the huge DMA window to include only RAM and fallback to
-the default DMA window for persistent memory.
-
-This checks if the system has persistent memory. If it does not,
-the DMA bypass mode is selected, i.e.
-* dev->bus_dma_limit = 0
-* dev->dma_ops_bypass = true <- this avoid calling dma_ops for mapping.
-
-If there is such memory, this creates identity mapping only for RAM and
-sets the dev->bus_dma_limit to let the generic code decide whether to
-call into the direct DMA or the indirect DMA ops.
-
-This should not change the existing behaviour when no persistent memory
-as dev->dma_ops_bypass is expected to be set.
-
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
----
- arch/powerpc/kernel/dma-iommu.c        | 12 +++++--
- arch/powerpc/platforms/pseries/iommu.c | 44 ++++++++++++++++++++------
- arch/powerpc/Kconfig                   |  1 +
- 3 files changed, 45 insertions(+), 12 deletions(-)
-
-diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
-index a1c744194018..d123b7205f76 100644
---- a/arch/powerpc/kernel/dma-iommu.c
-+++ b/arch/powerpc/kernel/dma-iommu.c
-@@ -90,8 +90,16 @@ int dma_iommu_dma_supported(struct device *dev, u64 mask)
- 	struct iommu_table *tbl = get_iommu_table_base(dev);
- 
- 	if (dev_is_pci(dev) && dma_iommu_bypass_supported(dev, mask)) {
--		dev->dma_ops_bypass = true;
--		dev_dbg(dev, "iommu: 64-bit OK, using fixed ops\n");
-+		/*
-+		 * dma_iommu_bypass_supported() sets dma_max when there is
-+		 * 1:1 mapping but it is somehow limited.
-+		 * ibm,pmemory is one example.
-+		 */
-+		dev->dma_ops_bypass = dev->bus_dma_limit == 0;
-+		if (!dev->dma_ops_bypass)
-+			dev_warn(dev, "iommu: 64-bit OK but using default ops\n");
-+		else
-+			dev_dbg(dev, "iommu: 64-bit OK, using fixed ops\n");
- 		return 1;
- 	}
- 
-diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
-index e4198700ed1a..91112e748491 100644
---- a/arch/powerpc/platforms/pseries/iommu.c
-+++ b/arch/powerpc/platforms/pseries/iommu.c
-@@ -839,7 +839,7 @@ static void remove_ddw(struct device_node *np, bool remove_prop)
- 			np, ret);
- }
- 
--static u64 find_existing_ddw(struct device_node *pdn)
-+static u64 find_existing_ddw(struct device_node *pdn, int *window_shift)
- {
- 	struct direct_window *window;
- 	const struct dynamic_dma_window_prop *direct64;
-@@ -851,6 +851,7 @@ static u64 find_existing_ddw(struct device_node *pdn)
- 		if (window->device == pdn) {
- 			direct64 = window->prop;
- 			dma_addr = be64_to_cpu(direct64->dma_base);
-+			*window_shift = be32_to_cpu(direct64->window_shift);
- 			break;
- 		}
- 	}
-@@ -1111,11 +1112,13 @@ static void reset_dma_window(struct pci_dev *dev, struct device_node *par_dn)
-  */
- static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
- {
--	int len, ret;
-+	int len = 0, ret;
-+	bool pmem_present = of_find_node_by_type(NULL, "ibm,pmemory") != NULL;
-+	int max_ram_len = order_base_2(ddw_memory_hotplug_max());
- 	struct ddw_query_response query;
- 	struct ddw_create_response create;
- 	int page_shift;
--	u64 dma_addr, max_addr;
-+	u64 dma_addr;
- 	struct device_node *dn;
- 	u32 ddw_avail[DDW_APPLICABLE_SIZE];
- 	struct direct_window *window;
-@@ -1126,7 +1129,7 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
- 
- 	mutex_lock(&direct_window_init_mutex);
- 
--	dma_addr = find_existing_ddw(pdn);
-+	dma_addr = find_existing_ddw(pdn, &len);
- 	if (dma_addr != 0)
- 		goto out_unlock;
- 
-@@ -1212,14 +1215,26 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
- 	}
- 	/* verify the window * number of ptes will map the partition */
- 	/* check largest block * page size > max memory hotplug addr */
--	max_addr = ddw_memory_hotplug_max();
--	if (query.largest_available_block < (max_addr >> page_shift)) {
--		dev_dbg(&dev->dev, "can't map partition max 0x%llx with %llu "
--			  "%llu-sized pages\n", max_addr,  query.largest_available_block,
--			  1ULL << page_shift);
-+	/*
-+	 * The "ibm,pmemory" can appear anywhere in the address space.
-+	 * Assuming it is still backed by page structs, try MAX_PHYSMEM_BITS
-+	 * for the upper limit and fallback to max RAM otherwise but this
-+	 * disables device::dma_ops_bypass.
-+	 */
-+	len = max_ram_len;
-+	if (pmem_present) {
-+		if (query.largest_available_block >=
-+		    (1ULL << (MAX_PHYSMEM_BITS - page_shift)))
-+			len = MAX_PHYSMEM_BITS - page_shift;
-+		else
-+			dev_info(&dev->dev, "Skipping ibm,pmemory");
-+	}
-+
-+	if (query.largest_available_block < (1ULL << (len - page_shift))) {
-+		dev_dbg(&dev->dev, "can't map partition max 0x%llx with %llu %llu-sized pages\n",
-+			1ULL << len, query.largest_available_block, 1ULL << page_shift);
- 		goto out_failed;
- 	}
--	len = order_base_2(max_addr);
- 	win64 = kzalloc(sizeof(struct property), GFP_KERNEL);
- 	if (!win64) {
- 		dev_info(&dev->dev,
-@@ -1299,6 +1314,15 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
- 
- out_unlock:
- 	mutex_unlock(&direct_window_init_mutex);
-+
-+	/*
-+	 * If we have persistent memory and the window size is only as big
-+	 * as RAM, then we failed to create a window to cover persistent
-+	 * memory and need to set the DMA limit.
-+	 */
-+	if (pmem_present && dma_addr && (len == max_ram_len))
-+		dev->dev.bus_dma_limit = dma_addr + (1ULL << len);
-+
- 	return dma_addr;
- }
- 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index e9f13fe08492..5a8881bf140e 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -159,6 +159,7 @@ config PPC
- 	select DCACHE_WORD_ACCESS		if PPC64 && CPU_LITTLE_ENDIAN
- 	select DMA_OPS				if PPC64
- 	select DMA_OPS_BYPASS			if PPC64
-+	select DMA_OPS_BYPASS_BUS_LIMIT		if PPC64 && PPC_PSERIES
- 	select DYNAMIC_FTRACE			if FUNCTION_TRACER
- 	select EDAC_ATOMIC_SCRUB
- 	select EDAC_SUPPORT
--- 
-2.17.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SU9SVCByZXZpc2lvbiBFIGNvbnRhaW5zIGEgZmV3IGFkZGl0aW9ucyBsaWtlLArCoCDCoCAtQWRk
+ZWQgYW4gaWRlbnRpZmllciBmaWVsZCBpbiB0aGUgbm9kZSBkZXNjcmlwdG9ycyB0byBhaWQgdGFi
+bGUKwqAgwqAgwqBjcm9zcy1yZWZlcmVuY2luZy4KwqAgwqAgLUludHJvZHVjZWQgdGhlIFJlc2Vy
+dmVkIE1lbW9yeSBSYW5nZShSTVIpIG5vZGUuIFRoaXMgaXMgdXNlZAogwqAgwqAgdG8gZGVzY3Jp
+YmUgbWVtb3J5IHJhbmdlcyB0aGF0IGFyZSB1c2VkIGJ5IGVuZHBvaW50cyBhbmQgcmVxdWlyZXMK
+IMKgIMKgIGEgdW5pdHkgbWFwcGluZyBpbiBTTU1VLgogICAgLUludHJvZHVjZWQgYSBmbGFnIGlu
+IHRoZSBSQyBub2RlIHRvIGV4cHJlc3Mgc3VwcG9ydCBmb3IgUFJJLgoKU2lnbmVkLW9mZi1ieTog
+U2hhbWVlciBLb2xvdGh1bSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPgot
+LS0KIC1UaGlzIHNob3VsZCBiZSB1cGRhdGVkIHRocm91Z2ggYWNwaWNhIGdpdC4gSSBoYXZlIHNl
+bnQgb3V0IGEgcHVsbAogIHJlcXVlc3QgZm9yIHRoZSBzYW1lIGhlcmUsCiAgaHR0cHM6Ly9naXRo
+dWIuY29tL2FjcGljYS9hY3BpY2EvcHVsbC82MzgKClBsZWFzZSBoZWxwIHRvIHJldmlldy4KLS0t
+CiBpbmNsdWRlL2FjcGkvYWN0YmwyLmggfCAyNSArKysrKysrKysrKysrKysrKysrLS0tLS0tCiAx
+IGZpbGUgY2hhbmdlZCwgMTkgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
+aXQgYS9pbmNsdWRlL2FjcGkvYWN0YmwyLmggYi9pbmNsdWRlL2FjcGkvYWN0YmwyLmgKaW5kZXgg
+ZWM2Njc3OWNiMTkzLi4yNzRmY2U3YjVjMDEgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvYWNwaS9hY3Ri
+bDIuaAorKysgYi9pbmNsdWRlL2FjcGkvYWN0YmwyLmgKQEAgLTY4LDcgKzY4LDcgQEAKICAqIElP
+UlQgLSBJTyBSZW1hcHBpbmcgVGFibGUKICAqCiAgKiBDb25mb3JtcyB0byAiSU8gUmVtYXBwaW5n
+IFRhYmxlIFN5c3RlbSBTb2Z0d2FyZSBvbiBBUk0gUGxhdGZvcm1zIiwKLSAqIERvY3VtZW50IG51
+bWJlcjogQVJNIERFTiAwMDQ5RCwgTWFyY2ggMjAxOAorICogRG9jdW1lbnQgbnVtYmVyOiBBUk0g
+REVOIDAwNDlFLCBKdW5lIDIwMjAKICAqCiAgKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLwogCkBAIC04
+Niw3ICs4Niw4IEBAIHN0cnVjdCBhY3BpX2lvcnRfbm9kZSB7CiAJdTggdHlwZTsKIAl1MTYgbGVu
+Z3RoOwogCXU4IHJldmlzaW9uOwotCXUzMiByZXNlcnZlZDsKKwl1MTYgcmVzZXJ2ZWQ7CisJdTE2
+IGlkZW50aWZpZXI7CiAJdTMyIG1hcHBpbmdfY291bnQ7CiAJdTMyIG1hcHBpbmdfb2Zmc2V0Owog
+CWNoYXIgbm9kZV9kYXRhWzFdOwpAQCAtMTAwLDcgKzEwMSw4IEBAIGVudW0gYWNwaV9pb3J0X25v
+ZGVfdHlwZSB7CiAJQUNQSV9JT1JUX05PREVfUENJX1JPT1RfQ09NUExFWCA9IDB4MDIsCiAJQUNQ
+SV9JT1JUX05PREVfU01NVSA9IDB4MDMsCiAJQUNQSV9JT1JUX05PREVfU01NVV9WMyA9IDB4MDQs
+Ci0JQUNQSV9JT1JUX05PREVfUE1DRyA9IDB4MDUKKwlBQ1BJX0lPUlRfTk9ERV9QTUNHID0gMHgw
+NSwKKwlBQ1BJX0lPUlRfTk9ERV9STVIgPSAweDA2LAogfTsKIAogc3RydWN0IGFjcGlfaW9ydF9p
+ZF9tYXBwaW5nIHsKQEAgLTE2NywxMCArMTY5LDEwIEBAIHN0cnVjdCBhY3BpX2lvcnRfcm9vdF9j
+b21wbGV4IHsKIAl1OCByZXNlcnZlZFszXTsJCS8qIFJlc2VydmVkLCBtdXN0IGJlIHplcm8gKi8K
+IH07CiAKLS8qIFZhbHVlcyBmb3IgYXRzX2F0dHJpYnV0ZSBmaWVsZCBhYm92ZSAqLworLyogTWFz
+a3MgZm9yIGF0c19hdHRyaWJ1dGUgZmllbGQgYWJvdmUgKi8KIAotI2RlZmluZSBBQ1BJX0lPUlRf
+QVRTX1NVUFBPUlRFRCAgICAgICAgIDB4MDAwMDAwMDEJLyogVGhlIHJvb3QgY29tcGxleCBzdXBw
+b3J0cyBBVFMgKi8KLSNkZWZpbmUgQUNQSV9JT1JUX0FUU19VTlNVUFBPUlRFRCAgICAgICAweDAw
+MDAwMDAwCS8qIFRoZSByb290IGNvbXBsZXggZG9lc24ndCBzdXBwb3J0IEFUUyAqLworI2RlZmlu
+ZSBBQ1BJX0lPUlRfQVRTX1NVUFBPUlRFRCAgICAgICAgICgxKQkvKiBUaGUgcm9vdCBjb21wbGV4
+IHN1cHBvcnRzIEFUUyAqLworI2RlZmluZSBBQ1BJX0lPUlRfUFJJX1NVUFBPUlRFRCAgICAgICAg
+ICgxPDwxKQkvKiBUaGUgcm9vdCBjb21wbGV4IHN1cHBvcnRzIFBSSSAqLwogCiBzdHJ1Y3QgYWNw
+aV9pb3J0X3NtbXUgewogCXU2NCBiYXNlX2FkZHJlc3M7CS8qIFNNTVUgYmFzZSBhZGRyZXNzICov
+CkBAIC0yNDEsNiArMjQzLDE3IEBAIHN0cnVjdCBhY3BpX2lvcnRfcG1jZyB7CiAJdTY0IHBhZ2Ux
+X2Jhc2VfYWRkcmVzczsKIH07CiAKK3N0cnVjdCBhY3BpX2lvcnRfcm1yIHsKKwl1MzIgcm1yX2Nv
+dW50OworCXUzMiBybXJfb2Zmc2V0OworfTsKKworc3RydWN0IGFjcGlfaW9ydF9ybXJfZGVzYyB7
+CisJdTY0IGJhc2VfYWRkcmVzczsKKwl1NjQgbGVuZ3RoOworCXUzMiByZXNlcnZlZDsKK307CisK
+IC8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqCiAgKgogICogSVZSUyAtIEkvTyBWaXJ0dWFsaXphdGlv
+biBSZXBvcnRpbmcgU3RydWN0dXJlCi0tIAoyLjE3LjEKCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
+bG1hbi9saXN0aW5mby9pb21tdQ==
