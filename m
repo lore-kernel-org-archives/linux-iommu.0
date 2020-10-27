@@ -2,79 +2,95 @@ Return-Path: <SRS0=PKzM=EC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DE9C388F9
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 21:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9666EC388F9
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 22:34:22 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 98AAF20829
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 21:54:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A75F221F7
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 22:34:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vOuhydjw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98AAF20829
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Fo+amHC8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A75F221F7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 21711872B2;
-	Tue, 27 Oct 2020 21:54:04 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AD7C78739B;
+	Tue, 27 Oct 2020 22:34:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0b3AervCpfUU; Tue, 27 Oct 2020 21:54:03 +0000 (UTC)
+	with ESMTP id Xfq6ORM5uxdg; Tue, 27 Oct 2020 22:34:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7126C872AF;
-	Tue, 27 Oct 2020 21:54:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 369FA87097;
+	Tue, 27 Oct 2020 22:34:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60B72C088B;
-	Tue, 27 Oct 2020 21:54:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84A2FC0051
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 21:54:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10AE4C0859;
+	Tue, 27 Oct 2020 22:34:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 956D9C0051
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 22:34:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 64C542042C
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 21:54:02 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 801FC864A4
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 22:34:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 98A-g3qGJSvX for <iommu@lists.linux-foundation.org>;
- Tue, 27 Oct 2020 21:54:00 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 10E7F20425
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 21:54:00 +0000 (UTC)
-Received: from sstabellini-ThinkPad-T480s (c-24-130-65-46.hsd1.ca.comcast.net
- [24.130.65.46])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 7224220759;
- Tue, 27 Oct 2020 21:53:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1603835639;
- bh=hLuBGmvknLJruJYQUNZGkX4EVqyzQJamlMv7F6lFoho=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=vOuhydjw9vlxiSuYbstg3MW2oGhlejZ8GriRzNfLn4RdkjVwbV2wc643qtmaqkPBj
- fxNpyuRws07osa8Ikr3w7OWn6YN3ZIzLEsVSiqxn0xhx/2Ll93BusC3uRUEkjfDNRi
- Ln94Z4m4p0cL6QbfhDQL50xIrZkIz0HWmJIOUVkM=
-Date: Tue, 27 Oct 2020 14:53:58 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH] fix swiotlb panic on Xen
-In-Reply-To: <20201027192726.GA13396@char.us.oracle.com>
-Message-ID: <alpine.DEB.2.21.2010271453480.12247@sstabellini-ThinkPad-T480s>
-References: <alpine.DEB.2.21.2010261653320.12247@sstabellini-ThinkPad-T480s>
- <20201027175114.GA32110@mattapan.m5p.com>
- <20201027192726.GA13396@char.us.oracle.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ with ESMTP id Qej6jqzwhQCT for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Oct 2020 22:34:18 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m42-4.mailgun.net (m42-4.mailgun.net [69.72.42.4])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E042E868E6
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 22:34:17 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1603838057; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Cc: To: From: Sender;
+ bh=1pqcBR32icAlSSJqh7uaEgLiXLQO2q+LnzAnG1A6u8c=;
+ b=Fo+amHC82D/gi8eLbmzDHqOrrFmmOq9acdRxY6BBCvcRJFliyxEA/edryHuET2jsyNEguyED
+ 8xXHKf1RX6SqdTn5SQ1L/ntZY/9BZugIjnPI/mSAgzDm/ev7ZrCKIIo4gqZw5/nhtyzpNtDd
+ 06HGdTaCH+6p8cgmLTcFIrrvmQ4=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5f98a0686a77b4322d3f5dff (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 27 Oct 2020 22:34:16
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id E650DC433C9; Tue, 27 Oct 2020 22:34:16 +0000 (UTC)
+Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
+ [129.46.96.20])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 3B91EC433C9;
+ Tue, 27 Oct 2020 22:34:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3B91EC433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=jcrouse@codeaurora.org
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: linux-arm-msm@vger.kernel.org
+Subject: [PATCH v18 0/4] iommu/arm-smmu: Add adreno-smmu implementation and
+ bindings
+Date: Tue, 27 Oct 2020 16:34:04 -0600
+Message-Id: <20201027223408.469893-1-jcrouse@codeaurora.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: Stefano Stabellini <sstabellini@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org,
- Elliott Mitchell <ehem+undef@m5p.com>, hch@lst.de
+Cc: Rob Clark <robdclark@chromium.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Andy Gross <agross@kernel.org>, Sibi Sankar <sibis@codeaurora.org>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>, Stephen Boyd <swboyd@chromium.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,95 +108,35 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 27 Oct 2020, Konrad Rzeszutek Wilk wrote:
-> > As the person who first found this and then confirmed this fixes a bug:
-> > 
-> > Tested-by: Elliott Mitchell <ehem+xen@m5p.com>
-> 
-> Thank you!!
-> 
-> I changed the title and added the various tags and will put it in
-> linux-next later this week.
+This short series adds support for the adreno-smmu implementation of the
+arm-smmu driver and the device-tree bindings to turn on the implementation
+for the sm845 and sc7180 GPUs. These changes are the last ones needed to enable
+per-instance pagetables in the drm/msm driver.
 
-Looks fine, thank you
+No deltas in this patchset since the last go-around for 5.10 [1].
 
+[1] https://patchwork.freedesktop.org/series/81393/
 
-> >From a1eb2768bf5954d25aa0f0136b38f0aa5d92d984 Mon Sep 17 00:00:00 2001
-> From: Stefano Stabellini <stefano.stabellini@xilinx.com>
-> Date: Mon, 26 Oct 2020 17:02:14 -0700
-> Subject: [PATCH] swiotlb: fix "x86: Don't panic if can not alloc buffer for
->  swiotlb"
-> 
-> kernel/dma/swiotlb.c:swiotlb_init gets called first and tries to
-> allocate a buffer for the swiotlb. It does so by calling
-> 
->   memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
-> 
-> If the allocation must fail, no_iotlb_memory is set.
-> 
-> Later during initialization swiotlb-xen comes in
-> (drivers/xen/swiotlb-xen.c:xen_swiotlb_init) and given that io_tlb_start
-> is != 0, it thinks the memory is ready to use when actually it is not.
-> 
-> When the swiotlb is actually needed, swiotlb_tbl_map_single gets called
-> and since no_iotlb_memory is set the kernel panics.
-> 
-> Instead, if swiotlb-xen.c:xen_swiotlb_init knew the swiotlb hadn't been
-> initialized, it would do the initialization itself, which might still
-> succeed.
-> 
-> Fix the panic by setting io_tlb_start to 0 on swiotlb initialization
-> failure, and also by setting no_iotlb_memory to false on swiotlb
-> initialization success.
-> 
-> Fixes: ac2cbab21f31 ("x86: Don't panic if can not alloc buffer for swiotlb")
-> 
-> Reported-by: Elliott Mitchell <ehem+xen@m5p.com>
-> Tested-by: Elliott Mitchell <ehem+xen@m5p.com>
-> Signed-off-by: Stefano Stabellini <stefano.stabellini@xilinx.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> CC: stable@vger.kernel.org
-> Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-> ---
->  kernel/dma/swiotlb.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 465a567678d9..e08cac39c0ba 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -229,6 +229,7 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
->  		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
->  	}
->  	io_tlb_index = 0;
-> +	no_iotlb_memory = false;
->  
->  	if (verbose)
->  		swiotlb_print_info();
-> @@ -260,9 +261,11 @@ swiotlb_init(int verbose)
->  	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose))
->  		return;
->  
-> -	if (io_tlb_start)
-> +	if (io_tlb_start) {
->  		memblock_free_early(io_tlb_start,
->  				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
-> +		io_tlb_start = 0;
-> +	}
->  	pr_warn("Cannot allocate buffer");
->  	no_iotlb_memory = true;
->  }
-> @@ -360,6 +363,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->  		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
->  	}
->  	io_tlb_index = 0;
-> +	no_iotlb_memory = false;
->  
->  	swiotlb_print_info();
->  
-> -- 
-> 2.13.6
-> 
+Jordan Crouse (3):
+  iommu/arm-smmu-qcom: Add implementation for the adreno GPU SMMU
+  dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
+  arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
+
+Rob Clark (1):
+  iommu/arm-smmu: Add a way for implementations to influence SCTLR
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |   9 +-
+ arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |   9 +
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |   2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   3 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 157 +++++++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |   3 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   4 +
+ 7 files changed, 182 insertions(+), 5 deletions(-)
+
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
