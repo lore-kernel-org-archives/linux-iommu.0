@@ -2,102 +2,110 @@ Return-Path: <SRS0=PKzM=EC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8056DC55178
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 13:04:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E77EC388F9
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 13:35:27 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0396521D42
-	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 13:04:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7BD3E218AC
+	for <iommu@archiver.kernel.org>; Tue, 27 Oct 2020 13:35:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="esJ7PWQy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0396521D42
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="kRXDExu9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BD3E218AC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 86B98204D1;
-	Tue, 27 Oct 2020 13:04:25 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Wt7RoxGOvPwM; Tue, 27 Oct 2020 13:04:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id AA4FC204DA;
-	Tue, 27 Oct 2020 13:04:21 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F113C088B;
-	Tue, 27 Oct 2020 13:04:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C780DC0051
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:04:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B009A867D1
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:04:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 014D286820;
+	Tue, 27 Oct 2020 13:35:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id u+7hM0px2G1s; Tue, 27 Oct 2020 13:35:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id B6F3385DA4;
+	Tue, 27 Oct 2020 13:35:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 30AE4C0859;
+	Tue, 27 Oct 2020 13:35:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9189FC0051
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:35:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 84B1C20463
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:35:23 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cOA3FsMY2LNl for <iommu@lists.linux-foundation.org>;
- Tue, 27 Oct 2020 13:04:19 +0000 (UTC)
+ with ESMTP id fw2R2k0cQoes for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Oct 2020 13:35:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8D933860ED
- for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:04:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1603803858;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=eXXpUz3VnsL2Xy70mrZp5D4eUU9pHEsl4U/A+ZeUZVA=;
- b=esJ7PWQyeyfFmeTdZkzSB3sOlX8b8ME/b1704roI+wc5ZFPsdh79Uivt0lWEVew3Qeo5pn
- 3fIW1C2ImGT7ZnF+SUN/tEhKtYkQuHDYhfPKyQrnvW7VZnBZGfmJZsFN7FvyNEUzkZnJc6
- ybreO9btDTiJvQdES+qVB3qC2ANOwew=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-556-6ACk6zq5PEK2TZ_Z7S-pwA-1; Tue, 27 Oct 2020 09:04:15 -0400
-X-MC-Unique: 6ACk6zq5PEK2TZ_Z7S-pwA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D744FEC505;
- Tue, 27 Oct 2020 13:04:12 +0000 (UTC)
-Received: from [10.36.112.194] (ovpn-112-194.ams2.redhat.com [10.36.112.194])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 3446F5B4A4;
- Tue, 27 Oct 2020 13:04:06 +0000 (UTC)
-Subject: Re: [PATCH v10 01/11] vfio: VFIO_IOMMU_SET_PASID_TABLE
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- yuzenghui <yuzenghui@huawei.com>,
- "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>,
- "yi.l.liu@intel.com" <yi.l.liu@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20200320161911.27494-1-eric.auger@redhat.com>
- <20200320161911.27494-2-eric.auger@redhat.com>
- <2fba23af-9cd7-147d-6202-01c13fff92e5@huawei.com>
- <d3a302bb-34e8-762f-a11f-717b3bc83a2b@redhat.com>
- <cb5835e79b474e30af6702dbee0d46df@huawei.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <cde28d6d-c6cf-ef23-b293-f9959aba0a18@redhat.com>
-Date: Tue, 27 Oct 2020 14:04:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by silver.osuosl.org (Postfix) with ESMTPS id 59AB7204C5
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 13:35:22 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09RDUV5F054249;
+ Tue, 27 Oct 2020 13:35:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=6SwjgoK6NmHrI7CpsdIL3yfEJog1phV7AEfu8seZA/M=;
+ b=kRXDExu9qqJPjZrehu24qzSbTC0ClcfPsU+E1LCNqwZPgXaAuNivtu7tqhMfiZ6q0lpe
+ Bc1rJ0kUziITVuLTbsP+xc0QqqexEpxCiNpw4wC3MvpUMWaUVfEDuHdObkmMq/Z/v6tH
+ X6h2+gop8GjYD+39av1lHRI9HqyrzDcYyIEZ5VDgzqp4QFliovcuwBR6IXhG+0YeYv6n
+ zZ4tglD5BG/aTAmPoqTvmoggu26V0I/2ZQQVXMhKytv7dCCx8onZQvV3Z5ohpk4C1U1/
+ TQXQoHQHMUjEUi7pbhhlMvU0zdedoahfmbvsem7LF20QVv3dtc1iiQTSPRaKivdbHjOp Fg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2120.oracle.com with ESMTP id 34dgm3yjgm-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Tue, 27 Oct 2020 13:35:20 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09RDVI8m168151;
+ Tue, 27 Oct 2020 13:35:19 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by userp3030.oracle.com with ESMTP id 34cx6vygrw-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 27 Oct 2020 13:35:19 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 09RDZI5Y012414;
+ Tue, 27 Oct 2020 13:35:18 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 27 Oct 2020 06:35:18 -0700
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id 8FA456A0121; Tue, 27 Oct 2020 09:37:01 -0400 (EDT)
+Date: Tue, 27 Oct 2020 09:37:01 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Stefano Stabellini <sstabellini@kernel.org>
+Subject: Re: [PATCH] fix swiotlb panic on Xen
+Message-ID: <20201027133701.GB6077@char.us.oracle.com>
+References: <alpine.DEB.2.21.2010261653320.12247@sstabellini-ThinkPad-T480s>
 MIME-Version: 1.0
-In-Reply-To: <cb5835e79b474e30af6702dbee0d46df@huawei.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2010261653320.12247@sstabellini-ThinkPad-T480s>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9786
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ phishscore=0 spamscore=0
+ bulkscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0 suspectscore=2
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010270085
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9786
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+ lowpriorityscore=0 impostorscore=0
+ adultscore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999
+ suspectscore=2 clxscore=1011 mlxscore=0 malwarescore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010270085
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,57 +123,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Shameer,
+On Mon, Oct 26, 2020 at 05:02:14PM -0700, Stefano Stabellini wrote:
+> From: Stefano Stabellini <stefano.stabellini@xilinx.com>
+> 
+> kernel/dma/swiotlb.c:swiotlb_init gets called first and tries to
+> allocate a buffer for the swiotlb. It does so by calling
+> 
+>   memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
+> 
+> If the allocation must fail, no_iotlb_memory is set.
+> 
+> 
+> Later during initialization swiotlb-xen comes in
+> (drivers/xen/swiotlb-xen.c:xen_swiotlb_init) and given that io_tlb_start
+> is != 0, it thinks the memory is ready to use when actually it is not.
+> 
+> When the swiotlb is actually needed, swiotlb_tbl_map_single gets called
+> and since no_iotlb_memory is set the kernel panics.
+> 
+> Instead, if swiotlb-xen.c:xen_swiotlb_init knew the swiotlb hadn't been
+> initialized, it would do the initialization itself, which might still
+> succeed.
+> 
+> 
+> Fix the panic by setting io_tlb_start to 0 on swiotlb initialization
+> failure, and also by setting no_iotlb_memory to false on swiotlb
+> initialization success.
 
-On 10/27/20 1:20 PM, Shameerali Kolothum Thodi wrote:
-> Hi Eric,
-> 
->> -----Original Message-----
->> From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On Behalf Of
->> Auger Eric
->> Sent: 23 September 2020 12:47
->> To: yuzenghui <yuzenghui@huawei.com>; eric.auger.pro@gmail.com;
->> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
->> kvm@vger.kernel.org; kvmarm@lists.cs.columbia.edu; joro@8bytes.org;
->> alex.williamson@redhat.com; jacob.jun.pan@linux.intel.com;
->> yi.l.liu@intel.com; robin.murphy@arm.com
->> Subject: Re: [PATCH v10 01/11] vfio: VFIO_IOMMU_SET_PASID_TABLE
-> 
-> ...
-> 
->>> Besides, before going through the whole series [1][2], I'd like to
->>> know if this is the latest version of your Nested-Stage-Setup work in
->>> case I had missed something.
->>>
->>> [1]
->>> https://lore.kernel.org/r/20200320161911.27494-1-eric.auger@redhat.com
->>> [2]
->>> https://lore.kernel.org/r/20200414150607.28488-1-eric.auger@redhat.com
->>
->> yes those 2 series are the last ones. Thank you for reviewing.
->>
->> FYI, I intend to respin within a week or 2 on top of Jacob's  [PATCH v10 0/7]
->> IOMMU user API enhancement. 
-> 
-> Thanks for that. Also is there any plan to respin the related Qemu series as well?
-> I know dual stage interface proposals are still under discussion, but it would be
-> nice to have a testable solution based on new interfaces for ARM64 as well.
-> Happy to help with any tests or verifications.
+Should this have a Fixes: flag?
 
-Yes the QEMU series will be respinned as well. That's on the top of my
-todo list right now.
-
-Thanks
-
-Eric
 > 
-> Please let me know.
+> Signed-off-by: Stefano Stabellini <stefano.stabellini@xilinx.com>
 > 
-> Thanks,
-> Shameer
->   
 > 
-
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index c19379fabd20..9924214df60a 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -231,6 +231,7 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+>  		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+>  	}
+>  	io_tlb_index = 0;
+> +	no_iotlb_memory = false;
+>  
+>  	if (verbose)
+>  		swiotlb_print_info();
+> @@ -262,9 +263,11 @@ swiotlb_init(int verbose)
+>  	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose))
+>  		return;
+>  
+> -	if (io_tlb_start)
+> +	if (io_tlb_start) {
+>  		memblock_free_early(io_tlb_start,
+>  				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
+> +		io_tlb_start = 0;
+> +	}
+>  	pr_warn("Cannot allocate buffer");
+>  	no_iotlb_memory = true;
+>  }
+> @@ -362,6 +365,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+>  	}
+>  	io_tlb_index = 0;
+> +	no_iotlb_memory = false;
+>  
+>  	swiotlb_print_info();
+>  
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
