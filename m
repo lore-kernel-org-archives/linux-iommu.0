@@ -2,79 +2,93 @@ Return-Path: <SRS0=WwkY=ED=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7791BC4363A
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 11:09:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8211C55178
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 11:39:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B568246B1
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 11:09:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B568246B1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 12BAD246CA
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 11:39:48 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pFiD3zgI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12BAD246CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DF6DB87401;
-	Wed, 28 Oct 2020 11:09:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fAQnFSTGjD+S; Wed, 28 Oct 2020 11:09:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DAD9C873E9;
-	Wed, 28 Oct 2020 11:09:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BDD84C088B;
-	Wed, 28 Oct 2020 11:09:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33515C0051
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:09:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1D590863A6
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:09:04 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7D997867E0;
+	Wed, 28 Oct 2020 11:39:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Yqtj5rqFD+MS; Wed, 28 Oct 2020 11:39:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id DD01786907;
+	Wed, 28 Oct 2020 11:39:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4114C0859;
+	Wed, 28 Oct 2020 11:39:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2C8DBC0051
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:39:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1FCCC86A00
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:39:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NlFLV6ysm9uz for <iommu@lists.linux-foundation.org>;
- Wed, 28 Oct 2020 11:09:01 +0000 (UTC)
+ with ESMTP id QnXGB6Bznftg for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Oct 2020 11:39:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5A374862E6
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:09:01 +0000 (UTC)
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CLm6P095sz6yKv;
- Wed, 28 Oct 2020 19:09:01 +0800 (CST)
-Received: from [10.174.179.182] (10.174.179.182) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 28 Oct 2020 19:08:54 +0800
-Subject: Re: [PATCH v4 6/7] arm64: mm: Set ZONE_DMA size based on early IORT
- scan
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, <robh+dt@kernel.org>,
- <catalin.marinas@arm.com>, <hch@lst.de>, <ardb@kernel.org>,
- <linux-kernel@vger.kernel.org>, Lorenzo Pieralisi
- <lorenzo.pieralisi@arm.com>, Sudeep Holla <sudeep.holla@arm.com>
-References: <20201021123437.21538-1-nsaenzjulienne@suse.de>
- <20201021123437.21538-7-nsaenzjulienne@suse.de>
-From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <3a1480f7-7fd6-247c-73a2-f761f9ce3362@huawei.com>
-Date: Wed, 28 Oct 2020 19:08:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
+ [209.85.167.196])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6FC81863E0
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 11:39:45 +0000 (UTC)
+Received: by mail-oi1-f196.google.com with SMTP id k27so4606192oij.11
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 04:39:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=Ycf4souIl+vJEDDRrugErU3DI/glUjwSMCLL0gPDd9s=;
+ b=pFiD3zgIvJ8kI8n7HPxVqWvOVhDZEALH8E3rtVcH3GMP4yEt1A6ggfNWtHL7R8xplB
+ JeNxHFrntI4y0PC4mW1HH4J2x8aEha/uro9Da/FtfOtcPafzRnOYk6uMKYMMoPulgAxQ
+ EY9mbYBHkVDUPktpZ2t32RTqdi7SlOkUEAiwjCL1lVaSJYyWdrTXY9BTq3JWwgxrAbX2
+ y797BtlzTV7ekAkkzQS8vbOrgaeu7GC0sphYAiKvUjIYsvK0hB1OFSIkVYwmpH3m0lni
+ +sse5q8GdKKaoaH8946MuyQI6cSa4LLUjP1IM9CEJfRP64xpi0QoGv4gwBRq1ECLUhM+
+ 4nsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=Ycf4souIl+vJEDDRrugErU3DI/glUjwSMCLL0gPDd9s=;
+ b=bLvzjy5oauaseA0qfrWCxM1Uv7O9pm4t2h0p0E6h4c64i1ookrX8W3OxJoNpHSp60z
+ M07oLfXh6SaCXj52ETkA27pFPgUljHIzn3zYx/8/mDxTvnQefuU4nXoNKZHVZq3CiB4Q
+ zZyDKIsSZlDj50FTLaRBWc03K7aN/gSuv1SQGrmMDHI0CeXTAIrgQmILzlHAFKLAdwiG
+ zGnbHXHnMODfNSyMI9ERKnmLNm2EYqQ9puTqjtCO/FZn/vAwIuqdP5e/sRJ43iXHQf6M
+ fex4OPzxehwhEqnPxHF2g7UjL638fXljxH+cbhmnleyivII9TxZJu0TQERix2wHOrU0L
+ eOxQ==
+X-Gm-Message-State: AOAM53069VMUA6WSoOvJpof2VSdqPmBmJ2AdEktyHsxm3qfg71Lk2Ky/
+ RL4WHlWL/J4vS3hy09LxKFvUdRLWSh/18ZyTvWc=
+X-Google-Smtp-Source: ABdhPJx3htBouv1IB6/JdQCAt9OXWMHepRfT2cBX8fUrG4yqPeSF2jh9sL7oJtdOvG7PCNv0LoBVpNyFo7d67faYCAY=
+X-Received: by 2002:aca:ea42:: with SMTP id i63mr4653331oih.130.1603885184640; 
+ Wed, 28 Oct 2020 04:39:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201021123437.21538-7-nsaenzjulienne@suse.de>
-Content-Language: en-GB
-X-Originating-IP: [10.174.179.182]
-X-CFilter-Loop: Reflected
-Cc: devicetree@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>,
- will@kernel.org, "Rafael J.
- Wysocki" <rjw@rjwysocki.net>, jeremy.linton@arm.com, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
- Len Brown <lenb@kernel.org>
+References: <20190802180758.9691-1-gavinli@thegavinli.com>
+ <20190803062333.GC29348@lst.de>
+In-Reply-To: <20190803062333.GC29348@lst.de>
+From: Oded Gabbay <oded.gabbay@gmail.com>
+Date: Wed, 28 Oct 2020 13:39:17 +0200
+Message-ID: <CAFCwf122xMQJgqN9qJ1SXAHkVqg4GoNDC+NvXuj=-owXB=AO0A@mail.gmail.com>
+Subject: Re: [PATCH v1] dma-mapping: normal memory for mmap() on coherent
+ architectures
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Gavin Li <git@thegavinli.com>,
+ gavinli@thegavinli.com,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,68 +101,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/10/21 20:34, Nicolas Saenz Julienne wrote:
-> From: Ard Biesheuvel <ardb@kernel.org>
-> 
-> We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
-> incorporating masters that can address less than 32 bits of DMA, in
-> particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
-> peripherals that can only address up to 1 GB (and its PCIe host
-> bridge can only access the bottom 3 GB)
-> 
-> Instructing the DMA layer about these limitations is straight-forward,
-> even though we had to fix some issues regarding memory limits set in
-> the IORT for named components, and regarding the handling of ACPI _DMA
-> methods. However, the DMA layer also needs to be able to allocate
-> memory that is guaranteed to meet those DMA constraints, for bounce
-> buffering as well as allocating the backing for consistent mappings.
-> 
-> This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
-> it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
-> problems with kdump, and potentially in other places where allocations
-> cannot cross zone boundaries. Therefore, we should avoid having two
-> separate DMA zones when possible.
-> 
-> So let's do an early scan of the IORT, and only create the ZONE_DMA
-> if we encounter any devices that need it. This puts the burden on
-> the firmware to describe such limitations in the IORT, which may be
-> redundant (and less precise) if _DMA methods are also being provided.
-> However, it should be noted that this situation is highly unusual for
-> arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
-> the _DMA method if implemented, and so we will not lose the ability to
-> perform streaming DMA outside the ZONE_DMA if the _DMA method permits
-> it.
-> 
-> Cc: Jeremy Linton <jeremy.linton@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Hanjun Guo <guohanjun@huawei.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> [nsaenz: Rebased, removed documentation change and add declaration in acpi_iort.h]
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> 
-> ---
-> 
-> Changes since v3:
->   - Use min_not_zero()
->   - Check ACPI revision
->   - Remove unnecessary #ifdef in zone_sizes_init()
-> 
->   arch/arm64/mm/init.c      |  3 ++-
->   drivers/acpi/arm64/iort.c | 52 +++++++++++++++++++++++++++++++++++++++
->   include/linux/acpi_iort.h |  4 +++
+On Sat, Aug 3, 2019 at 9:26 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> See the discussion at:
+>
+> https://lists.linuxfoundation.org/pipermail/iommu/2019-August/037716.html
+>
+> Just curious, what driver do you use that uses dma_mmap_coherent on
+> x86?
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-Acked-by: Hanjun Guo <guohanjun@huawei.com>
+Hi Christoph,
+In the habanalabs driver we have moved to use dma_mmap_coherent (to
+match dma_alloc_coherent - see commit
+https://lkml.org/lkml/2020/8/29/252)
+Since then, we are plagued by the kernel log message that gavin has
+mentioned, as we are mostly running in our C/I environment with 5.4.
+I wondered if you know if there was any fix to that in the more recent kernels ?
+If not, can I help to fix that ?
+
+Thanks,
+oded
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
