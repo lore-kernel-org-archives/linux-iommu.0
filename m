@@ -2,83 +2,97 @@ Return-Path: <SRS0=WwkY=ED=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 460F6C388F7
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 18:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7E3C4363A
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 19:33:36 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8742424810
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 18:48:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8742424810
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E74A52475F
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 19:33:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nbHcifXZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E74A52475F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F075186A54;
-	Wed, 28 Oct 2020 18:48:16 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3CDA38643D;
+	Wed, 28 Oct 2020 19:33:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BwlkqgJz2H7w; Wed, 28 Oct 2020 18:48:14 +0000 (UTC)
+	with ESMTP id WsNYB_c3ryJN; Wed, 28 Oct 2020 19:33:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4396C86A37;
-	Wed, 28 Oct 2020 18:48:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0EA71863CD;
+	Wed, 28 Oct 2020 19:33:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A5FAC088B;
-	Wed, 28 Oct 2020 18:48:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34BD1C0051
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 18:43:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CEC45C0859;
+	Wed, 28 Oct 2020 19:33:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B0EA1C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 19:33:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 18989874D7
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 18:43:50 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 94E2686407
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 19:33:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nm4XmdR6+ulp for <iommu@lists.linux-foundation.org>;
- Wed, 28 Oct 2020 18:43:49 +0000 (UTC)
+ with ESMTP id 2jjMILTUpC4d for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Oct 2020 19:33:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 47134874D5
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 18:43:49 +0000 (UTC)
-IronPort-SDR: YeJakDk549TOYLOU1b2LaNX6ZuPhd6gZ6H21ejt8SyqOGg4hYT+aqJGK6nOaGPv1r5EBrHfW1q
- KJyRboHmb1AA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9788"; a="148173023"
-X-IronPort-AV: E=Sophos;i="5.77,427,1596524400"; d="scan'208";a="148173023"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Oct 2020 11:43:48 -0700
-IronPort-SDR: z73T4VYYFT8e/7DDXn39yXFeEnTXnAf5KaKtE9AS9Pb5mkBEEBd5DLuJxvDFbuThfJdpmDbnDG
- C6BaGsiPU8pw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,427,1596524400"; d="scan'208";a="424809030"
-Received: from linux.intel.com ([10.54.29.200])
- by fmsmga001.fm.intel.com with ESMTP; 28 Oct 2020 11:43:48 -0700
-Received: from debox1-desk1.jf.intel.com (debox1-desk1.jf.intel.com
- [10.7.201.137])
- by linux.intel.com (Postfix) with ESMTP id 8C97A580713;
- Wed, 28 Oct 2020 11:43:48 -0700 (PDT)
-Message-ID: <d414a22fbae9575e6c04f4a557ae49a2cd8eac57.camel@linux.intel.com>
-Subject: Re: [Devel] [RFC PATCH 2/4] ACPI/IORT: Add support for RMR node
- parsing
-From: "David E. Box" <david.e.box@linux.intel.com>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, 
- linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, 
- iommu@lists.linux-foundation.org, devel@acpica.org
-Date: Wed, 28 Oct 2020 11:43:48 -0700
-In-Reply-To: <20201027112646.44680-3-shameerali.kolothum.thodi@huawei.com>
-References: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
- <20201027112646.44680-3-shameerali.kolothum.thodi@huawei.com>
-Organization: David E. Box
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
+ [209.85.167.194])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D6054863CD
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 19:33:30 +0000 (UTC)
+Received: by mail-oi1-f194.google.com with SMTP id s21so791224oij.0
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 12:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=5zvcSUuNfHMXrNxsvhXWKua5WXhfqy+u4npY1sVlxa0=;
+ b=nbHcifXZKYta1gH3g+oMBu+K1N7aQMsgY2S0qrfXwrIS//cX5av5B67ifJ3tMc52d3
+ LvCdNd7QDNR6OqVdLN2Sp1VKhvpMHtpqGaRfB4pZ38II9kQ1eE5/xk8xqtiGXwI1hVzM
+ 1SebMNmNpmB3RbMoXDjZMjofUmAfsngzFWlzcs8d412YNLuG0YNN38wGp/bR1JtQwkln
+ HDcvrNll6uwisNlaQoRnGLNmQ+OXmJcZ27nO+3RaYGO21HvBVmG3OXuiwobzOtR5zVCR
+ ywaDkX5V40PPJptS5tmvpP9vAyELBTmJnHoL6unWFllBUAeBBscNEbP1CKAwwj+pr5Gh
+ Xk2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=5zvcSUuNfHMXrNxsvhXWKua5WXhfqy+u4npY1sVlxa0=;
+ b=I3GDsE3sCikXwXIq7C1WYbDGR87VZuQ7km2/4dI2xUuV0zAp0fY8Eo7BMPgv5c53qH
+ GnbDzhpsdQdb4PvwWQEoGp3nAt00p/zc9eVLOYrqsEqws2UByCHJHYWVNcvWBnYrBhRG
+ Jbp3g0ixmfzTtN3URvG0N6YDZEwd7gPvY4pIKSwxWpEi8X1IAvZvC2nXa+iL00i/mvav
+ pyd23chEc1EfwxUA3UnIGD/39RUO9K22VxikhrIZEVFa7a+SEsXRj1+Pwp6bEvSI1gbe
+ gA3L71LwNgYpas955woaQp1maxtpHUXNtn4VrG8z7LBoSK4my80SuSAQ9fA9GwLIKEGT
+ 7zqQ==
+X-Gm-Message-State: AOAM531QtvnpHNarhw6bHbIHtk1UOgumLRwmgHLx0NBx455CpfZ/kHU6
+ 48Hq5ioJjjrOKL9bAEOvmzFOJhMYgFBjPgCXoQg=
+X-Google-Smtp-Source: ABdhPJxGlBhmHxqQDKb6le5siMUuiKMn6BRekoZYJZOXfxXc79e3Tza0QTuWzZODQ5cA7pXPBU4/fpBUlciZa2xSVsk=
+X-Received: by 2002:aca:5487:: with SMTP id i129mr430532oib.154.1603913610118; 
+ Wed, 28 Oct 2020 12:33:30 -0700 (PDT)
 MIME-Version: 1.0
-X-Mailman-Approved-At: Wed, 28 Oct 2020 18:48:12 +0000
-Cc: linuxarm@huawei.com, robin.murphy@arm.com, wanghuiqiang@huawei.com
+References: <20190802180758.9691-1-gavinli@thegavinli.com>
+ <20190803062333.GC29348@lst.de>
+ <CAFCwf122xMQJgqN9qJ1SXAHkVqg4GoNDC+NvXuj=-owXB=AO0A@mail.gmail.com>
+ <20201028173152.GA10224@lst.de>
+ <CAFCwf10HzngDA17sLxYRY_z1QcPp6NE+HYKnAzm_fEuN6FzmGA@mail.gmail.com>
+ <20201028173939.GB10317@lst.de>
+In-Reply-To: <20201028173939.GB10317@lst.de>
+From: Oded Gabbay <oded.gabbay@gmail.com>
+Date: Wed, 28 Oct 2020 21:33:01 +0200
+Message-ID: <CAFCwf13jRE_kXS_+Xd_pi103wvtP6oew8qDR3PyAZy=4jxZYYQ@mail.gmail.com>
+Subject: Re: [PATCH v1] dma-mapping: normal memory for mmap() on coherent
+ architectures
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Gavin Li <git@thegavinli.com>,
+ gavinli@thegavinli.com,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,37 +105,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: david.e.box@linux.intel.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Wed, Oct 28, 2020 at 7:39 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Wed, Oct 28, 2020 at 07:38:04PM +0200, Oded Gabbay wrote:
+> > > > https://lkml.org/lkml/2020/8/29/252)
+> > > > Since then, we are plagued by the kernel log message that gavin has
+> > > > mentioned, as we are mostly running in our C/I environment with 5.4.
+> > > > I wondered if you know if there was any fix to that in the more recent kernels ?
+> > > > If not, can I help to fix that ?
+> > >
+> > > What are the kernel log messages that gaving has mentioned?
+> >
+> > This one:
+> > 11:22:43  [Wed Oct 28 11:22:34 2020] x86/PAT: synapse_tests:29265 map
+> > pfn RAM range req uncached-minus for [mem 0xe6236b000-0xe6236bfff],
+> > got write-back
+> >
+> > Thousands of the same message with different addresses of course.
+>
+> What kernel version is this on?  And what is the test case?
 
-On Tue, 2020-10-27 at 11:26 +0000, Shameer Kolothum wrote:
+ok, so my previous message wasn't accurate. On 5.4 kernel it actually
+does NOT happen.
+It happens on 4.18 and 4.15 (kernels that are delivered in Ubuntu 18.04).
+So I assume it was fixed somewhere between 4.19 to 5.4.
+I'll try to dig the code to see where the change is exactly.
 
-...
-
-> @@ -1647,6 +1667,100 @@ static void __init iort_enable_acs(struct
-> acpi_iort_node *iort_node)
->  #else
->  static inline void iort_enable_acs(struct acpi_iort_node *iort_node)
-> { }
->  #endif
-> +static int iort_rmr_desc_valid(struct acpi_iort_rmr_desc *desc)
-> +{
-> +	struct iort_rmr_entry *e;
-> +	u64 end, start = desc->base_address, length = desc->length;
-> +
-> +	if ((!IS_ALIGNED(start, SZ_64K)) || (length % SZ_64K != 0))
-
-You could just do:
-
-if ((!IS_ALIGNED(start, SZ_64K)) || (length % SZ_64K))
-
-David
-
+Thanks and sorry for the trouble,
+Oded
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
