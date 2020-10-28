@@ -2,84 +2,71 @@ Return-Path: <SRS0=WwkY=ED=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B3CC388F7
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 14:51:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C67C388F7
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 16:43:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E610F247A8
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 14:51:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E610F247A8
+	by mail.kernel.org (Postfix) with ESMTPS id 07786247F3
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 16:43:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07786247F3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5DBD88694F;
-	Wed, 28 Oct 2020 14:51:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5E6112078D;
+	Wed, 28 Oct 2020 16:43:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FUNBYAqXENoJ; Wed, 28 Oct 2020 14:51:15 +0000 (UTC)
+	with ESMTP id AzDtOn4esqLx; Wed, 28 Oct 2020 16:43:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 81294869A9;
-	Wed, 28 Oct 2020 14:51:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AD2C82076B;
+	Wed, 28 Oct 2020 16:43:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6811AC088B;
-	Wed, 28 Oct 2020 14:51:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82C61C088B;
+	Wed, 28 Oct 2020 16:43:54 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2571C0051
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 14:51:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27A11C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 16:43:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E6EB187342
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 14:51:13 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0D2B387492
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 16:43:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZmeFiT4YAUXu for <iommu@lists.linux-foundation.org>;
- Wed, 28 Oct 2020 14:51:12 +0000 (UTC)
+ with ESMTP id eOnpKvLqCDyj for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Oct 2020 16:43:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id ACADE87403
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 14:51:12 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C830C870E0
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 16:43:51 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDF351A00;
- Wed, 28 Oct 2020 07:51:11 -0700 (PDT)
-Received: from [10.57.54.223] (unknown [10.57.54.223])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 55C003F66E;
- Wed, 28 Oct 2020 07:51:09 -0700 (PDT)
-Subject: Re: [PATCH v2 5/5] firmware: QCOM_SCM: Allow qcom_scm driver to be
- loadable as a permenent module
-To: Will Deacon <will@kernel.org>, John Stultz <john.stultz@linaro.org>
-References: <20200625001039.56174-1-john.stultz@linaro.org>
- <20200625001039.56174-6-john.stultz@linaro.org>
- <20200702141825.GA16941@willie-the-truck>
- <CALAqxLVZ2EhutYjOt7Be1RgnYwHT6-4m6DxA-t1wuxuSy=6yDQ@mail.gmail.com>
- <20200710075411.GA30011@willie-the-truck>
- <CALAqxLWadLrxckRHRAR0Q417RnFKquQJbRfO_DLEVH56cykRow@mail.gmail.com>
- <20200713204133.GA3731@willie-the-truck>
- <CALAqxLUDVEq4ds2Wbic6uaK3=dELKKO4eGQxjHFFz19GeUFd_w@mail.gmail.com>
- <20201028135118.GA28554@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ae6ba27a-d3c8-8b98-c263-ec779ef35738@arm.com>
-Date: Wed, 28 Oct 2020 14:51:03 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2557E1A32;
+ Wed, 28 Oct 2020 09:43:51 -0700 (PDT)
+Received: from [192.168.1.179] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F7D93F66E;
+ Wed, 28 Oct 2020 09:43:49 -0700 (PDT)
+Subject: Re: [RFC PATCH 0/4] ACPI/IORT: Support for IORT RMR node
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, devel@acpica.org
+References: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
+From: Steven Price <steven.price@arm.com>
+Message-ID: <f389e864-3d7a-3c96-8f51-c04f92759df1@arm.com>
+Date: Wed, 28 Oct 2020 16:43:48 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201028135118.GA28554@willie-the-truck>
+In-Reply-To: <20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com>
 Content-Language: en-GB
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, lkml <linux-kernel@vger.kernel.org>,
- Lina Iyer <ilina@codeaurora.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, Todd Kjos <tkjos@google.com>
+Cc: linuxarm@huawei.com, guohanjun@huawei.com,
+ Sami Mujawar <Sami.Mujawar@arm.com>, robin.murphy@arm.com,
+ wanghuiqiang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,146 +79,114 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-10-28 13:51, Will Deacon wrote:
-> On Tue, Oct 27, 2020 at 10:53:47PM -0700, John Stultz wrote:
->> On Mon, Jul 13, 2020 at 1:41 PM Will Deacon <will@kernel.org> wrote:
->>> On Fri, Jul 10, 2020 at 03:21:53PM -0700, John Stultz wrote:
->>>> On Fri, Jul 10, 2020 at 12:54 AM Will Deacon <will@kernel.org> wrote:
->>>>> On Thu, Jul 09, 2020 at 08:28:45PM -0700, John Stultz wrote:
->>>>>> On Thu, Jul 2, 2020 at 7:18 AM Will Deacon <will@kernel.org> wrote:
->>>>>>> On Thu, Jun 25, 2020 at 12:10:39AM +0000, John Stultz wrote:
->>>>>>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->>>>>>>> index b510f67dfa49..714893535dd2 100644
->>>>>>>> --- a/drivers/iommu/Kconfig
->>>>>>>> +++ b/drivers/iommu/Kconfig
->>>>>>>> @@ -381,6 +381,7 @@ config SPAPR_TCE_IOMMU
->>>>>>>>   config ARM_SMMU
->>>>>>>>        tristate "ARM Ltd. System MMU (SMMU) Support"
->>>>>>>>        depends on (ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)) && MMU
->>>>>>>> +     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
->>>>>>>>        select IOMMU_API
->>>>>>>>        select IOMMU_IO_PGTABLE_LPAE
->>>>>>>>        select ARM_DMA_USE_IOMMU if ARM
->>>>>>>
->>>>>>> This looks like a giant hack. Is there another way to handle this?
->>>>>>
->>>>>> Sorry for the slow response here.
->>>>>>
->>>>>> So, I agree the syntax looks strange (requiring a comment obviously
->>>>>> isn't a good sign), but it's a fairly common way to ensure drivers
->>>>>> don't get built in if they optionally depend on another driver that
->>>>>> can be built as a module.
->>>>>>    See "RFKILL || !RFKILL", "EXTCON || !EXTCON", or "USB_GADGET ||
->>>>>> !USB_GADGET" in various Kconfig files.
->>>>>>
->>>>>> I'm open to using a different method, and in a different thread you
->>>>>> suggested using something like symbol_get(). I need to look into it
->>>>>> more, but that approach looks even more messy and prone to runtime
->>>>>> failures. Blocking the unwanted case at build time seems a bit cleaner
->>>>>> to me, even if the syntax is odd.
->>>>>
->>>>> Maybe just split it out then, so that the ARM_SMMU entry doesn't have this,
->>>>> as that driver _really_ doesn't care about SoC details like this. In other
->>>>> words, add a new entry along the lines of:
->>>>>
->>>>>          config ARM_SMMU_QCOM_IMPL
->>>>>          default y
->>>>>          #if QCOM_SCM=m this can't be =y
->>>>>          depends on ARM_SMMU & (QCOM_SCM || !QCOM_SCM)
->>>>>
->>>>> and then have arm-smmu.h provide a static inline qcom_smmu_impl_init()
->>>>> which returns -ENODEV if CONFIG_ARM_SMMU_QCOM_IMPL=n and hack the Makefile
->>>>> so that we don't bother to compile arm-smmu-qcom.o in that case.
->>>>>
->>>>> Would that work?
->>>>
->>>> I think this proposal still has problems with the directionality of the call.
->>>>
->>>> The arm-smmu-impl.o calls to arm-smmu-qcom.o which calls qcom_scm.o
->>>> So if qcom_scm.o is part of a module, the calling code in
->>>> arm-smmu-qcom.o also needs to be a module, which means CONFIG_ARM_SMMU
->>>> needs to be a module.
->>>>
->>>> I know you said the arm-smmu driver doesn't care about SoC details,
->>>> but the trouble is that currently the arm-smmu driver does directly
->>>> call the qcom-scm code. So it is a real dependency. However, if
->>>> QCOM_SCM is not configured, it calls stubs and that's ok.  In that
->>>> way, the "depends on QCOM_SCM || !QCOM_SCM" line actually makes sense.
->>>> It looks terrible because we're used to boolean logic, but it's
->>>> ternary.
->>>
->>> Yes, it looks ugly, but the part I really have issues with is that building
->>> QCOM_SCM=m and ARM_SMMU=y is perfectly fine if you don't run on an SoC
->>> with the qcom implementation. I don't see why we need to enforce things
->>> here beyond making sure that all selectable permutations _build_ and
->>> fail gracefully at runtime on the qcom SoC if SCM isn't available.
->>
->> Hey Will,
->>    Sorry to dredge up this old thread. I've been off busy with other
->> things and didn't get around to trying to rework this until now.
->>
->> Unfortunately I'm still having some trouble coming up with a better
->> solution. Initially I figured I'd rework the qcom_scm driver to, so
->> that we have the various qcom_scm_* as inline functions, which call
->> out to function pointers that the qcom_scm driver would register when
->> the module loaded (Oof, and unfortunately there are a *ton* qcom_scm_*
->> functions so its a bunch of churn).
->>
->> The trouble I realized with that approach is that if the ARM_SMMU code
->> is built in, then it may try to use the qcom_scm code before the
->> module loads and sets those function pointers. So while it would build
->> ok, the issue would be when the arm_smmu_device_reset() is done by
->> done on arm_smmu_device_probe(), it wouldn't actually call the right
->> code.  There isn't a really good way to deal with the module loading
->> at some random time after arm_smmu_device_probe() completes.
->>
->> This is the benefit of the module symbol dependency tracking: If the
->> arm_smmu.ko calls symbols in qcom_scm.ko then qcom_scm.ko has to load
->> first.
->> But if arm_smmu is built in, I haven't found a clear mechanism to
->> force qcom_scm to load before we probe, if it's configured as a
->> module.
->>
->> I also looked into the idea of reworking the arm-smmu-impl code to be
->> modular instead, and while it does provide a similar method of using
->> function pointers to minimize the amount of symbols the arm-smmu code
->> needs to know about, the initialization call path is
->> arm_smmu_device_probe -> arm_smmu_impl_init -> qcom_smmu_impl_init. So
->> it doesn't really allow for dynamic registration of implementation
->> modules at runtime.
->>
->> So I'm sort of stewing on maybe trying to rework the directionality,
->> so the arm-smmu-qcom.o code probes and calls arm_smmu_impl_init and
->> that is what initializes the arm_smmu_device_probe logic?
->>
->> Alternatively, I'm considering trying to switch the module dependency
->> annotation so that the CONFIG_QCOM_SCM modularity depends on ARM_SMMU
->> being a module. But that is sort of putting the restriction on the
->> callee instead of the caller (sort of flipping the meaning of the
->> depends), which feels prone to later trouble (and with multiple users
->> of CONFIG_QCOM_SCM needing similar treatment, it would make it
->> difficult to discover the right combination of configs needed to allow
->> it to be a module).
->>
->> Anyway, I wanted to reach out to see if you had any further ideas
->> here. Sorry for letting such a large time gap pass!
-> 
-> Well we can always go with your original hack, if it helps?
-> 
-> https://lore.kernel.org/linux-iommu/20200714075603.GE4277@willie-the-truck/
-
-Hmm, perhaps I'm missing something here, but even if the config options 
-*do* line up, what prevents arm-smmu probing before qcom-scm and 
-dereferencing NULL in qcom_scm_qsmmu500_wait_safe_toggle() before __scm 
-is initialised?
-
-Robin.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjcvMTAvMjAyMCAxMToyNiwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToKPiBUaGUgc2VyaWVz
+IGFkZHMgc3VwcG9ydCB0byBJT1JUIFJNUiBub2RlcyBzcGVjaWZpZWQgaW4gSU9SVAo+IFJldmlz
+aW9uIEUgLUFSTSBERU4gMDA0OUVbMF0uIFJNUiBub2RlcyBhcmXCoHVzZWQgdG/CoGRlc2NyaWJl
+IG1lbW9yeQo+IHJhbmdlcyB0aGF0IGFyZSB1c2VkIGJ5IGVuZHBvaW50cyBhbmQgcmVxdWlyZSBh
+IHVuaXR5IG1hcHBpbmcKPiBpbiBTTU1VLgoKSGkgU2hhbWVlciwKCkkndmUgYWxzbyBiZWVuIHRh
+a2luZyBhIGxvb2sgYXQgUk1SLCBhbmQgU2FtaSBpcyBoZWxwaW5nIG1lIGdldCBzZXQgdXAgCnNv
+IHRoYXQgSSBjYW4gZG8gc29tZSB0ZXN0aW5nLiBXZSdyZSBob3BpbmcgdG8gYmUgYWJsZSB0byB0
+ZXN0IGFuIEVGSSAKZnJhbWVidWZmZXIgb3Igc3BsYXNoIHNjcmVlbiAtIHdoaWNoIGhhcyB0aGUg
+YWRkZWQgY29tcGxpY2F0aW9uIG9mIHRoZSAKdW5pdHkgbWFwcGluZyBiZWNvbWluZyByZWR1bmRh
+bnQgaWYgYSBuYXRpdmUgZGlzcGxheSBkcml2ZXIgdGFrZXMgb3ZlciAKdGhlIGRpc3BsYXkgY29u
+dHJvbGxlci4KCkkndmUgbG9va2VkIHRocm91Z2ggeW91ciBzZXJpZXMgYW5kIHRoZSBjb2RlIGxv
+b2tzIGNvcnJlY3QgdG8gbWUuIApIb3BlZnVsbHkgSSdsbCBiZSBhYmxlIHRvIGdpdmUgaXQgc29t
+ZSB0ZXN0aW5nIHNvb24uCgpUaGFua3MsCgpTdGV2ZQoKPiBXZSBoYXZlIGZhY2VkIGlzc3VlcyB3
+aXRoIDM0MDhpTVIgUkFJRCBjb250cm9sbGVyIGNhcmRzwqB3aGljaAo+IGZhaWwgdG8gYm9vdCB3
+aGVuIFNNTVUgaXMgZW5hYmxlZC4gVGhpcyBpcyBiZWNhdXNlIHRoZXNlIGNvbnRyb2xsZXJzCj4g
+bWFrZSB1c2Ugb2YgaG9zdCBtZW1vcnkgZm9yIHZhcmlvdXMgY2FjaGluZyByZWxhdGVkIHB1cnBv
+c2VzIGFuZCB3aGVuCj4gU01NVSBpcyBlbmFibGVkwqB0aGUgaU1SIGZpcm13YXJlwqBmYWlscyB0
+byBhY2Nlc3MgdGhlc2UgbWVtb3J5IHJlZ2lvbnMKPiBhcyB0aGVyZSBpcyBubyBtYXBwaW5nIGZv
+ciB0aGVtLiBJT1JUIFJNUiBwcm92aWRlcyBhIHdheSBmb3IgVUVGSSB0bwo+IGRlc2NyaWJlIGFu
+ZCByZXBvcnQgdGhlc2UgbWVtb3J5IHJlZ2lvbnPCoHNvIHRoYXQgdGhlIGtlcm5lbCBjYW4gbWFr
+ZQo+IGEgdW5pdHkgbWFwcGluZyBmb3IgdGhlc2UgaW4gU01NVS4KPiAKPiBSRkMgYmVjYXVzZSwg
+UGF0Y2ggIzEgaXMgdG8gdXBkYXRlIHRoZSBhY3RibDIuaCBhbmQgc2hvdWxkIGJlIGRvbmUKPiB0
+aHJvdWdoIGFjcGljYSB1cGRhdGUuIEkgaGF2ZSBzZW5kIG91dCBhIHB1bGwgcmVxdWVzdFsxXSBm
+b3IgdGhhdC4KPiAKPiBUZXN0czoKPiAKPiBXaXRoIGEgVUVGSSwgdGhhdCByZXBvcnRzIHRoZSBS
+TVIgZm9yIHRoZSBkZXYsCj4gLi4uLgo+IFsxNkYwaCA1ODcyICAgMV0gICAgICAgICAgICAgICAg
+ICAgICAgICAgVHlwZSA6IDA2Cj4gWzE2RjFoIDU4NzMgICAyXSAgICAgICAgICAgICAgICAgICAg
+ICAgTGVuZ3RoIDogMDA3Qwo+IFsxNkYzaCA1ODc1ICAgMV0gICAgICAgICAgICAgICAgICAgICBS
+ZXZpc2lvbiA6IDAwCj4gWzEwMzhoIDAwNTYgICAyXSAgICAgICAgICAgICAgICAgICAgIFJlc2Vy
+dmVkIDogMDAwMDAwMDAKPiBbMTAzOGggMDA1NiAgIDJdICAgICAgICAgICAgICAgICAgIElkZW50
+aWZpZXIgOiAwMDAwMDAwMAo+IFsxNkY4aCA1ODgwICAgNF0gICAgICAgICAgICAgICAgTWFwcGlu
+ZyBDb3VudCA6IDAwMDAwMDAxCj4gWzE2RkNoIDU4ODQgICA0XSAgICAgICAgICAgICAgIE1hcHBp
+bmcgT2Zmc2V0IDogMDAwMDAwNDAKPiAKPiBbMTcwMGggNTg4OCAgIDRdICAgIE51bWJlciBvZiBS
+TVIgRGVzY3JpcHRvcnMgOiAwMDAwMDAwMgo+IFsxNzA0aCA1ODkyICAgNF0gICAgICAgIFJNUiBE
+ZXNjcmlwdG9yIE9mZnNldCA6IDAwMDAwMDE4Cj4gCj4gWzE3MDhoIDU4OTYgICA4XSAgICAgICAg
+ICBCYXNlIEFkZHJlc3Mgb2YgUk1SIDogMDAwMEU2NDAwMDAwCj4gWzE3MTBoIDU5MDQgICA4XSAg
+ICAgICAgICAgICAgICBMZW5ndGggb2YgUk1SIDogMDAwMDAwMTAwMDAwCj4gWzE3MThoIDU5MTIg
+ICA0XSAgICAgICAgICAgICAgICAgICAgIFJlc2VydmVkIDogMDAwMDAwMDAKPiAKPiBbMTcxQ2gg
+NTkxNiAgIDhdICAgICAgICAgIEJhc2UgQWRkcmVzcyBvZiBSTVIgOiAwMDAwMDAwMDI3QjAwMDAw
+Cj4gWzE3MjRoIDU5MjQgICA4XSAgICAgICAgICAgICAgICBMZW5ndGggb2YgUk1SIDogMDAwMDAw
+MDAwMEMwMDAwMAo+IFsxNzJDaCA1OTMyICAgNF0gICAgICAgICAgICAgICAgICAgICBSZXNlcnZl
+ZCA6IDAwMDAwMDAwCj4gCj4gWzE3MzBoIDU5MzYgICA0XSAgICAgICAgICAgICAgICAgICBJbnB1
+dCBiYXNlIDogMDAwMDAwMDAKPiBbMTczNGggNTk0MCAgIDRdICAgICAgICAgICAgICAgICAgICAg
+SUQgQ291bnQgOiAwMDAwMDAwMQo+IFsxNzM4aCA1OTQ0ICAgNF0gICAgICAgICAgICAgICAgICBP
+dXRwdXQgQmFzZSA6IDAwMDAwMDAzCj4gWzE3M0NoIDU5NDggICA0XSAgICAgICAgICAgICBPdXRw
+dXQgUmVmZXJlbmNlIDogMDAwMDAwNjQKPiBbMTc0MGggNTk1MiAgIDRdICAgICAgICBGbGFncyAo
+ZGVjb2RlZCBiZWxvdykgOiAwMDAwMDAwMQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgU2luZ2xlIE1hcHBpbmcgOiAxCj4gLi4uCj4gCj4gV2l0aG91dCB0aGUgc2VyaWVzIHRoZSBS
+QUlEIGNvbnRyb2xsZXIgaW5pdGlsaXphdGlvbiBmYWlscyBhcwo+IGJlbG93LAo+IAo+IC4uLgo+
+IFsgICAxMi42MzExMTddIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IEZXIHN1cHBvcnRzIHN5
+bmMgY2FjaGUgICAgICAgIDogWWVzCj4gWyAgIDEyLjYzNzM2MF0gbWVnYXJhaWRfc2FzIDAwMDA6
+MDM6MDAuMDogbWVnYXNhc19kaXNhYmxlX2ludHJfZnVzaW9uIGlzIGNhbGxlZCBvdXRib3VuZF9p
+bnRyX21hc2s6MHg0MDAwMDAwOQo+IFsgICAxOC43NzYzNzddIG1lZ2FyYWlkX3NhcyAwMDAwOjAz
+OjAwLjA6IEluaXQgY21kIHJldHVybiBzdGF0dXMgRkFJTEVEIGZvciBTQ1NJIGhvc3QgMAo+IFsg
+ICAyMy4wMTkzODNdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IFdhaXRpbmcgZm9yIEZXIHRv
+IGNvbWUgdG8gcmVhZHkgc3RhdGUKPiBbICAxMDYuNjg0MjgxXSBtZWdhcmFpZF9zYXMgMDAwMDow
+MzowMC4wOiBGVyBpbiBGQVVMVCBzdGF0ZSwgRmF1bHQgY29kZToweDEwMDAwIHN1YmNvZGU6MHgw
+IGZ1bmM6bWVnYXNhc190cmFuc2l0aW9uX3RvX3JlYWR5Cj4gWyAgMTA2LjY5NTE4Nl0gbWVnYXJh
+aWRfc2FzIDAwMDA6MDM6MDAuMDogU3lzdGVtIFJlZ2lzdGVyIHNldDoKPiBbICAxMDYuODg5Nzg3
+XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBGYWlsZWQgdG8gdHJhbnNpdGlvbiBjb250cm9s
+bGVyIHRvIHJlYWR5IGZvciBzY3NpMC4KPiBbICAxMDYuOTEwNDc1XSBtZWdhcmFpZF9zYXMgMDAw
+MDowMzowMC4wOiBGYWlsZWQgZnJvbSBtZWdhc2FzX2luaXRfZncgNjQwNwo+IGVzdHVhcnk6LyQK
+PiAKPiBXaXRoIHRoZSBzZXJpZXMsIG5vdyB0aGUga2VybmVsIGhhcyBkaXJlY3QgbWFwcGluZyBm
+b3IgdGhlIGRldiBhcwo+IGJlbG93LAo+IAo+IGVzdHVhcnk6LyQgY2F0IC9zeXMva2VybmVsL2lv
+bW11X2dyb3Vwcy8wL3Jlc2VydmVkX3JlZ2lvbnMKPiAweDAwMDAwMDAwMDgwMDAwMDAgMHgwMDAw
+MDAwMDA4MGZmZmZmIG1zaQo+IDB4MDAwMDAwMDAyN2IwMDAwMCAweDAwMDAwMDAwMjg2ZmZmZmYg
+ZGlyZWN0Cj4gMHgwMDAwMDAwMGU2NDAwMDAwIDB4MDAwMDAwMDBlNjRmZmZmZiBkaXJlY3QKPiBl
+c3R1YXJ5Oi8kCj4gCj4gLi4uLgo+IFsgICAxMi4yNTQzMThdIG1lZ2FyYWlkX3NhcyAwMDAwOjAz
+OjAwLjA6IG1lZ2FzYXNfZGlzYWJsZV9pbnRyX2Z1c2lvbiBpcyBjYWxsZWQgb3V0Ym91bmRfaW50
+cl9tYXNrOjB4NDAwMDAwMDkKPiBbICAgMTIuNzM5MDg5XSBtZWdhcmFpZF9zYXMgMDAwMDowMzow
+MC4wOiBGVyBwcm92aWRlZCBzdXBwb3J0TWF4RXh0TERzOiAwICAgICAgbWF4X2xkczogMzIKPiBb
+ICAgMTIuNzQ2NjI4XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBjb250cm9sbGVyIHR5cGUg
+ICAgICAgOiBpTVIoME1CKQo+IFsgICAxMi43NTI2OTRdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAw
+LjA6IE9ubGluZSBDb250cm9sbGVyIFJlc2V0KE9DUikgIDogRW5hYmxlZAo+IFsgICAxMi43NTk3
+OThdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IFNlY3VyZSBKQk9EIHN1cHBvcnQgICA6IFll
+cwo+IFsgICAxMi43NjU3NzhdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IE5WTWUgcGFzc3Ro
+cnUgc3VwcG9ydCA6IFllcwo+IFsgICAxMi43NzE5MzFdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAw
+LjA6IEZXIHByb3ZpZGVkIFRNIFRhc2tBYm9ydC9SZXNldCB0aW1lb3U6IDYgc2Vjcy82MCBzZWNz
+Cj4gWyAgIDEyLjc4MDUwM10gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogSkJPRCBzZXF1ZW5j
+ZSBtYXAgc3VwcG9ydCAgICAgOiBZZXMKPiBbICAgMTIuNzg3MDAwXSBtZWdhcmFpZF9zYXMgMDAw
+MDowMzowMC4wOiBQQ0kgTGFuZSBNYXJnaW5pbmcgc3VwcG9ydCAgICA6IE5vCj4gWyAgIDEyLjgx
+OTE3OV0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogTlZNRSBwYWdlIHNpemUgICAgICAgIDog
+KDQwOTYpCj4gWyAgIDEyLjgyNTY3Ml0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogbWVnYXNh
+c19lbmFibGVfaW50cl9mdXNpb24gaXMgY2FsbGVkIG91dGJvdW5kX2ludHJfbWFzazoweDQwMDAw
+MDAwCj4gWyAgIDEyLjgzNTE5OV0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogSU5JVCBhZGFw
+dGVyIGRvbmUKPiBbICAgMTIuODczOTMyXSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBwY2kg
+aWQgICAgICAgICAgICAgICAgOiAoMHgxMDAwKS8oMHgwMDE3KS8oMHgxOWU1KS8oMHhkMjEzKQo+
+IFsgICAxMi44ODE2NDRdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IHVuZXZlbnNwYW4gc3Vw
+cG9ydCAgICA6IG5vCj4gWyAgIDEyLjg4NzQ1MV0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDog
+ZmlybXdhcmUgY3Jhc2ggZHVtcCAgIDogbm8KPiBbICAgMTIuODkzMzQ0XSBtZWdhcmFpZF9zYXMg
+MDAwMDowMzowMC4wOiBKQk9EIHNlcXVlbmNlIG1hcCAgICAgOiBlbmFibGVkCj4gCj4gUkFJRCBj
+b250cm9sbGVyIGluaXQgaXMgbm93IHN1Y2Nlc3MgYW5kIGNhbiBkZXRlY3QgdGhlIGRyaXZlcwo+
+IGF0dGFjaGVkIGFzIHdlbGwuCj4gCj4gVGhhbmtzLAo+IFNoYW1lZXIKPiAKPiBbMF0uwqBodHRw
+czovL2RldmVsb3Blci5hcm0uY29tL2RvY3VtZW50YXRpb24vZGVuMDA0OS9sYXRlc3QvCj4gWzFd
+LsKgaHR0cHM6Ly9naXRodWIuY29tL2FjcGljYS9hY3BpY2EvcHVsbC82MzgKPiAKPiBTaGFtZWVy
+IEtvbG90aHVtICg0KToKPiAgICBBQ1BJQ0E6IElPUlQ6IFVwZGF0ZSBmb3IgcmV2aXNpb24gRQo+
+ICAgIEFDUEkvSU9SVDogQWRkIHN1cHBvcnQgZm9yIFJNUiBub2RlIHBhcnNpbmcKPiAgICBBQ1BJ
+L0lPUlQ6IEFkZCBSTVIgbWVtb3J5IHJlZ2lvbnMgcmVzZXJ2YXRpb24gaGVscGVyCj4gICAgaW9t
+bXUvZG1hOiBSZXNlcnZlIGFueSBSTVIgcmVnaW9ucyBhc3NvY2lhdGVkIHdpdGggYSBkZXYKPiAK
+PiAgIGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMgfCAxNzUgKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKy0KPiAgIGRyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMgfCAgMTIgKyst
+Cj4gICBpbmNsdWRlL2FjcGkvYWN0YmwyLmggICAgIHwgIDI1ICsrKystLQo+ICAgaW5jbHVkZS9s
+aW51eC9hY3BpX2lvcnQuaCB8ICAgNCArCj4gICA0IGZpbGVzIGNoYW5nZWQsIDIwNSBpbnNlcnRp
+b25zKCspLCAxMSBkZWxldGlvbnMoLSkKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
