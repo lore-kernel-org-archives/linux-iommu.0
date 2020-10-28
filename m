@@ -2,79 +2,103 @@ Return-Path: <SRS0=WwkY=ED=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5163DC388F7
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 05:11:53 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF14AC388F7
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 05:54:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D0D7B22228
-	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 05:11:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D0D7B22228
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 257EC22282
+	for <iommu@archiver.kernel.org>; Wed, 28 Oct 2020 05:54:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Qbp/oUp5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 257EC22282
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 72624873F7;
-	Wed, 28 Oct 2020 05:11:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9B6AE20337;
+	Wed, 28 Oct 2020 05:54:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MBb73Wbw8a2L; Wed, 28 Oct 2020 05:11:51 +0000 (UTC)
+	with ESMTP id rbDWgSDTy0kr; Wed, 28 Oct 2020 05:54:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7071B873FD;
-	Wed, 28 Oct 2020 05:11:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 47E641FE0A;
+	Wed, 28 Oct 2020 05:54:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A4E6C0859;
-	Wed, 28 Oct 2020 05:11:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D6A5C0051
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:11:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2920AC0859;
+	Wed, 28 Oct 2020 05:54:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 67989C0051
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:54:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4E7FD873FD
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:11:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3FC7920337
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:54:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DtYXKd7bAZhQ for <iommu@lists.linux-foundation.org>;
- Wed, 28 Oct 2020 05:11:49 +0000 (UTC)
+ with ESMTP id UOP8xArfGy3Y for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Oct 2020 05:54:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 862E3873F7
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:11:49 +0000 (UTC)
-IronPort-SDR: RPexoJEZ4ekNXNnYCDzdZXgLUlhbQfEBRAEec2rck1/ypTgRQXvtLuK2H1OeMKiCeWHV/FVNKs
- R5Bm8GSL8M8A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9787"; a="148061352"
-X-IronPort-AV: E=Sophos;i="5.77,425,1596524400"; d="scan'208";a="148061352"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Oct 2020 22:11:49 -0700
-IronPort-SDR: 06Nj1yeR/gOtyPo0s3/iFBvRnOx08yW+yJMqRcUIQNe1QifzaUzY49RJPmvrknTguWtdCKAzLE
- T9f69de5Gaqg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,425,1596524400"; d="scan'208";a="424622448"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 27 Oct 2020 22:11:47 -0700
-Subject: Re: [PATCH v1 3/3] iommu/vt-d: Fix a bug for PDP check in
- prq_event_thread
-To: Yi Sun <yi.y.sun@linux.intel.com>, joro@8bytes.org, dwmw2@infradead.org
-References: <1603849018-6578-1-git-send-email-yi.y.sun@linux.intel.com>
- <1603849018-6578-4-git-send-email-yi.y.sun@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <5d43f0bd-c291-204e-973d-d496488f7a9d@linux.intel.com>
-Date: Wed, 28 Oct 2020 13:05:05 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com
+ [209.85.167.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9377B1FE0A
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 05:54:00 +0000 (UTC)
+Received: by mail-oi1-f193.google.com with SMTP id c72so3837413oig.9
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Oct 2020 22:54:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=cyg6GxQ7aGb81qvbCIMAVMxTggeWanr2R08/4sn6t1o=;
+ b=Qbp/oUp5QTY96Xl+9fGyEj7BDD8Ntl3OjFgxZOrUkX+HGGHN3+g8so2aa8C+yTl9oz
+ GR6wK5vCSeupCfxmYnLAWXGnx+32aVMYvvIrOCpLZso2axKsw447co85OgvtdWMpbe8L
+ 3PEWfGhaSIiWG00RKHUXD7qqCwzpjcIgMydaZU274pRjaR219g+su48SCT1RT3C6bdPw
+ of0InmDrAk8osDU7hXLCtd3Cw2RqlDp6sFnUjo+dq/USuWq8RP+lsDVpLSZezfphvbhs
+ z1APFV/clS1r7+0FcV+R8Hr1g8mUYDkL7XozwDB1DaqjUhXiWO6DQWxm+u2bDmiqrXfo
+ AMdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=cyg6GxQ7aGb81qvbCIMAVMxTggeWanr2R08/4sn6t1o=;
+ b=dEKpdUiC8hfJzjr5QDN7HbryGG3cqEJTiW9z3QMVLW3MRHt1K6KoURUJAe7knDUTDn
+ J8lo2pxe8frPb+6IBaWaX+DI3D6/pc8Uwl8Thvq7PwGm/5zjWh1vErXiv+shRJQfWrKd
+ 5s2ubUCvpFbqxcM0+sM4JFKIRkWccBp4vtiQuBq8pVM9QewviGkNf/FQR2XQCgYEmMOQ
+ zhaz8iQ16QOcc0e/52bJaAUTXkmW0rwcB8DJGN37RY4nNL7hU5CcQMQiStyhidPqPLBk
+ B0C3ThlCKFal10mSfslFPO7nPQIeu07oecI+u/1Nk0PAWr61DDBh7kIcoIPqo2GVmXV9
+ hFyg==
+X-Gm-Message-State: AOAM533u+7lJNX89VqdL+4rTBMBrED190FlhPYD50fsk4vMPUtHoLEJS
+ DjSnzkQePcgvA2OMXUUATdPAuCz2mGTlp6UGYKNwwQ==
+X-Google-Smtp-Source: ABdhPJwFK6CsnkmHO+BIuvRK/KRVa2t3oQuVylL8YPWfyyIxfJPnOIDKRcTsPvp8IeE3+sA/i60PwxYpTSJ7+yq2PVI=
+X-Received: by 2002:a05:6808:9b8:: with SMTP id
+ e24mr4180101oig.97.1603864439722; 
+ Tue, 27 Oct 2020 22:53:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1603849018-6578-4-git-send-email-yi.y.sun@linux.intel.com>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20200625001039.56174-1-john.stultz@linaro.org>
+ <20200625001039.56174-6-john.stultz@linaro.org>
+ <20200702141825.GA16941@willie-the-truck>
+ <CALAqxLVZ2EhutYjOt7Be1RgnYwHT6-4m6DxA-t1wuxuSy=6yDQ@mail.gmail.com>
+ <20200710075411.GA30011@willie-the-truck>
+ <CALAqxLWadLrxckRHRAR0Q417RnFKquQJbRfO_DLEVH56cykRow@mail.gmail.com>
+ <20200713204133.GA3731@willie-the-truck>
+In-Reply-To: <20200713204133.GA3731@willie-the-truck>
+From: John Stultz <john.stultz@linaro.org>
+Date: Tue, 27 Oct 2020 22:53:47 -0700
+Message-ID: <CALAqxLUDVEq4ds2Wbic6uaK3=dELKKO4eGQxjHFFz19GeUFd_w@mail.gmail.com>
+Subject: Re: [PATCH v2 5/5] firmware: QCOM_SCM: Allow qcom_scm driver to be
+ loadable as a permenent module
+To: Will Deacon <will@kernel.org>
+Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
+ Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
+ lkml <linux-kernel@vger.kernel.org>, Lina Iyer <ilina@codeaurora.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,43 +111,135 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
+On Mon, Jul 13, 2020 at 1:41 PM Will Deacon <will@kernel.org> wrote:
+> On Fri, Jul 10, 2020 at 03:21:53PM -0700, John Stultz wrote:
+> > On Fri, Jul 10, 2020 at 12:54 AM Will Deacon <will@kernel.org> wrote:
+> > > On Thu, Jul 09, 2020 at 08:28:45PM -0700, John Stultz wrote:
+> > > > On Thu, Jul 2, 2020 at 7:18 AM Will Deacon <will@kernel.org> wrote:
+> > > > > On Thu, Jun 25, 2020 at 12:10:39AM +0000, John Stultz wrote:
+> > > > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > > > > index b510f67dfa49..714893535dd2 100644
+> > > > > > --- a/drivers/iommu/Kconfig
+> > > > > > +++ b/drivers/iommu/Kconfig
+> > > > > > @@ -381,6 +381,7 @@ config SPAPR_TCE_IOMMU
+> > > > > >  config ARM_SMMU
+> > > > > >       tristate "ARM Ltd. System MMU (SMMU) Support"
+> > > > > >       depends on (ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)) && MMU
+> > > > > > +     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+> > > > > >       select IOMMU_API
+> > > > > >       select IOMMU_IO_PGTABLE_LPAE
+> > > > > >       select ARM_DMA_USE_IOMMU if ARM
+> > > > >
+> > > > > This looks like a giant hack. Is there another way to handle this?
+> > > >
+> > > > Sorry for the slow response here.
+> > > >
+> > > > So, I agree the syntax looks strange (requiring a comment obviously
+> > > > isn't a good sign), but it's a fairly common way to ensure drivers
+> > > > don't get built in if they optionally depend on another driver that
+> > > > can be built as a module.
+> > > >   See "RFKILL || !RFKILL", "EXTCON || !EXTCON", or "USB_GADGET ||
+> > > > !USB_GADGET" in various Kconfig files.
+> > > >
+> > > > I'm open to using a different method, and in a different thread you
+> > > > suggested using something like symbol_get(). I need to look into it
+> > > > more, but that approach looks even more messy and prone to runtime
+> > > > failures. Blocking the unwanted case at build time seems a bit cleaner
+> > > > to me, even if the syntax is odd.
+> > >
+> > > Maybe just split it out then, so that the ARM_SMMU entry doesn't have this,
+> > > as that driver _really_ doesn't care about SoC details like this. In other
+> > > words, add a new entry along the lines of:
+> > >
+> > >         config ARM_SMMU_QCOM_IMPL
+> > >         default y
+> > >         #if QCOM_SCM=m this can't be =y
+> > >         depends on ARM_SMMU & (QCOM_SCM || !QCOM_SCM)
+> > >
+> > > and then have arm-smmu.h provide a static inline qcom_smmu_impl_init()
+> > > which returns -ENODEV if CONFIG_ARM_SMMU_QCOM_IMPL=n and hack the Makefile
+> > > so that we don't bother to compile arm-smmu-qcom.o in that case.
+> > >
+> > > Would that work?
+> >
+> > I think this proposal still has problems with the directionality of the call.
+> >
+> > The arm-smmu-impl.o calls to arm-smmu-qcom.o which calls qcom_scm.o
+> > So if qcom_scm.o is part of a module, the calling code in
+> > arm-smmu-qcom.o also needs to be a module, which means CONFIG_ARM_SMMU
+> > needs to be a module.
+> >
+> > I know you said the arm-smmu driver doesn't care about SoC details,
+> > but the trouble is that currently the arm-smmu driver does directly
+> > call the qcom-scm code. So it is a real dependency. However, if
+> > QCOM_SCM is not configured, it calls stubs and that's ok.  In that
+> > way, the "depends on QCOM_SCM || !QCOM_SCM" line actually makes sense.
+> > It looks terrible because we're used to boolean logic, but it's
+> > ternary.
+>
+> Yes, it looks ugly, but the part I really have issues with is that building
+> QCOM_SCM=m and ARM_SMMU=y is perfectly fine if you don't run on an SoC
+> with the qcom implementation. I don't see why we need to enforce things
+> here beyond making sure that all selectable permutations _build_ and
+> fail gracefully at runtime on the qcom SoC if SCM isn't available.
 
-On 10/28/20 9:36 AM, Yi Sun wrote:
-> From: "Liu, Yi L" <yi.l.liu@intel.com>
+Hey Will,
+  Sorry to dredge up this old thread. I've been off busy with other
+things and didn't get around to trying to rework this until now.
 
-Can you please add some description here? How far should this patch back
-ported? A Fixes tag?
+Unfortunately I'm still having some trouble coming up with a better
+solution. Initially I figured I'd rework the qcom_scm driver to, so
+that we have the various qcom_scm_* as inline functions, which call
+out to function pointers that the qcom_scm driver would register when
+the module loaded (Oof, and unfortunately there are a *ton* qcom_scm_*
+functions so its a bunch of churn).
 
-Best regards,
-baolu
+The trouble I realized with that approach is that if the ARM_SMMU code
+is built in, then it may try to use the qcom_scm code before the
+module loads and sets those function pointers. So while it would build
+ok, the issue would be when the arm_smmu_device_reset() is done by
+done on arm_smmu_device_probe(), it wouldn't actually call the right
+code.  There isn't a really good way to deal with the module loading
+at some random time after arm_smmu_device_probe() completes.
 
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-> ---
->   drivers/iommu/intel/svm.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 75d9dc9..1870248 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -1032,7 +1032,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->   			resp.qw0 = QI_PGRP_PASID(req->pasid) |
->   				QI_PGRP_DID(req->rid) |
->   				QI_PGRP_PASID_P(req->pasid_present) |
-> -				QI_PGRP_PDP(req->pasid_present) |
-> +				QI_PGRP_PDP(req->priv_data_present) |
->   				QI_PGRP_RESP_CODE(result) |
->   				QI_PGRP_RESP_TYPE;
->   			resp.qw1 = QI_PGRP_IDX(req->prg_index) |
-> 
+This is the benefit of the module symbol dependency tracking: If the
+arm_smmu.ko calls symbols in qcom_scm.ko then qcom_scm.ko has to load
+first.
+But if arm_smmu is built in, I haven't found a clear mechanism to
+force qcom_scm to load before we probe, if it's configured as a
+module.
+
+I also looked into the idea of reworking the arm-smmu-impl code to be
+modular instead, and while it does provide a similar method of using
+function pointers to minimize the amount of symbols the arm-smmu code
+needs to know about, the initialization call path is
+arm_smmu_device_probe -> arm_smmu_impl_init -> qcom_smmu_impl_init. So
+it doesn't really allow for dynamic registration of implementation
+modules at runtime.
+
+So I'm sort of stewing on maybe trying to rework the directionality,
+so the arm-smmu-qcom.o code probes and calls arm_smmu_impl_init and
+that is what initializes the arm_smmu_device_probe logic?
+
+Alternatively, I'm considering trying to switch the module dependency
+annotation so that the CONFIG_QCOM_SCM modularity depends on ARM_SMMU
+being a module. But that is sort of putting the restriction on the
+callee instead of the caller (sort of flipping the meaning of the
+depends), which feels prone to later trouble (and with multiple users
+of CONFIG_QCOM_SCM needing similar treatment, it would make it
+difficult to discover the right combination of configs needed to allow
+it to be a module).
+
+Anyway, I wanted to reach out to see if you had any further ideas
+here. Sorry for letting such a large time gap pass!
+
+thanks
+-john
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
