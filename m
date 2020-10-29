@@ -7,65 +7,62 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293BFC4363A
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 17:26:12 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D65C56201
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 17:26:13 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B1C8F206CA
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 17:26:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B1C8F206CA
+	by mail.kernel.org (Postfix) with ESMTPS id 75C5B20838
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 17:26:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75C5B20838
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7F4F486ACB;
+	by silver.osuosl.org (Postfix) with ESMTP id BA05F220B2;
 	Thu, 29 Oct 2020 17:26:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id b0AdZ6Tyc6eL; Thu, 29 Oct 2020 17:26:10 +0000 (UTC)
+	with ESMTP id kTktXHDGfzYb; Thu, 29 Oct 2020 17:26:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AAF3886C75;
-	Thu, 29 Oct 2020 17:26:10 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 46280204C4;
+	Thu, 29 Oct 2020 17:26:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98D1AC088B;
-	Thu, 29 Oct 2020 17:26:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2F8DAC0051
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D972C1AD7;
+	Thu, 29 Oct 2020 17:26:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 06D5AC0893
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1B8CD86FEB
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:09 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EA51E86C34
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gbeDah4RiCoD for <iommu@lists.linux-foundation.org>;
- Thu, 29 Oct 2020 17:26:08 +0000 (UTC)
+ with ESMTP id HlOEPgv74sQV for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Oct 2020 17:26:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4ED1186FE5
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:08 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6607A86C1E
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 17:26:04 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id DE553AC9A;
- Thu, 29 Oct 2020 17:26:06 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id 06388AD18;
+ Thu, 29 Oct 2020 17:26:03 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: robh+dt@kernel.org, catalin.marinas@arm.com, hch@lst.de, ardb@kernel.org,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- Paul Walmsley <paul.walmsley@sifive.com>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>
-Subject: [PATCH v5 7/7] mm: Remove examples from enum zone_type comment
-Date: Thu, 29 Oct 2020 18:25:50 +0100
-Message-Id: <20201029172550.3523-8-nsaenzjulienne@suse.de>
+ linux-kernel@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>
+Subject: [PATCH v5 4/7] of: unittest: Add test for of_dma_get_max_cpu_address()
+Date: Thu, 29 Oct 2020 18:25:47 +0100
+Message-Id: <20201029172550.3523-5-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20201029172550.3523-1-nsaenzjulienne@suse.de>
 References: <20201029172550.3523-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-mm@kvack.org, will@kernel.org,
+Cc: devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>, will@kernel.org,
  jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
  linux-rpi-kernel@lists.infradead.org, guohanjun@huawei.com,
- linux-riscv@lists.infradead.org, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,48 +80,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We can't really list every setup in common code. On top of that they are
-unlikely to stay true for long as things change in the arch trees
-independently of this comment.
+Introduce a test for of_dma_get_max_cup_address(), it uses the same DT
+data as the rest of dma-ranges unit tests.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/mmzone.h | 20 --------------------
- 1 file changed, 20 deletions(-)
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index fb3bf696c05e..9d0c454d23cd 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -354,26 +354,6 @@ enum zone_type {
- 	 * DMA mask is assumed when ZONE_DMA32 is defined. Some 64-bit
- 	 * platforms may need both zones as they support peripherals with
- 	 * different DMA addressing limitations.
--	 *
--	 * Some examples:
--	 *
--	 *  - i386 and x86_64 have a fixed 16M ZONE_DMA and ZONE_DMA32 for the
--	 *    rest of the lower 4G.
--	 *
--	 *  - arm only uses ZONE_DMA, the size, up to 4G, may vary depending on
--	 *    the specific device.
--	 *
--	 *  - arm64 has a fixed 1G ZONE_DMA and ZONE_DMA32 for the rest of the
--	 *    lower 4G.
--	 *
--	 *  - powerpc only uses ZONE_DMA, the size, up to 2G, may vary
--	 *    depending on the specific device.
--	 *
--	 *  - s390 uses ZONE_DMA fixed to the lower 2G.
--	 *
--	 *  - ia64 and riscv only use ZONE_DMA32.
--	 *
--	 *  - parisc uses neither.
- 	 */
- #ifdef CONFIG_ZONE_DMA
- 	ZONE_DMA,
+---
+Changes since v3:
+ - Remove HAS_DMA guards
+
+ drivers/of/unittest.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index 06cc988faf78..b9a4d047a95e 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -869,6 +869,23 @@ static void __init of_unittest_changeset(void)
+ #endif
+ }
+ 
++static void __init of_unittest_dma_get_max_cpu_address(void)
++{
++	struct device_node *np;
++	phys_addr_t cpu_addr;
++
++	np = of_find_node_by_path("/testcase-data/address-tests");
++	if (!np) {
++		pr_err("missing testcase data\n");
++		return;
++	}
++
++	cpu_addr = of_dma_get_max_cpu_address(np);
++	unittest(cpu_addr == 0x50000000,
++		 "of_dma_get_max_cpu_address: wrong CPU addr %pad (expecting %x)\n",
++		 &cpu_addr, 0x50000000);
++}
++
+ static void __init of_unittest_dma_ranges_one(const char *path,
+ 		u64 expect_dma_addr, u64 expect_paddr)
+ {
+@@ -3266,6 +3283,7 @@ static int __init of_unittest(void)
+ 	of_unittest_changeset();
+ 	of_unittest_parse_interrupts();
+ 	of_unittest_parse_interrupts_extended();
++	of_unittest_dma_get_max_cpu_address();
+ 	of_unittest_parse_dma_ranges();
+ 	of_unittest_pci_dma_ranges();
+ 	of_unittest_match_node();
 -- 
 2.29.0
 
