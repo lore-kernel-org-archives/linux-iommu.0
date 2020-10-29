@@ -2,102 +2,109 @@ Return-Path: <SRS0=7pZu=EE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9E6C4363A
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 00:47:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EBCC4363A
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 02:07:23 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2F232076B
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 00:47:10 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="wyUORgbJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2F232076B
+	by mail.kernel.org (Postfix) with ESMTPS id 877EB208C3
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 02:07:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 877EB208C3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 38E2F868D4;
-	Thu, 29 Oct 2020 00:47:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 16C448736F;
+	Thu, 29 Oct 2020 02:07:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0MHqQUAojlgi; Thu, 29 Oct 2020 00:47:08 +0000 (UTC)
+	with ESMTP id u7fWqRwmCyI3; Thu, 29 Oct 2020 02:07:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DF29D8687D;
-	Thu, 29 Oct 2020 00:47:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 313AC8701C;
+	Thu, 29 Oct 2020 02:07:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7128C088B;
-	Thu, 29 Oct 2020 00:47:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 169C4C0859;
+	Thu, 29 Oct 2020 02:07:21 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05262C0051
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 00:47:07 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6E0D3C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 02:07:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EBB9285EBB
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 00:47:06 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4E79A86A35
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 02:07:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id awXjrW-staRu for <iommu@lists.linux-foundation.org>;
- Thu, 29 Oct 2020 00:47:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
- [209.85.210.196])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B517C85E99
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 00:47:05 +0000 (UTC)
-Received: by mail-pf1-f196.google.com with SMTP id 13so907161pfy.4
- for <iommu@lists.linux-foundation.org>; Wed, 28 Oct 2020 17:47:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=ldq+BaCHFGxiQTunTg58Jqzdh7VCGURX37mdUjZn1eU=;
- b=wyUORgbJvh+A575hdAXGUhNMCPw2wjQqdKzftI+f9ACZ1VWqKMv2WzlcukXSGHIcQT
- O4SGKDkosOnrJcbFMx5mGpjzLYeu1wBdshKLKwvJo4ZtCVfJHt88nV6rwcNZRyLCcuBK
- WVKbePw2HHKJIMcwmeprnWx/gMfEJKOGWu1A6PQfxS5gXwsYa5EYNW9ZgkaRJD6NXdHy
- UwnvCCMf7VA/g3JCio7G29RkHOvr7uEbJawL51kzBquv9WVcdKW5CKAWL8Vu59p2Worl
- wlw/bljoUorb5DkysNzoumwxLEi0oHQk9XsUaS6x8RfbfndUZlGC1j9zvmQkwQnvSex5
- GGEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=ldq+BaCHFGxiQTunTg58Jqzdh7VCGURX37mdUjZn1eU=;
- b=t/qmBE5nllNJpwPyyw37k99H9E4ysHWQByWdfFO8EPXHw9VVgD7dqbfqa6jll3pkOw
- 7qXDMqba8AHB3C8eEBLjLIa33GOXrFbdt6rpR6GmCLeegfCkgGTV0VPnalcv8i+4GuHz
- 7QIyyi5+JgAxO93AiOUtwy8q7X7rF2dtO+JH8tUCiLht8SH64kO5VXn27vayGjlEiFKG
- vZzjzVHYQc86bUwk6kx8t7dylWpQwRf45H01VnnV/20Pq16dPa+9FUHp0VAVVGmeHNq+
- ThrE9RaT05A5XSUFVe5BxgZbxa98I4qfe6XojMpsgsQzJS9obIG/bXnogtzPPmtwe4MY
- mCzQ==
-X-Gm-Message-State: AOAM530JJOsmkGv8ypzewFpVT7gxWL27Uhr3Cx9Fg3+1ZFxnKZx4YR2h
- RzDiKVLt5zLYARZFXaWR6otFyg==
-X-Google-Smtp-Source: ABdhPJwQeHwGAhLun9jUEWuolN0Z952UoAYpqBQvc1TiN1O0YqY/U4Wvi4c0j0oLKnp0h8WabeYK3g==
-X-Received: by 2002:a63:b516:: with SMTP id y22mr1772608pge.154.1603932425075; 
- Wed, 28 Oct 2020 17:47:05 -0700 (PDT)
-Received: from [192.168.10.88] (124-171-72-187.dyn.iinet.net.au.
- [124.171.72.187])
- by smtp.gmail.com with UTF8SMTPSA id v16sm533051pgk.26.2020.10.28.17.47.01
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 28 Oct 2020 17:47:04 -0700 (PDT)
-Subject: Re: [PATCH kernel v3 2/2] powerpc/dma: Fallback to dma_ops when
- persistent memory present
-To: Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org
-References: <20201028070030.60643-1-aik@ozlabs.ru>
- <20201028070030.60643-3-aik@ozlabs.ru> <87eelhx3t6.fsf@mpe.ellerman.id.au>
+ with ESMTP id jrO4zHAsVg82 for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Oct 2020 02:07:17 +0000 (UTC)
+X-Greylist: delayed 00:14:16 by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+ [148.163.156.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 446EF86910
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 02:07:17 +0000 (UTC)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 09T1WA8S117498; Wed, 28 Oct 2020 21:52:52 -0400
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com
+ [149.81.74.106])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 34esjmh1wk-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Wed, 28 Oct 2020 21:52:52 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+ by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09T1niJn005432;
+ Thu, 29 Oct 2020 01:52:50 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com
+ (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+ by ppma04fra.de.ibm.com with ESMTP id 34f7s3rb1g-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Thu, 29 Oct 2020 01:52:49 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com
+ [9.149.105.62])
+ by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 09T1qlvk35848644
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 29 Oct 2020 01:52:47 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 81C83AE045;
+ Thu, 29 Oct 2020 01:52:47 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id E0C9EAE055;
+ Thu, 29 Oct 2020 01:52:46 +0000 (GMT)
+Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
+ by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Thu, 29 Oct 2020 01:52:46 +0000 (GMT)
+Received: from bran.ozlabs.ibm.com (haven.au.ibm.com [9.192.254.114])
+ by ozlabs.au.ibm.com (Postfix) with ESMTP id D5AE2A020E;
+ Thu, 29 Oct 2020 12:52:45 +1100 (AEDT)
+Received: from fstn1-p1.ozlabs.ibm.com (fstn1-p1.ozlabs.ibm.com
+ [10.61.161.111])
+ by bran.ozlabs.ibm.com (Postfix) with ESMTP id C4FD1E0105;
+ Thu, 29 Oct 2020 12:52:45 +1100 (AEDT)
 From: Alexey Kardashevskiy <aik@ozlabs.ru>
-Message-ID: <2f285412-9e19-7888-1102-f50658c43b9d@ozlabs.ru>
-Date: Thu, 29 Oct 2020 11:46:59 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:83.0) Gecko/20100101
- Thunderbird/83.0
-MIME-Version: 1.0
-In-Reply-To: <87eelhx3t6.fsf@mpe.ellerman.id.au>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
- linux-kernel@vger.kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH kernel v4 1/2] dma: Allow mixing bypass and mapped DMA
+ operation
+Date: Thu, 29 Oct 2020 12:52:40 +1100
+Message-Id: <20201029015241.73920-2-aik@ozlabs.ru>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201029015241.73920-1-aik@ozlabs.ru>
+References: <20201029015241.73920-1-aik@ozlabs.ru>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312, 18.0.737
+ definitions=2020-10-28_09:2020-10-28,
+ 2020-10-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxlogscore=999 spamscore=0
+ adultscore=0 mlxscore=0 phishscore=0 bulkscore=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1034 priorityscore=1501 suspectscore=29
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010290002
+Cc: Michael Ellerman <mpe@ellerman.id.au>, iommu@lists.linux-foundation.org,
+ Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,101 +117,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+At the moment we allow bypassing DMA ops only when we can do this for
+the entire RAM. However there are configs with mixed type memory
+where we could still allow bypassing IOMMU in most cases;
+POWERPC with persistent memory is one example.
 
+This adds an arch hook to determine where bypass can still work and
+we invoke direct DMA API. The following patch checks the bus limit
+on POWERPC to allow or disallow direct mapping.
 
-On 29/10/2020 11:40, Michael Ellerman wrote:
-> Alexey Kardashevskiy <aik@ozlabs.ru> writes:
->> diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
->> index e4198700ed1a..91112e748491 100644
->> --- a/arch/powerpc/platforms/pseries/iommu.c
->> +++ b/arch/powerpc/platforms/pseries/iommu.c
->> @@ -1111,11 +1112,13 @@ static void reset_dma_window(struct pci_dev *dev, struct device_node *par_dn)
->>    */
->>   static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
->>   {
->> -	int len, ret;
->> +	int len = 0, ret;
->> +	bool pmem_present = of_find_node_by_type(NULL, "ibm,pmemory") != NULL;
-> 
-> That leaks a reference on the returned node.
-> 
-> 	dn = of_find_node_by_type(NULL, "ibm,pmemory");
-> 	pmem_present = dn != NULL;
-> 	of_node_put(dn);
+This adds a CONFIG_ARCH_HAS_DMA_SET_MASK config option to make arch_xxxx
+hooks no-op by default.
 
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+---
+Changes:
+v4:
+* wrapped long lines
+---
+ kernel/dma/mapping.c | 26 ++++++++++++++++++++++----
+ kernel/dma/Kconfig   |  4 ++++
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-ah, true. v4 then.
-
-
-> 
-> 
->> @@ -1126,7 +1129,7 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
->>   
->>   	mutex_lock(&direct_window_init_mutex);
->>   
->> -	dma_addr = find_existing_ddw(pdn);
->> +	dma_addr = find_existing_ddw(pdn, &len);
-> 
-> I don't see len used anywhere?
-> 
->>   	if (dma_addr != 0)
->>   		goto out_unlock;
->>   
->> @@ -1212,14 +1215,26 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
->>   	}
->>   	/* verify the window * number of ptes will map the partition */
->>   	/* check largest block * page size > max memory hotplug addr */
->> -	max_addr = ddw_memory_hotplug_max();
->> -	if (query.largest_available_block < (max_addr >> page_shift)) {
->> -		dev_dbg(&dev->dev, "can't map partition max 0x%llx with %llu "
->> -			  "%llu-sized pages\n", max_addr,  query.largest_available_block,
->> -			  1ULL << page_shift);
->> +	/*
->> +	 * The "ibm,pmemory" can appear anywhere in the address space.
->> +	 * Assuming it is still backed by page structs, try MAX_PHYSMEM_BITS
->> +	 * for the upper limit and fallback to max RAM otherwise but this
->> +	 * disables device::dma_ops_bypass.
->> +	 */
->> +	len = max_ram_len;
-> 
-> Here you override whatever find_existing_ddw() wrote to len?
-
-
-Not always, there is a bunch of gotos before this line to the end of the 
-function and one (which returns the existing window) is legit. Thanks,
-
-
-
-> 
->> +	if (pmem_present) {
->> +		if (query.largest_available_block >=
->> +		    (1ULL << (MAX_PHYSMEM_BITS - page_shift)))
->> +			len = MAX_PHYSMEM_BITS - page_shift;
->> +		else
->> +			dev_info(&dev->dev, "Skipping ibm,pmemory");
->> +	}
->> +
->> +	if (query.largest_available_block < (1ULL << (len - page_shift))) {
->> +		dev_dbg(&dev->dev, "can't map partition max 0x%llx with %llu %llu-sized pages\n",
->> +			1ULL << len, query.largest_available_block, 1ULL << page_shift);
->>   		goto out_failed;
->>   	}
->> -	len = order_base_2(max_addr);
->>   	win64 = kzalloc(sizeof(struct property), GFP_KERNEL);
->>   	if (!win64) {
->>   		dev_info(&dev->dev,
-> 
-> 
-> cheers
-> 
-
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 51bb8fa8eb89..ad1f052e046d 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -137,6 +137,20 @@ static inline bool dma_map_direct(struct device *dev,
+ 	return dma_go_direct(dev, *dev->dma_mask, ops);
+ }
+ 
++#ifdef CONFIG_ARCH_HAS_DMA_MAP_DIRECT
++bool arch_dma_map_page_direct(struct device *dev, phys_addr_t addr);
++bool arch_dma_unmap_page_direct(struct device *dev, dma_addr_t dma_handle);
++bool arch_dma_map_sg_direct(struct device *dev, struct scatterlist *sg,
++			    int nents);
++bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
++			      int nents);
++#else
++#define arch_dma_map_page_direct(d, a) (0)
++#define arch_dma_unmap_page_direct(d, a) (0)
++#define arch_dma_map_sg_direct(d, s, n) (0)
++#define arch_dma_unmap_sg_direct(d, s, n) (0)
++#endif
++
+ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+ 		size_t offset, size_t size, enum dma_data_direction dir,
+ 		unsigned long attrs)
+@@ -149,7 +163,8 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+ 	if (WARN_ON_ONCE(!dev->dma_mask))
+ 		return DMA_MAPPING_ERROR;
+ 
+-	if (dma_map_direct(dev, ops))
++	if (dma_map_direct(dev, ops) ||
++	    arch_dma_map_page_direct(dev, page_to_phys(page) + offset + size))
+ 		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
+ 	else
+ 		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+@@ -165,7 +180,8 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+-	if (dma_map_direct(dev, ops))
++	if (dma_map_direct(dev, ops) ||
++	    arch_dma_unmap_page_direct(dev, addr + size))
+ 		dma_direct_unmap_page(dev, addr, size, dir, attrs);
+ 	else if (ops->unmap_page)
+ 		ops->unmap_page(dev, addr, size, dir, attrs);
+@@ -188,7 +204,8 @@ int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
+ 	if (WARN_ON_ONCE(!dev->dma_mask))
+ 		return 0;
+ 
+-	if (dma_map_direct(dev, ops))
++	if (dma_map_direct(dev, ops) ||
++	    arch_dma_map_sg_direct(dev, sg, nents))
+ 		ents = dma_direct_map_sg(dev, sg, nents, dir, attrs);
+ 	else
+ 		ents = ops->map_sg(dev, sg, nents, dir, attrs);
+@@ -207,7 +224,8 @@ void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 	debug_dma_unmap_sg(dev, sg, nents, dir);
+-	if (dma_map_direct(dev, ops))
++	if (dma_map_direct(dev, ops) ||
++	    arch_dma_unmap_sg_direct(dev, sg, nents))
+ 		dma_direct_unmap_sg(dev, sg, nents, dir, attrs);
+ 	else if (ops->unmap_sg)
+ 		ops->unmap_sg(dev, sg, nents, dir, attrs);
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index c99de4a21458..43d106598e82 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -20,6 +20,10 @@ config DMA_OPS
+ config DMA_OPS_BYPASS
+ 	bool
+ 
++# Lets platform IOMMU driver choose between bypass and IOMMU
++config ARCH_HAS_DMA_MAP_DIRECT
++	bool
++
+ config NEED_SG_DMA_LENGTH
+ 	bool
+ 
 -- 
-Alexey
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
