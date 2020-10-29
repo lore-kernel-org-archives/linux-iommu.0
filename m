@@ -2,79 +2,71 @@ Return-Path: <SRS0=7pZu=EE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA650C5517A
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 09:56:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C94EC2D0A3
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 10:08:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3A2282076D
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 09:56:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="cJ89gKM6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A2282076D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id EFE3620706
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 10:08:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFE3620706
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A2D3320356;
-	Thu, 29 Oct 2020 09:56:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6A8DF87590;
+	Thu, 29 Oct 2020 10:08:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xBC1+w6SAuqx; Thu, 29 Oct 2020 10:08:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7DE248758E;
+	Thu, 29 Oct 2020 10:08:07 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 61E67C088B;
+	Thu, 29 Oct 2020 10:08:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 060CBC0051
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 10:08:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id C6E4F203D2
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 10:08:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XupoSIJaDr00; Thu, 29 Oct 2020 09:56:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DA42E2014B;
-	Thu, 29 Oct 2020 09:56:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3A92C088B;
-	Thu, 29 Oct 2020 09:56:08 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4081C0051
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 09:56:07 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 92854868D6
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 09:56:07 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9ayRbn8ym8P2 for <iommu@lists.linux-foundation.org>;
- Thu, 29 Oct 2020 09:56:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 699C586773
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 09:56:06 +0000 (UTC)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mail.ozlabs.org (Postfix) with ESMTPSA id 4CMLRm3sBKz9sRR;
- Thu, 29 Oct 2020 20:56:04 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
- s=201909; t=1603965364;
- bh=agmXWLfdIA/pQg1LOAdVjmxcr2Hn93lU+lUVrcQP8co=;
- h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
- b=cJ89gKM6AYK1YY7ZnpS2yHhbxcLbjmfev6r+5Jf2idhvDbSxMIo9mcs5wY0pZEN+W
- 0cIi327yBjBEVGmz2pNNAQhtIV6qLKR3otIH/eMSHWT8mkLPkvUeDXaqyd9QCBHNzm
- CfpAwbuDAh283Mb+6+j6c+iKHCQxlkMPxtW0ZlVJQx/hfchdhnlspaTuscYQS28C6O
- QBWRvvDEFrskk+0H/CtSY0Sfiq0kkRmoVc8ubM3WkGa/iXYDThHknl8QOTMUnF5RxN
- wBM1Rru6FhrMzWGzN5iSbrz6kKMpgR5ihXYDENlh5i9jVI4j2JWzRbw4K4THt9hwP+
- LlKTdcZt3QDnQ==
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Alexey Kardashevskiy <aik@ozlabs.ru>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH kernel v4 2/2] powerpc/dma: Fallback to dma_ops when
- persistent memory present
-In-Reply-To: <20201029015241.73920-3-aik@ozlabs.ru>
-References: <20201029015241.73920-1-aik@ozlabs.ru>
- <20201029015241.73920-3-aik@ozlabs.ru>
-Date: Thu, 29 Oct 2020 20:56:03 +1100
-Message-ID: <878sbpwe30.fsf@mpe.ellerman.id.au>
+ with ESMTP id GloUTYEMeQm5 for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Oct 2020 10:08:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id C729F203BA
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 10:08:04 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0EC7B139F;
+ Thu, 29 Oct 2020 03:08:04 -0700 (PDT)
+Received: from [10.57.54.223] (unknown [10.57.54.223])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 95AE73F66E;
+ Thu, 29 Oct 2020 03:08:02 -0700 (PDT)
+Subject: Re: [PATCH] iommu/rockchip: check return value of
+ of_find_device_by_node() in rk_iommu_of_xlate()
+To: Yu Kuai <yukuai3@huawei.com>, joro@8bytes.org, heiko@sntech.de,
+ jeffy.chen@rock-chips.com
+References: <20201029092202.900218-1-yukuai3@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <98dec09e-08a1-6550-fa4e-85a8104b90e1@arm.com>
+Date: Thu, 29 Oct 2020 10:08:01 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
- linux-kernel@vger.kernel.org
+In-Reply-To: <20201029092202.900218-1-yukuai3@huawei.com>
+Content-Language: en-GB
+Cc: linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ yi.zhang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,49 +79,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Alexey Kardashevskiy <aik@ozlabs.ru> writes:
-> So far we have been using huge DMA windows to map all the RAM available.
-> The RAM is normally mapped to the VM address space contiguously, and
-> there is always a reasonable upper limit for possible future hot plugged
-> RAM which makes it easy to map all RAM via IOMMU.
->
-> Now there is persistent memory ("ibm,pmemory" in the FDT) which (unlike
-> normal RAM) can map anywhere in the VM space beyond the maximum RAM size
-> and since it can be used for DMA, it requires extending the huge window
-> up to MAX_PHYSMEM_BITS which requires hypervisor support for:
-> 1. huge TCE tables;
-> 2. multilevel TCE tables;
-> 3. huge IOMMU pages.
->
-> Certain hypervisors cannot do either so the only option left is
-> restricting the huge DMA window to include only RAM and fallback to
-> the default DMA window for persistent memory.
->
-> This defines arch_dma_map_direct/etc to allow generic DMA code perform
-> additional checks on whether direct DMA is still possible.
->
-> This checks if the system has persistent memory. If it does not,
-> the DMA bypass mode is selected, i.e.
-> * dev->bus_dma_limit = 0
-> * dev->dma_ops_bypass = true <- this avoid calling dma_ops for mapping.
->
-> If there is such memory, this creates identity mapping only for RAM and
-> sets the dev->bus_dma_limit to let the generic code decide whether to
-> call into the direct DMA or the indirect DMA ops.
->
-> This should not change the existing behaviour when no persistent memory
-> as dev->dma_ops_bypass is expected to be set.
->
-> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+On 2020-10-29 09:22, Yu Kuai wrote:
+> If of_find_device_by_node() failed in rk_iommu_of_xlate(), null pointer
+> dereference will be triggered. Thus return error code if
+> of_find_device_by_node() failed.
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+How can that happen? (Given that ".suppress_bind_attrs = true")
 
-cheers
+Robin.
+
+> Fixes: 5fd577c3eac3("iommu/rockchip: Use OF_IOMMU to attach devices automatically")
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> ---
+>   drivers/iommu/rockchip-iommu.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index e5d86b7177de..090d149ef8e9 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1099,6 +1099,9 @@ static int rk_iommu_of_xlate(struct device *dev,
+>   
+>   	iommu_dev = of_find_device_by_node(args->np);
+>   
+> +	if (!iommu_dev)
+> +		return -ENODEV;
+> +
+>   	data->iommu = platform_get_drvdata(iommu_dev);
+>   	dev_iommu_priv_set(dev, data);
+>   
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
