@@ -2,81 +2,71 @@ Return-Path: <SRS0=7pZu=EE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB897C4363A
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 18:34:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FB8C2D0A3
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 19:38:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1D22520825
-	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 18:34:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="WR/UvLGk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D22520825
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id DF1FF206DD
+	for <iommu@archiver.kernel.org>; Thu, 29 Oct 2020 19:38:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF1FF206DD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7BACF86B66;
-	Thu, 29 Oct 2020 18:34:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 148AD8734E;
+	Thu, 29 Oct 2020 19:38:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Qo5z83kPolvk; Thu, 29 Oct 2020 18:34:30 +0000 (UTC)
+	with ESMTP id hNApHXMJb4wy; Thu, 29 Oct 2020 19:38:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A044286B5E;
-	Thu, 29 Oct 2020 18:34:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A0A0F87343;
+	Thu, 29 Oct 2020 19:38:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 833A3C0859;
-	Thu, 29 Oct 2020 18:34:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B3DAC0051
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 18:34:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F51EC088B;
+	Thu, 29 Oct 2020 19:38:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18953C0051
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 19:38:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 298E086B66
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 18:34:29 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 05EB086BF1
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 19:38:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qE78WzPzEjGY for <iommu@lists.linux-foundation.org>;
- Thu, 29 Oct 2020 18:34:28 +0000 (UTC)
+ with ESMTP id SUJa9FRci20p for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Oct 2020 19:38:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 10DC986B5E
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 18:34:28 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
- [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id D18EF20759;
- Thu, 29 Oct 2020 18:34:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1603996465;
- bh=HQpIAjP1Wxod0EOhVucw1rVm/CQHnVqnXZFVdJMA/3I=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=WR/UvLGkSG+GOYRLKdDaQJrwlOsEA87CShZ7hL/vdp4sFUNaF1//S4AZGBo/nmWIb
- Wy1Obxgr5/Q9CVI7nbHXzcWog/SlCul5Jviz1b68vpunbOjLcL8q1xlDXYSP/E4abW
- Kzm/LmaDH+FJt2ypzm8zFjBVQ/EML1jLdoa/9tA0=
-From: Will Deacon <will@kernel.org>
-To: Thierry Reding <treding@nvidia.com>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Clark <robdclark@chromium.org>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: [PATCH v5 0/3] iommu/arm-smmu-qcom: Support maintaining
- bootloader mappings
-Date: Thu, 29 Oct 2020 18:34:18 +0000
-Message-Id: <160399513141.1314250.8831514745970142969.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201019182323.3162386-1-bjorn.andersson@linaro.org>
-References: <20201019182323.3162386-1-bjorn.andersson@linaro.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5C5DE867E8
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 19:38:08 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5BB26139F;
+ Thu, 29 Oct 2020 12:38:07 -0700 (PDT)
+Received: from [10.57.54.223] (unknown [10.57.54.223])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E13EC3F719;
+ Thu, 29 Oct 2020 12:38:05 -0700 (PDT)
+Subject: Re: [PATCH 1/2] dma-mapping: add benchmark support for streaming DMA
+ APIs
+To: Barry Song <song.bao.hua@hisilicon.com>,
+ iommu@lists.linux-foundation.org, hch@lst.de, m.szyprowski@samsung.com
+References: <20201027035330.29612-1-song.bao.hua@hisilicon.com>
+ <20201027035330.29612-2-song.bao.hua@hisilicon.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <f9aebee4-5081-da8c-930c-c36617ab57c4@arm.com>
+Date: Thu, 29 Oct 2020 19:38:04 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-arm-msm@vger.kernel.org, kernel-team@android.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20201027035330.29612-2-song.bao.hua@hisilicon.com>
+Content-Language: en-GB
+Cc: shuah@kernel.org, will@kernel.org, linuxarm@huawei.com,
+ linux-kselftest@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,39 +79,348 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 19 Oct 2020 11:23:20 -0700, Bjorn Andersson wrote:
-> This is the revised fourth attempt of inheriting the stream mapping for
-> the framebuffer on many Qualcomm platforms, in order to not hit
-> catastrophic faults during arm-smmu initialization.
+On 2020-10-27 03:53, Barry Song wrote:
+> Nowadays, there are increasing requirements to benchmark the performance
+> of dma_map and dma_unmap particually while the device is attached to an
+> IOMMU.
 > 
-> The new approach does, based on Robin's suggestion, take a much more
-> direct approach with the allocation of a context bank for bypass
-> emulation and use of this context bank pretty much isolated to the
-> Qualcomm specific implementation.
+> This patch enables the support. Users can run specified number of threads
+> to do dma_map_page and dma_unmap_page on a specific NUMA node with the
+> specified duration. Then dma_map_benchmark will calculate the average
+> latency for map and unmap.
 > 
-> [...]
+> A difficulity for this benchmark is that dma_map/unmap APIs must run on
+> a particular device. Each device might have different backend of IOMMU or
+> non-IOMMU.
+> 
+> So we use the driver_override to bind dma_map_benchmark to a particual
+> device by:
+> echo dma_map_benchmark > /sys/bus/platform/devices/xxx/driver_override
+> echo xxx > /sys/bus/platform/drivers/xxx/unbind
+> echo xxx > /sys/bus/platform/drivers/dma_map_benchmark/bind
+> 
+> For this moment, it supports platform device only, PCI device will also
+> be supported afterwards.
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Neat! This is something I've thought about many times, but never got 
+round to attempting :)
 
-[1/3] iommu/arm-smmu: Allow implementation specific write_s2cr
-      https://git.kernel.org/will/c/56b75b51ed6d
-[2/3] iommu/arm-smmu-qcom: Read back stream mappings
-      https://git.kernel.org/will/c/07a7f2caaa5a
-[3/3] iommu/arm-smmu-qcom: Implement S2CR quirk
-      https://git.kernel.org/will/c/f9081b8ff593
+I think the basic latency measurement for mapping and unmapping pages is 
+enough to start with, but there are definitely some more things that 
+would be interesting to look into for future enhancements:
 
-Cheers,
--- 
-Will
+  - a choice of mapping sizes, both smaller and larger than one page, to 
+help characterise stuff like cache maintenance overhead and bounce 
+buffer/IOVA fragmentation.
+  - alternative allocation patterns like doing lots of maps first, then 
+all their corresponding unmaps (to provoke things like the worst-case 
+IOVA rcache behaviour).
+  - ways to exercise a range of those parameters at once across 
+different threads in a single test.
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+But let's get a basic framework nailed down first...
+
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Shuah Khan <shuah@kernel.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
+> ---
+>   kernel/dma/Kconfig         |   8 ++
+>   kernel/dma/Makefile        |   1 +
+>   kernel/dma/map_benchmark.c | 202 +++++++++++++++++++++++++++++++++++++
+>   3 files changed, 211 insertions(+)
+>   create mode 100644 kernel/dma/map_benchmark.c
+> 
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index c99de4a21458..949c53da5991 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -225,3 +225,11 @@ config DMA_API_DEBUG_SG
+>   	  is technically out-of-spec.
+>   
+>   	  If unsure, say N.
+> +
+> +config DMA_MAP_BENCHMARK
+> +	bool "Enable benchmarking of streaming DMA mapping"
+> +	help
+> +	  Provides /sys/kernel/debug/dma_map_benchmark that helps with testing
+> +	  performance of dma_(un)map_page.
+> +
+> +	  See tools/testing/selftests/dma/dma_map_benchmark.c
+> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+> index dc755ab68aab..7aa6b26b1348 100644
+> --- a/kernel/dma/Makefile
+> +++ b/kernel/dma/Makefile
+> @@ -10,3 +10,4 @@ obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+>   obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+>   obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+>   obj-$(CONFIG_DMA_REMAP)			+= remap.o
+> +obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> new file mode 100644
+> index 000000000000..16a5d7779d67
+> --- /dev/null
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -0,0 +1,202 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2020 Hisilicon Limited.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/device.h>
+> +#include <linux/kthread.h>
+> +#include <linux/slab.h>
+> +#include <linux/debugfs.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/timekeeping.h>
+> +#include <linux/delay.h>
+> +#include <linux/platform_device.h>
+
+Nit: alphabetical order is always nice, when there's not an existing 
+precedent of a complete mess...
+
+> +
+> +#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+> +
+> +struct map_benchmark {
+> +	__u64 map_nsec;
+> +	__u64 unmap_nsec;
+> +	__u32 threads; /* how many threads will do map/unmap in parallel */
+> +	__u32 seconds; /* how long the test will last */
+> +	int node; /* which numa node this benchmark will run on */
+> +	__u64 expansion[10];	/* For future use */
+> +};
+
+I'm no expert on userspace ABIs (and what little experience I do have is 
+mostly of Win32...), so hopefully someone else will comment if there's 
+anything of concern here. One thing I wonder is that there's a fair 
+likelihood of functionality evolving here over time, so might it be 
+appropriate to have some sort of explicit versioning parameter for 
+robustness?
+
+> +struct map_benchmark_data {
+> +	struct map_benchmark bparam;
+> +	struct device *dev;
+> +	struct dentry  *debugfs;
+> +	atomic64_t total_map_nsecs;
+> +	atomic64_t total_map_loops;
+> +	atomic64_t total_unmap_nsecs;
+> +	atomic64_t total_unmap_loops;
+> +};
+> +
+> +static int map_benchmark_thread(void *data)
+> +{
+> +	struct page *page;
+> +	dma_addr_t dma_addr;
+> +	struct map_benchmark_data *map = data;
+> +	int ret = 0;
+> +
+> +	page = alloc_page(GFP_KERNEL);
+> +	if (!page)
+> +		return -ENOMEM;
+> +
+> +	while (!kthread_should_stop())  {
+> +		ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
+> +
+> +		map_stime = ktime_get();
+> +		dma_addr = dma_map_page(map->dev, page, 0, PAGE_SIZE, DMA_BIDIRECTIONAL);
+
+Note that for a non-coherent device, this will give an underestimate of 
+the real-world overhead of BIDIRECTIONAL or TO_DEVICE mappings, since 
+the page will never be dirty in the cache (except possibly the very 
+first time through).
+
+> +		if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
+> +			dev_err(map->dev, "dma_map_page failed\n");
+> +			ret = -ENOMEM;
+> +			goto out;
+> +		}
+> +		map_etime = ktime_get();
+> +
+> +		unmap_stime = ktime_get();
+> +		dma_unmap_single(map->dev, dma_addr, PAGE_SIZE, DMA_BIDIRECTIONAL);
+
+Ahem, dma_map_page() pairs with dma_unmap_page(). Unfortunately 
+DMA_API_DEBUG is unable to shout at you for that...
+
+However, maybe changing the other end to dma_map_single() might make 
+more sense, since you're not allocating highmem pages or anything wacky, 
+and that'll be easier to expand in future.
+
+> +		unmap_etime = ktime_get();
+> +
+> +		atomic64_add((long long)ktime_to_ns(ktime_sub(map_etime, map_stime)),
+> +				&map->total_map_nsecs);
+
+ktime_to_ns() returns s64, which is already long long.
+
+> +		atomic64_add((long long)ktime_to_ns(ktime_sub(unmap_etime, unmap_stime)),
+> +				&map->total_unmap_nsecs);
+> +		atomic64_inc(&map->total_map_loops);
+> +		atomic64_inc(&map->total_unmap_loops);
+
+I think it would be worth keeping track of the variances as well - it 
+can be hard to tell if a reasonable-looking average is hiding terrible 
+worst-case behaviour.
+
+> +	}
+> +
+> +out:
+> +	__free_page(page);
+> +	return ret;
+> +}
+> +
+> +static int do_map_benchmark(struct map_benchmark_data *map)
+> +{
+> +	struct task_struct **tsk;
+> +	int threads = map->bparam.threads;
+
+I know it's debugfs, but maybe a bit of parameter validation wouldn't go 
+amiss? I'm already imaginging that sinking feeling when the SSH 
+connection stops responding and you realise you've just inadvertently 
+launched INT_MAX threads...
+
+> +	int node = map->bparam.node;
+> +	const cpumask_t *cpu_mask = cpumask_of_node(node);
+> +	int ret = 0;
+> +	int i;
+> +
+> +	tsk = kmalloc_array(threads, sizeof(tsk), GFP_KERNEL);
+> +	if (!tsk)
+> +		return -ENOMEM;
+> +
+> +	get_device(map->dev);
+> +
+> +	for (i = 0; i < threads; i++) {
+> +		tsk[i] = kthread_create_on_node(map_benchmark_thread, map,
+> +				map->bparam.node, "dma-map-benchmark/%d", i);
+> +		if (IS_ERR(tsk[i])) {
+> +			dev_err(map->dev, "create dma_map thread failed\n");
+> +			return PTR_ERR(tsk[i]);
+> +		}
+> +
+> +		if (node != NUMA_NO_NODE && node_online(node))
+> +			kthread_bind_mask(tsk[i], cpu_mask);
+> +
+> +		wake_up_process(tsk[i]);
+
+Might it be better to create all the threads first, *then* start kicking 
+them?
+
+> +	}
+> +
+> +	ssleep(map->bparam.seconds);
+> +
+> +	/* wait for the completion of benchmark threads */
+> +	for (i = 0; i < threads; i++) {
+> +		ret = kthread_stop(tsk[i]);
+> +		if (ret)
+> +			goto out;
+> +	}
+> +
+> +	/* average map nsec and unmap nsec */
+> +	map->bparam.map_nsec = atomic64_read(&map->total_map_nsecs) /
+> +				atomic64_read(&map->total_map_loops);
+> +	map->bparam.unmap_nsec = atomic64_read(&map->total_unmap_nsecs) /
+> +				atomic64_read(&map->total_unmap_loops);
+> +
+> +out:
+> +	put_device(map->dev);
+> +	kfree(tsk);
+> +	return ret;
+> +}
+> +
+> +static long map_benchmark_ioctl(struct file *filep, unsigned int cmd,
+> +		unsigned long arg)
+> +{
+> +	struct map_benchmark_data *map = filep->private_data;
+> +	int ret;
+> +
+> +	if (copy_from_user(&map->bparam, (void __user *)arg, sizeof(map->bparam)))
+> +		return -EFAULT;
+> +
+> +	switch (cmd) {
+> +	case DMA_MAP_BENCHMARK:
+> +		ret = do_map_benchmark(map);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (copy_to_user((void __user *)arg, &map->bparam, sizeof(map->bparam)))
+> +		return -EFAULT;
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct file_operations map_benchmark_fops = {
+> +	.open = simple_open,
+> +	.unlocked_ioctl = map_benchmark_ioctl,
+> +};
+> +
+> +static int map_benchmark_probe(struct platform_device *pdev)
+> +{
+> +	struct dentry *entry;
+> +	struct map_benchmark_data *map;
+> +
+> +	map = devm_kzalloc(&pdev->dev, sizeof(*map), GFP_KERNEL);
+> +	if (!map)
+> +		return -ENOMEM;
+> +
+> +	map->dev = &pdev->dev;
+> +	platform_set_drvdata(pdev, map);
+> +
+> +	/*
+> +	 * we only permit a device bound with this driver, 2nd probe
+> +	 * will fail
+> +	 */
+> +	entry = debugfs_create_file("dma_map_benchmark", 0600, NULL, map,
+> +			&map_benchmark_fops);
+> +	if (IS_ERR(entry))
+> +		return PTR_ERR(entry);
+> +	map->debugfs = entry;
+> +
+> +	return 0;
+> +}
+> +
+> +static int map_benchmark_remove(struct platform_device *pdev)
+> +{
+> +	struct map_benchmark_data *map = platform_get_drvdata(pdev);
+> +
+> +	debugfs_remove(map->debugfs);
+
+Consider a trivial 3-line wrapper plus a devm_add_action() call ;)
+
+Robin.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver map_benchmark_driver = {
+> +	.driver		= {
+> +		.name	= "dma_map_benchmark",
+> +	},
+> +	.probe		= map_benchmark_probe,
+> +	.remove		= map_benchmark_remove,
+> +};
+> +
+> +module_platform_driver(map_benchmark_driver);
+> +
+> +MODULE_AUTHOR("Barry Song <song.bao.hua@hisilicon.com>");
+> +MODULE_DESCRIPTION("dma_map benchmark driver");
+> +MODULE_LICENSE("GPL");
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
