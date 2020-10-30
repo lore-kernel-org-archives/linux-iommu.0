@@ -2,80 +2,93 @@ Return-Path: <SRS0=LARK=EF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 613CAC4363A
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 12:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEE3C4363A
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 13:53:12 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D39A1206ED
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 12:56:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D39A1206ED
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 016FE2076E
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 13:53:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 016FE2076E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3F97286927;
-	Fri, 30 Oct 2020 12:56:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3DE2986A89;
+	Fri, 30 Oct 2020 13:53:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id taclTzjoT5n4; Fri, 30 Oct 2020 12:56:45 +0000 (UTC)
+	with ESMTP id xk9vMpU6hQ5y; Fri, 30 Oct 2020 13:53:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B0A94868EB;
-	Fri, 30 Oct 2020 12:56:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E128986A94;
+	Fri, 30 Oct 2020 13:53:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A568FC088B;
-	Fri, 30 Oct 2020 12:56:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1CC4C0051
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:56:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C31ECC0859;
+	Fri, 30 Oct 2020 13:53:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F20D2C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 13:53:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E0D7686927
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:56:43 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E04FF874A3
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 13:53:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QxolzAnZGUFt for <iommu@lists.linux-foundation.org>;
- Fri, 30 Oct 2020 12:56:43 +0000 (UTC)
+ with ESMTP id FEbEVuOmsKGB for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Oct 2020 13:53:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4DEA3868EB
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:56:43 +0000 (UTC)
-IronPort-SDR: U7+gfr/m3Mj8vooFBRI3KKbO5E59C4EFylcF8NQ8wA8DEa5a6WNIIl70XDhS1Xrt97TwZ1xISd
- 7McaJukXByGg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="147886300"
-X-IronPort-AV: E=Sophos;i="5.77,433,1596524400"; d="scan'208";a="147886300"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Oct 2020 05:56:42 -0700
-IronPort-SDR: mfZBZuCyvqRQfQgXl5o5aDDGACTbwr1Tf7cOv/s5vxTubptdl3crp5CdmHeMk5lezIl91PgvRo
- Ear1wf7vEgFQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,433,1596524400"; d="scan'208";a="425339020"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 30 Oct 2020 05:56:40 -0700
-Subject: Re: [PATCH v2 2/2] iommu/vt-d: Fix a bug for PDP check in
- prq_event_thread
-To: Yi Sun <yi.y.sun@linux.intel.com>, joro@8bytes.org, dwmw2@infradead.org,
- jean-philippe@linaro.org
-References: <1604025444-6954-1-git-send-email-yi.y.sun@linux.intel.com>
- <1604025444-6954-3-git-send-email-yi.y.sun@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <429b63d1-1692-2244-f69b-a924e8534131@linux.intel.com>
-Date: Fri, 30 Oct 2020 20:49:49 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
+ [209.85.210.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D3172874B5
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 13:53:07 +0000 (UTC)
+Received: by mail-ot1-f67.google.com with SMTP id h62so5578755oth.9
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:53:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=ggiAUaruNw1YhH2l2hRk36w59nO1Oq/R58cjSZ0WsS0=;
+ b=UpiQkiHUyWZmzyy2PuZOZ7rhYgs28deIT/DFuNsjzUUW163IXxPP/hvta4piXj1xd/
+ CeeiEmVqt6PMZoipcIsov0PSHWuwRiY0u8fCylS/MFIkYhP71C0x4y2wR/s24S8fkkro
+ OhOAlZYB5bkD54pHqwQCURyVEgMVQNgidGi2Yn1LXG3FtyuqGxBdACEuvq3yrP1lz6ah
+ Htz/oCW5y/UmdMhGdlw76PVW7gZmKC0v+4MImDafa9Fy/7xxWtn3XPs7T4tTH/Pj8Gl/
+ tckHdT6XyrDBvx4e82BPLT4yT40orX5fO6BaAamMf0u6IBhXcCz4KltZMsi5YCi2J2G5
+ Tf6Q==
+X-Gm-Message-State: AOAM530uEjzWPDJ/8NU0o9H/n77RhH+j+LZo0xjeQutqMe7c29dG/rP3
+ aSd1SF4AvBlOYDUqN14Fsg==
+X-Google-Smtp-Source: ABdhPJxq/KhYrqN/T8NyxVmXEavGpBaGULf6IaWMFkIEntoJ3gOZgHkdXrgULkZisLkAOY1u63cuMg==
+X-Received: by 2002:a9d:75d6:: with SMTP id c22mr1672627otl.213.1604065987144; 
+ Fri, 30 Oct 2020 06:53:07 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+ by smtp.gmail.com with ESMTPSA id j184sm1386766oih.8.2020.10.30.06.53.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 30 Oct 2020 06:53:06 -0700 (PDT)
+Received: (nullmailer pid 3747758 invoked by uid 1000);
+ Fri, 30 Oct 2020 13:53:05 -0000
+Date: Fri, 30 Oct 2020 08:53:05 -0500
+From: Rob Herring <robh@kernel.org>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: memory: mediatek: Convert SMI to DT
+ schema
+Message-ID: <20201030135305.GA3746616@bogus>
+References: <20201030091254.26382-1-yong.wu@mediatek.com>
+ <20201030091254.26382-2-yong.wu@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <1604025444-6954-3-git-send-email-yi.y.sun@linux.intel.com>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20201030091254.26382-2-yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, devicetree@vger.kernel.org,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, Fabien Parent <fparent@baylibre.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ ming-fan.chen@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,46 +101,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 10/30/20 10:37 AM, Yi Sun wrote:
-> From: "Liu, Yi L" <yi.l.liu@intel.com>
+On Fri, 30 Oct 2020 17:12:52 +0800, Yong Wu wrote:
+> Convert MediaTek SMI to DT schema.
 > 
-> In prq_event_thread(), the QI_PGRP_PDP is wrongly set by
-> 'req->pasid_present' which should be replaced to
-> 'req->priv_data_present'.
-> 
-> Fixes: 5b438f4ba315 ("iommu/vt-d: Support page request in scalable mode")
-> Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-
-Cc: stable@ver.kernel.org
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
+> CC: Fabien Parent <fparent@baylibre.com>
+> CC: Ming-Fan Chen <ming-fan.chen@mediatek.com>
+> CC: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->   drivers/iommu/intel/svm.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../mediatek,smi-common.txt                   |  50 -------
+>  .../mediatek,smi-common.yaml                  | 140 ++++++++++++++++++
+>  .../memory-controllers/mediatek,smi-larb.txt  |  50 -------
+>  .../memory-controllers/mediatek,smi-larb.yaml | 129 ++++++++++++++++
+>  4 files changed, 269 insertions(+), 100 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+>  create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+>  create mode 100644 Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
 > 
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 7584669..3242ebd 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -1035,7 +1035,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->   			resp.qw0 = QI_PGRP_PASID(req->pasid) |
->   				QI_PGRP_DID(req->rid) |
->   				QI_PGRP_PASID_P(req->pasid_present) |
-> -				QI_PGRP_PDP(req->pasid_present) |
-> +				QI_PGRP_PDP(req->priv_data_present) |
->   				QI_PGRP_RESP_CODE(result) |
->   				QI_PGRP_RESP_TYPE;
->   			resp.qw1 = QI_PGRP_IDX(req->prg_index) |
-> 
+
+
+My bot found errors running 'make dt_binding_check' on your patch:
+
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml:84:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+./Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml:98:13: [warning] wrong indentation: expected 10 but found 12 (indentation)
+./Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml:41:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+
+dtschema/dtc warnings/errors:
+
+
+See https://patchwork.ozlabs.org/patch/1390887
+
+The base for the patch is generally the last rc1. Any dependencies
+should be noted.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
