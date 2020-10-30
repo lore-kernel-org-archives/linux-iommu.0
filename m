@@ -7,65 +7,65 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A59C00A89
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 05:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95594C00A89
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 05:05:29 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 283E3221F9
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 05:05:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 283E3221F9
+	by mail.kernel.org (Postfix) with ESMTPS id 20277221FF
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 05:05:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20277221FF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 802BF86B2A;
-	Fri, 30 Oct 2020 05:05:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D2F2786B16;
+	Fri, 30 Oct 2020 05:05:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EBqyafy7aIkV; Fri, 30 Oct 2020 05:05:21 +0000 (UTC)
+	with ESMTP id 3YSvRABzxnNy; Fri, 30 Oct 2020 05:05:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A68C986B11;
-	Fri, 30 Oct 2020 05:05:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DF61786B04;
+	Fri, 30 Oct 2020 05:05:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E918C0859;
-	Fri, 30 Oct 2020 05:05:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D0049C0859;
+	Fri, 30 Oct 2020 05:05:26 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3F6BDC0051
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:20 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E7874C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 33DBC228D1
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:20 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4B43822E6E
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O1z51roMh0kP for <iommu@lists.linux-foundation.org>;
- Fri, 30 Oct 2020 05:05:18 +0000 (UTC)
+ with ESMTP id xOdm7XwdCi1c for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Oct 2020 05:05:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by silver.osuosl.org (Postfix) with ESMTPS id ECD1C22EC1
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:17 +0000 (UTC)
-IronPort-SDR: FLJa7bX+GUp4RHdVjo81GGFFSKoq5zMGg+ioMkDW5tiRgonhri0jmkw+zM6/sYOjX/S8b9AYAV
- ew8bDruqyw1w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="253268385"
-X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="253268385"
+ by silver.osuosl.org (Postfix) with ESMTPS id 5E90D228D1
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 05:05:21 +0000 (UTC)
+IronPort-SDR: lcvH7wSYNRvyuHLX+o1j8f8sWtSfA0V/33Monk2LxeRDv1lrW9VqzAFlQX0P7Y/QveLqf48WRj
+ JniklWyAfSfA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="253268390"
+X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="253268390"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Oct 2020 22:05:17 -0700
-IronPort-SDR: c0LjjbkhtGJE0422erJnF8lBxfFhbe9z+5t6K5lZqzHttYEVLedTcAg8wTIB/OYKcZQirgv8Ln
- C3q1J4KYWivA==
+ 29 Oct 2020 22:05:21 -0700
+IronPort-SDR: oHD+TcdfaLN26CEhhjanZXvl5LLtjVm4yk5X0xvtAzVmCOmqfAODIVRNaV6AdCtTIRYFpPdWnL
+ cYMFRQADkBUg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="425261567"
+X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="425261596"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga001.fm.intel.com with ESMTP; 29 Oct 2020 22:05:14 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 29 Oct 2020 22:05:18 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
  Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v6 4/5] iommu/vt-d: Add iommu_ops support for subdevice bus
-Date: Fri, 30 Oct 2020 12:58:08 +0800
-Message-Id: <20201030045809.957927-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 5/5] vfio/type1: Use mdev bus iommu_ops for IOMMU callbacks
+Date: Fri, 30 Oct 2020 12:58:09 +0800
+Message-Id: <20201030045809.957927-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201030045809.957927-1-baolu.lu@linux.intel.com>
 References: <20201030045809.957927-1-baolu.lu@linux.intel.com>
@@ -92,224 +92,318 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The iommu_ops will only take effect when INTEL_IOMMU_SCALABLE_IOV kernel
-option is selected. It applies to any device passthrough framework which
-implements an underlying bus for the subdevices.
-
-- Subdevice probe:
-  When a subdevice is created and added to the bus, iommu_probe_device()
-  will be called, where the device will be probed by the iommu core. An
-  iommu group will be allocated and the device will be added to it. The
-  default domain won't be allocated since there's no use case of using a
-  subdevice in the host kernel at this time being. However, it's pretty
-  easy to add this support later.
-
-- Domain alloc/free/map/unmap/iova_to_phys operations:
-  For such ops, we just reuse those for PCI/PCIe devices.
-
-- Domain attach/detach operations:
-  It depends on whether the parent device supports IOMMU_DEV_FEAT_AUX
-  feature. If so, the domain will be attached to the parent device as an
-  aux-domain; Otherwise, it will be attached to the parent as a primary
-  domain.
+With the IOMMU driver registering iommu_ops for the mdev_bus, the IOMMU
+operations on an mdev could be done in the same way as any normal device
+(for example, PCI/PCIe). There's no need to distinguish an mdev from
+others for iommu operations. Remove the unnecessary code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/Kconfig  |  13 ++++
- drivers/iommu/intel/Makefile |   1 +
- drivers/iommu/intel/iommu.c  |   5 ++
- drivers/iommu/intel/siov.c   | 119 +++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h  |   4 ++
- 5 files changed, 142 insertions(+)
- create mode 100644 drivers/iommu/intel/siov.c
+ drivers/vfio/mdev/mdev_core.c    |  18 -----
+ drivers/vfio/mdev/mdev_driver.c  |   6 ++
+ drivers/vfio/mdev/mdev_private.h |   1 -
+ drivers/vfio/vfio_iommu_type1.c  | 128 +++----------------------------
+ include/linux/mdev.h             |  14 ----
+ 5 files changed, 18 insertions(+), 149 deletions(-)
 
-diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-index 28a3d1596c76..94edc332f558 100644
---- a/drivers/iommu/intel/Kconfig
-+++ b/drivers/iommu/intel/Kconfig
-@@ -86,3 +86,16 @@ config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
- 	  is not selected, scalable mode support could also be enabled by
- 	  passing intel_iommu=sm_on to the kernel. If not sure, please use
- 	  the default value.
-+
-+config INTEL_IOMMU_SCALABLE_IOV
-+	bool "Support for Intel Scalable I/O Virtualization"
-+	depends on INTEL_IOMMU
-+	select VFIO
-+	select VFIO_MDEV
-+	select VFIO_MDEV_DEVICE
-+	help
-+	  Intel Scalable I/O virtualization (SIOV) is a hardware-assisted
-+	  PCIe subdevices virtualization. With each subdevice tagged with
-+	  an unique ID(PCI/PASID) the VT-d hardware could identify, hence
-+	  isolate DMA transactions from different subdevices on a same PCIe
-+	  device. Selecting this option will enable the support.
-diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-index fb8e1e8c8029..f216385d5d59 100644
---- a/drivers/iommu/intel/Makefile
-+++ b/drivers/iommu/intel/Makefile
-@@ -4,4 +4,5 @@ obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
- obj-$(CONFIG_INTEL_IOMMU) += trace.o
- obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
- obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
-+obj-$(CONFIG_INTEL_IOMMU_SCALABLE_IOV) += siov.o
- obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 1454fe74f3ba..dafd8069c2af 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4298,6 +4298,11 @@ int __init intel_iommu_init(void)
- 	up_read(&dmar_global_lock);
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index 6b9ab71f89e7..f4fd5f237c49 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -386,24 +386,6 @@ int mdev_device_remove(struct device *dev)
+ 	return 0;
+ }
  
- 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
-+
-+#ifdef CONFIG_INTEL_IOMMU_SCALABLE_IOV
-+	intel_siov_init();
-+#endif /* CONFIG_INTEL_IOMMU_SCALABLE_IOV */
-+
- 	if (si_domain && !hw_pass_through)
- 		register_memory_notifier(&intel_iommu_memory_nb);
- 	cpuhp_setup_state(CPUHP_IOMMU_INTEL_DEAD, "iommu/intel:dead", NULL,
-diff --git a/drivers/iommu/intel/siov.c b/drivers/iommu/intel/siov.c
-new file mode 100644
-index 000000000000..b9470e7ab3d6
---- /dev/null
-+++ b/drivers/iommu/intel/siov.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/**
-+ * siov.c - Intel Scalable I/O virtualization support
-+ *
-+ * Copyright (C) 2020 Intel Corporation
-+ *
-+ * Author: Lu Baolu <baolu.lu@linux.intel.com>
-+ */
-+
-+#define pr_fmt(fmt)	"DMAR: " fmt
-+
-+#include <linux/intel-iommu.h>
-+#include <linux/iommu.h>
-+#include <linux/mdev.h>
-+#include <linux/pci.h>
-+
-+static struct device *subdev_lookup_parent(struct device *dev)
-+{
-+	if (dev->bus == &mdev_bus_type)
-+		return mdev_parent_dev(mdev_from_dev(dev));
-+
-+	return NULL;
-+}
-+
-+static struct iommu_domain *siov_iommu_domain_alloc(unsigned int type)
-+{
-+	if (type != IOMMU_DOMAIN_UNMANAGED)
-+		return NULL;
-+
-+	return intel_iommu_domain_alloc(type);
-+}
-+
-+static int siov_iommu_attach_device(struct iommu_domain *domain,
-+				    struct device *dev)
-+{
-+	struct device *parent;
-+
-+	parent = subdev_lookup_parent(dev);
-+	if (!parent || !dev_is_pci(parent))
-+		return -ENODEV;
-+
-+	if (iommu_dev_feature_enabled(parent, IOMMU_DEV_FEAT_AUX))
-+		return intel_iommu_aux_attach_device(domain, parent);
-+	else
-+		return intel_iommu_attach_device(domain, parent);
-+}
-+
-+static void siov_iommu_detach_device(struct iommu_domain *domain,
-+				     struct device *dev)
-+{
-+	struct device *parent;
-+
-+	parent = subdev_lookup_parent(dev);
-+	if (WARN_ON_ONCE(!parent || !dev_is_pci(parent)))
-+		return;
-+
-+	if (iommu_dev_feature_enabled(parent, IOMMU_DEV_FEAT_AUX))
-+		intel_iommu_aux_detach_device(domain, parent);
-+	else
-+		intel_iommu_detach_device(domain, parent);
-+}
-+
-+static struct iommu_device *siov_iommu_probe_device(struct device *dev)
-+{
-+	struct intel_iommu *iommu;
-+	struct device *parent;
-+
-+	parent = subdev_lookup_parent(dev);
-+	if (!parent || !dev_is_pci(parent))
-+		return ERR_PTR(-EINVAL);
-+
-+	iommu = device_to_iommu(parent, NULL, NULL);
-+	if (!iommu)
-+		return ERR_PTR(-ENODEV);
-+
-+	return &iommu->iommu;
-+}
-+
-+static void siov_iommu_release_device(struct device *dev)
-+{
-+}
-+
-+static void
-+siov_iommu_get_resv_regions(struct device *dev, struct list_head *head)
-+{
-+	struct device *parent;
-+
-+	parent = subdev_lookup_parent(dev);
-+	if (!parent || !dev_is_pci(parent))
-+		return;
-+
-+	intel_iommu_get_resv_regions(parent, head);
-+}
-+
-+static const struct iommu_ops siov_iommu_ops = {
-+	.capable		= intel_iommu_capable,
-+	.domain_alloc		= siov_iommu_domain_alloc,
-+	.domain_free		= intel_iommu_domain_free,
-+	.attach_dev		= siov_iommu_attach_device,
-+	.detach_dev		= siov_iommu_detach_device,
-+	.map			= intel_iommu_map,
-+	.unmap			= intel_iommu_unmap,
-+	.iova_to_phys		= intel_iommu_iova_to_phys,
-+	.probe_device		= siov_iommu_probe_device,
-+	.release_device		= siov_iommu_release_device,
-+	.get_resv_regions	= siov_iommu_get_resv_regions,
-+	.put_resv_regions	= generic_iommu_put_resv_regions,
-+	.device_group		= generic_device_group,
-+	.pgsize_bitmap		= (~0xFFFUL),
-+};
-+
-+void intel_siov_init(void)
-+{
-+	if (!scalable_mode_support() || !iommu_pasid_support())
-+		return;
-+
-+	bus_set_iommu(&mdev_bus_type, &siov_iommu_ops);
-+	pr_info("Intel(R) Scalable I/O Virtualization supported\n");
-+}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d3928ba87986..b790efa5509f 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -787,6 +787,10 @@ size_t intel_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
- void intel_iommu_get_resv_regions(struct device *device, struct list_head *head);
+-int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
+-{
+-	struct mdev_device *mdev = to_mdev_device(dev);
+-
+-	mdev->iommu_device = iommu_device;
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL(mdev_set_iommu_device);
+-
+-struct device *mdev_get_iommu_device(struct device *dev)
+-{
+-	struct mdev_device *mdev = to_mdev_device(dev);
+-
+-	return mdev->iommu_device;
+-}
+-EXPORT_SYMBOL(mdev_get_iommu_device);
+-
+ static int __init mdev_init(void)
+ {
+ 	return mdev_bus_register();
+diff --git a/drivers/vfio/mdev/mdev_driver.c b/drivers/vfio/mdev/mdev_driver.c
+index 0d3223aee20b..487402f16355 100644
+--- a/drivers/vfio/mdev/mdev_driver.c
++++ b/drivers/vfio/mdev/mdev_driver.c
+@@ -18,6 +18,9 @@ static int mdev_attach_iommu(struct mdev_device *mdev)
+ 	int ret;
+ 	struct iommu_group *group;
  
-+#ifdef CONFIG_INTEL_IOMMU_SCALABLE_IOV
-+void intel_siov_init(void);
-+#endif /* INTEL_IOMMU_SCALABLE_IOV */
++	if (iommu_present(&mdev_bus_type))
++		return 0;
 +
- #ifdef CONFIG_INTEL_IOMMU_SVM
- extern void intel_svm_check(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+ 	group = iommu_group_alloc();
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+@@ -33,6 +36,9 @@ static int mdev_attach_iommu(struct mdev_device *mdev)
+ 
+ static void mdev_detach_iommu(struct mdev_device *mdev)
+ {
++	if (iommu_present(&mdev_bus_type))
++		return;
++
+ 	iommu_group_remove_device(&mdev->dev);
+ 	dev_info(&mdev->dev, "MDEV: detaching iommu\n");
+ }
+diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+index 7d922950caaf..efe0aefdb52f 100644
+--- a/drivers/vfio/mdev/mdev_private.h
++++ b/drivers/vfio/mdev/mdev_private.h
+@@ -31,7 +31,6 @@ struct mdev_device {
+ 	void *driver_data;
+ 	struct list_head next;
+ 	struct kobject *type_kobj;
+-	struct device *iommu_device;
+ 	bool active;
+ };
+ 
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index bb2684cc245e..e231b7070ca5 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -100,7 +100,6 @@ struct vfio_dma {
+ struct vfio_group {
+ 	struct iommu_group	*iommu_group;
+ 	struct list_head	next;
+-	bool			mdev_group;	/* An mdev group */
+ 	bool			pinned_page_dirty_scope;
+ };
+ 
+@@ -1675,102 +1674,6 @@ static bool vfio_iommu_has_sw_msi(struct list_head *group_resv_regions,
+ 	return ret;
+ }
+ 
+-static struct device *vfio_mdev_get_iommu_device(struct device *dev)
+-{
+-	struct device *(*fn)(struct device *dev);
+-	struct device *iommu_device;
+-
+-	fn = symbol_get(mdev_get_iommu_device);
+-	if (fn) {
+-		iommu_device = fn(dev);
+-		symbol_put(mdev_get_iommu_device);
+-
+-		return iommu_device;
+-	}
+-
+-	return NULL;
+-}
+-
+-static int vfio_mdev_attach_domain(struct device *dev, void *data)
+-{
+-	struct iommu_domain *domain = data;
+-	struct device *iommu_device;
+-
+-	iommu_device = vfio_mdev_get_iommu_device(dev);
+-	if (iommu_device) {
+-		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
+-			return iommu_aux_attach_device(domain, iommu_device);
+-		else
+-			return iommu_attach_device(domain, iommu_device);
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static int vfio_mdev_detach_domain(struct device *dev, void *data)
+-{
+-	struct iommu_domain *domain = data;
+-	struct device *iommu_device;
+-
+-	iommu_device = vfio_mdev_get_iommu_device(dev);
+-	if (iommu_device) {
+-		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
+-			iommu_aux_detach_device(domain, iommu_device);
+-		else
+-			iommu_detach_device(domain, iommu_device);
+-	}
+-
+-	return 0;
+-}
+-
+-static int vfio_iommu_attach_group(struct vfio_domain *domain,
+-				   struct vfio_group *group)
+-{
+-	if (group->mdev_group)
+-		return iommu_group_for_each_dev(group->iommu_group,
+-						domain->domain,
+-						vfio_mdev_attach_domain);
+-	else
+-		return iommu_attach_group(domain->domain, group->iommu_group);
+-}
+-
+-static void vfio_iommu_detach_group(struct vfio_domain *domain,
+-				    struct vfio_group *group)
+-{
+-	if (group->mdev_group)
+-		iommu_group_for_each_dev(group->iommu_group, domain->domain,
+-					 vfio_mdev_detach_domain);
+-	else
+-		iommu_detach_group(domain->domain, group->iommu_group);
+-}
+-
+-static bool vfio_bus_is_mdev(struct bus_type *bus)
+-{
+-	struct bus_type *mdev_bus;
+-	bool ret = false;
+-
+-	mdev_bus = symbol_get(mdev_bus_type);
+-	if (mdev_bus) {
+-		ret = (bus == mdev_bus);
+-		symbol_put(mdev_bus_type);
+-	}
+-
+-	return ret;
+-}
+-
+-static int vfio_mdev_iommu_device(struct device *dev, void *data)
+-{
+-	struct device **old = data, *new;
+-
+-	new = vfio_mdev_get_iommu_device(dev);
+-	if (!new || (*old && *old != new))
+-		return -EINVAL;
+-
+-	*old = new;
+-
+-	return 0;
+-}
+-
+ /*
+  * This is a helper function to insert an address range to iova list.
+  * The list is initially created with a single entry corresponding to
+@@ -1999,7 +1902,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	struct vfio_iommu *iommu = iommu_data;
+ 	struct vfio_group *group;
+ 	struct vfio_domain *domain, *d;
+-	struct bus_type *bus = NULL;
++	struct bus_type *bus = NULL, *mdev_bus;
+ 	int ret;
+ 	bool resv_msi, msi_remap;
+ 	phys_addr_t resv_msi_base = 0;
+@@ -2037,15 +1940,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_free;
+ 
+-	if (vfio_bus_is_mdev(bus)) {
+-		struct device *iommu_device = NULL;
+-
+-		group->mdev_group = true;
+-
+-		/* Determine the isolation type */
+-		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
+-					       vfio_mdev_iommu_device);
+-		if (ret || !iommu_device) {
++	mdev_bus = symbol_get(mdev_bus_type);
++	if (mdev_bus) {
++		if (bus == mdev_bus && !iommu_present(bus)) {
++			symbol_put(mdev_bus_type);
+ 			if (!iommu->external_domain) {
+ 				INIT_LIST_HEAD(&domain->group_list);
+ 				iommu->external_domain = domain;
+@@ -2070,8 +1968,6 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 
+ 			return 0;
+ 		}
+-
+-		bus = iommu_device->bus;
+ 	}
+ 
+ 	domain->domain = iommu_domain_alloc(bus);
+@@ -2089,7 +1985,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 			goto out_domain;
+ 	}
+ 
+-	ret = vfio_iommu_attach_group(domain, group);
++	ret = iommu_attach_group(domain->domain, iommu_group);
+ 	if (ret)
+ 		goto out_domain;
+ 
+@@ -2157,15 +2053,15 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	list_for_each_entry(d, &iommu->domain_list, next) {
+ 		if (d->domain->ops == domain->domain->ops &&
+ 		    d->prot == domain->prot) {
+-			vfio_iommu_detach_group(domain, group);
+-			if (!vfio_iommu_attach_group(d, group)) {
++			iommu_detach_group(domain->domain, iommu_group);
++			if (!iommu_attach_group(d->domain, iommu_group)) {
+ 				list_add(&group->next, &d->group_list);
+ 				iommu_domain_free(domain->domain);
+ 				kfree(domain);
+ 				goto done;
+ 			}
+ 
+-			ret = vfio_iommu_attach_group(domain, group);
++			ret = iommu_attach_group(domain->domain, iommu_group);
+ 			if (ret)
+ 				goto out_domain;
+ 		}
+@@ -2202,7 +2098,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	return 0;
+ 
+ out_detach:
+-	vfio_iommu_detach_group(domain, group);
++	iommu_detach_group(domain->domain, iommu_group);
+ out_domain:
+ 	iommu_domain_free(domain->domain);
+ 	vfio_iommu_iova_free(&iova_copy);
+@@ -2385,7 +2281,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 		if (!group)
+ 			continue;
+ 
+-		vfio_iommu_detach_group(domain, group);
++		iommu_detach_group(domain->domain, iommu_group);
+ 		update_dirty_scope = !group->pinned_page_dirty_scope;
+ 		list_del(&group->next);
+ 		kfree(group);
+@@ -2466,7 +2362,7 @@ static void vfio_release_domain(struct vfio_domain *domain, bool external)
+ 	list_for_each_entry_safe(group, group_tmp,
+ 				 &domain->group_list, next) {
+ 		if (!external)
+-			vfio_iommu_detach_group(domain, group);
++			iommu_detach_group(domain->domain, group->iommu_group);
+ 		list_del(&group->next);
+ 		kfree(group);
+ 	}
+diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+index 0ce30ca78db0..f7aee86bd2b0 100644
+--- a/include/linux/mdev.h
++++ b/include/linux/mdev.h
+@@ -12,20 +12,6 @@
+ 
+ struct mdev_device;
+ 
+-/*
+- * Called by the parent device driver to set the device which represents
+- * this mdev in iommu protection scope. By default, the iommu device is
+- * NULL, that indicates using vendor defined isolation.
+- *
+- * @dev: the mediated device that iommu will isolate.
+- * @iommu_device: a pci device which represents the iommu for @dev.
+- *
+- * Return 0 for success, otherwise negative error value.
+- */
+-int mdev_set_iommu_device(struct device *dev, struct device *iommu_device);
+-
+-struct device *mdev_get_iommu_device(struct device *dev);
+-
+ /**
+  * struct mdev_parent_ops - Structure to be registered for each parent device to
+  * register the device to mdev module.
 -- 
 2.25.1
 
