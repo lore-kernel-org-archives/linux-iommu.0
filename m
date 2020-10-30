@@ -2,100 +2,80 @@ Return-Path: <SRS0=LARK=EF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4D2C00A89
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 10:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31251C4363A
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 12:55:08 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6257B22202
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 10:47:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VFde5+mz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6257B22202
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5E441206ED
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 12:55:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E441206ED
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BD7EF86303;
-	Fri, 30 Oct 2020 10:47:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C82C1860AD;
+	Fri, 30 Oct 2020 12:55:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rbmXcYfzFQ51; Fri, 30 Oct 2020 10:47:45 +0000 (UTC)
+	with ESMTP id ooOkHHBggfpz; Fri, 30 Oct 2020 12:55:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3AD4C860CD;
-	Fri, 30 Oct 2020 10:47:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6991885F44;
+	Fri, 30 Oct 2020 12:55:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3133C088B;
-	Fri, 30 Oct 2020 10:47:44 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00F00C0051
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 10:47:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20C6CC088B;
+	Fri, 30 Oct 2020 12:55:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B46E2C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:55:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E93FF87388
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 10:47:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 91C3F20416
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:55:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nXVua2Pf1w2v for <iommu@lists.linux-foundation.org>;
- Fri, 30 Oct 2020 10:47:43 +0000 (UTC)
+ with ESMTP id ZBNsIhQ9JjwQ for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Oct 2020 12:55:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E59EC8737C
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 10:47:42 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id y12so5927806wrp.6
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 03:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=jQiudrT92RoT4MnO8l4PixRWHyCh7YwN2t6t0NWCl8I=;
- b=VFde5+mzL3XrpwutQuptYgGfpVk1egIssR+s26ty3ekZpYibBDTiuQV5zFapNyE8xz
- 6v3A8xMfNiFzLTb2cZNXwVhfFARk+bgSkdGbO1edAjpGrdx5RQU69IAKu6NNVcwyG0PF
- womXcacbz9uNGUZOOgJZcSMSXlgQGCd9OLAmd/A0MLaIjmlAyAXznwmASzALVIyF50wC
- 84Aa6i3GxiZKW4MuYqFzR9Synue4zXdlcG6itsZ2CxWa7iREgT0xl/I6wTenPtbWqOAZ
- 9u++nR0d94pEaUBIH7tjNuyvVXlbrmkmFI2i4mOunI1OiwJyZvA9yxzHRXONpj+854wX
- DXcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=jQiudrT92RoT4MnO8l4PixRWHyCh7YwN2t6t0NWCl8I=;
- b=p0cIk6g2vtv/k5889D6wW8iETuCBZgNexXTc+d2E8nfloyVq+qhKJCpWNU9lw1omD/
- PjCjXtGYc819XHbsoZUEFJL7oeASQImbhJHFRCM7eIN4k2pDdlozRlS3BcGKU1P4UM5O
- 9wMtJPeB3Wcm9VnIaWVEi7uXQh7129KQKIYbvkQslNTauh+UFstcEe9iBsaTfPa/VY7p
- hZsS6zIhcaNb8ejlxivk6yp1IfJ/d/pz2ZYm4l2iNPPbs0PuSX+4X2ZjgqszKVluSYDP
- C67eewhjWt6iW34kXUK3GDH8YT0MlaNmc5sebY66/noVODi+GHQbcWA/t0/t8rlRRShO
- SLPg==
-X-Gm-Message-State: AOAM530supbzp+HarhTKF5SFGD02Fse/YhRBWgMq3ILdtZ3WlUQkN2cV
- PdbB3G2gWSO/BOrtgiPRPknTeg==
-X-Google-Smtp-Source: ABdhPJxoOQE0u2uOynQXeMQt4bBcTiACvEfnnakK42gV/IE5dKn3Hyesd2ExbFDOliawRXDUP6bYow==
-X-Received: by 2002:adf:df02:: with SMTP id y2mr2428311wrl.403.1604054861343; 
- Fri, 30 Oct 2020 03:47:41 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id y201sm4495303wmd.27.2020.10.30.03.47.40
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 30 Oct 2020 03:47:40 -0700 (PDT)
-Date: Fri, 30 Oct 2020 11:47:20 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v6 2/5] iommu: Use bus iommu ops for aux related callback
-Message-ID: <20201030104720.GA294997@myrica>
-References: <20201030045809.957927-1-baolu.lu@linux.intel.com>
- <20201030045809.957927-3-baolu.lu@linux.intel.com>
- <MWHPR11MB1645D795F7851F5894CB58D88C150@MWHPR11MB1645.namprd11.prod.outlook.com>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id 02522203EE
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 12:55:01 +0000 (UTC)
+IronPort-SDR: aVlykGNyjuViaudV7pEFgOvghXvz8d8fstdliY1b4ZOQRrFxQH3ZOdYko9MhZzvIhzugaLkNE9
+ A1dDH1HtizIQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="166014591"
+X-IronPort-AV: E=Sophos;i="5.77,433,1596524400"; d="scan'208";a="166014591"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Oct 2020 05:55:01 -0700
+IronPort-SDR: EQEJIWfEwF9HnjLzf2NvqY/yF+Agy3SzVDSC7NzNZ1QYd5tQlCOS0evb1dYdDAnpIcJJ8EI9ba
+ n1f5Ha+xYAiw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,433,1596524400"; d="scan'208";a="425338716"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
+ ([10.239.159.139])
+ by fmsmga001.fm.intel.com with ESMTP; 30 Oct 2020 05:54:56 -0700
+Subject: Re: [PATCH v2 1/2] iommu/vt-d: Fix sid not set issue in
+ intel_svm_bind_gpasid()
+To: Yi Sun <yi.y.sun@linux.intel.com>, joro@8bytes.org, dwmw2@infradead.org,
+ jean-philippe@linaro.org
+References: <1604025444-6954-1-git-send-email-yi.y.sun@linux.intel.com>
+ <1604025444-6954-2-git-send-email-yi.y.sun@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <fa69b000-b790-ae8c-2a40-618ca2631ac4@linux.intel.com>
+Date: Fri, 30 Oct 2020 20:48:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1645D795F7851F5894CB58D88C150@MWHPR11MB1645.namprd11.prod.outlook.com>
-Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1604025444-6954-2-git-send-email-yi.y.sun@linux.intel.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,35 +88,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Oct 30, 2020 at 05:55:53AM +0000, Tian, Kevin wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > Sent: Friday, October 30, 2020 12:58 PM
-> > 
-> > The aux-domain apis were designed for macro driver where the subdevices
-> > are created and used inside a device driver. Use the device's bus iommu
-> > ops instead of that in iommu domain for various callbacks.
+On 10/30/20 10:37 AM, Yi Sun wrote:
+> From: Liu Yi L <yi.l.liu@intel.com>
 > 
-> IIRC there are only two users on these apis. One is VFIO, and the other
-> is on the ARM side (not checked in yet). Jean, can you help confirm 
-> whether ARM-side usage still relies on aux apis even with this change?
+> Should get correct sid and set it into sdev. Because we execute
+> 'sdev->sid != req->rid' in the loop of prq_event_thread().
+> 
+> Fixes: eb8d93ea3c1d ("iommu/vt-d: Report page request faults for guest SVA")
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
 
-No, I have something out of tree but no plan to upstream it anymore, and
-the SMMUv2 implementation is out as well:
+Cc: stable@ver.kernel.org
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-https://lore.kernel.org/linux-iommu/20200713173556.GC3815@jcrouse1-lnx.qualcomm.com/
+Best regards,
+baolu
 
-> If no, possibly they can be removed completely?
-
-No objection from me. They can be added back later (I still belive adding
-PASID to the DMA API would be nice to have once more HW implements it).
-
-Thanks,
-Jean
+> ---
+>   drivers/iommu/intel/svm.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index f1861fa..7584669 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -279,6 +279,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+>   	struct intel_svm_dev *sdev = NULL;
+>   	struct dmar_domain *dmar_domain;
+> +	struct device_domain_info *info;
+>   	struct intel_svm *svm = NULL;
+>   	int ret = 0;
+>   
+> @@ -310,6 +311,10 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   	if (data->hpasid <= 0 || data->hpasid >= PASID_MAX)
+>   		return -EINVAL;
+>   
+> +	info = get_domain_info(dev);
+> +	if (!info)
+> +		return -EINVAL;
+> +
+>   	dmar_domain = to_dmar_domain(domain);
+>   
+>   	mutex_lock(&pasid_mutex);
+> @@ -357,6 +362,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   		goto out;
+>   	}
+>   	sdev->dev = dev;
+> +	sdev->sid = PCI_DEVID(info->bus, info->devfn);
+>   
+>   	/* Only count users if device has aux domains */
+>   	if (iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX))
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
