@@ -2,169 +2,136 @@ Return-Path: <SRS0=LARK=EF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FD8C55178
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 09:36:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834A7C55178
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 09:39:02 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0314A20825
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 09:36:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9FA1A2076E
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 09:39:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="KpW0208/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0314A20825
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Hh+5kowh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FA1A2076E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 58C2F8730E;
-	Fri, 30 Oct 2020 09:36:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4525D862C9;
+	Fri, 30 Oct 2020 09:39:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gNwD4rrRHyUL; Fri, 30 Oct 2020 09:36:00 +0000 (UTC)
+	with ESMTP id unBeDgNvchg6; Fri, 30 Oct 2020 09:39:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A71108729C;
-	Fri, 30 Oct 2020 09:36:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4DCEC84E0A;
+	Fri, 30 Oct 2020 09:39:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 932CEC0859;
-	Fri, 30 Oct 2020 09:36:00 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D29BCC0051
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:35:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A19FC0859;
+	Fri, 30 Oct 2020 09:39:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34562C0051
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:38:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CB3BD868A9
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:35:58 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id E402A2052B
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:38:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yGQpF+l3dCyR for <iommu@lists.linux-foundation.org>;
- Fri, 30 Oct 2020 09:35:58 +0000 (UTC)
+ with ESMTP id jKZ6WUK5d250 for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Oct 2020 09:38:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate26.nvidia.com (hqnvemgate26.nvidia.com
- [216.228.121.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F162981F0F
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:35:57 +0000 (UTC)
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
- id <B5f9bde880000>; Fri, 30 Oct 2020 02:36:08 -0700
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 30 Oct
- 2020 09:35:42 +0000
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
- by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 30 Oct 2020 09:35:42 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bz6F5eI34fR78jmjHwgRDj2MrjMar1EJrrObQ1EGCu87LX+jBzXVlj7lA9wfLY/xR0YOPfNF0/ugExg77qefuGT8wtynSbRSUSLZayUQP//RMUvc1Hc6zhgtVMKGY1WszHb379gFA9n3ixYLc2bmgADa+l9gf66Vl616y6/IMj7+Xy+6+xo6g52i9DzELnqgwgNmVzbZjycfo2R3J+69wG8Y1x3jmcysk6N9NsckBVzHrNnccBOgu0otogbA+nL50j7RLrqeyE6cpV8Kxpw2JvXQ5cOb1ZoFMoQ6DpzrMs2DHcznUdznHXfudc2kkbmwJjUK0lexF7OxEpFmzm1+OA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dWTAd7opkAERURr3qxfuOLB8iQ03YIm60A46/6r37+A=;
- b=XdkbgJGXSNnUqkFhstXLSmPoXPIBsGNV9Hkv/lJJNUWh1VP65DxXHL4DdPMW5rT+ud1m1g4qy9SbL6uWnVaBb6Wb5uJ20YWSYuzLuYpUuxIoOuXxykl2sw8auAmdgNyT9p3West+wuaPN+G/t2pHwZ1pjkn0tvrHSfHchIDV5vkElQc28pYXjsYBBHWXVR5CS+evRb0WTVTm/uA9daWUj+epvQ5F6z6lVaEXRijvIcp1HLHpgY2eRgM6VhmZHz5CjViMqripI8MUPm5iQblPEZSV2JZV7dWZsfbcS2xw9BZYqnVCdN1rDhX/CcFey2D83qwa5oKxpCbrmyvtmjMeQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BYAPR12MB3173.namprd12.prod.outlook.com (2603:10b6:a03:13d::26)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.19; Fri, 30 Oct
- 2020 09:35:40 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105%5]) with mapi id 15.20.3499.029; Fri, 30 Oct 2020
- 09:35:40 +0000
-From: Parav Pandit <parav@nvidia.com>
-To: "hch@lst.de" <hch@lst.de>
-Subject: RE: WARNING in dma_map_page_attrs
-Thread-Topic: WARNING in dma_map_page_attrs
-Thread-Index: AQHWqbLPPEPI9mnwmUSeVEeL/Zim3qmnD9kAgAJKk0CAAcOagIAATcGAgAHhEQCAAp+JsA==
-Date: Fri, 30 Oct 2020 09:35:40 +0000
-Message-ID: <BY5PR12MB4322B3F74495D950A2DF59FCDC150@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <000000000000335adc05b23300f6@google.com>
- <000000000000a0f8a305b261fe4a@google.com>
- <20201024111516.59abc9ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <BY5PR12MB4322CC03CE0D34B83269676ADC190@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201027081103.GA22877@lst.de>
- <BY5PR12MB43221380BB0259FF0693BB0CDC160@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201028173108.GA10135@lst.de>
-In-Reply-To: <20201028173108.GA10135@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lst.de; dkim=none (message not signed)
- header.d=none;lst.de; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.200.190]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e7d9918c-bfb9-4581-240e-08d87cb72a78
-x-ms-traffictypediagnostic: BYAPR12MB3173:
-x-microsoft-antispam-prvs: <BYAPR12MB31738EAE4736D98E391A6F93DC150@BYAPR12MB3173.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:923;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OhdeXHUxt2FA/MFFECvZtby02BvFWOngEalRKPhMwX7HXiqNroxcJLH5avg7jEwRNj8T7QcAjflq3zZZgU46DF/q8unaxtbltdYq/VBZ2G/8KA4KrP3m3113umtKplIrTfbKcx01If97Jc7LpDaF+1oP9U20b8E+G9AhWAeTiFSR5ZTL9hFKEg4ht8ECpprlp0laZSh3HQ4l9RvYmuwliXdbJQnYgxU5Fz27qkVAkoMw35vBBOeCnz05nTGpUQwHcIeBYTrfGvEJktySPmrV4mjzhAUXHOpR8E6Rn4WOon5vis9DVqKHXovRR0P+3U4LNUOMdraOr7YsmekOr4nsOg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BY5PR12MB4322.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(2906002)(6916009)(7416002)(7116003)(52536014)(66446008)(7696005)(55016002)(9686003)(64756008)(66476007)(8676002)(316002)(54906003)(76116006)(66556008)(66946007)(5660300002)(8936002)(55236004)(71200400001)(186003)(26005)(6506007)(86362001)(83380400001)(4326008)(33656002)(478600001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: OjRmIRgh21a33RTAnR76YfN2xHA8BZkMcAiad1IcQRsDJiZcD5dk8eh6YHRgSzDbMB1wRx+d8MFrnTUHwkAoO9hmQcIRgxahirs4LrUnI0jVMa29bam4d8XXijmeQ450a36S1sjfErWxIGvCMmE/IfQwDY0Tfk4tk09uuWPheBPyEJlNI8o7jPcz8+3RytdqhBVLqbEJN6aPaY657b8HZV5IsnfzmdfQgaW7l/KxP+ppOwY/vp9TGsJqbKLau7rtcDCzUekrgHgmqZ+lg0zVpi+An0oR3Z97Oe6142/VMjFV+FF4wTiU8gvpWirSe59BrtTUiG15WhU9rbXBVTWdtc0D4Zbe5tkumxIMb5hj2UllnOh7/l5CIg+ZxrYxsWzhLG8JNUnrnN2YWx+LsJn+o4+4YqMFmqgXw7YAJsycP5slRTEJ3Q564dwfmd8ldp5HFArvh/EfFOjhJgjeI0JMP5gqrMY2hiSxlgMqE1w8PJmG2iW6OOQxPfdCgwxRsEMpx4ZxT6xj3wJjDWchx3N7lVBoQonvoTea86BfuhAdv0/NffR6n5gndOllyjU/t/y41QGRlXCJl5yBW+ostT2sReWBdyw3MXQG/kitAjjl5ecopDgyCn2U0SCh72hlOyQyAD+vjgXmCpUcdVCHAmct4w==
-x-ms-exchange-transport-forked: True
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by silver.osuosl.org (Postfix) with ESMTPS id 88584203A0
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:38:56 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20201030093828euoutp02ba6868f1c466ec9cdf058623e5688957~Cu579BFU81591815918euoutp02h
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 09:38:28 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20201030093828euoutp02ba6868f1c466ec9cdf058623e5688957~Cu579BFU81591815918euoutp02h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1604050708;
+ bh=DPwF3bxN+Cc2XnEZqgdTkdloCkuZVnRXdYypETg8mf8=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=Hh+5kowhVx6PiX+0TrbLVahuGKAq+EUeLNnUvTXvpU17HZZrmyOUGI0kok/U3GEFc
+ wVD2wQHBeHbZBG64DTdnHTLpzbhyFA8OctqEe2P1iZO3D5Iu4VfPM+KthsvS1y94lv
+ Un08ftByNcR6r+U8hMAnlRUO/X3RjXlq38O6YTc8=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20201030093823eucas1p21159cba7ddf588d2f5ddc6746fdd9df9~Cu53JxNDP0257102571eucas1p2H;
+ Fri, 30 Oct 2020 09:38:23 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id 49.BD.05997.F0FDB9F5; Fri, 30
+ Oct 2020 09:38:23 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20201030093823eucas1p18c63df9a5c3a4c42314bda8d13a82f1e~Cu52l8IOh2325023250eucas1p1z;
+ Fri, 30 Oct 2020 09:38:23 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20201030093823eusmtrp1a0cf8ff1272958dea8978d6a2b3c467a~Cu52lOa1m0707207072eusmtrp1V;
+ Fri, 30 Oct 2020 09:38:23 +0000 (GMT)
+X-AuditID: cbfec7f4-65dff7000000176d-f0-5f9bdf0fe4ef
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 5F.07.06017.E0FDB9F5; Fri, 30
+ Oct 2020 09:38:23 +0000 (GMT)
+Received: from [106.210.88.143] (unknown [106.210.88.143]) by
+ eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20201030093822eusmtip28209a9dc3375e309b188a9e79428d91c~Cu52Hq_Qo2372423724eusmtip2N;
+ Fri, 30 Oct 2020 09:38:22 +0000 (GMT)
+Subject: Re: [PATCH] iommu: Clarify .of_xlate assumptions
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <cbae7bff-3b1c-fd0f-7e77-19413aaecf1b@samsung.com>
+Date: Fri, 30 Oct 2020 10:38:22 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7d9918c-bfb9-4581-240e-08d87cb72a78
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2020 09:35:40.4718 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CgHH+xAEN3e0xCD5oZ2wfdo63z7HVx5VtnIRjdiE2mTEDQAy8PSxd1ZyFSdVDbU12jS0GpPLURBpLCaBx/9vRA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3173
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1604050568; bh=dWTAd7opkAERURr3qxfuOLB8iQ03YIm60A46/6r37+A=;
- h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
- CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
- In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
- X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
- x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
- x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
- x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
- x-microsoft-antispam:x-microsoft-antispam-message-info:
- x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
- x-ms-exchange-transport-forked:Content-Type:
- Content-Transfer-Encoding:MIME-Version:
- X-MS-Exchange-CrossTenant-AuthAs:
- X-MS-Exchange-CrossTenant-AuthSource:
- X-MS-Exchange-CrossTenant-Network-Message-Id:
- X-MS-Exchange-CrossTenant-originalarrivaltime:
- X-MS-Exchange-CrossTenant-fromentityheader:
- X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
- X-MS-Exchange-CrossTenant-userprincipalname:
- X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
- b=KpW0208/lrHOJ6KvcoQdxl5iC32O7tO9okXla0wPDR+Zw97Z69XRc+q0SguKpq2l+
- 0HIUs7u10Q/R4JrQhZcnUJ3AsVThXAlCyEu/zZJDviU8s5xAq7OaaT6mX5f5R3UWSN
- hcBvKcGyVANGHQW+IMY5xAYxPesySJunXDBfaOBL493f8+W00AAZEVlOcNMVz9zxTE
- V3Dq3HOqIGL0N4p/l+fO/+E3MfunBccgCtHF1G8FR86KUVu7f2C5kuLRHqPoub5VZx
- imiXBkInc2RZBp/wUdKF3rTxisShqrbEU0cM4kIvv1HSH5tgjMCCsH8THMFQe4U4S8
- 8d+s/cqIgi82Q==
-Cc: "linaro-mm-sig-owner@lists.linaro.org"
- <linaro-mm-sig-owner@lists.linaro.org>,
- "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "sumit.semwal@linaro.org" <sumit.semwal@linaro.org>,
- "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- syzbot <syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com>,
- Jakub Kicinski <kuba@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "christian.koenig@amd.com" <christian.koenig@amd.com>,
- "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+In-Reply-To: <e86ad0f733a9fe7b209bb7c5ac58760266b97414.1603985657.git.robin.murphy@arm.com>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0hTYRjm85xtZ9rsbCq+aCSOlIy8lcQpS+zy49AvK7pgqE09qHgbmzMX
+ VGoiuUTmpdRNaytNsalLY6UippnTzKVl3jAkG16iUaQ/zCxqHi3/Pc/zPu/3Pg98BCYyczyI
+ pLQMRpYmSRFzHXFT3w+L//YZbUzQktqHqtaWIErXFUoVaI08quXTGIfKL3jIoeb1KxjV/c3K
+ oWZKWnGqSs8N59PW7rsOtOGuAdHFQ/50m+YDj87rtXHoloYCLt1ac50unahDdN5AFx7Bj3Q8
+ HM+kJGUyssCwS46JqukKnrTDKeu5yYKyUS5fhfgEkCEwqn7PVSFHQkTWI6gunMFYsoyganzO
+ gSVLCFb0at7miq6olsMO6hAYxyY2XF8RmF93cuwuF/Ig5I2+RHbsSlLQvWJbfxcjexHk9unW
+ TVwyGFQ2FdeOBWQYLFvsOkHgpA/c6Tpll93IWPi1tIaxFiEMVFpxO+aTF2HB1LSOMdILntqq
+ MBa7w5T13nogIKd40Nj/ZCP2CajVTmxgF/hs3tR3wGBpIc4u3EDw0dLIY0khgne5FYh1hcK0
+ ZZVrT4eRftDcHsjKR+GxbgrZZSCdYcImZEM4Q4mpHGNlAdzMF7FuX9CYm/6d7R5+i6mRWLOl
+ mmZLHc2WOpr/d3UIb0DujEKemsDI96UxlwPkklS5Ii0hIC49tQX9/V6Dv83Lz1D7WmwPIgkk
+ 3iYI99LGiDiSTLkytQcBgYldBceGBqNFgniJ8gojS4+RKVIYeQ/yJHCxu2D//cUoEZkgyWCS
+ GUbKyDanDgTfIxs9yhq2+CUnzufwz5Zf23mk7dbpA5Fl3l7tX87Pjue7DQ94v6mMEwYpv8c8
+ qPc0RE8afPf6j/VHWYbH0fK52caIOOMhdEH6s1WtB1NITe1Ikd9CTvPVXaPFFbubOq2Vr/Lm
+ /KTKpbn+28Fl4yNOvmeiTiqELyYXGzuOG43+ylUsWIzLEyXBezCZXPIH38nFQFoDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrJIsWRmVeSWpSXmKPExsVy+t/xe7r892fHG+ybxmQxd/YkRosF+60t
+ OmdvYLfY9Pgaq0Vb5zJWi+cLfzBbHPzwhNXi/qTNLBZzFrI5cHo8OTiPyWPNvDWMHhPP6nrs
+ nHWX3aPlyFtWj02rOtk8Ni+p95h8YzmjR8vJ/SwBnFF6NkX5pSWpChn5xSW2StGGFkZ6hpYW
+ ekYmlnqGxuaxVkamSvp2NimpOZllqUX6dgl6GV13ZrAX7OauOLDtHGMDYxNnFyMnh4SAicSC
+ vqWsXYxcHEICSxklztycxwqRkJE4Oa0ByhaW+HOtiw2i6C2jxLbeVhaQhLCApUTLlaOMILaI
+ gIXEwR9vmUGKmAWOMEo0vHgBNXYdo8SR2a/ARrEJGEp0vQUZxcnBK2An8eXcAqA4BweLgKrE
+ tP2BIGFRgSSJlxemMkGUCEqcnPkEbBmnQLTEi23rwGxmATOJeZsfMkPY8hLb386BssUlbj2Z
+ zzSBUWgWkvZZSFpmIWmZhaRlASPLKkaR1NLi3PTcYiO94sTc4tK8dL3k/NxNjMBo3Xbs55Yd
+ jF3vgg8xCnAwKvHwOsjPjhdiTSwrrsw9xCjBwawkwut09nScEG9KYmVValF+fFFpTmrxIUZT
+ oN8mMkuJJucDE0leSbyhqaG5haWhubG5sZmFkjhvh8DBGCGB9MSS1OzU1ILUIpg+Jg5OqQbG
+ qlMLd35Yc/TMwk7TC95KO2Pueim2fPCefOT02WQ3zqseVfknV9fpP1rgw2vjvfDtr8N9bh45
+ HiZnj5jqpjtmXpu69USCDdOyb8cffPz4p1QoRPHfJ7aWHfl3LaZtSuu9GnX/vXx/1bftW9uC
+ /ujnrLzY/ND3ujuPJ7/FldVCv+45Lbg7y/66rRJLcUaioRZzUXEiAD0krIrsAgAA
+X-CMS-MailID: 20201030093823eucas1p18c63df9a5c3a4c42314bda8d13a82f1e
+X-Msg-Generator: CA
+X-RootMTR: 20201029153501eucas1p1ca9cc3f19eb654e645b807ecfd87f52b
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201029153501eucas1p1ca9cc3f19eb654e645b807ecfd87f52b
+References: <CGME20201029153501eucas1p1ca9cc3f19eb654e645b807ecfd87f52b@eucas1p1.samsung.com>
+ <e86ad0f733a9fe7b209bb7c5ac58760266b97414.1603985657.git.robin.murphy@arm.com>
+Cc: geert+renesas@glider.be, mripard@kernel.org,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ Yu Kuai <yukuai3@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -182,52 +149,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Robin,
 
+On 29.10.2020 16:34, Robin Murphy wrote:
+> A common idiom for .of_xlate is to use of_find_device_by_node() to
+> retrieve the relevant IOMMU instance data when translating IOMMU
+> specifiers for a client device. Although it's slightly roundabout,
+> this is simply looking up something we know exists - if it *were*
+> to return NULL, that would mean that no platform device is associated
+> with the given DT node, therefore the driver couldn't have probed
+> and called iommu_device_register() with the ops that .of_xlate was
+> called from in the first place. By construction, we can also assume
+> that the instance data for any registered IOMMU must be valid.
+>
+> This isn't necessarily obvious at first glance, though, so add some
+> comments to document these assumptions in-place.
+>
+> Suggested-by: Yu Kuai <yukuai3@huawei.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c |  7 ++++---
+>   drivers/iommu/exynos-iommu.c            | 15 ++++++---------
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>   drivers/iommu/ipmmu-vmsa.c              | 13 ++++++-------
+>   drivers/iommu/mtk_iommu.c               |  8 ++++----
+>   drivers/iommu/rockchip-iommu.c          |  5 ++++-
+>   drivers/iommu/sun50i-iommu.c            |  5 ++++-
+>   6 files changed, 28 insertions(+), 25 deletions(-)
+>
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-> From: hch@lst.de <hch@lst.de>
-> Sent: Wednesday, October 28, 2020 11:01 PM
-> 
-> On Tue, Oct 27, 2020 at 12:52:30PM +0000, Parav Pandit wrote:
-> >
-> > > From: hch@lst.de <hch@lst.de>
-> > > Sent: Tuesday, October 27, 2020 1:41 PM
-> > >
-> > > On Mon, Oct 26, 2020 at 05:23:48AM +0000, Parav Pandit wrote:
-> > > > Hi Christoph,
-> > > >
-> > > > > From: Jakub Kicinski <kuba@kernel.org>
-> > > > > Sent: Saturday, October 24, 2020 11:45 PM
-> > > > >
-> > > > > CC: rdma, looks like rdma from the stack trace
-> > > > >
-> > > > > On Fri, 23 Oct 2020 20:07:17 -0700 syzbot wrote:
-> > > > > > syzbot has found a reproducer for the following issue on:
-> > > > > >
-> > > > > > HEAD commit:    3cb12d27 Merge tag 'net-5.10-rc1' of
-> > > git://git.kernel.org/..
-> > > >
-> > > > In [1] you mentioned that dma_mask should not be set for
-> dma_virt_ops.
-> > > > So patch [2] removed it.
-> > > >
-> > > > But check to validate the dma mask for all dma_ops was added in [3].
-> > > >
-> > > > What is the right way? Did I misunderstood your comment about
-> > > dma_mask in [1]?
-> > >
-> > > No, I did not say we don't need the mask.  I said copying over the
-> > > various dma-related fields from the parent is bogus.
-> > >
-> > > I think rxe (and ther other drivers/infiniband/sw drivers) need a
-> > > simple dma_coerce_mask_and_coherent and nothing else.
-> >
-> > I see. Does below fix make sense?
-> > Is DMA_MASK_NONE correct?
-> 
-> DMA_MASK_NONE is gone in 5.10.  I think you want DMA_BIT_MASK(64).
-> That isn't actually correct for 32-bit platforms, but good enough.
-Ok. thanks for the input.
-Sending updated fix to set 64-bit mask for 64-bit platform and 32-bit mask otherwise.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
