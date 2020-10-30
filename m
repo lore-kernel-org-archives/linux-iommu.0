@@ -2,99 +2,161 @@ Return-Path: <SRS0=LARK=EF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B99FC5517A
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 06:12:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23125C56202
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 06:13:51 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6EF3B22206
-	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 06:12:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 56DB5221F8
+	for <iommu@archiver.kernel.org>; Fri, 30 Oct 2020 06:13:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UfBGayb8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EF3B22206
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="zJ2lZhXI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56DB5221F8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id BBFB620460;
-	Fri, 30 Oct 2020 06:12:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KnKwgC53orP2; Fri, 30 Oct 2020 06:12:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id EFB9520368;
-	Fri, 30 Oct 2020 06:12:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF1E0C0859;
-	Fri, 30 Oct 2020 06:12:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C56AC0051
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:12:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1052385C90
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:12:51 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B9C4F85329;
+	Fri, 30 Oct 2020 06:13:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QyiQOk4AFxw8; Fri, 30 Oct 2020 06:13:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5DA0F85045;
+	Fri, 30 Oct 2020 06:13:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 499D0C0859;
+	Fri, 30 Oct 2020 06:13:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C65FC0051
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:13:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0A85985FC6
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:13:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xq2iz0t6xqAY for <iommu@lists.linux-foundation.org>;
- Fri, 30 Oct 2020 06:12:49 +0000 (UTC)
+ with ESMTP id JPXXfDdV1HZY for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Oct 2020 06:13:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
- [209.85.215.194])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C71E08472A
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:12:49 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id o3so4307795pgr.11
- for <iommu@lists.linux-foundation.org>; Thu, 29 Oct 2020 23:12:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id;
- bh=lsnXTwUpvelrYPLfzA7utESvkxWeP/bhg+1/v1FNjLA=;
- b=UfBGayb8x5oBlTQm9WYbhdGBwP/YSKxqhoSuncMMTO5ULnXRX2Aq4i4OE3eEbq3nON
- dvJxOBGfUtp01swmFGrXioQCY3QtO+M5AbwnAPGx88o9nz6aIsTzUmseOn1h45FE3DGA
- Mb8IAAB2n838fq13rMNKo11/hmCLBBbe5aXuntDDtIX+yddhh19Z7NE80hv1Sd7RTGGK
- bZM4HO4i8S6ucWRrkBiNFh6HH4xVmMB7CU0TZIVQA3D1nYFqLpd8iOmtEtk47FFz23BV
- 4m0Hf5su8yNk1DueudCyP2+k1tY7YW99OAqa2XHZJav57ya+JxPFAfO6o/nZXU/a1Lqh
- g4PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=lsnXTwUpvelrYPLfzA7utESvkxWeP/bhg+1/v1FNjLA=;
- b=f+Od4MSoreNKepqVGJaEvBTWI6z6gH90D6/v1mMIDjsAi1SMPEO4ZoYk1pBu7JT9xw
- QIqhBpKuUAeieGxD/qjZsdOgybiFQK3xCTnlh6IXrY6yr35MRPnAiculU5oWU07RWjwH
- EMp8iSwpmEs4YFHZI4uceseQ8ZCcPUkTeMSgzanMIFrRvDvJlB3FwshD35YK2ODHSNb+
- 7yDsGieunubU6WDF8+LrhDAxl0D3UqdqB5AVNblyhD0qaZk8szRhcUXaiHAWqLpWO6/I
- 32ODFaF9KhtRA2pZd3GlDgvx2D/fwfE7RgQxwsqtJVgQKRI9p35/jcH4oA+SgqUy6rRB
- +aQg==
-X-Gm-Message-State: AOAM530mO1+gwEWGrb4kKUWBNQ860wnjx7+IiKO37lwi7pb6bZTVsm45
- 3spUlgIxzHkm4l7fV1F/MTWB9w==
-X-Google-Smtp-Source: ABdhPJyMuv7JLIexqHuIPYrCQC7ksxed+139x8wvfwQYXJg4oOQ4wuzw2Zk2jd9zf02zl3oALm53nA==
-X-Received: by 2002:a17:90b:4749:: with SMTP id
- ka9mr951678pjb.197.1604038369215; 
- Thu, 29 Oct 2020 23:12:49 -0700 (PDT)
-Received: from localhost.localdomain (c-67-170-172-113.hsd1.or.comcast.net.
- [67.170.172.113])
- by smtp.gmail.com with ESMTPSA id e2sm4461569pgd.27.2020.10.29.23.12.48
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 29 Oct 2020 23:12:48 -0700 (PDT)
-From: John Stultz <john.stultz@linaro.org>
-To: lkml <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 1/2] pinctrl: qcom: Allow pinctrl-msm code to be loadable
- as a module
-Date: Fri, 30 Oct 2020 06:12:41 +0000
-Message-Id: <20201030061242.92510-1-john.stultz@linaro.org>
-X-Mailer: git-send-email 2.17.1
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
- linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CA67685FBA
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 06:13:44 +0000 (UTC)
+IronPort-SDR: xmtozpui2kWURsHv7vmQLuzg7UAUYZdwrhpvz9BbA1jJO6xkAidUPlY2Ts923aM7pY2yqWN/C1
+ FGi7QevoKl+Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9789"; a="168661544"
+X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="168661544"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Oct 2020 23:13:44 -0700
+IronPort-SDR: Tnz2/dAXV9I+zAvE6W7yuuGtwX8n53y1FYX7no0QapXf0BETIwikR7WFGZWMrpb09bXFcJ9523
+ k4in9BQNkyjA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,432,1596524400"; d="scan'208";a="304844532"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+ by fmsmga007.fm.intel.com with ESMTP; 29 Oct 2020 23:13:43 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 29 Oct 2020 23:13:41 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 29 Oct 2020 23:13:40 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 29 Oct 2020 23:13:40 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 29 Oct 2020 23:13:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IXJKFk4i+Zk/o5G4Kn/pHhBtNI2ed9a2ixA5wznonZf5oMcKIIja16+1g6C4lENMsLKaBELgJJI5UWTuY7upKjy0tmdyTUZJHJ6/7XDAAJQ8ODqEfBpLoGAUX66EvS8ZmTVPJOVvE5W9aCoWhq2irfSbT0vF463pSt73VWqpJYPHuTSRr/JopmaepXXOx93nNW2bMcDBKjVF+ebC47GStELtSiN7+JZLeaFi0q7/kthDSOP+9I4N9U7gtidy1utxUHLVXxh1BnL9LmQfqcDLNGjmxM3zp98G5/pFIitkH+cc/G0YX2oBBtZcIEFMsELD3Xc+TfkTQaDHRJgHsHbczQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gJH/VynuKMfvxifEQ+iVB23EtK0r5/gv7z50oE7Q2Xk=;
+ b=e/XZVP2rc3acuF6qt8zi4v1OwLfUA/ByItEL1nDk0PKjwGodJS5iby9DWhx39CJjH34sG1aNjadGIZl9SaeSjx+QDWn6F5Kf+m1tG2Qyd+NNXsYv3wB9NIvMKH8aovzrkgwNr9x3peXsMI+OMcOK++6dk7NH1sQdzMsQCPOJp8OX67OgdshOxowe8BRjn1qAKbXVPDO4pnpWT9YucXBlc1zBwL8JnslJYrfobfpOmLgc/TNCRE61c+g+kzlMQIArUItPGm2BXUwvHJWQwC71mBx9KGUZgAz8IEumjX4C1EByowX41citaSxuWZKslRE1d665HuHm9mqSoEchzvijyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gJH/VynuKMfvxifEQ+iVB23EtK0r5/gv7z50oE7Q2Xk=;
+ b=zJ2lZhXIqc6qFGjn+sCy8KZuUYg8o8z6+ON/7DLonECnp7+A5ICjee66zD+DnTceVMvMWbESWuSNcwZLyoSfBfEA+eE3K8Mp+fcLbNIQaAg6bsTMC9dQV46EVn106EKZCQs+T4AX0uV86sFJckd84HrjqTEBrUfvuMSNFyFLqcY=
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
+ by MW3PR11MB4730.namprd11.prod.outlook.com (2603:10b6:303:58::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Fri, 30 Oct
+ 2020 06:13:06 +0000
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::c88f:585f:f117:930b]) by MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::c88f:585f:f117:930b%8]) with mapi id 15.20.3477.034; Fri, 30 Oct 2020
+ 06:13:06 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Alex
+ Williamson" <alex.williamson@redhat.com>
+Subject: RE: [PATCH v6 4/5] iommu/vt-d: Add iommu_ops support for subdevice bus
+Thread-Topic: [PATCH v6 4/5] iommu/vt-d: Add iommu_ops support for subdevice
+ bus
+Thread-Index: AQHWrnpPGYPR7Ur3ekaXVTIsMMRUx6mvpdRA
+Date: Fri, 30 Oct 2020 06:13:06 +0000
+Message-ID: <MWHPR11MB1645F4F4D22E8FA12BDCFAE88C150@MWHPR11MB1645.namprd11.prod.outlook.com>
+References: <20201030045809.957927-1-baolu.lu@linux.intel.com>
+ <20201030045809.957927-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20201030045809.957927-5-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1eab4a8d-7bb5-4bf8-9463-08d87c9ade06
+x-ms-traffictypediagnostic: MW3PR11MB4730:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB47308170417764F7A1A1423A8C150@MW3PR11MB4730.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JUJQtkNYVSrmiKgQawI1c+5HXpV5YR4oBObthNWDStQtRimuVclqdtgnP7bC2Ses1bkBiv1gS9fh31FBXz/Xdf+mVqgKL5yFbk4PGKNVDDJpV9dFcAB1QlOwpxiIbhx67y0tw7/fVgAuJKtcXi4YKjU5svczYlLZkrexMW21NaNTrOfMX77Y+rwU65K/PCIOg2NS1zeFjE7CpMuXuj2PFq8n5V+3N6y4S3PuHmfRwshQOsXdRq2wWn81q4SMtFBvRLKQgYAWIR7BeSbAsPppsz0QyvaB7WmWnZyly3hqljeajSfoqQz2eHMgBhDwpe/sD23gsRlj1U4gNFvnO2FPww==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(136003)(366004)(376002)(39860400002)(346002)(26005)(54906003)(316002)(478600001)(55016002)(186003)(71200400001)(86362001)(6506007)(83380400001)(2906002)(66476007)(66446008)(64756008)(8676002)(66556008)(110136005)(4326008)(33656002)(9686003)(7416002)(52536014)(8936002)(66946007)(76116006)(7696005)(5660300002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: NcBR2yCOuWW4ToRbG3MdFfFTQj2rBpco4X7CiKcO8IzOmtKKl9UEO/h0qGiV6qVhRYx+sJuFjof8+ouh8JXuFJofyXgwFHrXBEmBFtpDnsucRg614/qOJFyTs/lERjUc1VpviFShKSC351QeIAH1merOgvpE/iQtMLO1zeocAwvCcKhVEmYUHruk5jceSANg9eLZ/eNKN/n2fMJUrrQkSVT6mV9VoZMaIWIq1wBhEjU39AKHCGR7FTKDd/ESwfO4clic78/xAvTm6BF11Xke9E9/ZrQ6CGW4PwqQBDWWiM13Vx7mSIlcGmF8lUAqOXHEGtqHpIG/5dQbIaCiFA72kHEllx3zND4QBQeZ87S1IcCvkrCPvk7ccqnt4Oq8vgQ9gRfCvF88wBpu1cWKKv7QCNo4FXC2r4w2q031COGtWOTVWTCkKDVXpJETk1ZPKPFLGak0LQkoPmYYIR9HOCrCdGFtRRntWl1ST/6MoAj/o4LLkxuG6lXGzq45M/mkdpNjnDXR2MmVVifSFLsgIWmfWryezApR75s++eU6nsd/y7nfRTxusaxtVngarpcxzT23K1UraKM3YifzQxaO9caUdtX5V6XHApfeIBpBxh7TIVwPyhhPa1j48qREfmmK2UdmLnYdoKU9NMv2IWcWERITNw==
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1645.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1eab4a8d-7bb5-4bf8-9463-08d87c9ade06
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2020 06:13:06.3306 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FFEgeEKKKc01LZraS+tmcU73/9UqmmARIj7jR71WpPiXPzXOLE6buzP0AijZmqs0M7DAeq99dJwKHhRqpPmpmg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4730
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,295 +169,263 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Tweaks to allow pinctrl-msm code to be loadable as a module.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Friday, October 30, 2020 12:58 PM
+> 
+> The iommu_ops will only take effect when INTEL_IOMMU_SCALABLE_IOV
+> kernel
+> option is selected. It applies to any device passthrough framework which
+> implements an underlying bus for the subdevices.
+> 
+> - Subdevice probe:
+>   When a subdevice is created and added to the bus, iommu_probe_device()
+>   will be called, where the device will be probed by the iommu core. An
+>   iommu group will be allocated and the device will be added to it. The
+>   default domain won't be allocated since there's no use case of using a
+>   subdevice in the host kernel at this time being. However, it's pretty
+>   easy to add this support later.
+> 
+> - Domain alloc/free/map/unmap/iova_to_phys operations:
+>   For such ops, we just reuse those for PCI/PCIe devices.
 
-This is needed in order to support having the qcom-scm driver,
-which pinctrl-msm calls into, configured as a module.
+One question. Just be curious whether every IOMMU vendor supports
+only one iommu_ops for all bus types. For Intel obviously the answer is
+yes. But if a vendor supports bus-type specific iommu_ops for physical
+devices, this may impose a restriction to VFIO or other passthrough 
+frameworks, because VFIO today maintains only one mdev bus while the 
+parent devices could come from different bus types. In the end the ops
+for subdevice should be same as the one used for the parent. Then it may 
+require VFIO to organize subdevices based on parent bus types. 
 
-This requires that we tweak Kconfigs selecting PINCTRL_MSM to
-also depend on QCOM_SCM || QCOM_SCM=n so that we match the
-module setting of QCOM_SCM.
+> 
+> - Domain attach/detach operations:
+>   It depends on whether the parent device supports IOMMU_DEV_FEAT_AUX
+>   feature. If so, the domain will be attached to the parent device as an
+>   aux-domain; Otherwise, it will be attached to the parent as a primary
+>   domain.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/Kconfig  |  13 ++++
+>  drivers/iommu/intel/Makefile |   1 +
+>  drivers/iommu/intel/iommu.c  |   5 ++
+>  drivers/iommu/intel/siov.c   | 119 +++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h  |   4 ++
+>  5 files changed, 142 insertions(+)
+>  create mode 100644 drivers/iommu/intel/siov.c
+> 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index 28a3d1596c76..94edc332f558 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -86,3 +86,16 @@ config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>  	  is not selected, scalable mode support could also be enabled by
+>  	  passing intel_iommu=sm_on to the kernel. If not sure, please use
+>  	  the default value.
+> +
+> +config INTEL_IOMMU_SCALABLE_IOV
 
-Unlike the previous revision of this patch:
-  https://lore.kernel.org/lkml/20200625001039.56174-5-john.stultz@linaro.org/
-this version reworks PINCTRL_MSM to be a visible option and
-instead of having the various SoC specific drivers select
-PINCTRL_MSM, this switches those configs to depend on
-PINCTRL_MSM. This avoids adding the oddish looking:
-  "depend on QCOM_SCM || QCOM_SCM=n"
-to every SoC specific driver, as that becomes a maintenance
-headache.
+INTEL_IOMMU_SUBDEVICE? if just talking from IOMMU p.o.v...
 
-Cc: Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
-Cc: Lina Iyer <ilina@codeaurora.org>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-msm@vger.kernel.org
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-gpio@vger.kernel.org
-Signed-off-by: John Stultz <john.stultz@linaro.org>
----
-v2:
-* Module description and whitespace fixes suggested by Bjorn
-* Added QCOM_SCM || QCOM_SCM=n bits on Kconfigs selecting
-  PINCTRL_MSM. Reported by both Todd and Bjorn.
-v3:
-* Make sure the QCOM_SCM || QCOM_SCM=n trick is commented
-v4:
-* Rework "select PINCTRL_MSM" to "depends on PINCTRL_MSM"
-  to consolidate the QCOM_SCM dependency.
----
- drivers/pinctrl/qcom/Kconfig       | 49 +++++++++++++++---------------
- drivers/pinctrl/qcom/pinctrl-msm.c |  2 ++
- 2 files changed, 27 insertions(+), 24 deletions(-)
+> +	bool "Support for Intel Scalable I/O Virtualization"
+> +	depends on INTEL_IOMMU
+> +	select VFIO
+> +	select VFIO_MDEV
+> +	select VFIO_MDEV_DEVICE
+> +	help
+> +	  Intel Scalable I/O virtualization (SIOV) is a hardware-assisted
+> +	  PCIe subdevices virtualization. With each subdevice tagged with
+> +	  an unique ID(PCI/PASID) the VT-d hardware could identify, hence
+> +	  isolate DMA transactions from different subdevices on a same PCIe
+> +	  device. Selecting this option will enable the support.
+> diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+> index fb8e1e8c8029..f216385d5d59 100644
+> --- a/drivers/iommu/intel/Makefile
+> +++ b/drivers/iommu/intel/Makefile
+> @@ -4,4 +4,5 @@ obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
+>  obj-$(CONFIG_INTEL_IOMMU) += trace.o
+>  obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
+>  obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
+> +obj-$(CONFIG_INTEL_IOMMU_SCALABLE_IOV) += siov.o
+>  obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 1454fe74f3ba..dafd8069c2af 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4298,6 +4298,11 @@ int __init intel_iommu_init(void)
+>  	up_read(&dmar_global_lock);
+> 
+>  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+> +
+> +#ifdef CONFIG_INTEL_IOMMU_SCALABLE_IOV
+> +	intel_siov_init();
+> +#endif /* CONFIG_INTEL_IOMMU_SCALABLE_IOV */
+> +
+>  	if (si_domain && !hw_pass_through)
+>  		register_memory_notifier(&intel_iommu_memory_nb);
+>  	cpuhp_setup_state(CPUHP_IOMMU_INTEL_DEAD,
+> "iommu/intel:dead", NULL,
+> diff --git a/drivers/iommu/intel/siov.c b/drivers/iommu/intel/siov.c
+> new file mode 100644
+> index 000000000000..b9470e7ab3d6
+> --- /dev/null
+> +++ b/drivers/iommu/intel/siov.c
+> @@ -0,0 +1,119 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/**
+> + * siov.c - Intel Scalable I/O virtualization support
+> + *
+> + * Copyright (C) 2020 Intel Corporation
+> + *
+> + * Author: Lu Baolu <baolu.lu@linux.intel.com>
+> + */
+> +
+> +#define pr_fmt(fmt)	"DMAR: " fmt
+> +
+> +#include <linux/intel-iommu.h>
+> +#include <linux/iommu.h>
+> +#include <linux/mdev.h>
+> +#include <linux/pci.h>
+> +
+> +static struct device *subdev_lookup_parent(struct device *dev)
+> +{
+> +	if (dev->bus == &mdev_bus_type)
+> +		return mdev_parent_dev(mdev_from_dev(dev));
 
-diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index 5fe7b8aaf69d8..8bb786ed152dd 100644
---- a/drivers/pinctrl/qcom/Kconfig
-+++ b/drivers/pinctrl/qcom/Kconfig
-@@ -2,7 +2,8 @@
- if (ARCH_QCOM || COMPILE_TEST)
- 
- config PINCTRL_MSM
--	bool
-+	tristate "Qualcomm core pin controller driver"
-+	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
-@@ -13,7 +14,7 @@ config PINCTRL_MSM
- config PINCTRL_APQ8064
- 	tristate "Qualcomm APQ8064 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm APQ8064 platform.
-@@ -21,7 +22,7 @@ config PINCTRL_APQ8064
- config PINCTRL_APQ8084
- 	tristate "Qualcomm APQ8084 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm APQ8084 platform.
-@@ -29,7 +30,7 @@ config PINCTRL_APQ8084
- config PINCTRL_IPQ4019
- 	tristate "Qualcomm IPQ4019 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm IPQ4019 platform.
-@@ -37,7 +38,7 @@ config PINCTRL_IPQ4019
- config PINCTRL_IPQ8064
- 	tristate "Qualcomm IPQ8064 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm IPQ8064 platform.
-@@ -45,7 +46,7 @@ config PINCTRL_IPQ8064
- config PINCTRL_IPQ8074
- 	tristate "Qualcomm Technologies, Inc. IPQ8074 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
- 	  the Qualcomm Technologies Inc. TLMM block found on the
-@@ -55,7 +56,7 @@ config PINCTRL_IPQ8074
- config PINCTRL_IPQ6018
- 	tristate "Qualcomm Technologies, Inc. IPQ6018 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
- 	  the Qualcomm Technologies Inc. TLMM block found on the
-@@ -65,7 +66,7 @@ config PINCTRL_IPQ6018
- config PINCTRL_MSM8226
- 	tristate "Qualcomm 8226 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
-@@ -74,7 +75,7 @@ config PINCTRL_MSM8226
- config PINCTRL_MSM8660
- 	tristate "Qualcomm 8660 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm 8660 platform.
-@@ -82,7 +83,7 @@ config PINCTRL_MSM8660
- config PINCTRL_MSM8960
- 	tristate "Qualcomm 8960 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm 8960 platform.
-@@ -90,7 +91,7 @@ config PINCTRL_MSM8960
- config PINCTRL_MDM9615
- 	tristate "Qualcomm 9615 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm 9615 platform.
-@@ -98,7 +99,7 @@ config PINCTRL_MDM9615
- config PINCTRL_MSM8X74
- 	tristate "Qualcomm 8x74 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm 8974 platform.
-@@ -106,7 +107,7 @@ config PINCTRL_MSM8X74
- config PINCTRL_MSM8916
- 	tristate "Qualcomm 8916 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found on the Qualcomm 8916 platform.
-@@ -114,7 +115,7 @@ config PINCTRL_MSM8916
- config PINCTRL_MSM8976
- 	tristate "Qualcomm 8976 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found on the Qualcomm MSM8976 platform.
-@@ -124,7 +125,7 @@ config PINCTRL_MSM8976
- config PINCTRL_MSM8994
- 	tristate "Qualcomm 8994 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm 8994 platform. The
-@@ -133,7 +134,7 @@ config PINCTRL_MSM8994
- config PINCTRL_MSM8996
- 	tristate "Qualcomm MSM8996 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm MSM8996 platform.
-@@ -141,7 +142,7 @@ config PINCTRL_MSM8996
- config PINCTRL_MSM8998
- 	tristate "Qualcomm MSM8998 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm TLMM block found in the Qualcomm MSM8998 platform.
-@@ -149,7 +150,7 @@ config PINCTRL_MSM8998
- config PINCTRL_QCS404
- 	tristate "Qualcomm QCS404 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  TLMM block found in the Qualcomm QCS404 platform.
-@@ -157,7 +158,7 @@ config PINCTRL_QCS404
- config PINCTRL_QDF2XXX
- 	tristate "Qualcomm Technologies QDF2xxx pin controller driver"
- 	depends on GPIOLIB && ACPI
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the GPIO driver for the TLMM block found on the
- 	  Qualcomm Technologies QDF2xxx SOCs.
-@@ -194,7 +195,7 @@ config PINCTRL_QCOM_SSBI_PMIC
- config PINCTRL_SC7180
- 	tristate "Qualcomm Technologies Inc SC7180 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
-@@ -203,7 +204,7 @@ config PINCTRL_SC7180
- config PINCTRL_SDM660
- 	tristate "Qualcomm Technologies Inc SDM660 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
-@@ -212,7 +213,7 @@ config PINCTRL_SDM660
- config PINCTRL_SDM845
- 	tristate "Qualcomm Technologies Inc SDM845 pin controller driver"
- 	depends on GPIOLIB && (OF || ACPI)
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
-@@ -221,7 +222,7 @@ config PINCTRL_SDM845
- config PINCTRL_SM8150
- 	tristate "Qualcomm Technologies Inc SM8150 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
-@@ -230,7 +231,7 @@ config PINCTRL_SM8150
- config PINCTRL_SM8250
- 	tristate "Qualcomm Technologies Inc SM8250 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
-diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-index c4bcda90aac4a..988343ac49b92 100644
---- a/drivers/pinctrl/qcom/pinctrl-msm.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-@@ -1443,3 +1443,5 @@ int msm_pinctrl_remove(struct platform_device *pdev)
- }
- EXPORT_SYMBOL(msm_pinctrl_remove);
- 
-+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. TLMM driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.17.1
+What about finding the parent through device core? Then the logic
+should work for all subdevice frameworks.
+
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct iommu_domain *siov_iommu_domain_alloc(unsigned int type)
+> +{
+> +	if (type != IOMMU_DOMAIN_UNMANAGED)
+> +		return NULL;
+> +
+> +	return intel_iommu_domain_alloc(type);
+> +}
+> +
+> +static int siov_iommu_attach_device(struct iommu_domain *domain,
+> +				    struct device *dev)
+> +{
+> +	struct device *parent;
+> +
+> +	parent = subdev_lookup_parent(dev);
+> +	if (!parent || !dev_is_pci(parent))
+> +		return -ENODEV;
+> +
+> +	if (iommu_dev_feature_enabled(parent, IOMMU_DEV_FEAT_AUX))
+> +		return intel_iommu_aux_attach_device(domain, parent);
+> +	else
+> +		return intel_iommu_attach_device(domain, parent);
+
+if subdevice then FEAT_AUX should be assumed true? otherwise why
+do we use subdevice interface to attach domain to physical device?
+
+Thanks
+Kevin
+
+> +}
+> +
+> +static void siov_iommu_detach_device(struct iommu_domain *domain,
+> +				     struct device *dev)
+> +{
+> +	struct device *parent;
+> +
+> +	parent = subdev_lookup_parent(dev);
+> +	if (WARN_ON_ONCE(!parent || !dev_is_pci(parent)))
+> +		return;
+> +
+> +	if (iommu_dev_feature_enabled(parent, IOMMU_DEV_FEAT_AUX))
+> +		intel_iommu_aux_detach_device(domain, parent);
+> +	else
+> +		intel_iommu_detach_device(domain, parent);
+> +}
+> +
+> +static struct iommu_device *siov_iommu_probe_device(struct device *dev)
+> +{
+> +	struct intel_iommu *iommu;
+> +	struct device *parent;
+> +
+> +	parent = subdev_lookup_parent(dev);
+> +	if (!parent || !dev_is_pci(parent))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	iommu = device_to_iommu(parent, NULL, NULL);
+> +	if (!iommu)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	return &iommu->iommu;
+> +}
+> +
+> +static void siov_iommu_release_device(struct device *dev)
+> +{
+> +}
+> +
+> +static void
+> +siov_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	struct device *parent;
+> +
+> +	parent = subdev_lookup_parent(dev);
+> +	if (!parent || !dev_is_pci(parent))
+> +		return;
+> +
+> +	intel_iommu_get_resv_regions(parent, head);
+> +}
+> +
+> +static const struct iommu_ops siov_iommu_ops = {
+> +	.capable		= intel_iommu_capable,
+> +	.domain_alloc		= siov_iommu_domain_alloc,
+> +	.domain_free		= intel_iommu_domain_free,
+> +	.attach_dev		= siov_iommu_attach_device,
+> +	.detach_dev		= siov_iommu_detach_device,
+> +	.map			= intel_iommu_map,
+> +	.unmap			= intel_iommu_unmap,
+> +	.iova_to_phys		= intel_iommu_iova_to_phys,
+> +	.probe_device		= siov_iommu_probe_device,
+> +	.release_device		= siov_iommu_release_device,
+> +	.get_resv_regions	= siov_iommu_get_resv_regions,
+> +	.put_resv_regions	= generic_iommu_put_resv_regions,
+> +	.device_group		= generic_device_group,
+> +	.pgsize_bitmap		= (~0xFFFUL),
+> +};
+> +
+> +void intel_siov_init(void)
+> +{
+> +	if (!scalable_mode_support() || !iommu_pasid_support())
+> +		return;
+> +
+> +	bus_set_iommu(&mdev_bus_type, &siov_iommu_ops);
+> +	pr_info("Intel(R) Scalable I/O Virtualization supported\n");
+> +}
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index d3928ba87986..b790efa5509f 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -787,6 +787,10 @@ size_t intel_iommu_unmap(struct iommu_domain
+> *domain, unsigned long iova,
+>  phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+> dma_addr_t iova);
+>  void intel_iommu_get_resv_regions(struct device *device, struct list_head
+> *head);
+> 
+> +#ifdef CONFIG_INTEL_IOMMU_SCALABLE_IOV
+> +void intel_siov_init(void);
+> +#endif /* INTEL_IOMMU_SCALABLE_IOV */
+> +
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  extern void intel_svm_check(struct intel_iommu *iommu);
+>  extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+> --
+> 2.25.1
 
 _______________________________________________
 iommu mailing list
