@@ -7,93 +7,96 @@ X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE32C56201
-	for <iommu@archiver.kernel.org>; Sat, 31 Oct 2020 00:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F026DC388F9
+	for <iommu@archiver.kernel.org>; Sat, 31 Oct 2020 00:38:52 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 873C0206ED
-	for <iommu@archiver.kernel.org>; Sat, 31 Oct 2020 00:37:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7BCC722249
+	for <iommu@archiver.kernel.org>; Sat, 31 Oct 2020 00:38:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bRnUkU5Q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 873C0206ED
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ps71XmrU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BCC722249
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 861D2871CD;
-	Sat, 31 Oct 2020 00:37:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1318186FF8;
+	Sat, 31 Oct 2020 00:38:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F8eDeBAHyDsn; Sat, 31 Oct 2020 00:37:31 +0000 (UTC)
+	with ESMTP id 2c9L0qWVBKb6; Sat, 31 Oct 2020 00:38:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AC9DE871DA;
-	Sat, 31 Oct 2020 00:37:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E71B686FEC;
+	Sat, 31 Oct 2020 00:38:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 75529C1AD6;
-	Sat, 31 Oct 2020 00:37:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DAAC3C088B;
+	Sat, 31 Oct 2020 00:38:50 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7796DC0051
- for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:37:28 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EF8C9C0051
+ for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:38:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 70F4987122
- for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:37:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DDB9187128
+ for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:38:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SMduwmfYveOb for <iommu@lists.linux-foundation.org>;
- Sat, 31 Oct 2020 00:37:27 +0000 (UTC)
+ with ESMTP id m_UwqnDB_5Zx for <iommu@lists.linux-foundation.org>;
+ Sat, 31 Oct 2020 00:38:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
- [209.85.215.193])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A77058711C
- for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:37:27 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id x13so6537028pgp.7
- for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 17:37:27 -0700 (PDT)
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
+ [209.85.214.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 72D6887122
+ for <iommu@lists.linux-foundation.org>; Sat, 31 Oct 2020 00:38:48 +0000 (UTC)
+Received: by mail-pl1-f195.google.com with SMTP id x23so3808218plr.6
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Oct 2020 17:38:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=hvoWVjH5MrvJlNL+Wpvlrvtr/qdzZEjizkDpZ+3TUPw=;
- b=bRnUkU5QJDdovKB+3Oe64UD9XdGDPdwmEL0e6homqfsQ1GrFivNaT1ceK4jr1G1+hD
- Xbxz4vWZTuO7moh7D/gW1/RgAf7UfMkBg5sT/9tzH5t5cDLLDpZNgMsiPjipAuG9JU9a
- /oJaZOVt49Hshtnxjyt3fN+2HhvC0sdg9XYHDTDLnfWn+9GFau6SbOzuehTkD9sXpeyz
- QlOOZ+vBKupPhbBvtMsR2abFGbElx1JBNuqPQLrDA9LsFD3PRpg7o6cZ3fdIr5sdZqZ0
- TkQ+0OvYEwaPH/hljQjozd5Ynr4RR/vYgr5LS3ISaJs/vgJmazLuhn6jX01hFMa3nbZm
- s4Ew==
+ h=from:to:cc:subject:date:message-id;
+ bh=fRP7cJ5L9qywDd+4VkqnGxZHnY4SVj+l7aHtmBT05eI=;
+ b=ps71XmrUfzScD09MFXehuBKyrAHVIGcfSHpsj4eBRrsSt3EbKCi1tVtOkB2LN5CSaj
+ t8sOvx6P7VsImudMQdX2uQEmwZpZ8gDZWeIO3KU+E+bCcH7mrpHPTxBYLzqanN2huhSM
+ 2BgijhwSZzkUNn+/1bL6rn/l09g+ztJn0gJokxzP5T5vWRKVEHZdIcr+mdsFZtT7DQHx
+ hh1uTCbK8wnEO476xcAQ0piaTjaTw3AlXsrT1Tz4kvxQzgpscz55q8Bk7Ht/KyJ34iw6
+ 42/e6GQQkOyAeC0MI7NeXS/x0vqXoktgXQf7sSkALGFTEhFWfEMNlHdkxWyldnzMroIB
+ zHow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=hvoWVjH5MrvJlNL+Wpvlrvtr/qdzZEjizkDpZ+3TUPw=;
- b=GxlfD2p7WpS47C3b8bcwkLkZe+FcKhdcDzf/qCYCBktXSlEcnOiMElzLgcYIij+hZM
- bc2/i9YXy0Hpaim+ndFabmuqRlsoX1E65c6Foe0Iz68trYG16Luh9xIH5aKcwTW0KxBN
- 1ZjIT6BOa/aJnr4q4Y7h+eT9uKWkHFirFXy0yYaVcma0/Q2fWY2biPhSsQIGv+Qo9Jb/
- UqN7Fo+YYDEl5VPSXNIZnmsSLSlhEmKr/3prpBbLye0+f6idvMYKHybEynyO6Dkonqsr
- q3i2uYYXa/7G4/3rguvpZnWMQzPq8tSNPMuZX03+0xrHyWOuofrZI9kSU9kpX1RMwckv
- V7tw==
-X-Gm-Message-State: AOAM533wyHe15f0BzenUKVoT89uXW0mZxX4d6/bVkiEwQqeaJQS9pbLM
- P9y/1W+TD6Nnrs05xyaSeXZ+fg==
-X-Google-Smtp-Source: ABdhPJxeqhaBAC7zYRx5xaemqM+o7fL8zXijASb2rLhquYgoiO/uJc+BWuRhrzTtrM6vCX+g3MXc8A==
-X-Received: by 2002:aa7:9095:0:b029:164:75c4:5d15 with SMTP id
- i21-20020aa790950000b029016475c45d15mr11561202pfa.49.1604104647290; 
- Fri, 30 Oct 2020 17:37:27 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=fRP7cJ5L9qywDd+4VkqnGxZHnY4SVj+l7aHtmBT05eI=;
+ b=J1NJX75XW/kAxxKMnWtR5eHgcqhndM5f0uYU5Nncn5Bc+yLeB82CAbd2rvaylFNn/e
+ Yyx5GPVAWnTHqAr0XS8Lsx4oADgq7aJLkJV3A6Ad6Ol+SSgeQcGJZBPovFVJjUOHZ9Hz
+ qrJQKsdG/QPaoGnl5SSSkhav0qHmKu6/GwtIvahVK/ZIfuHG5EvttoxkIUQ49vvi8grN
+ c/2jOHhin/Rh/7aJvRH3vm43yrYzwyT2tjMHvGAw09ZhrJcS1cnTJqjAvSwf+HsgLOnT
+ fmYTBi5gKAu1hwwKeKk6UPZKJsay5NZmzUHY8PWT5lBthomZOSdpKNM3D361l2InaboN
+ O8ZA==
+X-Gm-Message-State: AOAM530RZ4b5o0+8s554hl1kDEuOxUGRvPbpWMtue0BBP32X7V1H2KxN
+ yrCuyp1Mu90U102wJfoP04boWA==
+X-Google-Smtp-Source: ABdhPJwP8S5X6yFPDFdhknWzf+qZQTQUkPXuI9NISrUbISUo/+HgKSFyZB3hKhFYc2o4mlzXBjgn5g==
+X-Received: by 2002:a17:902:c1d2:b029:d3:ea72:cdec with SMTP id
+ c18-20020a170902c1d2b02900d3ea72cdecmr11482108plc.47.1604104728036; 
+ Fri, 30 Oct 2020 17:38:48 -0700 (PDT)
 Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
  by smtp.gmail.com with ESMTPSA id
- 3sm7011935pfv.92.2020.10.30.17.37.26
+ z16sm7074509pfq.33.2020.10.30.17.38.46
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 30 Oct 2020 17:37:26 -0700 (PDT)
+ Fri, 30 Oct 2020 17:38:47 -0700 (PDT)
 From: John Stultz <john.stultz@linaro.org>
 To: lkml <linux-kernel@vger.kernel.org>
-Subject: [RFC][PATCH 2/2] iommu: Avoid crash if iommu_group is null
-Date: Sat, 31 Oct 2020 00:37:21 +0000
-Message-Id: <20201031003721.40973-2-john.stultz@linaro.org>
+Subject: [PATCH v5 1/2] pinctrl: qcom: Allow pinctrl-msm code to be loadable
+ as a module
+Date: Sat, 31 Oct 2020 00:38:44 +0000
+Message-Id: <20201031003845.41137-1-john.stultz@linaro.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201031003721.40973-1-john.stultz@linaro.org>
-References: <20201031003721.40973-1-john.stultz@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Saravana Kannan <saravanak@google.com>,
- Will Deacon <will@kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Lina Iyer <ilina@codeaurora.org>, iommu@lists.linux-foundation.org,
- Andy Gross <agross@kernel.org>, John Stultz <john.stultz@linaro.org>,
- Marc Zyngier <maz@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux-foundation.org,
+ Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
+ Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Marc Zyngier <maz@kernel.org>,
+ linux-arm-msm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+ Will Deacon <will@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Kalle Valo <kvalo@codeaurora.org>, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,93 +115,310 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In trying to handle a possible driver probe ordering issue
-brought up by Robin Murphy, I ran across a separate null pointer
-crash in the iommu core in iommu_group_remove_device():
-[    2.732803] dwc3-qcom a6f8800.usb: failed to get usb-ddr path: -517
-[    2.739281] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000c0
-...
-[    2.775619] [00000000000000c0] user address but active_mm is swapper
-[    2.782039] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[    2.787670] Modules linked in:
-[    2.790769] CPU: 6 PID: 1 Comm: swapper/0 Tainted: G        W         5.10.0-rc1-mainline-00025-g272a618fc36-dirty #3973
-[    2.801719] Hardware name: Thundercomm Dragonboard 845c (DT)
-[    2.807431] pstate: 00c00005 (nzcv daif +PAN +UAO -TCO BTYPE=--)
-[    2.813508] pc : iommu_group_remove_device+0x30/0x1b0
-[    2.818611] lr : iommu_release_device+0x4c/0x78
-[    2.823189] sp : ffffffc01005b950
-...
-[    2.907082] Call trace:
-[    2.909566]  iommu_group_remove_device+0x30/0x1b0
-[    2.914323]  iommu_release_device+0x4c/0x78
-[    2.918559]  iommu_bus_notifier+0xe8/0x108
-[    2.922708]  blocking_notifier_call_chain+0x78/0xb8
-[    2.927641]  device_del+0x2ac/0x3d0
-[    2.931177]  platform_device_del.part.9+0x20/0x98
-[    2.935933]  platform_device_unregister+0x2c/0x40
-[    2.940694]  of_platform_device_destroy+0xd8/0xe0
-[    2.945450]  device_for_each_child_reverse+0x58/0xb0
-[    2.950471]  of_platform_depopulate+0x4c/0x78
-[    2.954886]  dwc3_qcom_probe+0x93c/0xcb8
-[    2.958858]  platform_drv_probe+0x58/0xa8
-[    2.962917]  really_probe+0xec/0x398
-[    2.966531]  driver_probe_device+0x5c/0xb8
-[    2.970677]  device_driver_attach+0x74/0x98
-[    2.974911]  __driver_attach+0x60/0xe8
-[    2.978700]  bus_for_each_dev+0x84/0xd8
-[    2.982581]  driver_attach+0x30/0x40
-[    2.986194]  bus_add_driver+0x160/0x208
-[    2.990076]  driver_register+0x64/0x110
-[    2.993957]  __platform_driver_register+0x58/0x68
-[    2.998716]  dwc3_qcom_driver_init+0x20/0x28
-[    3.003041]  do_one_initcall+0x6c/0x2d0
-[    3.006925]  kernel_init_freeable+0x214/0x268
-[    3.011339]  kernel_init+0x18/0x118
-[    3.014876]  ret_from_fork+0x10/0x18
-[    3.018495] Code: d0006a21 f9417295 91130021 910162b6 (b940c2a2)
+Tweaks to allow pinctrl-msm code to be loadable as a module.
 
-In the case above, the arm-smmu driver fails to probe with
-EPROBE_DEFER, and I'm guessing I'm guessing that causes
-iommu_group_add_device() to fail and sets the
-dev->iommu_group = NULL, then somehow we hit
-iommu_group_remove_device() and trip over the null value?
-I'm not really sure...
+This is needed in order to support having the qcom-scm driver,
+which pinctrl-msm calls into, configured as a module.
 
-Anyway, adding the null check seems to avoid the issue and the
-system boots fine after the arm-smmu driver later reprobed.
+This requires that we tweak Kconfigs selecting PINCTRL_MSM to
+also depend on QCOM_SCM || QCOM_SCM=n so that we match the
+module setting of QCOM_SCM.
 
-Feedback or better ideas for a solution would be appreciated!
+Unlike the previous revision of this patch:
+  https://lore.kernel.org/lkml/20200625001039.56174-5-john.stultz@linaro.org/
+this version reworks PINCTRL_MSM to be a visible option and
+instead of having the various SoC specific drivers select
+PINCTRL_MSM, this switches those configs to depend on
+PINCTRL_MSM. This avoids adding the oddish looking:
+  "depend on QCOM_SCM || QCOM_SCM=n"
+to every SoC specific driver, as that becomes a maintenance
+headache.
 
-Cc: Robin Murphy <robin.murphy@arm.com>
+We also add PINCTRL_MSM to the arm64 defconfig to avoid
+surprises as otherwise PINCTRL_MSM/IPQ* options previously
+enabled, will be off.
+
+Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will@kernel.org>
 Cc: Andy Gross <agross@kernel.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
 Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Saravana Kannan <saravanak@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jason Cooper <jason@lakedaemon.net>
 Cc: Marc Zyngier <maz@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Maulik Shah <mkshah@codeaurora.org>
 Cc: Lina Iyer <ilina@codeaurora.org>
+Cc: Saravana Kannan <saravanak@google.com>
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-msm@vger.kernel.org
 Cc: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Cc: linux-gpio@vger.kernel.org
 Signed-off-by: John Stultz <john.stultz@linaro.org>
 ---
- drivers/iommu/iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+v2:
+* Module description and whitespace fixes suggested by Bjorn
+* Added QCOM_SCM || QCOM_SCM=n bits on Kconfigs selecting
+  PINCTRL_MSM. Reported by both Todd and Bjorn.
+v3:
+* Make sure the QCOM_SCM || QCOM_SCM=n trick is commented
+v4:
+* Rework "select PINCTRL_MSM" to "depends on PINCTRL_MSM"
+  to consolidate the QCOM_SCM dependency.
+v5:
+* Add PINCTRL_MSM to arm64 defconfig
+---
+ arch/arm64/configs/defconfig       |  1 +
+ drivers/pinctrl/qcom/Kconfig       | 49 +++++++++++++++---------------
+ drivers/pinctrl/qcom/pinctrl-msm.c |  2 ++
+ 3 files changed, 28 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8c470f451a323..44639b88e77db 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -877,6 +877,10 @@ void iommu_group_remove_device(struct device *dev)
- 	struct iommu_group *group = dev->iommu_group;
- 	struct group_device *tmp_device, *device = NULL;
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 17a2df6a263e8..45768828fdb8e 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -483,6 +483,7 @@ CONFIG_PINCTRL_IMX8MP=y
+ CONFIG_PINCTRL_IMX8MQ=y
+ CONFIG_PINCTRL_IMX8QXP=y
+ CONFIG_PINCTRL_IMX8DXL=y
++CONFIG_PINCTRL_MSM=y
+ CONFIG_PINCTRL_IPQ8074=y
+ CONFIG_PINCTRL_IPQ6018=y
+ CONFIG_PINCTRL_MSM8916=y
+diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
+index 5fe7b8aaf69d8..8bb786ed152dd 100644
+--- a/drivers/pinctrl/qcom/Kconfig
++++ b/drivers/pinctrl/qcom/Kconfig
+@@ -2,7 +2,8 @@
+ if (ARCH_QCOM || COMPILE_TEST)
  
-+	/* Avoid crash if iommu_group value is null */
-+	if (!group)
-+		return;
-+
- 	dev_info(dev, "Removing from iommu group %d\n", group->id);
+ config PINCTRL_MSM
+-	bool
++	tristate "Qualcomm core pin controller driver"
++	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+ 	select PINMUX
+ 	select PINCONF
+ 	select GENERIC_PINCONF
+@@ -13,7 +14,7 @@ config PINCTRL_MSM
+ config PINCTRL_APQ8064
+ 	tristate "Qualcomm APQ8064 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm APQ8064 platform.
+@@ -21,7 +22,7 @@ config PINCTRL_APQ8064
+ config PINCTRL_APQ8084
+ 	tristate "Qualcomm APQ8084 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm APQ8084 platform.
+@@ -29,7 +30,7 @@ config PINCTRL_APQ8084
+ config PINCTRL_IPQ4019
+ 	tristate "Qualcomm IPQ4019 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm IPQ4019 platform.
+@@ -37,7 +38,7 @@ config PINCTRL_IPQ4019
+ config PINCTRL_IPQ8064
+ 	tristate "Qualcomm IPQ8064 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm IPQ8064 platform.
+@@ -45,7 +46,7 @@ config PINCTRL_IPQ8064
+ config PINCTRL_IPQ8074
+ 	tristate "Qualcomm Technologies, Inc. IPQ8074 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
+ 	  the Qualcomm Technologies Inc. TLMM block found on the
+@@ -55,7 +56,7 @@ config PINCTRL_IPQ8074
+ config PINCTRL_IPQ6018
+ 	tristate "Qualcomm Technologies, Inc. IPQ6018 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
+ 	  the Qualcomm Technologies Inc. TLMM block found on the
+@@ -65,7 +66,7 @@ config PINCTRL_IPQ6018
+ config PINCTRL_MSM8226
+ 	tristate "Qualcomm 8226 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
+@@ -74,7 +75,7 @@ config PINCTRL_MSM8226
+ config PINCTRL_MSM8660
+ 	tristate "Qualcomm 8660 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm 8660 platform.
+@@ -82,7 +83,7 @@ config PINCTRL_MSM8660
+ config PINCTRL_MSM8960
+ 	tristate "Qualcomm 8960 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm 8960 platform.
+@@ -90,7 +91,7 @@ config PINCTRL_MSM8960
+ config PINCTRL_MDM9615
+ 	tristate "Qualcomm 9615 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm 9615 platform.
+@@ -98,7 +99,7 @@ config PINCTRL_MDM9615
+ config PINCTRL_MSM8X74
+ 	tristate "Qualcomm 8x74 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm 8974 platform.
+@@ -106,7 +107,7 @@ config PINCTRL_MSM8X74
+ config PINCTRL_MSM8916
+ 	tristate "Qualcomm 8916 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found on the Qualcomm 8916 platform.
+@@ -114,7 +115,7 @@ config PINCTRL_MSM8916
+ config PINCTRL_MSM8976
+ 	tristate "Qualcomm 8976 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found on the Qualcomm MSM8976 platform.
+@@ -124,7 +125,7 @@ config PINCTRL_MSM8976
+ config PINCTRL_MSM8994
+ 	tristate "Qualcomm 8994 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm 8994 platform. The
+@@ -133,7 +134,7 @@ config PINCTRL_MSM8994
+ config PINCTRL_MSM8996
+ 	tristate "Qualcomm MSM8996 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm MSM8996 platform.
+@@ -141,7 +142,7 @@ config PINCTRL_MSM8996
+ config PINCTRL_MSM8998
+ 	tristate "Qualcomm MSM8998 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm TLMM block found in the Qualcomm MSM8998 platform.
+@@ -149,7 +150,7 @@ config PINCTRL_MSM8998
+ config PINCTRL_QCS404
+ 	tristate "Qualcomm QCS404 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  TLMM block found in the Qualcomm QCS404 platform.
+@@ -157,7 +158,7 @@ config PINCTRL_QCS404
+ config PINCTRL_QDF2XXX
+ 	tristate "Qualcomm Technologies QDF2xxx pin controller driver"
+ 	depends on GPIOLIB && ACPI
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the GPIO driver for the TLMM block found on the
+ 	  Qualcomm Technologies QDF2xxx SOCs.
+@@ -194,7 +195,7 @@ config PINCTRL_QCOM_SSBI_PMIC
+ config PINCTRL_SC7180
+ 	tristate "Qualcomm Technologies Inc SC7180 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
+@@ -203,7 +204,7 @@ config PINCTRL_SC7180
+ config PINCTRL_SDM660
+ 	tristate "Qualcomm Technologies Inc SDM660 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
+@@ -212,7 +213,7 @@ config PINCTRL_SDM660
+ config PINCTRL_SDM845
+ 	tristate "Qualcomm Technologies Inc SDM845 pin controller driver"
+ 	depends on GPIOLIB && (OF || ACPI)
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
+@@ -221,7 +222,7 @@ config PINCTRL_SDM845
+ config PINCTRL_SM8150
+ 	tristate "Qualcomm Technologies Inc SM8150 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	 Qualcomm Technologies Inc TLMM block found on the Qualcomm
+@@ -230,7 +231,7 @@ config PINCTRL_SM8150
+ config PINCTRL_SM8250
+ 	tristate "Qualcomm Technologies Inc SM8250 pin controller driver"
+ 	depends on GPIOLIB && OF
+-	select PINCTRL_MSM
++	depends on PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+ 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
+diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
+index c4bcda90aac4a..988343ac49b92 100644
+--- a/drivers/pinctrl/qcom/pinctrl-msm.c
++++ b/drivers/pinctrl/qcom/pinctrl-msm.c
+@@ -1443,3 +1443,5 @@ int msm_pinctrl_remove(struct platform_device *pdev)
+ }
+ EXPORT_SYMBOL(msm_pinctrl_remove);
  
- 	/* Pre-notify listeners that a device is being removed. */
++MODULE_DESCRIPTION("Qualcomm Technologies, Inc. TLMM driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.17.1
 
