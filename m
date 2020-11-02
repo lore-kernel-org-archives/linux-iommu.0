@@ -2,78 +2,102 @@ Return-Path: <SRS0=oYak=EI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEF2C388F9
-	for <iommu@archiver.kernel.org>; Mon,  2 Nov 2020 07:26:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD59C00A89
+	for <iommu@archiver.kernel.org>; Mon,  2 Nov 2020 07:43:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 749E922277
-	for <iommu@archiver.kernel.org>; Mon,  2 Nov 2020 07:26:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B62521556
+	for <iommu@archiver.kernel.org>; Mon,  2 Nov 2020 07:43:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="YQsDUxSN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 749E922277
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="CUzYOshK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B62521556
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 10E6A8733C;
-	Mon,  2 Nov 2020 07:26:07 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9BDE4204AE;
+	Mon,  2 Nov 2020 07:43:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VqZxLTOyXtji; Mon,  2 Nov 2020 07:26:06 +0000 (UTC)
+	with ESMTP id ichJplK18H9F; Mon,  2 Nov 2020 07:43:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 31E01859B1;
-	Mon,  2 Nov 2020 07:26:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 22DDF20496;
+	Mon,  2 Nov 2020 07:43:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E6E9C0889;
-	Mon,  2 Nov 2020 07:26:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7E28C0051
- for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:26:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A674C0889;
+	Mon,  2 Nov 2020 07:43:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EDB9C0051
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:43:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C5A77872C3
- for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:26:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5D7C786AA1
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:43:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pgUCQbI0nkmz for <iommu@lists.linux-foundation.org>;
- Mon,  2 Nov 2020 07:26:01 +0000 (UTC)
+ with ESMTP id lOhcsFmenrbB for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Nov 2020 07:43:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 635F6872A3
- for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:26:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=y0f6ILCwtq4G+l9+dzGcdDEE6zW8nF1rcA+SQ7hGP2Q=; b=YQsDUxSNrCxLMQfAwGNAx8h0Lz
- 20Q6eFBq0hAyPnbv3ZshQgTuK1gvnKRVX/9BKvWhHOA4xxqCQOsH6TwtgnHv2qCIaJ4s56naO746z
- j15kmyIT2hVeA+t8BKYDVu36OqN5btYOJBh0Nz6S0+1MZt12GgAoOdwTLJmiGEZyKSQQOucpXxNXL
- 2lvZx8QC7PxWI3ID9DJXVzhKPmMKUcrboFoB67/ieTfz05Y+JrXNW6SXpCLQgKm9CGp18YwneIvWI
- chHRncwkGJ0vynewQaS1y1ZjnnoH9f22fTMymFov4OzDvjl8PzQLpbsNJwDBU8Udz2hd7WLJRd5Ox
- njkGa95A==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat
- Linux)) id 1kZUE2-0004Ct-O8; Mon, 02 Nov 2020 07:25:58 +0000
-Date: Mon, 2 Nov 2020 07:25:58 +0000
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [GIT PULL] dma-mapping fix for 5.10
-Message-ID: <20201102072558.GA12588@infradead.org>
-References: <20201031093823.GA453843@infradead.org>
- <CAHk-=wgetKKWar8M0VW4mXBY4p5_oCMH=nvU001pkozEgsMEKg@mail.gmail.com>
+Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5CA5186A90
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Nov 2020 07:43:15 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1604302999; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=JcW6i+Qb4VgBJvdLIWaHbAHYP0+oYiGUqaNaSh4Fg0Q=;
+ b=CUzYOshKqBKKt2ljR0b88phqcZiCynIHfLOxQb0hRyQE4cEVkYMqxjTTUGVrUo6elCRQMV6N
+ 7PwztDeWvD+t5hb8Xo74cd8xrZlEgXV22f6WtkmZ7hs1i1U6rS/1I7eLFGbtyCtKYd+4abuv
+ KCaJVRhTvqFP7s1qKGNu7GwBMRM=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5f9fb8884ddd946c9162dd31 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 02 Nov 2020 07:43:04
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 2AC46C433CB; Mon,  2 Nov 2020 07:43:04 +0000 (UTC)
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi
+ [88.114.240.156])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: kvalo)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 194D5C433C6;
+ Mon,  2 Nov 2020 07:42:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 194D5C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From: Kalle Valo <kvalo@codeaurora.org>
+To: John Stultz <john.stultz@linaro.org>
+Subject: Re: [PATCH v5 2/2] firmware: QCOM_SCM: Allow qcom_scm driver to be
+ loadable as a permenent module
+References: <20201031003845.41137-1-john.stultz@linaro.org>
+ <20201031003845.41137-2-john.stultz@linaro.org>
+Date: Mon, 02 Nov 2020 09:42:55 +0200
+In-Reply-To: <20201031003845.41137-2-john.stultz@linaro.org> (John Stultz's
+ message of "Sat, 31 Oct 2020 00:38:45 +0000")
+Message-ID: <87imaouruo.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgetKKWar8M0VW4mXBY4p5_oCMH=nvU001pkozEgsMEKg@mail.gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Christoph Hellwig <hch@infradead.org>, Rob Herring <robh@kernel.org>,
- iommu <iommu@lists.linux-foundation.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Catalin Marinas <catalin.marinas@arm.com>, lkml <linux-kernel@vger.kernel.org>,
+ Lina Iyer <ilina@codeaurora.org>, iommu@lists.linux-foundation.org,
+ Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
+ ath10k@lists.infradead.org, linux-gpio@vger.kernel.org,
+ Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Will Deacon <will@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,84 +115,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Oct 31, 2020 at 12:50:44PM -0700, Linus Torvalds wrote:
-> So this is just a stylistic nit, and has no impact on this pull (which
-> I've done). But looking at the patch, it triggers one of my "this is
-> wrong" patterns.
++ ath10k list
 
-Adding the author and maintainer of that code so that they can sort it
-out.
+John Stultz <john.stultz@linaro.org> writes:
 
-> 
-> In particular, this:
-> 
->         u64 dma_start = 0;
->         ...
->         for (dma_start = ~0ULL; r->size; r++) {
-> 
-> is actually completely bogus in theory, and it's a horribly horribly
-> bad pattern to have.
-> 
-> The thing that I hate about that parttern is "~0ULL", which is simply wrong.
-> 
-> The correct pattern for "all bits set" is ~0. NOTHING ELSE. No extra
-> letters at the end.
-> 
-> Why? Because using an unsigned type is wrong, and will not extend the
-> bits up to a potentially bigger size.
-> 
-> So adding that "ULL" is not just three extra characters to type, it
-> actually _detracts_ from the code and makes it more fragile and
-> potentially wrong.
-> 
-> It so happens, that yes, in the kernel, "ull" us 64-bit, and you get
-> the right results. So the code _works_. But it's wrong, and it now
-> requires that the types match exactly (ie it would not be broken if
-> somebody ever were to say "I want to use use 128-bit dma addresses and
-> u128").
-> 
-> Another example is using "~0ul", which would give different results on
-> a 32-bit kernel and a 64-bit kernel. Again: DON'T DO THAT.
-> 
-> I repeat: the right thing to do for "all bits set" is just a plain ~0
-> or -1. Either of those are fine (technically assumes a 2's complement
-> machine, but let's just be honest: that's a perfectly fine assumption,
-> and -1 might be preferred by some because it makes that sign extension
-> behavior of the integer constant more obvious).
-> 
-> Don't try to do anything clever or anything else, because it's going
-> to be strictly worse.
-> 
-> The old code that that patch removed was "technically correct", but
-> just pointless, and actually shows the problem:
-> 
->         for (dma_start = ~(dma_addr_t)0; r->size; r++) {
-> 
-> the above is indeed a correct way to say "I want all bits set in a
-> dma_addr_t", but while correct, it is - once again - strictly inferior
-> to just using "~0".
-> 
-> Why? Because "~0" works regardless of type. IOW, exactly *because*
-> people used the wrong pattern for "all bits set", that patch was now
-> (a) bigger than necessary and (b) much more ilkely to cause bugs (ie I
-> could have imagined people changing just the type of the variable
-> without changing the initialization).
-> 
-> So in that tiny three-line patch there were actually several examples
-> of why "~0" is the right pattern to use for "all bits set". Because it
-> JustWorks(tm) in ways other patterns do not.
-> 
-> And if you have a compiler that complains about assigning -1 or ~0 to
-> an unsigned variable, get rid of that piece of garbage. You're almost
-> certainly either using some warning flag that you shouldn't be using,
-> or the compiler writer didn't know what they were doing.
-> 
->             Linus
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
----end quoted text---
+> Allow the qcom_scm driver to be loadable as a permenent module.
+>
+> This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
+> ensure that drivers that call into the qcom_scm driver are
+> also built as modules. While not ideal in some cases its the
+> only safe way I can find to avoid build errors without having
+> those drivers select QCOM_SCM and have to force it on (as
+> QCOM_SCM=n can be valid for those drivers).
+>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Jason Cooper <jason@lakedaemon.net>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: Maulik Shah <mkshah@codeaurora.org>
+> Cc: Lina Iyer <ilina@codeaurora.org>
+> Cc: Saravana Kannan <saravanak@google.com>
+> Cc: Todd Kjos <tkjos@google.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-gpio@vger.kernel.org
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> ---
+> v3:
+> * Fix __arm_smccc_smc build issue reported by
+>   kernel test robot <lkp@intel.com>
+> v4:
+> * Add "depends on QCOM_SCM || !QCOM_SCM" bit to ath10k
+>   config that requires it.
+> v5:
+> * Fix QCOM_QCM typo in Kconfig, it should be QCOM_SCM
+> ---
+>  drivers/firmware/Kconfig                | 4 ++--
+>  drivers/firmware/Makefile               | 3 ++-
+>  drivers/firmware/qcom_scm.c             | 4 ++++
+>  drivers/iommu/Kconfig                   | 2 ++
+>  drivers/net/wireless/ath/ath10k/Kconfig | 1 +
+>  5 files changed, 11 insertions(+), 3 deletions(-)
+
+For ath10k part:
+
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
