@@ -4,65 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7DBC5517A
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DECC55179
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3195322264
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3195322264
+	by mail.kernel.org (Postfix) with ESMTPS id 49D4622264
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49D4622264
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 070C887466;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 08E2A86451;
+	Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N9--gkdS34QU; Tue,  3 Nov 2020 17:32:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 873B686427;
 	Tue,  3 Nov 2020 17:32:14 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81F7BC088B;
+	Tue,  3 Nov 2020 17:32:14 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD870C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id C43CD87482
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kTSO5wQKb8nh; Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6A3D887471;
-	Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5828BC088B;
-	Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2BFA9C1AD5
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:12 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0028F21080
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q5IyGGpR81eg for <iommu@lists.linux-foundation.org>;
- Tue,  3 Nov 2020 17:32:10 +0000 (UTC)
+ with ESMTP id WYuNCij9aYpa for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by silver.osuosl.org (Postfix) with ESMTP id B1BDB20BF8
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1D29987466
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:13 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 8D8EDAD5F;
- Tue,  3 Nov 2020 17:32:09 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id 58B18AD85;
+ Tue,  3 Nov 2020 17:32:12 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: robh+dt@kernel.org, catalin.marinas@arm.com, hch@lst.de, ardb@kernel.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH v6 5/7] arm64: mm: Set ZONE_DMA size based on devicetree's
- dma-ranges
-Date: Tue,  3 Nov 2020 18:31:56 +0100
-Message-Id: <20201103173159.27570-6-nsaenzjulienne@suse.de>
+ linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+ Paul Walmsley <paul.walmsley@sifive.com>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>
+Subject: [PATCH v6 7/7] mm: Remove examples from enum zone_type comment
+Date: Tue,  3 Nov 2020 18:31:58 +0100
+Message-Id: <20201103173159.27570-8-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201103173159.27570-1-nsaenzjulienne@suse.de>
 References: <20201103173159.27570-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, will@kernel.org, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- guohanjun@huawei.com, robin.murphy@arm.com,
+Cc: devicetree@vger.kernel.org, linux-mm@kvack.org, will@kernel.org,
+ jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
+ linux-rpi-kernel@lists.infradead.org, guohanjun@huawei.com,
+ linux-riscv@lists.infradead.org, robin.murphy@arm.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -81,72 +83,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
-incorporating masters that can address less than 32 bits of DMA, in
-particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
-peripherals that can only address up to 1 GB (and its PCIe host
-bridge can only access the bottom 3 GB)
+We can't really list every setup in common code. On top of that they are
+unlikely to stay true for long as things change in the arch trees
+independently of this comment.
 
-The DMA layer also needs to be able to allocate memory that is
-guaranteed to meet those DMA constraints, for bounce buffering as well
-as allocating the backing for consistent mappings. This is why the 1 GB
-ZONE_DMA was introduced recently. Unfortunately, it turns out the having
-a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes problems with kdump, and
-potentially in other places where allocations cannot cross zone
-boundaries. Therefore, we should avoid having two separate DMA zones
-when possible.
-
-So, with the help of of_dma_get_max_cpu_address() get the topmost
-physical address accessible to all DMA masters in system and use that
-information to fine-tune ZONE_DMA's size. In the absence of addressing
-limited masters ZONE_DMA will span the whole 32-bit address space,
-otherwise, in the case of the Raspberry Pi 4 it'll only span the 30-bit
-address space, and have ZONE_DMA32 cover the rest of the 32-bit address
-space.
-
+Suggested-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
+ include/linux/mmzone.h | 20 --------------------
+ 1 file changed, 20 deletions(-)
 
-Changes since v4:
- - Use fls64 as we're now using the max address (as opposed to the
-   limit)
-
-Changes since v3:
- - Simplify code for readability.
-
-Changes since v2:
- - Updated commit log by shamelessly copying Ard's ACPI commit log
-
- arch/arm64/mm/init.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 410721fc4fc0..a2ce8a9a71a6 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -42,8 +42,6 @@
- #include <asm/tlb.h>
- #include <asm/alternative.h>
- 
--#define ARM64_ZONE_DMA_BITS	30
--
- /*
-  * We need to be able to catch inadvertent references to memstart_addr
-  * that occur (potentially in generic code) before arm64_memblock_init()
-@@ -188,9 +186,11 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
- static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
-+	unsigned int __maybe_unused dt_zone_dma_bits;
- 
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index fb3bf696c05e..9d0c454d23cd 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -354,26 +354,6 @@ enum zone_type {
+ 	 * DMA mask is assumed when ZONE_DMA32 is defined. Some 64-bit
+ 	 * platforms may need both zones as they support peripherals with
+ 	 * different DMA addressing limitations.
+-	 *
+-	 * Some examples:
+-	 *
+-	 *  - i386 and x86_64 have a fixed 16M ZONE_DMA and ZONE_DMA32 for the
+-	 *    rest of the lower 4G.
+-	 *
+-	 *  - arm only uses ZONE_DMA, the size, up to 4G, may vary depending on
+-	 *    the specific device.
+-	 *
+-	 *  - arm64 has a fixed 1G ZONE_DMA and ZONE_DMA32 for the rest of the
+-	 *    lower 4G.
+-	 *
+-	 *  - powerpc only uses ZONE_DMA, the size, up to 2G, may vary
+-	 *    depending on the specific device.
+-	 *
+-	 *  - s390 uses ZONE_DMA fixed to the lower 2G.
+-	 *
+-	 *  - ia64 and riscv only use ZONE_DMA32.
+-	 *
+-	 *  - parisc uses neither.
+ 	 */
  #ifdef CONFIG_ZONE_DMA
--	zone_dma_bits = ARM64_ZONE_DMA_BITS;
-+	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
-+	zone_dma_bits = min(32U, dt_zone_dma_bits);
- 	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
- #endif
+ 	ZONE_DMA,
 -- 
 2.29.1
 
