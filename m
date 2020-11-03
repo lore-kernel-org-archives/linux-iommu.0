@@ -2,71 +2,101 @@ Return-Path: <SRS0=TrXs=EJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.8 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A4B8C56201
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF17C2D0A3
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:42:31 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD80522226
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:32:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD80522226
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 4179320773
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:42:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cKgU/Gqe"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4179320773
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 71B57214EC;
-	Tue,  3 Nov 2020 17:32:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 531EF20C45;
+	Tue,  3 Nov 2020 17:42:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kfe3aFFHo+nR; Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+	with ESMTP id FsIhcd2zvlwW; Tue,  3 Nov 2020 17:42:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BB490214EB;
-	Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 39CB820BF8;
+	Tue,  3 Nov 2020 17:42:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A74A6C088B;
-	Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05EB9C0051
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28C98C088B;
+	Tue,  3 Nov 2020 17:42:28 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8D12C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:42:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 002F586F9B
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D3533863E2
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:42:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id n8+v2+ge5ETR for <iommu@lists.linux-foundation.org>;
- Tue,  3 Nov 2020 17:32:12 +0000 (UTC)
+ with ESMTP id WYuRJqQZp9T0 for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Nov 2020 17:42:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by whitealder.osuosl.org (Postfix) with ESMTP id B179E86E2F
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:32:11 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id EBB97AC97;
- Tue,  3 Nov 2020 17:32:10 +0000 (UTC)
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: robh+dt@kernel.org, catalin.marinas@arm.com, hch@lst.de, ardb@kernel.org,
- linux-kernel@vger.kernel.org,
- Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
- Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>
-Subject: [PATCH v6 6/7] arm64: mm: Set ZONE_DMA size based on early IORT scan
-Date: Tue,  3 Nov 2020 18:31:57 +0100
-Message-Id: <20201103173159.27570-7-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.29.1
-In-Reply-To: <20201103173159.27570-1-nsaenzjulienne@suse.de>
-References: <20201103173159.27570-1-nsaenzjulienne@suse.de>
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com
+ [209.85.214.180])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AF0FE863DC
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:42:25 +0000 (UTC)
+Received: by mail-pl1-f180.google.com with SMTP id b19so8911225pld.0
+ for <iommu@lists.linux-foundation.org>; Tue, 03 Nov 2020 09:42:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=Rsl6lmX6v9O2Z0QU9skbwTzUfbl2hHwSPUBkrUuyNCg=;
+ b=cKgU/Gqe/ADQRGSSLoA+Hi1WdKWJVAS0bw9sAo3A7juygkGRAEwAO6/lVdIVcMr/lp
+ tzUQ3K9GNGEXmW7YOQ7u/uVkhJjSc7ld47ie2rGKgMtmao07L9Zo4DP1Z37gK/FmMNvA
+ 2WuDZ+KOrtv3GTVmeAw2jxKZVU6LcGnPgWloevfWKKqRjd+ZI0jPKDcoNSVkeFb0yUwm
+ E6manMKPEnUhkWZmrc78aTn2d0kGrbpZ5JfuY3eYcLqUrdzoKmZJ72a9UKvEl7BsS0NH
+ CA0V2PoAfVmt7s6fkWOEoBLHwjEI4U0Tru/WfS8OUk5ADzmV8FeGCqvjCeOJrVi6lLJC
+ 8hZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=Rsl6lmX6v9O2Z0QU9skbwTzUfbl2hHwSPUBkrUuyNCg=;
+ b=W4NT5stzIfWSZKNL2oz7sqfbk8RnvKxGh/b2R5aWKIc57IKnFItWIuTL2DQTc5a9PK
+ eJN29JXVgW1gthE2WA9FfMoH2YEGpNyEo7RyPNHrIRqeH8JP5xFqAV4C5KHrPeejulkJ
+ /hujTnD3NBK0oIK4xMgf8j1I7eKCb1UXYjlSTg9aDgjiCZoFe58O9HORVdJi3y0CCEOF
+ 0zWu4PtZxwoEEdaYR72iapQg251sD0YLrvVxCOED2Y4Vi2r0ddtpsn7F6wmps+WesEKl
+ 2Nobn0gJJUDIdmLmyUnWMpw7y8ZLRZB9uY3GxJj21C084EozMe4Jv9Jevsee/suxGDkf
+ tMmg==
+X-Gm-Message-State: AOAM532ddGHAC5Fjc50xP0pBrZ1phdw7Fz4vd9gAkwTKp+pzRQD0OtfZ
+ DACVldiFJH84xi7CMtEkfgI=
+X-Google-Smtp-Source: ABdhPJx21kD40fBue0zqwQCVJRyuZ5D4dRTQMSl7iEnZz7fibbcE4gACjoasQRUSstfq8J3CU+josw==
+X-Received: by 2002:a17:902:9697:b029:d6:c3f6:8dcf with SMTP id
+ n23-20020a1709029697b02900d6c3f68dcfmr12777394plp.8.1604425345253; 
+ Tue, 03 Nov 2020 09:42:25 -0800 (PST)
+Received: from [10.230.28.234] ([192.19.223.252])
+ by smtp.gmail.com with ESMTPSA id a18sm18711595pfg.54.2020.11.03.09.42.23
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 03 Nov 2020 09:42:24 -0800 (PST)
+Subject: Re: can we switch bmips to the generic dma ranges code
+To: Christoph Hellwig <hch@lst.de>, cernekee@gmail.com, f.fainelli@gmail.com, 
+ james.quinlan@broadcom.com
+References: <20201103101545.GA20851@lst.de>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b7a673ca-db14-5b67-c1f4-068ed2b49bed@gmail.com>
+Date: Tue, 3 Nov 2020 09:42:23 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.4.0
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- Anshuman Khandual <anshuman.khandual@arm.com>, will@kernel.org,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
- Len Brown <lenb@kernel.org>
+In-Reply-To: <20201103101545.GA20851@lst.de>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, bcm-kernel-feedback-list@broadcom.com,
+ linux-mips@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,183 +114,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Ard Biesheuvel <ardb@kernel.org>
 
-We recently introduced a 1 GB sized ZONE_DMA to cater for platforms
-incorporating masters that can address less than 32 bits of DMA, in
-particular the Raspberry Pi 4, which has 4 or 8 GB of DRAM, but has
-peripherals that can only address up to 1 GB (and its PCIe host
-bridge can only access the bottom 3 GB)
 
-Instructing the DMA layer about these limitations is straight-forward,
-even though we had to fix some issues regarding memory limits set in
-the IORT for named components, and regarding the handling of ACPI _DMA
-methods. However, the DMA layer also needs to be able to allocate
-memory that is guaranteed to meet those DMA constraints, for bounce
-buffering as well as allocating the backing for consistent mappings.
+On 11/3/2020 2:15 AM, Christoph Hellwig wrote:
+> Hi Florian and others,
+> 
+> now that the generic DMA ranges code landed, can we switch bmips over
+> to it instead of duplicating the logic?
 
-This is why the 1 GB ZONE_DMA was introduced recently. Unfortunately,
-it turns out the having a 1 GB ZONE_DMA as well as a ZONE_DMA32 causes
-problems with kdump, and potentially in other places where allocations
-cannot cross zone boundaries. Therefore, we should avoid having two
-separate DMA zones when possible.
-
-So let's do an early scan of the IORT, and only create the ZONE_DMA
-if we encounter any devices that need it. This puts the burden on
-the firmware to describe such limitations in the IORT, which may be
-redundant (and less precise) if _DMA methods are also being provided.
-However, it should be noted that this situation is highly unusual for
-arm64 ACPI machines. Also, the DMA subsystem still gives precedence to
-the _DMA method if implemented, and so we will not lose the ability to
-perform streaming DMA outside the ZONE_DMA if the _DMA method permits
-it.
-
-Cc: Jeremy Linton <jeremy.linton@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Hanjun Guo <guohanjun@huawei.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-[nsaenz: unified implementation with DT's counterpart]
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Tested-by: Jeremy Linton <jeremy.linton@arm.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Hanjun Guo <guohanjun@huawei.com>
-
----
-
-Changes since v5:
- - Unify with DT's counterpart, return phys_addr_t
-
-Changes since v3:
- - Use min_not_zero()
- - Check revision
- - Remove unnecessary #ifdef in zone_sizes_init()
-
- arch/arm64/mm/init.c      |  5 +++-
- drivers/acpi/arm64/iort.c | 55 +++++++++++++++++++++++++++++++++++++++
- include/linux/acpi_iort.h |  4 +++
- 3 files changed, 63 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index a2ce8a9a71a6..ca5d4b10679d 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -29,6 +29,7 @@
- #include <linux/kexec.h>
- #include <linux/crash_dump.h>
- #include <linux/hugetlb.h>
-+#include <linux/acpi_iort.h>
- 
- #include <asm/boot.h>
- #include <asm/fixmap.h>
-@@ -186,11 +187,13 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
- static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
-+	unsigned int __maybe_unused acpi_zone_dma_bits;
- 	unsigned int __maybe_unused dt_zone_dma_bits;
- 
- #ifdef CONFIG_ZONE_DMA
-+	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
- 	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
--	zone_dma_bits = min(32U, dt_zone_dma_bits);
-+	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
- 	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
- #endif
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 9929ff50c0c0..1787406684aa 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1718,3 +1718,58 @@ void __init acpi_iort_init(void)
- 
- 	iort_init_platform_devices();
- }
-+
-+#ifdef CONFIG_ZONE_DMA
-+/*
-+ * Extract the highest CPU physical address accessible to all DMA masters in
-+ * the system. PHYS_ADDR_MAX is returned when no constrained device is found.
-+ */
-+phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
-+{
-+	phys_addr_t limit = PHYS_ADDR_MAX;
-+	struct acpi_iort_node *node, *end;
-+	struct acpi_table_iort *iort;
-+	acpi_status status;
-+	int i;
-+
-+	if (acpi_disabled)
-+		return limit;
-+
-+	status = acpi_get_table(ACPI_SIG_IORT, 0,
-+				(struct acpi_table_header **)&iort);
-+	if (ACPI_FAILURE(status))
-+		return limit;
-+
-+	node = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->node_offset);
-+	end = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->header.length);
-+
-+	for (i = 0; i < iort->node_count; i++) {
-+		if (node >= end)
-+			break;
-+
-+		switch (node->type) {
-+			struct acpi_iort_named_component *ncomp;
-+			struct acpi_iort_root_complex *rc;
-+			phys_addr_t local_limit;
-+
-+		case ACPI_IORT_NODE_NAMED_COMPONENT:
-+			ncomp = (struct acpi_iort_named_component *)node->node_data;
-+			local_limit = DMA_BIT_MASK(ncomp->memory_address_limit);
-+			limit = min_not_zero(limit, local_limit);
-+			break;
-+
-+		case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
-+			if (node->revision < 1)
-+				break;
-+
-+			rc = (struct acpi_iort_root_complex *)node->node_data;
-+			local_limit = DMA_BIT_MASK(rc->memory_address_limit);
-+			limit = min_not_zero(limit, local_limit);
-+			break;
-+		}
-+		node = ACPI_ADD_PTR(struct acpi_iort_node, node, node->length);
-+	}
-+	acpi_put_table(&iort->header);
-+	return limit;
-+}
-+#endif
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 20a32120bb88..1a12baa58e40 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -38,6 +38,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
- const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
- 						const u32 *id_in);
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
-+phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
- #else
- static inline void acpi_iort_init(void) { }
- static inline u32 iort_msi_map_id(struct device *dev, u32 id)
-@@ -55,6 +56,9 @@ static inline const struct iommu_ops *iort_iommu_configure_id(
- static inline
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- { return 0; }
-+
-+static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
-+{ return PHYS_ADDR_MAX; }
- #endif
- 
- #endif /* __ACPI_IORT_H__ */
+This should be fine, I cannot easily test the 338x chips, however as far
+as PCIe goes, I believe Jim may have some older patches he can dig up
+for testing.
 -- 
-2.29.1
-
+Florian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
