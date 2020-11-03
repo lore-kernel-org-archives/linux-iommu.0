@@ -2,68 +2,109 @@ Return-Path: <SRS0=TrXs=EJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43270C55179
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F5DC2D0A3
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:28:59 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A7D982080D
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:00:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A7D982080D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 067C6206F8
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 17:28:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="apsjf8a4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 067C6206F8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 46DB285D44;
-	Tue,  3 Nov 2020 17:00:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8AA908639F;
+	Tue,  3 Nov 2020 17:28:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mz_QKDaUx9JU; Tue,  3 Nov 2020 17:00:38 +0000 (UTC)
+	with ESMTP id XY9dgcmal79E; Tue,  3 Nov 2020 17:28:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 80A3785CFF;
-	Tue,  3 Nov 2020 17:00:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id ECE2086381;
+	Tue,  3 Nov 2020 17:28:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64B42C0889;
-	Tue,  3 Nov 2020 17:00:38 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CBB16C0051
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:00:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D294EC088B;
+	Tue,  3 Nov 2020 17:28:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D04A7C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:28:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B9DD7873CF
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:00:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id BD1FF86DB3
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:28:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EfIqAKrBjFAd for <iommu@lists.linux-foundation.org>;
- Tue,  3 Nov 2020 17:00:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTP id A7CA8873C9
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:00:36 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id D9FF7AC97;
- Tue,  3 Nov 2020 17:00:35 +0000 (UTC)
-Message-ID: <0fc240575aad6a538fdc282e419411a615ba93f3.camel@suse.de>
-Subject: Re: [PATCH v5 0/7] arm64: Default to 32-bit wide ZONE_DMA
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Date: Tue, 03 Nov 2020 18:00:33 +0100
-In-Reply-To: <20201030181134.GE23196@gaia>
-References: <20201029172550.3523-1-nsaenzjulienne@suse.de>
- <20201030181134.GE23196@gaia>
-User-Agent: Evolution 3.36.5 
+ with ESMTP id cNRG2BZ+KaTG for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Nov 2020 17:28:54 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5FC1D86D98
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 17:28:52 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1604424534; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=SIY7uNxtZfwPM9wQ4XHUF5oaAuM2aQ3lzPUrO3unZnY=;
+ b=apsjf8a4nDp3jqZymyIr7K3CTLcLxv8c4+SOnWu6Elugjq5bQ0to0n2CSJhDrKW9xNrRe43r
+ QyBVf2j8i/gLz3puuvumUvFZgwnzhpFHdh70n0xfPGKjfDfTizeNmi0EQ77Zi9gLuKU47WFG
+ MTKyoqWQvd9EVxYRfxp3QhFew8E=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5fa1933441e7c4fae7766e1f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 03 Nov 2020 17:28:20
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 6C709C43385; Tue,  3 Nov 2020 17:28:19 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id E6C49C433C8;
+ Tue,  3 Nov 2020 17:28:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E6C49C433C8
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=jcrouse@codeaurora.org
+Date: Tue, 3 Nov 2020 10:28:13 -0700
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v18 2/4] iommu/arm-smmu: Add a way for implementations to
+ influence SCTLR
+Message-ID: <20201103172813.GA5934@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joerg Roedel <joro@8bytes.org>, Krishna Reddy <vdumpa@nvidia.com>,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ Stephen Boyd <swboyd@chromium.org>,
+ Thierry Reding <treding@nvidia.com>,
+ Vivek Gautam <vivek.gautam@codeaurora.org>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20201102171416.654337-1-jcrouse@codeaurora.org>
+ <20201102171416.654337-3-jcrouse@codeaurora.org>
+ <0a00c162-ad77-46b7-85ad-e11229b57a3d@arm.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-mm@kvack.org, will@kernel.org,
- linux-kernel@vger.kernel.org, jeremy.linton@arm.com, ardb@kernel.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, linux-rpi-kernel@lists.infradead.org, guohanjun@huawei.com,
- linux-riscv@lists.infradead.org, robin.murphy@arm.com, hch@lst.de,
+Content-Disposition: inline
+In-Reply-To: <0a00c162-ad77-46b7-85ad-e11229b57a3d@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Rob Clark <robdclark@chromium.org>, Thierry Reding <treding@nvidia.com>,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Stephen Boyd <swboyd@chromium.org>, Will Deacon <will@kernel.org>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -77,141 +118,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6615173104570752255=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Mon, Nov 02, 2020 at 06:18:45PM +0000, Robin Murphy wrote:
+> On 2020-11-02 17:14, Jordan Crouse wrote:
+> >From: Rob Clark <robdclark@chromium.org>
+> >
+> >For the Adreno GPU's SMMU, we want SCTLR.HUPCF set to ensure that
+> >pending translations are not terminated on iova fault.  Otherwise
+> >a terminated CP read could hang the GPU by returning invalid
+> >command-stream data.
+> >
+> >Signed-off-by: Rob Clark <robdclark@chromium.org>
+> >Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> >Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> >---
+> >
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 6 ++++++
+> >  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 3 +++
+> >  drivers/iommu/arm/arm-smmu/arm-smmu.h      | 3 +++
+> >  3 files changed, 12 insertions(+)
+> >
+> >diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >index 1e942eed2dfc..0663d7d26908 100644
+> >--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >@@ -129,6 +129,12 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+> >  	    (smmu_domain->cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64))
+> >  		pgtbl_cfg->quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> >+	/*
+> >+	 * On the GPU device we want to process subsequent transactions after a
+> >+	 * fault to keep the GPU from hanging
+> >+	 */
+> >+	smmu_domain->cfg.sctlr_set |= ARM_SMMU_SCTLR_HUPCF;
+> >+
+> >  	/*
+> >  	 * Initialize private interface with GPU:
+> >  	 */
+> >diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >index dad7fa86fbd4..1f06ab219819 100644
+> >--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> >@@ -617,6 +617,9 @@ void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+> >  	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+> >  		reg |= ARM_SMMU_SCTLR_E;
+> >+	reg |= cfg->sctlr_set;
+> >+	reg &= ~cfg->sctlr_clr;
+> 
+> Since we now have a write_s2cr hook, I'm inclined to think that the
+> consistency of a write_sctlr hook that could similarly apply its own
+> arbitrary tweaks would make sense for this. Does anyone have any strong
+> opinions?
 
---===============6615173104570752255==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-e4mvEaSQmsP7NUXAJ5iB"
+None from me. That would make an eventual stall-on-fault implementation easier
+too.
 
+Jordan
 
---=-e4mvEaSQmsP7NUXAJ5iB
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> Robin.
+> 
+> >+
+> >  	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
+> >  }
+> >diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >index 6c5ff9999eae..ddf2ca4c923d 100644
+> >--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> >@@ -144,6 +144,7 @@ enum arm_smmu_cbar_type {
+> >  #define ARM_SMMU_CB_SCTLR		0x0
+> >  #define ARM_SMMU_SCTLR_S1_ASIDPNE	BIT(12)
+> >  #define ARM_SMMU_SCTLR_CFCFG		BIT(7)
+> >+#define ARM_SMMU_SCTLR_HUPCF		BIT(8)
+> >  #define ARM_SMMU_SCTLR_CFIE		BIT(6)
+> >  #define ARM_SMMU_SCTLR_CFRE		BIT(5)
+> >  #define ARM_SMMU_SCTLR_E		BIT(4)
+> >@@ -341,6 +342,8 @@ struct arm_smmu_cfg {
+> >  		u16			asid;
+> >  		u16			vmid;
+> >  	};
+> >+	u32				sctlr_set;    /* extra bits to set in SCTLR */
+> >+	u32				sctlr_clr;    /* bits to mask in SCTLR */
+> >  	enum arm_smmu_cbar_type		cbar;
+> >  	enum arm_smmu_context_fmt	fmt;
+> >  };
+> >
 
-On Fri, 2020-10-30 at 18:11 +0000, Catalin Marinas wrote:
-> On Thu, Oct 29, 2020 at 06:25:43PM +0100, Nicolas Saenz Julienne wrote:
-> > Ard Biesheuvel (1):
-> >   arm64: mm: Set ZONE_DMA size based on early IORT scan
-> >=20
-> > Nicolas Saenz Julienne (6):
-> >   arm64: mm: Move reserve_crashkernel() into mem_init()
-> >   arm64: mm: Move zone_dma_bits initialization into zone_sizes_init()
-> >   of/address: Introduce of_dma_get_max_cpu_address()
-> >   of: unittest: Add test for of_dma_get_max_cpu_address()
-> >   arm64: mm: Set ZONE_DMA size based on devicetree's dma-ranges
-> >   mm: Remove examples from enum zone_type comment
->=20
-> Thanks for putting this together. I had a minor comment but the patches
-> look fine to me. We still need an ack from Rob on the DT patch and I can
-> queue the series for 5.11.
-
-I'm preparing a v6 unifying both functions as you suggested.
-
-> Could you please also test the patch below on top of this series? It's
-> the removal of the implied DMA offset in the max_zone_phys()
-> calculation.
-
-Yes, happily. Comments below.
-
-> --------------------------8<-----------------------------
-> From 3ae252d888be4984a612236124f5b099e804c745 Mon Sep 17 00:00:00 2001
-> From: Catalin Marinas <catalin.marinas@arm.com>
-> Date: Fri, 30 Oct 2020 18:07:34 +0000
-> Subject: [PATCH] arm64: Ignore any DMA offsets in the max_zone_phys()
->  calculation
->=20
-> Currently, the kernel assumes that if RAM starts above 32-bit (or
-> zone_bits), there is still a ZONE_DMA/DMA32 at the bottom of the RAM and
-> such constrained devices have a hardwired DMA offset. In practice, we
-> haven't noticed any such hardware so let's assume that we can expand
-> ZONE_DMA32 to the available memory if no RAM below 4GB. Similarly,
-> ZONE_DMA is expanded to the 4GB limit if no RAM addressable by
-> zone_bits.
->=20
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> ---
->  arch/arm64/mm/init.c | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
->=20
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 095540667f0f..362160e16fb2 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -175,14 +175,21 @@ static void __init reserve_elfcorehdr(void)
->  #endif /* CONFIG_CRASH_DUMP */
-> =20
->  /*
-> - * Return the maximum physical address for a zone with a given address s=
-ize
-> - * limit. It currently assumes that for memory starting above 4G, 32-bit
-> - * devices will use a DMA offset.
-> + * Return the maximum physical address for a zone accessible by the give=
-n bits
-> + * limit. If the DRAM starts above 32-bit, expand the zone to the maximu=
-m
-> + * available memory, otherwise cap it at 32-bit.
->   */
->  static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
->  {
-> -	phys_addr_t offset =3D memblock_start_of_DRAM() & GENMASK_ULL(63, zone_=
-bits);
-> -	return min(offset + (1ULL << zone_bits), memblock_end_of_DRAM());
-> +	phys_addr_t zone_mask =3D (1ULL << zone_bits) - 1;
-
-Maybe use DMA_BIT_MASK(), instead of the manual calculation?
-
-> +	phys_addr_t phys_start =3D memblock_start_of_DRAM();
-> +
-> +	if (!(phys_start & U32_MAX))
-
-I'd suggest using 'bigger than' instead of masks. Just to cover ourselves
-against memory starting at odd locations. Also it'll behaves properly when
-phys_start is zero (this breaks things on RPi4).
-
-> +		zone_mask =3D PHYS_ADDR_MAX;
-> +	else if (!(phys_start & zone_mask))
-> +		zone_mask =3D U32_MAX;
-> +
-> +	return min(zone_mask + 1, memblock_end_of_DRAM());
-
-This + 1 isn't going to play well when zone_mask is PHYS_ADDR_MAX.
-
-Regards,
-Nicolas
-
-
---=-e4mvEaSQmsP7NUXAJ5iB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+hjLEACgkQlfZmHno8
-x/5wjggAjwdWMN+H9Cj7ukCCZxIw/mZ7tdk+jtxD8++ocqSv/BLWzfPJhliE31of
-ShuRaGhx2UpgX/fny9Ng9cEMWPdjYb6wpyI7EEm2As3R8aWDXwEFh1bu6PkdPyLu
-VBm0BkVSUY5Iu9fQYym1yA1KukGrzijxEW7+QFIUwrm1Bdralpg+67WLbOWUxmdI
-SGlntSKWlUcfRXCg+/XzLFfODu+htiXHSSBW1zMWx/OsNPHb6Mupfrtdogqv65UP
-aQpkzoqyZBlC9ueBXHtWUiDEv7EUdosKbia5mxa7i9apZ5ZPSy/OkGkY9mZq3evn
-XiCaUCaYMdiZx1RCUE2VRr9HqZnuEQ==
-=QpfN
------END PGP SIGNATURE-----
-
---=-e4mvEaSQmsP7NUXAJ5iB--
-
-
---===============6615173104570752255==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6615173104570752255==--
-
