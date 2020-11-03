@@ -2,124 +2,73 @@ Return-Path: <SRS0=TrXs=EJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2EEC2D0A3
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 15:22:39 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CADC55178
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 16:00:03 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4B7DF20780
-	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 15:22:39 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="lC7TQy6x"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B7DF20780
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 53F8722264
+	for <iommu@archiver.kernel.org>; Tue,  3 Nov 2020 16:00:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53F8722264
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AFC4786151;
-	Tue,  3 Nov 2020 15:22:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E2579873AA;
+	Tue,  3 Nov 2020 16:00:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Sn4craaU1tIY; Tue,  3 Nov 2020 16:00:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 46D87873E6;
+	Tue,  3 Nov 2020 16:00:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C14FC088B;
+	Tue,  3 Nov 2020 16:00:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A586C0051
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:59:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 57DA086207
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:59:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GQ_c3o3fOrwa; Tue,  3 Nov 2020 15:22:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2334485F5A;
-	Tue,  3 Nov 2020 15:22:38 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05760C088B;
-	Tue,  3 Nov 2020 15:22:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D314C0051
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:22:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 66AB386812
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:22:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hL-WTqOVvvmw for <iommu@lists.linux-foundation.org>;
- Tue,  3 Nov 2020 15:22:35 +0000 (UTC)
+ with ESMTP id hMu5unAzUzgL for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Nov 2020 15:59:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E21A2867F8
- for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:22:34 +0000 (UTC)
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.9]) by
- nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
- id <B5fa175b50000>; Tue, 03 Nov 2020 23:22:32 +0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 3 Nov
- 2020 15:22:28 +0000
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.50) by
- HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS)
- id 15.0.1473.3 via Frontend Transport; Tue, 3 Nov 2020 15:22:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cBpw/9U7MxGWo1oEJuhzooogF1Psr5UmirKKADi7OtnQYHHaXdIO9PC7bQUOk2/iQzXiBFIV3rfTtnnBr4nqXkwaJzcwWS+larmIUZTbbxySVjaduW8YnFrfoiUfRB8c2uDZvJnNiJIQ71Ao/EciIvQz/0wk5ms8s1SGXMuOeIzQHAiNVjz2eAz1VU2SR9Eb45rY/uA2mUsYxp0+M4iFrpUH0bX2nwJJrIPDGJWzeJgZTLpcNzILQWcph9T77fZWEtFHYM+XypgwbNbbq3tys8BL5rVK/zyzWeoO7pgYdc9EiBENFHYM64JOoniuvVNpXGfbjOgN4dHvZbN/C07B1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kTB337qpENG6+Ub3MecN1tM4eUGLVriCkTyaDVGu/Nc=;
- b=V5NGjtdhtGPR93dDMRg9UZBG+dsHX3claSsaHdbp25ESz0VT8xAc5FPGEcWGhNszWGOfSNygLuW/FAMKBbwSe3pPcsKbbwoAI7qhVmvpBoeQt1uEjSfFVhe6TgIHFJyOFAGoSnj0cwRkN+PIx0HaCmILzz21PCPmfchr06AVEW9w8RtL54TxGiAQls8xjDk5+wfHImME6a/7glsIFs8KH9td3WmQnfu5X8ohUnDGrB763HQwnHWbMYyMnoCqpdUN3RUAquY8g83k5z+hyEyzQ0WF48EJCDD/CqSzpf8PNn5L3r1C8y+sX2h1ngHcg5mpXvYtoWM334HZGwasgPIv4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB3827.namprd12.prod.outlook.com (2603:10b6:a03:1ab::16)
- by BY5PR12MB3700.namprd12.prod.outlook.com (2603:10b6:a03:1a5::33)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Tue, 3 Nov
- 2020 15:22:25 +0000
-Received: from BY5PR12MB3827.namprd12.prod.outlook.com
- ([fe80::2459:e095:ac09:34e5]) by BY5PR12MB3827.namprd12.prod.outlook.com
- ([fe80::2459:e095:ac09:34e5%6]) with mapi id 15.20.3499.031; Tue, 3 Nov 2020
- 15:22:25 +0000
-Date: Tue, 3 Nov 2020 11:22:23 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "joro@8bytes.org" <joro@8bytes.org>
-Subject: Re: (proposal) RE: [PATCH v7 00/16] vfio: expose virtual Shared
- Virtual Addressing to VMs
-Message-ID: <20201103152223.GR2620339@nvidia.com>
-References: <MWHPR11MB1645CFB0C594933E92A844AC8C070@MWHPR11MB1645.namprd11.prod.outlook.com>
- <20201103095208.GA22888@8bytes.org> <20201103125643.GN2620339@nvidia.com>
- <20201103131852.GE22888@8bytes.org> <20201103132335.GO2620339@nvidia.com>
- <20201103140318.GL22888@8bytes.org> <20201103140642.GQ2620339@nvidia.com>
- <20201103143532.GM22888@8bytes.org>
-Content-Disposition: inline
-In-Reply-To: <20201103143532.GM22888@8bytes.org>
-X-ClientProxiedBy: BL1PR13CA0171.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::26) To BY5PR12MB3827.namprd12.prod.outlook.com
- (2603:10b6:a03:1ab::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4A35D861F1
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Nov 2020 15:59:57 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4E6B139F;
+ Tue,  3 Nov 2020 07:59:56 -0800 (PST)
+Received: from [10.57.54.223] (unknown [10.57.54.223])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A57E23F66E;
+ Tue,  3 Nov 2020 07:59:55 -0800 (PST)
+Subject: Re: [PATCH v5 2/2] iommu/iova: Free global iova rcache on iova alloc
+ failure
+To: John Garry <john.garry@huawei.com>, vjitta@codeaurora.org,
+ joro@8bytes.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+References: <1601451864-5956-1-git-send-email-vjitta@codeaurora.org>
+ <1601451864-5956-2-git-send-email-vjitta@codeaurora.org>
+ <ff318311-77e8-b235-37dd-7b1b5f5d8ed9@arm.com>
+ <e1e5b24a-512b-7279-8341-7f4495718ece@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <5293135b-3a28-4edc-0515-61e595600bba@arm.com>
+Date: Tue, 3 Nov 2020 15:59:54 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by
- BL1PR13CA0171.namprd13.prod.outlook.com (2603:10b6:208:2bd::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.10 via Frontend
- Transport; Tue, 3 Nov 2020 15:22:25 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1kZy8d-00Fw0D-OO; Tue, 03 Nov 2020 11:22:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1604416952; bh=kTB337qpENG6+Ub3MecN1tM4eUGLVriCkTyaDVGu/Nc=;
- h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
- From:To:CC:Subject:Message-ID:References:Content-Type:
- Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType;
- b=lC7TQy6xEH/zdcCUP9nabNZtNzwHIE0KCgh2M6go3va8h+Z6Lf3mewBtT5CG24bTt
- 75/tsIQfMaFd8VHDoOxStwNwya/i16S1rdI8X0pRNtxTopVg5PVIDkWPU2uUtbmoCr
- 0s+bf8CfhFF+p9cX6dQEHaIbBcnorUo7F85QH5p8x6xNDt9jPV3rg6lBgfk4oTA7/n
- mTqSQi+SaOkym9uVp+Jb1BOeQ2xnS7Xdy0KPRuqlt1JZgTwJ5pPcN8weE6Sbt5hXg4
- L4TO5tFXCyGW7I8zLzeCyk+6tR5tnMIxKFgmLfwWOrzisi/MlJbfFbNrF9e8IPBCgc
- fIVMSpQrR81Zw==
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, Jason Wang <jasowang@redhat.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Wu,
- Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
+In-Reply-To: <e1e5b24a-512b-7279-8341-7f4495718ece@huawei.com>
+Content-Language: en-GB
+Cc: vinmenon@codeaurora.org, kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,33 +81,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 03, 2020 at 03:35:32PM +0100, joro@8bytes.org wrote:
-> On Tue, Nov 03, 2020 at 10:06:42AM -0400, Jason Gunthorpe wrote:
-> > The point is that other places beyond VFIO need this
-> 
-> Which and why?
->
-> > Sure, but sometimes it is necessary, and in those cases the answer
-> > can't be "rewrite a SVA driver to use vfio"
-> 
-> This is getting to abstract. Can you come up with an example where
-> handling this in VFIO or an endpoint device kernel driver does not work?
-
-This whole thread was brought up by IDXD which has a SVA driver and
-now wants to add a vfio-mdev driver too. SVA devices that want to be
-plugged into VMs are going to be common - this architecture that a SVA
-driver cannot cover the kvm case seems problematic.
-
-Yes, everything can have a SVA driver and a vfio-mdev, it works just
-fine, but it is not very clean or simple.
-
-Jason
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMC0xMS0wMyAxNDozMSwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAwMy8xMS8yMDIwIDEy
+OjM1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDIwMjAtMDktMzAgMDg6NDQsIHZqaXR0YUBj
+b2RlYXVyb3JhLm9yZyB3cm90ZToKPj4+IEZyb206IFZpamF5YW5hbmQgSml0dGEgPHZqaXR0YUBj
+b2RlYXVyb3JhLm9yZz4KPj4+Cj4+PiBXaGVuIGV2ZXIgYW4gaW92YSBhbGxvYyByZXF1ZXN0IGZh
+aWxzIHdlIGZyZWUgdGhlIGlvdmEKPj4+IHJhbmdlcyBwcmVzZW50IGluIHRoZSBwZXJjcHUgaW92
+YSByY2FjaGVzIGFuZCB0aGVuIHJldHJ5Cj4+PiBidXQgdGhlIGdsb2JhbCBpb3ZhIHJjYWNoZSBp
+cyBub3QgZnJlZWQgYXMgYSByZXN1bHQgd2UgY291bGQKPj4+IHN0aWxsIHNlZSBpb3ZhIGFsbG9j
+IGZhaWx1cmUgZXZlbiBhZnRlciByZXRyeSBhcyBnbG9iYWwKPj4+IHJjYWNoZSBpcyBob2xkaW5n
+IHRoZSBpb3ZhJ3Mgd2hpY2ggY2FuIGNhdXNlIGZyYWdtZW50YXRpb24uCj4+PiBTbywgZnJlZSB0
+aGUgZ2xvYmFsIGlvdmEgcmNhY2hlIGFzIHdlbGwgYW5kIHRoZW4gZ28gZm9yIHRoZQo+Pj4gcmV0
+cnkuCj4+Cj4gCj4gSWYgd2UgZG8gY2xlYXIgYWxsIHRoZSBDUFUgcmNhY2hlcywgaXQgd291bGQg
+bmljZSB0byBoYXZlIHNvbWV0aGluZyAKPiBpbW1lZGlhdGVseSBhdmFpbGFibGUgdG8gcmVwbGVu
+aXNoLCBpLmUuIHVzZSB0aGUgZ2xvYmFsIHJjYWNoZSwgaW5zdGVhZCAKPiBvZiBmbHVzaGluZyBp
+dCwgaWYgdGhhdCBpcyBub3QgcmVxdWlyZWQuLi4KCklmIHdlJ3ZlIHJlYWNoZWQgdGhlIHBvaW50
+IG9mIGNsZWFyaW5nICphbnkqIGNhY2hlcywgdGhvdWdoLCBJIHRoaW5rIGFueSAKaG9wZSBvZiBt
+YWludGFpbmluZyBwZXJmb3JtYW5jZSBpcyBhbHJlYWR5IGxvbmcgZ29uZS4gV2UndmUgd2Fsa2Vk
+IHRoZSAKcmJ0cmVlIGZvciB0aGUgZW50aXJlIGFkZHJlc3Mgc3BhY2UgYW5kIGZvdW5kIHRoYXQg
+aXQncyBzdGlsbCB0b28gZnVsbCAKdG8gYWxsb2NhdGUgZnJvbTsgd2UncmUgdGVldGVyaW5nIG9u
+IHRoZSBicmluayBvZiBoYXJkIGZhaWx1cmUgYW5kIHRoaXMgCmlzIGEgbGFzdC1kaXRjaCBhdHRl
+bXB0IHRvIGNsYXcgYmFjayBhcyBtdWNoIGFzIHBvc3NpYmxlIGluIHRoZSBob3BlIAp0aGF0IGl0
+IGdpdmVzIHVzIGEgdXNhYmxlIHNwYWNlLgoKVEJIIEknbSBub3QgZW50aXJlbHkgc3VyZSB3aGF0
+IGFsbG9jYXRpb24gcGF0dGVybiB3YXMgZXhwZWN0ZWQgYnkgdGhlIApvcmlnaW5hbCBjb2RlIHN1
+Y2ggdGhhdCBwdXJnaW5nIG9ubHkgc29tZSBvZiB0aGUgY2FjaGVzIG1hZGUgc2Vuc2UsIG5vciAK
+d2hhdCBraW5kIG9mIHBhdHRlcm4gbGVhZHMgdG8gbG90cyBvZiBzbWFsbGVyIElPVkFzIGJlaW5n
+IGFsbG9jYXRlZCwgCmZyZWVkLCBhbmQgbmV2ZXIgcmV1c2VkIHRvIHRoZSBwb2ludCBvZiBibG9j
+a2luZyBsYXJnZXIgYWxsb2NhdGlvbnMsIGJ1dCAKZWl0aGVyIHdheSB0aGUgcmVhc29uaW5nIGRv
+ZXMgYXQgbGVhc3Qgc2VlbSB0byBob2xkIHVwIGluIGFic3RyYWN0LgoKPj4gVGhpcyBsb29rcyBy
+ZWFzb25hYmxlIHRvIG1lIC0gaXQncyBtaWxkbHkgYW5ub3lpbmcgdGhhdCB3ZSBlbmQgdXAgd2l0
+aCAKPj4gc28gbWFueSBzaW1pbGFyLWxvb2tpbmcgZnVuY3Rpb25zLAo+IAo+IFdlbGwgSSBkaWQg
+YWRkIGEgZnVuY3Rpb24gdG8gY2xlYXIgYWxsIENQVSByY2FjaGVzIGhlcmUsIGlmIHlvdSB3b3Vs
+ZCAKPiBsaWtlIHRvIGNoZWNrOgo+IAo+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlv
+bW11LzE2MDM3MzM1MDEtMjExMDA0LTItZ2l0LXNlbmQtZW1haWwtam9obi5nYXJyeUBodWF3ZWku
+Y29tLyAKCkkgd2FzIHRoaW5raW5nIG1vcmUgb2YgdGhlIHdheSBmcmVlX2lvdmFfcmNhY2hlcygp
+LCAKZnJlZV9jcHVfY2FjaGVkX2lvdmFzKCksIGFuZCBmcmVlX2dsb2JhbF9jYWNoZWRfaW92YXMo
+KSBhbGwgbG9vayBwcmV0dHkgCm11Y2ggdGhlIHNhbWUgc2hhcGUgYXQgYSBnbGFuY2UuCgo+PiBi
+dXQgdGhlIG5lY2Vzc2FyeSBkaWZmZXJlbmNlcyBhcmUgcmlnaHQgZG93biBpbiB0aGUgbWlkZGxl
+IG9mIHRoZSAKPj4gbG9vcHMgc28gbm90aGluZyBjYW4gcmVhc29uYWJseSBiZSBmYWN0b3JlZCBv
+dXQgOigKPj4KPj4gUmV2aWV3ZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5j
+b20+Cj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBWaWpheWFuYW5kIEppdHRhIDx2aml0dGFAY29kZWF1
+cm9yYS5vcmc+Cj4+PiAtLS0KPj4+IMKgIGRyaXZlcnMvaW9tbXUvaW92YS5jIHwgMjMgKysrKysr
+KysrKysrKysrKysrKysrKysKPj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCsp
+Cj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW92YS5jIGIvZHJpdmVycy9pb21t
+dS9pb3ZhLmMKPj4+IGluZGV4IGMzYTFhOGUuLmZhZjliMTMgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2
+ZXJzL2lvbW11L2lvdmEuYwo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9pb3ZhLmMKPj4+IEBAIC0y
+NSw2ICsyNSw3IEBAIHN0YXRpYyB2b2lkIGluaXRfaW92YV9yY2FjaGVzKHN0cnVjdCBpb3ZhX2Rv
+bWFpbiAKPj4+ICppb3ZhZCk7Cj4+PiDCoCBzdGF0aWMgdm9pZCBmcmVlX2lvdmFfcmNhY2hlcyhz
+dHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkKTsKPj4+IMKgIHN0YXRpYyB2b2lkIGZxX2Rlc3Ryb3lf
+YWxsX2VudHJpZXMoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCk7Cj4+PiDCoCBzdGF0aWMgdm9p
+ZCBmcV9mbHVzaF90aW1lb3V0KHN0cnVjdCB0aW1lcl9saXN0ICp0KTsKPj4+ICtzdGF0aWMgdm9p
+ZCBmcmVlX2dsb2JhbF9jYWNoZWRfaW92YXMoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCk7Cj4g
+Cj4gYSB0aG91Z2h0OiBJdCB3b3VsZCBiZSBncmVhdCBpZiB0aGUgZmlsZSBjb3VsZCBiZSByZWFy
+cmFuZ2VkIGF0IHNvbWUgCj4gcG9pbnQgd2hlcmUgd2UgZG9uJ3QgcmVxdWlyZSBzbyBtYW55IGZv
+cndhcmQgZGVjbGFyYXRpb25zLgo+IAo+Pj4gwqAgdm9pZAo+Pj4gwqAgaW5pdF9pb3ZhX2RvbWFp
+bihzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkLCB1bnNpZ25lZCBsb25nIGdyYW51bGUsCj4+PiBA
+QCAtNDQyLDYgKzQ0Myw3IEBAIGFsbG9jX2lvdmFfZmFzdChzdHJ1Y3QgaW92YV9kb21haW4gKmlv
+dmFkLCAKPj4+IHVuc2lnbmVkIGxvbmcgc2l6ZSwKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBmbHVz
+aF9yY2FjaGUgPSBmYWxzZTsKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBmb3JfZWFjaF9vbmxpbmVf
+Y3B1KGNwdSkKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZyZWVfY3B1X2NhY2hlZF9p
+b3ZhcyhjcHUsIGlvdmFkKTsKPj4+ICvCoMKgwqDCoMKgwqDCoCBmcmVlX2dsb2JhbF9jYWNoZWRf
+aW92YXMoaW92YWQpOwo+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gcmV0cnk7Cj4+PiDCoMKg
+wqDCoMKgIH0KPj4+IEBAIC0xMDU3LDUgKzEwNTksMjYgQEAgdm9pZCBmcmVlX2NwdV9jYWNoZWRf
+aW92YXModW5zaWduZWQgaW50IGNwdSwgCj4+PiBzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkKQo+
+Pj4gwqDCoMKgwqDCoCB9Cj4+PiDCoCB9Cj4+PiArLyoKPj4+ICsgKiBmcmVlIGFsbCB0aGUgSU9W
+QSByYW5nZXMgb2YgZ2xvYmFsIGNhY2hlCj4+PiArICovCj4+PiArc3RhdGljIHZvaWQgZnJlZV9n
+bG9iYWxfY2FjaGVkX2lvdmFzKHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92YWQpCj4+PiArewo+Pj4g
+K8KgwqDCoCBzdHJ1Y3QgaW92YV9yY2FjaGUgKnJjYWNoZTsKPj4+ICvCoMKgwqAgdW5zaWduZWQg
+bG9uZyBmbGFnczsKPj4+ICvCoMKgwqAgaW50IGksIGo7Cj4+PiArCj4+PiArwqDCoMKgIGZvciAo
+aSA9IDA7IGkgPCBJT1ZBX1JBTkdFX0NBQ0hFX01BWF9TSVpFOyArK2kpIHsKPj4+ICvCoMKgwqDC
+oMKgwqDCoCByY2FjaGUgPSAmaW92YWQtPnJjYWNoZXNbaV07Cj4+PiArwqDCoMKgwqDCoMKgwqAg
+c3Bpbl9sb2NrX2lycXNhdmUoJnJjYWNoZS0+bG9jaywgZmxhZ3MpOwo+Pj4gK8KgwqDCoMKgwqDC
+oMKgIGZvciAoaiA9IDA7IGogPCByY2FjaGUtPmRlcG90X3NpemU7ICsraikgewo+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgaW92YV9tYWdhemluZV9mcmVlX3BmbnMocmNhY2hlLT5kZXBvdFtq
+XSwgaW92YWQpOwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW92YV9tYWdhemluZV9mcmVl
+KHJjYWNoZS0+ZGVwb3Rbal0pOwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmNhY2hlLT5k
+ZXBvdFtqXSA9IE5VTEw7Cj4gCj4gSSBkb24ndCB0aGluayB0aGF0IE5VTExpZnkgaXMgc3RyaWN0
+bHkgbmVjZXNzYXJ5CgpUcnVlLCB3ZSBkb24ndCBleHBsaWNpdGx5IGNsZWFyIGRlcG90IGVudHJp
+ZXMgaW4gX19pb3ZhX3JjYWNoZV9nZXQoKSBmb3IgCm5vcm1hbCBvcGVyYXRpb24sIHNvIHRoZXJl
+J3Mgbm90IG11Y2ggcG9pbnQgaW4gZG9pbmcgc28gaGVyZS4KClJvYmluLgoKPj4+ICvCoMKgwqDC
+oMKgwqDCoCB9Cj4+PiArwqDCoMKgwqDCoMKgwqAgcmNhY2hlLT5kZXBvdF9zaXplID0gMDsKPj4+
+ICvCoMKgwqDCoMKgwqDCoCBzcGluX3VubG9ja19pcnFyZXN0b3JlKCZyY2FjaGUtPmxvY2ssIGZs
+YWdzKTsKPj4+ICvCoMKgwqAgfQo+Pj4gK30KPj4+IMKgIE1PRFVMRV9BVVRIT1IoIkFuaWwgUyBL
+ZXNoYXZhbXVydGh5IAo+Pj4gPGFuaWwucy5rZXNoYXZhbXVydGh5QGludGVsLmNvbT4iKTsKPj4+
+IMKgIE1PRFVMRV9MSUNFTlNFKCJHUEwiKTsKPj4+Cj4+IF9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCj4+IGlvbW11IG1haWxpbmcgbGlzdAo+PiBpb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwo+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+PiAuCj4gCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
