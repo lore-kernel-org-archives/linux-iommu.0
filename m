@@ -6,105 +6,97 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9754BC2D0A3
-	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 12:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FA0C2D0A3
+	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 13:49:26 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07C0A223FD
-	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 12:43:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07C0A223FD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
+	by mail.kernel.org (Postfix) with ESMTPS id E86002236F
+	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 13:49:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AqAK6z8z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E86002236F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 77FFF86C7B;
-	Wed,  4 Nov 2020 12:43:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4820986785;
+	Wed,  4 Nov 2020 13:49:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6Yfu44n5Bb8i; Wed,  4 Nov 2020 12:43:15 +0000 (UTC)
+	with ESMTP id XdSX3sjyfjjb; Wed,  4 Nov 2020 13:49:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CABA486AED;
-	Wed,  4 Nov 2020 12:43:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3164C866C7;
+	Wed,  4 Nov 2020 13:49:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF38CC088B;
-	Wed,  4 Nov 2020 12:43:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21E93C0889;
+	Wed,  4 Nov 2020 13:49:22 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5FFBCC0051
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 12:43:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C461C0051
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 13:49:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5932D87509
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 12:43:14 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 72B3F874E0
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 13:49:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g7xNTwMk+wtQ for <iommu@lists.linux-foundation.org>;
- Wed,  4 Nov 2020 12:43:12 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com
- [66.111.4.221])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7D1A987507
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 12:43:12 +0000 (UTC)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
- by mailnew.nyi.internal (Postfix) with ESMTP id 647E65801DA;
- Wed,  4 Nov 2020 07:43:10 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
- by compute6.internal (MEProxy); Wed, 04 Nov 2020 07:43:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
- date:from:to:cc:subject:message-id:references:mime-version
- :content-type:in-reply-to; s=fm1; bh=78us+UUk6CoTQ5X7xHTMBAyQcMb
- Qj2fZdOq2ZTDXDpY=; b=CZNLwHr9AhKYEnHR9t31QQ8i1RaRhgEQIdpd2hCbg9Z
- 4/pnVucDq400XCUFdjX4yWuFZUN8BVMpJs/qij3McBEEjiY/aFHrTdialvQdLt5v
- ipALxcyYiZGwO/Zz6aixnh7IZUZyWTBnz/1eT3tNkO/QLYqDmQ6SbruYWdH4NVrb
- NQ9ODZlz33xoQAXbSdppzraAsb0+p2smSx03nVImAlaniewi+Lpn0G+bcQFHb3Ay
- SuyeW+toydHV9y8MtRyYc7I6YMKvN/pexLrD/Y/aGUN8LHNvv81PqfxN013Rb/PY
- L4Wmigc7pmJij8LnJ9D/UbKtmbXZahecN264S/gDt5Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=78us+U
- Uk6CoTQ5X7xHTMBAyQcMbQj2fZdOq2ZTDXDpY=; b=Sm6nVNrtTGHwIAW+nghCkj
- r2SOmU8vnF5fX/jCYQ9aD7VEn9KOyzsp428iKtj0QcUPtCybAKMQQzP7EywZpypB
- r41kiRLODFyFy8sVVvgrLEGi9Khm6xdAjPuBPGEbLT0w32rt410RpAOFaLkCllOd
- f2DuhDi4p3NFGFSMP2i3x/iWvNgyuHFqJftBUUvSBtjaoQfmSLfJ35t6ywwp5jjP
- 2A4U5U7C6lwugnuvm1oSc22WumrjRaYYaC1ZLfkmEbGsunH/IsPCUgW0uy+n07dN
- AUuhbk2GT6LWjehXmys199ah5ZrH/2Pou7wh8eLfNfHajfiqrP7UVeJEy7+V/NpQ
- ==
-X-ME-Sender: <xms:3KGiX0RhVlYcUA_MON-70AweRLRUn9_drusdN9rVY4FlIEx9vEbndg>
- <xme:3KGiXxye0Egu6ktFP_-mLb1B1zzcxdnR_u6KotVrT3vNw42eH0djyBrzcD3NP9YmB
- 2kx7QwQNHas9mLR63E>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedruddthedggeehucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
- vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
- htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
- gedunecukfhppeeltddrkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenuc
- frrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:3KGiXx3SEHC1svEduB3AoUiCdYqGEeKYPIX1nSfLYCQnCyrs2PuI9Q>
- <xmx:3KGiX4DwjvHSkbarYcediCJRObamjLT8IQ1soBqbSrP2BrPVClfEfQ>
- <xmx:3KGiX9gqMzjhsMaTcflcNeyeefsEAbYT7Ekid9AByeFjzpxhd_APnQ>
- <xmx:3qGiX-V7vOKh6yQaqPRF_3vWnvBTyMT_0FDfo6z_quJFCtoI1vjXag>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
- [90.89.68.76])
- by mail.messagingengine.com (Postfix) with ESMTPA id 086473280390;
- Wed,  4 Nov 2020 07:43:07 -0500 (EST)
-Date: Wed, 4 Nov 2020 13:43:06 +0100
-From: Maxime Ripard <maxime@cerno.tech>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: use of dma_direct_set_offset in (allwinner) drivers
-Message-ID: <20201104124306.65nfvmr3ceggug4z@gilmour.lan>
-References: <20201103095538.GA19136@lst.de>
- <20201104081411.bnt5kixgunaczbzj@gilmour.lan>
- <9623c346-c86c-e3ce-332b-95492576a859@arm.com>
+ with ESMTP id 2Xy3twxx-MqZ for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Nov 2020 13:49:18 +0000 (UTC)
+X-Greylist: delayed 00:06:34 by SQLgrey-1.7.6
+Received: from mail-qv1-f65.google.com (mail-qv1-f65.google.com
+ [209.85.219.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 67DC3874D7
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 13:49:18 +0000 (UTC)
+Received: by mail-qv1-f65.google.com with SMTP id i17so7830713qvp.11
+ for <iommu@lists.linux-foundation.org>; Wed, 04 Nov 2020 05:49:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=/Y6pLjN1q7V2Yyirv17Ixp1zKgqBOnTfkoe8vOdGQmc=;
+ b=AqAK6z8z5bDaRYQx3uZ+Wu3/K8GxaxgEq6AJvmQg+Tf/qpLygesSQiVgxIzS/BeGZS
+ 24qsbV2i3fUP2MV8ZnRvUMTdaAtgP19PzuLV6e3gSCReguF5aVZJecWN3UzTakyXD9Ew
+ gTsJe1gjUIDRuxddTnKdFqD4wGhDshRJlRRfeUTQ516cjJyZBpjbxVOR3Jc8LLcqdmhJ
+ hGl4lpxhj/aIv7/9es3cyL5KezyCzVhxC58W9sJiutw5ixNTeVlCxvbmXrubpAOOXEpa
+ Or3zZhjxli3lslmghIzCtq/uG3MZ1yMtsWyuW2dGnqTiAPWuczqSRHi5vM87+2QpfM6i
+ SN3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=/Y6pLjN1q7V2Yyirv17Ixp1zKgqBOnTfkoe8vOdGQmc=;
+ b=f9cS4t92khxQFSvIDTEoctzhNn5Rxw2DyL7GxFXNQDcuQU0cZGIIfamd2+QyjGUNel
+ eM6GfWjdsxFzguZmG7gManbu03+WkbK+EPUWFTb1nloztUHeYO5mTIWM7BGemRo9FVvF
+ MPkpUVxIM/hKmov2WJ/+bWd3IuS7nKj2ahd4QtGSaauSJ8/EQ4ndarBxkOLEzdS8CwUu
+ 1W+MRkHXOuzWW91tx31c7Kx+6WdLkGqV48X8QdlvleViiEjAmN8GfA4SCgk81iJSIGxN
+ f25yTKNDCbFIkfeKJwakcpXsRkMwn66YwKm/g0JdHYN9NYSw+Qi0LdJo2xNHnolsGVb/
+ Eojg==
+X-Gm-Message-State: AOAM531rLFfesi0JrpZOCYcCjyEqYCqgKjqjqGJZEyc6QE/gBCRZKVyN
+ CbVFXtj0nYYMzkC5kaJwwBhBC2tvzS70e5j0
+X-Google-Smtp-Source: ABdhPJxkm8cGmbaX4KWGu+7hGSW6QOoE16Ui2TjU3ixwgLY3H1M93rEXy/nBujminVULNL4bE5H1RQ==
+X-Received: by 2002:a05:6214:12c4:: with SMTP id
+ s4mr33685780qvv.33.1604497363362; 
+ Wed, 04 Nov 2020 05:42:43 -0800 (PST)
+Received: from ziepe.ca
+ (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net.
+ [156.34.48.30])
+ by smtp.gmail.com with ESMTPSA id r204sm2314457qka.122.2020.11.04.05.42.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 04 Nov 2020 05:42:42 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
+ id 1kaJ3h-00GVOu-C1; Wed, 04 Nov 2020 09:42:41 -0400
+Date: Wed, 4 Nov 2020 09:42:41 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 2/5] RDMA/core: remove use of dma_virt_ops
+Message-ID: <20201104134241.GP36674@ziepe.ca>
+References: <20201104095052.1222754-1-hch@lst.de>
+ <20201104095052.1222754-3-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <9623c346-c86c-e3ce-332b-95492576a859@arm.com>
-Cc: devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- Chen-Yu Tsai <wens@csie.org>, iommu@lists.linux-foundation.org,
- Yong Deng <yong.deng@magewell.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20201104095052.1222754-3-hch@lst.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-rdma@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Logan Gunthorpe <logang@deltatee.com>,
+ linux-pci@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,111 +109,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5943851144406073345=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Wed, Nov 04, 2020 at 10:50:49AM +0100, Christoph Hellwig wrote:
 
---===============5943851144406073345==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="zhorkoablbmsvz4w"
-Content-Disposition: inline
+> +int ib_dma_virt_map_sg(struct ib_device *dev, struct scatterlist *sg, int nents)
+> +{
+> +	struct scatterlist *s;
+> +	int i;
+> +
+> +	for_each_sg(sg, s, nents, i) {
+> +		sg_dma_address(s) = (uintptr_t)sg_virt(s);
+> +		sg_dma_len(s) = s->length;
 
+Hmm.. There is nothing ensuring the page is mapped here for this
+sg_virt(). Before maybe some of the kconfig stuff prevented highmem
+systems indirectly, I wonder if we should add something more direct to
+exclude highmem for these drivers?
 
---zhorkoablbmsvz4w
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sigh. I think the proper fix is to replace addr/length with a
+scatterlist pointer in the struct ib_sge, then have SW drivers
+directly use the page pointer properly.
 
-On Wed, Nov 04, 2020 at 10:15:49AM +0000, Robin Murphy wrote:
-> On 2020-11-04 08:14, Maxime Ripard wrote:
-> > Hi Christoph,
-> >=20
-> > On Tue, Nov 03, 2020 at 10:55:38AM +0100, Christoph Hellwig wrote:
-> > > Linux 5.10-rc1 switched from having a single dma offset in struct dev=
-ice
-> > > to a set of DMA ranges, and introduced a new helper to set them,
-> > > dma_direct_set_offset.
-> > >=20
-> > > This in fact surfaced that a bunch of drivers that violate our layeri=
-ng
-> > > and set the offset from drivers, which meant we had to reluctantly
-> > > export the symbol to set up the DMA range.
-> > >=20
-> > > The drivers are:
-> > >=20
-> > > drivers/gpu/drm/sun4i/sun4i_backend.c
-> > >=20
-> > >    This just use dma_direct_set_offset as a fallback.  Is there any g=
-ood
-> > >    reason to not just kill off the fallback?
-> > >=20
-> > > drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
-> > >=20
-> > >    Same as above.
-> >=20
-> > So, the history of this is:
-> >=20
-> >    - We initially introduced the support for those two controllers
-> >      assuming that there was a direct mapping between the physical and
-> >      DMA addresses. It turns out it didn't and the DMA accesses were
-> >      going through a secondary, dedicated, bus that didn't have the same
-> >      mapping of the RAM than the CPU.
-> >=20
-> >      4690803b09c6 ("drm/sun4i: backend: Offset layer buffer address by =
-DRAM starting address")
-> >=20
-> >    - This dedicated bus is undocumented and barely used in the vendor
-> >      kernel so this was overlooked, and it's fairly hard to get infos on
-> >      it for all the SoCs we support. We added the DT support for it
-> >      though on some SoCs we had enough infos to do so:
-> >=20
-> >      c43a4469402f ("dt-bindings: interconnect: Add a dma interconnect n=
-ame")
-> >      22f88e311399 ("ARM: dts: sun5i: Add the MBUS controller")
-> >=20
-> >      This explains the check on the interconnect property
-> >=20
-> >    - However, due to the stable DT rule, we still need to operate witho=
-ut
-> >      regressions on older DTs that wouldn't have that property (and for
-> >      SoCs we haven't figured out). Hence the fallback.
->=20
-> How about having something in the platform code that keys off the top-lev=
-el
-> SoC compatible and uses a bus notifier to create offsets for the relevant
-> devices if an MBUS description is missing? At least that way the workarou=
-nd
-> could be confined to a single dedicated place and look somewhat similar to
-> other special cases like sta2x11, rather than being duplicated all over t=
-he
-> place.
+Then just delete this stuff, all drivers need is a noop dmaops
 
-I'll give it a try, thanks for the suggestion :)
+Looks a lot hard though, so we should probably go ahead with this.
 
-Maxime
-
---zhorkoablbmsvz4w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCX6Kh2gAKCRDj7w1vZxhR
-xXUBAQCk9nFoP5/0upXw2XdZcSkENhaqLEYjyqa2eDCp2Rmb8QEApdDUSCwIotfs
-OBET+OLoM/9OhyjnL3e/+1Kb+EGvqA4=
-=D3ug
------END PGP SIGNATURE-----
-
---zhorkoablbmsvz4w--
-
---===============5943851144406073345==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5943851144406073345==--
