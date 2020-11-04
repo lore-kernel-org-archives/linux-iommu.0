@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0332C4741F
-	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 16:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFC9C2D0A3
+	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 16:54:53 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 18795206FA
-	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 16:54:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AE8162072C
+	for <iommu@archiver.kernel.org>; Wed,  4 Nov 2020 16:54:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ufgUb7fU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 18795206FA
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="A2dV6ftb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE8162072C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4D02E203FB;
-	Wed,  4 Nov 2020 16:54:00 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 54C62203F3;
+	Wed,  4 Nov 2020 16:54:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fKpvTzifzDKv; Wed,  4 Nov 2020 16:53:57 +0000 (UTC)
+	with ESMTP id 23pbiLVNNQfr; Wed,  4 Nov 2020 16:54:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 406C1203E2;
-	Wed,  4 Nov 2020 16:53:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 79E6D2000A;
+	Wed,  4 Nov 2020 16:54:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 30DD3C088B;
-	Wed,  4 Nov 2020 16:53:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A0A2C0051
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:53:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 725B1C088B;
+	Wed,  4 Nov 2020 16:54:51 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD92DC0051
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:54:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 579B185F92
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:53:56 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 99CB0203E2
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:54:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p0W-aM3nOrjo for <iommu@lists.linux-foundation.org>;
- Wed,  4 Nov 2020 16:53:55 +0000 (UTC)
+ with ESMTP id lsJCE4GDIrG8 for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Nov 2020 16:54:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B94C885F80
- for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:53:55 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id C72E82000A
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Nov 2020 16:54:49 +0000 (UTC)
 Received: from localhost (230.sub-72-107-127.myvzw.com [72.107.127.230])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E4EBE206FA;
- Wed,  4 Nov 2020 16:53:54 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id EC7782072C;
+ Wed,  4 Nov 2020 16:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1604508835;
- bh=2AnCcDgCUl6mvSBgQ/DNDlhMjVmEBjE51au1El1BYuY=;
+ s=default; t=1604508889;
+ bh=ArcQJwinIpORlAmkBGB/AAkFp/7wMyEXpZdR/3J4wBQ=;
  h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=ufgUb7fUuwShufuwOFMMiN+b9KhxmZPRjeacpooFT3rGtbvfpEYeTIDtR+8qbpybZ
- ViNnVNVez79xeThoXkIgQLPNu1B162vS+R/Iws4UAxxNYredVESg2yvamgQAHpoXqg
- QCtTCOr9+JeAYws//F1IQSU6/a4lEYyRNDJ8N6Ho=
-Date: Wed, 4 Nov 2020 10:53:53 -0600
+ b=A2dV6ftbFeL34zkMdFbtruZhBI1rmk5r4E50s63hTH493XEIMYiT1h5F49xpGnXOM
+ aiaZlQv4h/qyRD7jYsfpFqZ6bSRgipAJEIknQ1F5HZGFEREF8+Cyj+VjJ1fj/3OHMd
+ 1/J1Z1wCrb4HIDVlpvH4cYELRmp+oQoKUPLF9nXo=
+Date: Wed, 4 Nov 2020 10:54:47 -0600
 From: Bjorn Helgaas <helgaas@kernel.org>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/5] PCI/p2p: remove the DMA_VIRT_OPS hacks
-Message-ID: <20201104165353.GA357989@bjorn-Precision-5520>
+Subject: Re: [PATCH 4/5] PCI/p2p: cleanup up __pci_p2pdma_map_sg a bit
+Message-ID: <20201104165447.GA358343@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20201104095052.1222754-4-hch@lst.de>
+In-Reply-To: <20201104095052.1222754-5-hch@lst.de>
 Cc: linux-rdma@vger.kernel.org, linux-pci@vger.kernel.org,
  Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux-foundation.org,
  Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>
@@ -86,62 +86,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-s|PCI/p2p: remove|PCI/P2PDMA: Remove/
+s|PCI/p2p: cleanup up __pci_p2pdma_map_sg|PCI/P2PDMA: Cleanup up __pci_p2pdma_map_sg|
 to match history.
 
-On Wed, Nov 04, 2020 at 10:50:50AM +0100, Christoph Hellwig wrote:
-> Now that all users of dma_virt_ops are gone we can remove the workaround
-> for it in the PCIe peer to peer code.
-
-s/PCIe/PCI/
-We went to some trouble to make P2PDMA work on conventional PCI as
-well as PCIe.
-
+On Wed, Nov 04, 2020 at 10:50:51AM +0100, Christoph Hellwig wrote:
+> Remove the pointless paddr variable that was only used once.
+> 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 
 Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
 > ---
->  drivers/pci/p2pdma.c | 20 --------------------
->  1 file changed, 20 deletions(-)
+>  drivers/pci/p2pdma.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 > 
 > diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> index de1c331dbed43f..b07018af53876c 100644
+> index b07018af53876c..afd792cc272832 100644
 > --- a/drivers/pci/p2pdma.c
 > +++ b/drivers/pci/p2pdma.c
-> @@ -556,15 +556,6 @@ int pci_p2pdma_distance_many(struct pci_dev *provider, struct device **clients,
->  		return -1;
->  
->  	for (i = 0; i < num_clients; i++) {
-> -#ifdef CONFIG_DMA_VIRT_OPS
-> -		if (clients[i]->dma_ops == &dma_virt_ops) {
-> -			if (verbose)
-> -				dev_warn(clients[i],
-> -					 "cannot be used for peer-to-peer DMA because the driver makes use of dma_virt_ops\n");
-> -			return -1;
-> -		}
-> -#endif
-> -
->  		pci_client = find_parent_pci_dev(clients[i]);
->  		if (!pci_client) {
->  			if (verbose)
-> @@ -837,17 +828,6 @@ static int __pci_p2pdma_map_sg(struct pci_p2pdma_pagemap *p2p_pgmap,
->  	phys_addr_t paddr;
+> @@ -825,13 +825,10 @@ static int __pci_p2pdma_map_sg(struct pci_p2pdma_pagemap *p2p_pgmap,
+>  		struct device *dev, struct scatterlist *sg, int nents)
+>  {
+>  	struct scatterlist *s;
+> -	phys_addr_t paddr;
 >  	int i;
 >  
-> -	/*
-> -	 * p2pdma mappings are not compatible with devices that use
-> -	 * dma_virt_ops. If the upper layers do the right thing
-> -	 * this should never happen because it will be prevented
-> -	 * by the check in pci_p2pdma_distance_many()
-> -	 */
-> -#ifdef CONFIG_DMA_VIRT_OPS
-> -	if (WARN_ON_ONCE(dev->dma_ops == &dma_virt_ops))
-> -		return 0;
-> -#endif
-> -
 >  	for_each_sg(sg, s, nents, i) {
->  		paddr = sg_phys(s);
+> -		paddr = sg_phys(s);
+> -
+> -		s->dma_address = paddr - p2p_pgmap->bus_offset;
+> +		s->dma_address = sg_phys(s) - p2p_pgmap->bus_offset;
+>  		sg_dma_len(s) = s->length;
+>  	}
 >  
 > -- 
 > 2.28.0
