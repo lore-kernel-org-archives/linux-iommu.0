@@ -2,101 +2,133 @@ Return-Path: <SRS0=eQNl=EL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0141AC55178
-	for <iommu@archiver.kernel.org>; Thu,  5 Nov 2020 19:37:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D33C388F7
+	for <iommu@archiver.kernel.org>; Thu,  5 Nov 2020 19:54:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 61A7B20867
-	for <iommu@archiver.kernel.org>; Thu,  5 Nov 2020 19:37:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F399220728
+	for <iommu@archiver.kernel.org>; Thu,  5 Nov 2020 19:54:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KhyQlJxD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61A7B20867
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="NhQgY4V0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F399220728
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E649687311;
-	Thu,  5 Nov 2020 19:37:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D84385E83;
+	Thu,  5 Nov 2020 19:54:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QRHiQsb+0ujA; Thu,  5 Nov 2020 19:37:40 +0000 (UTC)
+	with ESMTP id p4HuLX8nnfDa; Thu,  5 Nov 2020 19:54:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4152F8730E;
-	Thu,  5 Nov 2020 19:37:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 577F085E60;
+	Thu,  5 Nov 2020 19:54:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26112C088B;
-	Thu,  5 Nov 2020 19:37:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25B3EC0889
- for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:37:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 264C2C088B;
+	Thu,  5 Nov 2020 19:54:38 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 830D0C0889
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:54:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0B5EA272E3
- for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:37:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 771F48674D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:54:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BPDjcC3c9KSx for <iommu@lists.linux-foundation.org>;
- Thu,  5 Nov 2020 19:37:37 +0000 (UTC)
+ with ESMTP id 5mJc6KGQPkgZ for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Nov 2020 19:54:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
- [209.85.167.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 8DB6827236
- for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:37:37 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id t16so2865723oie.11
- for <iommu@lists.linux-foundation.org>; Thu, 05 Nov 2020 11:37:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=0IeuWIyuaS2pCWkh8SM9vIHTk3Z9xKMgQga1epoP3ng=;
- b=KhyQlJxDU6io8FVXlTraVtbTy3bQuNC6sKWSQlCJoDV3eVUN8R8qBKymBN5FpTznBJ
- 4MhBYMa2IuKyTowiy9/fZZPa8rYN0sdd7tu4P2gSHcjnay4/Ewu7Fnkn90lA7bFKqFwU
- yb6Ge7spA+x/jLS4G8ilTQ0oIFhVBUcg0IOm74/C4jRoKRtkmLSh/gFsNOSLkaQvAvkX
- LhSfYwfDvUD2o+ek/F5TywPUJ/TNO/UTLQPZ5VTC7cDsFWpESDgcORcU32pa8PnSWqnO
- 98vNzQjj6t5oS5WFavOU9azcEjKsPpiPdpnK/9hEeczBP+OekrcPzv7NotIFDIo4DCVj
- gLig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=0IeuWIyuaS2pCWkh8SM9vIHTk3Z9xKMgQga1epoP3ng=;
- b=FVzddKHYkJHVOgP6DRl4cDTytUvUyyePk8qd/fBOLU59FEaMVCbwkHCsuKU24CAbMz
- qoFRMGgW+SrIv9UbaVRFI29532se2lGRQf5HmBiq1POU+u4TVBttUcYTzZiSlHwu7eSD
- GpeUam7ORR5V8AZ+9AOg23tn98HHUVWe6d9u2FBIfkBNwJQWqD6JMeyfi74dLV1VhfSG
- FXI3pBNI8fMmpWFjxVUNW04qQCViwxID8Ub4U4grv/WKHOlgbqakqrQnePp2qzq3W9NM
- mlNyLEuKEOxYjEZSdoPoCfsa4t69exybLHJBaDDup3qF2/S6LdJHAoiRYctazljYErdL
- x0Wg==
-X-Gm-Message-State: AOAM5337ZPhZDzDGyQIa7GsxBhb8U96Q3C1ww78NzHkuzfFea+DUbvvz
- hjeI9vW1ULAssXs/4G4E+Jd9Sqze9SP9hYH3VBJDpg==
-X-Google-Smtp-Source: ABdhPJy6EmV/kijD0O5lYgC/y/tG7BvaOubM7LfjvxCX96j17pkf6e0nRm/f++LPHQRFDQ7t06YdyL9HKphcyBMRX3A=
-X-Received: by 2002:aca:1a07:: with SMTP id a7mr587040oia.169.1604605056727;
- Thu, 05 Nov 2020 11:37:36 -0800 (PST)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on2057.outbound.protection.outlook.com [40.107.94.57])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5F07086742
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Nov 2020 19:54:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kFK3nybzlh9Q/yZazQcBAaWKXrBHbchtmFuImAPuj8sJpz+ry0YmyQjRZ2GWGw85/fySWkTC5vHZswks0ZumFL9kXZwBXYzNXWlG9yjBgLzW39gtdBCK+30HyUd5HpncjIDS9TDMC+d56pIceZt7Hurx7By9m+3yD+gRhymdz3019RKoQQnCF8+OQpSj/NjHm/Bf8zRsidu3kuYmS7YvXG2Oot8NN31bf90QXPQFRlBmc3S8KOzx2NrviJvCWW0m+yZ87wKyEX/wQohV/Y+EsHllv0efO+QuWUBVbqJPCC/4i6NYjAKeKX/ZA+Nm0L5T0uUsGZzJFSiqB3rMhqCE1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3iYF4xXPGPnruHtKZbxDygkCRJ+XfGEZD63ZuXg/i/c=;
+ b=lhzXG7ur+aTODzEjz1rwWcXuRTdx2qcDS77RBbopnY0t5ZEzGy9ZONpuwMJlM3dF+FoIqme/SUAE4oAKFD4NDxMsWVVD/myyFejtGsC4t7vbg/JpD/N27rJGa1Jyr5TVHGtKkpx7n1vmh39mwLomu1WanblJNJKIEgCr+R1eMs2JpBvmGAwr8ew+7Yl/aZ+AH8ajfRPcRLd5G8xYqMBW8CWl+/Hi2dpCFNxNi9w6R3TvOCQuBv3tdtjf4vpe4UzRNuybcJNqcMHLQIYAS1GpSBTuiwMsUnzrKEpoPXCc4RU4OO+qmVPoyOrQfTUwVhE+tvC9rfhoP7N4Uem+jXlNlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3iYF4xXPGPnruHtKZbxDygkCRJ+XfGEZD63ZuXg/i/c=;
+ b=NhQgY4V0XPI+wsjSjJ9fzw8h2aUlZFGy31z3kNjdUpwwwohh6Oe4SiGCYvHvj+zDDCknzXf0LkN2duWznU4PlCGu5H6H/TMPKZr5B6u/F5x/TTnOTKJDNTWReuGaPZ3eb5L4NhHwwWCfhUlngPYjm9uPUvVU9rsvO1kj6FcsQug=
+Authentication-Results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=amd.com;
+Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
+ by SN6PR12MB2766.namprd12.prod.outlook.com (2603:10b6:805:78::10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Thu, 5 Nov
+ 2020 19:38:34 +0000
+Received: from SN6PR12MB2767.namprd12.prod.outlook.com
+ ([fe80::d8f2:fde4:5e1d:afec]) by SN6PR12MB2767.namprd12.prod.outlook.com
+ ([fe80::d8f2:fde4:5e1d:afec%3]) with mapi id 15.20.3499.032; Thu, 5 Nov 2020
+ 19:38:34 +0000
+Date: Thu, 5 Nov 2020 19:38:28 +0000
+From: Ashish Kalra <ashish.kalra@amd.com>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v3] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
+ guests.
+Message-ID: <20201105193828.GA25303@ashkalra_ubuntu_server>
+References: <20201104220804.21026-1-Ashish.Kalra@amd.com>
+ <20201104221452.GA26079@char.us.oracle.com>
+ <20201104223913.GA25311@ashkalra_ubuntu_server>
+ <20201105174317.GA4294@char.us.oracle.com>
+ <20201105184115.GA25261@ashkalra_ubuntu_server>
+ <20201105190649.GB5366@char.us.oracle.com>
+Content-Disposition: inline
+In-Reply-To: <20201105190649.GB5366@char.us.oracle.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [165.204.77.1]
+X-ClientProxiedBy: SN1PR12CA0049.namprd12.prod.outlook.com
+ (2603:10b6:802:20::20) To SN6PR12MB2767.namprd12.prod.outlook.com
+ (2603:10b6:805:75::23)
 MIME-Version: 1.0
-References: <20201031003845.41137-1-john.stultz@linaro.org>
- <CACRpkda1MV2=0MOMk3t4mr1RczdvfeiNTdbYXX6Jig+6p3TABA@mail.gmail.com>
-In-Reply-To: <CACRpkda1MV2=0MOMk3t4mr1RczdvfeiNTdbYXX6Jig+6p3TABA@mail.gmail.com>
-From: John Stultz <john.stultz@linaro.org>
-Date: Thu, 5 Nov 2020 11:37:26 -0800
-Message-ID: <CALAqxLV_GG1tPf9NEHhQN0dtL6DJmOvENVvzdnS-4_o3pNOzoA@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] pinctrl: qcom: Allow pinctrl-msm code to be
- loadable as a module
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>, lkml <linux-kernel@vger.kernel.org>,
- Lina Iyer <ilina@codeaurora.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Marc Zyngier <maz@kernel.org>, MSM <linux-arm-msm@vger.kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
- Kalle Valo <kvalo@codeaurora.org>, Todd Kjos <tkjos@google.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from ashkalra_ubuntu_server (165.204.77.1) by
+ SN1PR12CA0049.namprd12.prod.outlook.com (2603:10b6:802:20::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3541.21 via Frontend Transport; Thu, 5 Nov 2020 19:38:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5a5c11aa-6efe-4489-cdef-08d881c26219
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2766:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN6PR12MB27669B4126E765FFA2BFC8458EEE0@SN6PR12MB2766.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LyBvDA0dMwK8RDqP8EdqzIg1TGgAAclowALv6Q4aHBBfNjazj+ePUBdICRnZnzmhQqUue6eW56sjZormk10EE8HvyJGN571psVYhPywjAxKfdMN5JCYggaR/WxN2FTmy625RRpIt5BwEO0ykVzELtXmAqxZpgbYflSgr58skyQCCrWBOQlxoWBHMKUsqqMbbz9M+u7HE+PK1mFw61P1jfeGQMz94tyTeKBgkxbqSXXaHVw2hYMzysCbdcYiSbkPsiebppyeXcPMtDxisRYdcAZR5J+dzBHpAWxMdCquagDNITprGoCJBphN6G6ngOepJPRa1Sqtz71CcMwRej5zFUw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:SN6PR12MB2767.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(33716001)(55016002)(66476007)(4326008)(2906002)(186003)(6916009)(66556008)(8676002)(1076003)(478600001)(316002)(66946007)(16526019)(8936002)(956004)(6666004)(6496006)(44832011)(26005)(5660300002)(86362001)(83380400001)(33656002)(52116002)(9686003)(7416002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: Ohb+V40taCoIj8UVGHbjZD23AJ5rtJW2LiYJH5gNPBY2CwqedohpFs/JQnLPCg+AiAvy14sdCXo10m/AizLTCh7AT854UTD/fOrLw2DV3xZ9S/kehA3uq7VLzWP2jjRAsuKbTo6OBOXNFgUMAvm0B12k9MEGDrQHf5ldpRy5k89i+NVp95r1NZXQaDkKctCQKs3MIDuTs5JTMaUuD/YXcCAsEfoKt6GA4EVvn3uGL4Fx/A2eDwkFhCoSLVv+hfZkk+baqhqoGU7gZMff8DOHU34ZJ+aQLGjtniVuznCtt7bEJJvTR2giOhQ6w6vDe/m2nvFZwH1mPKFTlAhQ6gufuEWZuXxFaTn2E32vezKIAwScVjNYMDdjJiFEQLjNwPIR+AZ89LHs8oTgqYHccaJAHkGJqfeLE4elsJjb88vAp9uZXPe6xh6M57i9SLUzhGl6l4JlpEMa7UnK0Q9DKSg37rcCuMAdj5MxJrzlk86J7hqfualQ6cjCt46S0iorZeZLjXKOAeTaevzJuYo9Ql0rLBvHJagqxb6LRfC6CXzFcRBshFZ4y9vBZrdoeaQwRN7Hd+2nv6i+UpupLVB8vKxn9ZQt+dHAU0bpDqG4j7dKnoqU+CPZBEqALs+yKIZl3JxLbta4U/WydTMOWNTPkrkVvA==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a5c11aa-6efe-4489-cdef-08d881c26219
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2020 19:38:34.4460 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pgHOR1woaujPHrIvv9pnJIyUyCp7Sp/li/HZXsReHzj4a0tYB3a5+I1NczBL02ud1lJoCSxStv6VkVh4yi/y8w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2766
+Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, ssg.sos.patches@amd.com,
+ dave.hansen@linux-intel.com, peterz@infradead.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, bp@alien8.de, luto@kernel.org, hpa@zytor.com,
+ tglx@linutronix.de, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,84 +146,224 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Nov 5, 2020 at 6:17 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Sat, Oct 31, 2020 at 1:38 AM John Stultz <john.stultz@linaro.org> wrote:
->
-> > Tweaks to allow pinctrl-msm code to be loadable as a module.
-> >
-> > This is needed in order to support having the qcom-scm driver,
-> > which pinctrl-msm calls into, configured as a module.
-> >
-> > This requires that we tweak Kconfigs selecting PINCTRL_MSM to
-> > also depend on QCOM_SCM || QCOM_SCM=n so that we match the
-> > module setting of QCOM_SCM.
-> >
-> > Unlike the previous revision of this patch:
-> >   https://lore.kernel.org/lkml/20200625001039.56174-5-john.stultz@linaro.org/
-> > this version reworks PINCTRL_MSM to be a visible option and
-> > instead of having the various SoC specific drivers select
-> > PINCTRL_MSM, this switches those configs to depend on
-> > PINCTRL_MSM. This avoids adding the oddish looking:
-> >   "depend on QCOM_SCM || QCOM_SCM=n"
-> > to every SoC specific driver, as that becomes a maintenance
-> > headache.
-> >
-> > We also add PINCTRL_MSM to the arm64 defconfig to avoid
-> > surprises as otherwise PINCTRL_MSM/IPQ* options previously
-> > enabled, will be off.
-> >
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Andy Gross <agross@kernel.org>
-> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Jason Cooper <jason@lakedaemon.net>
-> > Cc: Marc Zyngier <maz@kernel.org>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: Vinod Koul <vkoul@kernel.org>
-> > Cc: Kalle Valo <kvalo@codeaurora.org>
-> > Cc: Maulik Shah <mkshah@codeaurora.org>
-> > Cc: Lina Iyer <ilina@codeaurora.org>
-> > Cc: Saravana Kannan <saravanak@google.com>
-> > Cc: Todd Kjos <tkjos@google.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: linux-arm-msm@vger.kernel.org
-> > Cc: iommu@lists.linux-foundation.org
-> > Cc: linux-gpio@vger.kernel.org
-> > Signed-off-by: John Stultz <john.stultz@linaro.org>
-> > ---
-> > v2:
-> > * Module description and whitespace fixes suggested by Bjorn
-> > * Added QCOM_SCM || QCOM_SCM=n bits on Kconfigs selecting
-> >   PINCTRL_MSM. Reported by both Todd and Bjorn.
-> > v3:
-> > * Make sure the QCOM_SCM || QCOM_SCM=n trick is commented
-> > v4:
-> > * Rework "select PINCTRL_MSM" to "depends on PINCTRL_MSM"
-> >   to consolidate the QCOM_SCM dependency.
-> > v5:
-> > * Add PINCTRL_MSM to arm64 defconfig
->
-> Bjorn can you have a look at this series?
->
-> BTW John  I'm afraid I just merged a new QCOM subdriver so we might
-> need to respin this to cover all.
->
-> It's an important patch so I'll help out in rebasing it if the only problem is
-> that my tree is moving under your feet.
+On Thu, Nov 05, 2020 at 02:06:49PM -0500, Konrad Rzeszutek Wilk wrote:
+> .
+> > > Right, so I am wondering if we can do this better.
+> > > 
+> > > That is you are never going to get any 32-bit devices with SEV right? That
+> > > is there is nothing that bounds you to always use the memory below 4GB?
+> > > 
+> > 
+> > We do support 32-bit PCIe passthrough devices with SEV.
+> 
+> Ewww..  Which devices would this be?
 
-No worries. I'm mostly wanting to make sure there are no objections
-with switching PINCTRL_MSM from a selected config to a depended
-config.
+That will be difficult to predict as customers could be doing
+passthrough of all kinds of devices.
 
-If that seems ok, I can redo it on whatever point you would like.
+> > 
+> > Therefore, we can't just depend on >4G memory for SWIOTLB bounce buffering
+> > when there is I/O pressure, because we do need to support device
+> > passthrough of 32-bit devices.
+> 
+> Presumarily there is just a handful of them?
+>
+Again, it will be incorrect to assume this.
 
-I realize I can also split that change out separately from the module
-enablement bits as well if its helpful.
+> > 
+> > Considering this, we believe that this patch needs to adjust/extend
+> > boot-allocation of SWIOTLB and we want to keep it simple to do this
+> > within a range detemined by amount of allocated guest memory.
+> 
+> I would prefer to not have to revert this in a year as customers
+> complain about "I paid $$$ and I am wasting half a gig on something 
+> I am not using" and giving customers knobs to tweak this instead of
+> doing the right thing from the start.
 
-thanks
--john
+Currently, we face a lot of situations where we have to tell our
+internal teams/external customers to explicitly increase SWIOTLB buffer
+via the swiotlb parameter on the kernel command line, especially to
+get better I/O performance numbers with SEV. 
+
+So by having this SWIOTLB size adjustment done implicitly (even using a
+static logic) is a great win-win situation. In other words, having even
+a simple and static default increase of SWIOTLB buffer size for SEV is
+really useful for us.
+
+We can always think of adding all kinds of heuristics to this, but that
+just adds too much complexity without any predictable performance gain.
+
+And to add, the patch extends the SWIOTLB size as an architecture
+specific callback, currently it is a simple and static logic for SEV/x86
+specific, but there is always an option to tweak/extend it with
+additional logic in the future.
+
+Thanks,
+Ashish'
+
+> 
+> That is the right thing being something less static.
+> 
+> Can you work with me on what that could be please?
+> 
+> > 
+> > Thanks,
+> > Ashish
+> > 
+> > > What I wonder is if we can combine the boot-allocation of the SWIOTLB
+> > > with the post-boot-allocation of SWIOLTB to stitch together
+> > > continous physical ranges.
+> > > 
+> > > That way you have the flexibility at the start of using 64MB but if there
+> > > is pressure, we grow to a bigger size?
+> > > 
+> > > > 
+> > > > Thanks,
+> > > > Ashish
+> > > > 
+> > > > > > memory.
+> > > > > > 
+> > > > > > Using late_initcall() interface to invoke
+> > > > > > swiotlb_adjust() does not work as the size
+> > > > > > adjustment needs to be done before mem_encrypt_init()
+> > > > > > and reserve_crashkernel() which use the allocated
+> > > > > > SWIOTLB buffer size, hence calling it explicitly
+> > > > > > from setup_arch().
+> > > > > > 
+> > > > > > The SWIOTLB default size adjustment is added as an
+> > > > > > architecture specific interface/callback to allow
+> > > > > > architectures such as those supporting memory
+> > > > > > encryption to adjust/expand SWIOTLB size for their
+> > > > > > use.
+> > > > > > 
+> > > > > > Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+> > > > > > ---
+> > > > > >  arch/x86/kernel/setup.c   |  2 ++
+> > > > > >  arch/x86/mm/mem_encrypt.c | 42 +++++++++++++++++++++++++++++++++++++++
+> > > > > >  include/linux/swiotlb.h   |  1 +
+> > > > > >  kernel/dma/swiotlb.c      | 27 +++++++++++++++++++++++++
+> > > > > >  4 files changed, 72 insertions(+)
+> > > > > > 
+> > > > > > diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+> > > > > > index 3511736fbc74..b073d58dd4a3 100644
+> > > > > > --- a/arch/x86/kernel/setup.c
+> > > > > > +++ b/arch/x86/kernel/setup.c
+> > > > > > @@ -1166,6 +1166,8 @@ void __init setup_arch(char **cmdline_p)
+> > > > > >  	if (boot_cpu_has(X86_FEATURE_GBPAGES))
+> > > > > >  		hugetlb_cma_reserve(PUD_SHIFT - PAGE_SHIFT);
+> > > > > >  
+> > > > > > +	swiotlb_adjust();
+> > > > > > +
+> > > > > >  	/*
+> > > > > >  	 * Reserve memory for crash kernel after SRAT is parsed so that it
+> > > > > >  	 * won't consume hotpluggable memory.
+> > > > > > diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> > > > > > index 3f248f0d0e07..e0deb157cddd 100644
+> > > > > > --- a/arch/x86/mm/mem_encrypt.c
+> > > > > > +++ b/arch/x86/mm/mem_encrypt.c
+> > > > > > @@ -489,7 +489,49 @@ static void print_mem_encrypt_feature_info(void)
+> > > > > >  	pr_cont("\n");
+> > > > > >  }
+> > > > > >  
+> > > > > > +#define TOTAL_MEM_1G	0x40000000UL
+> > > > > > +#define TOTAL_MEM_4G	0x100000000UL
+> > > > > > +
+> > > > > > +#define SIZE_128M (128UL<<20)
+> > > > > > +#define SIZE_256M (256UL<<20)
+> > > > > > +#define SIZE_512M (512UL<<20)
+> > > > > > +
+> > > > > >  /* Architecture __weak replacement functions */
+> > > > > > +unsigned long __init arch_swiotlb_adjust(unsigned long iotlb_default_size)
+> > > > > > +{
+> > > > > > +	unsigned long size = 0;
+> > > > > > +
+> > > > > > +	/*
+> > > > > > +	 * For SEV, all DMA has to occur via shared/unencrypted pages.
+> > > > > > +	 * SEV uses SWOTLB to make this happen without changing device
+> > > > > > +	 * drivers. However, depending on the workload being run, the
+> > > > > > +	 * default 64MB of SWIOTLB may not be enough & SWIOTLB may
+> > > > > > +	 * run out of buffers for DMA, resulting in I/O errors and/or
+> > > > > > +	 * performance degradation especially with high I/O workloads.
+> > > > > > +	 * Increase the default size of SWIOTLB for SEV guests using
+> > > > > > +	 * a minimum value of 128MB and a maximum value of 512MB,
+> > > > > > +	 * depending on amount of provisioned guest memory.
+> > > > > > +	 */
+> > > > > > +	if (sev_active()) {
+> > > > > > +		phys_addr_t total_mem = memblock_phys_mem_size();
+> > > > > > +
+> > > > > > +		if (total_mem <= TOTAL_MEM_1G)
+> > > > > > +			size = clamp(iotlb_default_size * 2, SIZE_128M,
+> > > > > > +				     SIZE_128M);
+> > > > > > +		else if (total_mem <= TOTAL_MEM_4G)
+> > > > > > +			size = clamp(iotlb_default_size * 4, SIZE_256M,
+> > > > > > +				     SIZE_256M);
+> > > > > > +		else
+> > > > > > +			size = clamp(iotlb_default_size * 8, SIZE_512M,
+> > > > > > +				     SIZE_512M);
+> > > > > > +
+> > > > > > +		pr_info("SEV adjusted max SWIOTLB size = %luMB",
+> > > > > > +			size >> 20);
+> > > > > > +	}
+> > > > > > +
+> > > > > > +	return size;
+> > > > > > +}
+> > > > > > +
+> > > > > >  void __init mem_encrypt_init(void)
+> > > > > >  {
+> > > > > >  	if (!sme_me_mask)
+> > > > > > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> > > > > > index 046bb94bd4d6..01ae6d891327 100644
+> > > > > > --- a/include/linux/swiotlb.h
+> > > > > > +++ b/include/linux/swiotlb.h
+> > > > > > @@ -33,6 +33,7 @@ extern void swiotlb_init(int verbose);
+> > > > > >  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
+> > > > > >  extern unsigned long swiotlb_nr_tbl(void);
+> > > > > >  unsigned long swiotlb_size_or_default(void);
+> > > > > > +extern void __init swiotlb_adjust(void);
+> > > > > >  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
+> > > > > >  extern void __init swiotlb_update_mem_attributes(void);
+> > > > > >  
+> > > > > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > > > > > index c19379fabd20..66a9e627bb51 100644
+> > > > > > --- a/kernel/dma/swiotlb.c
+> > > > > > +++ b/kernel/dma/swiotlb.c
+> > > > > > @@ -163,6 +163,33 @@ unsigned long swiotlb_size_or_default(void)
+> > > > > >  	return size ? size : (IO_TLB_DEFAULT_SIZE);
+> > > > > >  }
+> > > > > >  
+> > > > > > +unsigned long __init __weak arch_swiotlb_adjust(unsigned long size)
+> > > > > > +{
+> > > > > > +	return 0;
+> > > > > > +}
+> > > > > > +
+> > > > > > +void __init swiotlb_adjust(void)
+> > > > > > +{
+> > > > > > +	unsigned long size;
+> > > > > > +
+> > > > > > +	/*
+> > > > > > +	 * If swiotlb parameter has not been specified, give a chance to
+> > > > > > +	 * architectures such as those supporting memory encryption to
+> > > > > > +	 * adjust/expand SWIOTLB size for their use.
+> > > > > > +	 */
+> > > > > > +	if (!io_tlb_nslabs) {
+> > > > > > +		size = arch_swiotlb_adjust(IO_TLB_DEFAULT_SIZE);
+> > > > > > +		if (size) {
+> > > > > > +			size = ALIGN(size, 1 << IO_TLB_SHIFT);
+> > > > > > +			io_tlb_nslabs = size >> IO_TLB_SHIFT;
+> > > > > > +			io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
+> > > > > > +
+> > > > > > +			pr_info("architecture adjusted SWIOTLB slabs = %lu\n",
+> > > > > > +				io_tlb_nslabs);
+> > > > > > +		}
+> > > > > > +	}
+> > > > > > +}
+> > > > > > +
+> > > > > >  void swiotlb_print_info(void)
+> > > > > >  {
+> > > > > >  	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+> > > > > > -- 
+> > > > > > 2.17.1
+> > > > > > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
