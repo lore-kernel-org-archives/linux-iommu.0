@@ -2,103 +2,142 @@ Return-Path: <SRS0=4FG6=EM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E82C4741F
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 04:27:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23C1C2D0A3
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 05:51:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 811AA2075A
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 04:27:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E5C6220867
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 05:51:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Hu5jg04R"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 811AA2075A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=emerson.onmicrosoft.com header.i=@emerson.onmicrosoft.com header.b="suZ4fnNn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5C6220867
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=emerson.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0D49E8435A;
-	Fri,  6 Nov 2020 04:27:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 322BA8672F;
+	Fri,  6 Nov 2020 05:51:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X2sDiRgzlW1D; Fri,  6 Nov 2020 04:27:21 +0000 (UTC)
+	with ESMTP id SHEKn6eBXS-b; Fri,  6 Nov 2020 05:51:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 685A684331;
-	Fri,  6 Nov 2020 04:27:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 87148866E5;
+	Fri,  6 Nov 2020 05:51:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 54CC5C0893;
-	Fri,  6 Nov 2020 04:27:21 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C76C5C0889
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 04:27:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 66C49C088B;
+	Fri,  6 Nov 2020 05:51:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0B95C0889
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 05:51:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id BCABE8736F
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 04:27:18 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 5FCCA20398
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 05:51:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1MVXIk6nj6vb for <iommu@lists.linux-foundation.org>;
- Fri,  6 Nov 2020 04:27:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
- [209.85.215.194])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 54293870F6
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 04:27:17 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id i7so2975583pgh.6
- for <iommu@lists.linux-foundation.org>; Thu, 05 Nov 2020 20:27:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=NUyUANspNtxDV6SxRCRDpb8/aThmojrVXw0zcthEhBk=;
- b=Hu5jg04RZzsiEQNEkfBdU7HvTeClSbA9rbqmuTpj13kO6V2WvZdvCTlRkSjPq6d+JL
- rwyJm4LFVyIzI6qM/IJjtwf2Y6bDJrgU+FSGuIit1HGlJxOSjCMyMF44Gg4UyFUG7qO3
- xJS0t4YYM7RIjwwv/ukdeVzHGljKFPSmfxl3eGcGS51EgrhCGt5LaLCK5wRjh1KedWUb
- 5zZdnbWKoSsU9m+RhG56xzrPNLx7NZ3BTIypYAK58JQHiBVaFXrtYc40iqdIyPwMVkVg
- uCBuF/Wu+WPso6v95Q4CbfbJKsSR+3FYzz3JL3DYmMZIZpTsSU2T/HFaWyMxl/0nXhi4
- 4d9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=NUyUANspNtxDV6SxRCRDpb8/aThmojrVXw0zcthEhBk=;
- b=iTzeCnhnfHRRhMQ+eh4g4SRT6M4K3q4N5jGYtPyo7rT7uMBwHmOyNoLjEA3cUcA7NT
- 2nP7EZvOYFNUUV/LRCLEPRnenR+W3zCIqsZKFt//kla2dS/atz2asRUoQXtqddxcJH/I
- TXiUCrQ3k50GQhk8CfF3+zkHxS45K8jJ/S/sB5VPz13n6u4yfUYlN/7b9JFhaj6lJgWF
- JMWpDPFz+6WSWS01kvNiMxEzgYaAuojev6MY4kpiat/hi/UGyycgYJwG+v7e00QZo0rK
- 1Ae5ckX6Qxhi7EEkQSci9IrmIMicrkNmg3/y8vq4t6+gLZBSF4GyYvyR02hdpIIPApvs
- T8kw==
-X-Gm-Message-State: AOAM533Jt76mcWJ+ebYfqy0xupyAYBTy5vBtkmSECWCK6JWE38ILN73o
- IsSFg20oBdFU4pV2qPPmx8OtDw==
-X-Google-Smtp-Source: ABdhPJxCgyO1IUphemwtnrgRQaBdpcBmVSqDyVQVBYjefKLrAb/d38xXs4evPD2oZV9TF1NkjAjypg==
-X-Received: by 2002:a63:d357:: with SMTP id u23mr161799pgi.106.1604636837005; 
- Thu, 05 Nov 2020 20:27:17 -0800 (PST)
-Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
- by smtp.gmail.com with ESMTPSA id
- e24sm179864pfl.149.2020.11.05.20.27.15
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 05 Nov 2020 20:27:16 -0800 (PST)
-From: John Stultz <john.stultz@linaro.org>
-To: lkml <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 3/3] firmware: QCOM_SCM: Allow qcom_scm driver to be
- loadable as a permenent module
-Date: Fri,  6 Nov 2020 04:27:10 +0000
-Message-Id: <20201106042710.55979-3-john.stultz@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201106042710.55979-1-john.stultz@linaro.org>
-References: <20201106042710.55979-1-john.stultz@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux-foundation.org,
- Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
- Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>, Marc Zyngier <maz@kernel.org>,
- linux-arm-msm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
- Will Deacon <will@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Kalle Valo <kvalo@codeaurora.org>, Todd Kjos <tkjos@google.com>
+ with ESMTP id LJJ50mXsOLEO for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Nov 2020 05:51:21 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-00300601.pphosted.com (mx0a-00300601.pphosted.com
+ [148.163.146.64])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0115720353
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 05:51:20 +0000 (UTC)
+Received: from pps.filterd (m0142705.ppops.net [127.0.0.1])
+ by mx0b-00300601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 0A65o1xA109860; Fri, 6 Nov 2020 05:51:20 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11lp2175.outbound.protection.outlook.com [104.47.57.175])
+ by mx0b-00300601.pphosted.com with ESMTP id 34n0b7g65t-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 06 Nov 2020 05:51:20 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KRB2WS3rpZ1Fh3KZZeLQ5i1Yb2Vjmk9yuPiaQ1XXrWI8zb0HJWljVRLJl494oOqHyb/odJhboo1ACSR4/nxkz1DgwWxGXE1uJXb1ROZY37jX7IxW67zFAu/UfnbKeSKYHhcCtqANiEbBfkw2OoYIFBbXARFkcJzf1NleQR2dCZsFZ45R5xonFOo2GFjG1mEEnRdUBAmjtgOpbUPNgEBd9wKNg/dFuj7mUXJ1V3Oqii+LiQFc37/vGb4KIPpS1sN7jQO1kxmKKbD45i7z1154dL8iIOthM+gSg3I/d0w0GUB2i5PrD6DYxzyUJppsm2IikIlabLeccmbOtoDYXiaaSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HWJtj/KyXdDj/OFFzNExYP3nTbBldSgApSNHoWxotQI=;
+ b=Wc22PHSfgrogiu6DSws38zrOBZkEsEt5pHn/ayY1M8frggAiRfRbO0jLEwmv/Zb9As7GF3ussjIxabY3GFkS34AQVE0xcEoCJy+nwChsPS7bDgV6OZI81g8kwNeDb0cpiURASnjra/9PwKugRIzE5O+9nCuigzvSebkhofexAmFY3FToZQY1rqLIiJZEve1jJwk+La+8M3rQeMdzqM343D4T8douph1OC/QHE0i7oCLlCQ5+n85DsPZEVIULWJVMBeaMjZhin+XTfOsggkwBo5EPJQN+apSIEE8dD19q/YtGKeQKZg13dcM8/xxm/CyFO40/MP7a9kx8aYqYeJYkxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=emerson.com; dmarc=pass action=none header.from=emerson.com;
+ dkim=pass header.d=emerson.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=emerson.onmicrosoft.com; s=selector2-emerson-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HWJtj/KyXdDj/OFFzNExYP3nTbBldSgApSNHoWxotQI=;
+ b=suZ4fnNnT6x6qbzc9T8tJBgGy2MP2mYV5e47sbDbCNoslhFOngRIN6vP2phWJFoUpD54SbOAvW+nw0ZUppsc6ER9STkyBmuo7rT5mERV55xVWMfofQTd2ggMxsBWXnso3HAIFzEs9c4YITm98uTZzWjW+AwGTgy+DGWWqG7iC2M=
+Received: from MWHPR10MB1310.namprd10.prod.outlook.com (2603:10b6:300:21::18)
+ by CO1PR10MB4787.namprd10.prod.outlook.com (2603:10b6:303:94::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Fri, 6 Nov
+ 2020 05:51:18 +0000
+Received: from MWHPR10MB1310.namprd10.prod.outlook.com
+ ([fe80::d85:aa30:739f:496e]) by MWHPR10MB1310.namprd10.prod.outlook.com
+ ([fe80::d85:aa30:739f:496e%12]) with mapi id 15.20.3499.032; Fri, 6 Nov 2020
+ 05:51:18 +0000
+From: "Merger, Edgar [AUTOSOL/MAS/AUGS]" <Edgar.Merger@emerson.com>
+To: "jroedel@suse.de" <jroedel@suse.de>
+Subject: RE: [EXTERNAL] Re: amdgpu error whenever IOMMU is enabled
+Thread-Topic: [EXTERNAL] Re: amdgpu error whenever IOMMU is enabled
+Thread-Index: Adaux7yL4OYKNrMETgKrPGK8SdhnWADwCzYAAADVBeAAAgZUAAAHYTJQAAGocXAAKw/AQAABvexwAAFDxYAAJDqaYA==
+Date: Fri, 6 Nov 2020 05:51:18 +0000
+Message-ID: <MWHPR10MB1310C1E8308484E2F7F967E889ED0@MWHPR10MB1310.namprd10.prod.outlook.com>
+References: <MWHPR10MB1310CDB6829DDCF5EA84A14689150@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <20201104085306.GQ22179@suse.de>
+ <MWHPR10MB13109574BDA0F1D8219A225C89EF0@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <20201104101454.GR22179@suse.de>
+ <MWHPR10MB13108FAFDAD3D33132B6593489EF0@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <MWHPR10MB13106AFEA3B68E666DD9CA6089EF0@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <MWHPR10MB13107C8A602FD7EE065F4E3D89EE0@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <MWHPR10MB1310AA6CDF577A1535600F7089EE0@MWHPR10MB1310.namprd10.prod.outlook.com>
+ <20201105123245.GS22179@suse.de>
+In-Reply-To: <20201105123245.GS22179@suse.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: suse.de; dkim=none (message not signed)
+ header.d=none;suse.de; dmarc=none action=none header.from=emerson.com;
+x-originating-ip: [194.140.115.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7be44c7a-b268-439b-8011-08d88217fb60
+x-ms-traffictypediagnostic: CO1PR10MB4787:
+x-microsoft-antispam-prvs: <CO1PR10MB4787E585AEECDDB02DB772B889ED0@CO1PR10MB4787.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rpZ/H4EJb+FhPkXn9rhl275z6IS3tULdsLRbxvx7Lq/mOyeNIJZ23UhEYsXt45LDJeqAoBFZcWAvD1vXmqkEAHaUk5GPlDHtXPdHz++vWGliFTNf5qN9M8Yk7EqtQ8n/PvBzBYknqKkOdbCUMm88KdHi5TRvTgzr+Ypt5wnBAYynikyFdZnW2oY8XZHtejlz9tm4vXNoX+hY19+vMsqp+ZHqEMxqX5WNOKHD08iboQdiF8L9+JXut80vMKAARibLkMUEc0HzGPBNL2rQI8LHf68tI6NuChxnNRqT9cUqLLyRzhgfRH1h8nOmafSKCp+l
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR10MB1310.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(366004)(136003)(346002)(39860400002)(376002)(396003)(86362001)(26005)(478600001)(8936002)(4744005)(316002)(8676002)(7696005)(6916009)(5660300002)(71200400001)(53546011)(52536014)(55016002)(33656002)(66446008)(9686003)(66556008)(66946007)(64756008)(76116006)(66476007)(2906002)(83380400001)(6506007)(4326008)(186003);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: Ctpb2yLazFDJph+R+PHX2haN/NHyxx9EIW0PSUUg8We3hD4UXyM3HXKdFS39zvJeLCxc5bY6NlVJt5lmqYPUSDohLXkmD34HYWwh2K+sbijKspWSEhYgf65YaDjgK/nTzoOfRsoCyC9HTUsQ8HtHANSjljub0nFClgdNC3/nY2lftu/1B3QEEVWzsCEJPvVUOvgyUeviafj9DQPhne9AukOX2jhQJZK110NeaBLfUzC11PL4DXyzqSt7c7qq01cey0WTOkhYyJsKny+csBOUHyRdZqZiGiTSu2FB/cTqgRRZ06crsloq2oFWjg/X8YQuqdTfXgtefr8Xx/FMbULsYG7V6OCVqrUOa07pK8TGQo5tb4JbPIn9JBBvptsx9D2jedOOmpwP6BxH3DwwmoIKwFE2g+hZrfF10xXNzumdQx6QyWCPAXcVq8qvfGgQW1OpZ6v18jue+87bcJWFUI/jS1eW+LPKOLYPv4N0R9vllCL5I81yhmwwTbra8B0yqDBCVzg1dRWHexXsVLayI3ecWng+GVCd+VNQMuHER8j93cdF8Ca3crB2XNWIFy90EtjF3HXRHwQwH3fYkqa2CntTiqtIFGteL2rtvwndF9yUPDn/3kxKqnsgKoR7GQrx1uRW1om9bbicqSa7zK2oYeZ4nA==
+x-ms-exchange-transport-forked: True
+MIME-Version: 1.0
+X-OriginatorOrg: Emerson.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR10MB1310.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7be44c7a-b268-439b-8011-08d88217fb60
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2020 05:51:18.4879 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eb06985d-06ca-4a17-81da-629ab99f6505
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CPYszvBD90/66ys9Om+TwijFNaPdCETgmMP9cahIqeidi2ftHo2lbyTBHGPt7Bhb3JuKTo/BiZ1g/EeE1WHnrVMC0r8TG1/4zvObSx7bEIk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4787
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312, 18.0.737
+ definitions=2020-11-06_01:2020-11-05,
+ 2020-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0
+ mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ impostorscore=0 clxscore=1015 suspectscore=0 mlxscore=0 adultscore=0
+ spamscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011060039
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,144 +150,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allow the qcom_scm driver to be loadable as a permenent module.
+With Kernel 5.9.3 kernel-parameter pci=noats the system is running for 19hours now in reboot-test without the error to occur.
 
-This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
-ensure that drivers that call into the qcom_scm driver are
-also built as modules. While not ideal in some cases its the
-only safe way I can find to avoid build errors without having
-those drivers select QCOM_SCM and have to force it on (as
-QCOM_SCM=n can be valid for those drivers).
+Best regards,
+Edgar
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
-Cc: Lina Iyer <ilina@codeaurora.org>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-msm@vger.kernel.org
+-----Original Message-----
+From: jroedel@suse.de <jroedel@suse.de> 
+Sent: Donnerstag, 5. November 2020 13:33
+To: Merger, Edgar [AUTOSOL/MAS/AUGS] <Edgar.Merger@emerson.com>
 Cc: iommu@lists.linux-foundation.org
-Cc: linux-gpio@vger.kernel.org
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: John Stultz <john.stultz@linaro.org>
----
-v3:
-* Fix __arm_smccc_smc build issue reported by
-  kernel test robot <lkp@intel.com>
-v4:
-* Add "depends on QCOM_SCM || !QCOM_SCM" bit to ath10k
-  config that requires it.
-v5:
-* Fix QCOM_QCM typo in Kconfig, it should be QCOM_SCM
----
- drivers/firmware/Kconfig                | 4 ++--
- drivers/firmware/Makefile               | 3 ++-
- drivers/firmware/qcom_scm.c             | 4 ++++
- drivers/iommu/Kconfig                   | 2 ++
- drivers/net/wireless/ath/ath10k/Kconfig | 1 +
- 5 files changed, 11 insertions(+), 3 deletions(-)
+Subject: Re: [EXTERNAL] Re: amdgpu error whenever IOMMU is enabled
 
-diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-index 3315e3c215864..5e369928bc567 100644
---- a/drivers/firmware/Kconfig
-+++ b/drivers/firmware/Kconfig
-@@ -235,8 +235,8 @@ config INTEL_STRATIX10_RSU
- 	  Say Y here if you want Intel RSU support.
- 
- config QCOM_SCM
--	bool
--	depends on ARM || ARM64
-+	tristate "Qcom SCM driver"
-+	depends on (ARM && HAVE_ARM_SMCCC) || ARM64
- 	select RESET_CONTROLLER
- 
- config QCOM_SCM_DOWNLOAD_MODE_DEFAULT
-diff --git a/drivers/firmware/Makefile b/drivers/firmware/Makefile
-index 5e013b6a3692e..523173cbff335 100644
---- a/drivers/firmware/Makefile
-+++ b/drivers/firmware/Makefile
-@@ -17,7 +17,8 @@ obj-$(CONFIG_ISCSI_IBFT)	+= iscsi_ibft.o
- obj-$(CONFIG_FIRMWARE_MEMMAP)	+= memmap.o
- obj-$(CONFIG_RASPBERRYPI_FIRMWARE) += raspberrypi.o
- obj-$(CONFIG_FW_CFG_SYSFS)	+= qemu_fw_cfg.o
--obj-$(CONFIG_QCOM_SCM)		+= qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
-+obj-$(CONFIG_QCOM_SCM)		+= qcom-scm.o
-+qcom-scm-objs += qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
- obj-$(CONFIG_TI_SCI_PROTOCOL)	+= ti_sci.o
- obj-$(CONFIG_TRUSTED_FOUNDATIONS) += trusted_foundations.o
- obj-$(CONFIG_TURRIS_MOX_RWTM)	+= turris-mox-rwtm.o
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index 7be48c1bec96d..6f431b73e617d 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -1280,6 +1280,7 @@ static const struct of_device_id qcom_scm_dt_match[] = {
- 	{ .compatible = "qcom,scm" },
- 	{}
- };
-+MODULE_DEVICE_TABLE(of, qcom_scm_dt_match);
- 
- static struct platform_driver qcom_scm_driver = {
- 	.driver = {
-@@ -1295,3 +1296,6 @@ static int __init qcom_scm_init(void)
- 	return platform_driver_register(&qcom_scm_driver);
- }
- subsys_initcall(qcom_scm_init);
-+
-+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. SCM driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 04878caf6da49..c64d7a2b65134 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -248,6 +248,7 @@ config SPAPR_TCE_IOMMU
- config ARM_SMMU
- 	tristate "ARM Ltd. System MMU (SMMU) Support"
- 	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -375,6 +376,7 @@ config QCOM_IOMMU
- 	# Note: iommu drivers cannot (yet?) be built as modules
- 	bool "Qualcomm IOMMU Support"
- 	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on QCOM_SCM=y
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
-diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
-index 40f91bc8514d8..741289e385d59 100644
---- a/drivers/net/wireless/ath/ath10k/Kconfig
-+++ b/drivers/net/wireless/ath/ath10k/Kconfig
-@@ -44,6 +44,7 @@ config ATH10K_SNOC
- 	tristate "Qualcomm ath10k SNOC support"
- 	depends on ATH10K
- 	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
- 	select QCOM_QMI_HELPERS
- 	help
- 	  This module adds support for integrated WCN3990 chip connected
--- 
-2.17.1
+On Thu, Nov 05, 2020 at 11:58:30AM +0000, Merger, Edgar [AUTOSOL/MAS/AUGS] wrote:
+> One remark:
+> With kernel-parameter pci=noats in dmesg there is
+> 
+> [   10.128463] kfd kfd: Error initializing iommuv2
 
+That is expected. IOMMUv2 depends on ATS support.
+
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
