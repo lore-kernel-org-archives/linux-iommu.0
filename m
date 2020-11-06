@@ -2,103 +2,82 @@ Return-Path: <SRS0=4FG6=EM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0D1C63697
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 18:20:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7A9C55178
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 18:20:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF2B4221FA
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 18:20:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 169E9208FE
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 18:20:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="WEavvMGU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF2B4221FA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="vD/64GD7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 169E9208FE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8D0ED86ACC;
-	Fri,  6 Nov 2020 18:20:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CC4872E130;
+	Fri,  6 Nov 2020 18:20:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EZApNURhaK-J; Fri,  6 Nov 2020 18:20:23 +0000 (UTC)
+	with ESMTP id iti9IntZnZ-l; Fri,  6 Nov 2020 18:20:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CC78786AD0;
-	Fri,  6 Nov 2020 18:20:22 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1252F2E13B;
+	Fri,  6 Nov 2020 18:20:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AFA5FC1AD5;
-	Fri,  6 Nov 2020 18:20:22 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CE097C1AD6
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F27FAC0893;
+	Fri,  6 Nov 2020 18:20:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AE0CC0889
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AEFAE86C55
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:18 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 86F678754B
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WBjpyU3iDGP3 for <iommu@lists.linux-foundation.org>;
- Fri,  6 Nov 2020 18:20:18 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 24C3186BF1
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:18 +0000 (UTC)
+ with ESMTP id aWBjbr+0bmuo for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Nov 2020 18:20:21 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D6CCD87526
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 18:20:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4c2lQ6ZJoiJD4wddIsh1sqnOjISbk8NdEHLgyMHjsI4=; b=WEavvMGUHHtVS6NthMSIjYgE8G
- m2Shk+887YnWyl84qAu5c5aSnwfmdgsQkwuV6Qk/VTpfpITmSKpZTStz2VoJeuvrgKYFgbkpcC2x9
- +Eygs4xkSnIjwB3jk8TQYbV+xWQY2KzZLECeTap/XHrhF7RfsNefRy2cKKo9kcYj3Hkd43uD6lH8r
- UeDxe01Yy7KFTC7wo/J2Zw1d3VJYZkJMQ5JZSmcYq3a5l1dL0v2dLl8ounQVMEe9onzzakY4UYleu
- immFBl00AOuIB6Gr3JQNUHz9T+DktFRE1Gznw7frT3XHfeD8UYFSjQcgB6Z9ymXrL/hXHs6bQE5SP
- AZUhpu/A==;
-Received: from s01060023bee90a7d.cg.shawcable.net ([24.64.145.4]
- helo=[192.168.0.10])
- by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.92) (envelope-from <logang@deltatee.com>)
- id 1kb6LI-0003vN-G2; Fri, 06 Nov 2020 11:20:09 -0700
+ d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+ References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-Type:Content-ID:Content-Description;
+ bh=6i+ZQBC5XZcaf/YFDznwfiEdycwkjc1Y9jVRZuhej00=; b=vD/64GD71o5eXoUcpM/pMq7C5Q
+ BRpA+tQa3c5ev/wh5nWlIONnQpXda1mskNB4X3AWGEaAnUeqWX65BIK4mWp0Wc50sEPNkMu/mUAba
+ Qdv5Cn1uT1Z1EX2fPNyqt+Ybdli3027UuyroqnDBdwml7p1pm0Oo5YdmQ4UXgBqIFhicPnMMCzGce
+ QGyuqEhjgeovUD6PaAVvTsWcbDLVm0vALlVjocWucdh++UVDVXGHBG1uW+Q9PoUGn7+AJB3ks7VUf
+ lbvS2x9KXnPK6HIiPtHQJLZcwUOf1wOeIgVk6bw0GHOGqkyh1J1IalUFJud09gk9WQ10c52LJ4lMl
+ 8IPh/u+w==;
+Received: from [2001:4bb8:184:9a8d:9e34:f7f4:e59e:ad6f] (helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kb6LG-0005g8-CB; Fri, 06 Nov 2020 18:20:06 +0000
+From: Christoph Hellwig <hch@lst.de>
 To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20201106170036.18713-1-logang@deltatee.com>
- <20201106170036.18713-15-logang@deltatee.com>
- <20201106172206.GS36674@ziepe.ca>
- <b1e8dfce-d583-bed8-d04d-b7265a54c99f@deltatee.com>
- <20201106174223.GU36674@ziepe.ca>
- <2c2d2815-165e-2ef9-60d6-3ace7ff3aaa5@deltatee.com>
- <20201106180922.GV36674@ziepe.ca>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <09885400-36f8-bc1d-27f0-a8adcf6104d4@deltatee.com>
-Date: Fri, 6 Nov 2020 11:20:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+Subject: [PATCH 10/10] dma-mapping: remove dma_virt_ops
+Date: Fri,  6 Nov 2020 19:19:41 +0100
+Message-Id: <20201106181941.1878556-11-hch@lst.de>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201106181941.1878556-1-hch@lst.de>
+References: <20201106181941.1878556-1-hch@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <20201106180922.GV36674@ziepe.ca>
-Content-Language: en-US
-X-SA-Exim-Connect-IP: 24.64.145.4
-X-SA-Exim-Rcpt-To: daniel.vetter@ffwll.ch, willy@infradead.org,
- ddutile@redhat.com, jhubbard@nvidia.com, iweiny@intel.com,
- christian.koenig@amd.com, dan.j.williams@intel.com, hch@lst.de,
- sbates@raithlin.com, iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [RFC PATCH 14/15] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ira Weiny <iweiny@intel.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-block@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Matthew Wilcox <willy@infradead.org>,
- John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Christoph Hellwig <hch@lst.de>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: rds-devel@oss.oracle.com, Zhu Yanjun <yanjunz@nvidia.com>,
+ Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+ linux-rdma@vger.kernel.org, linux-pci@vger.kernel.org,
+ Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <bhelgaas@google.com>,
+ Bernard Metzler <bmt@zurich.ibm.com>, Logan Gunthorpe <logang@deltatee.com>,
+ Santosh Shilimkar <santosh.shilimkar@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,41 +95,128 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Now that the RDMA core deals with devices that only do DMA mapping in
+lower layers properly, there is no user for dma_virt_ops and it can
+be removed.
 
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ include/linux/dma-mapping.h |  2 --
+ kernel/dma/Kconfig          |  5 ---
+ kernel/dma/Makefile         |  1 -
+ kernel/dma/virt.c           | 61 -------------------------------------
+ 4 files changed, 69 deletions(-)
+ delete mode 100644 kernel/dma/virt.c
 
-On 2020-11-06 11:09 a.m., Jason Gunthorpe wrote:
->> Ah, hmm, yes. I guess the pages have to be hooked and returned to the
->> genalloc through free_devmap_managed_page(). 
-> 
-> That sounds about right, but in this case it doesn't need the VMA
-> operations.
-> 
->> Seems like it might be doable... but it will complicate things for
->> users that don't want to use the genpool (though no such users exist
->> upstream).
-> 
-> I would like to use this stuff in RDMA pretty much immediately and the
-> genpool is harmful for those cases, so please don't make decisions
-> that are tying thing to genpool
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 956151052d4542..2aaed35b556df4 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -565,6 +565,4 @@ static inline int dma_mmap_wc(struct device *dev,
+ int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
+ 		dma_addr_t dma_start, u64 size);
+ 
+-extern const struct dma_map_ops dma_virt_ops;
+-
+ #endif /* _LINUX_DMA_MAPPING_H */
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index c99de4a2145889..fd2db2665fc691 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -75,11 +75,6 @@ config ARCH_HAS_DMA_PREP_COHERENT
+ config ARCH_HAS_FORCE_DMA_UNENCRYPTED
+ 	bool
+ 
+-config DMA_VIRT_OPS
+-	bool
+-	depends on HAS_DMA
+-	select DMA_OPS
+-
+ config SWIOTLB
+ 	bool
+ 	select NEED_DMA_MAP_STATE
+diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+index dc755ab68aabf9..cd1d86358a7a62 100644
+--- a/kernel/dma/Makefile
++++ b/kernel/dma/Makefile
+@@ -5,7 +5,6 @@ obj-$(CONFIG_DMA_OPS)			+= ops_helpers.o
+ obj-$(CONFIG_DMA_OPS)			+= dummy.o
+ obj-$(CONFIG_DMA_CMA)			+= contiguous.o
+ obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+-obj-$(CONFIG_DMA_VIRT_OPS)		+= virt.o
+ obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+ obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+ obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+diff --git a/kernel/dma/virt.c b/kernel/dma/virt.c
+deleted file mode 100644
+index 59d32317dd574a..00000000000000
+--- a/kernel/dma/virt.c
++++ /dev/null
+@@ -1,61 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * DMA operations that map to virtual addresses without flushing memory.
+- */
+-#include <linux/export.h>
+-#include <linux/mm.h>
+-#include <linux/dma-map-ops.h>
+-#include <linux/scatterlist.h>
+-
+-static void *dma_virt_alloc(struct device *dev, size_t size,
+-			    dma_addr_t *dma_handle, gfp_t gfp,
+-			    unsigned long attrs)
+-{
+-	void *ret;
+-
+-	ret = (void *)__get_free_pages(gfp | __GFP_ZERO, get_order(size));
+-	if (ret)
+-		*dma_handle = (uintptr_t)ret;
+-	return ret;
+-}
+-
+-static void dma_virt_free(struct device *dev, size_t size,
+-			  void *cpu_addr, dma_addr_t dma_addr,
+-			  unsigned long attrs)
+-{
+-	free_pages((unsigned long)cpu_addr, get_order(size));
+-}
+-
+-static dma_addr_t dma_virt_map_page(struct device *dev, struct page *page,
+-				    unsigned long offset, size_t size,
+-				    enum dma_data_direction dir,
+-				    unsigned long attrs)
+-{
+-	return (uintptr_t)(page_address(page) + offset);
+-}
+-
+-static int dma_virt_map_sg(struct device *dev, struct scatterlist *sgl,
+-			   int nents, enum dma_data_direction dir,
+-			   unsigned long attrs)
+-{
+-	int i;
+-	struct scatterlist *sg;
+-
+-	for_each_sg(sgl, sg, nents, i) {
+-		BUG_ON(!sg_page(sg));
+-		sg_dma_address(sg) = (uintptr_t)sg_virt(sg);
+-		sg_dma_len(sg) = sg->length;
+-	}
+-
+-	return nents;
+-}
+-
+-const struct dma_map_ops dma_virt_ops = {
+-	.alloc			= dma_virt_alloc,
+-	.free			= dma_virt_free,
+-	.map_page		= dma_virt_map_page,
+-	.map_sg			= dma_virt_map_sg,
+-	.alloc_pages		= dma_common_alloc_pages,
+-	.free_pages		= dma_common_free_pages,
+-};
+-EXPORT_SYMBOL(dma_virt_ops);
+-- 
+2.28.0
 
-I certainly can't make decisions for code that isn't currently upstream.
-So you will almost certainly have to make changes for the code you want
-to add, as is the standard procedure. I can't and should not export APIs
-that you might need that have no upstream users, but you are certainly
-free to send patches that create them when you add the use case.
-
-Ultimately, if you aren't using the genpool you will have to implement
-your own mmap operation that somehow allocates the pages and your own
-page_free hook. The latter can be accommodated for by a patch that
-splits off pci_p2pdma_add_resource() into a function that doesn't use
-the genpool (I've already seen two independent developers create a
-similar patch for this but with no upstream user, they couldn't be taken
-upstream).
-
-I also don't expect this to be going upstream in the near term so don't
-get too excited about using it.
-
-Logan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
