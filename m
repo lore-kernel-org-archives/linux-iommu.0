@@ -2,107 +2,74 @@ Return-Path: <SRS0=4FG6=EM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C002FC55178
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 20:03:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DFEC5517A
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 21:13:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 034A12072E
-	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 20:03:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4ECF1221F8
+	for <iommu@archiver.kernel.org>; Fri,  6 Nov 2020 21:13:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="dA51HxqS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 034A12072E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="fthJfn7S"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4ECF1221F8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5E0F786AA4;
-	Fri,  6 Nov 2020 20:03:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 77CF8203FE;
+	Fri,  6 Nov 2020 21:13:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x0HAPBAiOvit; Fri,  6 Nov 2020 20:03:39 +0000 (UTC)
+	with ESMTP id WtJOFlkUei5O; Fri,  6 Nov 2020 21:13:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A172F86A90;
-	Fri,  6 Nov 2020 20:03:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A947D203DF;
+	Fri,  6 Nov 2020 21:13:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92795C088B;
-	Fri,  6 Nov 2020 20:03:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80549C088B;
+	Fri,  6 Nov 2020 21:13:28 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A020C0889
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 20:03:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A5196C0889
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 21:13:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id EFAC82E13B
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 20:03:37 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 96E35203DF
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 21:13:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XF985scS6co7 for <iommu@lists.linux-foundation.org>;
- Fri,  6 Nov 2020 20:03:36 +0000 (UTC)
+ with ESMTP id zmQKjRjtidLC for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Nov 2020 21:13:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by silver.osuosl.org (Postfix) with ESMTPS id 940282E11D
- for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 20:03:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=eezeT8sE0c+dvLmjvESICoKhAlzXaqNnjl5jvhsWtf0=; b=dA51HxqSCHR4JuZbkzzSmg3W+t
- yWkoDic2Ka2INSPCZAs/OVNcm6A8oiWD4xs5cZOJI6JCJWoyIEcMFYQuwDXpEP94JRNOq4Jm597IW
- zY9+kL0WMddHMYyhT16mkNx04/hEioF70ZnVXsKAV6asL35LsLIGi/hQcp4flbFRG6VUJKaDSYlQm
- BxfqzK/sL5Uezm0Q9/fKyVYifXoPOzisxNKpvC7XUXwFcrIJEQsQ7vt00oqimgL0c3rksAR1njMyZ
- RHfHxAGvibWkE0XP5Ny8DbZ0h152CMHqRJ4Aq7wirLss+0t12x4iriBT6mcS0XfaFdtJXuwn2twYA
- onotgqBQ==;
-Received: from s01060023bee90a7d.cg.shawcable.net ([24.64.145.4]
- helo=[192.168.0.10])
- by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.92) (envelope-from <logang@deltatee.com>)
- id 1kb7xI-0005Wu-TX; Fri, 06 Nov 2020 13:03:30 -0700
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20201106170036.18713-1-logang@deltatee.com>
- <20201106170036.18713-15-logang@deltatee.com>
- <20201106172206.GS36674@ziepe.ca>
- <b1e8dfce-d583-bed8-d04d-b7265a54c99f@deltatee.com>
- <20201106174223.GU36674@ziepe.ca>
- <2c2d2815-165e-2ef9-60d6-3ace7ff3aaa5@deltatee.com>
- <20201106180922.GV36674@ziepe.ca>
- <09885400-36f8-bc1d-27f0-a8adcf6104d4@deltatee.com>
- <20201106193024.GW36674@ziepe.ca>
- <03032637-0826-da76-aec2-121902b1c166@deltatee.com>
- <20201106195341.GA244516@ziepe.ca>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <e6a99d54-b33a-0df1-ee33-4aa7a70124a6@deltatee.com>
-Date: Fri, 6 Nov 2020 13:03:26 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <20201106195341.GA244516@ziepe.ca>
-Content-Language: en-US
-X-SA-Exim-Connect-IP: 24.64.145.4
-X-SA-Exim-Rcpt-To: daniel.vetter@ffwll.ch, willy@infradead.org,
- ddutile@redhat.com, jhubbard@nvidia.com, iweiny@intel.com,
- christian.koenig@amd.com, dan.j.williams@intel.com, hch@lst.de,
- sbates@raithlin.com, iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [RFC PATCH 14/15] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ira Weiny <iweiny@intel.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-block@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Matthew Wilcox <willy@infradead.org>,
- John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Christoph Hellwig <hch@lst.de>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id DC2A9203CD
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Nov 2020 21:13:25 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v5.10-rc2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1604697205;
+ bh=5cKkHA45t/SLEE2IkJBajbrClJ/7j/9wbW6DCSjB73M=;
+ h=From:In-Reply-To:References:Date:To:Cc:From;
+ b=fthJfn7SaUkgmGr0fMljmEbInWGwApLCFkSBg1PHxEGpyXVfc0ea7bJVVkRVey9pi
+ ctjf/yJoBCAfSdRjqSLqROewZEXR09/VIMf8BsqQf0QP4C5jVWidj+h42fItvjY4Ay
+ rh9JCAwxLgFKDrJxNAhegpsiHalEuQ7U3N8lhzqQ=
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20201106162302.GA3084@8bytes.org>
+References: <20201106162302.GA3084@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20201106162302.GA3084@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ tags/iommu-fixes-v5.10-rc2
+X-PR-Tracked-Commit-Id: 4dd6ce478003525df8618750d30f0b90380047a7
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 02a2aa3500a993c9f0812b8564d36d63b8d49ce4
+Message-Id: <160469720523.14190.4464532018621557998.pr-tracker-bot@kernel.org>
+Date: Fri, 06 Nov 2020 21:13:25 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,75 +82,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+The pull request you sent on Fri, 6 Nov 2020 17:23:08 +0100:
 
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.10-rc2
 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/02a2aa3500a993c9f0812b8564d36d63b8d49ce4
 
-On 2020-11-06 12:53 p.m., Jason Gunthorpe wrote:
-> On Fri, Nov 06, 2020 at 12:44:59PM -0700, Logan Gunthorpe wrote:
->>
->>
->> On 2020-11-06 12:30 p.m., Jason Gunthorpe wrote:
->>>> I certainly can't make decisions for code that isn't currently
->>>> upstream.
->>>
->>> The rdma drivers are all upstream, what are you thinking about?
->>
->> Really? I feel like you should know what I mean here...
->>
->> I mean upstream code that actually uses the APIs that I'd have to
->> introduce. I can't say here's an API feature that no code uses but the
->> already upstream rdma driver might use eventually. It's fairly easy to
->> send patches that make the necessary changes when someone adds a use of
->> those changes inside the rdma code.
-> 
-> Sure, but that doesn't mean you have to actively design things to be
-> unusable beyond this narrow case. The RDMA drivers are all there, all
-> upstream, if this work is accepted then the changes to insert P2P
-> pages into their existing mmap flows is a reasonable usecase to
-> consider at this point when building core code APIs.
-> 
-> You shouldn't add dead code, but at least have a design in mind for
-> what it needs to look like and some allowance.
+Thank you!
 
-I don't see anything I've done that's at odds with that. You will still
-need to make changes to the p2pdma code to implement your use case.
-
->>>> Ultimately, if you aren't using the genpool you will have to implement
->>>> your own mmap operation that somehow allocates the pages and your own
->>>> page_free hook. 
->>>
->>> Sure, the mlx5 driver already has a specialized alloctor for it's BAR
->>> pages.
->>
->> So it *might* make sense to carve out a common helper to setup a VMA for
->> P2PDMA to do the vm_flags check and set VM_MIXEDMAP... but besides that,
->> there's no code that would be common to the two cases.
-> 
-> I think the whole insertion of P2PDMA pages into a VMA should be
-> similar to io_remap_pfn() so all the VM flags, pgprot_decrypted and
-> other subtle details are all in one place. (also it needs a
-> pgprot_decrypted before doing vmf_insert, I just learned that this
-> month)
-
-I don't think a function like that will work for the p2pmem use case. In
-order to implement proper page freeing I expect I'll need a loop around
-the allocator and vm_insert_mixed()... Something roughly like:
-
-for (addr = vma->vm_start; addr < vma->vm_end; addr += PAGE_SIZE) {
-        vaddr = pci_alloc_p2pmem(pdev, PAGE_SIZE);
-	ret = vmf_insert_mixed(vma, addr,
-  		       __pfn_to_pfn_t(virt_to_pfn(vaddr), PFN_DEV | PFN_MAP));
-}
-
-That way we can call pci_free_p2pmem() when a page's ref count goes to
-zero. I suspect your use case will need to do something similar.
-
-Logan
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
