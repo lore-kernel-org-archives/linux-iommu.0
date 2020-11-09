@@ -1,89 +1,94 @@
-Return-Path: <SRS0=7JV3=EN=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=JucZ=EP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-9.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62938C388F9
-	for <iommu@archiver.kernel.org>; Sat,  7 Nov 2020 22:01:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24457C388F9
+	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 02:28:17 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 894D120874
-	for <iommu@archiver.kernel.org>; Sat,  7 Nov 2020 22:01:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9C536206D8
+	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 02:28:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UD9HKExR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 894D120874
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CfhJd3s8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C536206D8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 191B58728A;
-	Sat,  7 Nov 2020 22:01:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GMB1jFo937oH; Sat,  7 Nov 2020 22:01:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B50B98722C;
-	Sat,  7 Nov 2020 22:01:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B1E4C0893;
-	Sat,  7 Nov 2020 22:01:40 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9647FC0889
- for <iommu@lists.linux-foundation.org>; Sat,  7 Nov 2020 22:01:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 843FC8681B
- for <iommu@lists.linux-foundation.org>; Sat,  7 Nov 2020 22:01:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 21651867DF;
+	Mon,  9 Nov 2020 02:28:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EL2fbB1oxW52; Mon,  9 Nov 2020 02:28:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 65102866C8;
+	Mon,  9 Nov 2020 02:28:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E8A2C0889;
+	Mon,  9 Nov 2020 02:28:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 84BA0C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 02:28:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7987D85BB5
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 02:28:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RTQ5Erivmy90 for <iommu@lists.linux-foundation.org>;
- Sat,  7 Nov 2020 22:01:39 +0000 (UTC)
+ with ESMTP id 97nTC5D07pUO for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Nov 2020 02:28:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com
- [209.85.218.48])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CAA5586645
- for <iommu@lists.linux-foundation.org>; Sat,  7 Nov 2020 22:01:38 +0000 (UTC)
-Received: by mail-ej1-f48.google.com with SMTP id o23so6922563ejn.11
- for <iommu@lists.linux-foundation.org>; Sat, 07 Nov 2020 14:01:38 -0800 (PST)
+Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
+ [209.85.167.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7C99885B78
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 02:28:12 +0000 (UTC)
+Received: by mail-lf1-f67.google.com with SMTP id s30so10259334lfc.4
+ for <iommu@lists.linux-foundation.org>; Sun, 08 Nov 2020 18:28:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
- bh=pXbBQEhOWPhbo6/hMS1RgcA/HFSmRq2rXt2N0GdNgIs=;
- b=UD9HKExRkhlRCDFU5vovhxukbLsdOQYuu5xIOq+CiFMDob9sguwsH5pmX/GJ7wNYz0
- 81SebbpR5nns3Ncn255hg4nud+RZgWnV4goyz3U3Napg2h26Od0pox/dE+vHoOn6Azc/
- /4Y7XXkvzkgUmgYZah3hTOeLSGZB8utvpvC/oFfqup+EbvwAL1hDp55HN5XQXe/CrlSs
- HrxXP2zGqq6DJ0/5kFU6k8iyIP3Po4SEPE27dXZl4u+nBa37EvISZgmq1qtehIEWChWk
- d091+aKwIeIAh9R1u0IynZL8VB5M3BHsNyEaC4rVjcnEj+RMufiY+7NSstx38w6pVBPM
- WHdA==
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=3k3rzhXGnCavdgR7PU+xYV8G0+6UcvU+HiFcuDdSrD4=;
+ b=CfhJd3s8xF3/QjuQfFs0lAj9QelLCvpOfvWTqGAuqWsu26wDrrcKot93DWFpewtQ4j
+ IFntnuMsIuV2/MB9SOBD1pASEomJ6vk44mZoHaDVZD8LmjR1QlSwka7kdDTk6vyb1CUL
+ 3s/uCOkBz8EYld41If9/Tn6lQltU+NdrcvR0UUxJuWf82/SJaGhLJRc3nIN3iTbVyCPJ
+ e7e1WPgioCpdihJ3hJWxhgt++28ETES79ffy0GXRZtcrkPKWpn56QVEEJKelDjgvGs/Q
+ 3BvW7m2TY3jyvrMUBC9XMOJ4VHG6VG6W+RbhwLLgvOzzhbA5fuhsX5JN67+OoGGj8RA+
+ S9Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to;
- bh=pXbBQEhOWPhbo6/hMS1RgcA/HFSmRq2rXt2N0GdNgIs=;
- b=dTsIP9cIepKESqt4xg9iUukrIUdj0a1e9R39s81Depy9vLV3AE1K/pBQEIKkdF8apX
- ihjNd7x5Yx6+7vCnySAcnrFjeAlfeLVXOEW1T0+1rb+yDifzJnkbOOUpsy4ICbiqYjdj
- kBeQmy6fTV8hiQ1zEm+k3tGubrmJGweWvxqEmVaIM+7hRD60Wfb1GWAa+pk1UCGGAviM
- KtW0IBEoqyFNhokj1KXOP9w2FJqP1HQjwYaF8lG/oBjAuiKL+fEEfRijPYnTx3HT+NiW
- gEpyJ0WKV7oElKd7zP/s4oxS2H3b2VI8HoSvcobY9D07p0hbZHhflFnuoi0ZlnAtePsJ
- 5XCg==
-X-Gm-Message-State: AOAM531TbcbsYPByV9w0wXwh3aFx8YIir2UKBE/6f8RvCVsaDMeV/I6z
- ILyO9V3Vv34EeqjK2uP0vzVZM7UUJDTYahG7DotOKvH98aM=
-X-Google-Smtp-Source: ABdhPJxfYPehfdSM9GrwtSxLe0yjKKol80pTFNaeG9ZqNEINXq7h5FqrVrq4oNsscSaKYm66O8SbOnM6EaRQ5uYosBk=
-X-Received: by 2002:a17:906:3b89:: with SMTP id
- u9mr8281448ejf.436.1604786497163; 
- Sat, 07 Nov 2020 14:01:37 -0800 (PST)
+ :message-id:subject:to:cc;
+ bh=3k3rzhXGnCavdgR7PU+xYV8G0+6UcvU+HiFcuDdSrD4=;
+ b=lA6SbrNNDVVg5nIF5+Qn/tN28N4gW2x/fhQ4TsfhiZYt6q2v11It91zHxwI4VF7how
+ 3P1cTgyom9jvtwbSNZjUD1QyEIUMBwmSqUqKHnBDBHHAQ/jypRe1lF5aFJtlij/etFkE
+ uKaZo2lxoaVYeG2UjXCwRgCfT2GSl9HbxRmZaZ2f3ORhnC8d2NjiEXNaVAgvOTECSmRj
+ dfflUY3G6xK3+Dksa/CdU2bM8cUUe2z71UOTy4DhYClYNEphwQEv0UfMdvDcVq6AB7Mw
+ okt+m1uc7UTD6GeQ14EzxQk+x5MImk1B+30JDsZZQl8J1VSrw3EVEhc8thg595SEe+XN
+ QObw==
+X-Gm-Message-State: AOAM533JcuL6wMGWlff4uW8bNiti+M5OvfV5guRMgvtY9NOyoRFwmIbX
+ DGr4iaD4CjZBGavU6sMBYhmCroXR/9Fdv1+n+f0=
+X-Google-Smtp-Source: ABdhPJw48w+yfmG8qqdLqg95+NqCjOKWIIfqme+l87Pct7D8cIF3Sp2DiMVhArshQU5xzv6l9pR0hi9VtX4bwwoRH8o=
+X-Received: by 2002:ac2:5ca3:: with SMTP id e3mr4581368lfq.591.1604888890607; 
+ Sun, 08 Nov 2020 18:28:10 -0800 (PST)
 MIME-Version: 1.0
-References: <CAGnHSEnS9OZ0i-7aL3ZuCRjNGTnUuqmbEaVN1t=WEOjUXRrUqw@mail.gmail.com>
-In-Reply-To: <CAGnHSEnS9OZ0i-7aL3ZuCRjNGTnUuqmbEaVN1t=WEOjUXRrUqw@mail.gmail.com>
-From: Tom Yan <tom.ty89@gmail.com>
-Date: Sun, 8 Nov 2020 06:01:25 +0800
-Message-ID: <CAGnHSEmh=8=vCvm1UC9O0-VTSFrhtwMBfcSF5HYAO6R+XwJRDQ@mail.gmail.com>
-Subject: Re: Intel VT-d IOMMU group regression in v5.9
-To: iommu@lists.linux-foundation.org
+References: <20201104081438.2075-1-zhenzhong.duan@gmail.com>
+In-Reply-To: <20201104081438.2075-1-zhenzhong.duan@gmail.com>
+From: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+Date: Mon, 9 Nov 2020 10:27:51 +0800
+Message-ID: <CAFH1YnMoNJZUJr-duEvzOMzeX0sXgE41T_A6HA+2oAU8WC=ktg@mail.gmail.com>
+Subject: Re: [PATCH] iommu/vt-d: avoid unnecessory panic if iommu init fail in
+ tboot
+To: linux-kernel <linux-kernel@vger.kernel.org>
+Cc: jroedel@suse.de, x86@kernel.org, iommu@lists.linux-foundation.org,
+ ning.sun@intel.com, tboot-devel@lists.sourceforge.net,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Thomas Gleixner <tglx@linutronix.de>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,18 +106,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Basically when it is good, each pcie slot gets an iommu group and so
-are the cards that are plugged into them; when it is bad, all the
-slots and their cards are in one single group :/
++intel iommu maintainers,
 
-On Sun, 1 Nov 2020 at 23:43, Tom Yan <tom.ty89@gmail.com> wrote:
+Can anyone help review this patch? Thanks
+
+Zhenzhong
+
+On Wed, Nov 4, 2020 at 4:15 PM Zhenzhong Duan <zhenzhong.duan@gmail.com> wrote:
 >
-> Hi,
+> "intel_iommu=off" command line is used to disable iommu and iommu is force
+> enabled in a tboot system. Meanwhile "intel_iommu=tboot_noforce,off"
+> could be used to force disable iommu in tboot for better performance.
 >
-> Please check out https://bugzilla.kernel.org/show_bug.cgi?id=209857, thanks!
+> By default kernel should panic if iommu init fail in tboot for security
+> reason, but it's unnecessory if we use "intel_iommu=tboot_noforce,off".
 >
-> Regards,
-> Tom
+> Fix it by return 0 in tboot_force_iommu() so that force_on is not set.
+>
+> Fixes: 7304e8f28bb2 ("iommu/vt-d: Correctly disable Intel IOMMU force on")
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+> ---
+>  arch/x86/kernel/tboot.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>
+> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+> index 992fb1415c0f..9fd4d162b331 100644
+> --- a/arch/x86/kernel/tboot.c
+> +++ b/arch/x86/kernel/tboot.c
+> @@ -511,12 +511,9 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
+>
+>  int tboot_force_iommu(void)
+>  {
+> -       if (!tboot_enabled())
+> +       if (!tboot_enabled() || intel_iommu_tboot_noforce)
+>                 return 0;
+>
+> -       if (intel_iommu_tboot_noforce)
+> -               return 1;
+> -
+>         if (no_iommu || swiotlb || dmar_disabled)
+>                 pr_warn("Forcing Intel-IOMMU to enabled\n");
+>
+> --
+> 2.25.1
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
