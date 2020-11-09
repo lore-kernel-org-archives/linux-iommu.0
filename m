@@ -1,101 +1,97 @@
-Return-Path: <iommu-bounces@lists.linux-foundation.org>
+Return-Path: <SRS0=JucZ=EP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_FAIL,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A1BC61DD8
-	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 16:50:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B155DC388F7
+	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 18:47:54 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 67111221F1
-	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 16:50:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 26B31206D8
+	for <iommu@archiver.kernel.org>; Mon,  9 Nov 2020 18:47:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="ThtDTaP+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67111221F1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="qK2vJFfc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26B31206D8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id DEB9020535;
-	Mon,  9 Nov 2020 16:50:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8CF5A86A87;
+	Mon,  9 Nov 2020 18:47:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YrmY9sg6rxlS; Mon,  9 Nov 2020 16:50:16 +0000 (UTC)
+	with ESMTP id 1212mYaRZ-ve; Mon,  9 Nov 2020 18:47:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 275FB2038A;
-	Mon,  9 Nov 2020 16:50:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D3EE586A6D;
+	Mon,  9 Nov 2020 18:47:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 195C2C088B;
-	Mon,  9 Nov 2020 16:50:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 93274C016F
- for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 16:50:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BBC78C088B;
+	Mon,  9 Nov 2020 18:47:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 908B3C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 18:47:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 881DF20535
- for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 16:50:15 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 79EA787242
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 18:47:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YLXH+txWBKPo for <iommu@lists.linux-foundation.org>;
- Mon,  9 Nov 2020 16:50:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by silver.osuosl.org (Postfix) with ESMTPS id 26EB12038A
- for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 16:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=JvTSJOBJXMYeKQM3WvNBTHeii6rtMfOVYOuXeE1KNJE=; b=ThtDTaP+0JSTSqxTpv0Wbo5rpZ
- iRui8AXvdDo2GGy2jD+Ihq9bjJnDiDzsI2eDLeMfjQgtCqgG1tvLOdsfhRmNEUO5jfT5M0MI5pI2v
- q2scQ0uSLY0gF95SrT5uiioU6950uU8eKRlO3IC5Z9K0t/8xAxKw/BHncD9WkCSO21vni9bfdfdjX
- Ln7KngxHrH+R5I2NkjQEaqpyQ8667dJ8gO+usI96NSRpENPnyhncaujMAMnPoIfhN4BFg8hdAnZFw
- mUlKnwOWo6dpdcffw7/1fMcc6qlFJ5qgEkOsQqBOUl2OSNvLl4XkpF9pd5ChHmt9ndYzbgPOuwY5t
- OGbul4GA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
- by ale.deltatee.com with esmtp (Exim 4.92)
- (envelope-from <logang@deltatee.com>)
- id 1kcAMk-00013k-Ea; Mon, 09 Nov 2020 09:50:03 -0700
-To: Keith Busch <kbusch@kernel.org>
-References: <20201106170036.18713-1-logang@deltatee.com>
- <20201106170036.18713-16-logang@deltatee.com>
- <20201109150326.GA2221592@dhcp-10-100-145-180.wdc.com>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <e718b81f-9cb8-dfe8-b1a6-ebb79f302732@deltatee.com>
-Date: Mon, 9 Nov 2020 09:50:00 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+ with ESMTP id 6gidxGPUy0Mk for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Nov 2020 18:47:50 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D076C8723F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Nov 2020 18:47:47 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1604947670; h=Content-Transfer-Encoding: MIME-Version:
+ References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=V29NTo7kJIBCYZztU1K8EyLNxF9TfvQF5kp/cG/Cvjo=;
+ b=qK2vJFfc81f5oU0AQC1/lBnEM48h+2QevsMn3kDJwVl25vUoqu9gjQsIg+YYgQWl2ZcAGMME
+ pb7m7mbrQbdIDvEIkLhtUFmmoF3h3LUZUXSK4Yitx6JQN+8hY7mCP58KXKgQxll62TJ1wZnN
+ PrIUbLS+lvIAF/+nnCZRzcR8yjg=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 5fa98ecd1d3980f7d6f6b289 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 09 Nov 2020 18:47:41
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 71A8BC43382; Mon,  9 Nov 2020 18:47:41 +0000 (UTC)
+Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
+ [129.46.96.20])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 23091C433C6;
+ Mon,  9 Nov 2020 18:47:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 23091C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=jcrouse@codeaurora.org
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: linux-arm-msm@vger.kernel.org
+Subject: [PATCH v19 2/4] iommu/arm-smmu: Add a way for implementations to
+ influence SCTLR
+Date: Mon,  9 Nov 2020 11:47:26 -0700
+Message-Id: <20201109184728.2463097-3-jcrouse@codeaurora.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201109184728.2463097-1-jcrouse@codeaurora.org>
+References: <20201109184728.2463097-1-jcrouse@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <20201109150326.GA2221592@dhcp-10-100-145-180.wdc.com>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: daniel.vetter@ffwll.ch, willy@infradead.org,
- ddutile@redhat.com, jhubbard@nvidia.com, iweiny@intel.com,
- christian.koenig@amd.com, jgg@ziepe.ca, dan.j.williams@intel.com, hch@lst.de,
- sbates@raithlin.com, iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- kbusch@kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [RFC PATCH 15/15] nvme-pci: Allow mmaping the CMB in userspace
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ira Weiny <iweiny@intel.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-block@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Christoph Hellwig <hch@lst.de>
+Cc: Rob Clark <robdclark@chromium.org>, linux-kernel@vger.kernel.org,
+ Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ Sibi Sankar <sibis@codeaurora.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,30 +109,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Rob Clark <robdclark@chromium.org>
 
+For the Adreno GPU's SMMU, we want SCTLR.HUPCF set to ensure that
+pending translations are not terminated on iova fault.  Otherwise
+a terminated CP read could hang the GPU by returning invalid
+command-stream data. Add a hook to for the implementation to modify
+the sctlr value if it wishes.
 
-On 2020-11-09 8:03 a.m., Keith Busch wrote:
-> On Fri, Nov 06, 2020 at 10:00:36AM -0700, Logan Gunthorpe wrote:
->> Allow userspace to obtain CMB memory by mmaping the controller's
->> char device. The mmap call allocates and returns a hunk of CMB memory,
->> (the offset is ignored) so userspace does not have control over the
->> address within the CMB.
->>
->> A VMA allocated in this way will only be usable by drivers that set
->> FOLL_PCI_P2PDMA when calling GUP. And inter-device support will be
->> checked the first time the pages are mapped for DMA.
->>
->> Currently this is only supported by O_DIRECT to an PCI NVMe device
->> or through the NVMe passthrough IOCTL.
-> 
-> Rather than make this be specific to nvme, could pci p2pdma create an
-> mmap'able file for any resource registered with it?
+Co-developed-by: Jordan Crouse <jcrouse@codeaurora.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+---
 
-It's certainly possible. However, other people have been arguing that
-more of this should be specific to NVMe as some use cases do not want to
-use the genalloc inside p2pdma.
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 13 +++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 ++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+ 3 files changed, 19 insertions(+), 1 deletion(-)
 
-Logan
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index b5384c4d92c8..d0636c803a36 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -20,6 +20,18 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+ 	return container_of(smmu, struct qcom_smmu, smmu);
+ }
+ 
++static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
++		u32 reg)
++{
++	/*
++	 * On the GPU device we want to process subsequent transactions after a
++	 * fault to keep the GPU from hanging
++	 */
++	reg |= ARM_SMMU_SCTLR_HUPCF;
++
++	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
++}
++
+ #define QCOM_ADRENO_SMMU_GPU_SID 0
+ 
+ static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+@@ -289,6 +301,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+ 	.reset = qcom_smmu500_reset,
+ 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
++	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ };
+ 
+ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index bcbacf22331d..0f28a8614da3 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -617,7 +617,10 @@ void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		reg |= ARM_SMMU_SCTLR_E;
+ 
+-	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
++	if (smmu->impl && smmu->impl->write_sctlr)
++		smmu->impl->write_sctlr(smmu, idx, reg);
++	else
++		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
+ }
+ 
+ static int arm_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_domain,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 9a5eb6782918..04288b6fc619 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -144,6 +144,7 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_SCTLR		0x0
+ #define ARM_SMMU_SCTLR_S1_ASIDPNE	BIT(12)
+ #define ARM_SMMU_SCTLR_CFCFG		BIT(7)
++#define ARM_SMMU_SCTLR_HUPCF		BIT(8)
+ #define ARM_SMMU_SCTLR_CFIE		BIT(6)
+ #define ARM_SMMU_SCTLR_CFRE		BIT(5)
+ #define ARM_SMMU_SCTLR_E		BIT(4)
+@@ -437,6 +438,7 @@ struct arm_smmu_impl {
+ 				  struct arm_smmu_device *smmu,
+ 				  struct device *dev, int start);
+ 	void (*write_s2cr)(struct arm_smmu_device *smmu, int idx);
++	void (*write_sctlr)(struct arm_smmu_device *smmu, int idx, u32 reg);
+ };
+ 
+ #define INVALID_SMENDX			-1
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
