@@ -7,69 +7,69 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC9CC4742C
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 03:55:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5808CC5517A
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 03:56:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A92321D91
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 03:55:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E68B5221F7
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 03:56:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BoDsqMfO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A92321D91
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="eIAHnd0v"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E68B5221F7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C23968644F;
-	Tue, 10 Nov 2020 03:55:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4uK70qxSYn6U; Tue, 10 Nov 2020 03:55:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5733B86451;
-	Tue, 10 Nov 2020 03:55:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 444C9C0889;
-	Tue, 10 Nov 2020 03:55:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79475C016F
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:55:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 74F2A86718
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:55:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 61A8986718;
+	Tue, 10 Nov 2020 03:56:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QRIxDfmQElT5; Tue, 10 Nov 2020 03:56:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8EC4A8671A;
+	Tue, 10 Nov 2020 03:56:04 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AAC4C0889;
+	Tue, 10 Nov 2020 03:56:04 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A466C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:56:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3F2F086FBB
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:56:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8Bw1oOgDpAvX for <iommu@lists.linux-foundation.org>;
- Tue, 10 Nov 2020 03:55:21 +0000 (UTC)
+ with ESMTP id sZ9eyiTFmj1Q for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Nov 2020 03:56:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E150A85A46
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:55:21 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8209186FAA
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 03:56:00 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id BC9A5221F1;
- Tue, 10 Nov 2020 03:55:20 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 5873C20870;
+ Tue, 10 Nov 2020 03:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1604980521;
- bh=NUTZyNioEXke4Hr4cRd0ILcwsd3Nj7fg0IyQ+JFoBVg=;
+ s=default; t=1604980560;
+ bh=Ejy93RLnNmUphyjzU+ljQMEPhyJJaHefgobGx91pGyQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=BoDsqMfOdQD8PYgIx/hLXLXXHvCA+votRyjgDUOKmii1xbow0kCXSSHlwe7O+2TI5
- P9dSs3Nr6tDKy14RFax69n9cwDL1aMmoqLvmBERSTUyCELt03UiGnGbp3iUQIHpw5w
- 08LTHNZQ8fqj9kX0Z1/ZbfyCCuXmbTDCgM7Jn6AU=
+ b=eIAHnd0vGSGz8ofGMHKn2GG76ckWRPKtKXBvfrcKsSqgcJpfJqhHjHSKpbgY0UL7P
+ yz2A2PknyiawMweADy3yX+WIoQ+HhnWKkl1n2kCWNLEq5dgaZnfd0hpMqfAJ9yZBpf
+ Uw6PYA4fn4agnVzT6RT5IVijtn1aR/uIIQ/+gpYQ=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 29/42] iommu/amd: Increase interrupt remapping
+Subject: [PATCH AUTOSEL 4.19 14/21] iommu/amd: Increase interrupt remapping
  table limit to 512 entries
-Date: Mon,  9 Nov 2020 22:54:27 -0500
-Message-Id: <20201110035440.424258-29-sashal@kernel.org>
+Date: Mon,  9 Nov 2020 22:55:34 -0500
+Message-Id: <20201110035541.424648-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201110035440.424258-1-sashal@kernel.org>
-References: <20201110035440.424258-1-sashal@kernel.org>
+In-Reply-To: <20201110035541.424648-1-sashal@kernel.org>
+References: <20201110035541.424648-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -121,10 +121,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0679896b9e2e1..3ec090adcdae7 100644
+index 859b06424e5c4..df6f3cc958e5e 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -406,7 +406,11 @@ extern bool amd_iommu_np_cache;
+@@ -410,7 +410,11 @@ extern bool amd_iommu_np_cache;
  /* Only true if all IOMMUs support device IOTLBs */
  extern bool amd_iommu_iotlb_sup;
  
