@@ -7,82 +7,83 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4E8C388F7
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 13:33:52 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52254C55ABD
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 13:34:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE060206B2
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 13:33:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C628F206B2
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 13:34:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FmlAGRfS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE060206B2
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="h3fs2yDb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C628F206B2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 241BC228D1;
-	Tue, 10 Nov 2020 13:33:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5771C872F1;
+	Tue, 10 Nov 2020 13:34:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tP9g+iIcT+no; Tue, 10 Nov 2020 13:34:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id C47C88707D;
+	Tue, 10 Nov 2020 13:34:17 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B163BC088B;
+	Tue, 10 Nov 2020 13:34:17 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE2D8C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:34:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id A1E5B228D5
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:34:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3Ao91DzTd-Ks; Tue, 10 Nov 2020 13:33:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8E33E228D5;
-	Tue, 10 Nov 2020 13:33:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 762F1C088B;
-	Tue, 10 Nov 2020 13:33:49 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5BC3C016F
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:33:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B13AD863D5
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:33:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3gULst9uJWoo for <iommu@lists.linux-foundation.org>;
- Tue, 10 Nov 2020 13:33:47 +0000 (UTC)
+ with ESMTP id UjvcEijUGtlO for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Nov 2020 13:34:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f65.google.com (mail-lf1-f65.google.com
- [209.85.167.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4375F863A6
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:33:47 +0000 (UTC)
-Received: by mail-lf1-f65.google.com with SMTP id j205so10149995lfj.6
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 05:33:47 -0800 (PST)
+Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
+ [209.85.208.194])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2CBD2228D1
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 13:34:15 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id v18so14700829ljc.3
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 05:34:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Q+6VXi/5fY0aP8aAL5vEFMrlAfYUy6hH2SKWPsznW1Q=;
- b=FmlAGRfSk4J3zgXbJDv8yHH20lrNZWFBkHg/DnPlYXHe2VccCLgYFTG8bjdBptozIj
- C2SnnYxyrVFoEIY8U1UhC6ub3gwPf//MyHB4gfw2rbPTQhPCPbO5KO4f2s9/x01x5c2q
- d6E8PMeQIsrG5wuAilg4l2FHg93/R/9JGkgflAWK9Hl3OzEvAijLIUAx7ofhK+AaESb+
- 1GmPNkrH2tMp7ciAAlxzkR08SQ+fhcGiiToI55gcDiBOR7/lsm7BVrnvEM5ycDQakWp1
- s0DF7ekcsMLZBvO0AbIver97jjPizf/gVWAnl+PQFCdABi/mw1+gmjWTI039J+xVWXTO
- gE3A==
+ :cc; bh=KGLM9fPNY7+GT4p8nJCSTip3uZZh4KalRevc6NBKqSw=;
+ b=h3fs2yDbhXzIKAaNrM+h8p/XSPvr3EH34ss06aruBBygOKO9jCk2Y2fGVpLMiUHrXI
+ LE6Lep9wERBSv9edvF2R2doBF6UAXzV/t6wvEqJGmP2fv/BKT/WdMvx9o3EnhCP6JLVi
+ Q1xUeqe6Uu/vuhmQBEe7HAqerEUcGEq2nQwgaTgrpDmXvvfR5zTO9Gvv6n00nixmJ40E
+ IwnKLpjoF9/iK0H8bBSdj24Ftf0Wj/OpGR7dBsrwYGZC2Z+nEBeRufIeob+3TLmbiUHU
+ tgVSzrE7cn5YGxROsHaRqAZ4NEXXzsPQLOwEu1nPCsTN9ZyJANwF9wGuLlNEpwaEPI9O
+ /iOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=Q+6VXi/5fY0aP8aAL5vEFMrlAfYUy6hH2SKWPsznW1Q=;
- b=bHDnZgts3dI0GEVL3OAhGU2C4DH6bTXuH5ge5k3YiROZoz2654jqVMoCqCVdxvpigU
- hTXu/HZaILbVSBnxBQO0+kuyqAL8OgoQuC0AsUQ57DPr9S1H+z8JjhRUNwEEXtTur6Fd
- 2AL9Vh8Ggj4sLAio+TekjLl1FApGq2opoLC8zMZLjFp5kYh307uuuj4Ny1mxripj+wRX
- haDlvRPFLNpOcqRmU5sMZlWNjhX9oPEdONoCGoEd3bbldk9RUzvhUGBv2Pb2tVfRyOL3
- EyngfiSgQuwxIRrtWiU9xSyM2RKkkKGIiYa5RxsrVPN1CDvuY0/MB2SDijS0O5QTimAV
- Hm1Q==
-X-Gm-Message-State: AOAM533OgbEANeSX5Y/2WOQIijkwXOR3MSOqtpJDByBDHoF+vq1ldkVr
- 1UUydAebMB5X/XP6LOvWgd/nmCvX2tSnM9Kll+9K+g==
-X-Google-Smtp-Source: ABdhPJwuAaqcMMw0q1QKD4oDxOC2Zd/QBV3ne5UQWRpT2XN+r51MyMsPZhWlpVqWlaIpmZiQGEvtoy7cfNG7jCXEoB0=
-X-Received: by 2002:a19:f00b:: with SMTP id p11mr7200799lfc.585.1605015225371; 
- Tue, 10 Nov 2020 05:33:45 -0800 (PST)
+ bh=KGLM9fPNY7+GT4p8nJCSTip3uZZh4KalRevc6NBKqSw=;
+ b=reMG/zg3JY0nmqW7e3Mmc2/KFHhCGHQnEfROZ8d+OpMeE/sFJKyjYZkAp+J/JSQBEB
+ RanxuTFxTYS7ZmTg4P+3jIJ6Rj+8ALwjsgcEySRb1ySW9Qu8BReyejL+TnaKmsdevuZn
+ joHGsGmEbQbMh/NUjFynWZvgtjPFMd0fO8fA29mZWBOkzk9P6MOyJebMiuIezadnqwoO
+ LNc5QmoStlObpp3tT8QFnbqSld+wcImBHiKY7zKITxy3xCgjWKCh2UxORxq7bSm0RC27
+ WsxGb8GjmD03c1EQGH9dQU7E0cxpzwarm5QsOjzeu/BaCVAj/CboQVhyIzEcuAMOCQuB
+ Ow0Q==
+X-Gm-Message-State: AOAM531hvC5ura4A0afCv9HMfXYb6CTMkV09LTHUERN+vc2VSgYaKxsg
+ VIs4FuRmyakYSm4NvWpURQ8QOW6t6vZt0zd9i1gzKw==
+X-Google-Smtp-Source: ABdhPJw4l95Aug60napiBX1bSOo2GaerufcLINoM+ZkU5hACFyVVdkrKEpvI/w+Qkg+bt6DgzwF/QHjFBj4ZnqZLbQo=
+X-Received: by 2002:a2e:8604:: with SMTP id a4mr8277742lji.100.1605015253248; 
+ Tue, 10 Nov 2020 05:34:13 -0800 (PST)
 MIME-Version: 1.0
 References: <20201106042710.55979-1-john.stultz@linaro.org>
-In-Reply-To: <20201106042710.55979-1-john.stultz@linaro.org>
+ <20201106042710.55979-2-john.stultz@linaro.org>
+In-Reply-To: <20201106042710.55979-2-john.stultz@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 10 Nov 2020 14:33:34 +0100
-Message-ID: <CACRpkdY2oH47Om1Xa=ku4csU-YHBB8XFrsemgfOvh0XCTog-aQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/3] pinctrl: qcom: Kconfig: Rework PINCTRL_MSM to be a
- depenency rather then a selected config
+Date: Tue, 10 Nov 2020 14:34:02 +0100
+Message-ID: <CACRpkdYf-SGfqjbE_SFfJLidH8v+Q3=_hwKkHZGfKNgD_GdLMg@mail.gmail.com>
+Subject: Re: [PATCH v6 2/3] pinctrl: qcom: Allow pinctrl-msm code to be
+ loadable as a module
 To: John Stultz <john.stultz@linaro.org>
 Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
  Saravana Kannan <saravanak@google.com>,
@@ -115,20 +116,14 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Fri, Nov 6, 2020 at 5:27 AM John Stultz <john.stultz@linaro.org> wrote:
 
-> This patch reworks PINCTRL_MSM to be a visible option, and
-> instead of having the various SoC specific drivers select
-> PINCTRL_MSM, this switches those configs to depend on
-> PINCTRL_MSM.
+> Tweaks to allow pinctrl-msm code to be loadable as a module.
 >
-> This is useful, as it will be needed in order to cleanly support
-> having the qcom-scm driver, which pinctrl-msm calls into,
-> configured as a module. Without this change, we would eventually
-> have to add dependency lines to every config that selects
-> PINCTRL_MSM, and that would becomes a maintenance headache.
+> This is needed in order to support having the qcom-scm driver,
+> which pinctrl-msm calls into, configured as a module.
 >
-> We also add PINCTRL_MSM to the arm64 defconfig to avoid
-> surprises as otherwise PINCTRL_MSM/IPQ* options previously
-> enabled, will be off.
+> This requires that we tweak Kconfigs selecting PINCTRL_MSM to
+> also depend on QCOM_SCM || QCOM_SCM=n so that we match the
+> module setting of QCOM_SCM.
 >
 > Cc: Catalin Marinas <catalin.marinas@arm.com>
 > Cc: Will Deacon <will@kernel.org>
