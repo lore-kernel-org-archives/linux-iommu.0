@@ -2,114 +2,80 @@ Return-Path: <SRS0=ThSx=EQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC77DC388F7
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 21:26:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B511C63697
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 23:25:20 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6C9D3207D3
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 21:26:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 92A492080A
+	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 23:25:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="KQwSFc1L"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C9D3207D3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="dPV32dPJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92A492080A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 083F32309D;
-	Tue, 10 Nov 2020 21:26:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lx-gMTKVaYUb; Tue, 10 Nov 2020 21:26:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0727E20026;
-	Tue, 10 Nov 2020 21:26:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA486C088B;
-	Tue, 10 Nov 2020 21:26:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1AE2AC016F
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 21:26:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0DCCE862F4
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 21:26:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0C60A861D5;
+	Tue, 10 Nov 2020 23:25:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pHPzz4RSbbuF; Tue, 10 Nov 2020 23:25:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 575AE861A4;
+	Tue, 10 Nov 2020 23:25:18 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48686C088B;
+	Tue, 10 Nov 2020 23:25:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74E6EC016F
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:25:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5BE6985A22
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:25:16 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cWSELAqb28C7 for <iommu@lists.linux-foundation.org>;
- Tue, 10 Nov 2020 21:26:10 +0000 (UTC)
+ with ESMTP id 1ZXqJb6ekHWb for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Nov 2020 23:25:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 7F67485BBD
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 21:26:10 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AALNsqL062598;
- Tue, 10 Nov 2020 21:26:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=9Nj2D+m80kZDJqrKbN/4/Is2vNJ6uqoCfmj84gGzeI0=;
- b=KQwSFc1LoGQ1VzaMRiggNXYjNGFOkFbtnIpoHJ63adZBDFwbB47VyCf6DN+tnopZ6tC+
- Ys3WhPIB7S4McHQMXEQ/TepCswb5N1BFbWjHrxa03JjMciQwnjLGGGyrlV53U9+z0dhb
- f3F77ISWqoiBoSQLLZ/m8/dJ3McQblbRZ9l/mnOEBiiEDYqqJ9Ns9zBPT1S6rci/9SBu
- QNDx37w7jRZCsXJG4ySSpIDFhgsG1sNZe/fNCo+y6IMeCl3O6VL0jWad0tcMUszF1FTg
- Ueya8AfybJ2HPRbcLnuZJBCKzrfT6slqP45OamdgZvhtcAVS1LgCt3H+vS4V2OPQqEF2 Lw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by aserp2130.oracle.com with ESMTP id 34nh3ax8mk-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 10 Nov 2020 21:26:07 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AALOqFA194731;
- Tue, 10 Nov 2020 21:26:07 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by aserp3020.oracle.com with ESMTP id 34p5g0w6vj-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 10 Nov 2020 21:26:07 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AALPx9D001394;
- Tue, 10 Nov 2020 21:26:01 GMT
-Received: from char.us.oracle.com (/10.152.32.25)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Tue, 10 Nov 2020 13:25:59 -0800
-Received: by char.us.oracle.com (Postfix, from userid 1000)
- id 650FC6A0109; Tue, 10 Nov 2020 16:27:51 -0500 (EST)
-Date: Tue, 10 Nov 2020 16:27:51 -0500
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH for-5.10] swiotlb: remove the tbl_dma_addr argument to
- swiotlb_tbl_map_single
-Message-ID: <20201110212751.GA16458@char.us.oracle.com>
-References: <20201023063309.3472987-1-hch@lst.de>
- <20201103094643.GA18936@lst.de>
- <20201104140438.GA16892@char.us.oracle.com>
- <20201110091421.GA23707@lst.de>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C24EB859CF
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:25:15 +0000 (UTC)
+Received: from localhost (230.sub-72-107-127.myvzw.com [72.107.127.230])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id BC9BC20781;
+ Tue, 10 Nov 2020 23:25:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1605050715;
+ bh=o6lMTu5xFOzYsPde49ClXFU1xXCgPh17zPTl4Yx9dys=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=dPV32dPJxAhqlhllWUsMt1gC7dOq85ACuyi2fnWL+r9/kPB0YaAY/q+UhWjLeQo7V
+ ZDoeayJFbRzQ9/aW39itkyKKH8s+us5oMd9a8UfsuIgKpGjmBDN1DXk5OlpCVC2zRi
+ xPJXtoRNKmQs4fail2G1MnvjO16Ve1HVNwPMHkTo=
+Date: Tue, 10 Nov 2020 17:25:13 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [RFC PATCH 03/15] PCI/P2PDMA: Introduce
+ pci_p2pdma_should_map_bus() and pci_p2pdma_bus_offset()
+Message-ID: <20201110232513.GA705726@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20201110091421.GA23707@lst.de>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9801
- signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
- spamscore=0 malwarescore=0
- adultscore=0 phishscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011100146
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9801
- signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
- lowpriorityscore=0 priorityscore=1501
- clxscore=1015 malwarescore=0 mlxscore=0 spamscore=0 suspectscore=0
- mlxlogscore=999 impostorscore=0 phishscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011100146
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
- Stefano Stabellini <sstabellini@kernel.org>
+In-Reply-To: <20201106170036.18713-4-logang@deltatee.com>
+Cc: Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Ira Weiny <iweiny@intel.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
+ linux-block@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org,
+ Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+ John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,20 +93,127 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 10, 2020 at 10:14:21AM +0100, Christoph Hellwig wrote:
-> On Wed, Nov 04, 2020 at 09:04:38AM -0500, Konrad Rzeszutek Wilk wrote:
-> > On Tue, Nov 03, 2020 at 10:46:43AM +0100, Christoph Hellwig wrote:
-> > > ping?
-> > 
-> > Hopefully this goes through. I am in the process of testing it but ran
-> > into testing issues that I believe are unrelated.
+On Fri, Nov 06, 2020 at 10:00:24AM -0700, Logan Gunthorpe wrote:
+> Introduce pci_p2pdma_should_map_bus() which is meant to be called by
+> dma map functions to determine how to map a given p2pdma page.
+
+s/dma/DMA/ for consistency (also below in function comment)
+
+> pci_p2pdma_bus_offset() is also added to allow callers to get the bus
+> offset if they need to map the bus address.
 > 
-> Did you manage to make any progress?  This fixes an issue with the
+> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+> ---
+>  drivers/pci/p2pdma.c       | 46 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/pci-p2pdma.h | 11 +++++++++
+>  2 files changed, 57 insertions(+)
+> 
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index ea8472278b11..9961e779f430 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -930,6 +930,52 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+>  }
+>  EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
+>  
+> +/**
+> + * pci_p2pdma_bus_offset - returns the bus offset for a given page
+> + * @page: page to get the offset for
+> + *
+> + * Must be passed a pci p2pdma page.
 
-YES!!
-> new support for systems with DMA offsets in 5.10..
+s/pci/PCI/
 
-OK. Sending the git pull request in a minute or two.
+> + */
+> +u64 pci_p2pdma_bus_offset(struct page *page)
+> +{
+> +	struct pci_p2pdma_pagemap *p2p_pgmap = to_p2p_pgmap(page->pgmap);
+> +
+> +	WARN_ON(!is_pci_p2pdma_page(page));
+> +
+> +	return p2p_pgmap->bus_offset;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_p2pdma_bus_offset);
+> +
+> +/**
+> + * pci_p2pdma_should_map_bus - determine if a dma mapping should use the
+> + *	bus address
+> + * @dev: device doing the DMA request
+> + * @pgmap: dev_pagemap structure for the mapping
+> + *
+> + * Returns 1 if the page should be mapped with a bus address, 0 otherwise
+> + * and -1 the device should not be mapping P2PDMA pages.
+
+I think this is missing a word.
+
+I'm not really sure how to interpret the "should" in
+pci_p2pdma_should_map_bus().  If this returns -1, does that mean the
+patches *cannot* be mapped?  They *could* be mapped, but you really
+*shouldn't*?  Something else?
+
+1 means page should be mapped with bus address.  0 means ... what,
+exactly?  It should be mapped with some different address?
+
+Sorry these are naive questions because I don't know how all this
+works.
+
+> + */
+> +int pci_p2pdma_should_map_bus(struct device *dev, struct dev_pagemap *pgmap)
+> +{
+> +	struct pci_p2pdma_pagemap *p2p_pgmap = to_p2p_pgmap(pgmap);
+> +	struct pci_dev *client;
+> +
+> +	if (!dev_is_pci(dev))
+> +		return -1;
+> +
+> +	client = to_pci_dev(dev);
+> +
+> +	switch (pci_p2pdma_map_type(p2p_pgmap->provider, client)) {
+> +	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> +		return 0;
+> +	case PCI_P2PDMA_MAP_BUS_ADDR:
+> +		return 1;
+> +	default:
+> +		return -1;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(pci_p2pdma_should_map_bus);
+> +
+>  /**
+>   * pci_p2pdma_enable_store - parse a configfs/sysfs attribute store
+>   *		to enable p2pdma
+> diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
+> index 8318a97c9c61..fc5de47eeac4 100644
+> --- a/include/linux/pci-p2pdma.h
+> +++ b/include/linux/pci-p2pdma.h
+> @@ -34,6 +34,8 @@ int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+>  		int nents, enum dma_data_direction dir, unsigned long attrs);
+>  void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+>  		int nents, enum dma_data_direction dir, unsigned long attrs);
+> +u64 pci_p2pdma_bus_offset(struct page *page);
+> +int pci_p2pdma_should_map_bus(struct device *dev, struct dev_pagemap *pgmap);
+>  int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
+>  			    bool *use_p2pdma);
+>  ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
+> @@ -83,6 +85,15 @@ static inline void pci_p2pmem_free_sgl(struct pci_dev *pdev,
+>  static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
+>  {
+>  }
+> +static inline u64 pci_p2pdma_bus_offset(struct page *page)
+> +{
+> +	return -1;
+> +}
+> +static inline int pci_p2pdma_should_map_bus(struct device *dev,
+> +					    struct dev_pagemap *pgmap)
+> +{
+> +	return -1;
+> +}
+>  static inline int pci_p2pdma_map_sg_attrs(struct device *dev,
+>  		struct scatterlist *sg, int nents, enum dma_data_direction dir,
+>  		unsigned long attrs)
+> -- 
+> 2.20.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
