@@ -2,85 +2,79 @@ Return-Path: <SRS0=hwFB=ER=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628D4C388F7
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 01:30:55 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1CCC55ABD
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 02:25:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 854F521D91
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 01:30:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 854F521D91
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id E5D3B221F7
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 02:25:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5D3B221F7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EC2D086BE5;
-	Wed, 11 Nov 2020 01:30:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CE135275A5;
+	Wed, 11 Nov 2020 02:25:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id et5lcXP9gXgc; Wed, 11 Nov 2020 01:30:51 +0000 (UTC)
+	with ESMTP id V406tU8vbL2f; Wed, 11 Nov 2020 02:25:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 064D386BE1;
-	Wed, 11 Nov 2020 01:30:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DD69A273E3;
+	Wed, 11 Nov 2020 02:25:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E12D0C088B;
-	Wed, 11 Nov 2020 01:30:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B9278C016F
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 01:30:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9B6C0889;
+	Wed, 11 Nov 2020 02:25:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 30B67C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:25:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A7FB186BAB
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 01:30:49 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1A2C8874E7
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:25:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1JAH0QSUbMg5 for <iommu@lists.linux-foundation.org>;
- Wed, 11 Nov 2020 01:30:44 +0000 (UTC)
+ with ESMTP id RpNRrKoz99ij for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Nov 2020 02:25:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0A92D85540
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 01:29:12 +0000 (UTC)
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
- by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4CW6ZW6CSbzVmnF;
- Wed, 11 Nov 2020 09:28:51 +0800 (CST)
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Wed, 11 Nov 2020 09:29:08 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.1913.007;
- Wed, 11 Nov 2020 09:29:08 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "hch@lst.de" <hch@lst.de>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>
-Subject: RE: [PATCH v3 1/2] dma-mapping: add benchmark support for streaming
- DMA APIs
-Thread-Topic: [PATCH v3 1/2] dma-mapping: add benchmark support for streaming
- DMA APIs
-Thread-Index: AQHWsO+tiT3rvc8AvUKektYgWKvLn6nBDT6Q//+EgQCAAZyYMA==
-Date: Wed, 11 Nov 2020 01:29:08 +0000
-Message-ID: <88e91063b7f041bda7d147438f1c4621@hisilicon.com>
-References: <20201102080646.2180-1-song.bao.hua@hisilicon.com>
- <20201102080646.2180-2-song.bao.hua@hisilicon.com>
- <eb317e5050b944c3aec97c5fb64a74cb@hisilicon.com>
- <0658ee16-d539-61c5-1d39-77d50f559803@huawei.com>
-In-Reply-To: <0658ee16-d539-61c5-1d39-77d50f559803@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.200.81]
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DC4C5874CE
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:24:59 +0000 (UTC)
+IronPort-SDR: STVWXYqSfRsiTR47yK6pLLvJJ9U9sh/s36BJCy9HFApVl8jFntcO0B9SIRK0myJ11ug4in8807
+ 7JhdQdEVb/6g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9801"; a="157090911"
+X-IronPort-AV: E=Sophos;i="5.77,468,1596524400"; d="scan'208";a="157090911"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 Nov 2020 18:24:58 -0800
+IronPort-SDR: 8rD9KYDd9c9o09kFAFh7gnes01OWReGVvpAsRgAj2qvld/255rxlpJb7v6lemXrgQ/N5Mjtw+n
+ gQJt8W2it05g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,468,1596524400"; d="scan'208";a="365763534"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
+ by FMSMGA003.fm.intel.com with ESMTP; 10 Nov 2020 18:24:55 -0800
+Subject: Re: [PATCH v2] iommu/vt-d: avoid unnecessory panic if iommu init fail
+ in tboot system
+To: Zhenzhong Duan <zhenzhong.duan@gmail.com>, linux-kernel@vger.kernel.org
+References: <20201110071908.3133-1-zhenzhong.duan@gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f98ff370-a3a0-2dea-9cb0-6465243a5d97@linux.intel.com>
+Date: Wed, 11 Nov 2020 10:17:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, Will
- Deacon <will@kernel.org>, Linuxarm <linuxarm@huawei.com>,
- "xuwei \(O\)" <xuwei5@huawei.com>, Shuah Khan <shuah@kernel.org>
+In-Reply-To: <20201110071908.3133-1-zhenzhong.duan@gmail.com>
+Content-Language: en-US
+Cc: x86@kernel.org, tboot-devel@lists.sourceforge.net, ning.sun@intel.com,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+ tglx@linutronix.de, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,127 +87,94 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Zhenzhong,
 
-
-> -----Original Message-----
-> From: John Garry
-> Sent: Tuesday, November 10, 2020 9:39 PM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>;
-> iommu@lists.linux-foundation.org; hch@lst.de; robin.murphy@arm.com;
-> m.szyprowski@samsung.com
-> Cc: linux-kselftest@vger.kernel.org; Will Deacon <will@kernel.org>; Joerg
-> Roedel <joro@8bytes.org>; Linuxarm <linuxarm@huawei.com>; xuwei (O)
-> <xuwei5@huawei.com>; Shuah Khan <shuah@kernel.org>
-> Subject: Re: [PATCH v3 1/2] dma-mapping: add benchmark support for
-> streaming DMA APIs
+On 11/10/20 3:19 PM, Zhenzhong Duan wrote:
+> "intel_iommu=off" command line is used to disable iommu but iommu is force
+> enabled in a tboot system for security reason.
 > 
-> On 10/11/2020 08:10, Song Bao Hua (Barry Song) wrote:
-> > Hello Robin, Christoph,
-> > Any further comment? John suggested that "depends on DEBUG_FS" should
-> be added in Kconfig.
-> > I am collecting more comments to send v4 together with fixing this minor
-> issue :-)
-> >
-> > Thanks
-> > Barry
-> >
-> >> -----Original Message-----
-> >> From: Song Bao Hua (Barry Song)
-> >> Sent: Monday, November 2, 2020 9:07 PM
-> >> To: iommu@lists.linux-foundation.org; hch@lst.de;
-> robin.murphy@arm.com;
-> >> m.szyprowski@samsung.com
-> >> Cc: Linuxarm <linuxarm@huawei.com>; linux-kselftest@vger.kernel.org;
-> xuwei
-> >> (O) <xuwei5@huawei.com>; Song Bao Hua (Barry Song)
-> >> <song.bao.hua@hisilicon.com>; Joerg Roedel <joro@8bytes.org>; Will
-> Deacon
-> >> <will@kernel.org>; Shuah Khan <shuah@kernel.org>
-> >> Subject: [PATCH v3 1/2] dma-mapping: add benchmark support for
-> streaming
-> >> DMA APIs
-> >>
-> >> Nowadays, there are increasing requirements to benchmark the
-> performance
-> >> of dma_map and dma_unmap particually while the device is attached to an
-> >> IOMMU.
-> >>
-> >> This patch enables the support. Users can run specified number of threads
-> to
-> >> do dma_map_page and dma_unmap_page on a specific NUMA node with
-> the
-> >> specified duration. Then dma_map_benchmark will calculate the average
-> >> latency for map and unmap.
-> >>
-> >> A difficulity for this benchmark is that dma_map/unmap APIs must run on a
-> >> particular device. Each device might have different backend of IOMMU or
-> >> non-IOMMU.
-> >>
-> >> So we use the driver_override to bind dma_map_benchmark to a particual
-> >> device by:
-> >> For platform devices:
-> >> echo dma_map_benchmark >
-> /sys/bus/platform/devices/xxx/driver_override
-> >> echo xxx > /sys/bus/platform/drivers/xxx/unbind
-> >> echo xxx > /sys/bus/platform/drivers/dma_map_benchmark/bind
-> >>
+> However for better performance on high speed network device, a new option
+> "intel_iommu=tboot_noforce" is introduced to disable the force on.
 > 
-> Hi Barry,
+> By default kernel should panic if iommu init fail in tboot for security
+> reason, but it's unnecessory if we use "intel_iommu=tboot_noforce,off".
 > 
-> >> For PCI devices:
-> >> echo dma_map_benchmark >
-> >> /sys/bus/pci/devices/0000:00:01.0/driver_override
-> >> echo 0000:00:01.0 > /sys/bus/pci/drivers/xxx/unbind echo 0000:00:01.0 >
-> >> /sys/bus/pci/drivers/dma_map_benchmark/bind
+> Fix the code setting force_on and move intel_iommu_tboot_noforce
+> from tboot code to intel iommu code.
 > 
-> Do we need to check if the device to which we attach actually has DMA
-> mapping capability?
+> Fixes: 7304e8f28bb2 ("iommu/vt-d: Correctly disable Intel IOMMU force on")
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
 
-Hello John,
+Thanks for the patch.
 
-I'd like to think checking this here would be overdesign. We just give users the
-freedom to bind any device they care about to the benchmark driver. Usually
-that means a real hardware either behind an IOMMU or through a direct
-mapping.
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-if for any reason users put a wrong "device", that is the choice of users. Anyhow,
-the below code will still handle it properly and users will get a report in which
-everything is zero.
+Best regards,
+baolu
 
-+static int map_benchmark_thread(void *data)
-+{
-...
-+		dma_addr = dma_map_single(map->dev, buf, PAGE_SIZE, DMA_BIDIRECTIONAL);
-+		if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
-+			pr_err("dma_map_single failed on %s\n", dev_name(map->dev));
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-...
-+}
-
+> ---
+> v2: move ckeck of intel_iommu_tboot_noforce into iommu code per Baolu.
 > 
-> >>
-> >> Cc: Joerg Roedel <joro@8bytes.org>
-> >> Cc: Will Deacon <will@kernel.org>
-> >> Cc: Shuah Khan <shuah@kernel.org>
-> >> Cc: Christoph Hellwig <hch@lst.de>
-> >> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> >> Cc: Robin Murphy <robin.murphy@arm.com>
-> >> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-> >> ---
+>   arch/x86/kernel/tboot.c     | 3 ---
+>   drivers/iommu/intel/iommu.c | 5 +++--
+>   include/linux/intel-iommu.h | 1 -
+>   3 files changed, 3 insertions(+), 6 deletions(-)
 > 
-> Thanks,
-> John
-
-Thanks
-Barry
-
+> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+> index 992fb14..420be87 100644
+> --- a/arch/x86/kernel/tboot.c
+> +++ b/arch/x86/kernel/tboot.c
+> @@ -514,9 +514,6 @@ int tboot_force_iommu(void)
+>   	if (!tboot_enabled())
+>   		return 0;
+>   
+> -	if (intel_iommu_tboot_noforce)
+> -		return 1;
+> -
+>   	if (no_iommu || swiotlb || dmar_disabled)
+>   		pr_warn("Forcing Intel-IOMMU to enabled\n");
+>   
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 1b1ca63..4d9b298 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -179,7 +179,7 @@ static inline unsigned long virt_to_dma_pfn(void *p)
+>    * (used when kernel is launched w/ TXT)
+>    */
+>   static int force_on = 0;
+> -int intel_iommu_tboot_noforce;
+> +static int intel_iommu_tboot_noforce;
+>   static int no_platform_optin;
+>   
+>   #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+> @@ -4885,7 +4885,8 @@ int __init intel_iommu_init(void)
+>   	 * Intel IOMMU is required for a TXT/tboot launch or platform
+>   	 * opt in, so enforce that.
+>   	 */
+> -	force_on = tboot_force_iommu() || platform_optin_force_iommu();
+> +	force_on = (!intel_iommu_tboot_noforce && tboot_force_iommu()) ||
+> +		    platform_optin_force_iommu();
+>   
+>   	if (iommu_init_mempool()) {
+>   		if (force_on)
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index fbf5b3e..d956987 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -798,7 +798,6 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+>   extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+>   extern int dmar_disabled;
+>   extern int intel_iommu_enabled;
+> -extern int intel_iommu_tboot_noforce;
+>   extern int intel_iommu_gfx_mapped;
+>   #else
+>   static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
