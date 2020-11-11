@@ -7,96 +7,96 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D391C55ABD
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 13:58:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11E0C388F9
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 13:58:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D7BC2072C
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 13:58:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1C3FF2074B
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 13:58:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OIo6Gpxu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D7BC2072C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PX5YSlcx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C3FF2074B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B5A062A128;
-	Wed, 11 Nov 2020 13:58:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7B6AA8753F;
+	Wed, 11 Nov 2020 13:58:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TUKwl9MsreSM; Wed, 11 Nov 2020 13:58:04 +0000 (UTC)
+	with ESMTP id ht4yyV-WTy3z; Wed, 11 Nov 2020 13:58:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B9503203B8;
-	Wed, 11 Nov 2020 13:58:04 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CEF2B87544;
+	Wed, 11 Nov 2020 13:58:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80E4FC0889;
-	Wed, 11 Nov 2020 13:58:04 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12278C016F
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE288C0889;
+	Wed, 11 Nov 2020 13:58:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98EA3C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CB298228B4
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 935C887544
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Lm1vrZsz1MBk for <iommu@lists.linux-foundation.org>;
- Wed, 11 Nov 2020 13:58:01 +0000 (UTC)
+ with ESMTP id F5gIlwDABGyK for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Nov 2020 13:58:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
- [209.85.221.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 4875A203B8
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:01 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id p1so2588042wrf.12
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 05:58:01 -0800 (PST)
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+ [209.85.221.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id AA2138753F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 13:58:10 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id c17so2584076wrc.11
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 05:58:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=nQxC580B2FGMz7fwoWGS/qV6OQLc0KLPED3qOpuBky8=;
- b=OIo6GpxukW3iK2MLSyvALt9frkeXd0ZXiyBWhhzmAxpU0yk9P7jOnHruqZKBQccZFO
- pi2tyWBjPtyBjL5dZIjocD5ciZf7y4jaSEPp7AQg7jVQhBrcZUkooG6dMykqfIKrnwAm
- cmTpHvTYivjJDMqffwVQNg3EIBx4N6ItwiIASsWC7oJFIABzF84mUeLhNduPpkE/B5fD
- zU74Wu3AXxpByDpPLbPJvtqj5iCgSkmn2qtMTKJ496VYWlXJFryVRfSUhAyN/CXGuD78
- QJiksGLXHFV1oaOcVmLLsBMjUdF+nYRlOKoiB/1ocK79gkEdbrKkmG95wo2oynjwhkmg
- RIqg==
+ bh=Bg58Nuvlkki+FL9k9rnhWH9yWYXQkDaY8dFISymQNf4=;
+ b=PX5YSlcxcGmSZg8r/sp2D0I5JTHOJyKFcuVZxLO1fiouCfjYWFBADilQDWAd0Zg9Sd
+ HIfJ/J4cOjkRzfvjnj1WMh/LKncrPEtfWeva76W8jYJ5GBV9QsvF6eKzhO5TLf58/h3Y
+ 9SHRXS3ggYLKFZJgaiWZUr0gnAEq+xCsESwyC2lrlYNo+T1yDCho+DSiFZax7SLWk8Kc
+ qS+/kEN2EY8zDLbcFnyYa3Hzli6iLHqYJh3b8/FneQUgK84gqG6h1k7T94Ji4UfDLetv
+ p3Xs14pIjTNueMnPgMl2lVXzAS9+JjhDnXFy1NouXt6C7VZY0sEXk+8MnG75YWkKX/C+
+ MxRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=nQxC580B2FGMz7fwoWGS/qV6OQLc0KLPED3qOpuBky8=;
- b=Wo0zv6DEzw1OAwOIy/3ogRI9JBb4QX1MS0ePvlchP/+X3ZDo9EmTtKMJreNF8RvA2N
- 7SPlfE4z/W4BucciGTe8fyZvezP81mw8WlmBka4YcNE0PxGVhUAIsy8mC38IachlSd/m
- wqyUNU11vxkWuasX/YXpSOY/vDZqoWuCLgNPyc4dqEUdIQsZRmwZuLRoGiVq7P5ix9gJ
- UwC1SNJKIWltwYDmoNV6HdBIm1T4TaLFDSCrml+ZI04YQfjOAt/6s60B9PuP7M2DrSah
- /Ei7mQLVzXK8oeo4ZGepyZO55Fn8UUtfoaGNB0syhrusDKjpeCb27ZFbAwhJ4NnpewGH
- 127A==
-X-Gm-Message-State: AOAM5311KNs8t+eFtYqr9Pjd32AkbteKbUoALGqo/Vp6CJOWF6WNbVu9
- ZIcRNhuepm4cPnRWN76CK076ig==
-X-Google-Smtp-Source: ABdhPJz8B46qAy3mH7K7M4xppHiXb//CHwuj/RA8IyjLL/yHeGrjXZ21yZsM7l6s4djLyiLVXJ69Cg==
-X-Received: by 2002:adf:e3cf:: with SMTP id k15mr13899007wrm.259.1605103079627; 
- Wed, 11 Nov 2020 05:57:59 -0800 (PST)
+ bh=Bg58Nuvlkki+FL9k9rnhWH9yWYXQkDaY8dFISymQNf4=;
+ b=i2Hd8juNycpBGVkOhRrzQqarnBGac2uB+vDIMM/ffGiSq8E+Xn9kAKwe2MWUtLKjcf
+ FOevTGhuSqOa3GLla0yd/qEmvH+aoJzBeUSj0zdI1MNvDw1LHnQel5PDRwwSBBkXgbJu
+ PTyMesApf3iQCRd7O2grvifVGhEE6aI8tS9Rjv86UupCHIbtoRXUSP22VJJNuYkIf0vb
+ MvGnLZF7RLWXR57jMKeR4ihyKPSoULzzNI8edeGl5FXBUvPVyqgEuVD7p0b1byLZcsr+
+ 16QiMPrHA02TTZQyyprl7JPfvFVFkJbo6HxImw/rgrvNoP3fcXphIzfBw0dAyjvpHemB
+ CrZw==
+X-Gm-Message-State: AOAM530Mbv8dgNqrpLg8XPa+3+bmiDGnmBr7Un5TvawA2thcTaa2/8bb
+ pQd55qAJFV6sN69yY+Cx7srpwg==
+X-Google-Smtp-Source: ABdhPJw6IjBDWuhoEyhqDsHpEgNzVVOxVUrrMBm3b8SRWwCRsVl0IlzCByu/s34c5pnWmTrWJJOQPA==
+X-Received: by 2002:adf:f9cb:: with SMTP id w11mr26381611wrr.1.1605103089202; 
+ Wed, 11 Nov 2020 05:58:09 -0800 (PST)
 Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id b14sm2550433wrq.47.2020.11.11.05.57.57
+ by smtp.gmail.com with ESMTPSA id b8sm2551407wmj.9.2020.11.11.05.58.08
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 11 Nov 2020 05:57:58 -0800 (PST)
-Date: Wed, 11 Nov 2020 14:57:40 +0100
+ Wed, 11 Nov 2020 05:58:08 -0800 (PST)
+Date: Wed, 11 Nov 2020 14:57:50 +0100
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
+To: Xiang Zheng <zhengxiang9@huawei.com>
 Subject: Re: [PATCH v7 04/24] iommu: Add a page fault handler
-Message-ID: <20201111135740.GA2622074@myrica>
+Message-ID: <20201111135750.GA2617489@myrica>
 References: <20200519175502.2504091-1-jean-philippe@linaro.org>
  <20200519175502.2504091-5-jean-philippe@linaro.org>
- <c840d771-188d-9ee5-d117-e4b91d29b329@linux.intel.com>
+ <422e84da-9ccb-5452-8cbf-f472d2ad16b5@huawei.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <c840d771-188d-9ee5-d117-e4b91d29b329@linux.intel.com>
-Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
- linux-pci@vger.kernel.org, robin.murphy@arm.com, fenghua.yu@intel.com,
- hch@infradead.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- zhangfei.gao@linaro.org, catalin.marinas@arm.com, felix.kuehling@amd.com,
- will@kernel.org, christian.koenig@amd.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <422e84da-9ccb-5452-8cbf-f472d2ad16b5@huawei.com>
+Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, will@kernel.org,
+ fenghua.yu@intel.com, jgg@ziepe.ca, linux-pci@vger.kernel.org,
+ christian.koenig@amd.com, hch@infradead.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Wang Haibin <wanghaibin.wang@huawei.com>,
+ catalin.marinas@arm.com, zhangfei.gao@linaro.org, robin.murphy@arm.com,
+ felix.kuehling@amd.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,13 +114,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu,
+Hi Xiang,
 
-Thanks for the review. I'm only now reworking this and realized I've never
-sent a reply, sorry about that.
+Thank you for reviewing this. I forgot to send a reply, sorry for the
+delay.
 
-On Wed, May 20, 2020 at 02:42:21PM +0800, Lu Baolu wrote:
-> Hi Jean,
+On Fri, May 29, 2020 at 05:18:27PM +0800, Xiang Zheng wrote:
+> Hi,
 > 
 > On 2020/5/20 1:54, Jean-Philippe Brucker wrote:
 > > Some systems allow devices to handle I/O Page Faults in the core mm. For
@@ -147,62 +147,30 @@ On Wed, May 20, 2020 at 02:42:21PM +0800, Lu Baolu wrote:
 > > 
 > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 [...]
-> > +static enum iommu_page_response_code
-> > +iopf_handle_single(struct iopf_fault *iopf)
+> > +/**
+> > + * iopf_queue_free - Free IOPF queue
+> > + * @queue: queue to free
+> > + *
+> > + * Counterpart to iopf_queue_alloc(). The driver must not be queuing faults or
+> > + * adding/removing devices on this queue anymore.
+> > + */
+> > +void iopf_queue_free(struct iopf_queue *queue)
 > > +{
-> > +	vm_fault_t ret;
-> > +	struct mm_struct *mm;
-> > +	struct vm_area_struct *vma;
-> > +	unsigned int access_flags = 0;
-> > +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
-> > +	struct iommu_fault_page_request *prm = &iopf->fault.prm;
-> > +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+> > +	struct iopf_device_param *iopf_param, *next;
 > > +
-> > +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
-> > +		return status;
+> > +	if (!queue)
+> > +		return;
 > > +
-> > +	mm = iommu_sva_find(prm->pasid);
-> > +	if (IS_ERR_OR_NULL(mm))
-> > +		return status;
+> > +	list_for_each_entry_safe(iopf_param, next, &queue->devices, queue_list)
+> > +		iopf_queue_remove_device(queue, iopf_param->dev);
 > > +
-> > +	down_read(&mm->mmap_sem);
-> > +
-> > +	vma = find_extend_vma(mm, prm->addr);
-> > +	if (!vma)
-> > +		/* Unmapped area */
-> > +		goto out_put_mm;
-> > +
-> > +	if (prm->perm & IOMMU_FAULT_PERM_READ)
-> > +		access_flags |= VM_READ;
-> > +
-> > +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
-> > +		access_flags |= VM_WRITE;
-> > +		fault_flags |= FAULT_FLAG_WRITE;
-> > +	}
-> > +
-> > +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
-> > +		access_flags |= VM_EXEC;
-> > +		fault_flags |= FAULT_FLAG_INSTRUCTION;
-> > +	}
-> > +
-> > +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
-> > +		fault_flags |= FAULT_FLAG_USER;
-> > +
-> > +	if (access_flags & ~vma->vm_flags)
-> > +		/* Access fault */
-> > +		goto out_put_mm;
-> > +
-> > +	ret = handle_mm_fault(vma, prm->addr, fault_flags);
-> > +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
+> > +	destroy_workqueue(queue->wq);
 > 
-> Do you mind telling why it's IOMMU_PAGE_RESP_INVALID but not
-> IOMMU_PAGE_RESP_FAILURE?
+> Do we need to free iopf_group(s) here in case the work queue of the group(s) are not
+> scheduled yet? If that occurs, we might leak memory here.
 
-PAGE_RESP_FAILURE maps to PRI Response code "Response Failure" which
-indicates a catastrophic error and causes the function to disable PRI.
-Instead PAGE_RESP_INVALID maps to PRI Response code "Invalid request",
-which tells the function that the address is invalid and there is no point
-retrying this particular access.
+Partial groups are freed by iopf_queue_remove_device(), and all other
+groups are freed when destroy_workqueue() executes the remaining work.
 
 Thanks,
 Jean
