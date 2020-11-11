@@ -2,79 +2,125 @@ Return-Path: <SRS0=hwFB=ER=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1CCC55ABD
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 02:25:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B60C388F7
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 03:10:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E5D3B221F7
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 02:25:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5D3B221F7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9C9D72168B
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 03:10:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="GPToxrUT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C9D72168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CE135275A5;
-	Wed, 11 Nov 2020 02:25:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2D92086204;
+	Wed, 11 Nov 2020 03:10:23 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qZmI3R9LYoDE; Wed, 11 Nov 2020 03:10:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5AB7D85E83;
+	Wed, 11 Nov 2020 03:10:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A893C088B;
+	Wed, 11 Nov 2020 03:10:22 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE436C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 03:10:20 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id C2D69274B3
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 03:10:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V406tU8vbL2f; Wed, 11 Nov 2020 02:25:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DD69A273E3;
-	Wed, 11 Nov 2020 02:25:02 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9B6C0889;
-	Wed, 11 Nov 2020 02:25:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30B67C016F
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:25:01 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1A2C8874E7
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:25:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RpNRrKoz99ij for <iommu@lists.linux-foundation.org>;
- Wed, 11 Nov 2020 02:25:00 +0000 (UTC)
+ with ESMTP id gPUvPzMT4eCq for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Nov 2020 03:10:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DC4C5874CE
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 02:24:59 +0000 (UTC)
-IronPort-SDR: STVWXYqSfRsiTR47yK6pLLvJJ9U9sh/s36BJCy9HFApVl8jFntcO0B9SIRK0myJ11ug4in8807
- 7JhdQdEVb/6g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9801"; a="157090911"
-X-IronPort-AV: E=Sophos;i="5.77,468,1596524400"; d="scan'208";a="157090911"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Nov 2020 18:24:58 -0800
-IronPort-SDR: 8rD9KYDd9c9o09kFAFh7gnes01OWReGVvpAsRgAj2qvld/255rxlpJb7v6lemXrgQ/N5Mjtw+n
- gQJt8W2it05g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,468,1596524400"; d="scan'208";a="365763534"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
- by FMSMGA003.fm.intel.com with ESMTP; 10 Nov 2020 18:24:55 -0800
-Subject: Re: [PATCH v2] iommu/vt-d: avoid unnecessory panic if iommu init fail
- in tboot system
-To: Zhenzhong Duan <zhenzhong.duan@gmail.com>, linux-kernel@vger.kernel.org
-References: <20201110071908.3133-1-zhenzhong.duan@gmail.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f98ff370-a3a0-2dea-9cb0-6465243a5d97@linux.intel.com>
-Date: Wed, 11 Nov 2020 10:17:56 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20201110071908.3133-1-zhenzhong.duan@gmail.com>
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2085.outbound.protection.outlook.com [40.107.93.85])
+ by silver.osuosl.org (Postfix) with ESMTPS id ADB612740C
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 03:10:19 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jvVfy/9f8dP5OJGj97lL3QlCFCRVMSlfB1k6PLY4wyv/vXO0YzRax8FwVfM5ZZ2OA+ILWcarbYo2YG/+raslqPFT1tzuwq7i5uuIW7n8FUxyYED6NbFHoxeeFiEoHIIjht04EEJyAgeMiYHpaWU/nHhuUZR7uB6lDoJS6B4gzl6vx+SmKQVJaxwiuSKG0nQDvCxrLWjFPdE/vjNT0AIcFZ4P8i+lBBljt88Lj9BfZcTVam1EEj57/WiEexxMnQF5x59CumxUjoY7lq0ypgPSHmH3x0oDeJAhh651pMGEb0r1jvHObOcXJjKuYHy0dskoF0VtyeawakDjjXhFY3PHxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xxlcvbBI2fob+ltg5VIzuEpiHYuAt2yrbzUpR/b895o=;
+ b=FqJ+sNRq4iNq8qsYJZRd2kgPtuRGO/i+L+5i2Emwahxyj3spB5LJGjPMHk/5PeelJS21KLCljNXTrVH52ZthIfDklezojIJ6zBWiYwzf2iVENuvBMdyjDgiRxe7ktDjfer61jcSe34Im53f2iMbrW2PVSvH+BXwk+Wlrzca9oycChI6Zoqq1SuJIuHIyyAB2K8Dlrax8eD5uVu54QyCbqAbO9ZMhLWZaJ8n3jP+K4FDLYM4w01RcvsFC38tSkJPvC/6D1dGwGO/AFNjIhZ6ApNOlgwWlOwTqzESA34usZ9UCLwxjOe/46QNYiNbZwjt3cy8u4WnCQP/8xLgkNUK0TA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xxlcvbBI2fob+ltg5VIzuEpiHYuAt2yrbzUpR/b895o=;
+ b=GPToxrUTpGiQ6qxYmKTW8P6uMIntGy/33D2ff5gTBSG05MlRwwRHJ/tUXWSHQAPP0L4Psm0iquqzOX9vKjeSoIjK3eFSStFf0NiEUQZsdCu6i9L+bCgq2skVCKicZuozYF0OnJ8czxyQQ9cszwlrcpHdVbznP0LpLDLEN5FUWxM=
+Authentication-Results: arm.com; dkim=none (message not signed)
+ header.d=none;arm.com; dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
+ by BY5PR12MB4163.namprd12.prod.outlook.com (2603:10b6:a03:202::18)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Wed, 11 Nov
+ 2020 03:10:17 +0000
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::dd10:efd2:e325:53c7]) by BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::dd10:efd2:e325:53c7%3]) with mapi id 15.20.3541.025; Wed, 11 Nov 2020
+ 03:10:17 +0000
+Subject: Re: [PATCH v3 00/14] iommu/amd: Add Generic IO Page Table Framework
+ Support
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <20201004014549.16065-1-suravee.suthikulpanit@amd.com>
+ <f28359ed-47dc-281f-7261-6320150ef906@amd.com>
+Message-ID: <eb567d23-b63b-a10a-d0b1-c03281a1f602@amd.com>
+Date: Wed, 11 Nov 2020 10:10:06 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.1
+In-Reply-To: <f28359ed-47dc-281f-7261-6320150ef906@amd.com>
 Content-Language: en-US
-Cc: x86@kernel.org, tboot-devel@lists.sourceforge.net, ning.sun@intel.com,
- iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
- tglx@linutronix.de, dwmw2@infradead.org
+X-Originating-IP: [165.204.159.242]
+X-ClientProxiedBy: BM1PR01CA0091.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:1::31) To BYAPR12MB4597.namprd12.prod.outlook.com
+ (2603:10b6:a03:10b::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from Suravees-MacBook-Pro.local (165.204.159.242) by
+ BM1PR01CA0091.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:1::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3541.21 via Frontend Transport; Wed, 11 Nov 2020 03:10:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: deb88366-577e-48f3-1027-08d885ef508d
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4163:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4163F1EA48864EB7D6CA4F2EF3E80@BY5PR12MB4163.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eUeQPU0RuyZhiRQF/KIfcuPXaShnWkFazdC14dEYTSezbW1kmMTtxleUhxJRjLPNhNVRMuOIZkOkbFTBAnT4+OoKZhecTI4DF9PJRkm3eckQZhjM7lGIvH0xGpYeubwyQDGmH9lGDsmznPYUaFbMLbMxba06l+3u6tgsP8i4hrct+025Yroo73UA1+11eDld5Vnlpsp9n9pAPGvh9SlhRK+riBOY2ylSnyoVP5kku1n73Rq5qFjwBIhqH8O7nycyfcqNO/+JdIXzSPQnlU+DPPsW4qL6Y1Fv74lzABJdo0iR0JygfO5JmM2dcuyn7ubrySXdAnsyi8666s8m4Wk16bb5J1FyIy++qcrJuwiiCFZ6FOH3X1qW19xUt+X1y8w6MF/Xqfd1023V5I7lcMRUVD6Xk3a2gcLtxu2dndzAWcKuMmYIo1zYlPlXhvC7kLhEUfplybx7eNytRxAponCFdaM//jywGop3v4sSWL/e1xo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(366004)(346002)(39860400002)(136003)(376002)(53546011)(6506007)(8676002)(44832011)(52116002)(66476007)(66946007)(5660300002)(2906002)(16526019)(31686004)(8936002)(186003)(66556008)(26005)(2616005)(86362001)(83380400001)(316002)(956004)(6666004)(6486002)(36756003)(4326008)(478600001)(6512007)(31696002)(41533002)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: OJlpwtqQWNA/7tgilhfb91JUm3plNJoqe8XLsbu6hqy/5lr1rSNFzm900W8cpCfFEvIo9qmIpQuXNAiMkpwzVUIcPWohqGb88BsiirfdAVbWO0OYf2FjxKBCHvi8teLE2ZDL4ww3riOTshIGVBXTUw9dBbMocVzhZt3G/owjtYk0ocTfk+vM20hz+ACicuUmo37SwjCxJMdZuqCDX/7MOeMD8BM1IWSOrf0hVSkPwBzB0HYOdAOyEtvbg2IJpKczQq6bb5RtXx0i4XVI0lN3b4f+hMTdKTbQ92QWg1ApN/zsa4sZGqbzNxBeNSPtfzb55b51GtMvsEYLSW0Ql3FTqCgyK/VNbM0MetN/G9Fb8Bj2wobfOOC++2YYFpRf2Gw/HfnDTWws2G5MC77oeFDZPbntwpVDC9Hs9S/vfNkluslafeXaFCq1XuAmjgLViJ+DrgyhWELYSKY9q5VeG33hSGSZD084qbQh7vIW/1U/ERBQ2FZ4kp2ttE4HzoXeszySnv1XaxgCHc8DhliQRKTohKq4Nes78XqHUpvieoMO5q+OSHsbOBj0x4UGkYrTKy6LJPu6o5hJl9VGmZG7Ps06/9A1gaITyLZZAMTZprvzmdLD+2ED82pDDVJBnGoPz5Ujv6nmPOgrx77k7DyetkeyaQ==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: deb88366-577e-48f3-1027-08d885ef508d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2020 03:10:17.2162 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: w1zZwsED/uMqbW8x5U1Tci3dCcRm/VFopBRYFoZ8DInAifepnSdD/+aAQKCD40lb8Zv6vZOi2u2dRlJ/pC58VQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4163
+Cc: robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,95 +133,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Zhenzhong,
-
-On 11/10/20 3:19 PM, Zhenzhong Duan wrote:
-> "intel_iommu=off" command line is used to disable iommu but iommu is force
-> enabled in a tboot system for security reason.
-> 
-> However for better performance on high speed network device, a new option
-> "intel_iommu=tboot_noforce" is introduced to disable the force on.
-> 
-> By default kernel should panic if iommu init fail in tboot for security
-> reason, but it's unnecessory if we use "intel_iommu=tboot_noforce,off".
-> 
-> Fix the code setting force_on and move intel_iommu_tboot_noforce
-> from tboot code to intel iommu code.
-> 
-> Fixes: 7304e8f28bb2 ("iommu/vt-d: Correctly disable Intel IOMMU force on")
-> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
-
-Thanks for the patch.
-
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
-> ---
-> v2: move ckeck of intel_iommu_tboot_noforce into iommu code per Baolu.
-> 
->   arch/x86/kernel/tboot.c     | 3 ---
->   drivers/iommu/intel/iommu.c | 5 +++--
->   include/linux/intel-iommu.h | 1 -
->   3 files changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
-> index 992fb14..420be87 100644
-> --- a/arch/x86/kernel/tboot.c
-> +++ b/arch/x86/kernel/tboot.c
-> @@ -514,9 +514,6 @@ int tboot_force_iommu(void)
->   	if (!tboot_enabled())
->   		return 0;
->   
-> -	if (intel_iommu_tboot_noforce)
-> -		return 1;
-> -
->   	if (no_iommu || swiotlb || dmar_disabled)
->   		pr_warn("Forcing Intel-IOMMU to enabled\n");
->   
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 1b1ca63..4d9b298 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -179,7 +179,7 @@ static inline unsigned long virt_to_dma_pfn(void *p)
->    * (used when kernel is launched w/ TXT)
->    */
->   static int force_on = 0;
-> -int intel_iommu_tboot_noforce;
-> +static int intel_iommu_tboot_noforce;
->   static int no_platform_optin;
->   
->   #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
-> @@ -4885,7 +4885,8 @@ int __init intel_iommu_init(void)
->   	 * Intel IOMMU is required for a TXT/tboot launch or platform
->   	 * opt in, so enforce that.
->   	 */
-> -	force_on = tboot_force_iommu() || platform_optin_force_iommu();
-> +	force_on = (!intel_iommu_tboot_noforce && tboot_force_iommu()) ||
-> +		    platform_optin_force_iommu();
->   
->   	if (iommu_init_mempool()) {
->   		if (force_on)
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index fbf5b3e..d956987 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -798,7 +798,6 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
->   extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
->   extern int dmar_disabled;
->   extern int intel_iommu_enabled;
-> -extern int intel_iommu_tboot_noforce;
->   extern int intel_iommu_gfx_mapped;
->   #else
->   static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSm9lcmcsCgpEbyB5b3UgaGF2ZSBhbnkgdXBkYXRlIG9uIHRoaXMgc2VyaWVzPwoKVGhhbmtz
+LApTdXJhdmVlCgpPbiAxMS8yLzIwIDEwOjE2IEFNLCBTdXJhdmVlIFN1dGhpa3VscGFuaXQgd3Jv
+dGU6Cj4gSm9lcmcsCj4gCj4gWW91IG1lbnRpb25lZCB0byByZW1pbmQgeW91IHRvIHB1bGwgdGhp
+cyBpbiB0byBsaW51eC1uZXh0Lgo+IAo+IFRoYW5rcywKPiBTdXJhdmVlCj4gCj4gT24gMTAvNC8y
+MCA4OjQ1IEFNLCBTdXJhdmVlIFN1dGhpa3VscGFuaXQgd3JvdGU6Cj4+IFRoZSBmcmFtZXdvcmsg
+YWxsb3dzIGNhbGxhYmxlIGltcGxlbWVudGF0aW9uIG9mIElPIHBhZ2UgdGFibGUuCj4+IFRoaXMg
+YWxsb3dzIEFNRCBJT01NVSBkcml2ZXIgdG8gc3dpdGNoIGJldHdlZW4gZGlmZmVyZW50IHR5cGVz
+Cj4+IG9mIEFNRCBJT01NVSBwYWdlIHRhYmxlcyAoZS5nLiB2MSB2cy4gdjIpLgo+Pgo+PiBUaGlz
+IHNlcmllcyByZWZhY3RvcnMgdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRpb24gb2YgQU1EIElPTU1V
+IHYxIHBhZ2UgdGFibGUKPj4gdG8gYWRvcHQgdGhlIGZyYW1ld29yay4gVGhlcmUgc2hvdWxkIGJl
+IG5vIGZ1bmN0aW9uYWwgY2hhbmdlLgo+PiBTdWJzZXF1ZW50IHNlcmllcyB3aWxsIGludHJvZHVj
+ZSBzdXBwb3J0IGZvciB0aGUgQU1EIElPTU1VIHYyIHBhZ2UgdGFibGUuCj4+Cj4+IFRoYW5rcywK
+Pj4gU3VyYXZlZQo+Pgo+PiBDaGFuZ2UgZnJvbSBWMiAoaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcv
+bGttbC84MzVjMGQ0Ni1lZDk2LTlmYmUtODU2YS03NzdkY2ZmYWM5NjdAYW1kLmNvbS9ULyN0KQo+
+PiDCoMKgIC0gUGF0Y2ggMi8xNDogSW50cm9kdWNlIGhlbHBlciBmdW5jdGlvbiBpb19wZ3RhYmxl
+X2NmZ190b19kYXRhLgo+PiDCoMKgIC0gUGF0Y2ggMTMvMTQ6IFB1dCBiYWNrIHRoZSBzdHJ1Y3Qg
+aW9tbXVfZmx1c2hfb3BzIHNpbmNlIHBhdGNoIHYyIHdvdWxkIHJ1biBpbnRvCj4+IMKgwqDCoMKg
+IE5VTEwgcG9pbnRlciBidWcgd2hlbiBjYWxsaW5nIGZyZWVfaW9fcGd0YWJsZV9vcHMgaWYgbm90
+IGRlZmluZWQuCj4+Cj4+IENoYW5nZSBmcm9tIFYxIChodHRwczovL2xrbWwub3JnL2xrbWwvMjAy
+MC85LzIzLzI1MSkKPj4gwqDCoCAtIERvIG5vdCBzcGVjaWZ5IHN0cnVjdCBpb19wZ3RhYmxlX2Nm
+Zy5jb2hlcmVudF93YWxrLCBzaW5jZSBpdCBpcwo+PiDCoMKgwqDCoCBub3QgY3VycmVudGx5IHVz
+ZWQuIChwZXIgUm9iaW4pCj4+IMKgwqAgLSBSZW1vdmUgdW51c2VkIHN0cnVjdCBpb21tdV9mbHVz
+aF9vcHMuwqAgKHBhdGNoIDIvMTMpCj4+IMKgwqAgLSBNb3ZlIGFtZF9pb21tdV9zZXR1cF9pb19w
+Z3RhYmxlX29wcyB0byBpb21tdS5jIGluc3RlYWQgb2YgaW9fcGd0YWJsZS5jCj4+IMKgwqDCoMKg
+IHBhdGNoIDEzLzEzKQo+Pgo+PiBTdXJhdmVlIFN1dGhpa3VscGFuaXQgKDE0KToKPj4gwqDCoCBp
+b21tdS9hbWQ6IFJlLWRlZmluZSBhbWRfaW9tbXVfZG9tYWluX2VuY29kZV9wZ3RhYmxlIGFzIGlu
+bGluZQo+PiDCoMKgIGlvbW11L2FtZDogUHJlcGFyZSBmb3IgZ2VuZXJpYyBJTyBwYWdlIHRhYmxl
+IGZyYW1ld29yawo+PiDCoMKgIGlvbW11L2FtZDogTW92ZSBwdF9yb290IHRvIHRvIHN0cnVjdCBh
+bWRfaW9fcGd0YWJsZQo+PiDCoMKgIGlvbW11L2FtZDogQ29udmVydCB0byB1c2luZyBhbWRfaW9f
+cGd0YWJsZQo+PiDCoMKgIGlvbW11L2FtZDogRGVjbGFyZSBmdW5jdGlvbnMgYXMgZXh0ZXJuCj4+
+IMKgwqAgaW9tbXUvYW1kOiBNb3ZlIElPIHBhZ2UgdGFibGUgcmVsYXRlZCBmdW5jdGlvbnMKPj4g
+wqDCoCBpb21tdS9hbWQ6IFJlc3RydWN0dXJlIGNvZGUgZm9yIGZyZWVpbmcgcGFnZSB0YWJsZQo+
+PiDCoMKgIGlvbW11L2FtZDogUmVtb3ZlIGFtZF9pb21tdV9kb21haW5fZ2V0X3BndGFibGUKPj4g
+wqDCoCBpb21tdS9hbWQ6IFJlbmFtZSB2YXJpYWJsZXMgdG8gYmUgY29uc2lzdGVudCB3aXRoIHN0
+cnVjdAo+PiDCoMKgwqDCoCBpb19wZ3RhYmxlX29wcwo+PiDCoMKgIGlvbW11L2FtZDogUmVmYWN0
+b3IgZmV0Y2hfcHRlIHRvIHVzZSBzdHJ1Y3QgYW1kX2lvX3BndGFibGUKPj4gwqDCoCBpb21tdS9h
+bWQ6IEludHJvZHVjZSBpb21tdV92MV9pb3ZhX3RvX3BoeXMKPj4gwqDCoCBpb21tdS9hbWQ6IElu
+dHJvZHVjZSBpb21tdV92MV9tYXBfcGFnZSBhbmQgaW9tbXVfdjFfdW5tYXBfcGFnZQo+PiDCoMKg
+IGlvbW11L2FtZDogSW50cm9kdWNlIElPTU1VIGZsdXNoIGNhbGxiYWNrcwo+PiDCoMKgIGlvbW11
+L2FtZDogQWRvcHQgSU8gcGFnZSB0YWJsZSBmcmFtZXdvcmsKPj4KPj4gwqAgZHJpdmVycy9pb21t
+dS9hbWQvS2NvbmZpZ8KgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgIDEgKwo+PiDCoCBkcml2ZXJz
+L2lvbW11L2FtZC9NYWtlZmlsZcKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoCAyICstCj4+IMKgIGRy
+aXZlcnMvaW9tbXUvYW1kL2FtZF9pb21tdS5owqDCoMKgwqDCoMKgIHzCoCAyMiArCj4+IMKgIGRy
+aXZlcnMvaW9tbXUvYW1kL2FtZF9pb21tdV90eXBlcy5oIHzCoCA0MyArLQo+PiDCoCBkcml2ZXJz
+L2lvbW11L2FtZC9pb19wZ3RhYmxlLmPCoMKgwqDCoMKgIHwgNTY0ICsrKysrKysrKysrKysrKysr
+KysrKysrKwo+PiDCoCBkcml2ZXJzL2lvbW11L2FtZC9pb21tdS5jwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgfCA2NDYgKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+PiDCoCBkcml2ZXJzL2lvbW11
+L2lvLXBndGFibGUuY8KgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoCAzICsKPj4gwqAgaW5jbHVkZS9s
+aW51eC9pby1wZ3RhYmxlLmjCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqAgMiArCj4+IMKgIDggZmls
+ZXMgY2hhbmdlZCwgNjkxIGluc2VydGlvbnMoKyksIDU5MiBkZWxldGlvbnMoLSkKPj4gwqAgY3Jl
+YXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaW9tbXUvYW1kL2lvX3BndGFibGUuYwo+PgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
