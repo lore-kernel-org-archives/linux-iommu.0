@@ -1,100 +1,96 @@
-Return-Path: <SRS0=ThSx=EQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=hwFB=ER=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C077C388F7
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 23:42:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D57B6C55ABD
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 00:25:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E1B8D20809
-	for <iommu@archiver.kernel.org>; Tue, 10 Nov 2020 23:42:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B1EA21D91
+	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 00:25:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="OGkZy1Uy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1B8D20809
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lzTpU0r8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B1EA21D91
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6EC658739C;
-	Tue, 10 Nov 2020 23:42:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 93E3486762;
+	Wed, 11 Nov 2020 00:25:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wXb2LmBM90Wl; Tue, 10 Nov 2020 23:42:25 +0000 (UTC)
+	with ESMTP id X2mCTPK0oRjE; Wed, 11 Nov 2020 00:25:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B6977871BA;
-	Tue, 10 Nov 2020 23:42:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0AF0986747;
+	Wed, 11 Nov 2020 00:25:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 884A9C088B;
-	Tue, 10 Nov 2020 23:42:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3C6FC0889;
+	Wed, 11 Nov 2020 00:25:12 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71797C016F
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:42:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4098EC016F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 00:25:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5A86887269
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:42:24 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2863B8719C
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 00:25:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MJI7wSNo6P3J for <iommu@lists.linux-foundation.org>;
- Tue, 10 Nov 2020 23:42:23 +0000 (UTC)
+ with ESMTP id Ci2AUeEejcfC for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Nov 2020 00:25:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9A46D871BA
- for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 23:42:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=dq7zEId0NdZdINMNT6Dmw/UdigbwtVpJA5sVRfmfofg=; b=OGkZy1Uyl96LErvRAxZGS3VLh2
- UFPnmL68iQiGa7WAKcronB92llBdP3YlqIU+7eGuFKbqGjkT01WWufQfvYhwJQWb5f4Chtvv5u50S
- ehGDDouQf07lLymZnuvKlNikGX0MG5kw18tbF+W0I0l1dYdqjxKHukHshhL/MTMWuMcU1rwtN+iYD
- MX/dMQFi6k6B6yzwa4oKcYK28+bCU9oc5m4af9qikpCqZDiTpCgHOzow/uqJ6YsHG16ieCLyHb+Qi
- Uefg2Nrk14j0VCvqrjysb0S8rgDpYRYKseTyjfXOJtFFb2JZ0gOPhivVU3VIxjdTMfibx68jS04pG
- vJLX6QZg==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
- by ale.deltatee.com with esmtp (Exim 4.92)
- (envelope-from <logang@deltatee.com>)
- id 1kcdH8-0000kz-29; Tue, 10 Nov 2020 16:42:11 -0700
-To: Bjorn Helgaas <helgaas@kernel.org>
-References: <20201110232513.GA705726@bjorn-Precision-5520>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <b3918b58-1c46-4f9c-fcae-37fd47b6bfde@deltatee.com>
-Date: Tue, 10 Nov 2020 16:42:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
+ [209.85.218.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 68375870E5
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 00:25:10 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id cw8so316638ejb.8
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Nov 2020 16:25:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=2O6LIbW3W1fyPRRz6Q2ugAoXMb1CF9Vg+VkIYIaeEto=;
+ b=lzTpU0r87pk4y6h34io+WvlgUIGcBLyA7ro331I4mTZJeLaJR4TA//cDV8W5J/BQUY
+ ND4Rxi7HVlG6Isz9aIu+NiblYCN/AMdvIG+p3HcHSRb2rg3mXcJTNf1cNykx8kLNh6o9
+ Ey7hiKYbqRCeTosc4zpX2vFY3z1AQLirY2i35nYzgh09Ef+VZYJeT1WmQNsCHYTS7hhk
+ VqdzzAMc6EdY9cIb1hgG9h7zpbamGZ64NZJaKiFJQ1fo/EP+1N+oAyUvpfKNQk0sORWL
+ gXHJHu9WbxjxEp8y4Lokg7Rrxjk3iq0h2A7LEi9PYUKwAmpjJ6UFadkPBP36DMA8zJZw
+ n65g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=2O6LIbW3W1fyPRRz6Q2ugAoXMb1CF9Vg+VkIYIaeEto=;
+ b=a9RzoX108JWNweRkDjCmhUQmlkoYI5sAMS+2dH03g2gdu24Li2m9Ziks2sYYnOEmJs
+ AgMFngzNOWrHSxC+Ww/D/AwNQ5XG0FmTrq6cp5PMRgW+MdxyS4x/3dCFdtsE0F9ovLpJ
+ akZWjJbepl7nqgbaklkTwr+m2c3h6725Z05mEyni60vbT/BlsTcSVVMjUUB9iYYd3wgx
+ bRlcM3FxMvR4vtFBPYle0Z47iYDvMpntxv3S3u/SOekGvBXd6vcgup0l3TQxaG9l89aB
+ +CCSshg24tJzm0L/SUeAhpnkpBgPQoV1mZuaqh0mXT80gDSThFWeV0f18xv6Km1o4sxV
+ wd2w==
+X-Gm-Message-State: AOAM531e+XEtC7FPR5J+rJyTHVxPzaczPIfW+QRn/YkDnti/ddindISc
+ 87N2WqVg2cm/BE4a+a39EhAlDaxRC5CLj4JYDn4=
+X-Google-Smtp-Source: ABdhPJx/VNilzppU5AdybE2mXkG021YFimA/sh9NK/KQLMFJ2kNYiaoe2MndQR0ypFROirBkv0XJ87TjyrWs9dDvZxQ=
+X-Received: by 2002:a17:906:b312:: with SMTP id
+ n18mr23363538ejz.353.1605054308883; 
+ Tue, 10 Nov 2020 16:25:08 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201110232513.GA705726@bjorn-Precision-5520>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: daniel.vetter@ffwll.ch, willy@infradead.org,
- ddutile@redhat.com, jhubbard@nvidia.com, iweiny@intel.com,
- christian.koenig@amd.com, jgg@ziepe.ca, dan.j.williams@intel.com, hch@lst.de,
- sbates@raithlin.com, iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- helgaas@kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [RFC PATCH 03/15] PCI/P2PDMA: Introduce
- pci_p2pdma_should_map_bus() and pci_p2pdma_bus_offset()
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ira Weiny <iweiny@intel.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-block@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Christoph Hellwig <hch@lst.de>
+References: <20201110071908.3133-1-zhenzhong.duan@gmail.com>
+ <4cfa1f1827e0ccbfbc94de3beba64a4a141b2248.camel@linux.intel.com>
+In-Reply-To: <4cfa1f1827e0ccbfbc94de3beba64a4a141b2248.camel@linux.intel.com>
+From: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+Date: Wed, 11 Nov 2020 08:24:52 +0800
+Message-ID: <CAFH1YnMb0MB+-hg7KWEzpGc_bUAv0UhR4_zBn4Sh8T3zjDMKuw@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/vt-d: avoid unnecessory panic if iommu init fail
+ in tboot system
+To: Lukasz Hawrylko <lukasz.hawrylko@linux.intel.com>
+Cc: tboot-devel@lists.sourceforge.net, x86@kernel.org,
+ linux-kernel <linux-kernel@vger.kernel.org>, ning.sun@intel.com,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,84 +108,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Lukasz,
 
+On Tue, Nov 10, 2020 at 11:53 PM Lukasz Hawrylko
+<lukasz.hawrylko@linux.intel.com> wrote:
+>
+> Hi Zhenzhong
+>
+> On Tue, 2020-11-10 at 15:19 +0800, Zhenzhong Duan wrote:
+> > "intel_iommu=off" command line is used to disable iommu but iommu is force
+> > enabled in a tboot system for security reason.
+> >
+> > However for better performance on high speed network device, a new option
+> > "intel_iommu=tboot_noforce" is introduced to disable the force on.
+> >
+> > By default kernel should panic if iommu init fail in tboot for security
+> > reason, but it's unnecessory if we use "intel_iommu=tboot_noforce,off".
+> >
+> > Fix the code setting force_on and move intel_iommu_tboot_noforce
+> > from tboot code to intel iommu code.
+> >
+> > Fixes: 7304e8f28bb2 ("iommu/vt-d: Correctly disable Intel IOMMU force on")
+> > Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+> > ---
+> > v2: move ckeck of intel_iommu_tboot_noforce into iommu code per Baolu.
+>
+> I have check it on my TXT testing environment with latest TBOOT,
+> everything works as expected.
 
-On 2020-11-10 4:25 p.m., Bjorn Helgaas wrote:
-> On Fri, Nov 06, 2020 at 10:00:24AM -0700, Logan Gunthorpe wrote:
->> Introduce pci_p2pdma_should_map_bus() which is meant to be called by
->> dma map functions to determine how to map a given p2pdma page.
-> 
-> s/dma/DMA/ for consistency (also below in function comment)
-> 
->> pci_p2pdma_bus_offset() is also added to allow callers to get the bus
->> offset if they need to map the bus address.
->>
->> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
->> ---
->>  drivers/pci/p2pdma.c       | 46 ++++++++++++++++++++++++++++++++++++++
->>  include/linux/pci-p2pdma.h | 11 +++++++++
->>  2 files changed, 57 insertions(+)
->>
->> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
->> index ea8472278b11..9961e779f430 100644
->> --- a/drivers/pci/p2pdma.c
->> +++ b/drivers/pci/p2pdma.c
->> @@ -930,6 +930,52 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
->>  }
->>  EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
->>  
->> +/**
->> + * pci_p2pdma_bus_offset - returns the bus offset for a given page
->> + * @page: page to get the offset for
->> + *
->> + * Must be passed a pci p2pdma page.
-> 
-> s/pci/PCI/
-> 
->> + */
->> +u64 pci_p2pdma_bus_offset(struct page *page)
->> +{
->> +	struct pci_p2pdma_pagemap *p2p_pgmap = to_p2p_pgmap(page->pgmap);
->> +
->> +	WARN_ON(!is_pci_p2pdma_page(page));
->> +
->> +	return p2p_pgmap->bus_offset;
->> +}
->> +EXPORT_SYMBOL_GPL(pci_p2pdma_bus_offset);
->> +
->> +/**
->> + * pci_p2pdma_should_map_bus - determine if a dma mapping should use the
->> + *	bus address
->> + * @dev: device doing the DMA request
->> + * @pgmap: dev_pagemap structure for the mapping
->> + *
->> + * Returns 1 if the page should be mapped with a bus address, 0 otherwise
->> + * and -1 the device should not be mapping P2PDMA pages.
-> 
-> I think this is missing a word.
-> 
-> I'm not really sure how to interpret the "should" in
-> pci_p2pdma_should_map_bus().  If this returns -1, does that mean the
-> patches *cannot* be mapped?  They *could* be mapped, but you really
-> *shouldn't*?  Something else?
-> 
-> 1 means page should be mapped with bus address.  0 means ... what,
-> exactly?  It should be mapped with some different address?
+Thanks very much for help checking, may I have your Tested-by?
 
-1 means it must be mapped with a bus address
-0 means it may be mapped normally (through the IOMMU or just with a
-direct physical address)
--1 means it cannot be mapped and should fail (ie. if it must go through
-the IOMMU, but the IOMMU is not in the whitelist).
-
-> Sorry these are naive questions because I don't know how all this
-> works.
-
-Thanks for the review. Definitely points out some questionable language
-that I used. I'll reword this if/when it goes further.
-
-Logan
-
+Zhenzhong
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
