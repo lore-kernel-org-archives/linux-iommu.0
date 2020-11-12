@@ -2,91 +2,93 @@ Return-Path: <SRS0=2i4G=ES=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EC9C388F9
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 02:42:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7F1C388F9
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 02:42:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 91413207F7
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 02:42:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EF0B1207F7
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 02:42:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="oA+Dbf0q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 91413207F7
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="B7i1qKrU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF0B1207F7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 0A1822037A;
-	Thu, 12 Nov 2020 02:42:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 717D486D22;
+	Thu, 12 Nov 2020 02:42:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x0YHBOd8mh8e; Thu, 12 Nov 2020 02:41:59 +0000 (UTC)
+	with ESMTP id 6OP9yZPlcvKb; Thu, 12 Nov 2020 02:42:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2EE82200ED;
-	Thu, 12 Nov 2020 02:41:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5C09C86CEF;
+	Thu, 12 Nov 2020 02:42:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12FADC0889;
-	Thu, 12 Nov 2020 02:41:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 522A4C016F
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:41:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49001C0889;
+	Thu, 12 Nov 2020 02:42:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1A01C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:42:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 39B4C86AF2
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:41:57 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id AC8D087541
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:42:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iGm0yR2H3Pb3 for <iommu@lists.linux-foundation.org>;
- Thu, 12 Nov 2020 02:41:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
- by whitealder.osuosl.org (Postfix) with ESMTP id B4C5084442
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:41:54 +0000 (UTC)
-X-UUID: 3e322c4d6c014b81adca0a5a36afc2e5-20201112
+ with ESMTP id 6FPTlk739yds for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Nov 2020 02:42:28 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 17E108753C
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 02:42:27 +0000 (UTC)
+X-UUID: 9be016932b0b47b695a8a04d0e8f8134-20201112
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=Se+dg4+AYHxaxLtO87h0o7d56UKD1EUz3XmAcnOw+/s=; 
- b=oA+Dbf0qPb92/DZF3kFkxWYazzkKvsKg0/1OM5wOp9sggU1MDJbxATKYd0bHSif+NtHFeCDweuX4Xx505Zv1xeRj7V3hvcXe+mEqufaYZVEcfJvez7qhPfj56D9i4g12WU8yAbEq+Bpmpt1UfPVhRSSMTHDBrBUr75eoDoGa2HM=;
-X-UUID: 3e322c4d6c014b81adca0a5a36afc2e5-20201112
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ bh=2akmVV9MmjilHzebTF46wwbdEe3nnOXuaGxT3mDFxZs=; 
+ b=B7i1qKrUtHcI/SrwT5pZORy4ir14B95DBrTr40zBuN/emudAM9UljPzdzwIxIU/KipAoPdnBqq69O4YtWo0SayqRd9mCp/cVg8pqHfY55ZKSB3xDznpBQJzrWb2xopkGnj2phZeALos97dcKsTy7u7el/w3Lg5rwWjTpp2N/hDw=;
+X-UUID: 9be016932b0b47b695a8a04d0e8f8134-20201112
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1635741934; Thu, 12 Nov 2020 10:41:44 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS32DR.mediatek.inc
- (172.27.6.104) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Thu, 12 Nov 2020 10:41:42 +0800
+ with ESMTP id 1625091449; Thu, 12 Nov 2020 10:42:21 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Thu, 12 Nov 2020 10:42:19 +0800
 Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
  (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 Nov 2020 10:41:42 +0800
-Message-ID: <1605148902.26323.126.camel@mhfsdcap03>
-Subject: Re: [PATCH v4 05/24] dt-bindings: mediatek: Add binding for mt8192
- IOMMU
+ Transport; Thu, 12 Nov 2020 10:42:19 +0800
+Message-ID: <1605148938.26323.127.camel@mhfsdcap03>
+Subject: Re: [PATCH v4 13/24] iommu/mediatek: Add device link for smi-common
+ and m4u
 From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Date: Thu, 12 Nov 2020 10:41:42 +0800
-In-Reply-To: <20201111213338.GD287176@kozik-lap>
+To: Nicolas Boichat <drinkcat@chromium.org>
+Date: Thu, 12 Nov 2020 10:42:18 +0800
+In-Reply-To: <CANMq1KBrnhAbGdKbsSmFJWONe-mkG6TJsN_jp2xuJ=4MiPyapQ@mail.gmail.com>
 References: <20201111123838.15682-1-yong.wu@mediatek.com>
- <20201111123838.15682-6-yong.wu@mediatek.com>
- <20201111213338.GD287176@kozik-lap>
+ <20201111123838.15682-14-yong.wu@mediatek.com>
+ <CANMq1KBrnhAbGdKbsSmFJWONe-mkG6TJsN_jp2xuJ=4MiPyapQ@mail.gmail.com>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 1C18FA5020027ADAA5CD122CFFAF794DF7B24B6C49C7403F677C225959A3CB292000:8
+X-TM-SNTS-SMTP: 9DD61C76332B6A687D16ACA0116BA587755327AA8BAE00AF0ECEE2DBB83A02B42000:8
 X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- chao.hao@mediatek.com, Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@google.com>, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
+Cc: youlin.pei@mediatek.com, Devicetree List <devicetree@vger.kernel.org>,
+ srv_heupstream <srv_heupstream@mediatek.com>, Tomasz Figa <tfiga@google.com>,
+ kernel-team@android.com, lkml <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, chao.hao@mediatek.com,
  iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- kernel-team@android.com, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Evan Green <evgreen@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ anan.sun@mediatek.com, Greg Kroah-Hartman <gregkh@google.com>,
+ Will Deacon <will@kernel.org>, linux-arm
+ Mailing List <linux-arm-kernel@lists.infradead.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,69 +106,157 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Krzysztof,
-
-On Wed, 2020-11-11 at 22:33 +0100, Krzysztof Kozlowski wrote:
-> On Wed, Nov 11, 2020 at 08:38:19PM +0800, Yong Wu wrote:
-> > This patch adds decriptions for mt8192 IOMMU and SMI.
-> > 
-> > mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
-> > table format. The M4U-SMI HW diagram is as below:
-> > 
-> >                           EMI
-> >                            |
-> >                           M4U
-> >                            |
-> >                       ------------
-> >                        SMI Common
-> >                       ------------
-> >                            |
-> >   +-------+------+------+----------------------+-------+
-> >   |       |      |      |       ......         |       |
-> >   |       |      |      |                      |       |
-> > larb0   larb1  larb2  larb4     ......      larb19   larb20
-> > disp0   disp1   mdp    vdec                   IPE      IPE
-> > 
-> > All the connections are HW fixed, SW can NOT adjust it.
-> > 
-> > mt8192 M4U support 0~16GB iova range. we preassign different engines
-> > into different iova ranges:
-> > 
-> > domain-id  module     iova-range                  larbs
-> >    0       disp        0 ~ 4G                      larb0/1
-> >    1       vcodec      4G ~ 8G                     larb4/5/7
-> >    2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
-> >    3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
-> >    4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
-> > 
-> > The iova range for CCU0/1(camera control unit) is HW requirement.
-> > 
+On Thu, 2020-11-12 at 09:10 +0800, Nicolas Boichat wrote:
+> On Wed, Nov 11, 2020 at 8:40 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> >
+> > In the lastest SoC, M4U has its special power domain. thus, If the engine
+> > begin to work, it should help enable the power for M4U firstly.
+> > Currently if the engine work, it always enable the power/clocks for
+> > smi-larbs/smi-common. This patch adds device_link for smi-common and M4U.
+> > then, if smi-common power is enabled, the M4U power also is powered on
+> > automatically.
+> >
+> > Normally M4U connect with several smi-larbs and their smi-common always
+> > are the same, In this patch it get smi-common dev from the first smi-larb
+> > device(i==0), then add the device_link only while m4u has power-domain.
+> >
 > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > Reviewed-by: Rob Herring <robh@kernel.org>
 > > ---
-
-[...]
-
-> > +#ifndef _DTS_IOMMU_PORT_MT8192_H_
-> > +#define _DTS_IOMMU_PORT_MT8192_H_
+> >  drivers/iommu/mtk_iommu.c | 36 +++++++++++++++++++++++++++++++++---
+> >  drivers/iommu/mtk_iommu.h |  1 +
+> >  2 files changed, 34 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index cfdf5ce696fd..4ce7e0883e4d 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -20,6 +20,7 @@
+> >  #include <linux/of_irq.h>
+> >  #include <linux/of_platform.h>
+> >  #include <linux/platform_device.h>
+> > +#include <linux/pm_runtime.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/spinlock.h>
+> > @@ -705,7 +706,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >                 return larb_nr;
+> >
+> >         for (i = 0; i < larb_nr; i++) {
+> > -               struct device_node *larbnode;
+> > +               struct device_node *larbnode, *smicomm_node;
+> >                 struct platform_device *plarbdev;
+> >                 u32 id;
+> >
+> > @@ -731,6 +732,26 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >
+> >                 component_match_add_release(dev, &match, release_of,
+> >                                             compare_of, larbnode);
+> > +               if (!i) {
 > 
-> Not accurate header guard. Shoud be:
-> _DT_BINDINGS_MEMORY_MT8192_LARB_PORT_H_
+> Maybe more of a style preference, but since you are actually comparing
+> an integer, I prefer seeing i == 0.
 > 
-> Probably you copied it from some other Mediatek headers - all of them
-> have header guard pointing to different directory.
+> Also, might be nicer to do
+> 
+> if (i != 0)
+>    continue;
+> 
+> And de-indent the rest.
 
-Thanks very much for your reviewing so many patches.
-
-This name like this when it was in the first version. Since it is only
-used when the consumer devices enable IOMMU, thus called it
-_IOMMU_PORT...
-
-I will use a new patch to rename all of them.
+Thanks. will fix.
 
 > 
-> Best regards,
-> Krzysztof
+> > +                       smicomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
+> > +                       if (!smicomm_node)
+> > +                               return -EINVAL;
+> > +
+> > +                       plarbdev = of_find_device_by_node(smicomm_node);
+> > +                       of_node_put(smicomm_node);
+> > +                       data->smicomm_dev = &plarbdev->dev;
+> > +               }
+> > +       }
+> > +
+> > +       if (dev->pm_domain) {
+> > +               struct device_link *link;
+> > +
+> > +               link = device_link_add(data->smicomm_dev, dev,
+> > +                                      DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+> > +               if (!link) {
+> > +                       dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
+> > +                       return -EINVAL;
+> > +               }
+> >         }
+> >
+> >         platform_set_drvdata(pdev, data);
+> > @@ -738,14 +759,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >         ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+> >                                      "mtk-iommu.%pa", &ioaddr);
+> >         if (ret)
+> > -               return ret;
+> > +               goto out_link_remove;
+> >
+> >         iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
+> >         iommu_device_set_fwnode(&data->iommu, &pdev->dev.of_node->fwnode);
+> >
+> >         ret = iommu_device_register(&data->iommu);
+> >         if (ret)
+> > -               return ret;
+> > +               goto out_sysfs_remove;
+> 
+> Technically, this change is unrelated.
+
+Sharp eye. Right. I thought it was small enough to squash here.
+
+I will use a new patch to fix this(add fixes tag, and no need add
+cc-stable I think.).
+
+> 
+> >
+> >         spin_lock_init(&data->tlb_lock);
+> >         list_add_tail(&data->list, &m4ulist);
+> > @@ -754,6 +775,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+> >                 bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
+> >
+> >         return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+> > +
+> > +out_sysfs_remove:
+> > +       iommu_device_sysfs_remove(&data->iommu);
+> > +out_link_remove:
+> > +       if (dev->pm_domain)
+> > +               device_link_remove(data->smicomm_dev, dev);
+> > +       return ret;
+> >  }
+> >
+> >  static int mtk_iommu_remove(struct platform_device *pdev)
+> > @@ -767,6 +795,8 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+> >                 bus_set_iommu(&platform_bus_type, NULL);
+> >
+> >         clk_disable_unprepare(data->bclk);
+> > +       if (pdev->dev.pm_domain)
+> > +               device_link_remove(data->smicomm_dev, &pdev->dev);
+> >         devm_free_irq(&pdev->dev, data->irq, data);
+> >         component_master_del(&pdev->dev, &mtk_iommu_com_ops);
+> >         return 0;
+> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > index d0c93652bdbe..5e03a029c4dc 100644
+> > --- a/drivers/iommu/mtk_iommu.h
+> > +++ b/drivers/iommu/mtk_iommu.h
+> > @@ -68,6 +68,7 @@ struct mtk_iommu_data {
+> >
+> >         struct iommu_device             iommu;
+> >         const struct mtk_iommu_plat_data *plat_data;
+> > +       struct device                   *smicomm_dev;
+> >
+> >         struct dma_iommu_mapping        *mapping; /* For mtk_iommu_v1.c */
+> >
+> > --
+> > 2.18.0
+> >
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
 _______________________________________________
 iommu mailing list
