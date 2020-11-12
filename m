@@ -1,86 +1,98 @@
-Return-Path: <SRS0=hwFB=ER=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=2i4G=ES=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB04C56201
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 23:11:50 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E41C388F9
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 01:11:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5208020870
-	for <iommu@archiver.kernel.org>; Wed, 11 Nov 2020 23:11:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5208020870
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CAD3420678
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 01:11:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="kDnlXe7t"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CAD3420678
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D452485D92;
-	Wed, 11 Nov 2020 23:11:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 481C287534;
+	Thu, 12 Nov 2020 01:11:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n9rSGZXp0iMv; Wed, 11 Nov 2020 23:11:48 +0000 (UTC)
+	with ESMTP id 1sSCe7NOUUYC; Thu, 12 Nov 2020 01:11:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1E40484F35;
-	Wed, 11 Nov 2020 23:11:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 97F2187526;
+	Thu, 12 Nov 2020 01:11:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0343FC088B;
-	Wed, 11 Nov 2020 23:11:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF65CC016F
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 23:11:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7ABDFC0889;
+	Thu, 12 Nov 2020 01:11:03 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2B11FC016F
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 01:11:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AAB3620395
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 23:11:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1E26287534
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 01:11:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CeuN0U2q-8yw for <iommu@lists.linux-foundation.org>;
- Wed, 11 Nov 2020 23:11:45 +0000 (UTC)
+ with ESMTP id FPmrMIZ+hQh2 for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Nov 2020 01:11:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by silver.osuosl.org (Postfix) with ESMTPS id 2A87F2010D
- for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 23:11:45 +0000 (UTC)
-IronPort-SDR: BV9oS2iQStbolQE1dja7KXAPfIKKKhzJU0uWw5MZPZmaT9xYtl8K71g3DOnRUu8k9FsVbrh9Eg
- NBvcEOskfvQQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9802"; a="166724199"
-X-IronPort-AV: E=Sophos;i="5.77,470,1596524400"; d="scan'208";a="166724199"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Nov 2020 15:11:44 -0800
-IronPort-SDR: 2SigUd3RC6BHd0NrZjhiVcNkd4/T5ldcTrknfGqqjnYMA+dH0hh6VxbwKoY75rW1jfqAHhP1bp
- TkxPMdnvvBtw==
-X-IronPort-AV: E=Sophos;i="5.77,470,1596524400"; d="scan'208";a="541993746"
-Received: from lmwang8-mobl.ccr.corp.intel.com (HELO [10.254.209.85])
- ([10.254.209.85])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Nov 2020 15:11:39 -0800
-Subject: Re: [PATCH v7 04/24] iommu: Add a page fault handler
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-5-jean-philippe@linaro.org>
- <c840d771-188d-9ee5-d117-e4b91d29b329@linux.intel.com>
- <20201111135740.GA2622074@myrica>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <8e630294-8199-68e3-d55a-68e6484d953a@linux.intel.com>
-Date: Thu, 12 Nov 2020 07:11:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
+Received: from mail-vk1-f196.google.com (mail-vk1-f196.google.com
+ [209.85.221.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A733A87526
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 01:11:00 +0000 (UTC)
+Received: by mail-vk1-f196.google.com with SMTP id o73so950686vka.5
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Nov 2020 17:11:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=Jz5kAZbrArqI0Wtmw+vtyP3p8jdhel21wmv2CFUUROo=;
+ b=kDnlXe7tyEixWf+480/PTLTVkBUYGbtBisgVqL6qcQgy4sPKvzTV6/tSw83j47RD7q
+ Rf9VAXW9kIm4P+pX/HXhGKwX9LVFIVmcuHv/6Jag9gPlQcBFdbxZcRC33/54CUyQozsU
+ NIphtyIs1Otvd9bO8oM70co0kkF3ZZXDKONwA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=Jz5kAZbrArqI0Wtmw+vtyP3p8jdhel21wmv2CFUUROo=;
+ b=DBXh1jrhHpkrjHjMzNN5b2a75y5uCqss9uKRBmEX30DOnhb6yqZwIL9jAuBCTmxq9g
+ KIBQPBvaDNQIWP9hCqiaWF8AhlJc6mJa+F4/K29/ZPbtpFLOkPsf6NhiN25TGSi4Uify
+ RN7763H8RIQgPwsEdWK2yw5Kd75+UdhzA6Ph8ygZYVhe30k8Omse7qTcWM77HLqmY25S
+ hql34bQcV19saiVNcvK4Sxnlq+R/NznGpHqfXQM+Vn2I65d9tXkHguX9B8zVNCIFqxCh
+ 3uTtX/a2sbIkZTikCbt0wSz7QZI6RHUiSPc8TCvfbtslbTWIq2rD+UDQgFYcwF2Riin0
+ Te5w==
+X-Gm-Message-State: AOAM531+cPQ41Zpw1qYZCTUEx5ld04ZfRkHNE712wEPJVXoOuAuw+udM
+ 4OZrYtqecHbOOyAEuFcl9aDANllRa3OhoUegI+02qA==
+X-Google-Smtp-Source: ABdhPJw+9rZ4nbhsdwX6zx9uimjIrtTve1brVMfTJF95tCZp/3u+DvsL8qx0usBjUpgCHUXOc17+xjTd7E+Sg/oGTEc=
+X-Received: by 2002:a1f:cd07:: with SMTP id d7mr16387452vkg.10.1605143459607; 
+ Wed, 11 Nov 2020 17:10:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201111135740.GA2622074@myrica>
-Content-Language: en-US
-Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
- linux-pci@vger.kernel.org, robin.murphy@arm.com, fenghua.yu@intel.com,
- hch@infradead.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- zhangfei.gao@linaro.org, catalin.marinas@arm.com, felix.kuehling@amd.com,
- will@kernel.org, christian.koenig@amd.com,
- linux-arm-kernel@lists.infradead.org
+References: <20201111123838.15682-1-yong.wu@mediatek.com>
+ <20201111123838.15682-14-yong.wu@mediatek.com>
+In-Reply-To: <20201111123838.15682-14-yong.wu@mediatek.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Date: Thu, 12 Nov 2020 09:10:49 +0800
+Message-ID: <CANMq1KBrnhAbGdKbsSmFJWONe-mkG6TJsN_jp2xuJ=4MiPyapQ@mail.gmail.com>
+Subject: Re: [PATCH v4 13/24] iommu/mediatek: Add device link for smi-common
+ and m4u
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, Devicetree List <devicetree@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@google.com>,
+ srv_heupstream <srv_heupstream@mediatek.com>, chao.hao@mediatek.com,
+ Will Deacon <will@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Evan Green <evgreen@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ kernel-team@android.com, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,109 +105,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
+On Wed, Nov 11, 2020 at 8:40 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> In the lastest SoC, M4U has its special power domain. thus, If the engine
+> begin to work, it should help enable the power for M4U firstly.
+> Currently if the engine work, it always enable the power/clocks for
+> smi-larbs/smi-common. This patch adds device_link for smi-common and M4U.
+> then, if smi-common power is enabled, the M4U power also is powered on
+> automatically.
+>
+> Normally M4U connect with several smi-larbs and their smi-common always
+> are the same, In this patch it get smi-common dev from the first smi-larb
+> device(i==0), then add the device_link only while m4u has power-domain.
+>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 36 +++++++++++++++++++++++++++++++++---
+>  drivers/iommu/mtk_iommu.h |  1 +
+>  2 files changed, 34 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index cfdf5ce696fd..4ce7e0883e4d 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+> @@ -705,7 +706,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>                 return larb_nr;
+>
+>         for (i = 0; i < larb_nr; i++) {
+> -               struct device_node *larbnode;
+> +               struct device_node *larbnode, *smicomm_node;
+>                 struct platform_device *plarbdev;
+>                 u32 id;
+>
+> @@ -731,6 +732,26 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>
+>                 component_match_add_release(dev, &match, release_of,
+>                                             compare_of, larbnode);
+> +               if (!i) {
 
-On 2020/11/11 21:57, Jean-Philippe Brucker wrote:
-> Hi Baolu,
-> 
-> Thanks for the review. I'm only now reworking this and realized I've never
-> sent a reply, sorry about that.
-> 
-> On Wed, May 20, 2020 at 02:42:21PM +0800, Lu Baolu wrote:
->> Hi Jean,
->>
->> On 2020/5/20 1:54, Jean-Philippe Brucker wrote:
->>> Some systems allow devices to handle I/O Page Faults in the core mm. For
->>> example systems implementing the PCIe PRI extension or Arm SMMU stall
->>> model. Infrastructure for reporting these recoverable page faults was
->>> added to the IOMMU core by commit 0c830e6b3282 ("iommu: Introduce device
->>> fault report API"). Add a page fault handler for host SVA.
->>>
->>> IOMMU driver can now instantiate several fault workqueues and link them
->>> to IOPF-capable devices. Drivers can choose between a single global
->>> workqueue, one per IOMMU device, one per low-level fault queue, one per
->>> domain, etc.
->>>
->>> When it receives a fault event, supposedly in an IRQ handler, the IOMMU
->>> driver reports the fault using iommu_report_device_fault(), which calls
->>> the registered handler. The page fault handler then calls the mm fault
->>> handler, and reports either success or failure with iommu_page_response().
->>> When the handler succeeded, the IOMMU retries the access.
->>>
->>> The iopf_param pointer could be embedded into iommu_fault_param. But
->>> putting iopf_param into the iommu_param structure allows us not to care
->>> about ordering between calls to iopf_queue_add_device() and
->>> iommu_register_device_fault_handler().
->>>
->>> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> [...]
->>> +static enum iommu_page_response_code
->>> +iopf_handle_single(struct iopf_fault *iopf)
->>> +{
->>> +	vm_fault_t ret;
->>> +	struct mm_struct *mm;
->>> +	struct vm_area_struct *vma;
->>> +	unsigned int access_flags = 0;
->>> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
->>> +	struct iommu_fault_page_request *prm = &iopf->fault.prm;
->>> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
->>> +
->>> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
->>> +		return status;
->>> +
->>> +	mm = iommu_sva_find(prm->pasid);
->>> +	if (IS_ERR_OR_NULL(mm))
->>> +		return status;
->>> +
->>> +	down_read(&mm->mmap_sem);
->>> +
->>> +	vma = find_extend_vma(mm, prm->addr);
->>> +	if (!vma)
->>> +		/* Unmapped area */
->>> +		goto out_put_mm;
->>> +
->>> +	if (prm->perm & IOMMU_FAULT_PERM_READ)
->>> +		access_flags |= VM_READ;
->>> +
->>> +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
->>> +		access_flags |= VM_WRITE;
->>> +		fault_flags |= FAULT_FLAG_WRITE;
->>> +	}
->>> +
->>> +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
->>> +		access_flags |= VM_EXEC;
->>> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
->>> +	}
->>> +
->>> +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
->>> +		fault_flags |= FAULT_FLAG_USER;
->>> +
->>> +	if (access_flags & ~vma->vm_flags)
->>> +		/* Access fault */
->>> +		goto out_put_mm;
->>> +
->>> +	ret = handle_mm_fault(vma, prm->addr, fault_flags);
->>> +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
->>
->> Do you mind telling why it's IOMMU_PAGE_RESP_INVALID but not
->> IOMMU_PAGE_RESP_FAILURE?
-> 
-> PAGE_RESP_FAILURE maps to PRI Response code "Response Failure" which
-> indicates a catastrophic error and causes the function to disable PRI.
-> Instead PAGE_RESP_INVALID maps to PRI Response code "Invalid request",
-> which tells the function that the address is invalid and there is no point
-> retrying this particular access.
+Maybe more of a style preference, but since you are actually comparing
+an integer, I prefer seeing i == 0.
 
-Thanks for the explanation. I am also working on converting Intel VT-d
-to use this framework (and the sva helpers). So far so good.
+Also, might be nicer to do
 
-Best regards,
-baolu
+if (i != 0)
+   continue;
+
+And de-indent the rest.
+
+> +                       smicomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
+> +                       if (!smicomm_node)
+> +                               return -EINVAL;
+> +
+> +                       plarbdev = of_find_device_by_node(smicomm_node);
+> +                       of_node_put(smicomm_node);
+> +                       data->smicomm_dev = &plarbdev->dev;
+> +               }
+> +       }
+> +
+> +       if (dev->pm_domain) {
+> +               struct device_link *link;
+> +
+> +               link = device_link_add(data->smicomm_dev, dev,
+> +                                      DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+> +               if (!link) {
+> +                       dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
+> +                       return -EINVAL;
+> +               }
+>         }
+>
+>         platform_set_drvdata(pdev, data);
+> @@ -738,14 +759,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>         ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+>                                      "mtk-iommu.%pa", &ioaddr);
+>         if (ret)
+> -               return ret;
+> +               goto out_link_remove;
+>
+>         iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
+>         iommu_device_set_fwnode(&data->iommu, &pdev->dev.of_node->fwnode);
+>
+>         ret = iommu_device_register(&data->iommu);
+>         if (ret)
+> -               return ret;
+> +               goto out_sysfs_remove;
+
+Technically, this change is unrelated.
+
+>
+>         spin_lock_init(&data->tlb_lock);
+>         list_add_tail(&data->list, &m4ulist);
+> @@ -754,6 +775,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>                 bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
+>
+>         return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
+> +
+> +out_sysfs_remove:
+> +       iommu_device_sysfs_remove(&data->iommu);
+> +out_link_remove:
+> +       if (dev->pm_domain)
+> +               device_link_remove(data->smicomm_dev, dev);
+> +       return ret;
+>  }
+>
+>  static int mtk_iommu_remove(struct platform_device *pdev)
+> @@ -767,6 +795,8 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+>                 bus_set_iommu(&platform_bus_type, NULL);
+>
+>         clk_disable_unprepare(data->bclk);
+> +       if (pdev->dev.pm_domain)
+> +               device_link_remove(data->smicomm_dev, &pdev->dev);
+>         devm_free_irq(&pdev->dev, data->irq, data);
+>         component_master_del(&pdev->dev, &mtk_iommu_com_ops);
+>         return 0;
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index d0c93652bdbe..5e03a029c4dc 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -68,6 +68,7 @@ struct mtk_iommu_data {
+>
+>         struct iommu_device             iommu;
+>         const struct mtk_iommu_plat_data *plat_data;
+> +       struct device                   *smicomm_dev;
+>
+>         struct dma_iommu_mapping        *mapping; /* For mtk_iommu_v1.c */
+>
+> --
+> 2.18.0
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
