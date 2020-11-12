@@ -2,68 +2,133 @@ Return-Path: <SRS0=2i4G=ES=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAD2C2D0A3
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 11:32:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBD2C388F7
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 12:55:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ACBFB221FE
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 11:32:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACBFB221FE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 874E021D91
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 12:55:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="VsWoaT5g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 874E021D91
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 48E5186E72;
-	Thu, 12 Nov 2020 11:32:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B9AF087789;
+	Thu, 12 Nov 2020 12:55:57 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TkS-9kE7EqoK; Thu, 12 Nov 2020 12:55:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id E5C5B87782;
+	Thu, 12 Nov 2020 12:55:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7467C0889;
+	Thu, 12 Nov 2020 12:55:56 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C254C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 12:55:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9529A8708C
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 12:55:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Sv8SKCRPONhu; Thu, 12 Nov 2020 11:32:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7BF4286E42;
-	Thu, 12 Nov 2020 11:32:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74F12C088B;
-	Thu, 12 Nov 2020 11:32:40 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 81852C016F
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 11:32:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 711C786F73
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 11:32:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Zyj0kr2KK3U3 for <iommu@lists.linux-foundation.org>;
- Thu, 12 Nov 2020 11:32:37 +0000 (UTC)
+ with ESMTP id d5jA3r1QIAfL for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Nov 2020 12:55:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 130AC86F55
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 11:32:33 +0000 (UTC)
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CWzwC4jN0zkjhX;
- Thu, 12 Nov 2020 19:32:11 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 12 Nov 2020 19:32:15 +0800
-From: John Garry <john.garry@huawei.com>
-To: <robin.murphy@arm.com>, <joro@8bytes.org>
-Subject: [PATCH v3 3/4] iommu/iova: Flush CPU rcache for when a depot fills
-Date: Thu, 12 Nov 2020 19:28:28 +0800
-Message-ID: <1605180509-9183-4-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1605180509-9183-1-git-send-email-john.garry@huawei.com>
-References: <1605180509-9183-1-git-send-email-john.garry@huawei.com>
+Received: from nat-hk.nvidia.com (nat-hk.nvidia.com [203.18.50.4])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5D6348703D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 12:55:54 +0000 (UTC)
+Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.9]) by
+ nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B5fad30d30000>; Thu, 12 Nov 2020 20:55:47 +0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 12 Nov
+ 2020 12:55:36 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.48) by
+ HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS)
+ id
+ 15.0.1473.3 via Frontend Transport; Thu, 12 Nov 2020 12:55:36 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KyIW7IOM0+++D4M++knuxpj7alhdYeaG22sc6dnPQJvngD6iTQvoKuFK3btnmgz2x5yqp2KUXW8gpJDEBdEvtEjNVEU+Zg1UHlyDVRTAXy/CRaAAshslESeA8XtvD9CNUSi5fQw1W/emZlcqGsBZni9eCp7dwc2n18TqXLtRVzzftvL8iAHZnki7/0gMua+yf1LU6I2Vi9Ryc9MtQ3bYLON/ejRZETiohSE8rkOel8ShqC5HGlLy5WVj5K49GrvhTwQ9bnRTURwNdW9PHm+9+Lm3Ds27QwQru7/BDW33MSTzo8ZlWlhMymu3rYrEycSfJsaw8+nCgsb+WHf+Hx7KEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=odkGYsTueGG1Oj1E5+/FEqJBoN5zCA2wnbKnOv3SBSE=;
+ b=joeixh4hu5ooTwctsGDAchHhtySQy59tD6tksNFsMczPvsiyyWuzacJauPFFKPZyCHv0IzmOqJaVJq3IwPU71DE7W5hi4kyQEyR6pJIxlSE2XuQcPvjQ4yLf3y6AVksI30sPG4CH/p0/c42VC6zzDIaNOS3iyIN7a4GQHtRk45P0ZWoJCF7P/gyZpqD1uxRRmTdun+D7uF0L7uTvzzcjoMqR8cOI8o/r2s2Lw7FgyBfaTwc4uBJ21Wt1CdBu5vAuD3ZVNz5IjO6f4b1uqtB6rxz5Wi0BUV7nwqfmviq43rTvsR0bX8YHYEt8oDBApe84NJk4YnGpc9atCfbvSXNNhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1881.namprd12.prod.outlook.com (2603:10b6:3:10f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21; Thu, 12 Nov
+ 2020 12:55:33 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3499.032; Thu, 12 Nov 2020
+ 12:55:33 +0000
+Date: Thu, 12 Nov 2020 08:55:31 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Thomas Gleixner <tglx@linutronix.de>, Ziyad Atiyyeh <ziyadat@nvidia.com>, 
+ Itay Aveksis <itayav@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
+Subject: REGRESSION: Re: [patch V2 00/46] x86, PCI, XEN, genirq ...: Prepare
+ for device MSI
+Message-ID: <20201112125531.GA873287@nvidia.com>
+References: <20200826111628.794979401@linutronix.de>
+Content-Disposition: inline
+In-Reply-To: <20200826111628.794979401@linutronix.de>
+X-ClientProxiedBy: MN2PR15CA0022.namprd15.prod.outlook.com
+ (2603:10b6:208:1b4::35) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, xiyou.wangcong@gmail.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by
+ MN2PR15CA0022.namprd15.prod.outlook.com (2603:10b6:208:1b4::35) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.21 via Frontend
+ Transport; Thu, 12 Nov 2020 12:55:32 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1kdC8R-003fG5-Cp; Thu, 12 Nov 2020 08:55:31 -0400
+X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1605185747; bh=eQ25xNlY3rVx34V0CM4Bnq31qnmUxB4lNkLgF/NTCTU=;
+ h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+ From:To:CC:Subject:Message-ID:References:Content-Type:
+ Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+ X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType:X-LD-Processed;
+ b=VsWoaT5gF6t9jiuouhEpEGN7Qg7rtC2IuOTe3e6QAc+/J5kvbsUGMZeN9Kt4v340c
+ KVbRoCH9TR2N9HqJF4VZ84B6k+51zu6l3inP6l0HJqan+cR7kEEn/+Cqpds/KwjSEr
+ BJf+0jPEtmRpSIm1ToZML8tn4g1PO1iVyJXs6pHwlKZwUso5Cn8iCe6LGFBRQ1tEUP
+ 95Nt8mKzj2PmKuTTS2AowvWwB9kBFIAxLC7TFNHrpa0/KKU1hbM20l9NiG3hCradK7
+ hY1uGGNICjBrlcYzyYVoaC3ibvjfkHv7m8xxytVcHuVd6aNpu8YGZow8Vv5rsi+u+9
+ YDb6R/lLzsueQ==
+Cc: Dimitri Sivanich <sivanich@hpe.com>, linux-hyperv@vger.kernel.org,
+ Steve Wahl <steve.wahl@hpe.com>, linux-pci@vger.kernel.org,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Dan Williams <dan.j.williams@intel.com>, Wei Liu <wei.liu@kernel.org>,
+ Stephen Hemminger <sthemmin@microsoft.com>, Baolu Lu <baolu.lu@intel.com>,
+ Marc Zyngier <maz@kernel.org>, x86@kernel.org, Megha Dey <megha.dey@intel.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dave Jiang <dave.jiang@intel.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>, Jon
+ Derrick <jonathan.derrick@intel.com>, Juergen Gross <jgross@suse.com>,
+ Russ Anderson <rja@hpe.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,117 +141,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Leizhen reported some time ago that IOVA performance may degrade over time
-[0], but unfortunately his solution to fix this problem was not given
-attention.
-
-To summarize, the issue is that as time goes by, the CPU rcache and depot
-rcache continue to grow. As such, IOVA RB tree access time also continues
-to grow.
-
-At a certain point, a depot may become full, and also some CPU rcaches may
-also be full when inserting another IOVA is attempted. For this scenario,
-currently the "loaded" CPU rcache is freed and a new one is created. This
-freeing means that many IOVAs in the RB tree need to be freed, which
-makes IO throughput performance fall off a cliff in some storage scenarios:
-
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6314MB/0KB/0KB /s] [1616K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [5669MB/0KB/0KB /s] [1451K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6673MB/0KB/0KB /s] [1708K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6761MB/0KB/0KB /s] [1731K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6685MB/0KB/0KB /s] [1711K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6178MB/0KB/0KB /s] [1582K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6731MB/0KB/0KB /s] [1723K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2387MB/0KB/0KB /s] [611K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2689MB/0KB/0KB /s] [688K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2278MB/0KB/0KB /s] [583K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1288MB/0KB/0KB /s] [330K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1632MB/0KB/0KB /s] [418K/0/0 iops]
-Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1765MB/0KB/0KB /s] [452K/0/0 iops]
-
-And continue in this fashion, without recovering. Note that in this
-example it was required to wait 16 hours for this to occur. Also note that
-IO throughput also becomes gradually becomes more unstable leading up to
-this point.
-
-This problem is only seen for non-strict mode. For strict mode, the rcaches
-stay quite compact.
-
-As a solution to this issue, judge that the IOVA caches have grown too big
-when cached magazines need to be free, and just flush all the CPUs rcaches
-instead.
-
-The depot rcaches, however, are not flushed, as they can be used to
-immediately replenish active CPUs.
-
-In future, some IOVA compaction could be implemented to solve the
-instabilty issue, which I figure could be quite complex to implement.
-
-[0] https://lore.kernel.org/linux-iommu/20190815121104.29140-3-thunder.leizhen@huawei.com/
-
-Analyzed-by: Zhen Lei <thunder.leizhen@huawei.com>
-Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/iova.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 1f3f0f8b12e0..386005055aca 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -901,7 +901,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 				 struct iova_rcache *rcache,
- 				 unsigned long iova_pfn)
- {
--	struct iova_magazine *mag_to_free = NULL;
- 	struct iova_cpu_rcache *cpu_rcache;
- 	bool can_insert = false;
- 	unsigned long flags;
-@@ -923,13 +922,12 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 				if (cpu_rcache->loaded)
- 					rcache->depot[rcache->depot_size++] =
- 							cpu_rcache->loaded;
--			} else {
--				mag_to_free = cpu_rcache->loaded;
-+				can_insert = true;
-+				cpu_rcache->loaded = new_mag;
- 			}
- 			spin_unlock(&rcache->lock);
--
--			cpu_rcache->loaded = new_mag;
--			can_insert = true;
-+			if (!can_insert)
-+				iova_magazine_free(new_mag);
- 		}
- 	}
- 
-@@ -938,10 +936,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 
- 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
- 
--	if (mag_to_free) {
--		iova_magazine_free_pfns(mag_to_free, iovad);
--		iova_magazine_free(mag_to_free);
--	}
-+	if (!can_insert)
-+		free_all_cpu_cached_iovas(iovad);
- 
- 	return can_insert;
- }
--- 
-2.26.2
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gV2VkLCBBdWcgMjYsIDIwMjAgYXQgMDE6MTY6MjhQTSArMDIwMCwgVGhvbWFzIEdsZWl4bmVy
+IHdyb3RlOgo+IFRoaXMgaXMgdGhlIHNlY29uZCB2ZXJzaW9uIG9mIHByb3ZpZGluZyBhIGJhc2Ug
+dG8gc3VwcG9ydCBkZXZpY2UgTVNJIChub24KPiBQQ0kgYmFzZWQpIGFuZCBvbiB0b3Agb2YgdGhh
+dCBzdXBwb3J0IGZvciBJTVMgKEludGVycnVwdCBNZXNzYWdlIFN0b3JtKQo+IGJhc2VkIGRldmlj
+ZXMgaW4gYSBoYWxmd2F5cyBhcmNoaXRlY3R1cmUgaW5kZXBlbmRlbnQgd2F5LgoKSGkgVGhvbWFz
+LAoKT3VyIHRlc3QgdGVhbSBoYXMgYmVlbiBzdHJ1Z2dsaW5nIHdpdGggYSByZWdyZXNzaW9uIG9u
+IGJhcmUgbWV0YWwKU1JJT1YgVkZzIHNpbmNlIC1yYzEgdGhhdCB0aGV5IHdlcmUgYWJsZSB0byBi
+aXNlY3QgdG8gdGhpcyBzZXJpZXMKClRoaXMgY29tbWl0IHRlc3RzIGdvb2Q6Cgo1NzEyYzNlZDU0
+OWUgKCJNZXJnZSB0YWcgJ2FybXNvYy1maXhlcycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHVi
+L3NjbS9saW51eC9rZXJuZWwvZ2l0L3NvYy9zb2MiKQoKVGhpcyBjb21taXQgdGVzdHMgYmFkOgoK
+OTgxYWExZDM2NmJmICgiUENJOiBNU0k6IEZpeCBLY29uZmlnIGRlcGVuZGVuY2llcyBmb3IgUENJ
+X01TSV9BUkNIX0ZBTExCQUNLUyIpCgpUaGV5IHdlcmUgdW5hYmxlIHRvIGJpc2VjdCBmdXJ0aGVy
+IGludG8gdGhlIHNlcmllcyBiZWNhdXNlIHNvbWUgb2YgdGhlCmludGVyaW9yIGNvbW1pdHMgZG9u
+J3QgYm9vdCA6KAoKV2hlbiB3ZSB0cnkgdG8gbG9hZCB0aGUgbWx4NSBkcml2ZXIgb24gYSBiYXJl
+IG1ldGFsIFZGIGl0IGdldHMgdGhpczoKCltUaHUgT2N0IDIyIDA4OjU0OjUxIDIwMjBdIERNQVI6
+IERSSEQ6IGhhbmRsaW5nIGZhdWx0IHN0YXR1cyByZWcgMgpbVGh1IE9jdCAyMiAwODo1NDo1MSAy
+MDIwXSBETUFSOiBbSU5UUi1SRU1BUF0gUmVxdWVzdCBkZXZpY2UgWzQyOjAwLjJdIGZhdWx0IGlu
+ZGV4IDE2MDAgW2ZhdWx0IHJlYXNvbiAzN10gQmxvY2tlZCBhIGNvbXBhdGliaWxpdHkgZm9ybWF0
+IGludGVycnVwdCByZXF1ZXN0CltUaHUgT2N0IDIyIDA4OjU1OjA0IDIwMjBdIG1seDVfY29yZSAw
+MDAwOjQyOjAwLjEgZXRoNDogTGluayBkb3duCltUaHUgT2N0IDIyIDA4OjU1OjExIDIwMjBdIG1s
+eDVfY29yZSAwMDAwOjQyOjAwLjEgZXRoNDogTGluayB1cApbVGh1IE9jdCAyMiAwODo1NTo1NCAy
+MDIwXSBtbHg1X2NvcmUgMDAwMDo0MjowMC4yOiBtbHg1X2NtZF9lcV9yZWNvdmVyOjI2NDoocGlk
+IDMzOTApOiBSZWNvdmVyZWQgMSBFUUVzIG9uIGNtZF9lcQpbVGh1IE9jdCAyMiAwODo1NTo1NCAy
+MDIwXSBtbHg1X2NvcmUgMDAwMDo0MjowMC4yOiB3YWl0X2Z1bmNfaGFuZGxlX2V4ZWNfdGltZW91
+dDoxMDUxOihwaWQgMzM5MCk6IGNtZDA6IENSRUFURV9FUSgww4PClzMwMSkgcmVjb3ZlcmVkIGFm
+dGVyIHRpbWVvdXQKW1RodSBPY3QgMjIgMDg6NTU6NTQgMjAyMF0gRE1BUjogRFJIRDogaGFuZGxp
+bmcgZmF1bHQgc3RhdHVzIHJlZyAxMDIKW1RodSBPY3QgMjIgMDg6NTU6NTQgMjAyMF0gRE1BUjog
+W0lOVFItUkVNQVBdIFJlcXVlc3QgZGV2aWNlIFs0MjowMC4yXSBmYXVsdCBpbmRleCAxNjAwIFtm
+YXVsdCByZWFzb24gMzddIEJsb2NrZWQgYSBjb21wYXRpYmlsaXR5IGZvcm1hdCBpbnRlcnJ1cHQg
+cmVxdWVzdAoKSWYgeW91IGhhdmUgYW55IGlkZWEgWml5YWQgYW5kIEl0YXkgY2FuIHJ1biBhbnkg
+ZGVidWdnaW5nIHlvdSBsaWtlLgoKSSBzdXBwb3NlIGl0IGlzIGJlY2F1c2UgdGhpcyBzZXJpZXMg
+aXMgaGFuZGluZyBvdXQgY29tcGF0YWJpbGl0eQphZGRyL2RhdGEgcGFpcnMgd2hpbGUgdGhlIElP
+TU1VIGlzIHNldHVwIHRvIG9ubHkgYWNjZXB0IHJlbWFwIG9uZXMKZnJvbSBTUklPViBWRnM/CgpU
+aGFua3MsCkphc29uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
