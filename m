@@ -2,116 +2,72 @@ Return-Path: <SRS0=2i4G=ES=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF8BC5519F
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 15:27:24 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C46C5519F
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 15:56:48 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4BA6B22240
-	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 15:27:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PuQBexc5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BA6B22240
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 027F0221E9
+	for <iommu@archiver.kernel.org>; Thu, 12 Nov 2020 15:56:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027F0221E9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C99B38714B;
-	Thu, 12 Nov 2020 15:27:23 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 66B792E1FE;
+	Thu, 12 Nov 2020 15:56:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l7wtlT98a1kP; Thu, 12 Nov 2020 15:27:23 +0000 (UTC)
+	with ESMTP id H+PO7YBMtowM; Thu, 12 Nov 2020 15:56:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4090487088;
-	Thu, 12 Nov 2020 15:27:23 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CA3B22E209;
+	Thu, 12 Nov 2020 15:56:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09C51C088B;
-	Thu, 12 Nov 2020 15:27:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B5DEC016F
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:27:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4BB6C088B;
+	Thu, 12 Nov 2020 15:56:45 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5ABF7C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:56:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 695E9877D1
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:27:21 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 486CE86F01
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:56:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uDCoPpFiW1U6 for <iommu@lists.linux-foundation.org>;
- Thu, 12 Nov 2020 15:27:21 +0000 (UTC)
+ with ESMTP id JtO9XPVpEUfO for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Nov 2020 15:56:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CB25D8779E
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:27:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1605194839;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=EToCEhKZCbY5qYquKZLEYM9Zxm5PVC8drZdaa3o0iK0=;
- b=PuQBexc5JbCrk+JoA+JCE26rlSNwjZWYKXfp2JIqlFW2U0Q+t88K8pzkGhK0ymQVlV/tGX
- guXj3F218sMNcTOKRsrx1mh+KaLBihj3UZTh1BqNRC8pfLV3oX1fsv7nFVCpwN4Qbmje18
- 0roGsJf6NJ9LJngCi4+ySlIWN2/yKyM=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-433-v6UmUmUNNUeIZiM55104Bg-1; Thu, 12 Nov 2020 10:27:17 -0500
-X-MC-Unique: v6UmUmUNNUeIZiM55104Bg-1
-Received: by mail-wr1-f71.google.com with SMTP id h11so2069426wrq.20
- for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 07:27:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
- :message-id:mime-version;
- bh=EToCEhKZCbY5qYquKZLEYM9Zxm5PVC8drZdaa3o0iK0=;
- b=dHyWJ4rr3L89qOkoRB0uWLch/d4nlTa8QDPi4tDSSRw60llBMPoS2ACe/3cf3pFYFK
- cKoGPaBlFqifS5frbk4z3ROva13OkrdD+oLiRadW+kGu6bCtNW/U7FhIHQQ9PNlum+bu
- wA0AbIK2ErgWudb8rL1EDlhL9/z/rzxW9Dxaxu+rb0jW4CQDbQCff21A9LU+xDcuFp6y
- 8QAYMtcwBX2zLJO7P2IhUAax14snAvaIi+s9Saqr1h1uwRs5lb9meDb3a2BwSQHF3fA3
- mPhuO1iHWivyVfh1aFbY8x60KEJze3OTQtQF8aJzYBXSLdRbN1JKqLIihfXj0/cxMgU5
- +oPQ==
-X-Gm-Message-State: AOAM531PAbKT+HfhSNkPZfq9LGkEafnnJnxWPa0bUL6IUO3BSnuzZKVs
- 9cpz70ZmSxBtv+PXTgu9XkB/nHLMRO0eAeDZk5iwgb6uDnNnC8Uj6HJ+AknElSicjtjHIiJPfaI
- kQNYKeHUHPWu1p/m7wbkC/OTLFbx7AsX32gAX5TqloqFBh5urp3EedO2qW8aYynoyq9Y1g8OUZF
- t4nnG8Cw==
-X-Received: by 2002:adf:e44f:: with SMTP id t15mr57373wrm.380.1605194836359;
- Thu, 12 Nov 2020 07:27:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwAEjBmoTH4/mr7/4f2REbvjuU/hHE1H+2TbgcnFk0M+o34TM33nSDmKd9yjYVLC54SujLB8w==
-X-Received: by 2002:adf:e44f:: with SMTP id t15mr57335wrm.380.1605194836113;
- Thu, 12 Nov 2020 07:27:16 -0800 (PST)
-Received: from vitty.brq.redhat.com (g-server-2.ign.cz. [91.219.240.2])
- by smtp.gmail.com with ESMTPSA id a9sm7378333wrp.21.2020.11.12.07.27.14
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 Nov 2020 07:27:15 -0800 (PST)
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
-To: Wei Liu <wei.liu@kernel.org>, Linux on Hyper-V List
- <linux-hyperv@vger.kernel.org>
-Subject: Re: [PATCH v2 04/17] iommu/hyperv: don't setup IRQ remapping when
- running as root
-In-Reply-To: <20201105165814.29233-5-wei.liu@kernel.org>
-References: <20201105165814.29233-1-wei.liu@kernel.org>
- <20201105165814.29233-5-wei.liu@kernel.org>
-Date: Thu, 12 Nov 2020 16:27:14 +0100
-Message-ID: <87ft5ey4rx.fsf@vitty.brq.redhat.com>
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E3E8D871B6
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Nov 2020 15:56:41 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id E823CAEA3;
+ Thu, 12 Nov 2020 15:56:39 +0000 (UTC)
+Message-ID: <b5336064145a30aadcfdb8920226a8c63f692695.camel@suse.de>
+Subject: Re: [PATCH v6 1/7] arm64: mm: Move reserve_crashkernel() into
+ mem_init()
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Date: Thu, 12 Nov 2020 16:56:38 +0100
+In-Reply-To: <X6rZRvWyigCJxAVW@trantor>
+References: <20201103173159.27570-1-nsaenzjulienne@suse.de>
+ <20201103173159.27570-2-nsaenzjulienne@suse.de>
+ <e60d643e-4879-3fc3-737d-2c145332a6d7@arm.com>
+ <88c69ac0c9d7e144c80cebc7e9f82b000828e7f5.camel@suse.de>
+ <X6rZRvWyigCJxAVW@trantor>
+User-Agent: Evolution 3.36.5 
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=vkuznets@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: "K. Y. Srinivasan" <kys@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Joerg Roedel <jroedel@suse.de>, Stephen Hemminger <sthemmin@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Linux Kernel List <linux-kernel@vger.kernel.org>,
- Michael Kelley <mikelley@microsoft.com>, "open list:IOMMU
- DRIVERS" <iommu@lists.linux-foundation.org>,
- Nuno Das Neves <nunodasneves@linux.microsoft.com>,
- Sunil Muthuswamy <sunilmut@microsoft.com>,
- virtualization@lists.linux-foundation.org,
- Vineeth Pillai <viremana@linux.microsoft.com>
+Cc: devicetree@vger.kernel.org, Chen Zhou <chenzhou10@huawei.com>,
+ robin.murphy@arm.com, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ ardb@kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ James Morse <james.morse@arm.com>, linux-rpi-kernel@lists.infradead.org,
+ guohanjun@huawei.com, will@kernel.org, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,55 +80,179 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7433917973695009550=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Wei Liu <wei.liu@kernel.org> writes:
 
-> The IOMMU code needs more work. We're sure for now the IRQ remapping
-> hooks are not applicable when Linux is the root.
+--===============7433917973695009550==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-M9M1vcPQLg1DUcTwNys9"
 
-Super-nitpick: I would suggest we always say 'root partition' as 'root'
-has a 'slightly different' meaning in Linux and this commit message may
-sound confusing to an unprepared reader.
 
->
-> Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/iommu/hyperv-iommu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-> index e09e2d734c57..8d3ce3add57d 100644
-> --- a/drivers/iommu/hyperv-iommu.c
-> +++ b/drivers/iommu/hyperv-iommu.c
-> @@ -20,6 +20,7 @@
->  #include <asm/io_apic.h>
->  #include <asm/irq_remapping.h>
->  #include <asm/hypervisor.h>
-> +#include <asm/mshyperv.h>
->  
->  #include "irq_remapping.h"
->  
-> @@ -143,7 +144,7 @@ static int __init hyperv_prepare_irq_remapping(void)
->  	int i;
->  
->  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
-> -	    !x2apic_supported())
-> +	    !x2apic_supported() || hv_root_partition)
->  		return -ENODEV;
->  
->  	fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
+--=-M9M1vcPQLg1DUcTwNys9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Hi Catalin,
 
--- 
-Vitaly
+On Tue, 2020-11-10 at 18:17 +0000, Catalin Marinas wrote:
+> On Fri, Nov 06, 2020 at 07:46:29PM +0100, Nicolas Saenz Julienne wrote:
+> > On Thu, 2020-11-05 at 16:11 +0000, James Morse wrote:
+> > > On 03/11/2020 17:31, Nicolas Saenz Julienne wrote:
+> > > > crashkernel might reserve memory located in ZONE_DMA. We plan to de=
+lay
+> > > > ZONE_DMA's initialization after unflattening the devicetree and ACP=
+I's
+> > > > boot table initialization, so move it later in the boot process.
+> > > > Specifically into mem_init(), this is the last place crashkernel wi=
+ll be
+> > > > able to reserve the memory before the page allocator kicks in.
+> > > > There
+> > > > isn't any apparent reason for doing this earlier.
+> > >=20
+> > > It's so that map_mem() can carve it out of the linear/direct map.
+> > > This is so that stray writes from a crashing kernel can't accidentall=
+y corrupt the kdump
+> > > kernel. We depend on this if we continue with kdump, but failed to of=
+fline all the other
+> > > CPUs.
+> >=20
+> > I presume here you refer to arch_kexec_protect_crashkres(), IIUC this w=
+ill only
+> > happen further down the line, after having loaded the kdump kernel imag=
+e. But
+> > it also depends on the mappings to be PAGE sized (flags =3D=3D NO_BLOCK=
+_MAPPINGS |
+> > NO_CONT_MAPPINGS).
+>=20
+> IIUC, arch_kexec_protect_crashkres() is only for the crashkernel image,
+> not the whole reserved memory that the crashkernel will use. For the
+> latter, we avoid the linear map by marking it as nomap in map_mem().
+
+I'm not sure we're on the same page here, so sorry if this was already impl=
+ied.
+
+The crashkernel memory mapping is bypassed while preparing the linear mappi=
+ngs
+but it is then mapped right away, with page granularity and !MTE.
+See paging_init()->map_mem():
+
+	/*
+	 * Use page-level mappings here so that we can shrink the region
+	 * in page granularity and put back unused memory to buddy system
+	 * through /sys/kernel/kexec_crash_size interface.
+	 */
+	if (crashk_res.end) {
+		__map_memblock(pgdp, crashk_res.start, crashk_res.end + 1,
+			       PAGE_KERNEL,
+			       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+		memblock_clear_nomap(crashk_res.start,
+				     resource_size(&crashk_res));
+	}
+
+IIUC the inconvenience here is that we need special mapping options for
+crashkernel and updating those after having mapped that memory as regular
+memory isn't possible/easy to do.
+
+> > > We also depend on this when skipping the checksum code in purgatory, =
+which can be
+> > > exceedingly slow.
+> >=20
+> > This one I don't fully understand, so I'll lazily assume the prerequisi=
+te is
+> > the same WRT how memory is mapped. :)
+> >=20
+> > Ultimately there's also /sys/kernel/kexec_crash_size's handling. Same
+> > prerequisite.
+> >=20
+> > Keeping in mind acpi_table_upgrade() and unflatten_device_tree() depend=
+ on
+> > having the linear mappings available.
+>=20
+> So it looks like reserve_crashkernel() wants to reserve memory before
+> setting up the linear map with the information about the DMA zones in
+> place but that comes later when we can parse the firmware tables.
+>=20
+> I wonder, instead of not mapping the crashkernel reservation, can we not
+> do an arch_kexec_protect_crashkres() for the whole reservation after we
+> created the linear map?
+
+arch_kexec_protect_crashkres() depends on __change_memory_common() which
+ultimately depends on the memory to be mapped with PAGE_SIZE pages. As I
+comment above, the trick would work as long as there is as way to update th=
+e
+linear mappings with whatever crashkernel needs later in the boot process.
+
+> > Let me stress that knowing the DMA constraints in the system before res=
+erving
+> > crashkernel's regions is necessary if we ever want it to work seamlessl=
+y on all
+> > platforms. Be it small stuff like the Raspberry Pi or huge servers with=
+ TB of
+> > memory.
+>=20
+> Indeed. So we have 3 options (so far):
+>=20
+> 1. Allow the crashkernel reservation to go into the linear map but set
+>    it to invalid once allocated.
+>=20
+> 2. Parse the flattened DT (not sure what we do with ACPI) before
+>    creating the linear map. We may have to rely on some SoC ID here
+>    instead of actual DMA ranges.
+>=20
+> 3. Assume the smallest ZONE_DMA possible on arm64 (1GB) for crashkernel
+>    reservations and not rely on arm64_dma_phys_limit in
+>    reserve_crashkernel().
+>=20
+> I think (2) we tried hard to avoid. Option (3) brings us back to the
+> issues we had on large crashkernel reservations regressing on some
+> platforms (though it's been a while since, they mostly went quiet ;)).
+> However, with Chen's crashkernel patches we end up with two
+> reservations, one in the low DMA zone and one higher, potentially above
+> 4GB. Having a fixed 1GB limit wouldn't be any worse for crashkernel
+> reservations than what we have now.
+>=20
+> If (1) works, I'd go for it (James knows this part better than me),
+> otherwise we can go for (3).
+
+Overall, I'd prefer (1) as well, and I'd be happy to have a got at it. If n=
+ot
+I'll append (3) in this series.
+
+Regards,
+Nicolas
+
+
+--=-M9M1vcPQLg1DUcTwNys9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl+tWzYACgkQlfZmHno8
+x/65FAf+LLZOeUhzc95cBKLl00enpYv+BDp5WO7U6y0jRH/RYuamx56LOFGNF4gi
+BG1Jkf+2jkPfyLRZ9JdivlTPmBHBnQCGGxKQVrHu72tiGJqBoX8VfW+r+r6zVqjL
+pBKLB62ac3Txf7qKv2WZ83Qhir+K206E0RE7zglgCZ4RTBDgNwhz3YdF5y+nyYaw
+/+EYngwjopzL5qLAAA4fw0vVyROwV8KaBL+7YjoVZnEyJvH7Wg6fabEfBRVw/WPW
+EaNXBlbwCOZrnsUGsIhc419pkyZxCresF+3JTLjdgClDYvzVbUB+q25qyVmWAy4F
+tKLs7M5thq3az+48jtTP7WEQm4pbxQ==
+=ycwy
+-----END PGP SIGNATURE-----
+
+--=-M9M1vcPQLg1DUcTwNys9--
+
+
+--===============7433917973695009550==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============7433917973695009550==--
+
