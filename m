@@ -2,96 +2,81 @@ Return-Path: <SRS0=vtxH=ET=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FDEC56202
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 09:19:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA84CC4742C
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 10:43:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 34F6F217A0
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 09:19:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="v+5H7kN+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 34F6F217A0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2A3EB20678
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 10:43:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A3EB20678
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9C3432E1DD;
-	Fri, 13 Nov 2020 09:19:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uwg6uShcjbpB; Fri, 13 Nov 2020 09:19:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0B06520349;
-	Fri, 13 Nov 2020 09:19:16 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EEFB5C163C;
-	Fri, 13 Nov 2020 09:19:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75F0BC0FAA
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 09:19:14 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 71793878D5
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 09:19:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id ADD00877B6;
+	Fri, 13 Nov 2020 10:43:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IwG8PkYKbj1f; Fri, 13 Nov 2020 10:43:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6AA448779E;
+	Fri, 13 Nov 2020 10:43:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58471C088E;
+	Fri, 13 Nov 2020 10:43:27 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B4402C0800
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 10:43:25 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9A9ED871E9
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 10:43:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SuPb0wVfubaP for <iommu@lists.linux-foundation.org>;
- Fri, 13 Nov 2020 09:19:13 +0000 (UTC)
+ with ESMTP id QTgeI3NtFnBS for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Nov 2020 10:43:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CE643878D4
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 09:19:13 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 21D4E217A0;
- Fri, 13 Nov 2020 09:19:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1605259153;
- bh=4WfWbAlavSUu5PlR51nGUJzILHY5zJO40KyO7oEp2x0=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=v+5H7kN+M6Sx/diM7jt8WdPp+z/ENWnjqo0Mt7jppePx8mOt6BV3zrXRG9C2ULikU
- h9y7cqmKqm+YjgJ4ZrirPtHXISgCrx9lvuZxQAnqFsHFzVDfJdBD7oFnw9u7vpLI/6
- EgYK3U+iopdz/Fm1SkJdgZyUFi6bNIhmOz1Og6J8=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
- by disco-boy.misterjones.org with esmtpsa (TLS1.2) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94)
- (envelope-from <maz@kernel.org>)
- id 1kdVEc-00AHye-HD; Fri, 13 Nov 2020 09:19:10 +0000
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E4BDA86BE2
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 10:43:23 +0000 (UTC)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4CXZl22YsHz67KSS;
+ Fri, 13 Nov 2020 18:41:18 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Fri, 13 Nov 2020 11:43:16 +0100
+Received: from [10.47.88.104] (10.47.88.104) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 13 Nov
+ 2020 10:43:16 +0000
+Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: Improve cmdq lock efficiency
+From: John Garry <john.garry@huawei.com>
+To: Will Deacon <will@kernel.org>
+References: <1598018062-175608-1-git-send-email-john.garry@huawei.com>
+ <20200921134324.GK2139@willie-the-truck>
+ <b13d0858-e164-4670-a5c6-ab84e81724b7@huawei.com>
+Message-ID: <ca5a0f5f-91fb-4c11-f158-44e16343cdb2@huawei.com>
+Date: Fri, 13 Nov 2020 10:43:06 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Date: Fri, 13 Nov 2020 09:19:10 +0000
-From: Marc Zyngier <maz@kernel.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: iommu/vt-d: Cure VF irqdomain hickup
-In-Reply-To: <87a6vmmf8h.fsf@nanos.tec.linutronix.de>
-References: <20200826111628.794979401@linutronix.de>
- <20201112125531.GA873287@nvidia.com>
- <87mtzmmzk6.fsf@nanos.tec.linutronix.de>
- <87k0uqmwn4.fsf@nanos.tec.linutronix.de>
- <87d00imlop.fsf@nanos.tec.linutronix.de>
- <87a6vmmf8h.fsf@nanos.tec.linutronix.de>
-User-Agent: Roundcube Webmail/1.4.9
-Message-ID: <2196b03a44a15fdc37223040197c4ac5@kernel.org>
-X-Sender: maz@kernel.org
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, jgg@nvidia.com, ziyadat@nvidia.com,
- itayav@nvidia.com, moshe@nvidia.com, linux-kernel@vger.kernel.org,
- x86@kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org,
- linux-pci@vger.kernel.org, bhelgaas@google.com, dwmw2@infradead.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: Itay Aveksis <itayav@nvidia.com>, Ziyad Atiyyeh <ziyadat@nvidia.com>,
- linux-pci@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>, x86@kernel.org,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <b13d0858-e164-4670-a5c6-ab84e81724b7@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.88.104]
+X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: maz@kernel.org, linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,71 +89,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-11-12 21:34, Thomas Gleixner wrote:
-> On Thu, Nov 12 2020 at 20:15, Thomas Gleixner wrote:
->> The recent changes to store the MSI irqdomain pointer in struct device
->> missed that Intel DMAR does not register virtual function devices.  
->> Due to
->> that a VF device gets the plain PCI-MSI domain assigned and then 
->> issues
->> compat MSI messages which get caught by the interrupt remapping unit.
->> 
->> Cure that by inheriting the irq domain from the physical function
->> device.
->> 
->> That's a temporary workaround. The correct fix is to inherit the irq 
->> domain
->> from the bus, but that's a larger effort which needs quite some other
->> changes to the way how x86 manages PCI and MSI domains.
-> 
-> Bah, that's not really going to work with the way how irq remapping
-> works on x86 because at least Intel/DMAR can have more than one DMAR
-> unit on a bus.
-> 
-> So the alternative solution would be to assign the domain per device,
-> but the current ordering creates a hen and egg problem. Looking the
-> domain up in pci_set_msi_domain() does not work because at that point
-> the device is not registered in the IOMMU. That happens from
-> device_add().
-> 
-> Marc, is there any problem to reorder the calls in pci_device_add():
-> 
->       device_add();
->       pci_set_msi_domain();
-
-I *think* it works as long as we keep the "match_driver = false" hack.
-Otherwise, we risk binding to a driver early, and game over.
-
-> That would allow to add a irq_find_matching_fwspec() based lookup to
-> pci_msi_get_device_domain().
-
-Just so that I understand the issue: is the core of the problem that
-there is no 1:1 mapping between a PCI bus and a DMAR unit, and no
-firmware topology information to indicate which one to pick?
-
-> Though I'm not yet convinced that the outcome would be less horrible
-> than the hack in the DMAR driver when I'm taking all the other horrors
-> of x86 (including XEN) into account :)
-
-I tried to follow the notifier into the DMAR driver, ended up in the
-IRQ remapping code, and lost the will to live. I have a question though:
-
-In the bus notifier callback, you end-up in dmar_pci_bus_add_dev(),
-which calls intel_irq_remap_add_device(), which tries to set the
-MSI domain. Why isn't that enough? Are we still missing any information
-at that stage?
-
-Thanks,
-
-         M.
--- 
-Jazz is not dead. It just smells funny...
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjEvMDkvMjAyMCAxNDo1OCwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAyMS8wOS8yMDIwIDE0
+OjQzLCBXaWxsIERlYWNvbiB3cm90ZToKPj4gT24gRnJpLCBBdWcgMjEsIDIwMjAgYXQgMDk6NTQ6
+MjBQTSArMDgwMCwgSm9obiBHYXJyeSB3cm90ZToKPj4+IEFzIG1lbnRpb25lZCBpbiBbMF0sIHRo
+ZSBDUFUgbWF5IGNvbnN1bWUgbWFueSBjeWNsZXMgcHJvY2Vzc2luZwo+Pj4gYXJtX3NtbXVfY21k
+cV9pc3N1ZV9jbWRsaXN0KCkuIE9uZSBpc3N1ZSB3ZSBmaW5kIGlzIHRoZSBjbXB4Y2hnKCkgCj4+
+PiBsb29wIHRvCj4+PiBnZXQgc3BhY2Ugb24gdGhlIHF1ZXVlIHRha2VzIGEgbG90IG9mIHRpbWUg
+b25jZSB3ZSBzdGFydCBnZXR0aW5nIG1hbnkKPj4+IENQVXMgY29udGVuZGluZyAtIGZyb20gZXhw
+ZXJpbWVudCwgZm9yIDY0IENQVXMgY29udGVuZGluZyB0aGUgY21kcSwKPj4+IHN1Y2Nlc3MgcmF0
+ZSBpcyB+IDEgaW4gMTIsIHdoaWNoIGlzIHBvb3IsIGJ1dCBub3QgdG90YWxseSBhd2Z1bC4KPj4+
+Cj4+PiBUaGlzIHNlcmllcyByZW1vdmVzIHRoYXQgY21weGNoZygpIGFuZCByZXBsYWNlcyB3aXRo
+IGFuIGF0b21pY19hZGQsCj4+PiBzYW1lIGFzIGhvdyB0aGUgYWN0dWFsIGNtZHEgZGVhbHMgd2l0
+aCBtYWludGFpbmluZyB0aGUgcHJvZCBwb2ludGVyLgo+PiDCoD4gSSdtIHN0aWxsIG5vdCBhIGZh
+biBvZiB0aGlzLgo+IAo+IDooCj4gCj4+IENvdWxkIHlvdSB0cnkgdG8gYWRhcHQgdGhlIGhhY2tz
+IEkgc2VudCBiZWZvcmUsCj4+IHBsZWFzZT8gSSBrbm93IHRoZXkgd2VyZW4ndCBxdWl0ZSByaWdo
+dCAoSSBoYXZlIG5vIGhhcmR3YXJlIHRvIHRlc3QgCj4+IG9uKSwgYnV0Cj4+IHRoZSBiYXNpYyBp
+ZGVhIGlzIHRvIGZhbGwgYmFjayB0byBhIHNwaW5sb2NrIGlmIHRoZSBjbXB4Y2hnKCkgZmFpbHMu
+IFRoZQo+PiBxdWV1ZWluZyBpbiB0aGUgc3BpbmxvY2sgaW1wbGVtZW50YXRpb24gc2hvdWxkIGF2
+b2lkIHRoZSBjb250ZW50aW9uLgo+IAo+IE9LLCBzbyBpZiB5b3UncmUgYXNraW5nIG1lIHRvIHRy
+eSB0aGlzIGFnYWluLCB0aGVuIEkgY2FuIGRvIHRoYXQsIGFuZCAKPiBzZWUgd2hhdCBpdCBnaXZl
+cyB1cy4KPiAKCkpGWUksIHRvIHByb3ZlIHRoYXQgdGhpcyBpcyBub3QgYSBwcm9ibGVtIHdoaWNo
+IGFmZmVjdHMgb25seSBvdXIgSFcsIEkgCm1hbmFnZWQgdG8gdGVzdCBhbiBhcm02NCBwbGF0Zm9y
+bSBmcm9tIGFub3RoZXIgdmVuZG9yLiBHZW5lcmFsbHkgSSBzZWUgCnRoZSBzYW1lIGlzc3VlLCBh
+bmQgdGhpcyBwYXRjaHNldCBhY3R1YWxseSBoZWxwcyB0aGF0IHBsYXRmb3JtIGV2ZW4gbW9yZS4K
+CgkJQ1BVcwlCZWZvcmUJQWZ0ZXIJJSBJbmNyZWFzZQpIdWF3ZWkgRDA2CTgJMjgySwkzMDJLCTcl
+Ck90aGVyCQkJMzc5Swk0MjBLCTExJQoKSHVhd2VpIEQwNgkxNgkxMTVLCTE5M0sJNjhLCk90aGVy
+CQkJMTAySwkyOTFLCTE4NUsKCkh1YXdlaSBEMDYJMzIJMzZLCTgwSwkxMjIlCk90aGVyCQkJNDFL
+CTE1NksJMjgwJQoKSHVhd2VpIEQwNgk2NAkxMUsJMzBLCTE3MiUKT3RoZXIJCQk2Swk0N0sJNjgz
+JQoKSSB0ZXN0ZWQgd2l0aCBzb21ldGhpbmcgbGlrZSBbMV0sIHNvIHVuaXQgaXMgbWFwK3VubWFw
+cyBwZXIgY3B1IHBlciAKc2Vjb25kIC0gaGlnaGVyIGlzIGJldHRlci4KCk15IEQwNiBpcyBtZW1v
+cnkgcG9vciwgc28gd291bGQgZXhwZWN0IGhpZ2hlciByZXN1bHRzIG90aGVyd2lzZSAod2l0aCAK
+bW9yZSBtZW1vcnkpLiBJbmRlZWQsIG15IEQwNSBoYXMgbWVtb3J5IG9uIGFsbCBub2RlcyBhbmQg
+cGVyZm9ybXMgYmV0dGVyLgoKQW55d2F5LCBJIHNlZSB0aGF0IHRoZSBpbXBsZW1lbnRhdGlvbiBo
+ZXJlIGlzIG5vdCBwZXJmZWN0LCBhbmQgSSBjb3VsZCAKbm90IGdldCBzdWdnZXN0ZWQgYXBwcm9h
+Y2ggdG8gaW1wcm92ZSBwZXJmb3JtYW5jZSBzaWduaWZpY2FudGx5LiBTbyBiYWNrIAp0byB0aGUg
+ZHJhd2luZyBib2FyZC4uLgoKVGhhbmtzLApKb2huCgpbMV0gCmh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xpbnV4LWlvbW11LzIwMjAxMTAyMDgwNjQ2LjIxODAtMS1zb25nLmJhby5odWFAaGlzaWxp
+Y29uLmNvbS8KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
