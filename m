@@ -2,71 +2,88 @@ Return-Path: <SRS0=vtxH=ET=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BD0C388F7
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 13:05:44 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3305C4742C
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 13:52:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66A962224D
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 13:05:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66A962224D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6FE762078D
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 13:52:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ayNoDTQA";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="X8h7nBkZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FE762078D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E333387522;
-	Fri, 13 Nov 2020 13:05:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2A58A87820;
+	Fri, 13 Nov 2020 13:52:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WuHVOLr9inkm; Fri, 13 Nov 2020 13:05:41 +0000 (UTC)
+	with ESMTP id P3Oc4sd8xCRD; Fri, 13 Nov 2020 13:52:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1B0CB86877;
-	Fri, 13 Nov 2020 13:05:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 97B68877E6;
+	Fri, 13 Nov 2020 13:52:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BC28C0FAA;
-	Fri, 13 Nov 2020 13:05:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79369C0891;
+	Fri, 13 Nov 2020 13:52:33 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B450EC088E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:05:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E73F1C0800
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:52:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A1FEF878D2
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:05:39 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D18BE87816
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:52:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dkYsz7txP7hG for <iommu@lists.linux-foundation.org>;
- Fri, 13 Nov 2020 13:05:38 +0000 (UTC)
+ with ESMTP id m-UfofHDxbre for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Nov 2020 13:52:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6434587690
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:05:38 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 809B5142F;
- Fri, 13 Nov 2020 05:05:37 -0800 (PST)
-Received: from [10.57.53.43] (unknown [10.57.53.43])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 455043F6CF;
- Fri, 13 Nov 2020 05:05:34 -0800 (PST)
-Subject: Re: [RESEND][PATCH 1/2] arm-smmu-qcom: Ensure the qcom_scm driver has
- finished probing
-To: John Stultz <john.stultz@linaro.org>, lkml <linux-kernel@vger.kernel.org>
-References: <20201112220520.48159-1-john.stultz@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c0c905c5-d118-2b74-1b76-fcb086a7faf4@arm.com>
-Date: Fri, 13 Nov 2020 13:05:28 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3760E877E6
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 13:52:31 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1605275547;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=xsSnKN0Y2j/jQ2IRBao4uClTn5UrQq6Zg7g/UkqX+lo=;
+ b=ayNoDTQA8qN45li0yGYUyxDleZJkOg5NfkWvLrESAsBTP7HmGH+rsHryn2bNTDxixwa5H7
+ UmIPAIT1Hacp/6y9T8dmqEt6Bvhspdyb06B6qG0TOEECmj+hlLfGqkOdQvfb0iSc5gak4J
+ oBcUXRxTY2W9ABYeWH0ECE7h42DLdDApf+ow7Sr2U7HVZy3kXUWcoZKEOgJQc61hJyygFC
+ C86gRbCf9R81w17QQmbm1X0bphCgaakqz4VhVEEMeRTKnFFXH2m4zJHkVapUcojXJDSDzf
+ 5/MGaf2atprYOuKwQopa03uoDwZi7/7blEcq2I7a1OeY9rFD7gqjfVXM8NQvFw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1605275547;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=xsSnKN0Y2j/jQ2IRBao4uClTn5UrQq6Zg7g/UkqX+lo=;
+ b=X8h7nBkZIVQfOzZvoYR42UafxIu8Yci8xE9VWP/nM/wn3IGE5v2RPyiosOcb53/JPb8fNi
+ m1VFqaGW00FwpFDw==
+To: Marc Zyngier <maz@kernel.org>
+Subject: Re: iommu/vt-d: Cure VF irqdomain hickup
+In-Reply-To: <2196b03a44a15fdc37223040197c4ac5@kernel.org>
+References: <20200826111628.794979401@linutronix.de>
+ <20201112125531.GA873287@nvidia.com> <87mtzmmzk6.fsf@nanos.tec.linutronix.de>
+ <87k0uqmwn4.fsf@nanos.tec.linutronix.de>
+ <87d00imlop.fsf@nanos.tec.linutronix.de>
+ <87a6vmmf8h.fsf@nanos.tec.linutronix.de>
+ <2196b03a44a15fdc37223040197c4ac5@kernel.org>
+Date: Fri, 13 Nov 2020 14:52:27 +0100
+Message-ID: <87wnypl5yc.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20201112220520.48159-1-john.stultz@linaro.org>
-Content-Language: en-GB
-Cc: Maulik Shah <mkshah@codeaurora.org>, Saravana Kannan <saravanak@google.com>,
- Marc Zyngier <maz@kernel.org>, Lina Iyer <ilina@codeaurora.org>,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will@kernel.org>
+Cc: Itay Aveksis <itayav@nvidia.com>, Ziyad Atiyyeh <ziyadat@nvidia.com>,
+ linux-pci@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>, x86@kernel.org,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,98 +96,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-11-12 22:05, John Stultz wrote:
-> Robin Murphy pointed out that if the arm-smmu driver probes before
-> the qcom_scm driver, we may call qcom_scm_qsmmu500_wait_safe_toggle()
-> before the __scm is initialized.
-> 
-> Now, getting this to happen is a bit contrived, as in my efforts it
-> required enabling asynchronous probing for both drivers, moving the
-> firmware dts node to the end of the dtsi file, as well as forcing a
-> long delay in the qcom_scm_probe function.
-> 
-> With those tweaks we ran into the following crash:
-> [    2.631040] arm-smmu 15000000.iommu:         Stage-1: 48-bit VA -> 48-bit IPA
-> [    2.633372] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-> ...
-> [    2.633402] [0000000000000000] user address but active_mm is swapper
-> [    2.633409] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-> [    2.633415] Modules linked in:
-> [    2.633427] CPU: 5 PID: 117 Comm: kworker/u16:2 Tainted: G        W         5.10.0-rc1-mainline-00025-g272a618fc36-dirty #3971
-> [    2.633430] Hardware name: Thundercomm Dragonboard 845c (DT)
-> [    2.633448] Workqueue: events_unbound async_run_entry_fn
-> [    2.633456] pstate: 80c00005 (Nzcv daif +PAN +UAO -TCO BTYPE=--)
-> [    2.633465] pc : qcom_scm_qsmmu500_wait_safe_toggle+0x78/0xb0
-> [    2.633473] lr : qcom_smmu500_reset+0x58/0x78
-> [    2.633476] sp : ffffffc0105a3b60
-> ...
-> [    2.633567] Call trace:
-> [    2.633572]  qcom_scm_qsmmu500_wait_safe_toggle+0x78/0xb0
-> [    2.633576]  qcom_smmu500_reset+0x58/0x78
-> [    2.633581]  arm_smmu_device_reset+0x194/0x270
-> [    2.633585]  arm_smmu_device_probe+0xc94/0xeb8
-> [    2.633592]  platform_drv_probe+0x58/0xa8
-> [    2.633597]  really_probe+0xec/0x398
-> [    2.633601]  driver_probe_device+0x5c/0xb8
-> [    2.633606]  __driver_attach_async_helper+0x64/0x88
-> [    2.633610]  async_run_entry_fn+0x4c/0x118
-> [    2.633617]  process_one_work+0x20c/0x4b0
-> [    2.633621]  worker_thread+0x48/0x460
-> [    2.633628]  kthread+0x14c/0x158
-> [    2.633634]  ret_from_fork+0x10/0x18
-> [    2.633642] Code: a9034fa0 d0007f73 29107fa0 91342273 (f9400020)
-> 
-> To avoid this, this patch adds a check on qcom_scm_is_available() in
-> the qcom_smmu_impl_init() function, returning -EPROBE_DEFER if its
-> not ready.
-> 
-> This allows the driver to try to probe again later after qcom_scm has
-> finished probing.
+On Fri, Nov 13 2020 at 09:19, Marc Zyngier wrote:
+> On 2020-11-12 21:34, Thomas Gleixner wrote:
+>> That would allow to add a irq_find_matching_fwspec() based lookup to
+>> pci_msi_get_device_domain().
+>
+> Just so that I understand the issue: is the core of the problem that
+> there is no 1:1 mapping between a PCI bus and a DMAR unit, and no
+> firmware topology information to indicate which one to pick?
 
-As well as strict correctness, the other motivation here was that 
-qcom_scm_is_available() should be the place to add the "is the module 
-even loaded yet?" dance to iron out the awkward config dependencies in 
-future.
+Yes, we don't have a 1:1 mapping and there is some info, but that's all
+a horrible mess.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>> Though I'm not yet convinced that the outcome would be less horrible
+>> than the hack in the DMAR driver when I'm taking all the other horrors
+>> of x86 (including XEN) into account :)
+>
+> I tried to follow the notifier into the DMAR driver, ended up in the
+> IRQ remapping code, and lost the will to live.
 
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Maulik Shah <mkshah@codeaurora.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Lina Iyer <ilina@codeaurora.org>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>
-> Reported-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 66ba4870659f4..ef37ccfa82562 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -159,6 +159,10 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->   {
->   	struct qcom_smmu *qsmmu;
->   
-> +	/* Check to make sure qcom_scm has finished probing */
-> +	if (!qcom_scm_is_available())
-> +		return ERR_PTR(-EPROBE_DEFER);
-> +
->   	qsmmu = devm_kzalloc(smmu->dev, sizeof(*qsmmu), GFP_KERNEL);
->   	if (!qsmmu)
->   		return ERR_PTR(-ENOMEM);
-> 
+Please just don't look at that and stay alive :)
+
+> I have a question though:
+>
+> In the bus notifier callback, you end-up in dmar_pci_bus_add_dev(),
+> which calls intel_irq_remap_add_device(), which tries to set the MSI
+> domain. Why isn't that enough? Are we still missing any information at
+> that stage?
+
+That works, but this code is not reached for VF devices ... See the
+patch which cures that.
+
+If we want to get rid of that mess we'd need to rewrite the DMAR IOMMU
+device registration completely. I'll leave it as is for now. My will to
+live is more important :)
+
+Thanks
+
+        tglx
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
