@@ -2,94 +2,122 @@ Return-Path: <SRS0=vtxH=ET=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187D5C63697
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 16:12:33 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F317C4742C
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 21:18:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F2E4208D5
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 16:12:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D1EF522252
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 21:18:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CvQfm1/T"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F2E4208D5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="gNjZhXz1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D1EF522252
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 52BFE8750E;
-	Fri, 13 Nov 2020 16:12:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6B4C687752;
+	Fri, 13 Nov 2020 21:18:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kBwHS1mh_Z8F; Fri, 13 Nov 2020 16:12:31 +0000 (UTC)
+	with ESMTP id UBCE450VW7Uo; Fri, 13 Nov 2020 21:18:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 751548750B;
-	Fri, 13 Nov 2020 16:12:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AEB7D87751;
+	Fri, 13 Nov 2020 21:18:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60847C088E;
-	Fri, 13 Nov 2020 16:12:31 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EFF1AC0800
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 16:12:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 865C4C088E;
+	Fri, 13 Nov 2020 21:18:08 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 457F9C0800
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 21:18:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DC3908750B
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 16:12:29 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 21D8D2E2C0
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 21:18:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id j7PiriVWat7x for <iommu@lists.linux-foundation.org>;
- Fri, 13 Nov 2020 16:12:29 +0000 (UTC)
+ with ESMTP id VNbEqmFSgDrN for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Nov 2020 21:18:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id F1A4487407
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 16:12:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1605283947;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=UlZi9/27auJjCr1Tgxx7qj+mGMxuNnCzu/j/Vclt8i8=;
- b=CvQfm1/TpmfKpTDm9DijDMrLMikfgif9aKZwEYRUGXIZvlBjtHpUk4Yc/sHCBzPmbBHbLT
- QDnhjHVCv+ShWCrkh2miON+/0M3+C4IkAxmcxOxiwztnYir0E7Mt59ftpe3+ebVgXXFnje
- DpwOFjUBN+1VL350AIqA5UsVTXc+dSU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-445-HAvqfqvIOlyRQwMuwz0ylQ-1; Fri, 13 Nov 2020 11:12:23 -0500
-X-MC-Unique: HAvqfqvIOlyRQwMuwz0ylQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE3476A299;
- Fri, 13 Nov 2020 16:12:21 +0000 (UTC)
-Received: from [10.36.114.125] (ovpn-114-125.ams2.redhat.com [10.36.114.125])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id B3FCD5B4A7;
- Fri, 13 Nov 2020 16:12:15 +0000 (UTC)
-Subject: Re: [PATCH v10 04/11] vfio/pci: Add VFIO_REGION_TYPE_NESTED region
- type
-To: Zenghui Yu <yuzenghui@huawei.com>, eric.auger.pro@gmail.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org,
- alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
- yi.l.liu@intel.com, robin.murphy@arm.com
-References: <20200320161911.27494-1-eric.auger@redhat.com>
- <20200320161911.27494-5-eric.auger@redhat.com>
- <d21e74e5-00a7-79f9-24d2-c9385409cc05@huawei.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <ce21ef1e-5ffd-586c-0925-d3a59eb0c30d@redhat.com>
-Date: Fri, 13 Nov 2020 17:12:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by silver.osuosl.org (Postfix) with ESMTPS id 303A32E2BF
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 21:18:06 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ADLFhR4078786;
+ Fri, 13 Nov 2020 21:17:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=gNk0JG1FFC5UH5WXHYXt8d8wnGBHRDwIpGjGIanQY78=;
+ b=gNjZhXz1rW9aynBB1xEwY1gsTP1zD8IzhRIQRBlope4ZPzX73ubCr83yyLcK5oAvUTuk
+ MTczsvCSGH+PCWEHg/6hThouOwBC+isBG5VHgc5L/pu/rTV7r1OleScIrYULGBXny6L/
+ d7aaptnmA8kEzVLgWlfNDgsGIdrbEFZMgGBVPgBvC27fKu9VPPe98lon0Z75HJNtROoU
+ gTDZOxlaxXQQZFJVY5Cvy1I8zyiYyN2hEtD29vQ2U/fxz3/M+bweaWf3BMT7nnFQaDE5
+ 9D2mDTmNvc1rnO1Z2e707xS2zfPtuDk5ZuKXGxOSuLSa4d28xXbumD2eOEKsAi6Iu5eb Zg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2120.oracle.com with ESMTP id 34p72f2gyt-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Fri, 13 Nov 2020 21:17:41 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ADLGJlb089847;
+ Fri, 13 Nov 2020 21:17:41 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3030.oracle.com with ESMTP id 34rtkua0gg-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 13 Nov 2020 21:17:40 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0ADLHaQp022362;
+ Fri, 13 Nov 2020 21:17:36 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Fri, 13 Nov 2020 13:17:36 -0800
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id 6FBB66A0109; Fri, 13 Nov 2020 16:19:25 -0500 (EST)
+Date: Fri, 13 Nov 2020 16:19:25 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Ashish Kalra <ashish.kalra@amd.com>
+Subject: Re: [PATCH v3] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
+ guests.
+Message-ID: <20201113211925.GA6096@char.us.oracle.com>
+References: <20201104220804.21026-1-Ashish.Kalra@amd.com>
+ <20201104221452.GA26079@char.us.oracle.com>
+ <20201104223913.GA25311@ashkalra_ubuntu_server>
+ <20201105174317.GA4294@char.us.oracle.com>
+ <20201105184115.GA25261@ashkalra_ubuntu_server>
+ <20201105190649.GB5366@char.us.oracle.com>
+ <20201105193828.GA25303@ashkalra_ubuntu_server>
+ <20201105202007.GA6370@char.us.oracle.com>
+ <20201105212045.GB25303@ashkalra_ubuntu_server>
 MIME-Version: 1.0
-In-Reply-To: <d21e74e5-00a7-79f9-24d2-c9385409cc05@huawei.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Disposition: inline
+In-Reply-To: <20201105212045.GB25303@ashkalra_ubuntu_server>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9804
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxscore=0 phishscore=0
+ suspectscore=0 bulkscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011130135
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9804
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ mlxlogscore=999 mlxscore=0
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011130135
+Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, ssg.sos.patches@amd.com,
+ dave.hansen@linux-intel.com, peterz@infradead.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, bp@alien8.de, luto@kernel.org, hpa@zytor.com,
+ tglx@linutronix.de, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,150 +130,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgWmVuZ2h1aSwKT24gOS8yNC8yMCAxMDoyMyBBTSwgWmVuZ2h1aSBZdSB3cm90ZToKPiBIaSBF
-cmljLAo+IAo+IE9uIDIwMjAvMy8yMSAwOjE5LCBFcmljIEF1Z2VyIHdyb3RlOgo+PiBBZGQgYSBu
-ZXcgc3BlY2lmaWMgRE1BX0ZBVUxUIHJlZ2lvbiBhaW1pbmcgdG8gZXhwb3NlZCBuZXN0ZWQgbW9k
-ZQo+PiB0cmFuc2xhdGlvbiBmYXVsdHMuCj4+Cj4+IFRoZSByZWdpb24gaGFzIGEgcmluZyBidWZm
-ZXIgdGhhdCBjb250YWlucyB0aGUgYWN0dWFsIGZhdWx0Cj4+IHJlY29yZHMgcGx1cyBhIGhlYWRl
-ciBhbGxvd2luZyB0byBoYW5kbGUgaXQgKHRhaWwvaGVhZCBpbmRpY2VzLAo+PiBtYXggY2FwYWNp
-dHksIGVudHJ5IHNpemUpLiBBdCB0aGUgbW9tZW50IHRoZSByZWdpb24gaXMgZGltZW5zaW9ubmVk
-Cj4+IGZvciA1MTIgZmF1bHQgcmVjb3Jkcy4KPj4KPj4gU2lnbmVkLW9mZi1ieTogRXJpYyBBdWdl
-ciA8ZXJpYy5hdWdlckByZWRoYXQuY29tPgo+IAo+IFsuLi5dCj4gCj4+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgYi9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMK
-Pj4gaW5kZXggMzc5YTAyYzM2ZTM3Li41ODZiODlkZWJlZDUgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZl
-cnMvdmZpby9wY2kvdmZpb19wY2kuYwo+PiArKysgYi9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNp
-LmMKPj4gQEAgLTI2MCw2ICsyNjAsNjkgQEAgaW50IHZmaW9fcGNpX3NldF9wb3dlcl9zdGF0ZShz
-dHJ1Y3QKPj4gdmZpb19wY2lfZGV2aWNlICp2ZGV2LCBwY2lfcG93ZXJfdCBzdGF0ZSkKPj4gwqDC
-oMKgwqDCoCByZXR1cm4gcmV0Owo+PiDCoCB9Cj4+IMKgICtzdGF0aWMgdm9pZCB2ZmlvX3BjaV9k
-bWFfZmF1bHRfcmVsZWFzZShzdHJ1Y3QgdmZpb19wY2lfZGV2aWNlICp2ZGV2LAo+PiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IHZmaW9fcGNpX3Jl
-Z2lvbiAqcmVnaW9uKQo+PiArewo+PiArfQo+PiArCj4+ICtzdGF0aWMgaW50IHZmaW9fcGNpX2Rt
-YV9mYXVsdF9hZGRfY2FwYWJpbGl0eShzdHJ1Y3QgdmZpb19wY2lfZGV2aWNlCj4+ICp2ZGV2LAo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVj
-dCB2ZmlvX3BjaV9yZWdpb24gKnJlZ2lvbiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgdmZpb19pbmZvX2NhcCAqY2FwcykKPj4gK3sK
-Pj4gK8KgwqDCoCBzdHJ1Y3QgdmZpb19yZWdpb25faW5mb19jYXBfZmF1bHQgY2FwID0gewo+PiAr
-wqDCoMKgwqDCoMKgwqAgLmhlYWRlci5pZCA9IFZGSU9fUkVHSU9OX0lORk9fQ0FQX0RNQV9GQVVM
-VCwKPj4gK8KgwqDCoMKgwqDCoMKgIC5oZWFkZXIudmVyc2lvbiA9IDEsCj4+ICvCoMKgwqDCoMKg
-wqDCoCAudmVyc2lvbiA9IDEsCj4+ICvCoMKgwqAgfTsKPj4gK8KgwqDCoCByZXR1cm4gdmZpb19p
-bmZvX2FkZF9jYXBhYmlsaXR5KGNhcHMsICZjYXAuaGVhZGVyLCBzaXplb2YoY2FwKSk7Cj4+ICt9
-Cj4+ICsKPj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgdmZpb19wY2lfcmVnb3BzIHZmaW9fcGNpX2Rt
-YV9mYXVsdF9yZWdvcHMgPSB7Cj4+ICvCoMKgwqAgLnJ3wqDCoMKgwqDCoMKgwqAgPSB2ZmlvX3Bj
-aV9kbWFfZmF1bHRfcncsCj4+ICvCoMKgwqAgLnJlbGVhc2XCoMKgwqAgPSB2ZmlvX3BjaV9kbWFf
-ZmF1bHRfcmVsZWFzZSwKPj4gK8KgwqDCoCAuYWRkX2NhcGFiaWxpdHkgPSB2ZmlvX3BjaV9kbWFf
-ZmF1bHRfYWRkX2NhcGFiaWxpdHksCj4+ICt9Owo+PiArCj4+ICsjZGVmaW5lIERNQV9GQVVMVF9S
-SU5HX0xFTkdUSCA1MTIKPj4gKwo+PiArc3RhdGljIGludCB2ZmlvX3BjaV9pbml0X2RtYV9mYXVs
-dF9yZWdpb24oc3RydWN0IHZmaW9fcGNpX2RldmljZSAqdmRldikKPj4gK3sKPj4gK8KgwqDCoCBz
-dHJ1Y3QgdmZpb19yZWdpb25fZG1hX2ZhdWx0ICpoZWFkZXI7Cj4+ICvCoMKgwqAgc2l6ZV90IHNp
-emU7Cj4+ICvCoMKgwqAgaW50IHJldDsKPj4gKwo+PiArwqDCoMKgIG11dGV4X2luaXQoJnZkZXYt
-PmZhdWx0X3F1ZXVlX2xvY2spOwo+PiArCj4+ICvCoMKgwqAgLyoKPj4gK8KgwqDCoMKgICogV2Ug
-cHJvdmlzaW9uIDEgcGFnZSBmb3IgdGhlIGhlYWRlciBhbmQgc3BhY2UgZm9yCj4+ICvCoMKgwqDC
-oCAqIERNQV9GQVVMVF9SSU5HX0xFTkdUSCBmYXVsdCByZWNvcmRzIGluIHRoZSByaW5nIGJ1ZmZl
-ci4KPj4gK8KgwqDCoMKgICovCj4+ICvCoMKgwqAgc2l6ZSA9IEFMSUdOKHNpemVvZihzdHJ1Y3Qg
-aW9tbXVfZmF1bHQpICoKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBETUFfRkFVTFRfUklO
-R19MRU5HVEgsIFBBR0VfU0laRSkgKyBQQUdFX1NJWkU7Cj4+ICsKPj4gK8KgwqDCoCB2ZGV2LT5m
-YXVsdF9wYWdlcyA9IGt6YWxsb2Moc2l6ZSwgR0ZQX0tFUk5FTCk7Cj4+ICvCoMKgwqAgaWYgKCF2
-ZGV2LT5mYXVsdF9wYWdlcykKPj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiAtRU5PTUVNOwo+PiAr
-Cj4+ICvCoMKgwqAgcmV0ID0gdmZpb19wY2lfcmVnaXN0ZXJfZGV2X3JlZ2lvbih2ZGV2LAo+PiAr
-wqDCoMKgwqDCoMKgwqAgVkZJT19SRUdJT05fVFlQRV9ORVNURUQsCj4+ICvCoMKgwqDCoMKgwqDC
-oCBWRklPX1JFR0lPTl9TVUJUWVBFX05FU1RFRF9ETUFfRkFVTFQsCj4+ICvCoMKgwqDCoMKgwqDC
-oCAmdmZpb19wY2lfZG1hX2ZhdWx0X3JlZ29wcywgc2l6ZSwKPj4gK8KgwqDCoMKgwqDCoMKgIFZG
-SU9fUkVHSU9OX0lORk9fRkxBR19SRUFEIHwgVkZJT19SRUdJT05fSU5GT19GTEFHX1dSSVRFLAo+
-PiArwqDCoMKgwqDCoMKgwqAgdmRldi0+ZmF1bHRfcGFnZXMpOwo+PiArwqDCoMKgIGlmIChyZXQp
-Cj4+ICvCoMKgwqDCoMKgwqDCoCBnb3RvIG91dDsKPj4gKwo+PiArwqDCoMKgIGhlYWRlciA9IChz
-dHJ1Y3QgdmZpb19yZWdpb25fZG1hX2ZhdWx0ICopdmRldi0+ZmF1bHRfcGFnZXM7Cj4+ICvCoMKg
-wqAgaGVhZGVyLT5lbnRyeV9zaXplID0gc2l6ZW9mKHN0cnVjdCBpb21tdV9mYXVsdCk7Cj4+ICvC
-oMKgwqAgaGVhZGVyLT5uYl9lbnRyaWVzID0gRE1BX0ZBVUxUX1JJTkdfTEVOR1RIOwo+PiArwqDC
-oMKgIGhlYWRlci0+b2Zmc2V0ID0gc2l6ZW9mKHN0cnVjdCB2ZmlvX3JlZ2lvbl9kbWFfZmF1bHQp
-Owo+PiArwqDCoMKgIHJldHVybiAwOwo+PiArb3V0Ogo+PiArwqDCoMKgIGtmcmVlKHZkZXYtPmZh
-dWx0X3BhZ2VzKTsKPj4gK8KgwqDCoCByZXR1cm4gcmV0Owo+PiArfQo+PiArCj4+IMKgIHN0YXRp
-YyBpbnQgdmZpb19wY2lfZW5hYmxlKHN0cnVjdCB2ZmlvX3BjaV9kZXZpY2UgKnZkZXYpCj4+IMKg
-IHsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgcGNpX2RldiAqcGRldiA9IHZkZXYtPnBkZXY7Cj4+IEBA
-IC0zNTgsNiArNDIxLDEwIEBAIHN0YXRpYyBpbnQgdmZpb19wY2lfZW5hYmxlKHN0cnVjdCB2Zmlv
-X3BjaV9kZXZpY2UKPj4gKnZkZXYpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+IMKgwqDCoMKg
-wqAgfQo+PiDCoCArwqDCoMKgIHJldCA9IHZmaW9fcGNpX2luaXRfZG1hX2ZhdWx0X3JlZ2lvbih2
-ZGV2KTsKPj4gK8KgwqDCoCBpZiAocmV0KQo+PiArwqDCoMKgwqDCoMKgwqAgZ290byBkaXNhYmxl
-X2V4aXQ7Cj4+ICsKPj4gwqDCoMKgwqDCoCB2ZmlvX3BjaV9wcm9iZV9tbWFwcyh2ZGV2KTsKPj4g
-wqAgwqDCoMKgwqDCoCByZXR1cm4gMDsKPj4gQEAgLTEzODMsNiArMTQ1MCw3IEBAIHN0YXRpYyB2
-b2lkIHZmaW9fcGNpX3JlbW92ZShzdHJ1Y3QgcGNpX2RldiAqcGRldikKPj4gwqAgwqDCoMKgwqDC
-oCB2ZmlvX2lvbW11X2dyb3VwX3B1dChwZGV2LT5kZXYuaW9tbXVfZ3JvdXAsICZwZGV2LT5kZXYp
-Owo+PiDCoMKgwqDCoMKgIGtmcmVlKHZkZXYtPnJlZ2lvbik7Cj4+ICvCoMKgwqAga2ZyZWUodmRl
-di0+ZmF1bHRfcGFnZXMpOwo+PiDCoMKgwqDCoMKgIG11dGV4X2Rlc3Ryb3koJnZkZXYtPmlvZXZl
-bnRmZHNfbG9jayk7Cj4+IMKgIMKgwqDCoMKgwqAgaWYgKCFkaXNhYmxlX2lkbGVfZDMpCj4+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3ByaXZhdGUuaAo+PiBiL2RyaXZl
-cnMvdmZpby9wY2kvdmZpb19wY2lfcHJpdmF0ZS5oCj4+IGluZGV4IDhhMmM3NjA3ZDUxMy4uYTM5
-MmY1MGUzYTk5IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3ByaXZh
-dGUuaAo+PiArKysgYi9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3ByaXZhdGUuaAo+PiBAQCAt
-MTE5LDYgKzExOSw4IEBAIHN0cnVjdCB2ZmlvX3BjaV9kZXZpY2Ugewo+PiDCoMKgwqDCoMKgIGlu
-dMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW9ldmVudGZkc19ucjsKPj4gwqDCoMKgwqDCoCBzdHJ1
-Y3QgZXZlbnRmZF9jdHjCoMKgwqAgKmVycl90cmlnZ2VyOwo+PiDCoMKgwqDCoMKgIHN0cnVjdCBl
-dmVudGZkX2N0eMKgwqDCoCAqcmVxX3RyaWdnZXI7Cj4+ICvCoMKgwqAgdTjCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgICpmYXVsdF9wYWdlczsKPiAKPiBXaGF0J3MgdGhlIHJlYXNvbiB0byB1c2UgJ3U4
-Jz8gSXQgZG9lc24ndCBtYXRjaCB0aGUgdHlwZSBvZiBoZWFkZXIsIG5vcgo+IHRoZSB0eXBlIG9m
-IHJpbmcgYnVmZmVyLgphY3R1YWxseSBpdCBtYXRjaGVzCgl1OCAgICAgICAgICAgICAgICAgICAg
-ICAqcGNpX2NvbmZpZ19tYXA7CiAgICAgICAgdTggICAgICAgICAgICAgICAgICAgICAgKnZjb25m
-aWc7CgpmYXVsdF9wYWdlcyBpcyB0aGUgdmEgb2YgdGhlIHJpbmcgYnVmZmVyLiBJbiB0aGUgaGVh
-ZGVyLCBvZmZzZXQgaXMgdGhlCm9mZnNldCBvZiB0aGUgcmluZyB3cnQgc3RhcnQgb2YgdGhlIHJl
-Z2lvbi4KCj4gCj4+ICvCoMKgwqAgc3RydWN0IG11dGV4wqDCoMKgwqDCoMKgwqAgZmF1bHRfcXVl
-dWVfbG9jazsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgbGlzdF9oZWFkwqDCoMKgIGR1bW15X3Jlc291
-cmNlc19saXN0Owo+PiDCoMKgwqDCoMKgIHN0cnVjdCBtdXRleMKgwqDCoMKgwqDCoMKgIGlvZXZl
-bnRmZHNfbG9jazsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgbGlzdF9oZWFkwqDCoMKgIGlvZXZlbnRm
-ZHNfbGlzdDsKPj4gQEAgLTE1MCw2ICsxNTIsMTQgQEAgZXh0ZXJuIHNzaXplX3QgdmZpb19wY2lf
-dmdhX3J3KHN0cnVjdAo+PiB2ZmlvX3BjaV9kZXZpY2UgKnZkZXYsIGNoYXIgX191c2VyICpidWYs
-Cj4+IMKgIGV4dGVybiBsb25nIHZmaW9fcGNpX2lvZXZlbnRmZChzdHJ1Y3QgdmZpb19wY2lfZGV2
-aWNlICp2ZGV2LCBsb2ZmX3QKPj4gb2Zmc2V0LAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHVpbnQ2NF90IGRhdGEsIGludCBjb3VudCwgaW50IGZkKTsKPj4gwqAg
-K3N0cnVjdCB2ZmlvX3BjaV9mYXVsdF9hYmkgewo+PiArwqDCoMKgIHUzMiBlbnRyeV9zaXplOwo+
-PiArfTsKPiAKPiBUaGlzIGlzIG5vdCB1c2VkIGJ5IHRoaXMgcGF0Y2ggKGFuZCB0aGUgd2hvbGUg
-c2VyaWVzKS4KcmVtb3ZlZAo+IAo+PiArCj4+ICtleHRlcm4gc2l6ZV90IHZmaW9fcGNpX2RtYV9m
-YXVsdF9ydyhzdHJ1Y3QgdmZpb19wY2lfZGV2aWNlICp2ZGV2LAo+PiArwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2hhciBfX3VzZXIgKmJ1Ziwgc2l6ZV90IGNvdW50LAo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbG9mZl90ICpwcG9zLCBi
-b29sIGlzd3JpdGUpOwo+PiArCj4+IMKgIGV4dGVybiBpbnQgdmZpb19wY2lfaW5pdF9wZXJtX2Jp
-dHModm9pZCk7Cj4+IMKgIGV4dGVybiB2b2lkIHZmaW9fcGNpX3VuaW5pdF9wZXJtX2JpdHModm9p
-ZCk7Cj4+IMKgIGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3Jkd3IuYwo+
-PiBiL2RyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcmR3ci5jCj4+IGluZGV4IGE4Nzk5Mjg5MmE5
-Zi4uNDAwNGFiOGNhZDBlIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNp
-X3Jkd3IuYwo+PiArKysgYi9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3Jkd3IuYwo+PiBAQCAt
-Mjc0LDYgKzI3NCw1MSBAQCBzc2l6ZV90IHZmaW9fcGNpX3ZnYV9ydyhzdHJ1Y3QgdmZpb19wY2lf
-ZGV2aWNlCj4+ICp2ZGV2LCBjaGFyIF9fdXNlciAqYnVmLAo+PiDCoMKgwqDCoMKgIHJldHVybiBk
-b25lOwo+PiDCoCB9Cj4+IMKgICtzaXplX3QgdmZpb19wY2lfZG1hX2ZhdWx0X3J3KHN0cnVjdCB2
-ZmlvX3BjaV9kZXZpY2UgKnZkZXYsIGNoYXIKPj4gX191c2VyICpidWYsCj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgY291bnQsIGxvZmZfdCAqcHBvcywgYm9vbCBp
-c3dyaXRlKQo+PiArewo+PiArwqDCoMKgIHVuc2lnbmVkIGludCBpID0gVkZJT19QQ0lfT0ZGU0VU
-X1RPX0lOREVYKCpwcG9zKSAtCj4+IFZGSU9fUENJX05VTV9SRUdJT05TOwo+PiArwqDCoMKgIGxv
-ZmZfdCBwb3MgPSAqcHBvcyAmIFZGSU9fUENJX09GRlNFVF9NQVNLOwo+PiArwqDCoMKgIHZvaWQg
-KmJhc2UgPSB2ZGV2LT5yZWdpb25baV0uZGF0YTsKPj4gK8KgwqDCoCBpbnQgcmV0ID0gLUVGQVVM
-VDsKPj4gKwo+PiArwqDCoMKgIGlmIChwb3MgPj0gdmRldi0+cmVnaW9uW2ldLnNpemUpCj4+ICvC
-oMKgwqDCoMKgwqDCoCByZXR1cm4gLUVJTlZBTDsKPj4gKwo+PiArwqDCoMKgIGNvdW50ID0gbWlu
-KGNvdW50LCAoc2l6ZV90KSh2ZGV2LT5yZWdpb25baV0uc2l6ZSAtIHBvcykpOwo+PiArCj4+ICvC
-oMKgwqAgbXV0ZXhfbG9jaygmdmRldi0+ZmF1bHRfcXVldWVfbG9jayk7Cj4+ICsKPj4gK8KgwqDC
-oCBpZiAoaXN3cml0ZSkgewo+PiArwqDCoMKgwqDCoMKgwqAgc3RydWN0IHZmaW9fcmVnaW9uX2Rt
-YV9mYXVsdCAqaGVhZGVyID0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKHN0cnVjdCB2Zmlv
-X3JlZ2lvbl9kbWFfZmF1bHQgKiliYXNlOwo+PiArwqDCoMKgwqDCoMKgwqAgdTMyIG5ld190YWls
-Owo+PiArCj4+ICvCoMKgwqDCoMKgwqDCoCBpZiAocG9zICE9IDAgfHwgY291bnQgIT0gNCkgewo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXQgPSAtRUlOVkFMOwo+PiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBnb3RvIHVubG9jazsKPj4gK8KgwqDCoMKgwqDCoMKgIH0KPj4gKwo+PiArwqDC
-oMKgwqDCoMKgwqAgaWYgKGNvcHlfZnJvbV91c2VyKCh2b2lkICopJm5ld190YWlsLCBidWYsIGNv
-dW50KSkKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byB1bmxvY2s7Cj4+ICsKPj4gK8Kg
-wqDCoMKgwqDCoMKgIGlmIChuZXdfdGFpbCA+IGhlYWRlci0+bmJfZW50cmllcykgewo+IAo+IE1h
-eWJlCj4gCj4gbmV3X3RhaWwgPj0gaGVhZGVyLT5uYl9lbnRyaWVzID8Kc3VyZQoKVGhhbmtzCgpF
-cmljCj4gCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldCA9IC1FSU5WQUw7Cj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gdW5sb2NrOwo+PiArwqDCoMKgwqDCoMKgwqAgfQo+PiAr
-wqDCoMKgwqDCoMKgwqAgaGVhZGVyLT50YWlsID0gbmV3X3RhaWw7Cj4+ICvCoMKgwqAgfSBlbHNl
-IHsKPj4gK8KgwqDCoMKgwqDCoMKgIGlmIChjb3B5X3RvX3VzZXIoYnVmLCBiYXNlICsgcG9zLCBj
-b3VudCkpCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdvdG8gdW5sb2NrOwo+PiArwqDCoMKg
-IH0KPj4gK8KgwqDCoCAqcHBvcyArPSBjb3VudDsKPj4gK8KgwqDCoCByZXQgPSBjb3VudDsKPj4g
-K3VubG9jazoKPj4gK8KgwqDCoCBtdXRleF91bmxvY2soJnZkZXYtPmZhdWx0X3F1ZXVlX2xvY2sp
-Owo+PiArwqDCoMKgIHJldHVybiByZXQ7Cj4+ICt9Cj4+ICsKPj4gKwo+PiDCoCBzdGF0aWMgaW50
-IHZmaW9fcGNpX2lvZXZlbnRmZF9oYW5kbGVyKHZvaWQgKm9wYXF1ZSwgdm9pZCAqdW51c2VkKQo+
-PiDCoCB7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IHZmaW9fcGNpX2lvZXZlbnRmZCAqaW9ldmVudGZk
-ID0gb3BhcXVlOwo+IAo+IAo+IFRoYW5rcywKPiBaZW5naHVpCj4gCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Thu, Nov 05, 2020 at 09:20:45PM +0000, Ashish Kalra wrote:
+> On Thu, Nov 05, 2020 at 03:20:07PM -0500, Konrad Rzeszutek Wilk wrote:
+> > On Thu, Nov 05, 2020 at 07:38:28PM +0000, Ashish Kalra wrote:
+> > > On Thu, Nov 05, 2020 at 02:06:49PM -0500, Konrad Rzeszutek Wilk wrote:
+> > > > .
+> > > > > > Right, so I am wondering if we can do this better.
+> > > > > > 
+> > > > > > That is you are never going to get any 32-bit devices with SEV right? That
+> > > > > > is there is nothing that bounds you to always use the memory below 4GB?
+> > > > > > 
+> > > > > 
+> > > > > We do support 32-bit PCIe passthrough devices with SEV.
+> > > > 
+> > > > Ewww..  Which devices would this be?
+> > > 
+> > > That will be difficult to predict as customers could be doing
+> > > passthrough of all kinds of devices.
+> > 
+> > But SEV is not on some 1990 hardware. It has PCIe, there is no PCI slots in there.
+> > 
+> > Is it really possible to have a PCIe device that can't do more than 32-bit DMA?
+> > 
+> > > 
+> > > > > 
+> > > > > Therefore, we can't just depend on >4G memory for SWIOTLB bounce buffering
+> > > > > when there is I/O pressure, because we do need to support device
+> > > > > passthrough of 32-bit devices.
+> > > > 
+> > > > Presumarily there is just a handful of them?
+> > > >
+> > > Again, it will be incorrect to assume this.
+> > > 
+> > > > > 
+> > > > > Considering this, we believe that this patch needs to adjust/extend
+> > > > > boot-allocation of SWIOTLB and we want to keep it simple to do this
+> > > > > within a range detemined by amount of allocated guest memory.
+> > > > 
+> > > > I would prefer to not have to revert this in a year as customers
+> > > > complain about "I paid $$$ and I am wasting half a gig on something 
+> > > > I am not using" and giving customers knobs to tweak this instead of
+> > > > doing the right thing from the start.
+> > > 
+> > > Currently, we face a lot of situations where we have to tell our
+> > > internal teams/external customers to explicitly increase SWIOTLB buffer
+> > > via the swiotlb parameter on the kernel command line, especially to
+> > > get better I/O performance numbers with SEV. 
+> > 
+> > Presumarily these are 64-bit?
+> > 
+> > And what devices do you speak off that are actually affected by 
+> > this performance? Increasing the SWIOTLB just means we have more
+> > memory, which in mind means you can have _more_ devices in the guest
+> > that won't handle the fact that DMA mapping returns an error.
+> > 
+> > Not neccessarily that one device suddenly can go faster.
+> > 
+> > > 
+> > > So by having this SWIOTLB size adjustment done implicitly (even using a
+> > > static logic) is a great win-win situation. In other words, having even
+> > > a simple and static default increase of SWIOTLB buffer size for SEV is
+> > > really useful for us.
+> > > 
+> > > We can always think of adding all kinds of heuristics to this, but that
+> > > just adds too much complexity without any predictable performance gain.
+> > > 
+> > > And to add, the patch extends the SWIOTLB size as an architecture
+> > > specific callback, currently it is a simple and static logic for SEV/x86
+> > > specific, but there is always an option to tweak/extend it with
+> > > additional logic in the future.
+> > 
+> > Right, and that is what I would like to talk about as I think you
+> > are going to disappear (aka, busy with other stuff) after this patch goes in.
+> > 
+> > I need to understand this more than "performance" and "internal teams"
+> > requirements to come up with a better way going forward as surely other
+> > platforms will hit the same issue anyhow.
+> > 
+> > Lets break this down:
+> > 
+> > How does the performance improve for one single device if you increase the SWIOTLB?
+> > Is there a specific device/driver that you can talk about that improve with this patch?
+> > 
+> > 
+> 
+> Yes, these are mainly for multi-queue devices such as NICs or even
+> multi-queue virtio. 
+> 
+> This basically improves performance with concurrent DMA, hence,
+> basically multi-queue devices.
+
+OK, and for _1GB_ guest - what are the "internal teams/external customers" amount 
+of CPUs they use? Please lets use real use-cases.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
