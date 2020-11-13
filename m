@@ -2,71 +2,95 @@ Return-Path: <SRS0=vtxH=ET=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5D1C388F7
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 14:22:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875FCC4742C
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 14:53:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B812222248
-	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 14:22:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B812222248
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 29C232222F
+	for <iommu@archiver.kernel.org>; Fri, 13 Nov 2020 14:53:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29C232222F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5A1758750B;
-	Fri, 13 Nov 2020 14:22:45 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6VSh4lOSTvXQ; Fri, 13 Nov 2020 14:22:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0DC67873D4;
-	Fri, 13 Nov 2020 14:22:44 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F1D74C0FAA;
-	Fri, 13 Nov 2020 14:22:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06B79C088E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 14:22:43 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E1297204C6
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 14:22:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C2FEF2E248;
+	Fri, 13 Nov 2020 14:53:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id i1OsdKhugbtR; Fri, 13 Nov 2020 14:53:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 702C9203D5;
+	Fri, 13 Nov 2020 14:53:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53CFEC0FAA;
+	Fri, 13 Nov 2020 14:53:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 89536C088E;
+ Fri, 13 Nov 2020 14:53:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 49D3A878C9;
+ Fri, 13 Nov 2020 14:53:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NH9SLGGKr9ec for <iommu@lists.linux-foundation.org>;
- Fri, 13 Nov 2020 14:22:41 +0000 (UTC)
+ with ESMTP id GoCE+BUPKO4u; Fri, 13 Nov 2020 14:53:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 3A1F9204AC
- for <iommu@lists.linux-foundation.org>; Fri, 13 Nov 2020 14:22:41 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4940C142F;
- Fri, 13 Nov 2020 06:22:40 -0800 (PST)
-Received: from [10.57.53.43] (unknown [10.57.53.43])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 91AA73F6CF;
- Fri, 13 Nov 2020 06:22:38 -0800 (PST)
-Subject: Re: [RESEND][PATCH 2/2] iommu: Avoid crash if iommu_group is null
-To: John Stultz <john.stultz@linaro.org>, lkml <linux-kernel@vger.kernel.org>
-References: <20201112220520.48159-1-john.stultz@linaro.org>
- <20201112220520.48159-2-john.stultz@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <71d9e4f1-8205-0dec-5723-e1ae83389481@arm.com>
-Date: Fri, 13 Nov 2020 14:22:37 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4F007878C6;
+ Fri, 13 Nov 2020 14:53:08 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id s8so10188796wrw.10;
+ Fri, 13 Nov 2020 06:53:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=J3g1EmbPGYLgsVJyJusBp+ecz9drgGWXqp9ghw7oo04=;
+ b=ucwVJ46TYFe5FakYXHYhOLTIEgD9muvDuLKseZ2INIc0GB8/cL0Y+WAeHw9gIE83Am
+ 1BHd95Vdpv0tD+ph2fLlvg8dsfYDyj+9kEy++QwP4P1h+jm2SEyxl4OimASNfzwgmXWe
+ hC4f6vcgF3D4P3yndU1rNFREgrGc+25gnxUSqsXqUazNu4FCDQAa2ufbnuP0RgmyFpp/
+ 1BQvc+0A+FAwSA6AV8Xasz0+DYD81HVbIhDd6lU9z2BDwQ/uX6yVYpTCj6WDmWZJytwk
+ q16bPsMA0cfZkWW1uQfm4dS2vTD2xHrB9lvopg5OKTe8SeCo9UbXKbOUnh4sB01TwbEF
+ 1U0A==
+X-Gm-Message-State: AOAM530miraoANB/mmD6AMdO2VL6SQcYZFSiHe8XYS7qORYUi+xMXVKA
+ KBw34mTNDale3v7k+fNqStM=
+X-Google-Smtp-Source: ABdhPJzVhgHWH+ov3Hd5rUXZqXGqiSjFrXDw4D/7d7K8Q6VCR1SzDiuP4R19ZvbbTIhBSZZZ4eN/EA==
+X-Received: by 2002:adf:804b:: with SMTP id 69mr3963167wrk.274.1605279186710; 
+ Fri, 13 Nov 2020 06:53:06 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id a17sm12104587wra.61.2020.11.13.06.53.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 13 Nov 2020 06:53:06 -0800 (PST)
+Date: Fri, 13 Nov 2020 14:53:04 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH v2 04/17] iommu/hyperv: don't setup IRQ remapping when
+ running as root
+Message-ID: <20201113145304.37w3h6xi7fmhgcg6@liuwe-devbox-debian-v2>
+References: <20201105165814.29233-1-wei.liu@kernel.org>
+ <20201105165814.29233-5-wei.liu@kernel.org>
+ <87ft5ey4rx.fsf@vitty.brq.redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201112220520.48159-2-john.stultz@linaro.org>
-Content-Language: en-GB
-Cc: Maulik Shah <mkshah@codeaurora.org>, Saravana Kannan <saravanak@google.com>,
- Marc Zyngier <maz@kernel.org>, Lina Iyer <ilina@codeaurora.org>,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <87ft5ey4rx.fsf@vitty.brq.redhat.com>
+User-Agent: NeoMutt/20180716
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Joerg Roedel <jroedel@suse.de>, Stephen Hemminger <sthemmin@microsoft.com>,
+ Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ virtualization@lists.linux-foundation.org,
+ Vineeth Pillai <viremana@linux.microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,115 +103,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-11-12 22:05, John Stultz wrote:
-> In trying to handle a possible driver probe ordering issue
-> brought up by Robin Murphy, I ran across a separate null pointer
-> crash in the iommu core in iommu_group_remove_device():
-> [    2.732803] dwc3-qcom a6f8800.usb: failed to get usb-ddr path: -517
-> [    2.739281] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000c0
-> ...
-> [    2.775619] [00000000000000c0] user address but active_mm is swapper
-> [    2.782039] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-> [    2.787670] Modules linked in:
-> [    2.790769] CPU: 6 PID: 1 Comm: swapper/0 Tainted: G        W         5.10.0-rc1-mainline-00025-g272a618fc36-dirty #3973
-> [    2.801719] Hardware name: Thundercomm Dragonboard 845c (DT)
-> [    2.807431] pstate: 00c00005 (nzcv daif +PAN +UAO -TCO BTYPE=--)
-> [    2.813508] pc : iommu_group_remove_device+0x30/0x1b0
-> [    2.818611] lr : iommu_release_device+0x4c/0x78
-> [    2.823189] sp : ffffffc01005b950
-> ...
-> [    2.907082] Call trace:
-> [    2.909566]  iommu_group_remove_device+0x30/0x1b0
-> [    2.914323]  iommu_release_device+0x4c/0x78
-> [    2.918559]  iommu_bus_notifier+0xe8/0x108
-> [    2.922708]  blocking_notifier_call_chain+0x78/0xb8
-> [    2.927641]  device_del+0x2ac/0x3d0
-> [    2.931177]  platform_device_del.part.9+0x20/0x98
-> [    2.935933]  platform_device_unregister+0x2c/0x40
-> [    2.940694]  of_platform_device_destroy+0xd8/0xe0
-> [    2.945450]  device_for_each_child_reverse+0x58/0xb0
-> [    2.950471]  of_platform_depopulate+0x4c/0x78
-> [    2.954886]  dwc3_qcom_probe+0x93c/0xcb8
-> [    2.958858]  platform_drv_probe+0x58/0xa8
-> [    2.962917]  really_probe+0xec/0x398
-> [    2.966531]  driver_probe_device+0x5c/0xb8
-> [    2.970677]  device_driver_attach+0x74/0x98
-> [    2.974911]  __driver_attach+0x60/0xe8
-> [    2.978700]  bus_for_each_dev+0x84/0xd8
-> [    2.982581]  driver_attach+0x30/0x40
-> [    2.986194]  bus_add_driver+0x160/0x208
-> [    2.990076]  driver_register+0x64/0x110
-> [    2.993957]  __platform_driver_register+0x58/0x68
-> [    2.998716]  dwc3_qcom_driver_init+0x20/0x28
-> [    3.003041]  do_one_initcall+0x6c/0x2d0
-> [    3.006925]  kernel_init_freeable+0x214/0x268
-> [    3.011339]  kernel_init+0x18/0x118
-> [    3.014876]  ret_from_fork+0x10/0x18
-> [    3.018495] Code: d0006a21 f9417295 91130021 910162b6 (b940c2a2)
+On Thu, Nov 12, 2020 at 04:27:14PM +0100, Vitaly Kuznetsov wrote:
+> Wei Liu <wei.liu@kernel.org> writes:
 > 
-> In the case above, the arm-smmu driver fails to probe with
-> EPROBE_DEFER, and I'm guessing I'm guessing that causes
-> iommu_group_add_device() to fail and sets the
-> dev->iommu_group = NULL, then somehow we hit
-> iommu_group_remove_device() and trip over the null value?
-> I'm not really sure...
+> > The IOMMU code needs more work. We're sure for now the IRQ remapping
+> > hooks are not applicable when Linux is the root.
 > 
-> Anyway, adding the null check seems to avoid the issue and the
-> system boots fine after the arm-smmu driver later reprobed.
-> 
-> Feedback or better ideas for a solution would be appreciated!
+> Super-nitpick: I would suggest we always say 'root partition' as 'root'
+> has a 'slightly different' meaning in Linux and this commit message may
+> sound confusing to an unprepared reader.
 
-I think the real issue is that we shouldn't even be here. If the device 
-was still waiting for an IOMMU when it got torn down, then dev->iommu 
-would be non-NULL due to a fwspec being allocated, but it's possible 
-that none of the other setup would have been done, so 
-iommu_release_device() shouldn't be blindly trying to undo it. It 
-happens that iommu_device_unlink() and arm_smmu_release_device() still 
-have some left-over tolerance for invalid inputs, but even if we do make 
-iommu_group_remove_device() similarly tolerant of invalid input, the 
-subsequent module_put() could still be unbalanced if the fwspec and 
-deferral came from of_iommu_configure() without iommu_probe_device() 
-even being called. Therefore I think this needs to be fundamentally 
-fixed by making iommu_release_device() better at handling 
-partially-configured devices in the first place.
+Fixed.
 
-Robin.
-
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Maulik Shah <mkshah@codeaurora.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Lina Iyer <ilina@codeaurora.org>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
-> ---
->   drivers/iommu/iommu.c | 4 ++++
->   1 file changed, 4 insertions(+)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b53446bb8c6b4..28229f7ef7d5a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -877,6 +877,10 @@ void iommu_group_remove_device(struct device *dev)
->   	struct iommu_group *group = dev->iommu_group;
->   	struct group_device *tmp_device, *device = NULL;
->   
-> +	/* Avoid crash if iommu_group value is null */
-> +	if (!group)
-> +		return;
-> +
->   	dev_info(dev, "Removing from iommu group %d\n", group->id);
->   
->   	/* Pre-notify listeners that a device is being removed. */
+> >
+> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> > Acked-by: Joerg Roedel <jroedel@suse.de>
+> > ---
+> >  drivers/iommu/hyperv-iommu.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> > index e09e2d734c57..8d3ce3add57d 100644
+> > --- a/drivers/iommu/hyperv-iommu.c
+> > +++ b/drivers/iommu/hyperv-iommu.c
+> > @@ -20,6 +20,7 @@
+> >  #include <asm/io_apic.h>
+> >  #include <asm/irq_remapping.h>
+> >  #include <asm/hypervisor.h>
+> > +#include <asm/mshyperv.h>
+> >  
+> >  #include "irq_remapping.h"
+> >  
+> > @@ -143,7 +144,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+> >  	int i;
+> >  
+> >  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+> > -	    !x2apic_supported())
+> > +	    !x2apic_supported() || hv_root_partition)
+> >  		return -ENODEV;
+> >  
+> >  	fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
+> 
+> Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+
+Thanks.
+
+Wei.
+
+> 
+> -- 
+> Vitaly
 > 
 _______________________________________________
 iommu mailing list
