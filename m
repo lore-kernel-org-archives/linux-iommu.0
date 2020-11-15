@@ -2,85 +2,84 @@ Return-Path: <SRS0=8b8q=EV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF9EC55ABD
-	for <iommu@archiver.kernel.org>; Sun, 15 Nov 2020 21:54:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DAEC2D0E4
+	for <iommu@archiver.kernel.org>; Sun, 15 Nov 2020 23:48:31 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A85002242E
-	for <iommu@archiver.kernel.org>; Sun, 15 Nov 2020 21:54:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A85002242E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 72E39223BF
+	for <iommu@archiver.kernel.org>; Sun, 15 Nov 2020 23:48:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72E39223BF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5D49D871F1;
-	Sun, 15 Nov 2020 21:54:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0A6E586A1F;
+	Sun, 15 Nov 2020 23:48:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BxIWYB5NwghG; Sun, 15 Nov 2020 21:54:53 +0000 (UTC)
+	with ESMTP id mEtyxH5xRj4D; Sun, 15 Nov 2020 23:48:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0B5EE871E6;
-	Sun, 15 Nov 2020 21:54:53 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3BB4586714;
+	Sun, 15 Nov 2020 23:48:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF13DC0800;
-	Sun, 15 Nov 2020 21:54:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 91BB1C07FF
- for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 21:54:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1EDE6C0800;
+	Sun, 15 Nov 2020 23:48:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A853C07FF
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 23:48:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8045485F9B
- for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 21:54:51 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3A2B720390
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 23:48:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rnkBTUrIetWR for <iommu@lists.linux-foundation.org>;
- Sun, 15 Nov 2020 21:54:50 +0000 (UTC)
+ with ESMTP id jZ4PoSQwtKBH for <iommu@lists.linux-foundation.org>;
+ Sun, 15 Nov 2020 23:48:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B471D85F95
- for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 21:54:49 +0000 (UTC)
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.56])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4CZ5Zk1rpTz13QFJ;
- Mon, 16 Nov 2020 05:54:22 +0800 (CST)
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Mon, 16 Nov 2020 05:54:45 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.1913.007;
- Mon, 16 Nov 2020 05:54:45 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH v3 1/2] dma-mapping: add benchmark support for streaming
- DMA APIs
-Thread-Topic: [PATCH v3 1/2] dma-mapping: add benchmark support for streaming
- DMA APIs
-Thread-Index: AQHWuqaxiT3rvc8AvUKektYgWKvLn6nIS8nQgAAQE4CAAVfXkA==
-Date: Sun, 15 Nov 2020 21:54:45 +0000
-Message-ID: <cb7a42bd21f8488f861ebfd7fa46cef6@hisilicon.com>
-References: <20201102080646.2180-1-song.bao.hua@hisilicon.com>
- <20201102080646.2180-2-song.bao.hua@hisilicon.com>
- <20201114165336.GA24844@lst.de>
- <5c4488dd28fc4869b7e67dd842ffa208@hisilicon.com>
- <20201115084515.GA18411@lst.de>
-In-Reply-To: <20201115084515.GA18411@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.203.73]
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by silver.osuosl.org (Postfix) with ESMTPS id C02242034A
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Nov 2020 23:48:25 +0000 (UTC)
+IronPort-SDR: XkYVjPhH7wVtbpvLbh19tTNraXhEFogbcxqN1MVJiRoUy26Sz9p0HumBsnf46TwlaClWVy/xh8
+ OXfXi9jrYP7A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9806"; a="234840214"
+X-IronPort-AV: E=Sophos;i="5.77,481,1596524400"; d="scan'208";a="234840214"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Nov 2020 15:48:24 -0800
+IronPort-SDR: QFsXTK8yVJAJVshqFuARa27KZZ7lQvmrMDwIx7oqw5NiZ71abynlHnruwa681+tBsBtddcg0E6
+ mVNxTG+UtNqQ==
+X-IronPort-AV: E=Sophos;i="5.77,481,1596524400"; d="scan'208";a="358279683"
+Received: from chenyudo-mobl.ccr.corp.intel.com (HELO [10.254.215.59])
+ ([10.254.215.59])
+ by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Nov 2020 15:48:21 -0800
+Subject: Re: [PATCH] iommu/vt-d: include conditionally on
+ CONFIG_INTEL_IOMMU_SVM
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux-foundation.org
+References: <20201115205951.20698-1-lukas.bulwahn@gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <188313a2-ec53-28ef-2349-66594e116a2e@linux.intel.com>
+Date: Mon, 16 Nov 2020 07:47:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Shuah Khan <shuah@kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- Will Deacon <will@kernel.org>, Linuxarm <linuxarm@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xuwei
- \(O\)" <xuwei5@huawei.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
+In-Reply-To: <20201115205951.20698-1-lukas.bulwahn@gmail.com>
+Content-Language: en-US
+Cc: kernel-janitors@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ Tom Rix <trix@redhat.com>, Nick Desaulniers <ndesaulniers@google.com>,
+ linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+ Nathan Chancellor <natechancellor@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,122 +92,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: Christoph Hellwig [mailto:hch@lst.de]
-> Sent: Sunday, November 15, 2020 9:45 PM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> Cc: Christoph Hellwig <hch@lst.de>; iommu@lists.linux-foundation.org;
-> robin.murphy@arm.com; m.szyprowski@samsung.com; Linuxarm
-> <linuxarm@huawei.com>; linux-kselftest@vger.kernel.org; xuwei (O)
-> <xuwei5@huawei.com>; Joerg Roedel <joro@8bytes.org>; Will Deacon
-> <will@kernel.org>; Shuah Khan <shuah@kernel.org>
-> Subject: Re: [PATCH v3 1/2] dma-mapping: add benchmark support for
-> streaming DMA APIs
+On 2020/11/16 4:59, Lukas Bulwahn wrote:
+> Commit 6ee1b77ba3ac ("iommu/vt-d: Add svm/sva invalidate function")
+> introduced intel_iommu_sva_invalidate() when CONFIG_INTEL_IOMMU_SVM.
+> This function uses the dedicated static variable inv_type_granu_table
+> and functions to_vtd_granularity() and to_vtd_size().
 > 
-> On Sun, Nov 15, 2020 at 12:11:15AM +0000, Song Bao Hua (Barry Song)
-> wrote:
-> >
-> > Checkpatch has changed 80 to 100. That's probably why my local checkpatch
-> didn't report any warning:
-> >
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=
-> bdc48fa11e46f867ea4d
-> >
-> > I am happy to change them to be less than 80 if you like.
+> These parts are unused when !CONFIG_INTEL_IOMMU_SVM, and hence,
+> make CC=clang W=1 warns with an -Wunused-function warning.
 > 
-> Don't rely on checkpath, is is broken.  Look at the codingstyle document.
+> Include these parts conditionally on CONFIG_INTEL_IOMMU_SVM.
 > 
-> > > I think this needs to set a dma mask as behavior for unlimited dma
-> > > mask vs the default 32-bit one can be very different.
-> >
-> > I actually prefer users bind real devices with real dma_mask to test rather
-> than force to change
-> > the dma_mask in this benchmark.
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+
+Fixes: 6ee1b77ba3ac0 ("iommu/vt-d: Add svm/sva invalidate function")
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Best regards,
+baolu
+
+> ---
+> applies cleanly on current master and next-20201113
 > 
-> The mask is set by the driver, not the device.  So you need to set when
-> when you bind, real device or not.
-
-Yep while it is a little bit tricky.
-
-Sometimes, it is done by "device" in architectures, e.g. there are lots of
-dma_mask configuration code in arch/arm/mach-xxx.
-arch/arm/mach-davinci/da850.c
-static u64 da850_vpif_dma_mask = DMA_BIT_MASK(32);
-static struct platform_device da850_vpif_dev = {
-	.name		= "vpif",
-	.id		= -1,
-	.dev		= {
-		.dma_mask		= &da850_vpif_dma_mask,
-		.coherent_dma_mask	= DMA_BIT_MASK(32),
-	},
-	.resource	= da850_vpif_resource,
-	.num_resources	= ARRAY_SIZE(da850_vpif_resource),
-};
-
-Sometimes, it is done by "of" or "acpi", for example:
-drivers/acpi/arm64/iort.c
-void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
-{
-	u64 end, mask, dmaaddr = 0, size = 0, offset = 0;
-	int ret;
-
-	...
-
-	ret = acpi_dma_get_range(dev, &dmaaddr, &offset, &size);
-	if (!ret) {
-		/*
-		 * Limit coherent and dma mask based on size retrieved from
-		 * firmware.
-		 */
-		end = dmaaddr + size - 1;
-		mask = DMA_BIT_MASK(ilog2(end) + 1);
-		dev->bus_dma_limit = end;
-		dev->coherent_dma_mask = mask;
-		*dev->dma_mask = mask;
-	}
-	...
-}
-
-Sometimes, it is done by "bus", for example, ISA:
-		isa_dev->dev.coherent_dma_mask = DMA_BIT_MASK(24);
-		isa_dev->dev.dma_mask = &isa_dev->dev.coherent_dma_mask;
-
-		error = device_register(&isa_dev->dev);
-		if (error) {
-			put_device(&isa_dev->dev);
-			break;
-		}
-
-And in many cases, it is done by driver. On the ARM64 server platform I am testing,
-actually rarely drivers set dma_mask.
-
-So to make the dma benchmark work on all platforms, it seems it is worth
-to add a dma_mask_bit parameter. But, in order to avoid breaking the
-dma_mask of those devices whose dma_mask are set by architectures, 
-acpi and bus, it seems we need to do the below in dma_benchmark:
-
-u64 old_mask;
-
-old_mask = dma_get_mask(dev);
-
-dma_set_mask(dev, &new_mask);
-
-do_map_benchmark();
-
-/* restore old dma_mask so that the dma_mask of the device is not changed due to
-benchmark when it is bound back to its original driver */
-dma_set_mask(dev, &old_mask);
-
-Thanks
-Barry
-
+> Liu Yi L, Jakob Pan, Lu Baolu, please ack.
+> 
+> Joerg, please pick this minor non-urgent clean-up patch.
+> 
+>   drivers/iommu/intel/iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index c6622011d493..7b32703c0b47 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5386,6 +5386,7 @@ static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
+>   	aux_domain_remove_dev(to_dmar_domain(domain), dev);
+>   }
+>   
+> +#ifdef CONFIG_INTEL_IOMMU_SVM
+>   /*
+>    * 2D array for converting and sanitizing IOMMU generic TLB granularity to
+>    * VT-d granularity. Invalidation is typically included in the unmap operation
+> @@ -5432,7 +5433,6 @@ static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
+>   	return order_base_2(nr_pages);
+>   }
+>   
+> -#ifdef CONFIG_INTEL_IOMMU_SVM
+>   static int
+>   intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
+>   			   struct iommu_cache_invalidate_info *inv_info)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
