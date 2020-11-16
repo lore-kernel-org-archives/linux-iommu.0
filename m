@@ -7,79 +7,78 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 277B2C63699
-	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 10:44:51 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494E4C55ABD
+	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 10:45:05 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9FFAA2223C
-	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 10:44:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D7B11222E8
+	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 10:45:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FaFgARYV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FFAA2223C
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UMteQfw3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7B11222E8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 426F520467;
-	Mon, 16 Nov 2020 10:44:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id M+wCsdxpqxOe; Mon, 16 Nov 2020 10:44:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C190D2041E;
-	Mon, 16 Nov 2020 10:44:47 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADA20C0800;
-	Mon, 16 Nov 2020 10:44:47 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9DE42C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:44:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8BE4C86715
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:44:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 632678589A;
+	Mon, 16 Nov 2020 10:45:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ayYg4T98miRH; Mon, 16 Nov 2020 10:45:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id EC45985802;
+	Mon, 16 Nov 2020 10:45:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E01F4C0800;
+	Mon, 16 Nov 2020 10:45:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23D51C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:45:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 0BD472041E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:45:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z47yGd3rjqeT for <iommu@lists.linux-foundation.org>;
- Mon, 16 Nov 2020 10:44:46 +0000 (UTC)
+ with ESMTP id 2z8epbeUnHgn for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Nov 2020 10:45:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D62728670F
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:44:45 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by silver.osuosl.org (Postfix) with ESMTPS id EA5E22044A
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 10:45:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1605523484;
+ s=mimecast20190719; t=1605523500;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=7UhhE+wBoYEM6RGgx1gdxGhDxtIZ6tg0it6OX0kL9i4=;
- b=FaFgARYVGJauF9sGXvJvPJ6k25H041ZYiqH3ZhgExmjCTVYzGo/uGXa+nx7t+45LFC3DGX
- 3uSnGuCdNILkamKj+n40BuYKg3Zgg/2bTCMzqwQdmap9tvHzdEoOi+EzgGFaxctR9YMa4d
- P1Kbyom16DnJYGjW4zW/wmOepMLmkRI=
+ bh=oEgdYkNM3jqg5gj2etSX4w67affN+BFuiyONEoNAjNs=;
+ b=UMteQfw3bNUjP8dh2k6Ao3kW72+S5+igV6RiYJWullYnmEQhKMiBBZafqyUpcMdOUrLO59
+ bXb5alSfantz+AOlBwYGrDg/8rAChp/oYxuyzev+OiNOm5eN7//Ft1+UEdC43yIR4jdjor
+ EVcV/xxm7pua49rLXPa5jqptwclJdao=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-ZiQMDX2vNi-NL0GxiTic3w-1; Mon, 16 Nov 2020 05:44:43 -0500
-X-MC-Unique: ZiQMDX2vNi-NL0GxiTic3w-1
+ us-mta-590-mUeifrzjP9-60bEOIt_qug-1; Mon, 16 Nov 2020 05:44:57 -0500
+X-MC-Unique: mUeifrzjP9-60bEOIt_qug-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
  [10.5.11.16])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 76B6C1084C8D;
- Mon, 16 Nov 2020 10:44:39 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 012E9108E1A2;
+ Mon, 16 Nov 2020 10:44:50 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-113-230.ams2.redhat.com [10.36.113.230])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 0E06B5C5FE;
- Mon, 16 Nov 2020 10:44:34 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id B14AC5C5AF;
+ Mon, 16 Nov 2020 10:44:39 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  joro@8bytes.org, maz@kernel.org, robin.murphy@arm.com
-Subject: [PATCH v12 11/15] iommu/smmuv3: Enforce incompatibility between
- nested mode and HW MSI regions
-Date: Mon, 16 Nov 2020 11:43:12 +0100
-Message-Id: <20201116104316.31816-12-eric.auger@redhat.com>
+Subject: [PATCH v12 12/15] iommu/smmuv3: Implement bind/unbind_guest_msi
+Date: Mon, 16 Nov 2020 11:43:13 +0100
+Message-Id: <20201116104316.31816-13-eric.auger@redhat.com>
 In-Reply-To: <20201116104316.31816-1-eric.auger@redhat.com>
 References: <20201116104316.31816-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -103,59 +102,80 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Nested mode currently is not compatible with HW MSI reserved regions.
-Indeed MSI transactions targeting this MSI doorbells bypass the SMMU.
-
-Let's check nested mode is not attempted in such configuration.
+The bind/unbind_guest_msi() callbacks check the domain
+is NESTED and redirect to the dma-iommu implementation.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
+
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 23 +++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+
+v6 -> v7:
+- remove device handle argument
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 43 +++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index de03ac111f76..0c5ab4005f76 100644
+index 0c5ab4005f76..5aa9e0e747fa 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2296,6 +2296,23 @@ static bool arm_smmu_share_msi_domain(struct iommu_domain *domain,
- 	return share;
+@@ -2738,6 +2738,47 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
  }
  
-+static bool arm_smmu_has_hw_msi_resv_region(struct device *dev)
++static int
++arm_smmu_bind_guest_msi(struct iommu_domain *domain,
++			dma_addr_t giova, phys_addr_t gpa, size_t size)
 +{
-+	struct iommu_resv_region *region;
-+	bool has_msi_resv_region = false;
-+	LIST_HEAD(resv_regions);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu;
++	int ret = -EINVAL;
 +
-+	iommu_get_resv_regions(dev, &resv_regions);
-+	list_for_each_entry(region, &resv_regions, list) {
-+		if (region->type == IOMMU_RESV_MSI) {
-+			has_msi_resv_region = true;
-+			break;
-+		}
-+	}
-+	iommu_put_resv_regions(dev, &resv_regions);
-+	return has_msi_resv_region;
++	mutex_lock(&smmu_domain->init_mutex);
++	smmu = smmu_domain->smmu;
++	if (!smmu)
++		goto out;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto out;
++
++	ret = iommu_dma_bind_guest_msi(domain, giova, gpa, size);
++out:
++	mutex_unlock(&smmu_domain->init_mutex);
++	return ret;
 +}
 +
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
++static void
++arm_smmu_unbind_guest_msi(struct iommu_domain *domain, dma_addr_t giova)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu;
++
++	mutex_lock(&smmu_domain->init_mutex);
++	smmu = smmu_domain->smmu;
++	if (!smmu)
++		goto unlock;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto unlock;
++
++	iommu_dma_unbind_guest_msi(domain, giova);
++unlock:
++	mutex_unlock(&smmu_domain->init_mutex);
++}
++
+ static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
+ 				       struct iommu_pasid_table_config *cfg)
  {
- 	int ret = 0;
-@@ -2350,10 +2367,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	/*
- 	 * In nested mode we must check all devices belonging to the
- 	 * domain share the same physical MSI doorbell. Otherwise nested
--	 * stage MSI binding is not supported.
-+	 * stage MSI binding is not supported. Also nested mode is not
-+	 * compatible with MSI HW reserved regions.
- 	 */
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED &&
--		!arm_smmu_share_msi_domain(domain, dev)) {
-+		(!arm_smmu_share_msi_domain(domain, dev) ||
-+		 arm_smmu_has_hw_msi_resv_region(dev))) {
- 		ret = -EINVAL;
- 		goto out_unlock;
- 	}
+@@ -2970,6 +3011,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+ 	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+ 	.cache_invalidate	= arm_smmu_cache_invalidate,
++	.bind_guest_msi		= arm_smmu_bind_guest_msi,
++	.unbind_guest_msi	= arm_smmu_unbind_guest_msi,
+ 	.dev_has_feat		= arm_smmu_dev_has_feature,
+ 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+ 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
 -- 
 2.21.3
 
