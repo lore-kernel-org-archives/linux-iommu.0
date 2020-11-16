@@ -2,70 +2,85 @@ Return-Path: <SRS0=dfl9=EW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B59FC63777
-	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 06:13:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5F9C4742C
+	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 09:47:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B78332222E
-	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 06:13:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B78332222E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 38393222EA
+	for <iommu@archiver.kernel.org>; Mon, 16 Nov 2020 09:47:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38393222EA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3EBEF868B5;
-	Mon, 16 Nov 2020 06:13:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nzG5kFX-s0z0; Mon, 16 Nov 2020 06:13:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B25EC868AC;
-	Mon, 16 Nov 2020 06:13:17 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C1CDC0800;
-	Mon, 16 Nov 2020 06:13:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7EC37C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 06:13:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6366D87184
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 06:13:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 88C5E87091;
+	Mon, 16 Nov 2020 09:47:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id boa8qDrQ0Jpx; Mon, 16 Nov 2020 09:47:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7897C8708D;
+	Mon, 16 Nov 2020 09:47:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C3C6C0891;
+	Mon, 16 Nov 2020 09:47:38 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13443C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 09:47:37 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id D1F3C20016
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 09:47:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ytyA5sSWMjS5 for <iommu@lists.linux-foundation.org>;
- Mon, 16 Nov 2020 06:13:13 +0000 (UTC)
+ with ESMTP id IPDsJ6PN3jBy for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Nov 2020 09:47:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 89EA787182
- for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 06:13:12 +0000 (UTC)
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CZJdz5cXVz15Lp7;
- Mon, 16 Nov 2020 14:12:55 +0800 (CST)
-Received: from SWX921481.china.huawei.com (10.126.201.147) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 16 Nov 2020 14:12:57 +0800
-From: Barry Song <song.bao.hua@hisilicon.com>
-To: <iommu@lists.linux-foundation.org>, <hch@lst.de>, <robin.murphy@arm.com>, 
- <m.szyprowski@samsung.com>
-Subject: [PATCH v4 2/2] selftests/dma: add test application for
- DMA_MAP_BENCHMARK
-Date: Mon, 16 Nov 2020 19:08:48 +1300
-Message-ID: <20201116060848.1848-3-song.bao.hua@hisilicon.com>
-X-Mailer: git-send-email 2.21.0.windows.1
-In-Reply-To: <20201116060848.1848-1-song.bao.hua@hisilicon.com>
-References: <20201116060848.1848-1-song.bao.hua@hisilicon.com>
+Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com
+ [209.85.167.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 869831FE41
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 09:47:35 +0000 (UTC)
+Received: by mail-oi1-f193.google.com with SMTP id t143so18098689oif.10
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Nov 2020 01:47:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=z+F5r+A2Ydy3g6regFzy4mPZxcGaSWa5FXZJrRUitmk=;
+ b=m6e1yBZOsdcK2NTws3iRURzwlOZ4BxvZOmk8wGrkgGRrMT8u41OFXl7+l0rkFjruSZ
+ D9ABHej9APDf2d/pNXQXBWz8G9qDQ3i9F1j3Vl6EKu59QU/6vND69UroeZuUhKlpUz7y
+ fbZl9WMCorUuFfrSafGwFo+0OqhIsdsbwEyY9WqJReclFprxPHSNSrvUHYByF+eqtj7D
+ YhSucZkcu6BtqU6i6pFVJNQJZInyhKiiYfY3yPe7f5Vvp6NQmAus5XOl85Upd0ZYdzCg
+ qNPuqTt6lQB6MuclED2wu4hKZAxpOb0xBUg1hl+1R6WTPkHRUBPkjwbjoPFExj4Oxy6U
+ iv7g==
+X-Gm-Message-State: AOAM531qo+qJhEaxt6j2QFR8UGmBWGqDiLLYUn5GfuaA0XdhPZO8NQYU
+ 0/MxmovVtrwJY8Qy0Ol4kGWM/trhwXZWJzOxErs=
+X-Google-Smtp-Source: ABdhPJywjKJgEoVdofvrrxMy7A30vVriKI1tM5Mq/PI9qja7lbnht9Sd63/thbMiAKpLUQgfaV6TpBEM7w2Aq4WrXdM=
+X-Received: by 2002:aca:c3c4:: with SMTP id t187mr8708087oif.148.1605520054848; 
+ Mon, 16 Nov 2020 01:47:34 -0800 (PST)
 MIME-Version: 1.0
-X-Originating-IP: [10.126.201.147]
-X-CFilter-Loop: Reflected
-Cc: Shuah Khan <shuah@kernel.org>, Will Deacon <will@kernel.org>,
- linuxarm@huawei.com, linux-kselftest@vger.kernel.org
+References: <20200826111628.794979401@linutronix.de>
+ <20201112125531.GA873287@nvidia.com>
+ <87mtzmmzk6.fsf@nanos.tec.linutronix.de>
+ <87k0uqmwn4.fsf@nanos.tec.linutronix.de>
+ <87d00imlop.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <87d00imlop.fsf@nanos.tec.linutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 16 Nov 2020 10:47:23 +0100
+Message-ID: <CAMuHMdXA7wfJovmfSH2nbAhN0cPyCiFHodTvg4a8Hm9rx5Dj-w@mail.gmail.com>
+Subject: Re: iommu/vt-d: Cure VF irqdomain hickup
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Itay Aveksis <itayav@nvidia.com>, Ziyad Atiyyeh <ziyadat@nvidia.com>,
+ linux-pci <linux-pci@vger.kernel.org>, Moshe Shemesh <moshe@nvidia.com>,
+ the arch/x86 maintainers <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Marc Zyngier <maz@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,215 +98,54 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch provides the test application for DMA_MAP_BENCHMARK.
+Hi Thomas,
 
-Before running the test application, we need to bind a device to dma_map_
-benchmark driver. For example, unbind "xxx" from its original driver and
-bind to dma_map_benchmark:
+On Thu, Nov 12, 2020 at 8:16 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> The recent changes to store the MSI irqdomain pointer in struct device
+> missed that Intel DMAR does not register virtual function devices.  Due to
+> that a VF device gets the plain PCI-MSI domain assigned and then issues
+> compat MSI messages which get caught by the interrupt remapping unit.
+>
+> Cure that by inheriting the irq domain from the physical function
+> device.
+>
+> That's a temporary workaround. The correct fix is to inherit the irq domain
+> from the bus, but that's a larger effort which needs quite some other
+> changes to the way how x86 manages PCI and MSI domains.
+>
+> Fixes: 85a8dfc57a0b ("iommm/vt-d: Store irq domain in struct device")
+> Reported-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  drivers/iommu/intel/dmar.c |   19 ++++++++++++++++++-
+>  1 file changed, 18 insertions(+), 1 deletion(-)
+>
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -333,6 +333,11 @@ static void  dmar_pci_bus_del_dev(struct
+>         dmar_iommu_notify_scope_dev(info);
+>  }
+>
+> +static inline void vf_inherit_msi_domain(struct pci_dev *pdev)
+> +{
+> +       dev_set_msi_domain(&pdev->dev, dev_get_msi_domain(&pdev->physfn->dev));
 
-echo dma_map_benchmark > /sys/bus/platform/devices/xxx/driver_override
-echo xxx > /sys/bus/platform/drivers/xxx/unbind
-echo xxx > /sys/bus/platform/drivers/dma_map_benchmark/bind
+If CONFIG_PCI_ATS is not set:
 
-Another example for PCI devices:
-echo dma_map_benchmark > /sys/bus/pci/devices/0000:00:01.0/driver_override
-echo 0000:00:01.0 > /sys/bus/pci/drivers/xxx/unbind
-echo 0000:00:01.0 > /sys/bus/pci/drivers/dma_map_benchmark/bind
+    error: 'struct pci_dev' has no member named 'physfn'
 
-The below command will run 16 threads on numa node 0 for 10 seconds on
-the device bound to dma_map_benchmark platform_driver or pci_driver:
-./dma_map_benchmark -t 16 -s 10 -n 0
-dma mapping benchmark: threads:16 seconds:10
-average map latency(us):1.1 standard deviation:1.9
-average unmap latency(us):0.5 standard deviation:0.8
+http://kisskb.ellerman.id.au/kisskb/buildresult/14400927/
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
----
- -v4:
-  * add dma direction and mask_bit parameters
+Gr{oetje,eeting}s,
 
- MAINTAINERS                                   |   6 +
- tools/testing/selftests/dma/Makefile          |   6 +
- tools/testing/selftests/dma/config            |   1 +
- .../testing/selftests/dma/dma_map_benchmark.c | 123 ++++++++++++++++++
- 4 files changed, 136 insertions(+)
- create mode 100644 tools/testing/selftests/dma/Makefile
- create mode 100644 tools/testing/selftests/dma/config
- create mode 100644 tools/testing/selftests/dma/dma_map_benchmark.c
+                        Geert
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e451dcce054f..bc851ffd3114 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5247,6 +5247,12 @@ F:	include/linux/dma-mapping.h
- F:	include/linux/dma-map-ops.h
- F:	kernel/dma/
- 
-+DMA MAPPING BENCHMARK
-+M:	Barry Song <song.bao.hua@hisilicon.com>
-+L:	iommu@lists.linux-foundation.org
-+F:	kernel/dma/map_benchmark.c
-+F:	tools/testing/selftests/dma/
-+
- DMA-BUF HEAPS FRAMEWORK
- M:	Sumit Semwal <sumit.semwal@linaro.org>
- R:	Benjamin Gaignard <benjamin.gaignard@linaro.org>
-diff --git a/tools/testing/selftests/dma/Makefile b/tools/testing/selftests/dma/Makefile
-new file mode 100644
-index 000000000000..aa8e8b5b3864
---- /dev/null
-+++ b/tools/testing/selftests/dma/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+CFLAGS += -I../../../../usr/include/
-+
-+TEST_GEN_PROGS := dma_map_benchmark
-+
-+include ../lib.mk
-diff --git a/tools/testing/selftests/dma/config b/tools/testing/selftests/dma/config
-new file mode 100644
-index 000000000000..6102ee3c43cd
---- /dev/null
-+++ b/tools/testing/selftests/dma/config
-@@ -0,0 +1 @@
-+CONFIG_DMA_MAP_BENCHMARK=y
-diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-new file mode 100644
-index 000000000000..7065163a8388
---- /dev/null
-+++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-@@ -0,0 +1,123 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2020 Hisilicon Limited.
-+ */
-+
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <sys/ioctl.h>
-+#include <sys/mman.h>
-+#include <linux/types.h>
-+
-+#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
-+#define DMA_MAP_MAX_THREADS	1024
-+#define DMA_MAP_MAX_SECONDS     300
-+
-+#define DMA_MAP_BIDIRECTIONAL	0
-+#define DMA_MAP_TO_DEVICE	1
-+#define DMA_MAP_FROM_DEVICE	2
-+
-+static char *directions[] = {
-+	"BIDIRECTIONAL",
-+	"TO_DEVICE",
-+	"FROM_DEVICE",
-+};
-+
-+struct map_benchmark {
-+	__u64 avg_map_100ns; /* average map latency in 100ns */
-+	__u64 map_stddev; /* standard deviation of map latency */
-+	__u64 avg_unmap_100ns; /* as above */
-+	__u64 unmap_stddev;
-+	__u32 threads; /* how many threads will do map/unmap in parallel */
-+	__u32 seconds; /* how long the test will last */
-+	__s32 node; /* which numa node this benchmark will run on */
-+	__u32 dma_bits; /* DMA addressing capability */
-+	__u32 dma_dir; /* DMA data direction */
-+	__u64 expansion[10];	/* For future use */
-+};
-+
-+int main(int argc, char **argv)
-+{
-+	struct map_benchmark map;
-+	int fd, opt;
-+	/* default single thread, run 20 seconds on NUMA_NO_NODE */
-+	int threads = 1, seconds = 20, node = -1;
-+	/* default dma mask 32bit, bidirectional DMA */
-+	int bits = 32, dir = DMA_MAP_BIDIRECTIONAL;
-+
-+	int cmd = DMA_MAP_BENCHMARK;
-+	char *p;
-+
-+	while ((opt = getopt(argc, argv, "t:s:n:b:d:")) != -1) {
-+		switch (opt) {
-+		case 't':
-+			threads = atoi(optarg);
-+			break;
-+		case 's':
-+			seconds = atoi(optarg);
-+			break;
-+		case 'n':
-+			node = atoi(optarg);
-+			break;
-+		case 'b':
-+			bits = atoi(optarg);
-+			break;
-+		case 'd':
-+			dir = atoi(optarg);
-+			break;
-+		default:
-+			return -1;
-+		}
-+	}
-+
-+	if (threads <= 0 || threads > DMA_MAP_MAX_THREADS) {
-+		fprintf(stderr, "invalid number of threads, must be in 1-%d\n",
-+			DMA_MAP_MAX_THREADS);
-+		exit(1);
-+	}
-+
-+	if (seconds <= 0 || seconds > DMA_MAP_MAX_SECONDS) {
-+		fprintf(stderr, "invalid number of seconds, must be in 1-%d\n",
-+			DMA_MAP_MAX_SECONDS);
-+		exit(1);
-+	}
-+
-+	/* suppose the mininum DMA zone is 1MB in the world */
-+	if (bits < 20 || bits > 64) {
-+		fprintf(stderr, "invalid dma mask bit, must be in 20-64\n");
-+		exit(1);
-+	}
-+
-+	if (dir != DMA_MAP_BIDIRECTIONAL && dir != DMA_MAP_TO_DEVICE &&
-+			dir != DMA_MAP_FROM_DEVICE) {
-+		fprintf(stderr, "invalid dma direction\n");
-+		exit(1);
-+	}
-+
-+	fd = open("/sys/kernel/debug/dma_map_benchmark", O_RDWR);
-+	if (fd == -1) {
-+		perror("open");
-+		exit(1);
-+	}
-+
-+	map.seconds = seconds;
-+	map.threads = threads;
-+	map.node = node;
-+	map.dma_bits = bits;
-+	map.dma_dir = dir;
-+	if (ioctl(fd, cmd, &map)) {
-+		perror("ioctl");
-+		exit(1);
-+	}
-+
-+	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s\n",
-+			threads, seconds, node, dir[directions]);
-+	printf("average map latency(us):%.1f standard deviation:%.1f\n",
-+			map.avg_map_100ns/10.0, map.map_stddev/10.0);
-+	printf("average unmap latency(us):%.1f standard deviation:%.1f\n",
-+			map.avg_unmap_100ns/10.0, map.unmap_stddev/10.0);
-+
-+	return 0;
-+}
 -- 
-2.25.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
