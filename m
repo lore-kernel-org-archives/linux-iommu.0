@@ -2,130 +2,111 @@ Return-Path: <SRS0=JfyE=EX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA34C63697
-	for <iommu@archiver.kernel.org>; Tue, 17 Nov 2020 20:30:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAA7C63697
+	for <iommu@archiver.kernel.org>; Tue, 17 Nov 2020 21:29:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1631F2225E
-	for <iommu@archiver.kernel.org>; Tue, 17 Nov 2020 20:30:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7A58224181
+	for <iommu@archiver.kernel.org>; Tue, 17 Nov 2020 21:29:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="zj0QOE2b"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1631F2225E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VC75sZ0s"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A58224181
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 75F49207A6;
-	Tue, 17 Nov 2020 20:30:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0B1BD86FC6;
+	Tue, 17 Nov 2020 21:29:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dicCOCJQ8+ZA; Tue, 17 Nov 2020 20:30:20 +0000 (UTC)
+	with ESMTP id ajcB-o3Fwx0S; Tue, 17 Nov 2020 21:29:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 43FED2039A;
-	Tue, 17 Nov 2020 20:30:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 195F486FBF;
+	Tue, 17 Nov 2020 21:29:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28AEBC0891;
-	Tue, 17 Nov 2020 20:30:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09F4BC0800;
+	Tue, 17 Nov 2020 21:29:42 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8785C07FF
- for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 20:30:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B25F7C07FF
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 21:29:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CC35385551
- for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 20:30:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9953485085
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 21:29:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e8WGwe_k8eAy for <iommu@lists.linux-foundation.org>;
- Tue, 17 Nov 2020 20:30:18 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0DA0D85531
- for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 20:30:17 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AHKORws128609;
- Tue, 17 Nov 2020 20:29:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to : content-transfer-encoding; s=corp-2020-01-29;
- bh=/9ouyw75sZcj64B7J3W0GYiJN8Cf86XbWdloBIz8was=;
- b=zj0QOE2bh0JBJey8IOaUA6r/ystzgD5gpvEzU19rRmVQqand2cCeG49nXMJ4WqNraXpV
- IDK1j28YlJPajIltbcu3+To0hmN14gYMNmDPo+uV1m0aj1RDAZBRE8rYPdWM/yibPidP
- R8e0BFr9pSFkdjy12jpO0nKmC1ScTtYnCmgqGrVXNcbqh0qHV7EEZzyFT3NFb/TaUbu9
- yDYTJbKtGSBmYZ69ECqCPNRBIlhcOH8CxK7rzSTqkWn9WMMBaQFPzRpmfAYkKzKvEvka
- gLIXCgL/GYbsXKfELoGg1q2tC5KTsj657Imuui6PN0ecrcZfydubwYhELrqU1VwMHKv9 0A== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by aserp2130.oracle.com with ESMTP id 34t4ravu78-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 17 Nov 2020 20:29:46 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AHKLGtT159075;
- Tue, 17 Nov 2020 20:29:46 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by aserp3020.oracle.com with ESMTP id 34umcypfdm-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 17 Nov 2020 20:29:46 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AHKTXiv026531;
- Tue, 17 Nov 2020 20:29:33 GMT
-Received: from char.us.oracle.com (/10.152.32.25)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Tue, 17 Nov 2020 12:29:32 -0800
-Received: by char.us.oracle.com (Postfix, from userid 1000)
- id 9CE916A00FA; Tue, 17 Nov 2020 15:31:24 -0500 (EST)
-Date: Tue, 17 Nov 2020 15:31:24 -0500
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-To: "Kalra, Ashish" <Ashish.Kalra@amd.com>
-Subject: Re: [PATCH v3] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
- guests.
-Message-ID: <20201117203123.GB16539@char.us.oracle.com>
-References: <20201105184115.GA25261@ashkalra_ubuntu_server>
- <20201105190649.GB5366@char.us.oracle.com>
- <20201105193828.GA25303@ashkalra_ubuntu_server>
- <20201105202007.GA6370@char.us.oracle.com>
- <20201105212045.GB25303@ashkalra_ubuntu_server>
- <20201113211925.GA6096@char.us.oracle.com>
- <20201117153302.GA29293@ashkalra_ubuntu_server>
- <20201117170003.GF10360@char.us.oracle.com>
- <20201117173829.GA29387@ashkalra_ubuntu_server>
- <7EAA7A38-50B7-4291-9A4E-34668455B59D@amd.com>
+ with ESMTP id jCDsnOq731Pe for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Nov 2020 21:29:39 +0000 (UTC)
+X-Greylist: delayed 00:08:04 by SQLgrey-1.7.6
+Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com
+ [209.85.167.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7C90F85082
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 21:29:39 +0000 (UTC)
+Received: by mail-oi1-f193.google.com with SMTP id t16so24175912oie.11
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 13:29:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=qaFR/vbXEE/Fp6N4YA11Mip+TFc+3mxIxAGB0BrXskE=;
+ b=VC75sZ0sI622cqRm8NQfeG/nHdIrHJG5hf4nb18w5Ezfn7dMY95pE7f6ymO6jyVG5b
+ RHrNPQPAkIvmJQcyxl/7knSpyGi+tr36KXPjdVxT8PNSHF++jwPSbnADEtdQfMS8xGvM
+ xybni7VT4JkWf5GIe8nK7+qGTJhJlnTpen1Hc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=qaFR/vbXEE/Fp6N4YA11Mip+TFc+3mxIxAGB0BrXskE=;
+ b=Wgkrf+/+pYrKAJhFJafjrq6GKFNvLYpCdrSUu/3IFKXua5nkAueG9rKLctTkMB6WaW
+ v6dUr+0a8PKT4xwWchtFDYufmQELLOMV+SW8hfm2RoioU119JYBofRw07O9DXlEJDCzU
+ AuglGbEDlWFoM3bzL3DfQiJYDIZ83BR2QFiCh+1Aes2LC0MonwbE1HUx8sVY4d+i6HMn
+ WDQfDesAOIaGOn/gzGKZntz8W1a2WMDIsP9lZVVUK65tE+ifjOXbNvpXWper7hB6jXFT
+ QPYXee5ZJ/57VZjkX55SRsJwUW7UL/6mbgAkS1qX3s806ANWos149kLg7S7tv/SHiDox
+ aNwQ==
+X-Gm-Message-State: AOAM530aNqw3u0p+6SWHOn8hqQx7IdjreoVfb4+jBDt8DdERzLLRIhMG
+ 7XTNQ9fyg0B1/9JauzPmja120ppghjeJQ7JP
+X-Google-Smtp-Source: ABdhPJySVU2CmSPZ7EK7XwQu/p5gj3X3AGh7VJ9X0SPN7gjkBmBvQDVWfhCvCwt5pmsA+MvHvtqE7A==
+X-Received: by 2002:aca:c311:: with SMTP id t17mr769481oif.46.1605648094443;
+ Tue, 17 Nov 2020 13:21:34 -0800 (PST)
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com.
+ [209.85.167.173])
+ by smtp.gmail.com with ESMTPSA id q10sm6507112oih.56.2020.11.17.13.21.32
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 17 Nov 2020 13:21:33 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id d9so24208604oib.3
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Nov 2020 13:21:32 -0800 (PST)
+X-Received: by 2002:aca:7506:: with SMTP id q6mr742413oic.128.1605648092412;
+ Tue, 17 Nov 2020 13:21:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <7EAA7A38-50B7-4291-9A4E-34668455B59D@amd.com>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808
- signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
- mlxscore=0 phishscore=0
- spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011170149
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808
- signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
- clxscore=1015
- malwarescore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
- mlxlogscore=999 adultscore=0 phishscore=0 suspectscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011170149
-Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "Grimm,
- Jon" <Jon.Grimm@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>,
- "ssg.sos.patches" <ssg.sos.patches@amd.com>,
- "dave.hansen@linux-intel.com" <dave.hansen@linux-intel.com>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "x86@kernel.org" <x86@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "luto@kernel.org" <luto@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "rientjes@google.com" <rientjes@google.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>, "hch@lst.de" <hch@lst.de>
+References: <20200930160917.1234225-1-hch@lst.de>
+ <20200930160917.1234225-9-hch@lst.de>
+ <CAAFQd5CttttqMXb=iDPb+Z0WGUa2g=W6JwXJ-5HbhmrDyxP+cQ@mail.gmail.com>
+ <CANiDSCtefXKw-xC3bskyggW-BzCmVPj6GGLvO=cCPZHbS1oTDA@mail.gmail.com>
+ <20201110092506.GA24469@lst.de>
+ <CANiDSCsBUBV1WA2To9x26Uhc5SU-4xuh3m4wUwXBcGwA6n8now@mail.gmail.com>
+ <CAAFQd5CCOrp0OA_n_SHNO5RAhV-MQ2KuQJA+oWHQ76h_So=M2Q@mail.gmail.com>
+ <20201110095747.GA26574@lst.de>
+In-Reply-To: <20201110095747.GA26574@lst.de>
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Tue, 17 Nov 2020 22:21:21 +0100
+X-Gmail-Original-Message-ID: <CANiDSCtbZHe2pqKj+=DbEODBSNy1hrysTOAHYbTG4_DRBmH00A@mail.gmail.com>
+Message-ID: <CANiDSCtbZHe2pqKj+=DbEODBSNy1hrysTOAHYbTG4_DRBmH00A@mail.gmail.com>
+Subject: Re: [PATCH 8/8] WIP: add a dma_alloc_contiguous API
+To: Christoph Hellwig <hch@lst.de>
+Cc: Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Kieran Bingham <kieran.bingham@ideasonboard.com>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -138,80 +119,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVHVlLCBOb3YgMTcsIDIwMjAgYXQgMDc6MDQ6NTlQTSArMDAwMCwgS2FscmEsIEFzaGlzaCB3
-cm90ZToKPiBIZWxsbyBLb25yYWQsCj4gCj4gQWN0dWFsbHkgSSBkaWRu4oCZdCBnZXQgdGhhdCwg
-ZG8geW91IG1lYW4geW91IGFyZSB0YWtpbmcgMUcgYW5kIDw9NEcgY2FzZXMgb3V0IG9mIHRoZSBw
-YXRjaCBhbmQgb25seSBnb2luZyB0byBhcHBseSB0aGUgPjRHIGNhc2UgYXMgcGFydCBvZiB0aGUg
-cGF0Y2ggPwoKVGhhdCB3YXMgdGhlIHRob3VnaHQsIGJ1dCBub3cgSSBhbSB3b25kZXJpbmcgaG93
-IFREWCBpcyBnb2luZyB0byB3b3JrCndpdGggdGhpcy4gVGhhdCBpcyB0aGUgX193ZWFrIHdvbid0
-IHdvcmsgb24gZGlzdHJvIGtlcm5lbCB0aGF0IGhhcyB0bwpydW4gb24gYm90aCBBTUQgYW5kIElu
-dGVsLiBIbW0uCgpMZXQgbWUgYnJ1c2ggb2ZmIHRoZSBsYXRlLVNXSU9UTEIgcGF0Y2hlcyB0aGF0
-IGludGVybmFsbHkgd2UgZGV2ZWxvcGVkIHNvbWUgdGltZSBhZ28uCgo+IAo+IFRoYW5rcywKPiBB
-c2hpc2ggCj4gCj4gPiBPbiBOb3YgMTcsIDIwMjAsIGF0IDExOjM4IEFNLCBLYWxyYSwgQXNoaXNo
-IDxBc2hpc2guS2FscmFAYW1kLmNvbT4gd3JvdGU6Cj4gPiAKPiA+IO+7v0hlbGxvIEtvbnJhZCwg
-Cj4gPiAKPiA+PiBPbiBUdWUsIE5vdiAxNywgMjAyMCBhdCAxMjowMDowM1BNIC0wNTAwLCBLb25y
-YWQgUnplc3p1dGVrIFdpbGsgd3JvdGU6Cj4gPj4gLnNuaXAuLgo+ID4+Pj4+PiBMZXRzIGJyZWFr
-IHRoaXMgZG93bjoKPiA+Pj4+Pj4gCj4gPj4+Pj4+IEhvdyBkb2VzIHRoZSBwZXJmb3JtYW5jZSBp
-bXByb3ZlIGZvciBvbmUgc2luZ2xlIGRldmljZSBpZiB5b3UgaW5jcmVhc2UgdGhlIFNXSU9UTEI/
-Cj4gPj4+Pj4+IElzIHRoZXJlIGEgc3BlY2lmaWMgZGV2aWNlL2RyaXZlciB0aGF0IHlvdSBjYW4g
-dGFsayBhYm91dCB0aGF0IGltcHJvdmUgd2l0aCB0aGlzIHBhdGNoPwo+ID4+Pj4+PiAKPiA+Pj4+
-Pj4gCj4gPj4+Pj4gCj4gPj4+Pj4gWWVzLCB0aGVzZSBhcmUgbWFpbmx5IGZvciBtdWx0aS1xdWV1
-ZSBkZXZpY2VzIHN1Y2ggYXMgTklDcyBvciBldmVuCj4gPj4+Pj4gbXVsdGktcXVldWUgdmlydGlv
-LiAKPiA+Pj4+PiAKPiA+Pj4+PiBUaGlzIGJhc2ljYWxseSBpbXByb3ZlcyBwZXJmb3JtYW5jZSB3
-aXRoIGNvbmN1cnJlbnQgRE1BLCBoZW5jZSwKPiA+Pj4+PiBiYXNpY2FsbHkgbXVsdGktcXVldWUg
-ZGV2aWNlcy4KPiA+Pj4+IAo+ID4+Pj4gT0ssIGFuZCBmb3IgXzFHQl8gZ3Vlc3QgLSB3aGF0IGFy
-ZSB0aGUgImludGVybmFsIHRlYW1zL2V4dGVybmFsIGN1c3RvbWVycyIgYW1vdW50IAo+ID4+Pj4g
-b2YgQ1BVcyB0aGV5IHVzZT8gUGxlYXNlIGxldHMgdXNlIHJlYWwgdXNlLWNhc2VzLgo+ID4+PiAK
-PiA+Pj4+PiBJIGFtIHN1cmUgeW91IHdpbGwgdW5kZXJzdGFuZCB3ZSBjYW5ub3Qgc2hhcmUgYW55
-IGV4dGVybmFsIGN1c3RvbWVyCj4gPj4+Pj4gZGF0YSBhcyBhbGwgdGhhdCBjdXN0b21lciBpbmZv
-cm1hdGlvbiBpcyBwcm9wcmlldGFyeS4KPiA+Pj4+PiAKPiA+Pj4+PiBJbiBzaW1pbGFyIHNpdHVh
-dGlvbiBpZiB5b3UgaGF2ZSB0byBzaGFyZSBPcmFjbGUgZGF0YSwgeW91IHdpbGwKPiA+Pj4+PiBz
-dXJlbHkgaGF2ZSB0aGUgc2FtZSBjb25jZXJucyBhbmQgaSBkb24ndCB0aGluayB5b3Ugd2lsbCBi
-ZSBhYmxlCj4gPj4+Pj4gdG8gc2hhcmUgYW55IHN1Y2ggaW5mb3JtYXRpb24gZXh0ZXJuYWxseSwg
-aS5lLiwgb3V0c2lkZSBPcmFjbGUuCj4gPj4+Pj4gCj4gPj4+PiBJIGFtIGFza2luZyBmb3IgYSBz
-aW1wbGUgcXVlcnkgLSB3aGF0IGFtb3VudCBvZiBDUFVzIGRvZXMgYSAxR0IKPiA+Pj4+IGd1ZXN0
-IGhhdmU/IFRoZSByZWFzb24gZm9yIHRoaXMgc2hvdWxkIGJlIGZhaXJseSBvYnZpb3VzIC0gaWYK
-PiA+Pj4+IGl0IGlzIGEgMXZDUFUsIHRoZW4gdGhlcmUgaXMgbm8gbXVsdGktcXVldWUgYW5kIHRo
-ZSBleGlzdGluZwo+ID4+Pj4gU1dJT1RMQiBwb29sIHNpemUgYXMgaXQgaXMgT0suCj4gPj4+PiAK
-PiA+Pj4+IElmIGhvd2V2ZXIgdGhlcmUgYXJlIHNheSAyIGFuZCBtdWx0aXF1ZXVlIGlzIGVuYWJs
-ZWQsIHRoYXQKPiA+Pj4+IGdpdmVzIG1lIGFuIGlkZWEgb2YgaG93IG1hbnkgeW91IHVzZSBhbmQg
-SSBjYW4gZmluZCBvdXQgd2hhdAo+ID4+Pj4gdGhlIG1heGltdW0gcG9vbCBzaXplIHVzYWdlIG9m
-IHZpcnRpbyB0aGVyZSBpcyB3aXRoIHRoYXQgY29uZmlndXJhdGlvbi4KPiA+Pj4gCj4gPj4+IEFn
-YWluIHdlIGNhbm5vdCBzaGFyZSBhbnkgY3VzdG9tZXIgZGF0YS4KPiA+Pj4gCj4gPj4+IEFsc28g
-aSBkb24ndCB0aGluayB0aGVyZSBjYW4gYmUgYSBkZWZpbml0aXZlIGFuc3dlciB0byBob3cgbWFu
-eSB2Q1BVcyBhCj4gPj4+IDFHQiBndWVzdCB3aWxsIGhhdmUsIGl0IHdpbGwgZGVwZW5kIG9uIHdo
-YXQga2luZCBvZiBjb25maWd1cmF0aW9uIHdlIGFyZQo+ID4+PiB0ZXN0aW5nLgo+ID4+PiAKPiA+
-Pj4gRm9yIGV4YW1wbGUsIGkgdXN1YWxseSBzZXR1cCA0LTE2IHZDUFVzIGZvciBhcyBsb3cgYXMg
-NTEyTSBjb25maWd1cmVkCj4gPj4+IGd1ZWVzdCBtZW1vcnkuCj4gPj4gCj4gPj4gU3VyZSwgYnV0
-IHlvdSBhcmUgbm90IHRoZSBub3JtYWwgdXNlci4KPiA+PiAKPiA+PiBUaGF0IGlzIEkgZG9uJ3Qg
-bGlrZSB0aGF0IGZvciAxR0IgZ3Vlc3RzIHlvdXIgcGF0Y2ggZW5kcyB1cCBkb3VibGluZyB0aGUK
-PiA+PiBTV0lPVExCIG1lbW9yeSBwb29sLiBUaGF0IHNlZW1zIHRvIG1lIHdlIGFyZSB0cnlpbmcg
-dG8gc29sdmUgYSBwcm9ibGVtCj4gPj4gdGhhdCBub3JtYWwgdXNlcnMgd2lsbCBub3QgaGl0LiBU
-aGF0IGlzIHdoeSBJIHdhbnQgJ2hlcmUgaXMgdGhlIGN1c3RvbWVyCj4gPj4gYnVnJy4KPiA+PiAK
-PiA+PiBIZXJlIGlzIHdoYXQgSSBhbSBnb2luZyB0byBkbyAtIEkgd2lsbCB0YWtlIG91dCB0aGUg
-MUdCIGFuZCA0R0IgY2FzZSBvdXQgb2YKPiA+PiB5b3VyIHBhdGNoIGFuZCBjYWxsIGl0IGEgZGF5
-LiBJZiB0aGVyZSBhcmUgY3VzdG9tZXJzIHdobyBzdGFydCByZXBvcnRpbmcgaXNzdWVzCj4gPj4g
-d2UgY2FuIHJldmlzdCB0aGF0LiBOb3RoaW5nIHdyb25nIHdpdGggJ1JlcG9ydGVkLWJ5JyBYWlkg
-KHdlIG9mdGVuIGFzayB0aGUKPiA+PiBjdXN0b21lciBpZiBoZSBvciBzaGUgd291bGQgbGlrZSB0
-byBiZSByZWNvZ25pemVkIG9uIHVwc3RyZWFtIGJ1Z3MpLgo+ID4+IAo+ID4gCj4gPiBPay4KPiA+
-IAo+ID4+IEFuZCBpbiB0aGUgbWVhbnRpbWUgSSBhbSBnb2luZyB0byBsb29rIGFib3V0IGFkZGlu
-ZyAuLgo+ID4+PiAKPiA+Pj4gSSBoYXZlIGJlZW4gYWxzbyB0ZXN0aW5nIHdpdGggMTYgdkNQVXMg
-Y29uZmlndXJhdGlvbiBmb3IgNTEyTS0xRyBndWVzdAo+ID4+PiBtZW1vcnkgd2l0aCBNZWxsYW5v
-eCBTUklPViBOSUNzLCBhbmQgdGhpcyB3aWxsIGJlIGEgbXVsdGktcXVldWUgTklDCj4gPj4+IGRl
-dmljZSBlbnZpcm9ubWVudC4KPiA+PiAKPiA+PiAuLiBsYXRlIFNXSU9UTEIgZXhwYW5zaW9uIHRv
-IHN0aWNoIHRoZSBETUEgcG9vbHMgdG9nZXRoZXIgYXMgYm90aAo+ID4+IE1lbGxhbm94IGFuZCBW
-aXJ0SU8gYXJlIG5vdCAzMi1iaXQgRE1BIGJvdW5kLgo+ID4+IAo+ID4+PiAKPiA+Pj4gU28gd2Ug
-bWlnaHQgYmUgaGF2aW5nIGxlc3MgY29uZmlndXJlZCBndWVzdCBtZW1vcnksIGJ1dCB3ZSBzdGls
-bCBtaWdodAo+ID4+PiBiZSB1c2luZyB0aGF0IGNvbmZpZ3VyYXRpb24gd2l0aCBJL08gaW50ZW5z
-aXZlIHdvcmtsb2Fkcy4KPiA+Pj4gCj4gPiAKPiA+IEkgYW0gZ29pbmcgdG8gc3VibWl0IHY0IG9m
-IG15IGN1cnJlbnQgcGF0Y2gtc2V0IHdoaWNoIHVzZXMgbWF4KCkgaW5zdGVhZAo+ID4gb2YgY2xh
-bXAoKSBhbmQgYWxzbyByZXBsYWNlcyBjb25zdGFudHMgZGVmaW5lZCBpbiB0aGlzIHBhdGNoIHdp
-dGggdGhlCj4gPiBwcmUtZGVmaW5lZCBvbmVzIGluIHNpemVzLmgKPiA+IAo+ID4gVGhhbmtzLAo+
-ID4gQXNoaXNoCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Christoph
+
+I have been testing with real hardware on arm64 your patchset. And uvc
+performs 20 times better using Kieran's test
+
+https://github.com/ribalda/linux/tree/uvc-noncontiguous
+
+These are the result of running   yavta --capture=1000
+
+
+dma_alloc_noncontiguous
+
+frames:  999
+packets: 999
+empty:   0 (0 %)
+errors:  0
+invalid: 0
+pts: 0 early, 0 initial, 999 ok
+scr: 0 count ok, 0 diff ok
+sof: 2048 <= sof <= 0, freq 0.000 kHz
+bytes 78466000 : duration 33303
+FPS: 29.99
+URB: 418105/5000 uS/qty: 83.621 avg 98.783 std 17.396 min 1264.688 max (uS)
+header: 100040/5000 uS/qty: 20.008 avg 19.458 std 2.969 min 454.167 max (uS)
+latency: 347653/5000 uS/qty: 69.530 avg 98.937 std 9.114 min 1256.875 max (uS)
+decode: 70452/5000 uS/qty: 14.090 avg 11.547 std 6.146 min 271.510 max (uS)
+raw decode speed: 8.967 Gbits/s
+raw URB handling speed: 1.501 Gbits/s
+throughput: 18.848 Mbits/s
+URB decode CPU usage 0.211500 %
+
+
+usb_alloc_coherent
+
+frames:  999
+packets: 999
+empty:   0 (0 %)
+errors:  0
+invalid: 0
+pts: 0 early, 0 initial, 999 ok
+scr: 0 count ok, 0 diff ok
+sof: 2048 <= sof <= 0, freq 0.000 kHz
+bytes 70501712 : duration 33319
+FPS: 29.98
+URB: 1854128/5000 uS/qty: 370.825 avg 417.133 std 14.539 min 2875.760 max (uS)
+header: 98765/5000 uS/qty: 19.753 avg 30.714 std 1.042 min 573.463 max (uS)
+latency: 453316/5000 uS/qty: 90.663 avg 114.987 std 4.065 min 860.795 max (uS)
+decode: 1400811/5000 uS/qty: 280.162 avg 330.786 std 6.305 min 2758.202 max (uS)
+raw decode speed: 402.866 Mbits/s
+raw URB handling speed: 304.214 Mbits/s
+throughput: 16.927 Mbits/s
+URB decode CPU usage 4.204200 %
+
+
+Best regards
+
+On Tue, Nov 10, 2020 at 10:57 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Tue, Nov 10, 2020 at 06:50:32PM +0900, Tomasz Figa wrote:
+> > In what terms it doesn't actually work? Last time I checked some
+> > platforms actually defined CONFIG_DMA_NONCOHERENT, so those would
+> > instead use the kmalloc() + dma_map() path. I don't have any
+> > background on why that was added and whether it needs to be preserved,
+> > though. Kieran, Laurent, do you have any insight?
+>
+> CONFIG_DMA_NONCOHERENT is set on sh and mips for platforms that may
+> support non-coherent DMA at compile time (but at least for mips that
+> doesn't actually means this gets used).  Using that ifdef to decide
+> on using usb_alloc_coherent vs letting the usb layer map the data
+> seems at best odd, and if we are unlucky papering over a bug somewhere.
+
+
+
+-- 
+Ricardo Ribalda
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
