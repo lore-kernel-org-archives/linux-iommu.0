@@ -7,79 +7,79 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE50BC5519F
-	for <iommu@archiver.kernel.org>; Wed, 18 Nov 2020 11:22:58 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5059C56202
+	for <iommu@archiver.kernel.org>; Wed, 18 Nov 2020 11:23:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 402C42462E
-	for <iommu@archiver.kernel.org>; Wed, 18 Nov 2020 11:22:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2E53D24181
+	for <iommu@archiver.kernel.org>; Wed, 18 Nov 2020 11:23:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="S17IEouk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 402C42462E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UufnZpqW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E53D24181
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D6B8B8666B;
-	Wed, 18 Nov 2020 11:22:57 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D+Nf75Rt6c8e; Wed, 18 Nov 2020 11:22:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2FE5A86477;
-	Wed, 18 Nov 2020 11:22:57 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CE36C0891;
-	Wed, 18 Nov 2020 11:22:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 247C2C07FF
- for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:22:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 13739854B4
- for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:22:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DE837854C9;
+	Wed, 18 Nov 2020 11:23:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U-mzlSojw7oU; Wed, 18 Nov 2020 11:23:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5C99185487;
+	Wed, 18 Nov 2020 11:23:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48300C0891;
+	Wed, 18 Nov 2020 11:23:03 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6E47DC07FF
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:23:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6A4688669F
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:23:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0LGFLZuwRL9A for <iommu@lists.linux-foundation.org>;
- Wed, 18 Nov 2020 11:22:55 +0000 (UTC)
+ with ESMTP id nAnLsF0wK9sq for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Nov 2020 11:23:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4D00185487
- for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:22:55 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 06FB3867FB
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Nov 2020 11:22:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1605698574;
+ s=mimecast20190719; t=1605698579;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=ddwD2vqIvhvWPRs86xcPJXkhNWMoaWi7DkNuxi9Kik8=;
- b=S17IEoukT5Ozso6IAUBNh+v3DCuYrlF9ZGcyCeMr2vYuCMAOt2UxsvVLFOo4rri/NdQ1Xo
- EylzZYYM5vvESkAmGitblz+epCmWB4pb5FY+epQ5WHh/miliXZ7pdXo4TeFNIZw06umu7j
- 254XHkwNnN6Kg/wAKIgWCVKrpHZ8OGk=
+ bh=sdZPdY7xzQ0DxBSFBQSmPitPcicaqsAR5GrcablMUaA=;
+ b=UufnZpqW9K8AA+zoPwi/fh8UkRgcOuMBvYH9Lf3tZf4pWKMheVFDFFCK2x5ew9cYaqpJ4v
+ hdc3Omw+GkVtI82MKlGgGvs6mSzo5DR8l/nGT57Kda/+vkjzNLI2DIHHkOavhNc2rlgVVZ
+ K9BoBB+9RLmuOJQjSYAHsUlA43z77Hg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-479-DBRq8LMPPIC_v8mgGl_wXw-1; Wed, 18 Nov 2020 06:22:50 -0500
-X-MC-Unique: DBRq8LMPPIC_v8mgGl_wXw-1
+ us-mta-22-0ukNpFPoMQGiwSlRdBxDdw-1; Wed, 18 Nov 2020 06:22:55 -0500
+X-MC-Unique: 0ukNpFPoMQGiwSlRdBxDdw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
  [10.5.11.11])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A40AC1084D64;
- Wed, 18 Nov 2020 11:22:47 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B495801ABA;
+ Wed, 18 Nov 2020 11:22:52 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-115-104.ams2.redhat.com [10.36.115.104])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3E7B95B4BC;
- Wed, 18 Nov 2020 11:22:37 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 071B951512;
+ Wed, 18 Nov 2020 11:22:47 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  joro@8bytes.org, maz@kernel.org, robin.murphy@arm.com,
  alex.williamson@redhat.com
-Subject: [PATCH v13 05/15] iommu/smmuv3: Get prepared for nested stage support
-Date: Wed, 18 Nov 2020 12:21:41 +0100
-Message-Id: <20201118112151.25412-6-eric.auger@redhat.com>
+Subject: [PATCH v13 06/15] iommu/smmuv3: Implement attach/detach_pasid_table
+Date: Wed, 18 Nov 2020 12:21:42 +0100
+Message-Id: <20201118112151.25412-7-eric.auger@redhat.com>
 In-Reply-To: <20201118112151.25412-1-eric.auger@redhat.com>
 References: <20201118112151.25412-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -102,193 +102,143 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When nested stage translation is setup, both s1_cfg and
-s2_cfg are set.
-
-We introduce a new smmu domain abort field that will be set
-upon guest stage1 configuration passing.
-
-arm_smmu_write_strtab_ent() is modified to write both stage
-fields in the STE and deal with the abort field.
-
-In nested mode, only stage 2 is "finalized" as the host does
-not own/configure the stage 1 context descriptor; guest does.
+On attach_pasid_table() we program STE S1 related info set
+by the guest into the actual physical STEs. At minimum
+we need to program the context descriptor GPA and compute
+whether the stage1 is translated/bypassed or aborted.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
-v10 -> v11:
-- Fix an issue reported by Shameer when switching from with vSMMU
-  to without vSMMU. Despite the spec does not seem to mention it
-  seems to be needed to reset the 2 high 64b when switching from
-  S1+S2 cfg to S1 only. Especially dst[3] needs to be reset (S2TTB).
-  On some implementations, if the S2TTB is not reset, this causes
-  a C_BAD_STE error
+v7 -> v8:
+- remove smmu->features check, now done on domain finalize
+
+v6 -> v7:
+- check versions and comment the fact we don't need to take
+  into account s1dss and s1fmt
+v3 -> v4:
+- adapt to changes in iommu_pasid_table_config
+- different programming convention at s1_cfg/s2_cfg/ste.abort
+
+v2 -> v3:
+- callback now is named set_pasid_table and struct fields
+  are laid out differently.
+
+v1 -> v2:
+- invalidate the STE before changing them
+- hold init_mutex
+- handle new fields
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 64 +++++++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 +
- 2 files changed, 56 insertions(+), 10 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 89 +++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 18ac5af1b284..412ea1bafa50 100644
+index 412ea1bafa50..805acdc18a3a 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1181,8 +1181,10 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	 * three cases at the moment:
- 	 *
- 	 * 1. Invalid (all zero) -> bypass/fault (init)
--	 * 2. Bypass/fault -> translation/bypass (attach)
--	 * 3. Translation/bypass -> bypass/fault (detach)
-+	 * 2. Bypass/fault -> single stage translation/bypass (attach)
-+	 * 3. Single or nested stage Translation/bypass -> bypass/fault (detach)
-+	 * 4. S2 -> S1 + S2 (attach_pasid_table)
-+	 * 5. S1 + S2 -> S2 (detach_pasid_table)
- 	 *
- 	 * Given that we can't update the STE atomically and the SMMU
- 	 * doesn't read the thing in a defined order, that leaves us
-@@ -1193,7 +1195,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	 * 3. Update Config, sync
- 	 */
- 	u64 val = le64_to_cpu(dst[0]);
--	bool ste_live = false;
-+	bool s1_live = false, s2_live = false, ste_live;
-+	bool abort, nested = false, translate = false;
- 	struct arm_smmu_device *smmu = NULL;
- 	struct arm_smmu_s1_cfg *s1_cfg;
- 	struct arm_smmu_s2_cfg *s2_cfg;
-@@ -1233,6 +1236,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 		default:
- 			break;
- 		}
-+		nested = s1_cfg->set && s2_cfg->set;
-+		translate = s1_cfg->set || s2_cfg->set;
- 	}
+@@ -2661,6 +2661,93 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
  
- 	if (val & STRTAB_STE_0_V) {
-@@ -1240,23 +1245,36 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 		case STRTAB_STE_0_CFG_BYPASS:
- 			break;
- 		case STRTAB_STE_0_CFG_S1_TRANS:
-+			s1_live = true;
-+			break;
- 		case STRTAB_STE_0_CFG_S2_TRANS:
--			ste_live = true;
-+			s2_live = true;
-+			break;
-+		case STRTAB_STE_0_CFG_NESTED:
-+			s1_live = true;
-+			s2_live = true;
- 			break;
- 		case STRTAB_STE_0_CFG_ABORT:
--			BUG_ON(!disable_bypass);
- 			break;
- 		default:
- 			BUG(); /* STE corruption */
- 		}
- 	}
- 
-+	ste_live = s1_live || s2_live;
++static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
++				       struct iommu_pasid_table_config *cfg)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master *master;
++	struct arm_smmu_device *smmu;
++	unsigned long flags;
++	int ret = -EINVAL;
 +
- 	/* Nuke the existing STE_0 value, as we're going to rewrite it */
- 	val = STRTAB_STE_0_V;
- 
- 	/* Bypass/fault */
--	if (!smmu_domain || !(s1_cfg->set || s2_cfg->set)) {
--		if (!smmu_domain && disable_bypass)
-+
-+	if (!smmu_domain)
-+		abort = disable_bypass;
-+	else
-+		abort = smmu_domain->abort;
-+
-+	if (abort || !translate) {
-+		if (abort)
- 			val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT);
- 		else
- 			val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS);
-@@ -1274,8 +1292,16 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 		return;
- 	}
- 
-+	BUG_ON(ste_live && !nested);
-+
-+	if (ste_live) {
-+		/* First invalidate the live STE */
-+		dst[0] = cpu_to_le64(STRTAB_STE_0_CFG_ABORT);
-+		arm_smmu_sync_ste_for_sid(smmu, sid);
-+	}
-+
- 	if (s1_cfg->set) {
--		BUG_ON(ste_live);
-+		BUG_ON(s1_live);
- 		dst[1] = cpu_to_le64(
- 			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-@@ -1294,7 +1320,14 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	}
- 
- 	if (s2_cfg->set) {
--		BUG_ON(ste_live);
-+		u64 vttbr = s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK;
-+
-+		if (s2_live) {
-+			u64 s2ttb = le64_to_cpu(dst[3] & STRTAB_STE_3_S2TTB_MASK);
-+
-+			BUG_ON(s2ttb != vttbr);
-+		}
-+
- 		dst[2] = cpu_to_le64(
- 			 FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
- 			 FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
-@@ -1304,9 +1337,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 			 STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2AA64 |
- 			 STRTAB_STE_2_S2R);
- 
--		dst[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
-+		dst[3] = cpu_to_le64(vttbr);
- 
- 		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS);
-+	} else {
-+		dst[2] = 0;
-+		dst[3] = 0;
- 	}
- 
- 	if (master->ats_enabled)
-@@ -1982,6 +2018,14 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 		return 0;
- 	}
- 
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED &&
-+	    (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1) ||
-+	     !(smmu->features & ARM_SMMU_FEAT_TRANS_S2))) {
-+		dev_info(smmu_domain->smmu->dev,
-+			 "does not implement two stages\n");
++	if (cfg->format != IOMMU_PASID_FORMAT_SMMUV3)
 +		return -EINVAL;
-+	}
 +
- 	/* Restrict the stage to what we can actually support */
- 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
- 		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 07f59252dd21..269779dee8d1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -206,6 +206,7 @@
- #define STRTAB_STE_0_CFG_BYPASS		4
- #define STRTAB_STE_0_CFG_S1_TRANS	5
- #define STRTAB_STE_0_CFG_S2_TRANS	6
-+#define STRTAB_STE_0_CFG_NESTED		7
- 
- #define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
- #define STRTAB_STE_0_S1FMT_LINEAR	0
-@@ -682,6 +683,7 @@ struct arm_smmu_domain {
- 	enum arm_smmu_domain_stage	stage;
- 	struct arm_smmu_s1_cfg	s1_cfg;
- 	struct arm_smmu_s2_cfg	s2_cfg;
-+	bool				abort;
- 
- 	struct iommu_domain		domain;
- 
++	if (cfg->version != PASID_TABLE_CFG_VERSION_1 ||
++	    cfg->vendor_data.smmuv3.version != PASID_TABLE_SMMUV3_CFG_VERSION_1)
++		return -EINVAL;
++
++	mutex_lock(&smmu_domain->init_mutex);
++
++	smmu = smmu_domain->smmu;
++
++	if (!smmu)
++		goto out;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto out;
++
++	switch (cfg->config) {
++	case IOMMU_PASID_CONFIG_ABORT:
++		smmu_domain->s1_cfg.set = false;
++		smmu_domain->abort = true;
++		break;
++	case IOMMU_PASID_CONFIG_BYPASS:
++		smmu_domain->s1_cfg.set = false;
++		smmu_domain->abort = false;
++		break;
++	case IOMMU_PASID_CONFIG_TRANSLATE:
++		/* we do not support S1 <-> S1 transitions */
++		if (smmu_domain->s1_cfg.set)
++			goto out;
++
++		/*
++		 * we currently support a single CD so s1fmt and s1dss
++		 * fields are also ignored
++		 */
++		if (cfg->pasid_bits)
++			goto out;
++
++		smmu_domain->s1_cfg.cdcfg.cdtab_dma = cfg->base_ptr;
++		smmu_domain->s1_cfg.set = true;
++		smmu_domain->abort = false;
++		break;
++	default:
++		goto out;
++	}
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(master, &smmu_domain->devices, domain_head)
++		arm_smmu_install_ste_for_dev(master);
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++	ret = 0;
++out:
++	mutex_unlock(&smmu_domain->init_mutex);
++	return ret;
++}
++
++static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master *master;
++	unsigned long flags;
++
++	mutex_lock(&smmu_domain->init_mutex);
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto unlock;
++
++	smmu_domain->s1_cfg.set = false;
++	smmu_domain->abort = true;
++
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(master, &smmu_domain->devices, domain_head)
++		arm_smmu_install_ste_for_dev(master);
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++
++unlock:
++	mutex_unlock(&smmu_domain->init_mutex);
++}
++
+ static bool arm_smmu_dev_has_feature(struct device *dev,
+ 				     enum iommu_dev_features feat)
+ {
+@@ -2742,6 +2829,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
++	.attach_pasid_table	= arm_smmu_attach_pasid_table,
++	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+ 	.dev_has_feat		= arm_smmu_dev_has_feature,
+ 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+ 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
 -- 
 2.21.3
 
