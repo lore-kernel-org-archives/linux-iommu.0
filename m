@@ -2,94 +2,78 @@ Return-Path: <SRS0=wYjh=EZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD404C6369E
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 930D3C63697
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:10:59 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 362602078E
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:03:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fcjQdYnX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 362602078E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 076822468B
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:10:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 076822468B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8AA2587450;
-	Thu, 19 Nov 2020 17:03:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 732BD87450;
+	Thu, 19 Nov 2020 17:10:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mzNJpOLQSByD; Thu, 19 Nov 2020 17:03:11 +0000 (UTC)
+	with ESMTP id M5GVT12p-siq; Thu, 19 Nov 2020 17:10:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 322E48742C;
-	Thu, 19 Nov 2020 17:03:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AFE728744C;
+	Thu, 19 Nov 2020 17:10:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D4E3C1825;
-	Thu, 19 Nov 2020 17:03:11 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2308AC0891
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:03:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99560C163C;
+	Thu, 19 Nov 2020 17:10:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B00A9C0891
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:10:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0689020479
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:03:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8F5588744D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:10:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BnY-93NG72I7 for <iommu@lists.linux-foundation.org>;
- Thu, 19 Nov 2020 17:03:08 +0000 (UTC)
+ with ESMTP id H0VX9SdYCNqe for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Nov 2020 17:10:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by silver.osuosl.org (Postfix) with ESMTPS id 825E12046A
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:03:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1605805387;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=s+vcXswPPyHcHAAVc0M1ASPG390ljEeLpzZYdPJy6Xw=;
- b=fcjQdYnX8+shzSeZ9GSMBHHQqfQnRhHb6uiqBUQqC97ztG0bviSQod9+uz67BGgvFmsbFb
- dg6YW4eBR7+PHCpHV5i8WUEfGZHHMehDgyHPxb4TzJaGDayuliRvknqZWF7R0s29GP3Qzu
- Fj2NT1C+l0Tt6W9OdfFDvVcUtF1Df8g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-186-e0-fHSz0P4OKym8_uQlcQQ-1; Thu, 19 Nov 2020 12:03:01 -0500
-X-MC-Unique: e0-fHSz0P4OKym8_uQlcQQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A38B58744C
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:10:55 +0000 (UTC)
+Received: from gaia (unknown [2.26.170.190])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B5A0A91207;
- Thu, 19 Nov 2020 17:02:58 +0000 (UTC)
-Received: from [10.36.115.104] (ovpn-115-104.ams2.redhat.com [10.36.115.104])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 5E8E65D6AD;
- Thu, 19 Nov 2020 17:02:50 +0000 (UTC)
-Subject: Re: [PATCH v13 01/15] iommu: Introduce attach/detach_pasid_table API
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20201118112151.25412-1-eric.auger@redhat.com>
- <20201118112151.25412-2-eric.auger@redhat.com>
- <20201118081940.3192ac1c@jacob-builder>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <002fb3b6-99d4-2c3c-d86d-d290c30ba936@redhat.com>
-Date: Thu, 19 Nov 2020 18:02:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ by mail.kernel.org (Postfix) with ESMTPSA id 3F167241A6;
+ Thu, 19 Nov 2020 17:10:52 +0000 (UTC)
+Date: Thu, 19 Nov 2020 17:10:49 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH v6 1/7] arm64: mm: Move reserve_crashkernel() into
+ mem_init()
+Message-ID: <20201119171048.GD4376@gaia>
+References: <20201103173159.27570-1-nsaenzjulienne@suse.de>
+ <20201103173159.27570-2-nsaenzjulienne@suse.de>
+ <e60d643e-4879-3fc3-737d-2c145332a6d7@arm.com>
+ <88c69ac0c9d7e144c80cebc7e9f82b000828e7f5.camel@suse.de>
+ <X6rZRvWyigCJxAVW@trantor>
+ <b5336064145a30aadcfdb8920226a8c63f692695.camel@suse.de>
+ <20201113112901.GA3212@gaia>
+ <ba343af12fc60bce36837cc090a39c9e42457788.camel@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <20201118081940.3192ac1c@jacob-builder>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Cc: jean-philippe@linaro.org, alex.williamson@redhat.com, kvm@vger.kernel.org,
- maz@kernel.org, linux-kernel@vger.kernel.org, vivek.gautam@arm.com,
- iommu@lists.linux-foundation.org, zhangfei.gao@linaro.org,
- robin.murphy@arm.com, will@kernel.org, kvmarm@lists.cs.columbia.edu,
- eric.auger.pro@gmail.com
+Content-Disposition: inline
+In-Reply-To: <ba343af12fc60bce36837cc090a39c9e42457788.camel@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: devicetree@vger.kernel.org, Chen Zhou <chenzhou10@huawei.com>,
+ robin.murphy@arm.com, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ ardb@kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ James Morse <james.morse@arm.com>, linux-rpi-kernel@lists.infradead.org,
+ guohanjun@huawei.com, will@kernel.org, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,278 +91,144 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
-On 11/18/20 5:19 PM, Jacob Pan wrote:
-> Hi Eric,
+On Thu, Nov 19, 2020 at 03:09:58PM +0100, Nicolas Saenz Julienne wrote:
+> On Fri, 2020-11-13 at 11:29 +0000, Catalin Marinas wrote:
+> [...]
+> > > > > Let me stress that knowing the DMA constraints in the system before reserving
+> > > > > crashkernel's regions is necessary if we ever want it to work seamlessly on all
+> > > > > platforms. Be it small stuff like the Raspberry Pi or huge servers with TB of
+> > > > > memory.
+> > > > 
+> > > > Indeed. So we have 3 options (so far):
+> > > > 
+> > > > 1. Allow the crashkernel reservation to go into the linear map but set
+> > > >    it to invalid once allocated.
+> > > > 
+> > > > 2. Parse the flattened DT (not sure what we do with ACPI) before
+> > > >    creating the linear map. We may have to rely on some SoC ID here
+> > > >    instead of actual DMA ranges.
+> > > > 
+> > > > 3. Assume the smallest ZONE_DMA possible on arm64 (1GB) for crashkernel
+> > > >    reservations and not rely on arm64_dma_phys_limit in
+> > > >    reserve_crashkernel().
+> > > > 
+> > > > I think (2) we tried hard to avoid. Option (3) brings us back to the
+> > > > issues we had on large crashkernel reservations regressing on some
+> > > > platforms (though it's been a while since, they mostly went quiet ;)).
+> > > > However, with Chen's crashkernel patches we end up with two
+> > > > reservations, one in the low DMA zone and one higher, potentially above
+> > > > 4GB. Having a fixed 1GB limit wouldn't be any worse for crashkernel
+> > > > reservations than what we have now.
+> > > > 
+> > > > If (1) works, I'd go for it (James knows this part better than me),
+> > > > otherwise we can go for (3).
+> > > 
+> > > Overall, I'd prefer (1) as well, and I'd be happy to have a got at it. If not
+> > > I'll append (3) in this series.
+> > 
+> > I think for 1 we could also remove the additional KEXEC_CORE checks,
+> > something like below, untested:
+> > 
+> > diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+> > index 3e5a6913acc8..27ab609c1c0c 100644
+> > --- a/arch/arm64/mm/mmu.c
+> > +++ b/arch/arm64/mm/mmu.c
+> > @@ -477,7 +477,8 @@ static void __init map_mem(pgd_t *pgdp)
+> >  	int flags = 0;
+> >  	u64 i;
+> >  
+> > -	if (rodata_full || debug_pagealloc_enabled())
+> > +	if (rodata_full || debug_pagealloc_enabled() ||
+> > +	    IS_ENABLED(CONFIG_KEXEC_CORE))
+> >  		flags = NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+> >  
+> >  	/*
+> > @@ -487,11 +488,6 @@ static void __init map_mem(pgd_t *pgdp)
+> >  	 * the following for-loop
+> >  	 */
+> >  	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+> > -#ifdef CONFIG_KEXEC_CORE
+> > -	if (crashk_res.end)
+> > -		memblock_mark_nomap(crashk_res.start,
+> > -				    resource_size(&crashk_res));
+> > -#endif
+> >  
+> >  	/* map all the memory banks */
+> >  	for_each_mem_range(i, &start, &end) {
+> > @@ -518,21 +514,6 @@ static void __init map_mem(pgd_t *pgdp)
+> >  	__map_memblock(pgdp, kernel_start, kernel_end,
+> >  		       PAGE_KERNEL, NO_CONT_MAPPINGS);
+> >  	memblock_clear_nomap(kernel_start, kernel_end - kernel_start);
+> > -
+> > -#ifdef CONFIG_KEXEC_CORE
+> > -	/*
+> > -	 * Use page-level mappings here so that we can shrink the region
+> > -	 * in page granularity and put back unused memory to buddy system
+> > -	 * through /sys/kernel/kexec_crash_size interface.
+> > -	 */
+> > -	if (crashk_res.end) {
+> > -		__map_memblock(pgdp, crashk_res.start, crashk_res.end + 1,
+> > -			       PAGE_KERNEL,
+> > -			       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+> > -		memblock_clear_nomap(crashk_res.start,
+> > -				     resource_size(&crashk_res));
+> > -	}
+> > -#endif
+> >  }
+> >  
+> >  void mark_rodata_ro(void)
 > 
-> On Wed, 18 Nov 2020 12:21:37 +0100, Eric Auger <eric.auger@redhat.com>
-> wrote:
+> So as far as I'm concerned this is good enough for me. I took the time to
+> properly test crashkernel on RPi4 using the series, this patch, and another
+> small fix to properly update /proc/iomem.
 > 
->> In virtualization use case, when a guest is assigned
->> a PCI host device, protected by a virtual IOMMU on the guest,
->> the physical IOMMU must be programmed to be consistent with
->> the guest mappings. If the physical IOMMU supports two
->> translation stages it makes sense to program guest mappings
->> onto the first stage/level (ARM/Intel terminology) while the host
->> owns the stage/level 2.
->>
->> In that case, it is mandated to trap on guest configuration
->> settings and pass those to the physical iommu driver.
->>
->> This patch adds a new API to the iommu subsystem that allows
->> to set/unset the pasid table information.
->>
->> A generic iommu_pasid_table_config struct is introduced in
->> a new iommu.h uapi header. This is going to be used by the VFIO
->> user API.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
->> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
->> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> ---
->>
->> v12 -> v13:
->> - Fix config check
->>
->> v11 -> v12:
->> - add argsz, name the union
->> ---
->>  drivers/iommu/iommu.c      | 68 ++++++++++++++++++++++++++++++++++++++
->>  include/linux/iommu.h      | 21 ++++++++++++
->>  include/uapi/linux/iommu.h | 54 ++++++++++++++++++++++++++++++
->>  3 files changed, 143 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index b53446bb8c6b..978fe34378fb 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2171,6 +2171,74 @@ int iommu_uapi_sva_unbind_gpasid(struct
->> iommu_domain *domain, struct device *dev }
->>  EXPORT_SYMBOL_GPL(iommu_uapi_sva_unbind_gpasid);
->>  
->> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +			     struct iommu_pasid_table_config *cfg)
->> +{
->> +	if (unlikely(!domain->ops->attach_pasid_table))
->> +		return -ENODEV;
->> +
->> +	return domain->ops->attach_pasid_table(domain, cfg);
->> +}
->> +
->> +int iommu_uapi_attach_pasid_table(struct iommu_domain *domain,
->> +				  void __user *uinfo)
->> +{
->> +	struct iommu_pasid_table_config pasid_table_data = { 0 };
->> +	u32 minsz;
->> +
->> +	if (unlikely(!domain->ops->attach_pasid_table))
->> +		return -ENODEV;
->> +
->> +	/*
->> +	 * No new spaces can be added before the variable sized union,
->> the
->> +	 * minimum size is the offset to the union.
->> +	 */
->> +	minsz = offsetof(struct iommu_pasid_table_config, vendor_data);
->> +
->> +	/* Copy minsz from user to get flags and argsz */
->> +	if (copy_from_user(&pasid_table_data, uinfo, minsz))
->> +		return -EFAULT;
->> +
->> +	/* Fields before the variable size union are mandatory */
->> +	if (pasid_table_data.argsz < minsz)
->> +		return -EINVAL;
->> +
->> +	/* PASID and address granu require additional info beyond minsz
->> */
->> +	if (pasid_table_data.version != PASID_TABLE_CFG_VERSION_1)
->> +		return -EINVAL;
->> +	if (pasid_table_data.format == IOMMU_PASID_FORMAT_SMMUV3 &&
->> +	    pasid_table_data.argsz <
->> +		offsetofend(struct iommu_pasid_table_config,
->> vendor_data.smmuv3))
->> +		return -EINVAL;
->> +
->> +	/*
->> +	 * User might be using a newer UAPI header which has a larger
->> data
->> +	 * size, we shall support the existing flags within the current
->> +	 * size. Copy the remaining user data _after_ minsz but not more
->> +	 * than the current kernel supported size.
->> +	 */
->> +	if (copy_from_user((void *)&pasid_table_data + minsz, uinfo +
->> minsz,
->> +			   min_t(u32, pasid_table_data.argsz,
->> sizeof(pasid_table_data)) - minsz))
->> +		return -EFAULT;
->> +
->> +	/* Now the argsz is validated, check the content */
->> +	if (pasid_table_data.config < IOMMU_PASID_CONFIG_TRANSLATE ||
->> +	    pasid_table_data.config > IOMMU_PASID_CONFIG_ABORT)
->> +		return -EINVAL;
->> +
->> +	return domain->ops->attach_pasid_table(domain,
->> &pasid_table_data); +}
->> +EXPORT_SYMBOL_GPL(iommu_uapi_attach_pasid_table);
->> +
->> +void iommu_detach_pasid_table(struct iommu_domain *domain)
->> +{
->> +	if (unlikely(!domain->ops->detach_pasid_table))
->> +		return;
->> +
->> +	domain->ops->detach_pasid_table(domain);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
->> +
->>  static void __iommu_detach_device(struct iommu_domain *domain,
->>  				  struct device *dev)
->>  {
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index b95a6f8db6ff..464fcbecf841 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -223,6 +223,8 @@ struct iommu_iotlb_gather {
->>   * @cache_invalidate: invalidate translation caches
->>   * @sva_bind_gpasid: bind guest pasid and mm
->>   * @sva_unbind_gpasid: unbind guest pasid and mm
->> + * @attach_pasid_table: attach a pasid table
->> + * @detach_pasid_table: detach the pasid table
->>   * @def_domain_type: device default domain type, return value:
->>   *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
->>   *		- IOMMU_DOMAIN_DMA: must use a dma domain
->> @@ -287,6 +289,9 @@ struct iommu_ops {
->>  				      void *drvdata);
->>  	void (*sva_unbind)(struct iommu_sva *handle);
->>  	u32 (*sva_get_pasid)(struct iommu_sva *handle);
->> +	int (*attach_pasid_table)(struct iommu_domain *domain,
->> +				  struct iommu_pasid_table_config *cfg);
->> +	void (*detach_pasid_table)(struct iommu_domain *domain);
->>  
->>  	int (*page_response)(struct device *dev,
->>  			     struct iommu_fault_event *evt,
->> @@ -434,6 +439,11 @@ extern int iommu_uapi_sva_unbind_gpasid(struct
->> iommu_domain *domain, struct device *dev, void __user *udata);
->>  extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
->>  				   struct device *dev, ioasid_t pasid);
->> +extern int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +				    struct iommu_pasid_table_config
->> *cfg); +extern int iommu_uapi_attach_pasid_table(struct iommu_domain
->> *domain,
->> +					 void __user *udata);
->> +extern void iommu_detach_pasid_table(struct iommu_domain *domain);
->>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->>  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->>  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
->> @@ -639,6 +649,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device
->> *dev, void iommu_sva_unbind_device(struct iommu_sva *handle);
->>  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
->>  
->> +
->>  #else /* CONFIG_IOMMU_API */
->>  
->>  struct iommu_ops {};
->> @@ -1020,6 +1031,16 @@ iommu_aux_get_pasid(struct iommu_domain *domain,
->> struct device *dev) return -ENODEV;
->>  }
->>  
->> +static inline
->> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->> +			     struct iommu_pasid_table_config *cfg)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->> +static inline
->> +void iommu_detach_pasid_table(struct iommu_domain *domain) {}
->> +
->>  static inline struct iommu_sva *
->>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void
->> *drvdata) {
->> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->> index e1d9e75f2c94..082d758dd016 100644
->> --- a/include/uapi/linux/iommu.h
->> +++ b/include/uapi/linux/iommu.h
->> @@ -338,4 +338,58 @@ struct iommu_gpasid_bind_data {
->>  	} vendor;
->>  };
->>  
->> +/**
->> + * struct iommu_pasid_smmuv3 - ARM SMMUv3 Stream Table Entry stage 1
->> related
->> + *     information
->> + * @version: API version of this structure
->> + * @s1fmt: STE s1fmt (format of the CD table: single CD, linear table
->> + *         or 2-level table)
->> + * @s1dss: STE s1dss (specifies the behavior when @pasid_bits != 0
->> + *         and no PASID is passed along with the incoming transaction)
->> + * @padding: reserved for future use (should be zero)
->> + *
->> + * The PASID table is referred to as the Context Descriptor (CD) table
->> on ARM
->> + * SMMUv3. Please refer to the ARM SMMU 3.x spec (ARM IHI 0070A) for full
->> + * details.
->> + */
->> +struct iommu_pasid_smmuv3 {
->> +#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
->> +	__u32	version;
->> +	__u8	s1fmt;
->> +	__u8	s1dss;
->> +	__u8	padding[2];
->> +};
->> +
->> +/**
->> + * struct iommu_pasid_table_config - PASID table data used to bind guest
->> PASID
->> + *     table to the host IOMMU
->> + * @argsz: User filled size of this data
->> + * @version: API version to prepare for future extensions
->> + * @format: format of the PASID table
->> + * @base_ptr: guest physical address of the PASID table
->> + * @pasid_bits: number of PASID bits used in the PASID table
->> + * @config: indicates whether the guest translation stage must
->> + *          be translated, bypassed or aborted.
->> + * @padding: reserved for future use (should be zero)
->> + * @vendor_data.smmuv3: table information when @format is
->> + * %IOMMU_PASID_FORMAT_SMMUV3
->> + */
->> +struct iommu_pasid_table_config {
->> +	__u32	argsz;
->> +#define PASID_TABLE_CFG_VERSION_1 1
->> +	__u32	version;
->> +#define IOMMU_PASID_FORMAT_SMMUV3	1
->> +	__u32	format;
-> There will be a u32 gap here, right? perhaps another padding?
-Yes you're right (as per
-https://lists.cs.columbia.edu/pipermail/kvmarm/2019-January/034414.html).
-I will add some padding here and add some additional padding below.
+> I'll send v7 soon, but before, James (or anyone for that matter) any obvious
+> push-back to Catalin's solution?
 
-Thanks
+I talked to James earlier and he was suggesting that we check the
+command line for any crashkernel reservations and only disable block
+mappings in that case, see the diff below on top of the one I already
+sent (still testing it).
 
-Eric
-> 
->> +	__u64	base_ptr;
->> +	__u8	pasid_bits;
->> +#define IOMMU_PASID_CONFIG_TRANSLATE	1
->> +#define IOMMU_PASID_CONFIG_BYPASS	2
->> +#define IOMMU_PASID_CONFIG_ABORT	3
->> +	__u8	config;
->> +	__u8    padding[2];
->> +	union {
->> +		struct iommu_pasid_smmuv3 smmuv3;
->> +	} vendor_data;
->> +};
->> +
->>  #endif /* _UAPI_IOMMU_H */
-> 
-> 
-> Thanks,
-> 
-> Jacob
-> 
+If you don't have any other changes for v7, I'm happy to pick v6 up on
+top of the no-block-mapping fix.
 
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index ed71b1c305d7..acdec0c67d3b 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -469,6 +469,21 @@ void __init mark_linear_text_alias_ro(void)
+ 			    PAGE_KERNEL_RO);
+ }
+ 
++static bool crash_mem_map __initdata;
++
++static int __init enable_crash_mem_map(char *arg)
++{
++	/*
++	 * Proper parameter parsing is done by reserve_crashkernel(). We only
++	 * need to know if the linear map has to avoid block mappings so that
++	 * the crashkernel reservations can be unmapped later.
++	 */
++	crash_mem_map = false;
++
++	return 0;
++}
++early_param("crashkernel", enable_crash_mem_map);
++
+ static void __init map_mem(pgd_t *pgdp)
+ {
+ 	phys_addr_t kernel_start = __pa_symbol(_stext);
+@@ -477,8 +492,7 @@ static void __init map_mem(pgd_t *pgdp)
+ 	int flags = 0;
+ 	u64 i;
+ 
+-	if (rodata_full || debug_pagealloc_enabled() ||
+-	    IS_ENABLED(CONFIG_KEXEC_CORE))
++	if (rodata_full || debug_pagealloc_enabled() || crash_mem_map)
+ 		flags = NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+ 
+ 	/*
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
