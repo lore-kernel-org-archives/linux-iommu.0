@@ -2,75 +2,79 @@ Return-Path: <SRS0=wYjh=EZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C429C2D0E4
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 05:58:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D936C388F9
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:18:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D657622227
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 05:58:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D657622227
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B080E246A5
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:18:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B080E246A5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4527C86918;
-	Thu, 19 Nov 2020 05:58:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 22E6C23039;
+	Thu, 19 Nov 2020 06:18:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3Z3kF4o9z2VL; Thu, 19 Nov 2020 05:58:39 +0000 (UTC)
+	with ESMTP id 8FheMKpsyfwV; Thu, 19 Nov 2020 06:18:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 993C4868FF;
-	Thu, 19 Nov 2020 05:58:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1E283204DF;
+	Thu, 19 Nov 2020 06:18:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80470C0800;
-	Thu, 19 Nov 2020 05:58:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 05E84C0891;
+	Thu, 19 Nov 2020 06:18:54 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CEACBC07FF
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 05:58:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D7C7C07FF
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:18:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B6A9186968
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 05:58:37 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id ED8F5869A5
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:18:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KIAn7bR-AgIx for <iommu@lists.linux-foundation.org>;
- Thu, 19 Nov 2020 05:58:37 +0000 (UTC)
+ with ESMTP id HQAcJJv__H_m for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Nov 2020 06:18:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CA58786943
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 05:58:36 +0000 (UTC)
-IronPort-SDR: WLeOqJvGNqE6GeRQau1fnxXIcVvKQh+vs5Zs0DbCvLYeXdGWWFn8mqusFIfcwCrxO7ywr2aJHb
- /cGbTA7pwrTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="235383092"
-X-IronPort-AV: E=Sophos;i="5.77,489,1596524400"; d="scan'208";a="235383092"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Nov 2020 21:58:35 -0800
-IronPort-SDR: s9meoi1P7Q22K3FC62cjIaPmRut2VXtfLVImt0gET1ADZL/bjcsfFM1n2JtFjfqqbUOhQ9mWcN
- MYAabKsc8Rtg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,489,1596524400"; d="scan'208";a="431120296"
-Received: from allen-box.sh.intel.com ([10.239.159.28])
- by fmsmga001.fm.intel.com with ESMTP; 18 Nov 2020 21:58:33 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/1] iommu/vt-d: Fix compile error with CONFIG_PCI_ATS not set
-Date: Thu, 19 Nov 2020 13:51:19 +0800
-Message-Id: <20201119055119.2862701-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 187B88698F
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:18:49 +0000 (UTC)
+X-UUID: c867fb6f2b3f4e09acb102905d195901-20201119
+X-UUID: c867fb6f2b3f4e09acb102905d195901-20201119
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1304192711; Thu, 19 Nov 2020 14:18:44 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 19 Nov 2020 14:18:43 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 19 Nov 2020 14:18:42 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 0/6] MediaTek IOMMU improve tlb flush performance in
+ map/unmap
+Date: Thu, 19 Nov 2020 14:18:30 +0800
+Message-ID: <20201119061836.15238-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Cc: Thomas Gleixner <tglx@linutronix.de>,
- Geert Uytterhoeven <geert@linux-m68k.org>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, jun.wen@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,37 +87,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rml4IHRoZSBjb21waWxlIGVycm9yIGJlbG93IChDT05GSUdfUENJX0FUUyBub3Qgc2V0KToKCmRy
-aXZlcnMvaW9tbXUvaW50ZWwvZG1hci5jOiBJbiBmdW5jdGlvbiDigJh2Zl9pbmhlcml0X21zaV9k
-b21haW7igJk6CmRyaXZlcnMvaW9tbXUvaW50ZWwvZG1hci5jOjMzODo1OTogZXJyb3I6IOKAmHN0
-cnVjdCBwY2lfZGV24oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYcGh5c2Zu4oCZOyBkaWQgeW91
-IG1lYW4g4oCYaXNfcGh5c2Zu4oCZPwogIDMzOCB8ICBkZXZfc2V0X21zaV9kb21haW4oJnBkZXYt
-PmRldiwgZGV2X2dldF9tc2lfZG9tYWluKCZwZGV2LT5waHlzZm4tPmRldikpOwogICAgICB8ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBe
-fn5+fn4KICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgaXNfcGh5c2ZuCgpMaW5rOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9s
-aW51eC1pb21tdS9DQU11SE1kWEE3d2ZKb3ZtZlNIMm5iQWhOMGNQeUNpRkhvZFR2ZzRhOEhtOXJ4
-NURqLXdAbWFpbC5nbWFpbC5jb20vCkZpeGVzOiBmZjgyODcyOWJlNDQ2ICgiaW9tbXUvdnQtZDog
-Q3VyZSBWRiBpcnFkb21haW4gaGlja3VwIikKQ2M6IFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51
-dHJvbml4LmRlPgpSZXBvcnRlZC1ieTogR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVydEBsaW51eC1t
-NjhrLm9yZz4KU2lnbmVkLW9mZi1ieTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNv
-bT4KLS0tCiBkcml2ZXJzL2lvbW11L2ludGVsL2RtYXIuYyB8IDQgKysrLQogMSBmaWxlIGNoYW5n
-ZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aW9tbXUvaW50ZWwvZG1hci5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC9kbWFyLmMKaW5kZXggYjJl
-ODA0NDczMjA5Li4xMTMxOWU0ZGNlNGEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwv
-ZG1hci5jCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvZG1hci5jCkBAIC0zMzUsNyArMzM1LDkg
-QEAgc3RhdGljIHZvaWQgIGRtYXJfcGNpX2J1c19kZWxfZGV2KHN0cnVjdCBkbWFyX3BjaV9ub3Rp
-ZnlfaW5mbyAqaW5mbykKIAogc3RhdGljIGlubGluZSB2b2lkIHZmX2luaGVyaXRfbXNpX2RvbWFp
-bihzdHJ1Y3QgcGNpX2RldiAqcGRldikKIHsKLQlkZXZfc2V0X21zaV9kb21haW4oJnBkZXYtPmRl
-diwgZGV2X2dldF9tc2lfZG9tYWluKCZwZGV2LT5waHlzZm4tPmRldikpOworCXN0cnVjdCBwY2lf
-ZGV2ICpwaHlzZm4gPSBwY2lfcGh5c2ZuKHBkZXYpOworCisJZGV2X3NldF9tc2lfZG9tYWluKCZw
-ZGV2LT5kZXYsIGRldl9nZXRfbXNpX2RvbWFpbigmcGh5c2ZuLT5kZXYpKTsKIH0KIAogc3RhdGlj
-IGludCBkbWFyX3BjaV9idXNfbm90aWZpZXIoc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpuYiwKLS0g
-CjIuMjUuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+This patchset is to improve tlb flushing performance in iommu_map/unmap
+for MediaTek IOMMU.
+
+For iommu_map, currently MediaTek IOMMU use IO_PGTABLE_QUIRK_TLBI_ON_MAP
+to do tlb_flush for each a memory chunk. this is so unnecessary. we could
+improve it by tlb flushing one time at the end of iommu_map.
+
+For iommu_unmap, currently we have already improve this performance by
+gather. But the current gather should take care its granule size. if the
+granule size is different, it will do tlb flush and gather again. Our HW
+don't care about granule size. thus I add a flag(granule_ignore) for this
+case.
+
+After this patchset, we could achieve only tlb flushing once in iommu_map
+and iommu_unmap.
+
+Regardless of sg, for each a segment, I did a simple test:
+  
+  size = 20 * SZ_1M;
+  /* the worst case, all are 4k mapping. */
+  ret = iommu_map(domain, 0x5bb02000, 0x123f1000, size, IOMMU_READ);
+  iommu_unmap(domain, 0x5bb02000, size);
+
+This is the comparing time(unit is us):
+              original-time  after-improve
+   map-20M    59943           2347
+   unmap-20M  264             36
+
+This patchset also flush tlb once in the iommu_map_sg case.
+
+patch [1/6][2/6][3/6] are for map while the others are for unmap.
+
+change note:
+v2: Refactor all the code.
+    base on v5.10-rc1.
+
+v1: https://lore.kernel.org/linux-iommu/20201019113100.23661-1-chao.hao@mediatek.com/
+
+Yong Wu (6):
+  iommu: Move iotlb_sync_map out from __iommu_map
+  iommu: Add iova and size as parameters in iommu_iotlb_map
+  iommu/mediatek: Add iotlb_sync_map to sync whole the iova range
+  iommu: Add granule_ignore when tlb gather
+  iommu/mediatek: Enable granule_ignore for unmap
+  iommu/mediatek: Convert tlb_flush_walk to gather_add_page
+
+ drivers/iommu/iommu.c      | 24 +++++++++++++++++++-----
+ drivers/iommu/mtk_iommu.c  | 32 ++++++++++++++++++++++++++------
+ drivers/iommu/tegra-gart.c |  3 ++-
+ include/linux/iommu.h      |  7 +++++--
+ 4 files changed, 52 insertions(+), 14 deletions(-)
+
+-- 
+2.18.0
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
