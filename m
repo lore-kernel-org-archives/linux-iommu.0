@@ -2,70 +2,75 @@ Return-Path: <SRS0=wYjh=EZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D14ABC63697
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:54:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB31C63697
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 18:18:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66674246CA
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 17:54:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66674246CA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id BB0C824199
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 18:18:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB0C824199
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 0C950273CF;
-	Thu, 19 Nov 2020 17:54:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3DDCC86BA4;
+	Thu, 19 Nov 2020 18:18:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yC8K-Sv7mtjr; Thu, 19 Nov 2020 17:54:19 +0000 (UTC)
+	with ESMTP id 9q56-q_SB1y7; Thu, 19 Nov 2020 18:18:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id AE33827428;
-	Thu, 19 Nov 2020 17:54:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7F8F086B8D;
+	Thu, 19 Nov 2020 18:18:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE18C163C;
-	Thu, 19 Nov 2020 17:54:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 667DFC1825;
+	Thu, 19 Nov 2020 18:18:32 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4474AC0891
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:54:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4911AC0891
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 18:18:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3CAF386E72
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:54:16 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2FA6686D90
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 18:18:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PtvAIld2nWcp for <iommu@lists.linux-foundation.org>;
- Thu, 19 Nov 2020 17:54:15 +0000 (UTC)
+ with ESMTP id PZpsdcRm3Enc for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Nov 2020 18:18:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0778B86E8B
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 17:54:15 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 96637AC22;
- Thu, 19 Nov 2020 17:54:13 +0000 (UTC)
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: robh+dt@kernel.org, catalin.marinas@arm.com, hch@lst.de, ardb@kernel.org,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- Paul Walmsley <paul.walmsley@sifive.com>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>
-Subject: [PATCH v7 7/7] mm: Remove examples from enum zone_type comment
-Date: Thu, 19 Nov 2020 18:53:59 +0100
-Message-Id: <20201119175400.9995-8-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201119175400.9995-1-nsaenzjulienne@suse.de>
-References: <20201119175400.9995-1-nsaenzjulienne@suse.de>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id B580A86D8D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 18:18:29 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DCDF11595;
+ Thu, 19 Nov 2020 10:18:28 -0800 (PST)
+Received: from [192.168.2.21] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1DD923F70D;
+ Thu, 19 Nov 2020 10:18:25 -0800 (PST)
+Subject: Re: [PATCH v6 1/7] arm64: mm: Move reserve_crashkernel() into
+ mem_init()
+To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+References: <20201103173159.27570-1-nsaenzjulienne@suse.de>
+ <20201103173159.27570-2-nsaenzjulienne@suse.de>
+ <e60d643e-4879-3fc3-737d-2c145332a6d7@arm.com>
+ <88c69ac0c9d7e144c80cebc7e9f82b000828e7f5.camel@suse.de>
+From: James Morse <james.morse@arm.com>
+Message-ID: <f15ad06d-faa8-65fc-6fc1-d5c77115b1f1@arm.com>
+Date: Thu, 19 Nov 2020 18:18:23 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-mm@kvack.org, will@kernel.org,
- jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
- linux-rpi-kernel@lists.infradead.org, guohanjun@huawei.com,
- linux-riscv@lists.infradead.org, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <88c69ac0c9d7e144c80cebc7e9f82b000828e7f5.camel@suse.de>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org, catalin.marinas@arm.com,
+ linux-kernel@vger.kernel.org, jeremy.linton@arm.com, ardb@kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-rpi-kernel@lists.infradead.org, guohanjun@huawei.com, will@kernel.org,
+ hch@lst.de, linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,51 +88,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We can't really list every setup in common code. On top of that they are
-unlikely to stay true for long as things change in the arch trees
-independently of this comment.
+Hi,
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/mmzone.h | 20 --------------------
- 1 file changed, 20 deletions(-)
+(sorry for the late response)
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 8b074e2ba12c..15132adaa233 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -355,26 +355,6 @@ enum zone_type {
- 	 * DMA mask is assumed when ZONE_DMA32 is defined. Some 64-bit
- 	 * platforms may need both zones as they support peripherals with
- 	 * different DMA addressing limitations.
--	 *
--	 * Some examples:
--	 *
--	 *  - i386 and x86_64 have a fixed 16M ZONE_DMA and ZONE_DMA32 for the
--	 *    rest of the lower 4G.
--	 *
--	 *  - arm only uses ZONE_DMA, the size, up to 4G, may vary depending on
--	 *    the specific device.
--	 *
--	 *  - arm64 has a fixed 1G ZONE_DMA and ZONE_DMA32 for the rest of the
--	 *    lower 4G.
--	 *
--	 *  - powerpc only uses ZONE_DMA, the size, up to 2G, may vary
--	 *    depending on the specific device.
--	 *
--	 *  - s390 uses ZONE_DMA fixed to the lower 2G.
--	 *
--	 *  - ia64 and riscv only use ZONE_DMA32.
--	 *
--	 *  - parisc uses neither.
- 	 */
- #ifdef CONFIG_ZONE_DMA
- 	ZONE_DMA,
--- 
-2.29.2
+On 06/11/2020 18:46, Nicolas Saenz Julienne wrote:
+> On Thu, 2020-11-05 at 16:11 +0000, James Morse wrote:>> We also depend on this when skipping the checksum code in purgatory, which can be
+>> exceedingly slow.
+> 
+> This one I don't fully understand, so I'll lazily assume the prerequisite is
+> the same WRT how memory is mapped. :)
 
+The aim is its never normally mapped by the kernel. This is so that if we can't get rid of
+the secondary CPUs (e.g. they have IRQs masked), but they are busy scribbling all over
+memory, we have a rough guarantee that they aren't scribbling over the kdump kernel.
+
+We can skip the checksum in purgatory, as there is very little risk of the memory having
+been corrupted.
+
+
+> Ultimately there's also /sys/kernel/kexec_crash_size's handling. Same
+> prerequisite.
+
+Yeah, this lets you release PAGE_SIZEs back to the allocator, which means the
+marked-invalid page tables we have hidden there need to be PAGE_SIZE mappings.
+
+
+Thanks,
+
+James
+
+
+> Keeping in mind acpi_table_upgrade() and unflatten_device_tree() depend on
+> having the linear mappings available. I don't see any simple way of solving
+> this. Both moving the firmware description routines to use fixmap or correcting
+> the linear mapping further down the line so as to include kdump's regions, seem
+> excessive/impossible (feel free to correct me here). I'd be happy to hear
+> suggestions. Otherwise we're back to hard-coding the information as we
+> initially did.
+> 
+> Let me stress that knowing the DMA constraints in the system before reserving
+> crashkernel's regions is necessary if we ever want it to work seamlessly on all
+> platforms. Be it small stuff like the Raspberry Pi or huge servers with TB of
+> memory.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
