@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA24C63798
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:19:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C36C388F9
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:19:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 11CB4246A5
-	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:19:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11CB4246A5
+	by mail.kernel.org (Postfix) with ESMTPS id EA747246AD
+	for <iommu@archiver.kernel.org>; Thu, 19 Nov 2020 06:19:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA747246AD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 97A7F86B74;
-	Thu, 19 Nov 2020 06:19:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8CA538484B;
+	Thu, 19 Nov 2020 06:19:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mRUCkV4O966H; Thu, 19 Nov 2020 06:19:19 +0000 (UTC)
+	with ESMTP id chVpBnzuwV5L; Thu, 19 Nov 2020 06:19:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F000D86B68;
-	Thu, 19 Nov 2020 06:19:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1DE7B8086A;
+	Thu, 19 Nov 2020 06:19:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CFD56C0891;
-	Thu, 19 Nov 2020 06:19:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 162F4C1833;
+	Thu, 19 Nov 2020 06:19:25 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33199C07FF
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:17 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86E7EC07FF
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2F1D7834A1
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:17 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 766D383507
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lVAQ_sxCywjQ for <iommu@lists.linux-foundation.org>;
- Thu, 19 Nov 2020 06:19:16 +0000 (UTC)
+ with ESMTP id AeVKxsUtepim for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Nov 2020 06:19:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9359A8086A
- for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:16 +0000 (UTC)
-X-UUID: c699f1342b924e3fb40ede5a158461b5-20201119
-X-UUID: c699f1342b924e3fb40ede5a158461b5-20201119
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9497F8086A
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Nov 2020 06:19:22 +0000 (UTC)
+X-UUID: 83c82368deb24aa7914bdd595376d73a-20201119
+X-UUID: 83c82368deb24aa7914bdd595376d73a-20201119
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
  mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1858901902; Thu, 19 Nov 2020 14:19:14 +0800
+ with ESMTP id 2069203104; Thu, 19 Nov 2020 14:19:19 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 19 Nov 2020 14:19:12 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 19 Nov 2020 14:19:17 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 19 Nov 2020 14:19:11 +0800
+ Transport; Thu, 19 Nov 2020 14:19:16 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
  Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 4/6] iommu: Add granule_ignore when tlb gather
-Date: Thu, 19 Nov 2020 14:18:34 +0800
-Message-ID: <20201119061836.15238-5-yong.wu@mediatek.com>
+Subject: [PATCH v2 5/6] iommu/mediatek: Enable granule_ignore for unmap
+Date: Thu, 19 Nov 2020 14:18:35 +0800
+Message-ID: <20201119061836.15238-6-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20201119061836.15238-1-yong.wu@mediatek.com>
 References: <20201119061836.15238-1-yong.wu@mediatek.com>
@@ -93,43 +93,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a granule_ignore option when tlb gather for some HW which don't care
-about granule when it flush tlb.
+MediaTek IOMMU HW don't care about granule when it flush tlb.
+In order to flush tlb once when unmap, Enable this flag to gather all
+the iova chunk of unmap.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- include/linux/iommu.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 794d4085edd3..1aad32238510 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -171,6 +171,7 @@ enum iommu_dev_features {
-  * @start: IOVA representing the start of the range to be flushed
-  * @end: IOVA representing the end of the range to be flushed (exclusive)
-  * @pgsize: The interval at which to perform the flush
-+ * @granule_ignore: For tlb flushing that could be regardless of granule.
-  *
-  * This structure is intended to be updated by multiple calls to the
-  * ->unmap() function in struct iommu_ops before eventually being passed
-@@ -180,6 +181,7 @@ struct iommu_iotlb_gather {
- 	unsigned long		start;
- 	unsigned long		end;
- 	size_t			pgsize;
-+	bool			granule_ignore;
- };
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 8c2d4a225666..94786860bd84 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -432,6 +432,7 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
  
- /**
-@@ -544,7 +546,7 @@ static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
- 	 * a different granularity, then sync the TLB so that the gather
- 	 * structure can be rewritten.
- 	 */
--	if (gather->pgsize != size ||
-+	if ((!gather->granule_ignore && gather->pgsize != size) ||
- 	    end < gather->start || start > gather->end) {
- 		if (gather->pgsize)
- 			iommu_iotlb_sync(domain, gather);
++	gather->granule_ignore = true;
+ 	return dom->iop->unmap(dom->iop, iova, size, gather);
+ }
+ 
 -- 
 2.18.0
 
