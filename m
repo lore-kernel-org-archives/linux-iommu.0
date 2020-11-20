@@ -7,78 +7,78 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C60C5519F
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 13:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC975C5519F
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 13:39:47 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 955D12224C
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 13:09:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 955D12224C
+	by mail.kernel.org (Postfix) with ESMTPS id 0AE67222C3
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 13:39:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0AE67222C3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 87ADE86142;
-	Fri, 20 Nov 2020 13:09:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 94E2286EB1;
+	Fri, 20 Nov 2020 13:39:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x2FgAvUSMKz8; Fri, 20 Nov 2020 13:09:32 +0000 (UTC)
+	with ESMTP id YMurCN_Ex9bW; Fri, 20 Nov 2020 13:39:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 278BB860B2;
-	Fri, 20 Nov 2020 13:09:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1D36986EA2;
+	Fri, 20 Nov 2020 13:39:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A3AEC1825;
-	Fri, 20 Nov 2020 13:09:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 00A83C1825;
+	Fri, 20 Nov 2020 13:39:45 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 81E3EC0891
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:09:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C0301C0891
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:39:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 76BCA8711B
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:09:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A7B0A871AB
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:39:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T8XJ1KG7PmWV for <iommu@lists.linux-foundation.org>;
- Fri, 20 Nov 2020 13:09:28 +0000 (UTC)
+ with ESMTP id WPTit07ExFEM for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Nov 2020 13:39:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 3BA9A86EB0
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:09:28 +0000 (UTC)
-IronPort-SDR: I9cAHu6r/7D/omd6OaXTejJ3F4EGjxU2CE5kDuxM1fr5a3Ck2L4z9mJEAYD7vP8eTUU6VLDVV2
- ymcVQ1wm3aMQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="151315524"
-X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; d="scan'208";a="151315524"
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E5B39871A5
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 13:39:41 +0000 (UTC)
+IronPort-SDR: rnU/9/TXD6Da5BGkgxD8YntK86yArcTjl7QgccCbT/E3Ldqgqj+1aCjhJ38g2Z85kb9h4aalVv
+ MKMsqAFwB3yA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="159242245"
+X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; d="scan'208";a="159242245"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Nov 2020 05:09:27 -0800
-IronPort-SDR: I3ANYG+MCm06m++Y2u6acD5cf3iERnDnjFqIVuq0SR+sGh74o0LSTyupX/RF7RuWQa5fUOBs1i
- RQ9u9QTxqBzg==
-X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; d="scan'208";a="360437891"
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Nov 2020 05:39:41 -0800
+IronPort-SDR: zcG5jgBnh2cMRVml9SIPx982RrslX9yNsB54Wl4V064d/Q6eIpva3+ifWf9WrQEC7BZslaVb/d
+ ov8mxQPySJwQ==
+X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; d="scan'208";a="360447085"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.97])
  ([10.254.215.97])
  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Nov 2020 05:09:25 -0800
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Ashok Raj <ashok.raj@intel.com>, Joerg Roedel <joro@8bytes.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-References: <20200925190620.18732-1-ashok.raj@intel.com>
- <20200925190620.18732-2-ashok.raj@intel.com>
- <243ce89c33fe4b9da4c56ba35acebf81@huawei.com>
+ 20 Nov 2020 05:39:38 -0800
+To: Chris Wilson <chris@chris-wilson.co.uk>,
+ Christoph Hellwig <hch@infradead.org>, David Woodhouse
+ <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Tom Murphy <murphyt7@tcd.ie>, Will Deacon <will@kernel.org>
+References: <20201120101719.3172693-1-baolu.lu@linux.intel.com>
+ <160587504147.19364.17448380121292539865@build.alporthouse.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [Patch V8 1/3] iommu: Add support to change default domain of an
- iommu group
-Message-ID: <2bac8484-735d-db63-edef-3f0295417d9c@linux.intel.com>
-Date: Fri, 20 Nov 2020 21:09:23 +0800
+Subject: Re: [PATCH v5 0/7] Convert the intel iommu driver to the dma-iommu api
+Message-ID: <2ff7be9f-75e8-03a2-8030-92cb734faa61@linux.intel.com>
+Date: Fri, 20 Nov 2020 21:39:36 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <243ce89c33fe4b9da4c56ba35acebf81@huawei.com>
+In-Reply-To: <160587504147.19364.17448380121292539865@build.alporthouse.com>
 Content-Language: en-US
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>,
- Christoph Hellwig <hch@lst.de>
+Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ iommu@lists.linux-foundation.org, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,85 +96,46 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Shameer,
+Hi Chris,
 
-On 2020/11/20 19:27, Shameerali Kolothum Thodi wrote:
-> Hi Baolu/Ashok,
-> 
->> -----Original Message-----
->> From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On Behalf Of
->> Ashok Raj
->> Sent: 25 September 2020 20:06
->> To: Joerg Roedel <joro@8bytes.org>; iommu@lists.linux-foundation.org
->> Cc: Ashok Raj <ashok.raj@intel.com>; Will Deacon <will.deacon@arm.com>;
->> Robin Murphy <robin.murphy@arm.com>; Christoph Hellwig <hch@lst.de>
->> Subject: [Patch V8 1/3] iommu: Add support to change default domain of an
->> iommu group
+On 2020/11/20 20:24, Chris Wilson wrote:
+> Quoting Lu Baolu (2020-11-20 10:17:12)
+>> Lu Baolu (3):
+>>    iommu: Add quirk for Intel graphic devices in map_sg
+>>    iommu/vt-d: Update domain geometry in iommu_ops.at(de)tach_dev
+>>    iommu/vt-d: Cleanup after converting to dma-iommu ops
 >>
->> From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
->>
->> Presently, the default domain of an iommu group is allocated during boot
->> time and it cannot be changed later. So, the device would typically be
->> either in identity (also known as pass_through) mode or the device would be
->> in DMA mode as long as the machine is up and running. There is no way to
->> change the default domain type dynamically i.e. after booting, a device
->> cannot switch between identity mode and DMA mode.
->>
->> But, assume a use case wherein the user trusts the device and believes that
->> the OS is secure enough and hence wants *only* this device to bypass IOMMU
->> (so that it could be high performing) whereas all the other devices to go
->> through IOMMU (so that the system is protected). Presently, this use case
->> is not supported. It will be helpful if there is some way to change the
->> default domain of an iommu group dynamically. Hence, add such support.
->>
->> A privileged user could request the kernel to change the default domain
->> type of a iommu group by writing to
->> "/sys/kernel/iommu_groups/<grp_id>/type" file. Presently, only three values
->> are supported
->> 1. identity: all the DMA transactions from the device in this group are
->>               *not* translated by the iommu
->> 2. DMA: all the DMA transactions from the device in this group are
->>          translated by the iommu
->> 3. auto: change to the type the device was booted with
->>
->> Note:
->> 1. Default domain of an iommu group with two or more devices cannot be
->>     changed.
->> 2. The device in the iommu group shouldn't be bound to any driver.
->> 3. The device shouldn't be assigned to user for direct access.
->> 4. The vendor iommu driver is required to add def_domain_type() callback.
->>     The change request will fail if the request type conflicts with that
->>     returned from the callback.
+>> Tom Murphy (4):
+>>    iommu: Handle freelists when using deferred flushing in iommu drivers
+>>    iommu: Add iommu_dma_free_cpu_cached_iovas()
+>>    iommu: Allow the dma-iommu api to use bounce buffers
+>>    iommu/vt-d: Convert intel iommu driver to the iommu ops
 > 
-> Currently Arm SMMUv3 driver doesn't provide the def_doman_type() callback.
-> And I have sent a patch[1] based on this series to just add that. But Robin made
-> couple of suggestions there which can be incorporated into this series so that the
-> vendor driver no more required to provide the callback for this feature to work.
+> Something that may be of interest is that we encounter problems with
+> using intel-iommu across a PCI remove event. All HW generations fail
+> with faults like:
 > 
-> 1. Include a generic checking for
-> 	if (dev_is_pci(dev)) {
-> 		if (pci_dev->untrusted)
-> 			return IOMMU_DOMAIN_DMA;
-> 	}
-
-To be honest, I have the same idea. Okay! I can do this in the next
-version.
-
+> DMAR: DRHD: handling fault status reg 3
+> DMAR: [DMA Write] Request device [00:02.0] PASID ffffffff fault addr 4b822000 [fault reason 02] Present bit in context entry is clear
 > 
-> 2. Also if there is no def_doman_type() callback provided by vendor driver, assume
->    that the dev supports both IDENTITY and DMA domain types.
-
-It's true for boot case. I will assume this in this series.
-
+> i.e. they all report missing present bit after re-adding the device to the
+> iommu group. Forcing an identity map (or disabling iommu) works fine.
 > 
-> If you plan to respin this series, could you please consider the above as well?
-> Please let me know.
+> I applied this series just on the off-chance it changed the symptoms; it
+> does not. If you have any ideas on how to chase down this fault, that
+> would be very useful. We have a few other DMAR faults visible on many
+> platforms, all "[fault reason 07] Next page table ptr is invalid" that
+> are again not affected by this series, that we also need to resolve.
 
-Sure!
+This series only replaces the previous vt-d self-made dma api's with the
+generic one (which has already been used by some other vendor iommu
+drivers). It shouldn't solve the problem you're having.
 
+How about reporting them in https://bugzilla.kernel.org/? I have
+interests to help to figure out possible fixes.
+
+> -Chris
 > 
-> Thanks,
-> Shameer
 
 Best regards,
 baolu
