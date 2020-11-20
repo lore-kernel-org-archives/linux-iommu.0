@@ -2,81 +2,75 @@ Return-Path: <SRS0=3eTK=E2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE078C64E8A
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 11:04:09 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB011C5519F
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 11:15:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4637424124
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 11:04:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1431B22240
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 11:15:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rXo0btu+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4637424124
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="pPDrMmhr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1431B22240
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 90BB42E0E8;
-	Fri, 20 Nov 2020 11:04:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 813BB874E8;
+	Fri, 20 Nov 2020 11:15:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tb+rV-FVcxCi; Fri, 20 Nov 2020 11:04:03 +0000 (UTC)
+	with ESMTP id LMR5HJoXn5rq; Fri, 20 Nov 2020 11:15:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8A0B52038D;
-	Fri, 20 Nov 2020 11:04:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DE3E4874E4;
+	Fri, 20 Nov 2020 11:15:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C50BC163C;
-	Fri, 20 Nov 2020 11:04:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30F9DC0891
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:04:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE2E2C1825;
+	Fri, 20 Nov 2020 11:15:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F98FC0891
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:15:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1CF9886DC2
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:04:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 76EEE874E8
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:15:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NtogPGzdtHO3 for <iommu@lists.linux-foundation.org>;
- Fri, 20 Nov 2020 11:04:01 +0000 (UTC)
+ with ESMTP id rih6CY4BeXmL for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Nov 2020 11:15:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 950CA86DAF
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:04:01 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9EB7F874E4
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 11:15:09 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
  bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id C1C3422255;
- Fri, 20 Nov 2020 11:03:59 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id B179722201;
+ Fri, 20 Nov 2020 11:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1605870241;
- bh=mX/p1HAFLIFTQg9G08w9hM65P8tSBhCpzNO+qokhof8=;
+ s=default; t=1605870908;
+ bh=GSItVeWvihA/fKI1jLN8vpWcLxAkWCGGdtAGRnaUc/0=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=rXo0btu+7YkF0HfhHhr9fCe0rvUbz1OzazP7il7YfgjZzs5kJLVRrJ4JFG8g1lOFS
- Iy1YuX71Hx5/Ifp0hXjR2x2rZtrqfX5+fJ5yxza2kKhSq99Ej//3hSDe/lQliIoqIo
- naTlp+uDe0OmsgL15I7b68KRL5kMzW/LBqHN5yiM=
-Date: Fri, 20 Nov 2020 11:03:55 +0000
+ b=pPDrMmhrxyYIKgJxq2R7Uf4u5OET3fgjwxIuBhwxmQ9iZZ2irAKmQwBoKC9QWPSrM
+ T+CKIL9BHuW1NHukqvOD2fHJNQkndm7gQT4pwZ1SU57TWD9r5w8h/DGu/caYOiMfpD
+ FNtKO0Sk2q/RhT3BfUz3cdykTbv4ykDXw3UPdQ/I=
+Date: Fri, 20 Nov 2020 11:15:04 +0000
 From: Will Deacon <will@kernel.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [Patch V8 1/3] iommu: Add support to change default domain of an
- iommu group
-Message-ID: <20201120110355.GA6151@willie-the-truck>
-References: <20200925190620.18732-1-ashok.raj@intel.com>
- <20200925190620.18732-2-ashok.raj@intel.com>
- <20201118135153.GB2177@willie-the-truck>
- <568d4dee-ad10-ca4f-d51a-8909afb6b782@linux.intel.com>
- <20201119085303.GA3599@willie-the-truck>
- <ee19b2ff-1cb6-7db1-9fc9-9e7fb8df5de6@linux.intel.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH] iommu: Check return of __iommu_attach_device()
+Message-ID: <20201120111503.GB6151@willie-the-truck>
+References: <20201119165846.34180-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <ee19b2ff-1cb6-7db1-9fc9-9e7fb8df5de6@linux.intel.com>
+In-Reply-To: <20201119165846.34180-1-shameerali.kolothum.thodi@huawei.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Ashok Raj <ashok.raj@intel.com>,
- Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com, linuxarm@huawei.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,56 +88,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Nov 20, 2020 at 10:11:58AM +0800, Lu Baolu wrote:
-> On 11/19/20 4:53 PM, Will Deacon wrote:
-> > On Thu, Nov 19, 2020 at 10:18:05AM +0800, Lu Baolu wrote:
-> > > On 11/18/20 9:51 PM, Will Deacon wrote:
-> > > > On Fri, Sep 25, 2020 at 12:06:18PM -0700, Ashok Raj wrote:
-> > > > > From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-> > 
-> > [...]
-> > 
-> > > > > +free_new_domain:
-> > > > > +	iommu_domain_free(group->default_domain);
-> > > > > +	group->default_domain = prev_dom;
-> > > > > +	group->domain = prev_dom;i
-> > > > 
-> > > > Hmm. This seems to rely on all users of group->default_domain holding the
-> > > > group->mutex. Have you confirmed that this is the case? There's a funny
-> > > > use of iommu_group_get() in the exynos IOMMU driver at least.
-> > > 
-> > > Emm. This change happens within the area with group->mutex held. Or I
-> > > am not getting your point?
-> > 
-> > Yeah, sorry, I wasn't very clear. This code holds the group->mutex, and it
-> > relies on _anybody_ else who wants to inspect group->default_domain also
-> > holding that mutex, otherwise they could observe a transient domain pointer
-> > which we free on the failure path here.
+On Thu, Nov 19, 2020 at 04:58:46PM +0000, Shameer Kolothum wrote:
+> Currently iommu_create_device_direct_mappings() is called
+> without checking the return of __iommu_attach_device(). This
+> may result in failures in iommu driver if dev attach returns
+> error.
 > 
-> Clear to me now. Thanks for explanation. :-)
+> Fixes: ce574c27ae27("iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()")
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+> Crash log:
+> [   31.353605] hns3 0000:7d:00.3: Adding to iommu group 10
+> [   31.358822] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000018
+> [   31.367567] Mem abort info:
+> [   31.370350]   ESR = 0x96000004
+> [   31.373391]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [   31.378680]   SET = 0, FnV = 0
+> [   31.381720]   EA = 0, S1PTW = 0
+> [   31.384847] Data abort info:
+> [   31.387716]   ISV = 0, ISS = 0x00000004
+> [   31.391535]   CM = 0, WnR = 0
+> [   31.394491] [0000000000000018] user address but active_mm is swapper
+> [   31.400818] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> [   31.406365] Modules linked in:
+> [   31.409409] CPU: 21 PID: 1 Comm: swapper/0 Not tainted 5.10.0-rc4-00008-gdd5aba9d719-dirty #79
+> [   31.417980] Hardware name: Huawei TaiShan 200 (Model 2280)/BC82AMDD, BIOS 2280-V2 CS V3.B220.01 03/19/2020
+> [   31.427588] pstate: 00c00009 (nzcv daif +PAN +UAO -TCO BTYPE=--)
+> [   31.433566] pc : arm_smmu_tlb_inv_range+0x178/0x1f0
+> [   31.438422] lr : arm_smmu_tlb_inv_range+0x5c/0x1f0
+> [   31.443190] sp : ffff80001043b4e0
+> ...
+> [   31.531175] Call trace:
+> [   31.533613]  arm_smmu_tlb_inv_range+0x178/0x1f0
+> [   31.538122]  arm_smmu_iotlb_sync+0x2c/0x38
+> [   31.542200]  iommu_unmap+0x60/0x90
+> [   31.545585]  __iommu_map+0x110/0x1f0
+> [   31.549144]  iommu_create_device_direct_mappings.isra.34+0x1ac/0x250
+> [   31.555468]  iommu_probe_device+0x6c/0x110
+> [   31.559551]  iort_iommu_configure_id+0x114/0x218
+> [   31.564148]  acpi_dma_configure_id+0x94/0xe0
+> [   31.568402]  pci_dma_configure+0xc8/0xf0
+> [   31.572310]  really_probe+0xd4/0x3e0
+> [   31.575871]  driver_probe_device+0x5c/0xc0
 > 
-> Changing default domain through sysfs requires the users to ubind any
-> driver from the devices in the group. There's a check code and return
-> failure if this requirement doesn't meet.
+> ---
+>  drivers/iommu/iommu.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
-> So we only need to consider the device release path. device_lock(dev) is
-> used in this patch to guarantee that no device release happens at the
-> same time.
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index b53446bb8c6b..0f4dc25d46c9 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -264,16 +264,18 @@ int iommu_probe_device(struct device *dev)
+>  	 */
+>  	iommu_alloc_default_domain(group, dev);
+>  
+> -	if (group->default_domain)
+> +	if (group->default_domain) {
+>  		ret = __iommu_attach_device(group->default_domain, dev);
+> +		if (ret) {
+> +			iommu_group_put(group);
+> +			goto err_release;
+> +		}
+> +	}
 
-Aha, thanks. Please can you add a comment for future reference?
-
-> 
-> > 
-> > My question is whether or not there is code that inspects
-> > group->default_domain without group->mutex held? The exynos case doesn't
-> > obviously hold it, and I'd like to make sure that there aren't others that
-> > we need to worry about.
-> 
-> I searched the code. The exynos is the only case that inspects
-> group->default_domain without holding the mutex during run time. It's in
-> the device release path, so I think it's safe.
-
-Great, thanks for looking.
+This looks sensible to me, but what I don't understand is where that
+NULL pointer is coming from in the first place. iommu_map() operates
+on the domain, so why does it matter if the attach fails? What is being
+accessed at arm_smmu_tlb_inv_range+0x178/0x1f0 ?
 
 Will
 _______________________________________________
