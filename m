@@ -2,97 +2,85 @@ Return-Path: <SRS0=3eTK=E2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F7AC2D0E4
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 16:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46B34C56201
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 16:53:58 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4EB7B2225B
-	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 16:26:39 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X7Fu2uHG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4EB7B2225B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 573CC2225B
+	for <iommu@archiver.kernel.org>; Fri, 20 Nov 2020 16:53:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 573CC2225B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E86E387478;
-	Fri, 20 Nov 2020 16:26:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C166F875FD;
+	Fri, 20 Nov 2020 16:53:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DNMQVM08Ai7j; Fri, 20 Nov 2020 16:26:38 +0000 (UTC)
+	with ESMTP id 15rQ58cqYtwP; Fri, 20 Nov 2020 16:53:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8472487447;
-	Fri, 20 Nov 2020 16:26:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8DECF87600;
+	Fri, 20 Nov 2020 16:53:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72546C163C;
-	Fri, 20 Nov 2020 16:26:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0477EC0891
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:26:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 756BBC163C;
+	Fri, 20 Nov 2020 16:53:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA864C0891
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:53:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E3C3686F3B
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:26:36 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B712886DC0
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:53:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TzMa8ZoxJ2uU for <iommu@lists.linux-foundation.org>;
- Fri, 20 Nov 2020 16:26:36 +0000 (UTC)
+ with ESMTP id PXoYiPy6Wpyk for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Nov 2020 16:53:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2B79986EA1
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:26:36 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id k2so10672836wrx.2
- for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 08:26:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=uLP0sG7IAs7+cc+GreF3lr0MerBJLvcZOPUd3stxzAw=;
- b=X7Fu2uHGBxHD9Q0cLEJcbKQlyyEe6ZL5+8Rojb8tsCgxQtfTVox4rzCWhmnR16gpYC
- ux81LFBM7fgBYCa/8NdgpNpS1zClv44/zPqkBV/FkCc/At52qFwY9OK2hmClKlCMOwWV
- BvRbX0QI9ZPGEv9XqjxvUvv+dBc4hasXlcGUEBLfuI/f7FEYv/XJXBF+MzWyNHW+iqCF
- JaL3nwrdTysU0tg/XucM1i02u1jwhKwp4839LaKrx4sun0/m8KfqOIouDqZgKpX8LQBB
- BANXCtdH9FJCrQseVWOZVSh7Vnvr482vHOT27GYEnIveqEPkZrBAOs4bndBLrzJoMXzz
- 4NFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=uLP0sG7IAs7+cc+GreF3lr0MerBJLvcZOPUd3stxzAw=;
- b=kbBYIv+liDC4S0BKTtcRhjt/j+dm1Z0tM9irKYbA8jYI2qJmrR/YmP/4EzudsQbxbx
- l2sffNtBOtoUonTGu7dPKQxLWuEkHEIU4/cFFF8KioQ1bkNUqSv4PcBIHcrt3yf/X1WB
- acOaZmEZ8RAjqRfFz6sPyGJf2RDdhS5YBQH/azIZrpmYWVvhNoeDTL0yNma5uI04lLSX
- YYMybCeccx5HCJa2PiyVYXczTyhQbcy/mGKkAD8lCr+s8XChlZ+08UNnY5DaDD8L13zu
- 56jcvV6Ndnd9LRBwYKRzZzNuUX1B1eHOyANfxA19zQljgSKjkfCxqmsvTmDJ9ZUmUPGq
- 1WPg==
-X-Gm-Message-State: AOAM532SH+V0Ru296U3teEGoxT+VMSwJdnjWZ7+HxByiQqYpE5JZ7r60
- jcQSyP8xFSNlzUyIFsV/oQY=
-X-Google-Smtp-Source: ABdhPJzhkS/cosRT2dyRGlAjfUutCi3tca5uZYK6T7Td7wjTAaL8iqjhxeZEShhwZOBC9zJ2ktURgQ==
-X-Received: by 2002:a5d:5446:: with SMTP id w6mr16889747wrv.122.1605889594525; 
- Fri, 20 Nov 2020 08:26:34 -0800 (PST)
-Received: from localhost ([217.111.27.204])
- by smtp.gmail.com with ESMTPSA id b8sm6055040wrv.57.2020.11.20.08.26.32
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 20 Nov 2020 08:26:32 -0800 (PST)
-Date: Fri, 20 Nov 2020 17:26:31 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH RESEND 5/5] iommu/tegra-smmu: Add PCI support
-Message-ID: <20201120162631.GG3870099@ulmo>
-References: <20201111222129.15736-1-nicoleotsuka@gmail.com>
- <20201111222129.15736-6-nicoleotsuka@gmail.com>
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2236A86DB6
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Nov 2020 16:53:51 +0000 (UTC)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Cd2dl0PVGz67DPK;
+ Sat, 21 Nov 2020 00:52:11 +0800 (CST)
+Received: from lhreml714-chm.china.huawei.com (10.201.108.65) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Fri, 20 Nov 2020 17:53:48 +0100
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml714-chm.china.huawei.com (10.201.108.65) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Fri, 20 Nov 2020 16:53:48 +0000
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.1913.007; Fri, 20 Nov 2020 16:53:48 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: RE: [PATCH] iommu: Check return of __iommu_attach_device()
+Thread-Topic: [PATCH] iommu: Check return of __iommu_attach_device()
+Thread-Index: AQHWvpWDFOlCvhbm1kiI932Tcvk2j6nQ358AgAAwKACAACcb8A==
+Date: Fri, 20 Nov 2020 16:53:47 +0000
+Message-ID: <6375e8511bcb48209fffa0c02833e27b@huawei.com>
+References: <20201119165846.34180-1-shameerali.kolothum.thodi@huawei.com>
+ <20201120111503.GB6151@willie-the-truck>
+ <337ffd34-a606-4fb1-adb0-49367c136170@arm.com>
+In-Reply-To: <337ffd34-a606-4fb1-adb0-49367c136170@arm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.210.172.192]
 MIME-Version: 1.0
-In-Reply-To: <20201111222129.15736-6-nicoleotsuka@gmail.com>
-User-Agent: Mutt/1.14.7 (2020-08-29)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org
+X-CFilter-Loop: Reflected
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Linuxarm <linuxarm@huawei.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,64 +93,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5653905667146747193=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============5653905667146747193==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cyV/sMl4KAhiehtf"
-Content-Disposition: inline
 
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy@arm.com]
+> Sent: 20 November 2020 14:07
+> To: Will Deacon <will@kernel.org>; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>
+> Cc: linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org;
+> Linuxarm <linuxarm@huawei.com>
+> Subject: Re: [PATCH] iommu: Check return of __iommu_attach_device()
+> 
+> On 2020-11-20 11:15, Will Deacon wrote:
+> > On Thu, Nov 19, 2020 at 04:58:46PM +0000, Shameer Kolothum wrote:
+> >> Currently iommu_create_device_direct_mappings() is called
+> >> without checking the return of __iommu_attach_device(). This
+> >> may result in failures in iommu driver if dev attach returns
+> >> error.
+> >>
+> >> Fixes: ce574c27ae27("iommu: Move
+> iommu_group_create_direct_mappings() out of iommu_group_add_device()")
+> >> Signed-off-by: Shameer Kolothum
+> <shameerali.kolothum.thodi@huawei.com>
+> >> ---
+> >> Crash log:
+> >> [   31.353605] hns3 0000:7d:00.3: Adding to iommu group 10
+> >> [   31.358822] Unable to handle kernel NULL pointer dereference at virtual
+> address 0000000000000018
+> >> [   31.367567] Mem abort info:
+> >> [   31.370350]   ESR = 0x96000004
+> >> [   31.373391]   EC = 0x25: DABT (current EL), IL = 32 bits
+> >> [   31.378680]   SET = 0, FnV = 0
+> >> [   31.381720]   EA = 0, S1PTW = 0
+> >> [   31.384847] Data abort info:
+> >> [   31.387716]   ISV = 0, ISS = 0x00000004
+> >> [   31.391535]   CM = 0, WnR = 0
+> >> [   31.394491] [0000000000000018] user address but active_mm is
+> swapper
+> >> [   31.400818] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> >> [   31.406365] Modules linked in:
+> >> [   31.409409] CPU: 21 PID: 1 Comm: swapper/0 Not tainted
+> 5.10.0-rc4-00008-gdd5aba9d719-dirty #79
+> >> [   31.417980] Hardware name: Huawei TaiShan 200 (Model
+> 2280)/BC82AMDD, BIOS 2280-V2 CS V3.B220.01 03/19/2020
+> >> [   31.427588] pstate: 00c00009 (nzcv daif +PAN +UAO -TCO BTYPE=--)
+> >> [   31.433566] pc : arm_smmu_tlb_inv_range+0x178/0x1f0
+> >> [   31.438422] lr : arm_smmu_tlb_inv_range+0x5c/0x1f0
+> >> [   31.443190] sp : ffff80001043b4e0
+> >> ...
+> >> [   31.531175] Call trace:
+> >> [   31.533613]  arm_smmu_tlb_inv_range+0x178/0x1f0
+> >> [   31.538122]  arm_smmu_iotlb_sync+0x2c/0x38
+> >> [   31.542200]  iommu_unmap+0x60/0x90
+> >> [   31.545585]  __iommu_map+0x110/0x1f0
+> >> [   31.549144]
+> iommu_create_device_direct_mappings.isra.34+0x1ac/0x250
+> >> [   31.555468]  iommu_probe_device+0x6c/0x110
+> >> [   31.559551]  iort_iommu_configure_id+0x114/0x218
+> >> [   31.564148]  acpi_dma_configure_id+0x94/0xe0
+> >> [   31.568402]  pci_dma_configure+0xc8/0xf0
+> >> [   31.572310]  really_probe+0xd4/0x3e0
+> >> [   31.575871]  driver_probe_device+0x5c/0xc0
+> >>
+> >> ---
+> >>   drivers/iommu/iommu.c | 10 ++++++----
+> >>   1 file changed, 6 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> >> index b53446bb8c6b..0f4dc25d46c9 100644
+> >> --- a/drivers/iommu/iommu.c
+> >> +++ b/drivers/iommu/iommu.c
+> >> @@ -264,16 +264,18 @@ int iommu_probe_device(struct device *dev)
+> >>   	 */
+> >>   	iommu_alloc_default_domain(group, dev);
+> >>
+> >> -	if (group->default_domain)
+> >> +	if (group->default_domain) {
+> >>   		ret = __iommu_attach_device(group->default_domain, dev);
+> >> +		if (ret) {
+> >> +			iommu_group_put(group);
+> >> +			goto err_release;
+> >> +		}
+> >> +	}
+> >
+> > This looks sensible to me, but what I don't understand is where that
+> > NULL pointer is coming from in the first place. iommu_map() operates
+> > on the domain, so why does it matter if the attach fails? What is being
+> > accessed at arm_smmu_tlb_inv_range+0x178/0x1f0 ?
+> 
+> Probably because the domain is a hollow fake until the first successful
+> attach - even TLB maintenance depends on having decided a pagetable format.
 
---cyV/sMl4KAhiehtf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think, in this particular instance, what happens is, dev reports RMR
+regions (IOMMU_RESV_DIRECT) but attach_dev() fails early without
+setting, smmu_domain->smmu  =  smmu.
 
-On Wed, Nov 11, 2020 at 02:21:29PM -0800, Nicolin Chen wrote:
-> This patch simply adds support for PCI devices.
->=20
-> Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
-> Tested-by: Dmitry Osipenko <digetx@gmail.com>
-> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-> ---
->  drivers/iommu/tegra-smmu.c | 35 +++++++++++++++++++++++++----------
->  1 file changed, 25 insertions(+), 10 deletions(-)
+iommu_probe_device()
+  __iommu_attach_dev()  -->return err, but carries on.
+  iommu_create_device_direct_mappings()
+    iommu_get_resv_regions()  --> dev has IOMMU_RESV_DIRECT regions
+    iommu_map()  
+      __iommu_map()   
+        arm_smmu_map()  -->return err
+      iommu_unmap()    --> unroll on map failure
+        __iommu_unmap()  --> size is zero. So returns.
+        iommu_iotlb_sync()
+          arm_smmu_iotlb_sync()
+            arm_smmu_tlb_inv_range()  --> smmu is NULL
 
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---cyV/sMl4KAhiehtf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl+37jcACgkQ3SOs138+
-s6EiTg/9GRPPoHHfgJdC1KDJNHfaIvRHgIfN7UJZrAi+9AohCLVeZv7Hy4tc2f+W
-9CGahWmVzh/ES/nlePd2ZU5dv7Ef+g7Pn6RFd2iBrK90oR+9FBoXfOIL42xWSgZm
-iHBYOXt40v1+UOXGJ2Am0twNqHJ2nhP7o0s1I46WHOZbaW797J76HQd/vbLF5AYP
-surUNEMbp2e49FwVBDn+gScDQfPvX88L6AcSWXuihwUEgSl0zYmByK2nav27GAmf
-jTNDOi4i3I3uGTYgB9eOJLqlbWqgy50Ld7Ot2GoTHsuetAPB1wK8PxpXJGjVqCxR
-AxxgIUFjmawetf/k9qAYL7SbC2aSYi5p/vu4EeTlXkvHzDaHzchCzacj3YCztlVE
-AMzQ+Qhi6smuDbKF93Fb0LsD0dBUEE9Dam7UxzpdZj08Es3lC+e46srGVTWSDL5x
-hA+v/qhB+QysJLuUTPiU8sg38tSLJ9rHyZqVU1fvLmvSa5fZyCVJaoCFhFk5I1vR
-1Wos2O1lX6QcoO4u0H2HXw/mAmK3mdRsTl1nbu5xCISIcc9zld4sJwcEyx7vE64W
-Jz9M51nARrLd9v/UhGMzwp3PuvLlguvVNY62R75gbnvPjQDDJCBm+HZBRlcup+pI
-0Tnke8ctQk+71cQeUlgiv/GjzsOJo2KCsE5tyoFKbnIjyx3z9TA=
-=0u3o
------END PGP SIGNATURE-----
-
---cyV/sMl4KAhiehtf--
-
---===============5653905667146747193==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Thanks,
+Shameer 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5653905667146747193==--
