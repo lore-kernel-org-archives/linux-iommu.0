@@ -2,101 +2,146 @@ Return-Path: <SRS0=jcR/=E5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A05BC2D0E4
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 19:20:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A145C388F9
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 21:04:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 59A4A20663
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 19:20:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 04332206E0
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 21:04:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D3LUaTo9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59A4A20663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="gRIB2Fph"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04332206E0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DB1AF87061;
-	Mon, 23 Nov 2020 19:20:48 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 66ACE86763;
+	Mon, 23 Nov 2020 21:04:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mxcdtAUPN458; Mon, 23 Nov 2020 21:04:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8CDEB86746;
+	Mon, 23 Nov 2020 21:04:20 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D8ECC163C;
+	Mon, 23 Nov 2020 21:04:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6BD55C0052
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 21:04:19 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 409C787158
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 21:04:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tw7-iGTeX8ei; Mon, 23 Nov 2020 19:20:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5B6BB87040;
-	Mon, 23 Nov 2020 19:20:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31450C0891;
-	Mon, 23 Nov 2020 19:20:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4CD02C0052
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 19:20:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 391BB85815
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 19:20:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dkEj2Z7vJsLb for <iommu@lists.linux-foundation.org>;
- Mon, 23 Nov 2020 19:20:46 +0000 (UTC)
+ with ESMTP id byAOxpiIDgvF for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Nov 2020 21:04:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com
- [209.85.221.49])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 30804857F8
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 19:20:46 +0000 (UTC)
-Received: by mail-wr1-f49.google.com with SMTP id t4so6773490wrr.12
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 11:20:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=qywik7ZeoNLjOI/OiRzyEWbv5L3UmV1jd3xo8upxDsg=;
- b=D3LUaTo9sjQT2psf9iOfR5Q+w/hWOKbYJIrGkOwrSKId0+dXBhN2JbAKZrdU51cvlB
- 2TH/BH6AH3DKIlQMdVT/V8i+l/yJ0ztIDwjnuj5ekXsttMcEx45j51pC0OifHlxSPhYg
- Vk+onO+4dhk/KXF75P7ZKjh+voUOJ9oSQjQwUJDgxbPMNzzW/mCkzUromNJl14ewjTbQ
- hnFhD+OP+mQd1nGunov0a3cqO2Ge91PFnaB9BUbjoIR7Xh+5gqsSdXq8Qw6VGchsGoGF
- 0vJhoOfb411RYFqRARv8q6FJ4UVj/X+YELsIA4bt6jG6BaYQDZlj6Yq4zmlmJcnYBMzK
- BWSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=qywik7ZeoNLjOI/OiRzyEWbv5L3UmV1jd3xo8upxDsg=;
- b=ZOQJu87eQierqtV8pRbYXnr4p4XQm4YBt6yTwT/ANIkjdZBV3w347gfgU50m6+cTqS
- qpuTCiXHQlevM9oSTRQhpjMBgN2KhY8Jz64z9hfREIGjaDKFEkSla6Ns3vbswjTyN/Uf
- 8zpLcBMDOUN3WAotOozOPdo8lBLIWP/2+A5J/MtHLPnqQjJg3lPt1B4jvM1SjXcp+J25
- OFFMLLEmWcduCCHSpPQ+crL06VJq3WKOqkQ/KSeIoYNbe9u+KaBX+CKDTQHGgDUey+i+
- XsDnSPyXnzJzOnZwrFVm+YogDg1si7tH3TMifY2U4QaG4Xl8Zht08SjLcvoKB/0mtdzf
- y5dA==
-X-Gm-Message-State: AOAM532EGR4hDDa1cIVRmIU84GXqCM0y2JdhFntyF08sLCMRhBKMXwDD
- 4Z0RZrF4AnRnSVVxkynIs+h9yzEHJnrCy4Z3O+c=
-X-Google-Smtp-Source: ABdhPJy8N53HXm9IuUy+KZQkqOt4/pj9ITZPgRIZbKk5Hw32UENtsWfsI7ELNiEQlwY8TBRX7HEq8kOv+802Ag6uHEw=
-X-Received: by 2002:adf:a54d:: with SMTP id j13mr1337431wrb.132.1606159244462; 
- Mon, 23 Nov 2020 11:20:44 -0800 (PST)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EC09E8715D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 21:04:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LD/ij7now6ki1oIzUtdHsiXB++Szp2Ps7ROOvxfGY+q883b03zMLoS8B8q3wN7sOyiY6surGxMdn1FqVaGt7PQvHYTZsqx76Hlde+lGo3S3oLmEN2Hzu7WglwBwOGeE3jbccNMl4qTBSgVvJCIx7yeEQNMnfPs+x30SS/iqfYbLE4HtukkdGmHO34AAFGTU+29sqRarc+EiiNgNc1YdEkcrEbbRrpkS13jbXakE63rg7Swo6cD2uqPwYuEm4BFIYUvFgUMCygC7IdhgNjKf4AzdWhklAJRQRwMM8yrT0JuAZGAObPiiSI1bWgQEPJRySOL/xF4PfE5nPaJ4MewmRHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YnwQ/N+t+0CBDMWOY2zVCf6A7r2abgcuhd0m6rX5oL0=;
+ b=IY96jZr7od22mTdQ+pKDYFabmZvGdKMEpmSMoRzOE/EUeJlpTuAeWSwNhQRO3RNB8ls3/g8ZfiXq/6AKfpDMnPkIrnQ40GisOfr8Xuh74vHyW9EPNKtSIf9BbES11xYVjBDjiJRO+7jYZH5Donw9iXp2zcjO13K4e7pw0CX8iv8ticW3YcOA5ks513pImh/wn0xUpcHmIMnr4hB7Ylz8dryBIvWqL32fhf7LZN3wI2IXF5R1Tel6t77zz7bCaig5tG09xr/+hZg8Vhgql0yvG/fP/oSFt4wGqfW9Wnb5/k2or6A0fKWM7UOKOyHjhHFqmkhNDgNjooOL5bVE4JTiRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YnwQ/N+t+0CBDMWOY2zVCf6A7r2abgcuhd0m6rX5oL0=;
+ b=gRIB2FphSBRp5vYN4b3bUmop8mGfiDo9CXwJF9IbR56eLBkoCLx+QtNkOTMarAeEQZQpznzB45+XvskPzECNBjrqDa/uJlJRrvuwGp3Y9d43J1iaT3bUfJect0PtqCbzayyuO222/nU4tpK7CuT6V6F7SvK/GqsTyBFFZaY5iCc=
+Received: from MN2PR12MB4488.namprd12.prod.outlook.com (2603:10b6:208:24e::19)
+ by MN2PR12MB4584.namprd12.prod.outlook.com (2603:10b6:208:24e::11)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Mon, 23 Nov
+ 2020 21:04:14 +0000
+Received: from MN2PR12MB4488.namprd12.prod.outlook.com
+ ([fe80::fca3:155c:bf43:94af]) by MN2PR12MB4488.namprd12.prod.outlook.com
+ ([fe80::fca3:155c:bf43:94af%6]) with mapi id 15.20.3589.030; Mon, 23 Nov 2020
+ 21:04:14 +0000
+From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+To: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+Thread-Topic: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+Thread-Index: AQHWwZ6+dZH+wAWtiUyhnWNLDE7tj6nWM/hw
+Date: Mon, 23 Nov 2020 21:04:14 +0000
+Message-ID: <MN2PR12MB4488308D26DB50C18EA3BE0FF7FC0@MN2PR12MB4488.namprd12.prod.outlook.com>
+References: <20201123134410.10648-1-will@kernel.org>
+In-Reply-To: <20201123134410.10648-1-will@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Enabled=true;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SetDate=2020-11-23T21:03:38Z; 
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Method=Privileged;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Name=Public_0;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ActionId=db3d5d7e-64b8-444f-8adc-0000f44ba9f6;
+ MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ContentBits=1
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_enabled: true
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_setdate: 2020-11-23T21:03:31Z
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_method: Standard
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_name: Internal Use Only -
+ Unrestricted
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_actionid: 5ea545a5-4adc-4408-aa01-0000d82026bd
+msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_contentbits: 0
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_enabled: true
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_setdate: 2020-11-23T21:04:10Z
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_method: Privileged
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_name: Public_0
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_actionid: 604a5609-a6ee-47a5-9dc6-00005a2d8991
+msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_contentbits: 0
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=amd.com;
+x-originating-ip: [192.161.78.5]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: ab02af1e-2539-43f7-2867-08d88ff3557b
+x-ms-traffictypediagnostic: MN2PR12MB4584:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR12MB45843C0B4F6B7B39E6D36F20F7FC0@MN2PR12MB4584.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OibVyQKJ/N2yBzn3btTNiQDgcv9mYy9/iXpe3+2ty4f5gHJadqiR8rrSHNC9ckuOgjWVIgSnGURy/7ip+q/80fcIhsZqZZkW4N9bsCUEhV7bLQlNRXxfeAom9hSXtWBuylQL30YZEsCPdHKOkajkcdz2WOy2P1OFwoOMYBN5tgIjLSzUH/LoVBpWGPw8gkV1T0MqnYIwJ8nPhZxKxeQ5d7daZYbiZFmZ4Zjwtk4P9YK5qwg/FDIOFfQ4pF4qoxBvr/Dq+0OYPos9S1dKzSUHmXvjYqYO7w3putktfZEXD5wcdHl04cPpYGJX5u7AB1Xj06lPYVL/jnx8j7TYJ1a8FAtPKB7xMCdGfPKa6dHKog9QALoRnH6m/aEGkCV+xf1CCbRDyrsYf795GweeCSPr4w==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4488.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(53546011)(186003)(26005)(2906002)(4326008)(8936002)(8676002)(71200400001)(478600001)(45080400002)(52536014)(55016002)(86362001)(9686003)(83380400001)(966005)(7696005)(110136005)(33656002)(66946007)(54906003)(66476007)(66556008)(66446008)(64756008)(76116006)(316002)(5660300002)(6506007);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata: VpN0SwX+J2CWoCO9zgqxMezJv0RPgB06mU/JARvCUkUT0aV4v21EdZLENpJt5VPW2O6V+yLQyoWY9K++qfcmLEYRZIuiJruyrGRbfgxyVCGXQUpIFEn3q4OZmeY2CLRMUSR9U2Euw8kTtPyM1k1ASNjpOAxDLb6cVwmmUApia88Qe/7KOO6rfRCS/pFwRk6uGcawmN8ne1W49Bq1Vpi6m5yxBYpYlwwbOncnDw4f7c1/BinO69GdxXMHJSUHBMJTzt3K46U6oJoKi+LVQjWTnUL68LZl7MF6tmTpAUUNyrJWZpymJfO9Io4KY91wM3XfmxU9qepT+Un4JSighSDgP61y9YTvxKTzwoVsi274reNuQLPmxxTytYIWZLwOWuzRXyIU3na4P+3hPzm2/IbG8aRksS82PTlqfJSXJCfgDC7sia84yhNGCjNt7GGTsd1CbrOsMleczqMEDpGsUH6BrOAEhd0Wz1DId7PJ1E6lJmXLt8WDuRnvqbA4myC7+tzhQILx/D9PSYsD7MmBTPD/8Ag78ZxrOdNuiPLaxBorhKk3dtyhP99AbhsZIa/1VwmOzwE0t+aYcPA2BdIw8TyfVfSrQxfpBJ2nltPAQ/gxttiDhWYRTeRHj+a9MyF8xSGodOsPSjXK/0N/gnoPh+6rOt285Enkm1Rl7KfThnP4Grznq4sw+PhLbiYWXL0DCrSx0FNl7NEY01bOZWdKAmivvkaQPEyxHvj6RdEeKvejtHeOMONLSY8pXGoE7qKPNH3XD2QYG1J32dYosrtmAKpJnCkoCK3G36y9bT8OxzmOoarqIRWm/XFiWsQdSDiF6bilL7VptaRUqCNfJxXCXnufPxEtOjA7qpfKHHs+lTbN5gb36z+ZTywnvve0u74t09F8Yv9OHyi41LULVrYgpQJhnw==
 MIME-Version: 1.0
-References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
- <20201123152146.GE11033@willie-the-truck>
- <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
-In-Reply-To: <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
-From: Rob Clark <robdclark@gmail.com>
-Date: Mon, 23 Nov 2020 11:22:31 -0800
-Message-ID: <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
-Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
- support
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Cc: Will Deacon <will@kernel.org>, freedreno <freedreno@lists.freedesktop.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4488.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab02af1e-2539-43f7-2867-08d88ff3557b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2020 21:04:14.6157 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BlQDhOupKDQUxrOfB4sLk/9/UZxSpe8DEpnEKcleFXLlEUWmzzDtEGpT34R1O5OYDZky1T9O1rbG2pK2vKEwZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4584
+Cc: Edgar Merger <Edgar.Merger@emerson.com>, Joerg Roedel <jroedel@suse.de>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Kuehling,
+ Felix" <Felix.Kuehling@amd.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,70 +159,88 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
-<saiprakash.ranjan@codeaurora.org> wrote:
->
-> On 2020-11-23 20:51, Will Deacon wrote:
-> > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
-> >> Some hardware variants contain a system cache or the last level
-> >> cache(llc). This cache is typically a large block which is shared
-> >> by multiple clients on the SOC. GPU uses the system cache to cache
-> >> both the GPU data buffers(like textures) as well the SMMU pagetables.
-> >> This helps with improved render performance as well as lower power
-> >> consumption by reducing the bus traffic to the system memory.
-> >>
-> >> The system cache architecture allows the cache to be split into slices
-> >> which then be used by multiple SOC clients. This patch series is an
-> >> effort to enable and use two of those slices preallocated for the GPU,
-> >> one for the GPU data buffers and another for the GPU SMMU hardware
-> >> pagetables.
-> >>
-> >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
-> >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
-> >>
-> >> Changes in v8:
-> >>  * Introduce a generic domain attribute for pagetable config (Will)
-> >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
-> >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
-> >> (Will)
-> >
-> > Modulo some minor comments I've made, this looks good to me. What is
-> > the
-> > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
-> > the
-> > MSM GPU driver and I'd like to avoid conflicts with that.
-> >
->
-> SMMU bits are pretty much independent and GPU relies on the domain
-> attribute
-> and the quirk exposed, so as long as SMMU changes go in first it should
-> be good.
-> Rob?
+[AMD Public Use]
 
-I suppose one option would be to split out the patch that adds the
-attribute into it's own patch, and merge that both thru drm and iommu?
+> -----Original Message-----
+> From: Will Deacon <will@kernel.org>
+> Sent: Monday, November 23, 2020 8:44 AM
+> To: linux-kernel@vger.kernel.org
+> Cc: linux-pci@vger.kernel.org; iommu@lists.linux-foundation.org; Will
+> Deacon <will@kernel.org>; Bjorn Helgaas <bhelgaas@google.com>;
+> Deucher, Alexander <Alexander.Deucher@amd.com>; Edgar Merger
+> <Edgar.Merger@emerson.com>; Joerg Roedel <jroedel@suse.de>
+> Subject: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+> 
+> Edgar Merger reports that the AMD Raven GPU does not work reliably on his
+> system when the IOMMU is enabled:
+> 
+>   | [drm:amdgpu_job_timedout [amdgpu]] *ERROR* ring gfx timeout,
+> signaled seq=1, emitted seq=3
+>   | [...]
+>   | amdgpu 0000:0b:00.0: GPU reset begin!
+>   | AMD-Vi: Completion-Wait loop timed out
+>   | iommu ivhd0: AMD-Vi: Event logged [IOTLB_INV_TIMEOUT
+> device=0b:00.0 address=0x38edc0970]
+> 
+> This is indicative of a hardware/platform configuration issue so, since
+> disabling ATS has been shown to resolve the problem, add a quirk to match
+> this particular device while Edgar follows-up with AMD for more information.
+> 
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Alex Deucher <alexander.deucher@amd.com>
+> Reported-by: Edgar Merger <Edgar.Merger@emerson.com>
+> Suggested-by: Joerg Roedel <jroedel@suse.de>
+> Link:
+> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.
+> kernel.org%2Flinux-
+> iommu%2FMWHPR10MB1310F042A30661D4158520B589FC0%40MWHPR10M
+> B1310.namprd10.prod.outlook.com&amp;data=04%7C01%7Calexander.deuc
+> her%40amd.com%7C1a883fe14d0c408e7d9508d88fb5df4e%7C3dd8961fe488
+> 4e608e11a82d994e183d%7C0%7C0%7C637417358593629699%7CUnknown%7
+> CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwi
+> LCJXVCI6Mn0%3D%7C1000&amp;sdata=TMgKldWzsX8XZ0l7q3%2BszDWXQJJ
+> LOUfX5oGaoLN8n%2B8%3D&amp;reserved=0
+> Signed-off-by: Will Deacon <will@kernel.org>
+> ---
+> 
+> Hi all,
+> 
+> Since Joerg is away at the moment, I'm posting this to try to make some
+> progress with the thread in the Link: tag.
 
-If Will/Robin dislike that approach, I'll pick up the parts of the drm
-patches which don't depend on the new attribute for v5.11 and the rest
-for v5.12.. or possibly a second late v5.11 pull req if airlied
-doesn't hate me too much for it.
++ Felix
 
-Going forward, I think we will have one or two more co-dependent
-series, like the smmu iova fault handler improvements that Jordan
-posted.  So I would like to hear how Will and Robin prefer to handle
-those.
+What system is this?  Can you provide more details?  Does a sbios update fix this?  Disabling ATS for all Ravens will break GPU compute for a lot of people.  I'd prefer to just black list this particular system (e.g., just SSIDs or revision) if possible.
 
-BR,
--R
+Alex
 
-
-> Thanks,
-> Sai
->
+> 
+> Cheers,
+> 
+> Will
+> 
+>  drivers/pci/quirks.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c index
+> f70692ac79c5..3911b0ec57ba 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -5176,6 +5176,8 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI,
+> 0x6900, quirk_amd_harvest_no_ats);
+> DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7312,
+> quirk_amd_harvest_no_ats);
+>  /* AMD Navi14 dGPU */
+>  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7340,
+> quirk_amd_harvest_no_ats);
+> +/* AMD Raven platform iGPU */
+> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x15d8,
+> +quirk_amd_harvest_no_ats);
+>  #endif /* CONFIG_PCI_ATS */
+> 
+>  /* Freescale PCIe doesn't support MSI in RC mode */
 > --
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a
-> member
-> of Code Aurora Forum, hosted by The Linux Foundation
+> 2.29.2.454.gaff20da3a2-goog
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
