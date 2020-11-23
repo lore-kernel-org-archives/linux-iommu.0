@@ -2,79 +2,92 @@ Return-Path: <SRS0=jcR/=E5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC70C2D0E4
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:21:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED5C2D0E4
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:31:45 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CC11C20729
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:21:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="kZ0YudLP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC11C20729
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 633512078E
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:31:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 633512078E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7FCD1870E8;
-	Mon, 23 Nov 2020 15:21:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BD197866E4;
+	Mon, 23 Nov 2020 15:31:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S1VRneeaRQGH; Mon, 23 Nov 2020 15:21:55 +0000 (UTC)
+	with ESMTP id d2mQ1nkOcpQL; Mon, 23 Nov 2020 15:31:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DC867861C1;
-	Mon, 23 Nov 2020 15:21:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 27F8086695;
+	Mon, 23 Nov 2020 15:31:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1DE2C0891;
-	Mon, 23 Nov 2020 15:21:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C472BC0052
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:21:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 111C1C0891;
+	Mon, 23 Nov 2020 15:31:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4E53DC0052
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:31:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5A6A820480
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:21:54 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 45A4086695
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:31:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YrLEckQyX4fd for <iommu@lists.linux-foundation.org>;
- Mon, 23 Nov 2020 15:21:53 +0000 (UTC)
+ with ESMTP id Fp2OANAN2oSe for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Nov 2020 15:31:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 5207120429
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:21:53 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 8189720729;
- Mon, 23 Nov 2020 15:21:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606144912;
- bh=0jQICtTOb7H9wGgtrr19TvHCx5PbEKZVBHd7pBdsH6I=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=kZ0YudLPK19JiVmwZLOWrSlWft/GrXA+VdajRVzoW+6wkH58mEsubCatugV6yxDIW
- mIhkLWJVNKOEZW9Mqpz6yS3eL4orw9IivqCTFx/o8mxWdANUeU14PfvM7BHdLXbmBm
- R5tUybBstHOdJoj8a2BcQWRpy/eHvi0tR4tSowko=
-Date: Mon, 23 Nov 2020 15:21:47 +0000
-From: Will Deacon <will@kernel.org>
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
- support
-Message-ID: <20201123152146.GE11033@willie-the-truck>
-References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5FD438669C
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:31:39 +0000 (UTC)
+Received: from mail-ed1-f69.google.com ([209.85.208.69])
+ by youngberry.canonical.com with esmtps
+ (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
+ (envelope-from <guilherme.piccoli@canonical.com>) id 1khDoX-0007LX-9M
+ for iommu@lists.linux-foundation.org; Mon, 23 Nov 2020 15:31:37 +0000
+Received: by mail-ed1-f69.google.com with SMTP id y11so6719943edv.6
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 07:31:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=DIYmatONslBJtx0vls11e+ppVgIv/t+HfpL12twmIjk=;
+ b=ZopWPLDeFbhLyOFaPGAIgNw8jYSjhAx0jL9G6Ni6PA9FIzUM4rRMKZeJlydaFdVclN
+ WSi4zAdrp/fz37TWNqdy0t1JgVPD7FW8PGGtV1/ivxE405WadDrPeBPfc8myJTBDhC8i
+ Olpx3muWNe0Sq3sc0uZwzmp2UYTzXKgi7H2itELHLCLH24Gt+cmtgI9v2CGrgE53pyL3
+ UQZFfgvPiZTQ1LeVtarIcEQW3pFJvYlv9wvQ3+G+qgRwJu9NRubO+zLtB+UajFhDI2qW
+ QFIoHGIHWKqhyDAL4zx/odDoPXI969FFfQer0Gw8JCkD2yDlpoyMn4jgC+aPrDoF9KlK
+ JVxA==
+X-Gm-Message-State: AOAM532G3JSA87rf1wDVHTmorbshkixkWFbxxGq6vtlh+8naVIwas+M/
+ 359dLtoB5awgJMLrXKUMK57k80afN3Psn9gAbg16dCh2dfHC3I1zIeryxWu3krPfZcwlx1TPpca
+ F1dPka719d5i4yYc8+c7vNndD1Um8BUzu35FfrYTe7DwGG00bTvkxtrQeKI5QG5g=
+X-Received: by 2002:aa7:d298:: with SMTP id w24mr5994009edq.82.1606145497008; 
+ Mon, 23 Nov 2020 07:31:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyrWu7xVwFBmOecqSZY4ld78I3wZkqLcisWUTr1xKJt3H6E/cA0mPHuJlf+nhK7/Ew1KW1Eno+hgp66Z/wsDtc=
+X-Received: by 2002:aa7:d298:: with SMTP id w24mr5993991edq.82.1606145496804; 
+ Mon, 23 Nov 2020 07:31:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- dri-devel@lists.freedesktop.org, Akhil P Oommen <akhilpo@codeaurora.org>,
- iommu@lists.linux-foundation.org,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org
+References: <20201104220804.21026-1-Ashish.Kalra@amd.com>
+In-Reply-To: <20201104220804.21026-1-Ashish.Kalra@amd.com>
+From: Guilherme Piccoli <gpiccoli@canonical.com>
+Date: Mon, 23 Nov 2020 12:31:00 -0300
+Message-ID: <CAHD1Q_ycPbd9uuEN2nuT4norwuRt04E5ZdqAVC9si1c-T=SRmA@mail.gmail.com>
+Subject: Re: [PATCH v3] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
+ guests.
+To: Ashish Kalra <Ashish.Kalra@amd.com>
+Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, luto@kernel.org,
+ dave.hansen@linux-intel.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Peter Zijlstra <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, ssg.sos.patches@amd.com,
+ "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,33 +105,12 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
-> Some hardware variants contain a system cache or the last level
-> cache(llc). This cache is typically a large block which is shared
-> by multiple clients on the SOC. GPU uses the system cache to cache
-> both the GPU data buffers(like textures) as well the SMMU pagetables.
-> This helps with improved render performance as well as lower power
-> consumption by reducing the bus traffic to the system memory.
-> 
-> The system cache architecture allows the cache to be split into slices
-> which then be used by multiple SOC clients. This patch series is an
-> effort to enable and use two of those slices preallocated for the GPU,
-> one for the GPU data buffers and another for the GPU SMMU hardware
-> pagetables.
-> 
-> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
-> Patch 7 and 8 are minor cleanups for arm-smmu impl.
-> 
-> Changes in v8:
->  * Introduce a generic domain attribute for pagetable config (Will)
->  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
->  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config (Will)
+Hi Ashish, non-technical comment: in the subject, you might want to
+s/SWIOTBL/SWIOTLB .
+cheers,
 
-Modulo some minor comments I've made, this looks good to me. What is the
-plan for merging it? I can take the IOMMU parts, but patches 4-6 touch the
-MSM GPU driver and I'd like to avoid conflicts with that.
 
-Will
+Guilherme
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
