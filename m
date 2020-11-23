@@ -2,98 +2,115 @@ Return-Path: <SRS0=jcR/=E5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1851EC2D0E4
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 17:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE6DC2D0E4
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 17:55:18 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8EAED206E3
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 17:07:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CC7172075A
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 17:55:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="gTHiEN11"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EAED206E3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="wMo+EhlF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC7172075A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0ACED84525;
-	Mon, 23 Nov 2020 17:07:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 30F1185CA8;
+	Mon, 23 Nov 2020 17:55:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I-P7QdokLKeX; Mon, 23 Nov 2020 17:07:36 +0000 (UTC)
+	with ESMTP id t+9D8O7QcXzg; Mon, 23 Nov 2020 17:55:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5FC4E8473A;
-	Mon, 23 Nov 2020 17:07:36 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C154E85BC0;
+	Mon, 23 Nov 2020 17:55:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A314C0891;
-	Mon, 23 Nov 2020 17:07:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A98A6C0891;
+	Mon, 23 Nov 2020 17:55:15 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A1FDC0052
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:07:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9DA55C0052
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:55:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 27A4D87040
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:07:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 83AF487059
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:55:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dD-5OOZogFnR for <iommu@lists.linux-foundation.org>;
- Mon, 23 Nov 2020 17:07:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8076D87048
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:07:32 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1606151254; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=xBQcg+Wcwhh18eydvFxaDQClwZpGMJnYWJxgECPLHjo=;
- b=gTHiEN11ljBzLYw+9lRH7RJhGA0JZS7cjW+7wtIFpy9YZZc+0Pi2ygNuW3scyvkuiLsOG6f7
- bEUBjqotQz9ygnqSWEEVLGldXrLqJN80X7Ywnhr64lmvFyCPLLCnc8rtU11KspLtaKNjXMMz
- fJzNcp2BwhtbGL346LuoHpuhFV0=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 5fbbec467e9d874dfc6ec370 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 23 Nov 2020 17:07:18
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id A9766C4322A; Mon, 23 Nov 2020 17:07:18 +0000 (UTC)
-Received: from blr-ubuntu-253.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 66CC4C43462;
- Mon, 23 Nov 2020 17:07:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 66CC4C43462
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
- smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>
-Subject: [PATCHv9 8/8] iommu: arm-smmu-impl: Add a space before open
- parenthesis
-Date: Mon, 23 Nov 2020 22:36:01 +0530
-Message-Id: <bc6218a81ee48ac320a3046f7f88b981dab1cd15.1606150259.git.saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1606150259.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1606150259.git.saiprakash.ranjan@codeaurora.org>
+ with ESMTP id 3p2bb3SLVaNZ for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Nov 2020 17:55:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 909268705B
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 17:55:12 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ANHjQER029935;
+ Mon, 23 Nov 2020 17:54:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=jNy9iM8MssBS6XZLLC3syZ1vLxQIA3c5ANVUchLK3fQ=;
+ b=wMo+EhlFH4pLJpAEcNh0bnM8tLGA2MAn6vaQ8xzYYjS6EtvqesQfPaZiKu+Kwy+AzL0e
+ ltB7fkbEBigQzdvKmJ4vlehhCE6tgpDHEsIQWsIc5NoRvgmGPC+LkqTGltrW7ZU+YfF/
+ yugcIVpYwnZA5rw/sqEvVj5pzyDPi2ntJ3NDTNDYLIbBhO7mT2mDhBTRgHB4/5R1FtxH
+ Px1x83fPjiiK2QV1dq0hwazesEe4Fx7VQ70i7MWF6JJ0KMFLzYY64YWmujth+aIq0yVt
+ DQHx73gXi+mwc6HJ7+AoVmts36ai4RjIX3mKEVmb+2nvoBjcJKPNT4EA5/TNiGfyEeBJ 3g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by userp2130.oracle.com with ESMTP id 34xtaqj2j8-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Mon, 23 Nov 2020 17:54:44 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0ANHdbxc037449;
+ Mon, 23 Nov 2020 17:54:43 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+ by aserp3020.oracle.com with ESMTP id 34yx8hrbjb-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 23 Nov 2020 17:54:43 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+ by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0ANHscYD000338;
+ Mon, 23 Nov 2020 17:54:38 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Mon, 23 Nov 2020 09:54:38 -0800
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id D63B16A00A8; Mon, 23 Nov 2020 12:56:32 -0500 (EST)
+Date: Mon, 23 Nov 2020 12:56:32 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v6] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
+ guests.
+Message-ID: <20201123175632.GA21539@char.us.oracle.com>
+References: <20201119214205.11062-1-Ashish.Kalra@amd.com>
+ <20201123170647.GE15044@zn.tnic>
 MIME-Version: 1.0
-Cc: linux-arm-msm@vger.kernel.org, Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20201123170647.GE15044@zn.tnic>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9814
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ spamscore=0 suspectscore=0
+ bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011230118
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9814
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ spamscore=0 phishscore=0
+ mlxlogscore=999 clxscore=1015 suspectscore=0 lowpriorityscore=0
+ priorityscore=1501 bulkscore=0 impostorscore=0 adultscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011230118
+Cc: Thomas.Lendacky@amd.com, Ashish Kalra <Ashish.Kalra@amd.com>,
+ jon.grimm@amd.com, brijesh.singh@amd.com, dave.hansen@linux-intel.com,
+ peterz@infradead.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, luto@kernel.org,
+ hpa@zytor.com, rientjes@google.com, tglx@linutronix.de, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,32 +128,172 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Fix the checkpatch warning for space required before the open
-parenthesis.
+On Mon, Nov 23, 2020 at 06:06:47PM +0100, Borislav Petkov wrote:
+> On Thu, Nov 19, 2020 at 09:42:05PM +0000, Ashish Kalra wrote:
+> > From: Ashish Kalra <ashish.kalra@amd.com>
+> > 
+> > For SEV, all DMA to and from guest has to use shared (un-encrypted) pages.
+> > SEV uses SWIOTLB to make this happen without requiring changes to device
+> > drivers.  However, depending on workload being run, the default 64MB of
+> > SWIOTLB might not be enough and SWIOTLB may run out of buffers to use
+> > for DMA, resulting in I/O errors and/or performance degradation for
+> > high I/O workloads.
+> > 
+> > Increase the default size of SWIOTLB for SEV guests using a minimum
+> > value of 128MB and a maximum value of 512MB, determining on amount
+> > of provisioned guest memory.
+> 
+> That sentence needs massaging.
+> 
+> > Using late_initcall() interface to invoke swiotlb_adjust() does not
+> > work as the size adjustment needs to be done before mem_encrypt_init()
+> > and reserve_crashkernel() which use the allocated SWIOTLB buffer size,
+> > hence calling it explicitly from setup_arch().
+> 
+> "hence call it ... "
+> 
+> > 
+> > The SWIOTLB default size adjustment is added as an architecture specific
+> 
+> "... is added... " needs to be "Add ..."
+> 
+> > interface/callback to allow architectures such as those supporting memory
+> > encryption to adjust/expand SWIOTLB size for their use.
+> > 
+> > v5 fixed build errors and warnings as
+> > Reported-by: kbuild test robot <lkp@intel.com>
+> > 
+> > Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+> > ---
+> >  arch/x86/kernel/setup.c   |  2 ++
+> >  arch/x86/mm/mem_encrypt.c | 32 ++++++++++++++++++++++++++++++++
+> >  include/linux/swiotlb.h   |  6 ++++++
+> >  kernel/dma/swiotlb.c      | 24 ++++++++++++++++++++++++
+> >  4 files changed, 64 insertions(+)
+> > 
+> > diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+> > index 3511736fbc74..b073d58dd4a3 100644
+> > --- a/arch/x86/kernel/setup.c
+> > +++ b/arch/x86/kernel/setup.c
+> > @@ -1166,6 +1166,8 @@ void __init setup_arch(char **cmdline_p)
+> >  	if (boot_cpu_has(X86_FEATURE_GBPAGES))
+> >  		hugetlb_cma_reserve(PUD_SHIFT - PAGE_SHIFT);
+> >  
+> > +	swiotlb_adjust();
+> > +
+> >  	/*
+> >  	 * Reserve memory for crash kernel after SRAT is parsed so that it
+> >  	 * won't consume hotpluggable memory.
+> > diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> > index 3f248f0d0e07..c79a0d761db5 100644
+> > --- a/arch/x86/mm/mem_encrypt.c
+> > +++ b/arch/x86/mm/mem_encrypt.c
+> > @@ -490,6 +490,38 @@ static void print_mem_encrypt_feature_info(void)
+> >  }
+> >  
+> >  /* Architecture __weak replacement functions */
+> > +unsigned long __init arch_swiotlb_adjust(unsigned long iotlb_default_size)
+> > +{
+> > +	unsigned long size = 0;
+> 
+> 	unsigned long size = iotlb_default_size;
+> 
+> > +
+> > +	/*
+> > +	 * For SEV, all DMA has to occur via shared/unencrypted pages.
+> > +	 * SEV uses SWOTLB to make this happen without changing device
+> > +	 * drivers. However, depending on the workload being run, the
+> > +	 * default 64MB of SWIOTLB may not be enough & SWIOTLB may
+> 						     ^
+> 
+> Use words pls, not "&".
+> 
+> 
+> > +	 * run out of buffers for DMA, resulting in I/O errors and/or
+> > +	 * performance degradation especially with high I/O workloads.
+> > +	 * Increase the default size of SWIOTLB for SEV guests using
+> > +	 * a minimum value of 128MB and a maximum value of 512MB,
+> > +	 * depending on amount of provisioned guest memory.
+> > +	 */
+> > +	if (sev_active()) {
+> > +		phys_addr_t total_mem = memblock_phys_mem_size();
+> > +
+> > +		if (total_mem <= SZ_1G)
+> > +			size = max(iotlb_default_size, (unsigned long) SZ_128M);
+> > +		else if (total_mem <= SZ_4G)
+> > +			size = max(iotlb_default_size, (unsigned long) SZ_256M);
 
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Acked-by: Will Deacon <will@kernel.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That is eating 128MB for 1GB, aka 12% of the guest memory allocated statically for this.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-index 26e2734eb4d7..136872e77195 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-@@ -12,7 +12,7 @@
- 
- static int arm_smmu_gr0_ns(int offset)
- {
--	switch(offset) {
-+	switch (offset) {
- 	case ARM_SMMU_GR0_sCR0:
- 	case ARM_SMMU_GR0_sACR:
- 	case ARM_SMMU_GR0_sGFSR:
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+And for guests that are 2GB, that is 12% until it gets to 3GB when it is 8%
+and then 6% at 4GB.
 
+I would prefer this to be based on your memory count, that is 6% of total
+memory. And then going forward we can allocate memory _after_ boot and then stich
+the late SWIOTLB pool and allocate on demand.
+
+
+
+> > +		else
+> > +			size = max(iotlb_default_size, (unsigned long) SZ_512M);
+> > +
+> > +		pr_info("SWIOTLB bounce buffer size adjusted to %luMB for SEV platform",
+> 
+> just "... for SEV" - no need for "platform".
+> 
+> ...
+> 
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index c19379fabd20..3be9a19ea0a5 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -163,6 +163,30 @@ unsigned long swiotlb_size_or_default(void)
+> >  	return size ? size : (IO_TLB_DEFAULT_SIZE);
+> >  }
+> >  
+> > +unsigned long __init __weak arch_swiotlb_adjust(unsigned long size)
+> > +{
+> > +	return 0;
+> 
+> That, of course, needs to return size, not 0.
+
+This is not going to work for TDX. I think having a registration
+to SWIOTLB to have this function would be better going forward.
+
+As in there will be a swiotlb_register_adjuster() which AMD SEV
+code can call at start, also TDX can do it (and other platforms).
+
+
+> 
+> > +}
+> > +
+> > +void __init swiotlb_adjust(void)
+> > +{
+> > +	unsigned long size;
+> > +
+> > +	/*
+> > +	 * If swiotlb parameter has not been specified, give a chance to
+> > +	 * architectures such as those supporting memory encryption to
+> > +	 * adjust/expand SWIOTLB size for their use.
+> > +	 */
+> 
+> And when you preset the function-local argument "size" with the size
+> coming in as the size argument of arch_swiotlb_adjust()...
+> 
+> > +	if (!io_tlb_nslabs) {
+> > +		size = arch_swiotlb_adjust(IO_TLB_DEFAULT_SIZE);
+> > +		if (size) {
+> 
+> ... you don't have to do if (size) here either but simply use size to
+> compute io_tlb_nslabs, I'd say.
+> 
+> Thx.
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
