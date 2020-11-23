@@ -6,75 +6,71 @@ X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B918C2D0E4
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:47:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90990C56202
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:47:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 13ADB20B1F
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:47:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3406B20BED
+	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 15:47:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="aqvbywYz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13ADB20B1F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="oHrP0/Xx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3406B20BED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6B76A858B8;
-	Mon, 23 Nov 2020 15:47:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C4E22870FC;
+	Mon, 23 Nov 2020 15:47:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QkQ7C_e-Exn0; Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
+	with ESMTP id swSFSb6Lhcv1; Mon, 23 Nov 2020 15:47:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B026857BE;
-	Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6B4B0870EE;
+	Mon, 23 Nov 2020 15:47:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F7C7C0891;
-	Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE7A8C0052
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 65B2CC0891;
+	Mon, 23 Nov 2020 15:47:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 06895C0052
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A84F220472
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:12 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E95BE870EE
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qUxZrICv6tHP for <iommu@lists.linux-foundation.org>;
- Mon, 23 Nov 2020 15:47:11 +0000 (UTC)
+ with ESMTP id 48NwXYmiXEZh for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 6977D20459
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:11 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8259B870FC
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:47:13 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
  [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id B142320B1F;
- Mon, 23 Nov 2020 15:47:08 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 98F582100A;
+ Mon, 23 Nov 2020 15:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606146431;
- bh=liw0vFpQnqcjI3i4phcXrlgXpuoa4Cd0IXbxBoIJ3xE=;
+ s=default; t=1606146433;
+ bh=N9PPBZShoo+kzWjvDYDSDkWU/7lToiEmOhGmMUrdK1E=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=aqvbywYz7pfnV73A8wIB4GNBS+jqx2H8kz1q3qyS8CekS8bvtszw9/CJy8b8rohxU
- v+x/Wx0bv19xr0FVF/CvxJH4R74RTOMxR6jj4ctN662KjLLkhS73tno/olheOZ+04w
- b3YQCBsGvdokA8/oR2+l2pcrA8gahGVWlaFDh6Kg=
+ b=oHrP0/XxSj/xsc/il/Qhq8h3bIwKPB90YMoThRMBen848mx/fKkSGWvM+Njuva3fi
+ Hi7PCIgrCzkOaIK3dUXY1OlhmRTDtQ3G3++Yu/zybAZG5ghvcAm4oU487ba6QCpOJ2
+ QW+3rzMNpYFkr3A37X9aTDzfSul5gQrk3RxfWAGI=
 From: Will Deacon <will@kernel.org>
-To: lkml <linux-kernel@vger.kernel.org>, John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 1/2] arm-smmu-qcom: Ensure the qcom_scm driver has
- finished probing
-Date: Mon, 23 Nov 2020 15:46:59 +0000
-Message-Id: <160614327473.875458.14207739459234972190.b4-ty@kernel.org>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH] iommu: Check return of __iommu_attach_device()
+Date: Mon, 23 Nov 2020 15:47:00 +0000
+Message-Id: <160614346318.875972.5810044376174592959.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201112220520.48159-1-john.stultz@linaro.org>
-References: <20201112220520.48159-1-john.stultz@linaro.org>
+In-Reply-To: <20201119165846.34180-1-shameerali.kolothum.thodi@huawei.com>
+References: <20201119165846.34180-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-Cc: Maulik Shah <mkshah@codeaurora.org>, Marc Zyngier <maz@kernel.org>,
- Saravana Kannan <saravanak@google.com>, Will Deacon <will@kernel.org>,
- catalin.marinas@arm.com, Robin Murphy <robin.murphy@arm.com>,
- Lina Iyer <ilina@codeaurora.org>, iommu@lists.linux-foundation.org,
- Andy Gross <agross@kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- kernel-team@android.com
+Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
+ robin.murphy@arm.com, linuxarm@huawei.com, kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,22 +88,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 12 Nov 2020 22:05:19 +0000, John Stultz wrote:
-> Robin Murphy pointed out that if the arm-smmu driver probes before
-> the qcom_scm driver, we may call qcom_scm_qsmmu500_wait_safe_toggle()
-> before the __scm is initialized.
-> 
-> Now, getting this to happen is a bit contrived, as in my efforts it
-> required enabling asynchronous probing for both drivers, moving the
-> firmware dts node to the end of the dtsi file, as well as forcing a
-> long delay in the qcom_scm_probe function.
-> 
-> [...]
+On Thu, 19 Nov 2020 16:58:46 +0000, Shameer Kolothum wrote:
+> Currently iommu_create_device_direct_mappings() is called
+> without checking the return of __iommu_attach_device(). This
+> may result in failures in iommu driver if dev attach returns
+> error.
 
-Applied only the first patch to arm64 (for-next/iommu/fixes), thanks!
+Applied to arm64 (for-next/iommu/fixes), thanks!
 
-[1/2] arm-smmu-qcom: Ensure the qcom_scm driver has finished probing
-      https://git.kernel.org/arm64/c/72b55c96f3a5
+[1/1] iommu: Check return of __iommu_attach_device()
+      https://git.kernel.org/arm64/c/77c38c8cf52e
 
 Cheers,
 -- 
