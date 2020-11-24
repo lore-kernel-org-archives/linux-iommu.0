@@ -1,94 +1,100 @@
-Return-Path: <SRS0=jcR/=E5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573C0C56202
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 23:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 270F5C2D0E4
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 04:03:08 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99AF8206B6
-	for <iommu@archiver.kernel.org>; Mon, 23 Nov 2020 23:28:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5D15B2068D
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 04:03:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="B2IBeB19"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99AF8206B6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oMt4QV/6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D15B2068D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D34B985FD5;
-	Mon, 23 Nov 2020 23:28:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C031F85E9F;
+	Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RCGr50H5LGpi; Mon, 23 Nov 2020 23:28:11 +0000 (UTC)
+	with ESMTP id un2nI6MxrIYZ; Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CE1E085BDF;
-	Mon, 23 Nov 2020 23:28:11 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0F71E85C95;
+	Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B80A2C0891;
-	Mon, 23 Nov 2020 23:28:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9137EC0052
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 23:20:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6690C0891;
+	Tue, 24 Nov 2020 04:03:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AEE8AC0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7467E85BCD
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 23:20:26 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8AA188710B
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id V75TuQgdpoHG for <iommu@lists.linux-foundation.org>;
- Mon, 23 Nov 2020 23:20:25 +0000 (UTC)
-X-Greylist: delayed 00:33:59 by SQLgrey-1.7.6
-Received: from mail-oo1-f74.google.com (mail-oo1-f74.google.com
- [209.85.161.74])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C4C5684EDB
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 23:20:25 +0000 (UTC)
-Received: by mail-oo1-f74.google.com with SMTP id w3so7599999oov.6
- for <iommu@lists.linux-foundation.org>; Mon, 23 Nov 2020 15:20:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=sender:date:message-id:mime-version:subject:from:to:cc;
- bh=YXylx3GCNHyHYBMQqsysdmzOVSsOtZin9cWyUbZGeSg=;
- b=B2IBeB19zTfs1xYaSNHLZDMsX3f0wvPupU1x6jQPo5zn0gD36JBXuYQIEFhSNZxQVc
- C+cutJyz7ixR0Zct99A8r8T+So46A9nmiDQAiQPQ5yQjyxNdxDFUrysbVUSvhoni3QWw
- qUNVsxjAQfDFmPr/HsEzGJYkQnVTRasJjwEaq22nHHkqnYRTLt+shTBNv1s7AsybXR/Q
- 824VelCSQrO4ugrRqHUlEk05gL3618qDH7DQJgTrPp+XFCkLDAXfPJGZuCyUvB/ENZaN
- 2sVT81n9zsSeivwzCcBMIGwGmXPrm13GhQHUsNjzlDceRfzYvC0buQx2dzAsdSmshJuR
- IjXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
- :to:cc;
- bh=YXylx3GCNHyHYBMQqsysdmzOVSsOtZin9cWyUbZGeSg=;
- b=I/Nqk+gpN0UDRXutZmqb903MbBvG/vchKSFVmHFIeMg5YeIUJxXdRrmzhn2KcRHAiK
- JolWqlfl5vYqdOLqqk3oq5NDlgmJKWD3wDp+ai/sg02nw8Thk5uW2aNgBc3XOFfB1qO0
- GeirLn3rjiK1mbo/V1Ah2IN0EwZz8D2+UCtOKThEn/TDGAxkCN8nktiXlJxHsPz2F2xD
- Y4Rni0+eSQyIq/6aAagtKkSgNX2zPTqd13zjA2uUdFY18cxrI2L1w2kftr67VYeBHkx2
- RiwzcvJXLe4dSo8i6vjl3+rdqZo8A9SpbQObAIzEPb8qhDISXCh/Ua8HJq4zQxhEz6LY
- 5RqQ==
-X-Gm-Message-State: AOAM532731JSuTmNCmXmpIRwFfG/03C0rZy77RXIwcr7xAnQ9W71YB2F
- f0SooS6aJORQRmJ9KdET7lHuu2Hvtg==
-X-Google-Smtp-Source: ABdhPJwaHIC5Agde+mPQGxwaVJCi4Ya+RC1h3w/HtrSv/HBYs4qc50kEx9QHD7poWbsARQ0erwEZDcV4cA==
-X-Received: from jxgao.kir.corp.google.com
- ([2620:0:1008:11:3e52:82ff:fe62:cb61])
- (user=jxgao job=sendgmr) by 2002:a17:90a:5b07:: with SMTP id
- o7mr1213160pji.58.1606169891131; Mon, 23 Nov 2020 14:18:11 -0800 (PST)
-Date: Mon, 23 Nov 2020 14:18:07 -0800
-Message-Id: <20201123221807.3344263-1-jxgao@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
-Subject: [PATCH] [PATCH] Adding offset keeping option when mapping data via
- SWIOTLB.
-To: kbusch@kernel.org
-X-Mailman-Approved-At: Mon, 23 Nov 2020 23:28:10 +0000
-Cc: sagi@grimberg.me, konrad.wilk@oracle.com, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, axboe@fb.com, iommu@lists.linux-foundation.org,
- David Rientjes <rientjes@google.com>, Jianxiong Gao <jxgao@google.com>,
- robin.murphy@arm.com, hch@lst.de
+ with ESMTP id kDXoGC4J8WnR for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 04:03:03 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C9064870EE
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:00 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1606190583; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=FoFdssz2mmWQah99fW3jkhC1o+yA5snIRe1I3agQdNA=;
+ b=oMt4QV/6GdjWv/zSB19e7nYz+RvI8afFtQjYG4TkYh+ypiwMdBA1+DLo9kGvb4/qh3gENZob
+ k/vXCQVmN6yM1wN9v1YtJ3qYLDblPsM1FDrRaw0U/r7B/Qmzo5kEl427bzb2V13Xv0xYKtKi
+ R/n00PSBHNJaUMHo35Att/jLeA0=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n10.prod.us-east-1.postgun.com with SMTP id
+ 5fbc85f0e9b70886228ae0df (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 04:02:56
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 2EC81C43466; Tue, 24 Nov 2020 04:02:55 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 19B4BC433ED;
+ Tue, 24 Nov 2020 04:02:54 +0000 (UTC)
+MIME-Version: 1.0
+Date: Tue, 24 Nov 2020 09:32:54 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
+ support
+In-Reply-To: <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
+References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
+ <20201123152146.GE11033@willie-the-truck>
+ <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
+ <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
+Message-ID: <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Akhil P Oommen <akhilpo@codeaurora.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS , Joerg
+ Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ "Kristian H . Kristensen" <hoegsberg@google.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ freedreno <freedreno@lists.freedesktop.org>, "moderated
+ list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,98 +107,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jianxiong Gao via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jianxiong Gao <jxgao@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-NVMe driver and other applications may depend on the data offset
-to operate correctly. Currently when unaligned data is mapped via
-SWIOTLB, the data is mapped as slab aligned with the SWIOTLB. When
-booting with --swiotlb=force option and using NVMe as interface,
-running mkfs.xfs on Rhel fails because of the unalignment issue.
-This patch adds an option to make sure the mapped data preserves
-its offset of the orginal addrss. Tested on latest kernel that
-this patch fixes the issue.
+On 2020-11-24 00:52, Rob Clark wrote:
+> On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
+> <saiprakash.ranjan@codeaurora.org> wrote:
+>> 
+>> On 2020-11-23 20:51, Will Deacon wrote:
+>> > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
+>> >> Some hardware variants contain a system cache or the last level
+>> >> cache(llc). This cache is typically a large block which is shared
+>> >> by multiple clients on the SOC. GPU uses the system cache to cache
+>> >> both the GPU data buffers(like textures) as well the SMMU pagetables.
+>> >> This helps with improved render performance as well as lower power
+>> >> consumption by reducing the bus traffic to the system memory.
+>> >>
+>> >> The system cache architecture allows the cache to be split into slices
+>> >> which then be used by multiple SOC clients. This patch series is an
+>> >> effort to enable and use two of those slices preallocated for the GPU,
+>> >> one for the GPU data buffers and another for the GPU SMMU hardware
+>> >> pagetables.
+>> >>
+>> >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
+>> >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
+>> >>
+>> >> Changes in v8:
+>> >>  * Introduce a generic domain attribute for pagetable config (Will)
+>> >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
+>> >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
+>> >> (Will)
+>> >
+>> > Modulo some minor comments I've made, this looks good to me. What is
+>> > the
+>> > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
+>> > the
+>> > MSM GPU driver and I'd like to avoid conflicts with that.
+>> >
+>> 
+>> SMMU bits are pretty much independent and GPU relies on the domain
+>> attribute
+>> and the quirk exposed, so as long as SMMU changes go in first it 
+>> should
+>> be good.
+>> Rob?
+> 
+> I suppose one option would be to split out the patch that adds the
+> attribute into it's own patch, and merge that both thru drm and iommu?
+> 
 
-Signed-off-by: Jianxiong Gao <jxgao@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
----
- drivers/nvme/host/pci.c     |  3 ++-
- include/linux/dma-mapping.h |  8 ++++++++
- kernel/dma/swiotlb.c        | 13 +++++++++++++
- 3 files changed, 23 insertions(+), 1 deletion(-)
+Ok I can split out domain attr and quirk into its own patch if Will is
+fine with that approach.
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 0578ff253c47..a366fb8a1ff0 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -833,7 +833,8 @@ static blk_status_t nvme_map_data(struct nvme_dev *dev, struct request *req,
- 				iod->nents, rq_dma_dir(req), DMA_ATTR_NO_WARN);
- 	else
- 		nr_mapped = dma_map_sg_attrs(dev->dev, iod->sg, iod->nents,
--					     rq_dma_dir(req), DMA_ATTR_NO_WARN);
-+				rq_dma_dir(req),
-+			       	DMA_ATTR_NO_WARN|DMA_ATTR_SWIOTLB_KEEP_OFFSET);
- 	if (!nr_mapped)
- 		goto out;
- 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 956151052d45..e46d23d9fa20 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,14 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
-+/*
-+ * DMA_ATTR_SWIOTLB_KEEP_OFFSET: used to indicate that the buffer has to keep
-+ * its offset when mapped via SWIOTLB. Some application functionality depends
-+ * on the address offset, thus when buffers are mapped via SWIOTLB, the offset
-+ * needs to be preserved.
-+ */
-+#define DMA_ATTR_SWIOTLB_KEEP_OFFSET	(1UL << 10)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 781b9dca197c..f43d7be1342d 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -483,6 +483,13 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
- 	max_slots = mask + 1
- 		    ? ALIGN(mask + 1, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT
- 		    : 1UL << (BITS_PER_LONG - IO_TLB_SHIFT);
-+ 
-+	/*
-+	 * If we need to keep the offset when mapping, we need to add the offset
-+	 * to the total set we need to allocate in SWIOTLB
-+	 */
-+	if (attrs & DMA_ATTR_SWIOTLB_KEEP_OFFSET)
-+		alloc_size += offset_in_page(orig_addr);
- 
- 	/*
- 	 * For mappings greater than or equal to a page, we limit the stride
-@@ -567,6 +574,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
- 	 */
- 	for (i = 0; i < nslots; i++)
- 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
-+	/*
-+	 * When keeping the offset of the original data, we need to advance
-+	 * the tlb_addr by the offset of orig_addr.
-+	 */
-+	if (attrs & DMA_ATTR_SWIOTLB_KEEP_OFFSET)
-+		tlb_addr += orig_addr & (PAGE_SIZE - 1);
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
- 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
+> If Will/Robin dislike that approach, I'll pick up the parts of the drm
+> patches which don't depend on the new attribute for v5.11 and the rest
+> for v5.12.. or possibly a second late v5.11 pull req if airlied
+> doesn't hate me too much for it.
+> 
+> Going forward, I think we will have one or two more co-dependent
+> series, like the smmu iova fault handler improvements that Jordan
+> posted.  So I would like to hear how Will and Robin prefer to handle
+> those.
+> 
+> BR,
+> -R
+> 
+
+Thanks,
+Sai
+
 -- 
-2.27.0
-
-
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
