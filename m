@@ -7,76 +7,76 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26530C2D0E4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2801C63798
 	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 15:38:59 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8FA8A20715
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 15:38:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 36ECA2067C
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 15:38:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MyQgzUY2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8FA8A20715
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="P/Yhlw5T"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36ECA2067C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4B0C8203F9;
+	by whitealder.osuosl.org (Postfix) with ESMTP id E2D16866C1;
 	Tue, 24 Nov 2020 15:38:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 95oK80Z4sAOs; Tue, 24 Nov 2020 15:38:57 +0000 (UTC)
+	with ESMTP id LWJSY9AtZdgJ; Tue, 24 Nov 2020 15:38:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3E6642039C;
-	Tue, 24 Nov 2020 15:38:57 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1EA3586180;
+	Tue, 24 Nov 2020 15:38:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BAF3C163C;
-	Tue, 24 Nov 2020 15:38:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CA740C0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 15:38:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AA8DF204E1
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 15:38:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7+YjHqCWATiz for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 15:38:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
- [209.85.221.68])
- by silver.osuosl.org (Postfix) with ESMTPS id 4577F204DE
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F1946C1D9F;
+	Tue, 24 Nov 2020 15:38:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC7E2C163C
  for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 15:38:52 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id z7so6950562wrn.3
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 07:38:52 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id E35BB872E2
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 15:38:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6fjIW1nU3n8a for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 15:38:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
+ [209.85.221.66])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9C568872E0
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 15:38:51 +0000 (UTC)
+Received: by mail-wr1-f66.google.com with SMTP id s8so22725449wrw.10
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 07:38:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=EpyMQrLTrHVI5txNBrKgPsmGUgrXglJVTVw+m/0Ouds=;
- b=MyQgzUY2byHdFSx/r89I4t+T+2w/nKt4sOcaLSo7MrKy8Ir89ajb4aO0+vl+xzdFNB
- OpSlE7xnd/+/+6WDTbNQFh51Ew487JIaCXtKuzfGiqISmmcvLj/Dzp3cKS+RwDVh5z+1
- +1VCIwXMZBuwSmzdchZPZ2xbRnbB1UlaV3QSg=
+ h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+ :content-transfer-encoding;
+ bh=HML93bM0Bc4n5YHvmGElcbvPwZfiGcvKE6k2Cpvki30=;
+ b=P/Yhlw5TgpxeGby9pjaEmYM0kGqLCsDDYBbhyLuTlFded/Q5ZQRlZ84NfRlykzbYH1
+ DkVUEyabfDMDks59dR0b4BJYzFtC7c9ApMtGMz0bO5Hu7ZMt+S74Y94J6gZNfEWSV4ge
+ MnpSsvnZ0GngUkTv8BCpKHurEO5uF9oK2zb5g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=EpyMQrLTrHVI5txNBrKgPsmGUgrXglJVTVw+m/0Ouds=;
- b=WmB8QIG3os6LZ80GgV7xK5RbKJ3EZ049QYgAdqLwcENU4VCk0V2g8vVUbXWDLoR+Zo
- HCyU75woAwzAOc2NmIYFHZZ7RjCI9lw1FCTICqrznfrDn6gFUqmrtD48GLVCtBlMpmg9
- VyNZY2OsRvgzMEYzD3jXDds/4ptFYgTedHcXwXCEul9aSYX4DavsIPPsuybPwzJGuX7S
- GnZg4d9qsfvlXJhYUNnydXZs8MLgKdZewMqSOoIQZY3mGduPLUssGDJw6O58YZWgaCbf
- 5DDGapBXcE6bKNqYOCU1sc7uOfZJZ/oRMqWwmbCjIb37rmDGaTSlaIPUZunkvEWtbERU
- sPKg==
-X-Gm-Message-State: AOAM530MzwGgOplBh8UH+dTZNJirL/Ok9gVJDOu71+3jdjjDM2wPFxJA
- OnJC4LQIVcC/GA/08INYHmaviQ==
-X-Google-Smtp-Source: ABdhPJwNdpaLE8ojeiuxLUG9loFdJWcDfRi4IrJGedmjtWxZwsbIrZ+gGhlPEvJkjoCQXT/9u2JRwg==
-X-Received: by 2002:adf:f1c2:: with SMTP id z2mr5751777wro.281.1606232330808; 
+ bh=HML93bM0Bc4n5YHvmGElcbvPwZfiGcvKE6k2Cpvki30=;
+ b=SICYxTlkoA7pOlRDjXPYm/hmHWk3QyYYTmGs6w4b+xkXt+14rclcoUqj55c3CrU1C/
+ +5rjc0we6ZstzFLYY3+Bfe/jN3vwhfPzbgh96EE75R9KVZqIqqyCP6Hutlh7RCdO9epW
+ vQqPROsLXr+9BRyn0Ym63Zoh2QXJ5mlNlulk1fwzOVg8zjNV5/k5Y+qtEDhUy/H/rpLK
+ UOTi63nUiGD4E953d6J9/kS/yzkS2QfnDHRii4UUcQI3xjewse7ZNSTl2h4HK41JGRLS
+ COgtxlzpafFGATXnR+rUsmlHeZSJWykj6gVPUWFmgoc7oWVwvSO48n2hE8jojSAYqMXQ
+ bmHQ==
+X-Gm-Message-State: AOAM532ovMO8HMyN2sH3c1LLArUpkmvggNR7Pr37J9BtgnEyCk5SZRP4
+ Vjb97BtVTwlufKCCRnJdS7njxg==
+X-Google-Smtp-Source: ABdhPJyr+m/OvVN8bOtfmxzP/EzSgR9DeGgRdBRvSfGr9+vxnRk4Tg52DdcdCEyGndX/SxXL7AVijg==
+X-Received: by 2002:a5d:44c1:: with SMTP id z1mr5836653wrr.375.1606232330021; 
  Tue, 24 Nov 2020 07:38:50 -0800 (PST)
 Received: from alco.lan ([80.71.134.83])
- by smtp.gmail.com with ESMTPSA id 25sm5814752wmk.19.2020.11.24.07.38.50
+ by smtp.gmail.com with ESMTPSA id 25sm5814752wmk.19.2020.11.24.07.38.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 24 Nov 2020 07:38:50 -0800 (PST)
+ Tue, 24 Nov 2020 07:38:49 -0800 (PST)
 From: Ricardo Ribalda <ribalda@chromium.org>
 To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab <mchehab@kernel.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -87,14 +87,13 @@ To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab <mchehab@kernel.org>,
  Linux Media Mailing List <linux-media@vger.kernel.org>,
  Tomasz Figa <tfiga@chromium.org>,
  Sergey Senozhatsky <senozhatsky@google.com>
-Subject: [PATCH 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
-Date: Tue, 24 Nov 2020 16:38:44 +0100
-Message-Id: <20201124153845.132207-5-ribalda@chromium.org>
+Subject: [PATCH 4/6] WIP: add a dma_alloc_contiguous API
+Date: Tue, 24 Nov 2020 16:38:43 +0100
+Message-Id: <20201124153845.132207-4-ribalda@chromium.org>
 X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
 In-Reply-To: <20201124153845.132207-1-ribalda@chromium.org>
 References: <20201124153845.132207-1-ribalda@chromium.org>
 MIME-Version: 1.0
-Cc: Ricardo Ribalda <ribalda@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,147 +111,225 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On architectures where the is no coherent caching such as ARM use the
-dma_alloc_noncontiguos API and handle manually the cache flushing using
-dma_sync_single().
+From: Christoph Hellwig <hch@lst.de>
 
-With this patch on the affected architectures we can measure up to 20x
-performance improvement in uvc_video_copy_data_work().
+Add a new API that returns a virtually non-contigous array of pages
+and dma address.  This API is only implemented for dma-iommu and will
+not be implemented for non-iommu DMA API instances that have to allocate
+contiguous memory.  It is up to the caller to check if the API is
+available.
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+The intent is that media drivers can use this API if either:
+
+ - no kernel mapping or only temporary kernel mappings are required.
+   That is as a better replacement for DMA_ATTR_NO_KERNEL_MAPPING
+ - a kernel mapping is required for cached and DMA mapped pages, but
+   the driver also needs the pages to e.g. map them to userspace.
+   In that sense it is a replacement for some aspects of the recently
+   removed and never fully implemented DMA_ATTR_NON_CONSISTENT
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/media/usb/uvc/uvc_video.c | 74 ++++++++++++++++++++++++++-----
- drivers/media/usb/uvc/uvcvideo.h  |  1 +
- 2 files changed, 63 insertions(+), 12 deletions(-)
+ drivers/iommu/dma-iommu.c   | 73 +++++++++++++++++++++++++------------
+ include/linux/dma-map-ops.h |  4 ++
+ include/linux/dma-mapping.h |  5 +++
+ kernel/dma/mapping.c        | 35 ++++++++++++++++++
+ 4 files changed, 93 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
-index a6a441d92b94..9e90b261428a 100644
---- a/drivers/media/usb/uvc/uvc_video.c
-+++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1490,6 +1490,11 @@ static void uvc_video_encode_bulk(struct uvc_urb *uvc_urb,
- 	urb->transfer_buffer_length = stream->urb_size - len;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index a2fb92de7e3d..2e72fe1b9c3b 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -564,23 +564,12 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
+ 	return pages;
  }
  
-+static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
-+{
-+	return stream->dev->udev->bus->controller->parent;
-+}
-+
- static void uvc_video_complete(struct urb *urb)
+-/**
+- * iommu_dma_alloc_remap - Allocate and map a buffer contiguous in IOVA space
+- * @dev: Device to allocate memory for. Must be a real device
+- *	 attached to an iommu_dma_domain
+- * @size: Size of buffer in bytes
+- * @dma_handle: Out argument for allocated DMA handle
+- * @gfp: Allocation flags
+- * @prot: pgprot_t to use for the remapped mapping
+- * @attrs: DMA attributes for this allocation
+- *
+- * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
++/*
++ * If size is less than PAGE_SIZE, then a full CPU page will be allocated,
+  * but an IOMMU which supports smaller pages might not map the whole thing.
+- *
+- * Return: Mapped virtual address, or NULL on failure.
+  */
+-static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
++static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
++		size_t size, dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
+ 		unsigned long attrs)
  {
- 	struct uvc_urb *uvc_urb = urb->context;
-@@ -1539,6 +1544,11 @@ static void uvc_video_complete(struct urb *urb)
- 	 * Process the URB headers, and optionally queue expensive memcpy tasks
- 	 * to be deferred to a work queue.
- 	 */
-+	if (uvc_urb->pages)
-+		dma_sync_single_for_cpu(stream_to_dmadev(stream),
-+					urb->transfer_dma,
-+					urb->transfer_buffer_length,
-+					DMA_FROM_DEVICE);
- 	stream->decode(uvc_urb, buf, buf_meta);
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+@@ -592,7 +581,6 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 	struct page **pages;
+ 	struct sg_table sgt;
+ 	dma_addr_t iova;
+-	void *vaddr;
  
- 	/* If no async work is needed, resubmit the URB immediately. */
-@@ -1566,8 +1576,15 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
- 			continue;
+ 	*dma_handle = DMA_MAPPING_ERROR;
  
- #ifndef CONFIG_DMA_NONCOHERENT
--		usb_free_coherent(stream->dev->udev, stream->urb_size,
--				  uvc_urb->buffer, uvc_urb->dma);
-+		if (uvc_urb->pages) {
-+			vunmap(uvc_urb->buffer);
-+			dma_free_noncontiguous(stream_to_dmadev(stream),
-+					       stream->urb_size,
-+					       uvc_urb->pages, uvc_urb->dma);
-+		} else {
-+			usb_free_coherent(stream->dev->udev, stream->urb_size,
-+					  uvc_urb->buffer, uvc_urb->dma);
-+		}
- #else
- 		kfree(uvc_urb->buffer);
- #endif
-@@ -1577,6 +1594,47 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
- 	stream->urb_size = 0;
+@@ -635,17 +623,10 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 			< size)
+ 		goto out_free_sg;
+ 
+-	vaddr = dma_common_pages_remap(pages, size, prot,
+-			__builtin_return_address(0));
+-	if (!vaddr)
+-		goto out_unmap;
+-
+ 	*dma_handle = iova;
+ 	sg_free_table(&sgt);
+-	return vaddr;
++	return pages;
+ 
+-out_unmap:
+-	__iommu_dma_unmap(dev, iova, size);
+ out_free_sg:
+ 	sg_free_table(&sgt);
+ out_free_iova:
+@@ -655,6 +636,46 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 	return NULL;
  }
  
-+#ifndef CONFIG_DMA_NONCOHERENT
-+static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-+				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
++static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
++		unsigned long attrs)
 +{
-+	struct device *dma_dev = dma_dev = stream_to_dmadev(stream);
++	struct page **pages;
++	void *vaddr;
 +
-+	if (!dma_can_alloc_noncontiguous(dma_dev)) {
-+		uvc_urb->buffer = usb_alloc_coherent(stream->dev->udev,
-+						     stream->urb_size,
-+						     gfp_flags | __GFP_NOWARN,
-+						     &uvc_urb->dma);
-+		return uvc_urb->buffer != NULL;
-+	}
++	pages = __iommu_dma_alloc_noncontiguous(dev, size, dma_handle, gfp,
++						prot, attrs);
++	if (!pages)
++		return NULL;
++	vaddr = dma_common_pages_remap(pages, size, prot,
++			__builtin_return_address(0));
++	if (!vaddr)
++		goto out_unmap;
++	return vaddr;
 +
-+	uvc_urb->pages = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
-+						 &uvc_urb->dma,
-+						 gfp_flags | __GFP_NOWARN, 0);
-+	if (!uvc_urb->pages)
-+		return false;
-+
-+	uvc_urb->buffer = vmap(uvc_urb->pages,
-+			       PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT,
-+			       VM_DMA_COHERENT, PAGE_KERNEL);
-+	if (!uvc_urb->buffer) {
-+		dma_free_noncontiguous(dma_dev, stream->urb_size,
-+				       uvc_urb->pages, uvc_urb->dma);
-+		return false;
-+	}
-+
-+	return true;
++out_unmap:
++	__iommu_dma_unmap(dev, *dma_handle, size);
++	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
++	return NULL;
 +}
-+#else
-+static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-+				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
-+{
-+	uvc_urb->buffer = kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
 +
-+	return uvc_urb->buffer != NULL;
++#ifdef CONFIG_DMA_REMAP
++static struct page **iommu_dma_alloc_noncontiguous(struct device *dev,
++		size_t size, dma_addr_t *dma_handle, gfp_t gfp,
++		unsigned long attrs)
++{
++	return __iommu_dma_alloc_noncontiguous(dev, size, dma_handle, gfp,
++					       PAGE_KERNEL, attrs);
++}
++
++static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
++		struct page **pages, dma_addr_t dma_handle)
++{
++	__iommu_dma_unmap(dev, dma_handle, size);
++	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
 +}
 +#endif
 +
- /*
-  * Allocate transfer buffers. This function can be called with buffers
-  * already allocated when resuming from suspend, in which case it will
-@@ -1607,19 +1665,11 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+ {
+@@ -1109,6 +1130,10 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.free			= iommu_dma_free,
+ 	.alloc_pages		= dma_common_alloc_pages,
+ 	.free_pages		= dma_common_free_pages,
++#ifdef CONFIG_DMA_REMAP
++	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
++	.free_noncontiguous	= iommu_dma_free_noncontiguous,
++#endif
+ 	.mmap			= iommu_dma_mmap,
+ 	.get_sgtable		= iommu_dma_get_sgtable,
+ 	.map_page		= iommu_dma_map_page,
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 3d1f91464bcf..3cc313678d42 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -22,6 +22,10 @@ struct dma_map_ops {
+ 			gfp_t gfp);
+ 	void (*free_pages)(struct device *dev, size_t size, struct page *vaddr,
+ 			dma_addr_t dma_handle, enum dma_data_direction dir);
++	struct page **(*alloc_noncontiguous)(struct device *dev, size_t size,
++			dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs);
++	void (*free_noncontiguous)(struct device *dev, size_t size,
++			struct page **pages, dma_addr_t dma_handle);
+ 	int (*mmap)(struct device *, struct vm_area_struct *,
+ 			void *, dma_addr_t, size_t, unsigned long attrs);
  
- 	/* Retry allocations until one succeed. */
- 	for (; npackets > 1; npackets /= 2) {
-+		stream->urb_size = psize * npackets;
- 		for (i = 0; i < UVC_URBS; ++i) {
- 			struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 956151052d45..e1b4cb1d2e55 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -267,6 +267,11 @@ void *dma_alloc_noncoherent(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp);
+ void dma_free_noncoherent(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_handle, enum dma_data_direction dir);
++bool dma_can_alloc_noncontiguous(struct device *dev);
++struct page **dma_alloc_noncontiguous(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs);
++void dma_free_noncontiguous(struct device *dev, size_t size,
++		struct page **pages, dma_addr_t dma_handle);
  
--			stream->urb_size = psize * npackets;
--#ifndef CONFIG_DMA_NONCOHERENT
--			uvc_urb->buffer = usb_alloc_coherent(
--				stream->dev->udev, stream->urb_size,
--				gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
--#else
--			uvc_urb->buffer =
--			    kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
--#endif
--			if (!uvc_urb->buffer) {
-+			if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
- 				uvc_free_urb_buffers(stream);
- 				break;
- 			}
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index a3dfacf069c4..3e3ef1f1daa5 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -532,6 +532,7 @@ struct uvc_urb {
+ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index d3032513c54b..770c2f66512d 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -530,6 +530,41 @@ void dma_free_noncoherent(struct device *dev, size_t size, void *vaddr,
+ }
+ EXPORT_SYMBOL_GPL(dma_free_noncoherent);
  
- 	char *buffer;
- 	dma_addr_t dma;
-+	struct page **pages;
- 
- 	unsigned int async_operations;
- 	struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
++bool dma_can_alloc_noncontiguous(struct device *dev)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	return ops && ops->free_noncontiguous;
++}
++EXPORT_SYMBOL_GPL(dma_can_alloc_noncontiguous);
++
++struct page **dma_alloc_noncontiguous(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	if (WARN_ON_ONCE(!dma_can_alloc_noncontiguous(dev)))
++		return NULL;
++	if (attrs & ~DMA_ATTR_ALLOC_SINGLE_PAGES) {
++		dev_warn(dev, "invalid flags (0x%lx) for %s\n",
++			 attrs, __func__);
++		return NULL;
++	}
++	return ops->alloc_noncontiguous(dev, size, dma_handle, gfp, attrs);
++}
++EXPORT_SYMBOL_GPL(dma_alloc_noncontiguous);
++
++void dma_free_noncontiguous(struct device *dev, size_t size,
++		struct page **pages, dma_addr_t dma_handle)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	if (WARN_ON_ONCE(!dma_can_alloc_noncontiguous(dev)))
++		return;
++	ops->free_noncontiguous(dev, size, pages, dma_handle);
++}
++EXPORT_SYMBOL_GPL(dma_free_noncontiguous);
++
+ int dma_supported(struct device *dev, u64 mask)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
 -- 
 2.29.2.454.gaff20da3a2-goog
 
