@@ -2,104 +2,93 @@ Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F34C56202
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:04:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A918C56202
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:16:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9DC4920857
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:04:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8C45F206B5
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:16:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e4XPfFaf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DC4920857
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="mIBRVvEq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C45F206B5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1772E85CA1;
-	Tue, 24 Nov 2020 19:04:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pz09wNx0WVYh; Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 53ED985C90;
-	Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31E6BC163C;
-	Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37F12C0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:55 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 181B6872ED
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1198C86F88;
+	Tue, 24 Nov 2020 19:16:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cIP5zrEwhWh5; Tue, 24 Nov 2020 19:16:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3AE4D85D22;
+	Tue, 24 Nov 2020 19:16:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2AFA9C163C;
+	Tue, 24 Nov 2020 19:16:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19816C0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:16:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0CF0386257
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:16:14 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NZx1xJT3szCP for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 19:03:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com
- [209.85.221.45])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D21AF872EC
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:53 +0000 (UTC)
-Received: by mail-wr1-f45.google.com with SMTP id u12so23503699wrt.0
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:03:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Kf8N/OmqZHAolew6L+ymXRNdjbnvIjwkoc3J3zrIO6o=;
- b=e4XPfFafIyuCJA3/oM5IEkO0sIKvTxq5TB/vBw5VApjZmswLIR+ss8JeVCBQc3S0YB
- utaTXD2KgvRBJSQYloFRQA3bwyim1R63U6DlE/t1zLaFkVf6C4xghKml39Z5tUdk8KE0
- FOyMsVp/6YNj0a+F4KKDzno65iOfoowVa0154Sled8pW+rU69gDbIGFGIs379KCmm2Bn
- ZxHpjoYkCCIPHBCgz4Q2ODoHHTiIRw2fRYAmW7CNSCRm8Dk2TSpWbBjoFGOb5k2sn5Wb
- xzKdxqm90TYqRiKn+hjfi33FMMy2DdVYzrfu8Tg/n3hBDZ3JwSpF8wCnmejQd5TfPZa2
- 1Tww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=Kf8N/OmqZHAolew6L+ymXRNdjbnvIjwkoc3J3zrIO6o=;
- b=I5ax7ndfwlzADD1OycRWMh6Gn95snNZvIey6hNteC+e12E95mo/fj8njTwvScaYSkK
- omEg6EHmaOSfPydfkCNv1bfFzty8kIgzHfKjY8ZXCj2Vxc1c6Qkx/brX15sIgUxrgh40
- h9yNHbWATtXMr3IBwye9fFF3BT0LzEWaz7qXrdixiERzkK48KhR6ENHZ6Lvg/AVM7Nz+
- hwO96tjw76CNTauNDYNOL8A3i0vqdUquGbUMLWT5RgkqJPt93WdstDAoBuVv6KTRItR9
- csq7dwsgJOIyrHFZCyl/Te7AFyN+Wu9OmFqx1SQ7/FAO+MDoy5Jk3NU8fBRmHldP97D1
- MU9g==
-X-Gm-Message-State: AOAM532ybtnf2O4qHEiWweZBSK5jB5lSaHR6sxJRxJc9oSkd2Z9Jcld5
- 9JBn7tif27AamqYAbCPQ/t87NKQu7e+lxWdE15I=
-X-Google-Smtp-Source: ABdhPJwW1Dno1QctDapnpNYSFC4x+KGmIfQzh+3Rg5OpwpAmPAHWb0eqXoADDsWEL4IzwAxlcJmhREL9yr7VY0C/XTc=
-X-Received: by 2002:adf:f6c7:: with SMTP id y7mr6621316wrp.147.1606244632292; 
- Tue, 24 Nov 2020 11:03:52 -0800 (PST)
+ with ESMTP id fB8HmTiQN_Nk for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 19:16:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m42-4.mailgun.net (m42-4.mailgun.net [69.72.42.4])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CAB138626C
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:16:12 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1606245373; h=Content-Transfer-Encoding: MIME-Version:
+ References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=PNVTaloRPDmgsBwaqIvGRZa0Rv80a3FCXDmAiylbwpM=;
+ b=mIBRVvEq+DsA82X4aJ21K9qncWvT1kqIe5z5wEtlrPbF1gxjMPIPa+H1/szDPdMUpbg8GtNP
+ 4tyKyxOI2vqEvwI0dQyAa9jJeeHF2j2HZHPaTnaB8AKWatfH30dp1rbTr+XwRYlnGB0sHSNJ
+ ao7HVaYIpu+0W4nL20TneoRUKSY=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
+ 5fbd5bfb0c9500dc7bafefd7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 19:16:11
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 6667CC43463; Tue, 24 Nov 2020 19:16:11 +0000 (UTC)
+Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
+ [129.46.96.20])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 8A38DC433C6;
+ Tue, 24 Nov 2020 19:16:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8A38DC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=jcrouse@codeaurora.org
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 2/3] drm/msm: Add an adreno-smmu-priv callback to get
+ pagefault info
+Date: Tue, 24 Nov 2020 12:15:59 -0700
+Message-Id: <20201124191600.2051751-3-jcrouse@codeaurora.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201124191600.2051751-1-jcrouse@codeaurora.org>
+References: <20201124191600.2051751-1-jcrouse@codeaurora.org>
 MIME-Version: 1.0
-References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
- <20201123152146.GE11033@willie-the-truck>
- <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
- <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
- <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
- <20201124111027.GA13151@willie-the-truck>
-In-Reply-To: <20201124111027.GA13151@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 24 Nov 2020 11:05:39 -0800
-Message-ID: <CAF6AEGuZ2YbY=ATFBX1KJw=LwhcpH8n+zzxckTHPwwopi6mOqw@mail.gmail.com>
-Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
- support
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS , Joerg Roedel <joro@8bytes.org>,
- " <iommu@lists.linux-foundation.org>,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
- freedreno <freedreno@lists.freedesktop.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+Cc: Rob Clark <robdclark@chromium.org>, linux-kernel@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,67 +106,127 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 24, 2020 at 3:10 AM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Nov 24, 2020 at 09:32:54AM +0530, Sai Prakash Ranjan wrote:
-> > On 2020-11-24 00:52, Rob Clark wrote:
-> > > On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
-> > > <saiprakash.ranjan@codeaurora.org> wrote:
-> > > >
-> > > > On 2020-11-23 20:51, Will Deacon wrote:
-> > > > > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
-> > > > >> Some hardware variants contain a system cache or the last level
-> > > > >> cache(llc). This cache is typically a large block which is shared
-> > > > >> by multiple clients on the SOC. GPU uses the system cache to cache
-> > > > >> both the GPU data buffers(like textures) as well the SMMU pagetables.
-> > > > >> This helps with improved render performance as well as lower power
-> > > > >> consumption by reducing the bus traffic to the system memory.
-> > > > >>
-> > > > >> The system cache architecture allows the cache to be split into slices
-> > > > >> which then be used by multiple SOC clients. This patch series is an
-> > > > >> effort to enable and use two of those slices preallocated for the GPU,
-> > > > >> one for the GPU data buffers and another for the GPU SMMU hardware
-> > > > >> pagetables.
-> > > > >>
-> > > > >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
-> > > > >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
-> > > > >>
-> > > > >> Changes in v8:
-> > > > >>  * Introduce a generic domain attribute for pagetable config (Will)
-> > > > >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
-> > > > >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
-> > > > >> (Will)
-> > > > >
-> > > > > Modulo some minor comments I've made, this looks good to me. What is
-> > > > > the
-> > > > > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
-> > > > > the
-> > > > > MSM GPU driver and I'd like to avoid conflicts with that.
-> > > > >
-> > > >
-> > > > SMMU bits are pretty much independent and GPU relies on the domain
-> > > > attribute
-> > > > and the quirk exposed, so as long as SMMU changes go in first it
-> > > > should
-> > > > be good.
-> > > > Rob?
-> > >
-> > > I suppose one option would be to split out the patch that adds the
-> > > attribute into it's own patch, and merge that both thru drm and iommu?
-> > >
-> >
-> > Ok I can split out domain attr and quirk into its own patch if Will is
-> > fine with that approach.
->
-> Why don't I just queue the first two patches on their own branch and we
-> both pull that?
+Add a callback in adreno-smmu-priv to read interesting SMMU
+registers to provide an opportunity for a richer debug experience
+in the GPU driver.
 
-Ok, that works for me.  I normally base msm-next on -rc1 but I guess
-as long as we base the branch on the older or our two -next branches,
-that should work out nicely
+Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+---
 
-BR,
--R
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 19 +++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.h      |  2 ++
+ include/linux/adreno-smmu-priv.h           | 31 +++++++++++++++++++++-
+ 3 files changed, 51 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index d0636c803a36..367a267324a2 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -32,6 +32,24 @@ static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
+ 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
+ }
+ 
++static void qcom_adreno_smmu_get_fault_info(const void *cookie,
++		struct adreno_smmu_fault_info *info)
++{
++	struct arm_smmu_domain *smmu_domain = (void *)cookie;
++	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++
++	info->fsr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSR);
++	/* FIXME: return error here if we aren't really in a fault? */
++
++	info->fsynr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR0);
++	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
++	info->far = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_FAR);
++	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
++	info->ttbr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
++	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
++}
++
+ #define QCOM_ADRENO_SMMU_GPU_SID 0
+ 
+ static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
+@@ -156,6 +174,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	priv->cookie = smmu_domain;
+ 	priv->get_ttbr1_cfg = qcom_adreno_smmu_get_ttbr1_cfg;
+ 	priv->set_ttbr0_cfg = qcom_adreno_smmu_set_ttbr0_cfg;
++	priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 04288b6fc619..fe511540a6bf 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -224,6 +224,8 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_FSYNR0		0x68
+ #define ARM_SMMU_FSYNR0_WNR		BIT(4)
+ 
++#define ARM_SMMU_CB_FSYNR1		0x6c
++
+ #define ARM_SMMU_CB_S1_TLBIVA		0x600
+ #define ARM_SMMU_CB_S1_TLBIASID		0x610
+ #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
+index a889f28afb42..53fe32fb9214 100644
+--- a/include/linux/adreno-smmu-priv.h
++++ b/include/linux/adreno-smmu-priv.h
+@@ -8,6 +8,32 @@
+ 
+ #include <linux/io-pgtable.h>
+ 
++/**
++ * struct adreno_smmu_fault_info - container for key fault information
++ *
++ * @far: The faulting IOVA from ARM_SMMU_CB_FAR
++ * @ttbr0: The current TTBR0 pagetable from ARM_SMMU_CB_TTBR0
++ * @contextidr: The value of ARM_SMMU_CB_CONTEXTIDR
++ * @fsr: The fault status from ARM_SMMU_CB_FSR
++ * @fsynr0: The value of FSYNR0 from ARM_SMMU_CB_FSYNR0
++ * @fsynr1: The value of FSYNR1 from ARM_SMMU_CB_FSYNR0
++ * @cbfrsynra: The value of CBFRSYNRA from ARM_SMMU_GR1_CBFRSYNRA(idx)
++ *
++ * This struct passes back key page fault information to the GPU driver
++ * through the get_fault_info function pointer.
++ * The GPU driver can use this information to print informative
++ * log messages and provide deeper GPU specific insight into the fault.
++ */
++struct adreno_smmu_fault_info {
++	u64 far;
++	u64 ttbr0;
++	u32 contextidr;
++	u32 fsr;
++	u32 fsynr0;
++	u32 fsynr1;
++	u32 cbfrsynra;
++};
++
+ /**
+  * struct adreno_smmu_priv - private interface between adreno-smmu and GPU
+  *
+@@ -17,6 +43,8 @@
+  * @set_ttbr0_cfg: Set the TTBR0 config for the GPUs context bank.  A
+  *                 NULL config disables TTBR0 translation, otherwise
+  *                 TTBR0 translation is enabled with the specified cfg
++ * @get_fault_info: Called by the GPU fault handler to get information about
++ *                  the fault
+  *
+  * The GPU driver (drm/msm) and adreno-smmu work together for controlling
+  * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
+@@ -31,6 +59,7 @@ struct adreno_smmu_priv {
+     const void *cookie;
+     const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);
+     int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);
++    void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
+ };
+ 
+-#endif /* __ADRENO_SMMU_PRIV_H */
+\ No newline at end of file
++#endif /* __ADRENO_SMMU_PRIV_H */
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
