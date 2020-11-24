@@ -2,81 +2,87 @@ Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B229EC6379D
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 11:05:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BD2C2D0E4
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 11:10:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 242752076B
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 11:05:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 85CC02076B
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 11:10:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="F3SBAmZR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 242752076B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="W2t4y8oN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 85CC02076B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3F9558711B;
-	Tue, 24 Nov 2020 11:05:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E33FF214E6;
+	Tue, 24 Nov 2020 11:10:37 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aem8TKbIzsaA; Tue, 24 Nov 2020 11:10:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 276B5204DE;
+	Tue, 24 Nov 2020 11:10:36 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 194AEC163C;
+	Tue, 24 Nov 2020 11:10:36 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D25FC0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:10:35 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7202387258
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:10:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kpLYxIumuXoR; Tue, 24 Nov 2020 11:05:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 859C287160;
-	Tue, 24 Nov 2020 11:05:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3615BC0891;
-	Tue, 24 Nov 2020 11:05:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 626AEC0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:05:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 50408859D1
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:05:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QClQE4FACNLq for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 11:05:27 +0000 (UTC)
+ with ESMTP id CEsFporJyC9n for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 11:10:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D5F7B845A0
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:05:27 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D756187242
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:10:34 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
  bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 9A41B20708;
- Tue, 24 Nov 2020 11:05:24 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id E99E52073C;
+ Tue, 24 Nov 2020 11:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606215927;
- bh=p7cS0enyaISQXUsFbBkJBL1aoa2MlX33h5/J260iXIw=;
+ s=default; t=1606216234;
+ bh=2uK6gknCKN4AYaBsRSYNpCUpw9VdB72lt/njxbxA6GA=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=F3SBAmZRTb54N/YAxmPu1vt5vCXgqcUrDxC/I6tq4FoRWdxlhKAXh24e2A3yq6vzm
- BgHxbhukrj9r3LrDIPXIc3Mwe2Guh38i3iRJEe4ZQjjNxebY2oBWMFXYq3afwnmKfK
- THIyImd3gme1xi91jEdzIxGCeTTwpRkoTNsv8iK8=
-Date: Tue, 24 Nov 2020 11:05:21 +0000
+ b=W2t4y8oN8c0g38vhBQq66MuAcmgMMFWcHRYuxyuRtuX8qaVsF+C1CKqA9RJfInMj1
+ qZff1xDjS64XFMDr0/sXiHg0S+ie8s1dELjmSWS9eDscf4ptO9IGUHDT3JkTNVJlbk
+ uKw/lXPS1M5h4yLJHyV+JPEHYysKkMbXjwvEYBvU=
+Date: Tue, 24 Nov 2020 11:10:28 +0000
 From: Will Deacon <will@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH] iommu: Improve the performance for direct_mapping
-Message-ID: <20201124110520.GA12980@willie-the-truck>
-References: <20201120090628.6566-1-yong.wu@mediatek.com>
- <20201123123258.GC10233@willie-the-truck>
- <1606209884.26323.132.camel@mhfsdcap03>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
+ support
+Message-ID: <20201124111027.GA13151@willie-the-truck>
+References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
+ <20201123152146.GE11033@willie-the-truck>
+ <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
+ <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
+ <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1606209884.26323.132.camel@mhfsdcap03>
+In-Reply-To: <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- chao.hao@mediatek.com, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, Tomasz Figa <tfiga@google.com>,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, "list@263.net:IOMMU DRIVERS ,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ "Kristian H . Kristensen" <hoegsberg@google.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,72 +100,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 24, 2020 at 05:24:44PM +0800, Yong Wu wrote:
-> On Mon, 2020-11-23 at 12:32 +0000, Will Deacon wrote:
-> > On Fri, Nov 20, 2020 at 05:06:28PM +0800, Yong Wu wrote:
-> > > +				unmapped_sz = 0;
-> > > +			}
-> > > +			start += pg_size;
-> > > +		}
-> > > +		if (unmapped_sz) {
-> > > +			ret = iommu_map(domain, start, start, unmapped_sz,
-> > > +					entry->prot);
+On Tue, Nov 24, 2020 at 09:32:54AM +0530, Sai Prakash Ranjan wrote:
+> On 2020-11-24 00:52, Rob Clark wrote:
+> > On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
+> > <saiprakash.ranjan@codeaurora.org> wrote:
+> > > 
+> > > On 2020-11-23 20:51, Will Deacon wrote:
+> > > > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
+> > > >> Some hardware variants contain a system cache or the last level
+> > > >> cache(llc). This cache is typically a large block which is shared
+> > > >> by multiple clients on the SOC. GPU uses the system cache to cache
+> > > >> both the GPU data buffers(like textures) as well the SMMU pagetables.
+> > > >> This helps with improved render performance as well as lower power
+> > > >> consumption by reducing the bus traffic to the system memory.
+> > > >>
+> > > >> The system cache architecture allows the cache to be split into slices
+> > > >> which then be used by multiple SOC clients. This patch series is an
+> > > >> effort to enable and use two of those slices preallocated for the GPU,
+> > > >> one for the GPU data buffers and another for the GPU SMMU hardware
+> > > >> pagetables.
+> > > >>
+> > > >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
+> > > >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
+> > > >>
+> > > >> Changes in v8:
+> > > >>  * Introduce a generic domain attribute for pagetable config (Will)
+> > > >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
+> > > >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
+> > > >> (Will)
+> > > >
+> > > > Modulo some minor comments I've made, this looks good to me. What is
+> > > > the
+> > > > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
+> > > > the
+> > > > MSM GPU driver and I'd like to avoid conflicts with that.
+> > > >
+> > > 
+> > > SMMU bits are pretty much independent and GPU relies on the domain
+> > > attribute
+> > > and the quirk exposed, so as long as SMMU changes go in first it
+> > > should
+> > > be good.
+> > > Rob?
 > > 
-> > Can you avoid this hunk by changing your loop check to something like:
+> > I suppose one option would be to split out the patch that adds the
+> > attribute into it's own patch, and merge that both thru drm and iommu?
 > > 
-> > 	if (!phys_addr) {
-> > 		map_size += pg_size;
-> > 		if (addr + pg_size < end)
-> > 			continue;
-> > 	}
 > 
-> Thanks for your quick review. I have fixed and tested it. the patch is
-> simple. I copy it here. Is this readable for you now?
-> 
-> 
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -737,6 +737,7 @@ static int
-> iommu_create_device_direct_mappings(struct iommu_group *group,
->  	/* We need to consider overlapping regions for different devices */
->  	list_for_each_entry(entry, &mappings, list) {
->  		dma_addr_t start, end, addr;
-> +		size_t map_size = 0;
->  
->  		if (domain->ops->apply_resv_region)
->  			domain->ops->apply_resv_region(dev, domain, entry);
-> @@ -752,12 +753,21 @@ static int
-> iommu_create_device_direct_mappings(struct iommu_group *group,
->  			phys_addr_t phys_addr;
->  
->  			phys_addr = iommu_iova_to_phys(domain, addr);
-> -			if (phys_addr)
-> -				continue;
-> +			if (!phys_addr) {
-> +				map_size += pg_size;
-> +				if (addr + pg_size < end)
-> +					continue;
-> +				else
+> Ok I can split out domain attr and quirk into its own patch if Will is
+> fine with that approach.
 
-You don't need the 'else' here  ^^^
-
-> +					addr += pg_size; /*Point to End */
-
-addr = end ?
-
-That said, maybe we could simplify this further by changing the loop bounds
-to be:
-
-	for (addr = start; addr <= end; addr += pg_size)
-
-and checking:
-
-	if (!phys_addr && addr != end) {
-		map_size += pg_size;
-		continue;
-	}
-
-does that work?
+Why don't I just queue the first two patches on their own branch and we
+both pull that?
 
 Will
 _______________________________________________
