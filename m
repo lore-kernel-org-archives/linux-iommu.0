@@ -2,99 +2,160 @@ Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270F5C2D0E4
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 04:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6AFC64E7B
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 05:32:24 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5D15B2068D
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 04:03:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BD8FB206FB
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 05:32:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oMt4QV/6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D15B2068D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=emerson.onmicrosoft.com header.i=@emerson.onmicrosoft.com header.b="bnNydjDC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD8FB206FB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=emerson.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C031F85E9F;
-	Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6B17C83659;
+	Tue, 24 Nov 2020 05:32:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id un2nI6MxrIYZ; Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
+	with ESMTP id gCd0xYOvHg-5; Tue, 24 Nov 2020 05:32:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0F71E85C95;
-	Tue, 24 Nov 2020 04:03:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B68E7835EE;
+	Tue, 24 Nov 2020 05:32:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6690C0891;
-	Tue, 24 Nov 2020 04:03:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AEE8AC0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7C61C0891;
+	Tue, 24 Nov 2020 05:32:22 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53844C0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 05:32:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8AA188710B
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4E84383659
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 05:32:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kDXoGC4J8WnR for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 04:03:03 +0000 (UTC)
+ with ESMTP id mfSuwmlPzNsJ for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 05:32:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C9064870EE
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 04:03:00 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1606190583; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=FoFdssz2mmWQah99fW3jkhC1o+yA5snIRe1I3agQdNA=;
- b=oMt4QV/6GdjWv/zSB19e7nYz+RvI8afFtQjYG4TkYh+ypiwMdBA1+DLo9kGvb4/qh3gENZob
- k/vXCQVmN6yM1wN9v1YtJ3qYLDblPsM1FDrRaw0U/r7B/Qmzo5kEl427bzb2V13Xv0xYKtKi
- R/n00PSBHNJaUMHo35Att/jLeA0=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-east-1.postgun.com with SMTP id
- 5fbc85f0e9b70886228ae0df (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 04:02:56
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 2EC81C43466; Tue, 24 Nov 2020 04:02:55 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 19B4BC433ED;
- Tue, 24 Nov 2020 04:02:54 +0000 (UTC)
+Received: from mx0b-00300601.pphosted.com (mx0b-00300601.pphosted.com
+ [148.163.142.35])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id F3802835EE
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 05:32:19 +0000 (UTC)
+Received: from pps.filterd (m0144092.ppops.net [127.0.0.1])
+ by mx0b-00300601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 0AO5Rn1h012760; Tue, 24 Nov 2020 05:32:15 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12lp2169.outbound.protection.outlook.com [104.47.55.169])
+ by mx0b-00300601.pphosted.com with ESMTP id 3509dcqc8c-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 24 Nov 2020 05:32:15 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oEzqsCqv1V7ThAPS/bbUb0I6qC6XI/2kKRokic2Ii/n021/To+i4ZkgQ5KEn4FIzDVLCKH/knHnQnVcmah/21z/p9+BMW9nk9teQTbEkWpQ8Hi5ZpENLUb3qtS3q8bAcEBscJLKfCOuW0STfDaj1UfVvF4Ph3S26h31lWKjwlnRvPNToRpyPvMTuetzMp6goSmDd8beFYrxmSuTLyTavbCV4E3qYNBWqtaPVvbCq1vqKdJoRcBpxwNGY9pgNmo0LThbSSBYoHd80+dDb+3DKiNEV/vWe59gkjLk3RQHYVlYkayRNIO+372jGphsWchevXWucfn4/anrh8N6XxesG3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SnWxVrkxMjiJ1F35Qg6FnG7Ly85GR8/BJfeA3VoPQrA=;
+ b=Uhht0sRdrec/OW8LEQSc2uZ2wWidz5TL6+cHf2h7oh3NcIvQWC+DAG1sm7m8/Rxy+afJ1GOt0LN2ddplnpQMkvJQY5fT1FiAIZYJy9XCvFunWxeeuXQ4GE6hrhUgyQ0S5u0lMPVLDKKCdqH+/NqLdVQcIdnitSSb+eCwj5lyOvQ0nUInT1QuNmAqjN++ZVKhQibF2hDK9U0cppbjJMS7z94J8rcrL8/nUdmeVnCqVkKwPJFBknTXPotGWJPff9VNRXHOyfHBTWyjwtKfuQEGMF6nuqP/McW1d4DQ54veXS3SwnwI07ikGhAJOZHW1FdpWQ6E5EuDo2xMtxAU6QqjTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=emerson.com; dmarc=pass action=none header.from=emerson.com;
+ dkim=pass header.d=emerson.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=emerson.onmicrosoft.com; s=selector2-emerson-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SnWxVrkxMjiJ1F35Qg6FnG7Ly85GR8/BJfeA3VoPQrA=;
+ b=bnNydjDCheMHtUDKQwf0Vcv718WVeinksi5gSfeEwZNDetfCtpG2tgCnXg/W09+GI3+MeVNnwXb9x/M9UeSIoqBJUU+zaiseYtiGbZfm8RP9zWjXCsVm5+hgRjSw/TmRvVfLGwfxtTdlDhHvk1Ze3pmyrzeY0nnqJEhGmwJ1LCM=
+Received: from MWHPR10MB1310.namprd10.prod.outlook.com (2603:10b6:300:21::18)
+ by CO1PR10MB4481.namprd10.prod.outlook.com (2603:10b6:303:9e::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Tue, 24 Nov
+ 2020 05:32:12 +0000
+Received: from MWHPR10MB1310.namprd10.prod.outlook.com
+ ([fe80::d85:aa30:739f:496e]) by MWHPR10MB1310.namprd10.prod.outlook.com
+ ([fe80::d85:aa30:739f:496e%12]) with mapi id 15.20.3589.030; Tue, 24 Nov 2020
+ 05:32:12 +0000
+From: "Merger, Edgar [AUTOSOL/MAS/AUGS]" <Edgar.Merger@emerson.com>
+To: Will Deacon <will@kernel.org>, "Deucher, Alexander"
+ <Alexander.Deucher@amd.com>
+Subject: RE: [EXTERNAL] Re: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+Thread-Topic: [EXTERNAL] Re: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+Thread-Index: AQHWwdw3n5VLcueYHUSP0T6AMdoDgKnWTbwAgABu3qA=
+Date: Tue, 24 Nov 2020 05:32:12 +0000
+Message-ID: <MWHPR10MB1310DE70BAC5A86892D5398B89FB0@MWHPR10MB1310.namprd10.prod.outlook.com>
+References: <20201123134410.10648-1-will@kernel.org>
+ <MN2PR12MB4488308D26DB50C18EA3BE0FF7FC0@MN2PR12MB4488.namprd12.prod.outlook.com>
+ <20201123223356.GC12069@willie-the-truck>
+In-Reply-To: <20201123223356.GC12069@willie-the-truck>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=emerson.com;
+x-originating-ip: [2a00:79c0:797:6b00:2523:54e2:cc0f:eaa4]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2734ff5f-f7fd-4cf1-9117-08d8903a4be5
+x-ms-traffictypediagnostic: CO1PR10MB4481:
+x-microsoft-antispam-prvs: <CO1PR10MB448144FF01B40462171508A889FB0@CO1PR10MB4481.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:883;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fpLIHYoGImsQLFN0cPHQkVyg1ZwA0yTuN+WbxIQjQZfvtJEtRRyGfe2igLj1wo/89OFT/vM4Pzq1Jk8k/HpwjGoftyRm+svKtINr/pXWYIa4MbUf3yTph2+eg/AjLyWamzjWcRkc0WJ7Q7w2/6Njoyx4VWNIHVodcqF/IVwyoqhs4JMixgpGAwGfDQfPe0OVg10q50rQKHl/gjMu4kV9e0mNaL9eE4mAHtsrbcDbcw/Zf8I5j/u+JVVt3pBuL1LCnYSXnLuj4mj7S7xClRswIjSFq0heVGyuWiDRAWg2OMvwUOhuzAm5+pcmFxKo1BlNjFoGKaRuiL1Dyx8IpGPPSXCv3aqb6Bc18wsIZvWBEpw9ypVU/4TDKTliCdQX+wGzfWPdL3twk7l4X2DVCnVZUQ==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR10MB1310.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(376002)(346002)(396003)(136003)(366004)(39860400002)(52536014)(83380400001)(5660300002)(8676002)(186003)(110136005)(316002)(966005)(7696005)(45080400002)(64756008)(86362001)(8936002)(53546011)(478600001)(6506007)(66446008)(4326008)(9686003)(66946007)(66476007)(76116006)(33656002)(2906002)(71200400001)(54906003)(66556008)(55016002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?zSNctf8RFHXkmgKsI55TFdNKCZasVoS8tX1qCIC0zTLhlpizyVmh/M3XS+?=
+ =?iso-8859-1?Q?vEjg06yYYXPwbMs+WkHdN6jJtdxYlXWqXfCYVXHvCPfITkfXxetTH01l2e?=
+ =?iso-8859-1?Q?g6kaxQzEbOaGUN9bYleiu5FBklw32xDyhEC97OqJZK2LLOxyyN+xC7VZKy?=
+ =?iso-8859-1?Q?bmGOELZafbKaIp3oO/WhdiA9l4/CxDrZcgRcd2dYcaDK+c9XU3ZyHE9nN2?=
+ =?iso-8859-1?Q?TEI+vi+9WO9sfMIM/uLS/38s6yenRRBDDAznQu9RbgiP5lFlW77Pa8rLJ6?=
+ =?iso-8859-1?Q?qNrsJL14UBgelMQeAdfw9jD6+6drDTXuAKWNlszXRZQ8nqAsOjcjjlqCM7?=
+ =?iso-8859-1?Q?qGIwsnXqrhOL/c7aSIt1kjPjwWpn34prg+2owgc1PS0c5Ziy75zF5i6qGX?=
+ =?iso-8859-1?Q?HM4InQ+LZ1GtuNKe1+aY4AkZnluBvee1B2F6r4BjcZ+8ayuu2fxbhc/JAF?=
+ =?iso-8859-1?Q?uYFJEe/Q/GvfUbn7+pCgYZcHiKx3vp/6dzeH/sJY8Kya4u86mZeDwOQphK?=
+ =?iso-8859-1?Q?6paEfUNLjUA/Wrh1tiC78NpY7ypbCC6xoXBhx8gTgfi0t3f7/UBBvmoreZ?=
+ =?iso-8859-1?Q?QqpZKZ6/2M7HYdYRqypQvQr/2PInJuOFQ7fFq5SVZci7AfUFmtH5IZE6DR?=
+ =?iso-8859-1?Q?IkK33QuTzEZMODKR2U+gSn2SuwIoHSQU5UIWsZpCIYmPqFKGhQ38CYka5W?=
+ =?iso-8859-1?Q?l4WJvwKzG3iZnkBht1h9bDXQw9NUyEvpgdg0mjqbfBbitm8GZX0Astr2Ot?=
+ =?iso-8859-1?Q?9zWo8WKi2QdGxtt3oFTGtL3nmARUsw9ePmcdQySUEW99iwbMHzkpBefLCK?=
+ =?iso-8859-1?Q?AKNXvPI6d5h3SL+hZBOgKslqTx7TXsujvQN3c09d1jIJTvwVQ+Z4Hp97y3?=
+ =?iso-8859-1?Q?C2jNglpCeP5oTUSnKzk4kQL2/EFhrJhazK18mPyrDJbZRUk3TGmd/XVKwE?=
+ =?iso-8859-1?Q?G9YdAyX+DsVZPJvnmJqwSn19fl7KqS8nCGm+h5QW925wHvghuzcxpQ=3D?=
+ =?iso-8859-1?Q?=3D?=
+x-ms-exchange-transport-forked: True
 MIME-Version: 1.0
-Date: Tue, 24 Nov 2020 09:32:54 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
- support
-In-Reply-To: <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
-References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
- <20201123152146.GE11033@willie-the-truck>
- <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
- <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
-Message-ID: <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Robin Murphy <robin.murphy@arm.com>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS , Joerg
- Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- freedreno <freedreno@lists.freedesktop.org>, "moderated
- list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+X-OriginatorOrg: Emerson.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR10MB1310.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2734ff5f-f7fd-4cf1-9117-08d8903a4be5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2020 05:32:12.6964 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eb06985d-06ca-4a17-81da-629ab99f6505
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MPWT7WqPMLiJAhyM2YlKECuyXBmorS1f9S/10DozyGK+11lwF3XCM2wrY88sLChIGhKZMaTgXGWGlUBY4FogkO3C4DhiKvBItZU1DJzJCzo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4481
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312, 18.0.737
+ definitions=2020-11-24_01:2020-11-24,
+ 2020-11-23 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0
+ mlxscore=0 mlxlogscore=999 phishscore=0 priorityscore=1501 clxscore=1011
+ spamscore=0 malwarescore=0 impostorscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011240032
+Cc: Joerg Roedel <jroedel@suse.de>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Kuehling, 
+ Felix" <Felix.Kuehling@amd.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,81 +168,127 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-11-24 00:52, Rob Clark wrote:
-> On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
-> <saiprakash.ranjan@codeaurora.org> wrote:
->> 
->> On 2020-11-23 20:51, Will Deacon wrote:
->> > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
->> >> Some hardware variants contain a system cache or the last level
->> >> cache(llc). This cache is typically a large block which is shared
->> >> by multiple clients on the SOC. GPU uses the system cache to cache
->> >> both the GPU data buffers(like textures) as well the SMMU pagetables.
->> >> This helps with improved render performance as well as lower power
->> >> consumption by reducing the bus traffic to the system memory.
->> >>
->> >> The system cache architecture allows the cache to be split into slices
->> >> which then be used by multiple SOC clients. This patch series is an
->> >> effort to enable and use two of those slices preallocated for the GPU,
->> >> one for the GPU data buffers and another for the GPU SMMU hardware
->> >> pagetables.
->> >>
->> >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
->> >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
->> >>
->> >> Changes in v8:
->> >>  * Introduce a generic domain attribute for pagetable config (Will)
->> >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
->> >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
->> >> (Will)
->> >
->> > Modulo some minor comments I've made, this looks good to me. What is
->> > the
->> > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
->> > the
->> > MSM GPU driver and I'd like to avoid conflicts with that.
->> >
->> 
->> SMMU bits are pretty much independent and GPU relies on the domain
->> attribute
->> and the quirk exposed, so as long as SMMU changes go in first it 
->> should
->> be good.
->> Rob?
-> 
-> I suppose one option would be to split out the patch that adds the
-> attribute into it's own patch, and merge that both thru drm and iommu?
-> 
+This is a board developed by my company.
+Subsystem-ID is ea50:0c19 or ea50:cc10 (depending on which particular carri=
+er board the compute module is attached to), however we haven=B4t managed y=
+et to enter this Subsystem-ID to every PCI-Device in the system, because of=
+ missing means to do that by our UEFI-FW. This might will change if we upda=
+te to latest AGESA version. =
 
-Ok I can split out domain attr and quirk into its own patch if Will is
-fine with that approach.
 
-> If Will/Robin dislike that approach, I'll pick up the parts of the drm
-> patches which don't depend on the new attribute for v5.11 and the rest
-> for v5.12.. or possibly a second late v5.11 pull req if airlied
-> doesn't hate me too much for it.
-> 
-> Going forward, I think we will have one or two more co-dependent
-> series, like the smmu iova fault handler improvements that Jordan
-> posted.  So I would like to hear how Will and Robin prefer to handle
-> those.
-> 
-> BR,
-> -R
-> 
+-----Original Message-----
+From: Will Deacon <will@kernel.org> =
 
-Thanks,
-Sai
+Sent: Montag, 23. November 2020 23:34
+To: Deucher, Alexander <Alexander.Deucher@amd.com>
+Cc: linux-kernel@vger.kernel.org; linux-pci@vger.kernel.org; iommu@lists.li=
+nux-foundation.org; Bjorn Helgaas <bhelgaas@google.com>; Merger, Edgar [AUT=
+OSOL/MAS/AUGS] <Edgar.Merger@emerson.com>; Joerg Roedel <jroedel@suse.de>; =
+Kuehling, Felix <Felix.Kuehling@amd.com>
+Subject: [EXTERNAL] Re: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+On Mon, Nov 23, 2020 at 09:04:14PM +0000, Deucher, Alexander wrote:
+> [AMD Public Use]
+> =
+
+> > -----Original Message-----
+> > From: Will Deacon <will@kernel.org>
+> > Sent: Monday, November 23, 2020 8:44 AM
+> > To: linux-kernel@vger.kernel.org
+> > Cc: linux-pci@vger.kernel.org; iommu@lists.linux-foundation.org; =
+
+> > Will Deacon <will@kernel.org>; Bjorn Helgaas <bhelgaas@google.com>; =
+
+> > Deucher, Alexander <Alexander.Deucher@amd.com>; Edgar Merger =
+
+> > <Edgar.Merger@emerson.com>; Joerg Roedel <jroedel@suse.de>
+> > Subject: [PATCH] PCI: Mark AMD Raven iGPU ATS as broken
+> > =
+
+> > Edgar Merger reports that the AMD Raven GPU does not work reliably =
+
+> > on his system when the IOMMU is enabled:
+> > =
+
+> >   | [drm:amdgpu_job_timedout [amdgpu]] *ERROR* ring gfx timeout, =
+
+> > signaled seq=3D1, emitted seq=3D3
+> >   | [...]
+> >   | amdgpu 0000:0b:00.0: GPU reset begin!
+> >   | AMD-Vi: Completion-Wait loop timed out
+> >   | iommu ivhd0: AMD-Vi: Event logged [IOTLB_INV_TIMEOUT
+> > device=3D0b:00.0 address=3D0x38edc0970]
+> > =
+
+> > This is indicative of a hardware/platform configuration issue so, =
+
+> > since disabling ATS has been shown to resolve the problem, add a =
+
+> > quirk to match this particular device while Edgar follows-up with AMD f=
+or more information.
+> > =
+
+> > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > Cc: Alex Deucher <alexander.deucher@amd.com>
+> > Reported-by: Edgar Merger <Edgar.Merger@emerson.com>
+> > Suggested-by: Joerg Roedel <jroedel@suse.de>
+> > Link:
+> > https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__nam11.safelinks.=
+protection.outlook.com_-3Furl-3Dhttps-253A-252F-252Flore&d=3DDwIBAg&c=3DjOU=
+RTkCZzT8tVB5xPEYIm3YJGoxoTaQsQPzPKJGaWbo&r=3DBJxhacqqa4K1PJGm6_-862rdSP13_P=
+6LVp7j_9l1xmg&m=3DWjiRGepDgI7voSyaAJcvnvZb6gsvZ1fvcnR2tm6bGXg&s=3DO1nU-RafB=
+XMAS7Mao5Gtu6o1Xkuj8fg4oHQs74TssuA&e=3D .
+> > kernel.org%2Flinux-
+> > iommu%2FMWHPR10MB1310F042A30661D4158520B589FC0%40MWHPR10M
+> > B1310.namprd10.prod.outlook.com&amp;data=3D04%7C01%7Calexander.deuc
+> > her%40amd.com%7C1a883fe14d0c408e7d9508d88fb5df4e%7C3dd8961fe488
+> > 4e608e11a82d994e183d%7C0%7C0%7C637417358593629699%7CUnknown%7
+> > CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwi
+> > LCJXVCI6Mn0%3D%7C1000&amp;sdata=3DTMgKldWzsX8XZ0l7q3%2BszDWXQJJ
+> > LOUfX5oGaoLN8n%2B8%3D&amp;reserved=3D0
+> > Signed-off-by: Will Deacon <will@kernel.org>
+> > ---
+> > =
+
+> > Hi all,
+> > =
+
+> > Since Joerg is away at the moment, I'm posting this to try to make =
+
+> > some progress with the thread in the Link: tag.
+> =
+
+> + Felix
+> =
+
+> What system is this?  Can you provide more details?  Does a sbios =
+
+> update fix this?  Disabling ATS for all Ravens will break GPU compute =
+
+> for a lot of people.  I'd prefer to just black list this particular =
+
+> system (e.g., just SSIDs or revision) if possible.
+
+Cheers, Alex. I'll have to defer to Edgar for the details, as my understand=
+ing from the original thread over at:
+
+https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__lore.kernel.org_linu=
+x-2Diommu_MWHPR10MB1310CDB6829DDCF5EA84A14689150-40MWHPR10MB1310.namprd10.p=
+rod.outlook.com_&d=3DDwIBAg&c=3DjOURTkCZzT8tVB5xPEYIm3YJGoxoTaQsQPzPKJGaWbo=
+&r=3DBJxhacqqa4K1PJGm6_-862rdSP13_P6LVp7j_9l1xmg&m=3DWjiRGepDgI7voSyaAJcvnv=
+Zb6gsvZ1fvcnR2tm6bGXg&s=3D9qyuCqHeOGaY1sKjkzNN5A6ks6PNF7V2M2PPckHyFKk&e=3D =
+
+
+is that this is a board developed by his company.
+
+Edgar -- please can you answer Alex's questions?
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
