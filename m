@@ -2,103 +2,84 @@ Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB7C63777
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 08:36:16 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AB5C2D0E4
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 09:01:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 375272087D
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 08:36:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A73E82073C
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 09:01:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gD65OASB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 375272087D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="fj3ptSS1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A73E82073C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 99A1D87193;
-	Tue, 24 Nov 2020 08:36:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 03E522014A;
+	Tue, 24 Nov 2020 09:01:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id whX0M+uQif-C; Tue, 24 Nov 2020 08:36:14 +0000 (UTC)
+	with ESMTP id 6f-TQ1PDoXSX; Tue, 24 Nov 2020 09:01:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6739C8717F;
-	Tue, 24 Nov 2020 08:36:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 208B52033D;
+	Tue, 24 Nov 2020 09:01:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4B82AC163C;
-	Tue, 24 Nov 2020 08:36:14 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7170C0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 08:36:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02779C163C;
+	Tue, 24 Nov 2020 09:01:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5AAA4C0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 09:01:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AC318861E7
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 08:36:12 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4837185579
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 09:01:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WGmBMQBGFFiB for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 08:36:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 115128620F
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 08:36:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1606206969;
+ with ESMTP id Gp84AYs1vgr0 for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 09:01:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3BD7B85572
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 09:01:04 +0000 (UTC)
+Received: from zn.tnic (p200300ec2f0e3600a9cb1df0e98d070c.dip0.t-ipconnect.de
+ [IPv6:2003:ec:2f0e:3600:a9cb:1df0:e98d:70c])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3EB881EC04DF;
+ Tue, 24 Nov 2020 10:01:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+ t=1606208460;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=2YukGiE2FCUmndnhnDnXr+BlSK91UkBprcq4IwfW0FM=;
- b=gD65OASBmvLuApgJLwn94ui5pc0X2tVUSDuVF4L03jEp96uI+eg+isOE+72rZueA/LXLFQ
- pfBycFnpnRTY3z3STGYIcUAuWmk2mF1gq14Kys/s6HKzvl0JizdllFAg6BJo3nBWmYM1j5
- CjXOrEI7sfcCD3afKp/BHKhR4xVDDH4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-yqCWSOKbPk2sIh7EFG4fUQ-1; Tue, 24 Nov 2020 03:36:04 -0500
-X-MC-Unique: yqCWSOKbPk2sIh7EFG4fUQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 129749CC0F;
- Tue, 24 Nov 2020 08:36:02 +0000 (UTC)
-Received: from [10.36.114.189] (ovpn-114-189.ams2.redhat.com [10.36.114.189])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 6170D10021AA;
- Tue, 24 Nov 2020 08:35:52 +0000 (UTC)
-Subject: Re: [PATCH v11 08/13] vfio/pci: Add framework for custom interrupt
- indices
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>
-References: <20201116110030.32335-1-eric.auger@redhat.com>
- <20201116110030.32335-9-eric.auger@redhat.com>
- <d938eaf119c441359b1c30fe1b7c58ef@huawei.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <84492a63-4369-d7c7-87d4-f0a94f6ba070@redhat.com>
-Date: Tue, 24 Nov 2020 09:35:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+ bh=spuCTuobFwZYtpYYd4DV2fwHDk1geO/8cruVmOCIaH0=;
+ b=fj3ptSS1GtXsvj+p8OhlpnW/U9DSzWgcspkEvxrdmT29kMCqUlsSIez4hyxYY0SZw7LX/z
+ 4yAaVBGc6siRwnUFXzcYgN4RqqvaO3Rmtt6RdnKKSSd40K8B+OPuBSjxCvic3UJo9603rU
+ M62U9inbR4ckew8vrSFeasWEjqAIMoU=
+Date: Tue, 24 Nov 2020 10:00:55 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v6] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
+ guests.
+Message-ID: <20201124090055.GB4009@zn.tnic>
+References: <20201119214205.11062-1-Ashish.Kalra@amd.com>
+ <20201123170647.GE15044@zn.tnic>
+ <20201123175632.GA21539@char.us.oracle.com>
+ <20201123180215.GG15044@zn.tnic>
+ <20201123184327.GA22269@char.us.oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <d938eaf119c441359b1c30fe1b7c58ef@huawei.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- Linuxarm <linuxarm@huawei.com>, "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- qubingbing <qubingbing@hisilicon.com>
+Content-Disposition: inline
+In-Reply-To: <20201123184327.GA22269@char.us.oracle.com>
+Cc: Thomas.Lendacky@amd.com, Ashish Kalra <Ashish.Kalra@amd.com>,
+ jon.grimm@amd.com, brijesh.singh@amd.com, dave.hansen@linux-intel.com,
+ peterz@infradead.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, luto@kernel.org,
+ hpa@zytor.com, rientjes@google.com, tglx@linutronix.de, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,375 +97,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Shameer, Qubingbing
-On 11/23/20 1:51 PM, Shameerali Kolothum Thodi wrote:
-> Hi Eric,
+On Mon, Nov 23, 2020 at 01:43:27PM -0500, Konrad Rzeszutek Wilk wrote:
+> I am assuming that TDX is going to have the same exact issue that 
+> AMD SEV will have.
 > 
->> -----Original Message-----
->> From: Eric Auger [mailto:eric.auger@redhat.com]
->> Sent: 16 November 2020 11:00
->> To: eric.auger.pro@gmail.com; eric.auger@redhat.com;
->> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
->> kvm@vger.kernel.org; kvmarm@lists.cs.columbia.edu; will@kernel.org;
->> joro@8bytes.org; maz@kernel.org; robin.murphy@arm.com;
->> alex.williamson@redhat.com
->> Cc: jean-philippe@linaro.org; zhangfei.gao@linaro.org;
->> zhangfei.gao@gmail.com; vivek.gautam@arm.com; Shameerali Kolothum
->> Thodi <shameerali.kolothum.thodi@huawei.com>;
->> jacob.jun.pan@linux.intel.com; yi.l.liu@intel.com; tn@semihalf.com;
->> nicoleotsuka@gmail.com; yuzenghui <yuzenghui@huawei.com>
->> Subject: [PATCH v11 08/13] vfio/pci: Add framework for custom interrupt
->> indices
->>
->> Implement IRQ capability chain infrastructure. All interrupt
->> indexes beyond VFIO_PCI_NUM_IRQS are handled as extended
->> interrupts. They are registered with a specific type/subtype
->> and supported flags.
->>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->> ---
->>  drivers/vfio/pci/vfio_pci.c         | 99 +++++++++++++++++++++++------
->>  drivers/vfio/pci/vfio_pci_intrs.c   | 62 ++++++++++++++++++
->>  drivers/vfio/pci/vfio_pci_private.h | 14 ++++
->>  3 files changed, 157 insertions(+), 18 deletions(-)
->>
->> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
->> index 2a6cc1a87323..93e03a4a5f32 100644
->> --- a/drivers/vfio/pci/vfio_pci.c
->> +++ b/drivers/vfio/pci/vfio_pci.c
->> @@ -608,6 +608,14 @@ static void vfio_pci_disable(struct vfio_pci_device
->> *vdev)
->>
->>  	WARN_ON(iommu_unregister_device_fault_handler(&vdev->pdev->dev));
->>
->> +	for (i = 0; i < vdev->num_ext_irqs; i++)
->> +		vfio_pci_set_irqs_ioctl(vdev, VFIO_IRQ_SET_DATA_NONE |
->> +					VFIO_IRQ_SET_ACTION_TRIGGER,
->> +					VFIO_PCI_NUM_IRQS + i, 0, 0, NULL);
->> +	vdev->num_ext_irqs = 0;
->> +	kfree(vdev->ext_irqs);
->> +	vdev->ext_irqs = NULL;
->> +
->>  	/* Device closed, don't need mutex here */
->>  	list_for_each_entry_safe(ioeventfd, ioeventfd_tmp,
->>  				 &vdev->ioeventfds_list, next) {
->> @@ -823,6 +831,9 @@ static int vfio_pci_get_irq_count(struct vfio_pci_device
->> *vdev, int irq_type)
->>  			return 1;
->>  	} else if (irq_type == VFIO_PCI_REQ_IRQ_INDEX) {
->>  		return 1;
->> +	} else if (irq_type >= VFIO_PCI_NUM_IRQS &&
->> +		   irq_type < VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs) {
->> +		return 1;
->>  	}
->>
->>  	return 0;
->> @@ -1008,7 +1019,7 @@ static long vfio_pci_ioctl(void *device_data,
->>  			info.flags |= VFIO_DEVICE_FLAGS_RESET;
->>
->>  		info.num_regions = VFIO_PCI_NUM_REGIONS + vdev->num_regions;
->> -		info.num_irqs = VFIO_PCI_NUM_IRQS;
->> +		info.num_irqs = VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs;
->>
->>  		if (IS_ENABLED(CONFIG_VFIO_PCI_ZDEV)) {
->>  			int ret = vfio_pci_info_zdev_add_caps(vdev, &caps);
->> @@ -1187,36 +1198,87 @@ static long vfio_pci_ioctl(void *device_data,
->>
->>  	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
->>  		struct vfio_irq_info info;
->> +		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
->> +		unsigned long capsz;
->>
->>  		minsz = offsetofend(struct vfio_irq_info, count);
->>
->> +		/* For backward compatibility, cannot require this */
->> +		capsz = offsetofend(struct vfio_irq_info, cap_offset);
->> +
->>  		if (copy_from_user(&info, (void __user *)arg, minsz))
->>  			return -EFAULT;
->>
->> -		if (info.argsz < minsz || info.index >= VFIO_PCI_NUM_IRQS)
->> +		if (info.argsz < minsz ||
->> +			info.index >= VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs)
->>  			return -EINVAL;
->>
->> -		switch (info.index) {
->> -		case VFIO_PCI_INTX_IRQ_INDEX ... VFIO_PCI_MSIX_IRQ_INDEX:
->> -		case VFIO_PCI_REQ_IRQ_INDEX:
->> -			break;
->> -		case VFIO_PCI_ERR_IRQ_INDEX:
->> -			if (pci_is_pcie(vdev->pdev))
->> -				break;
->> -			fallthrough;
->> -		default:
->> -			return -EINVAL;
->> -		}
->> +		if (info.argsz >= capsz)
->> +			minsz = capsz;
->>
->>  		info.flags = VFIO_IRQ_INFO_EVENTFD;
->>
->> -		info.count = vfio_pci_get_irq_count(vdev, info.index);
->> -
->> -		if (info.index == VFIO_PCI_INTX_IRQ_INDEX)
->> +		switch (info.index) {
->> +		case VFIO_PCI_INTX_IRQ_INDEX:
->>  			info.flags |= (VFIO_IRQ_INFO_MASKABLE |
->>  				       VFIO_IRQ_INFO_AUTOMASKED);
->> -		else
->> +			break;
->> +		case VFIO_PCI_MSI_IRQ_INDEX ... VFIO_PCI_MSIX_IRQ_INDEX:
->> +		case VFIO_PCI_REQ_IRQ_INDEX:
->>  			info.flags |= VFIO_IRQ_INFO_NORESIZE;
->> +			break;
->> +		case VFIO_PCI_ERR_IRQ_INDEX:
->> +			info.flags |= VFIO_IRQ_INFO_NORESIZE;
->> +			if (!pci_is_pcie(vdev->pdev))
->> +				return -EINVAL;
->> +			break;
->> +		default:
->> +		{
->> +			struct vfio_irq_info_cap_type cap_type = {
->> +				.header.id = VFIO_IRQ_INFO_CAP_TYPE,
->> +				.header.version = 1 };
->> +			int ret, i;
->> +
->> +			if (info.index >= VFIO_PCI_NUM_IRQS +
->> +						vdev->num_ext_irqs)
->> +				return -EINVAL;
->> +			info.index = array_index_nospec(info.index,
->> +							VFIO_PCI_NUM_IRQS +
->> +							vdev->num_ext_irqs);
->> +			i = info.index - VFIO_PCI_NUM_IRQS;
->> +
->> +			info.flags = vdev->ext_irqs[i].flags;
->> +			cap_type.type = vdev->ext_irqs[i].type;
->> +			cap_type.subtype = vdev->ext_irqs[i].subtype;
->> +
->> +			ret = vfio_info_add_capability(&caps,
->> +					&cap_type.header,
->> +					sizeof(cap_type));
->> +			if (ret)
->> +				return ret;
->> +		}
->> +		}
->> +
->> +		info.count = vfio_pci_get_irq_count(vdev, info.index);
->> +
->> +		if (caps.size) {
->> +			info.flags |= VFIO_IRQ_INFO_FLAG_CAPS;
->> +			if (info.argsz < sizeof(info) + caps.size) {
->> +				info.argsz = sizeof(info) + caps.size;
->> +				info.cap_offset = 0;
->> +			} else {
->> +				vfio_info_cap_shift(&caps, sizeof(info));
->> +				if (copy_to_user((void __user *)arg +
->> +						  sizeof(info), caps.buf,
->> +						  caps.size)) {
->> +					kfree(caps.buf);
->> +					return -EFAULT;
->> +				}
->> +				info.cap_offset = sizeof(info);
->> +			}
->> +
->> +			kfree(caps.buf);
->> +		}
->>
->>  		return copy_to_user((void __user *)arg, &info, minsz) ?
->>  			-EFAULT : 0;
->> @@ -1235,7 +1297,8 @@ static long vfio_pci_ioctl(void *device_data,
->>  		max = vfio_pci_get_irq_count(vdev, hdr.index);
->>
->>  		ret = vfio_set_irqs_validate_and_prepare(&hdr, max,
->> -						 VFIO_PCI_NUM_IRQS, &data_size);
->> +				VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs,
->> +				&data_size);
->>  		if (ret)
->>  			return ret;
->>
->> diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
->> index 869dce5f134d..1e785a5f5fb2 100644
->> --- a/drivers/vfio/pci/vfio_pci_intrs.c
->> +++ b/drivers/vfio/pci/vfio_pci_intrs.c
->> @@ -19,6 +19,7 @@
->>  #include <linux/vfio.h>
->>  #include <linux/wait.h>
->>  #include <linux/slab.h>
->> +#include <linux/nospec.h>
->>
->>  #include "vfio_pci_private.h"
->>
->> @@ -635,6 +636,24 @@ static int vfio_pci_set_req_trigger(struct
->> vfio_pci_device *vdev,
->>  					       count, flags, data);
->>  }
->>
->> +static int vfio_pci_set_ext_irq_trigger(struct vfio_pci_device *vdev,
->> +					unsigned int index, unsigned int start,
->> +					unsigned int count, uint32_t flags,
->> +					void *data)
->> +{
->> +	int i;
->> +
->> +	if (start != 0 || count > 1)
->> +		return -EINVAL;
+> Are you recommending to have an unified x86 specific callback
+> where we check if it:
 > 
-> It looks like we need to add ! vdev->num_ext_irqs check above
-> as the vdev->ext_irqs is allocated for "nested" case only.
-> 
-> Thanks to qubingbing for reporting the below crash,
-> 
-> [ 5034.902114] Unable to handle kernel paging request at virtual address ffffffffffffff98
-> [ 5034.927645] Mem abort info:
-> ...
-> [ 5035.088409] pc : vfio_pci_set_ctx_trigger_single+0x2c/0x108 [vfio_pci]
-> [ 5035.102140] lr : vfio_pci_set_ext_irq_trigger+0x84/0xa0 [vfio_pci]
-> ...
-> [ 5035.289655] Call trace:
-> [ 5035.294796]  vfio_pci_set_ctx_trigger_single+0x2c/0x108 [vfio_pci]
-> [ 5035.307795]  vfio_pci_set_ext_irq_trigger+0x84/0xa0 [vfio_pci]
-> [ 5035.320062]  vfio_pci_set_irqs_ioctl+0xf0/0x120 [vfio_pci]
-> [ 5035.331601]  vfio_pci_disable+0x60/0x4e0 [vfio_pci]
-> [ 5035.341859]  vfio_pci_release+0x74/0xb0 [vfio_pci]
-> 
-> This is observed when the Guest is launched without vsmmu and then "poweroff".
-> 
-> estuary:/home/vsmmu$ ./qemu-system-aarch64_vsmmu5.20 \
->> -machine virt,gic-version=3 \
->> -cpu host \
->> -smp 1 \
->> -m 1024 \
->> -kernel Image_vsmmu  \
->> -initrd rootfs_vsmmu.cpio.gz  \
->> -device vfio-pci,host=7d:01.0,id=net0 \
->> -net none  \
->> -nographic -D -d -enable-kvm   \
->> -append "rdinit=init console=ttyAMA0 ealycon=pl0ll,0x90000000"
-> 
-> estuary:/$ poweroff
-> 
-> Could you please take a look.
-Sure I will.
+>  - CPUID_AMD_SEV or CPUID_INTEL_TDX is set, and
+>  - No vIOMMU present, then we adjust the size?
 
-Thanks
+I'm thinking do it correct right now and when TDX appears on the horizon
+requesting this adjusted to TDX, then change it. Like we always do.
 
-Eric
-> 
-> Thanks,
-> Shameer
->  
-> 
->> +	index = array_index_nospec(index,
->> +				   VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs);
->> +	i = index - VFIO_PCI_NUM_IRQS;
->> +
->> +	return vfio_pci_set_ctx_trigger_single(&vdev->ext_irqs[i].trigger,
->> +					       count, flags, data);
->> +}
->> +
->>  int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev, uint32_t flags,
->>  			    unsigned index, unsigned start, unsigned count,
->>  			    void *data)
->> @@ -684,6 +703,13 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device
->> *vdev, uint32_t flags,
->>  			break;
->>  		}
->>  		break;
->> +	default:
->> +		switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
->> +		case VFIO_IRQ_SET_ACTION_TRIGGER:
->> +			func = vfio_pci_set_ext_irq_trigger;
->> +			break;
->> +		}
->> +		break;
->>  	}
->>
->>  	if (!func)
->> @@ -691,3 +717,39 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device
->> *vdev, uint32_t flags,
->>
->>  	return func(vdev, index, start, count, flags, data);
->>  }
->> +
->> +int vfio_pci_get_ext_irq_index(struct vfio_pci_device *vdev,
->> +			       unsigned int type, unsigned int subtype)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i <  vdev->num_ext_irqs; i++) {
->> +		if (vdev->ext_irqs[i].type == type &&
->> +		    vdev->ext_irqs[i].subtype == subtype) {
->> +			return i;
->> +		}
->> +	}
->> +	return -EINVAL;
->> +}
->> +
->> +int vfio_pci_register_irq(struct vfio_pci_device *vdev,
->> +			  unsigned int type, unsigned int subtype,
->> +			  u32 flags)
->> +{
->> +	struct vfio_ext_irq *ext_irqs;
->> +
->> +	ext_irqs = krealloc(vdev->ext_irqs,
->> +			    (vdev->num_ext_irqs + 1) * sizeof(*ext_irqs),
->> +			    GFP_KERNEL);
->> +	if (!ext_irqs)
->> +		return -ENOMEM;
->> +
->> +	vdev->ext_irqs = ext_irqs;
->> +
->> +	vdev->ext_irqs[vdev->num_ext_irqs].type = type;
->> +	vdev->ext_irqs[vdev->num_ext_irqs].subtype = subtype;
->> +	vdev->ext_irqs[vdev->num_ext_irqs].flags = flags;
->> +	vdev->ext_irqs[vdev->num_ext_irqs].trigger = NULL;
->> +	vdev->num_ext_irqs++;
->> +	return 0;
->> +}
->> diff --git a/drivers/vfio/pci/vfio_pci_private.h
->> b/drivers/vfio/pci/vfio_pci_private.h
->> index 1d9b0f648133..e180b5435c8f 100644
->> --- a/drivers/vfio/pci/vfio_pci_private.h
->> +++ b/drivers/vfio/pci/vfio_pci_private.h
->> @@ -77,6 +77,13 @@ struct vfio_pci_region {
->>  	u32				flags;
->>  };
->>
->> +struct vfio_ext_irq {
->> +	u32				type;
->> +	u32				subtype;
->> +	u32				flags;
->> +	struct eventfd_ctx		*trigger;
->> +};
->> +
->>  struct vfio_pci_dummy_resource {
->>  	struct resource		resource;
->>  	int			index;
->> @@ -111,6 +118,8 @@ struct vfio_pci_device {
->>  	struct vfio_pci_irq_ctx	*ctx;
->>  	int			num_ctx;
->>  	int			irq_type;
->> +	struct vfio_ext_irq	*ext_irqs;
->> +	int			num_ext_irqs;
->>  	int			num_regions;
->>  	struct vfio_pci_region	*region;
->>  	u8			msi_qmax;
->> @@ -154,6 +163,11 @@ struct vfio_pci_device {
->>
->>  extern void vfio_pci_intx_mask(struct vfio_pci_device *vdev);
->>  extern void vfio_pci_intx_unmask(struct vfio_pci_device *vdev);
->> +extern int vfio_pci_register_irq(struct vfio_pci_device *vdev,
->> +				 unsigned int type, unsigned int subtype,
->> +				 u32 flags);
->> +extern int vfio_pci_get_ext_irq_index(struct vfio_pci_device *vdev,
->> +				      unsigned int type, unsigned int subtype);
->>
->>  extern int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev,
->>  				   uint32_t flags, unsigned index,
->> --
->> 2.21.3
-> 
+-- 
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
