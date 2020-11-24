@@ -2,103 +2,104 @@ Return-Path: <SRS0=f5WA=E6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D5AC64E75
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 17:25:49 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F34C56202
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:04:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E9F792087C
-	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 17:25:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9DC4920857
+	for <iommu@archiver.kernel.org>; Tue, 24 Nov 2020 19:04:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="O1otos6r"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9F792087C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e4XPfFaf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DC4920857
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 1A6D0214EC;
-	Tue, 24 Nov 2020 17:25:48 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1772E85CA1;
+	Tue, 24 Nov 2020 19:04:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZXE3GGNKVS68; Tue, 24 Nov 2020 17:25:47 +0000 (UTC)
+	with ESMTP id pz09wNx0WVYh; Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 173412045C;
-	Tue, 24 Nov 2020 17:25:47 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 53ED985C90;
+	Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF2C5C163C;
-	Tue, 24 Nov 2020 17:25:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68783C0052
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 17:25:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 31E6BC163C;
+	Tue, 24 Nov 2020 19:03:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37F12C0052
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5F247214EC
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 17:25:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 181B6872ED
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IXdOLB6grcQ8 for <iommu@lists.linux-foundation.org>;
- Tue, 24 Nov 2020 17:25:44 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f196.google.com (mail-il1-f196.google.com
- [209.85.166.196])
- by silver.osuosl.org (Postfix) with ESMTPS id AD1282045C
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 17:25:44 +0000 (UTC)
-Received: by mail-il1-f196.google.com with SMTP id z12so7259398ilu.8
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 09:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ with ESMTP id NZx1xJT3szCP for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Nov 2020 19:03:54 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com
+ [209.85.221.45])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D21AF872EC
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 19:03:53 +0000 (UTC)
+Received: by mail-wr1-f45.google.com with SMTP id u12so23503699wrt.0
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 11:03:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Z6tlEwV2va2PDMozZGMdT895LM4tZsvIbgGRKWaEoV4=;
- b=O1otos6rFw3st6xur2OtmZ59kmbeoRug0Ytr6D48haYnFV/4i5YTnbi7zgXShcxOYw
- qW4Lxi/kxwNU/9Q+YW3586WdhZjbM0GSSV2zXURBFZGjJuH+gfoFZj+6309L5sfOP7Uz
- ZNE/98YEWZrRlCURKbfdWnqDbiBV906YsvYKY=
+ :cc; bh=Kf8N/OmqZHAolew6L+ymXRNdjbnvIjwkoc3J3zrIO6o=;
+ b=e4XPfFafIyuCJA3/oM5IEkO0sIKvTxq5TB/vBw5VApjZmswLIR+ss8JeVCBQc3S0YB
+ utaTXD2KgvRBJSQYloFRQA3bwyim1R63U6DlE/t1zLaFkVf6C4xghKml39Z5tUdk8KE0
+ FOyMsVp/6YNj0a+F4KKDzno65iOfoowVa0154Sled8pW+rU69gDbIGFGIs379KCmm2Bn
+ ZxHpjoYkCCIPHBCgz4Q2ODoHHTiIRw2fRYAmW7CNSCRm8Dk2TSpWbBjoFGOb5k2sn5Wb
+ xzKdxqm90TYqRiKn+hjfi33FMMy2DdVYzrfu8Tg/n3hBDZ3JwSpF8wCnmejQd5TfPZa2
+ 1Tww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=Z6tlEwV2va2PDMozZGMdT895LM4tZsvIbgGRKWaEoV4=;
- b=nRiH6td5mw/5vXGjBHxL+yCDxwDgZv/XouAcUwVDY537ZzhpkZIaT4AVJ3nHcBsfvT
- llKn2jtSIyDk+IKEZyHOAwVkSXe9z0r1/u++JpeEv24zjTHXhjLIMdw9904sRbJ20RP4
- VneVY1zw4MC3Ci8AuC3g+5rX8ZORmb1FDmhTZKlmAyva8ynOOjCaqDyYN58SUXzC/nXR
- Lzc+/5/ksD+8aAAiANbcmCO2QMuIwUwzqWXyynb1vywpPs9K91eUdn5FZo1EN8+cTUBt
- R3mLYFD1bbePsBOw95cd5xQG+gIZ4A/ig87AcoMmxlgIGYNyA8Q3wkcih2TY34P6j1Ik
- CBUQ==
-X-Gm-Message-State: AOAM533B5d+FRpXEX5l/onSGOsVeRBRct5n5RiTtAvuT2HrWmEQaVNq6
- iEDwvVGG0KNX79KbcewhtfJXhQfudoiNTz5v
-X-Google-Smtp-Source: ABdhPJzkC2qjHNRlBAJrgQNXtFJ0k9yuWg5OnYD3BgS+byCAeqm8Q6Kl6ktCvAAARYUf0p8S4xtWCQ==
-X-Received: by 2002:a92:1306:: with SMTP id 6mr2136352ilt.87.1606238743446;
- Tue, 24 Nov 2020 09:25:43 -0800 (PST)
-Received: from mail-io1-f44.google.com (mail-io1-f44.google.com.
- [209.85.166.44])
- by smtp.gmail.com with ESMTPSA id w89sm10745718ili.73.2020.11.24.09.25.41
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 24 Nov 2020 09:25:42 -0800 (PST)
-Received: by mail-io1-f44.google.com with SMTP id s10so22765060ioe.1
- for <iommu@lists.linux-foundation.org>; Tue, 24 Nov 2020 09:25:41 -0800 (PST)
-X-Received: by 2002:a02:b144:: with SMTP id s4mr5587937jah.32.1606238741494;
- Tue, 24 Nov 2020 09:25:41 -0800 (PST)
+ bh=Kf8N/OmqZHAolew6L+ymXRNdjbnvIjwkoc3J3zrIO6o=;
+ b=I5ax7ndfwlzADD1OycRWMh6Gn95snNZvIey6hNteC+e12E95mo/fj8njTwvScaYSkK
+ omEg6EHmaOSfPydfkCNv1bfFzty8kIgzHfKjY8ZXCj2Vxc1c6Qkx/brX15sIgUxrgh40
+ h9yNHbWATtXMr3IBwye9fFF3BT0LzEWaz7qXrdixiERzkK48KhR6ENHZ6Lvg/AVM7Nz+
+ hwO96tjw76CNTauNDYNOL8A3i0vqdUquGbUMLWT5RgkqJPt93WdstDAoBuVv6KTRItR9
+ csq7dwsgJOIyrHFZCyl/Te7AFyN+Wu9OmFqx1SQ7/FAO+MDoy5Jk3NU8fBRmHldP97D1
+ MU9g==
+X-Gm-Message-State: AOAM532ybtnf2O4qHEiWweZBSK5jB5lSaHR6sxJRxJc9oSkd2Z9Jcld5
+ 9JBn7tif27AamqYAbCPQ/t87NKQu7e+lxWdE15I=
+X-Google-Smtp-Source: ABdhPJwW1Dno1QctDapnpNYSFC4x+KGmIfQzh+3Rg5OpwpAmPAHWb0eqXoADDsWEL4IzwAxlcJmhREL9yr7VY0C/XTc=
+X-Received: by 2002:adf:f6c7:: with SMTP id y7mr6621316wrp.147.1606244632292; 
+ Tue, 24 Nov 2020 11:03:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20201124153845.132207-1-ribalda@chromium.org>
- <20201124153845.132207-5-ribalda@chromium.org>
- <f1055d12-8bde-80d0-29f3-dfbfbf59cc11@arm.com>
-In-Reply-To: <f1055d12-8bde-80d0-29f3-dfbfbf59cc11@arm.com>
-From: Ricardo Ribalda <ribalda@chromium.org>
-Date: Tue, 24 Nov 2020 18:25:30 +0100
-X-Gmail-Original-Message-ID: <CANiDSCuVgN=d-TdW1T0EVxMALhyOcy2Sc511D4SkxN_1kh8h9A@mail.gmail.com>
-Message-ID: <CANiDSCuVgN=d-TdW1T0EVxMALhyOcy2Sc511D4SkxN_1kh8h9A@mail.gmail.com>
-Subject: Re: [PATCH 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Sergey Senozhatsky <senozhatsky@google.com>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+References: <cover.1605621785.git.saiprakash.ranjan@codeaurora.org>
+ <20201123152146.GE11033@willie-the-truck>
+ <50b68f2bdf9413b896fbe816ba4ddbc9@codeaurora.org>
+ <CAF6AEGse=WBAC1WbTi6aD5_m1_NBg91f=veYm-7V=Uds7NA0Lw@mail.gmail.com>
+ <1c665e33d1d27263fb5056c16d30b827@codeaurora.org>
+ <20201124111027.GA13151@willie-the-truck>
+In-Reply-To: <20201124111027.GA13151@willie-the-truck>
+From: Rob Clark <robdclark@gmail.com>
+Date: Tue, 24 Nov 2020 11:05:39 -0800
+Message-ID: <CAF6AEGuZ2YbY=ATFBX1KJw=LwhcpH8n+zzxckTHPwwopi6mOqw@mail.gmail.com>
+Subject: Re: [PATCHv8 0/8] System Cache support for GPU and required SMMU
+ support
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Akhil P Oommen <akhilpo@codeaurora.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Christoph Hellwig <hch@lst.de>
+ "list@263.net:IOMMU DRIVERS , Joerg Roedel <joro@8bytes.org>,
+ " <iommu@lists.linux-foundation.org>,
+ "Kristian H . Kristensen" <hoegsberg@google.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,179 +117,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin
-
-On Tue, Nov 24, 2020 at 5:29 PM Robin Murphy <robin.murphy@arm.com> wrote:
+On Tue, Nov 24, 2020 at 3:10 AM Will Deacon <will@kernel.org> wrote:
 >
-> On 2020-11-24 15:38, Ricardo Ribalda wrote:
-> > On architectures where the is no coherent caching such as ARM use the
-> > dma_alloc_noncontiguos API and handle manually the cache flushing using
-> > dma_sync_single().
+> On Tue, Nov 24, 2020 at 09:32:54AM +0530, Sai Prakash Ranjan wrote:
+> > On 2020-11-24 00:52, Rob Clark wrote:
+> > > On Mon, Nov 23, 2020 at 9:01 AM Sai Prakash Ranjan
+> > > <saiprakash.ranjan@codeaurora.org> wrote:
+> > > >
+> > > > On 2020-11-23 20:51, Will Deacon wrote:
+> > > > > On Tue, Nov 17, 2020 at 08:00:39PM +0530, Sai Prakash Ranjan wrote:
+> > > > >> Some hardware variants contain a system cache or the last level
+> > > > >> cache(llc). This cache is typically a large block which is shared
+> > > > >> by multiple clients on the SOC. GPU uses the system cache to cache
+> > > > >> both the GPU data buffers(like textures) as well the SMMU pagetables.
+> > > > >> This helps with improved render performance as well as lower power
+> > > > >> consumption by reducing the bus traffic to the system memory.
+> > > > >>
+> > > > >> The system cache architecture allows the cache to be split into slices
+> > > > >> which then be used by multiple SOC clients. This patch series is an
+> > > > >> effort to enable and use two of those slices preallocated for the GPU,
+> > > > >> one for the GPU data buffers and another for the GPU SMMU hardware
+> > > > >> pagetables.
+> > > > >>
+> > > > >> Patch 1 - Patch 6 adds system cache support in SMMU and GPU driver.
+> > > > >> Patch 7 and 8 are minor cleanups for arm-smmu impl.
+> > > > >>
+> > > > >> Changes in v8:
+> > > > >>  * Introduce a generic domain attribute for pagetable config (Will)
+> > > > >>  * Rename quirk to more generic IO_PGTABLE_QUIRK_ARM_OUTER_WBWA (Will)
+> > > > >>  * Move non-strict mode to use new struct domain_attr_io_pgtbl_config
+> > > > >> (Will)
+> > > > >
+> > > > > Modulo some minor comments I've made, this looks good to me. What is
+> > > > > the
+> > > > > plan for merging it? I can take the IOMMU parts, but patches 4-6 touch
+> > > > > the
+> > > > > MSM GPU driver and I'd like to avoid conflicts with that.
+> > > > >
+> > > >
+> > > > SMMU bits are pretty much independent and GPU relies on the domain
+> > > > attribute
+> > > > and the quirk exposed, so as long as SMMU changes go in first it
+> > > > should
+> > > > be good.
+> > > > Rob?
+> > >
+> > > I suppose one option would be to split out the patch that adds the
+> > > attribute into it's own patch, and merge that both thru drm and iommu?
+> > >
 > >
-> > With this patch on the affected architectures we can measure up to 20x
-> > performance improvement in uvc_video_copy_data_work().
-> >
-> > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-> > ---
-> >   drivers/media/usb/uvc/uvc_video.c | 74 ++++++++++++++++++++++++++-----
-> >   drivers/media/usb/uvc/uvcvideo.h  |  1 +
-> >   2 files changed, 63 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
-> > index a6a441d92b94..9e90b261428a 100644
-> > --- a/drivers/media/usb/uvc/uvc_video.c
-> > +++ b/drivers/media/usb/uvc/uvc_video.c
-> > @@ -1490,6 +1490,11 @@ static void uvc_video_encode_bulk(struct uvc_urb *uvc_urb,
-> >       urb->transfer_buffer_length = stream->urb_size - len;
-> >   }
-> >
-> > +static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
-> > +{
-> > +     return stream->dev->udev->bus->controller->parent;
-> > +}
-> > +
-> >   static void uvc_video_complete(struct urb *urb)
-> >   {
-> >       struct uvc_urb *uvc_urb = urb->context;
-> > @@ -1539,6 +1544,11 @@ static void uvc_video_complete(struct urb *urb)
-> >        * Process the URB headers, and optionally queue expensive memcpy tasks
-> >        * to be deferred to a work queue.
-> >        */
-> > +     if (uvc_urb->pages)
-> > +             dma_sync_single_for_cpu(stream_to_dmadev(stream),
-> > +                                     urb->transfer_dma,
-> > +                                     urb->transfer_buffer_length,
-> > +                                     DMA_FROM_DEVICE);
+> > Ok I can split out domain attr and quirk into its own patch if Will is
+> > fine with that approach.
 >
-> This doesn't work. Even in iommu-dma, the streaming API still expects to
-> work on physically-contiguous memory that could have been passed to
-> dma_map_single() in the first place. As-is, this will invalidate
-> transfer_buffer_length bytes from the start of the *first* physical
-> page, and thus destroy random other data if lines from subsequent
-> unrelated pages are dirty in caches.
->
-> The only feasible way to do a DMA sync on disjoint pages in a single
-> call is with a scatterlist.
+> Why don't I just queue the first two patches on their own branch and we
+> both pull that?
 
-Thanks for pointing this out. I guess I was lucky on my hardware and
-the areas were always  contiguous.
+Ok, that works for me.  I normally base msm-next on -rc1 but I guess
+as long as we base the branch on the older or our two -next branches,
+that should work out nicely
 
-Will rework and send back to the list.
-
-Thanks again.
-
->
-> Robin.
->
-> >       stream->decode(uvc_urb, buf, buf_meta);
-> >
-> >       /* If no async work is needed, resubmit the URB immediately. */
-> > @@ -1566,8 +1576,15 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
-> >                       continue;
-> >
-> >   #ifndef CONFIG_DMA_NONCOHERENT
-> > -             usb_free_coherent(stream->dev->udev, stream->urb_size,
-> > -                               uvc_urb->buffer, uvc_urb->dma);
-> > +             if (uvc_urb->pages) {
-> > +                     vunmap(uvc_urb->buffer);
-> > +                     dma_free_noncontiguous(stream_to_dmadev(stream),
-> > +                                            stream->urb_size,
-> > +                                            uvc_urb->pages, uvc_urb->dma);
-> > +             } else {
-> > +                     usb_free_coherent(stream->dev->udev, stream->urb_size,
-> > +                                       uvc_urb->buffer, uvc_urb->dma);
-> > +             }
-> >   #else
-> >               kfree(uvc_urb->buffer);
-> >   #endif
-> > @@ -1577,6 +1594,47 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
-> >       stream->urb_size = 0;
-> >   }
-> >
-> > +#ifndef CONFIG_DMA_NONCOHERENT
-> > +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-> > +                              struct uvc_urb *uvc_urb, gfp_t gfp_flags)
-> > +{
-> > +     struct device *dma_dev = dma_dev = stream_to_dmadev(stream);
-> > +
-> > +     if (!dma_can_alloc_noncontiguous(dma_dev)) {
-> > +             uvc_urb->buffer = usb_alloc_coherent(stream->dev->udev,
-> > +                                                  stream->urb_size,
-> > +                                                  gfp_flags | __GFP_NOWARN,
-> > +                                                  &uvc_urb->dma);
-> > +             return uvc_urb->buffer != NULL;
-> > +     }
-> > +
-> > +     uvc_urb->pages = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
-> > +                                              &uvc_urb->dma,
-> > +                                              gfp_flags | __GFP_NOWARN, 0);
-> > +     if (!uvc_urb->pages)
-> > +             return false;
-> > +
-> > +     uvc_urb->buffer = vmap(uvc_urb->pages,
-> > +                            PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT,
-> > +                            VM_DMA_COHERENT, PAGE_KERNEL);
-> > +     if (!uvc_urb->buffer) {
-> > +             dma_free_noncontiguous(dma_dev, stream->urb_size,
-> > +                                    uvc_urb->pages, uvc_urb->dma);
-> > +             return false;
-> > +     }
-> > +
-> > +     return true;
-> > +}
-> > +#else
-> > +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-> > +                              struct uvc_urb *uvc_urb, gfp_t gfp_flags)
-> > +{
-> > +     uvc_urb->buffer = kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
-> > +
-> > +     return uvc_urb->buffer != NULL;
-> > +}
-> > +#endif
-> > +
-> >   /*
-> >    * Allocate transfer buffers. This function can be called with buffers
-> >    * already allocated when resuming from suspend, in which case it will
-> > @@ -1607,19 +1665,11 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
-> >
-> >       /* Retry allocations until one succeed. */
-> >       for (; npackets > 1; npackets /= 2) {
-> > +             stream->urb_size = psize * npackets;
-> >               for (i = 0; i < UVC_URBS; ++i) {
-> >                       struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
-> >
-> > -                     stream->urb_size = psize * npackets;
-> > -#ifndef CONFIG_DMA_NONCOHERENT
-> > -                     uvc_urb->buffer = usb_alloc_coherent(
-> > -                             stream->dev->udev, stream->urb_size,
-> > -                             gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
-> > -#else
-> > -                     uvc_urb->buffer =
-> > -                         kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
-> > -#endif
-> > -                     if (!uvc_urb->buffer) {
-> > +                     if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
-> >                               uvc_free_urb_buffers(stream);
-> >                               break;
-> >                       }
-> > diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-> > index a3dfacf069c4..3e3ef1f1daa5 100644
-> > --- a/drivers/media/usb/uvc/uvcvideo.h
-> > +++ b/drivers/media/usb/uvc/uvcvideo.h
-> > @@ -532,6 +532,7 @@ struct uvc_urb {
-> >
-> >       char *buffer;
-> >       dma_addr_t dma;
-> > +     struct page **pages;
-> >
-> >       unsigned int async_operations;
-> >       struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
-> >
-
-
-
--- 
-Ricardo Ribalda
+BR,
+-R
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
