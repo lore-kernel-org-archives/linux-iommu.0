@@ -2,82 +2,103 @@ Return-Path: <SRS0=GPDh=E7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF54CC64E7C
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DE0C56202
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 15:42:02 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3ECCD206D4
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DBC0C2145D
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 15:42:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="OLniI8sF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3ECCD206D4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nuSjByGq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBC0C2145D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BD6B086D55;
-	Wed, 25 Nov 2020 14:05:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 582D586E77;
+	Wed, 25 Nov 2020 15:42:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 96ii1QV2uA81; Wed, 25 Nov 2020 14:05:43 +0000 (UTC)
+	with ESMTP id 3JxU7fLzEVnE; Wed, 25 Nov 2020 15:42:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 51A3986D50;
-	Wed, 25 Nov 2020 14:05:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 93D6586D38;
+	Wed, 25 Nov 2020 15:42:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D97AC0891;
-	Wed, 25 Nov 2020 14:05:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8671FC0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80A7AC163C;
+	Wed, 25 Nov 2020 15:42:00 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34284C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 15:41:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 797D22E148
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:42 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2F78687694
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 15:41:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M2bnqExf0F5g for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 14:05:41 +0000 (UTC)
+ with ESMTP id oKf-oImB+asm for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 15:41:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id C0D612E0BD
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:40 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
- [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 96049206D8;
- Wed, 25 Nov 2020 14:05:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606313140;
- bh=CrW9VJQR3WVXiruWhGTnLGV91u/uR09AoTYqRiq51WQ=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=OLniI8sFhqbr1EsqH5ak+Bj8H223FzLjqgx9hy4JvMdUTPhk8AxEK7UuZ3YhHe6vU
- HCfNTbwZEkTHi2hmkE5h42MvHfwZgRL7CY5oNbB7mb2njdp//PCzN1FeiwISPN8BLB
- 2KZP2Yo7RgeexiluKCl5OSZ0Qa7qIDoRtkcB+oGc=
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>, Jordan Crouse <jcrouse@codeaurora.org>,
- Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCHv10 0/9] System Cache support for GPU and required SMMU
- support
-Date: Wed, 25 Nov 2020 14:05:20 +0000
-Message-Id: <160630795189.1943614.1845602767779998183.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1606287059.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1606287059.git.saiprakash.ranjan@codeaurora.org>
+Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
+ [209.85.160.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CD3FE8768D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 15:41:57 +0000 (UTC)
+Received: by mail-qt1-f196.google.com with SMTP id z3so1864158qtw.9
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:41:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=zJQ2hLwoYKnLT/mLeaSf+xgCMRB9d8OpY3uJGRpDrh8=;
+ b=nuSjByGqfM0DLOPHS8807/d2MHwZyQ0oMMJcegcmic4Jy1ihsuYDkdrbQzDnrQ9q2T
+ HJ0PX5wyfoeAyfEC10mav6bnWlqqySIplmsuTG7QK2JfK/URX4sdDuNt6Rr0xUtzvPtE
+ Chs6DLzUgP4cJiJoOWafEYZgCKU/EZ/fFxIkkKdpBPjUKkDxMF69psIK+4VrAghS7Zek
+ tfa5NJYwkr7MPK8nohTHTDXnnq/40o6x1lsycNv1fZsecnnshQpG5mvx0T4dj95UmQGk
+ ljmFWunS4mOE9UvlQLw1Kpfc+L5smnqYbCx7gcLpoAPgc19ixzF2GffUHQkrEKr3C9Jw
+ OYbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=zJQ2hLwoYKnLT/mLeaSf+xgCMRB9d8OpY3uJGRpDrh8=;
+ b=E1PCvG1Btkevx0XpVHNhhnveUK/rs2bwnKLHkUdtWJeA6yfdLtuEsEjYQWpW3ovafT
+ 4p3ZMj+RO+xjgl+REo1seryp1kquA8C3353OpWs4PZHQa8QnPhVyzemSLNkJbLhdSuC6
+ zuhS9OSFUFISo6UeMLB0w6p0STyBvEFl1Za5nniUxTe0uc2j0SsTrYTVUA6naiuTKUAs
+ AfDPoc1uaVznUAIB8I1c/Sp8K8kWgx2NjOGZ9ZcMj0DomU8FM5bUvqMKc9RuQgpDnJLJ
+ 5NBGN9VYbyXT4Iq+lPlrwE7Lkf8vElgbMGOttRqtrzUuOLYcsFZsAhEZAMKhP6vMEVNw
+ ugXA==
+X-Gm-Message-State: AOAM532ZBnP0q3n+T9YTVWvxIeAXfl84T9ywszpbIpixYa6k5Nhv5PP8
+ tlhJ4p74BlMQcn/PJb1xX0s=
+X-Google-Smtp-Source: ABdhPJzlDG5z/jwneHQe+Gy56zmcIiQjlk3cCKzARF175d58GjbcAuixAtHHERx3PCVRr/TXMWBn1A==
+X-Received: by 2002:ac8:4a8c:: with SMTP id l12mr3634691qtq.7.1606318916838;
+ Wed, 25 Nov 2020 07:41:56 -0800 (PST)
+Received: from localhost.localdomain
+ (209-6-208-110.s8556.c3-0.smr-cbr2.sbo-smr.ma.cable.rcncustomer.com.
+ [209.6.208.110])
+ by smtp.gmail.com with ESMTPSA id z88sm2800542qtd.46.2020.11.25.07.41.55
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 25 Nov 2020 07:41:56 -0800 (PST)
+Date: Wed, 25 Nov 2020 10:41:53 -0500
+From: Konrad Rzeszutek Wilk <konrad@darnok.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 1/1] x86/tboot: Don't disable swiotlb when iommu is
+ forced on
+Message-ID: <20201125154153.GA29929@localhost.localdomain>
+References: <20201125014124.4070776-1-baolu.lu@linux.intel.com>
+ <160630605367.4096500.10722779964348157570.b4-ty@kernel.org>
 MIME-Version: 1.0
-Cc: freedreno@lists.freedesktop.org, Will Deacon <will@kernel.org>,
- catalin.marinas@arm.com, Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Kristian H Kristensen <hoegsberg@google.com>,
- linux-arm-msm@vger.kernel.org, kernel-team@android.com,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <160630605367.4096500.10722779964348157570.b4-ty@kernel.org>
+Cc: Ashok Raj <ashok.raj@intel.com>, catalin.marinas@arm.com, x86@kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Ning Sun <ning.sun@intel.com>, tboot-devel@lists.sourceforge.net,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Adrian Huang <ahuang12@lenovo.com>, Thomas Gleixner <tglx@linutronix.de>,
+ kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,32 +116,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 25 Nov 2020 12:30:09 +0530, Sai Prakash Ranjan wrote:
-> Some hardware variants contain a system cache or the last level
-> cache(llc). This cache is typically a large block which is shared
-> by multiple clients on the SOC. GPU uses the system cache to cache
-> both the GPU data buffers(like textures) as well the SMMU pagetables.
-> This helps with improved render performance as well as lower power
-> consumption by reducing the bus traffic to the system memory.
+On Wed, Nov 25, 2020 at 02:05:15PM +0000, Will Deacon wrote:
+> On Wed, 25 Nov 2020 09:41:24 +0800, Lu Baolu wrote:
+> > After commit 327d5b2fee91c ("iommu/vt-d: Allow 32bit devices to uses DMA
+> > domain"), swiotbl could also be used for direct memory access if IOMMU
+> > is enabled but a device is configured to pass through the DMA translation.
+> > Keep swiotlb when IOMMU is forced on, otherwise, some devices won't work
+> > if "iommu=pt" kernel parameter is used.
 > 
-> [...]
+> Applied to arm64 (for-next/iommu/fixes), thanks!
+> 
+> [1/1] x86/tboot: Don't disable swiotlb when iommu is forced on
+>       https://git.kernel.org/arm64/c/e2be2a833ab5
 
-Applied first two patches on a shared branch for Rob:
+But tboot never ran on ARM. It is a Intel specifc.
 
-	arm64 (for-next/iommu/io-pgtable-domain-attr), thanks!
-
-[1/9] iommu/io-pgtable: Add a domain attribute for pagetable configuration
-      https://git.kernel.org/arm64/c/a7656ecf825a
-[2/9] iommu/io-pgtable-arm: Add support to use system cache
-      https://git.kernel.org/arm64/c/e67890c97944
-
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+I think either me or Thomas should take this patch.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
