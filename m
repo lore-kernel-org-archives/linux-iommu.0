@@ -4,98 +4,144 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E900C64E7D
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 21:10:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58F7C56201
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 21:31:13 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 943CD21D40
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 21:10:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B6652075A
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 21:31:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="JPjbDxor"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 943CD21D40
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="mf3I1o3j"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B6652075A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 36D97876F2;
-	Wed, 25 Nov 2020 21:10:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8DD2D2E113;
+	Wed, 25 Nov 2020 21:31:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7MN6jDKgpke1; Wed, 25 Nov 2020 21:10:15 +0000 (UTC)
+	with ESMTP id cocD9W3AYEql; Wed, 25 Nov 2020 21:31:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 16331876D9;
-	Wed, 25 Nov 2020 21:10:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6CABE2E0EE;
+	Wed, 25 Nov 2020 21:31:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 005F1C163C;
-	Wed, 25 Nov 2020 21:10:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56BC5C0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:10:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48EE8C163C;
+	Wed, 25 Nov 2020 21:31:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8EA9FC0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:31:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4D10787475
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:10:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 81A4486FD8
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:31:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yDTtWgJOo5um for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 21:10:11 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 408B9873D8
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:10:11 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1606338611; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=LXi+8GhbOdCSBQpn2FWDZHiSkQRyBjoO0GEOs9SQ7rU=;
- b=JPjbDxorJnT8jvBeB/tzEeHKp7TJ/Ug1orhcE0NvYIufWa8Dp+5VhsnQhv3LJXCqAxWcFmed
- jGO9Bixg5xAWJgcDQzuq4M3Yl/9+DaMp1NbWbBQZwWkv72xO7Fi2rDjwmSjT/iXbEMYONbiQ
- yXURcaDliI0abaYQqleRvCFxOgQ=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5fbec830e9b7088622329370 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 25 Nov 2020 21:10:08
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 1AB90C43463; Wed, 25 Nov 2020 21:10:08 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 50E98C433ED;
- Wed, 25 Nov 2020 21:10:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 50E98C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=fail smtp.mailfrom=jcrouse@codeaurora.org
-Date: Wed, 25 Nov 2020 14:10:02 -0700
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/io-pgtable: Remove tlb_flush_leaf
-Message-ID: <20201125211002.GE16856@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org,
- robh@kernel.org, tomeu.vizoso@collabora.com,
- dri-devel@lists.freedesktop.org, steven.price@arm.com,
- iommu@lists.linux-foundation.org, Sean Paul <sean@poorly.run>,
- linux-arm-kernel@lists.infradead.org
-References: <9844ab0c5cb3da8b2f89c6c2da16941910702b41.1606324115.git.robin.murphy@arm.com>
- <c6e3e4af-118e-d92c-0430-94d8caf52963@arm.com>
+ with ESMTP id gnWx0A6MIDdD for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 21:31:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B917186FC5
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:31:03 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20201125213036euoutp01fd0bb20c811268575f8b1c032c6b8990~K3ZH3ZtI71157011570euoutp01F
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 21:30:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20201125213036euoutp01fd0bb20c811268575f8b1c032c6b8990~K3ZH3ZtI71157011570euoutp01F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1606339836;
+ bh=0SyuEg94uJUCVmkxRXgGOa5Agz30lkFn7guBPvROnjk=;
+ h=Subject:To:From:Date:In-Reply-To:References:From;
+ b=mf3I1o3jktCc8xwYebeJJVhHg6QliT7kxsgvldiGWxs4XEUJ7HbLgn8qJlE1MxjST
+ AQTG+ha2uwHYYcZzAHxBI+0TvPs40dpLa/EOSHzdWNS64cDnHWIGPBNEmP2oOPRsoO
+ j8s7GaUpCDX5JSuV1oU/5VdDRuQKjZyC5N7XjvIo=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20201125213026eucas1p133e92809597e3c51e2a1a84a92723446~K3Y_6D5841182311823eucas1p1q;
+ Wed, 25 Nov 2020 21:30:26 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id 98.D2.27958.2FCCEBF5; Wed, 25
+ Nov 2020 21:30:26 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20201125213025eucas1p24fd0cb6e4383297f8527b2075ce3e4ea~K3Y99-Bl20787307873eucas1p2B;
+ Wed, 25 Nov 2020 21:30:25 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20201125213025eusmtrp25f4ce38c22ce80760d9d31f6992b350b~K3Y95d6Gn2067820678eusmtrp2c;
+ Wed, 25 Nov 2020 21:30:25 +0000 (GMT)
+X-AuditID: cbfec7f2-f15ff70000006d36-42-5fbeccf2c82c
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 08.CC.16282.1FCCEBF5; Wed, 25
+ Nov 2020 21:30:25 +0000 (GMT)
+Received: from [106.210.88.143] (unknown [106.210.88.143]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20201125213024eusmtip1ffc51ff185ac47173f20b7f93f931937~K3Y9Ny24w3264332643eusmtip1D;
+ Wed, 25 Nov 2020 21:30:24 +0000 (GMT)
+Subject: Re: [PATCH v2 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
+To: Ricardo Ribalda <ribalda@chromium.org>, Robin Murphy
+ <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, auro Carvalho Chehab
+ <mchehab@kernel.org>, IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, Linux Doc Mailing List
+ <linux-doc@vger.kernel.org>, Linux Kernel Mailing List
+ <linux-kernel@vger.kernel.org>, Linux Media Mailing List
+ <linux-media@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, Sergey
+ Senozhatsky <senozhatsky@google.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <527e4b4e-e631-adfa-e4fa-c777af82ae17@samsung.com>
+Date: Wed, 25 Nov 2020 22:30:28 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c6e3e4af-118e-d92c-0430-94d8caf52963@arm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: robh@kernel.org, tomeu.vizoso@collabora.com, Sean Paul <sean@poorly.run>,
- dri-devel@lists.freedesktop.org, steven.price@arm.com,
- iommu@lists.linux-foundation.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20201125203114.130967-1-ribalda@chromium.org>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrIKsWRmVeSWpSXmKPExsWy7djPc7qfzuyLN9hxSthi5eqjTBYL9ltb
+ dM7ewG6xsG0Ji8XlXXPYLHo2bGW1WLbpD5NF0/SDbBYHPzxhtVjwdRWjxefWf2wO3B5PDs5j
+ 8lgzbw2jx+yGiyweCzaVemxa1cnmMfnGckaP3Tcb2Dw+b5IL4IjisklJzcksSy3St0vgyljU
+ +JulYJ5+xarzcxkbGPepdjFyckgImEjsXDaPpYuRi0NIYAWjxOYjc1ghnC+MEnPmdTJBOJ8Z
+ JQ7fO8wO03Jl2lM2iMRyRokrk39A9b9nlGicvYUNpEpYwFvixbaFYLNEBN4zS3S0ngVrZxMw
+ lOh62wVWxCtgJ/H+9xkwm0VAVeLj6cfMILaoQJLEwY8PoGoEJU7OfMICYnMKWEucWf2TEcRm
+ FpCX2P52DjOELS5x68l8sFslBP5zSKxse8QEcauLRPPOo6wQtrDEq+NboH6Qkfi/E6ahmVHi
+ 4bm17BBOD6PE5aYZjBBV1hJ3zv0COoMDaIWmxPpd+hBhR4lV95Yyg4QlBPgkbrwVhDiCT2LS
+ tulQYV6JjjYhiGo1iVnH18GtPXjhEjOE7SHRu20W2wRGxVlI3pyF5LVZSF6bhXDDAkaWVYzi
+ qaXFuempxYZ5qeV6xYm5xaV56XrJ+bmbGIGp7PS/4592MM599VHvECMTB+MhRgkOZiURXnfh
+ vfFCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeVfNXhMvJJCeWJKanZpakFoEk2Xi4JRqYJK401Rb
+ treRq0LmXOF+3oAH3/epG77rDWeu+HSP/9+uyT8i/gTssGM7HjFjcV+/vFiBipTiJIHq8Pzp
+ azQlVcwN5RtP63BemGWcVvip8OU+jmufJaL6v7I/eHqe8djK1Hyuqexrr75U1XvgUKD4/e7/
+ b4mMs9z+avCtf3dT426Erac6+7q2zjP8Kz0sl2fdMlf6PJfhz6QAywVn/jZs6Kqa++/VrDDW
+ NOeZojsa5z5ev2y3xudpfox3vjkeUfWuyT9pvd+5MOPHLQOHqh69vYmXq5Zz/Niv/ODmfl2O
+ dSKLDx6/5t7xVmHyj6B10Rl/GSJ4FhWy5X++0hp9/uF7NiHBu1GFd3azN31L/+EY2KnEUpyR
+ aKjFXFScCABr1rVW1AMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGIsWRmVeSWpSXmKPExsVy+t/xu7ofz+yLNzhyhd9i5eqjTBYL9ltb
+ dM7ewG6xsG0Ji8XlXXPYLHo2bGW1WLbpD5NF0/SDbBYHPzxhtVjwdRWjxefWf2wO3B5PDs5j
+ 8lgzbw2jx+yGiyweCzaVemxa1cnmMfnGckaP3Tcb2Dw+b5IL4IjSsynKLy1JVcjILy6xVYo2
+ tDDSM7S00DMysdQzNDaPtTIyVdK3s0lJzcksSy3St0vQy1jU+JulYJ5+xarzcxkbGPepdjFy
+ ckgImEhcmfaUrYuRi0NIYCmjREfbamaIhIzEyWkNrBC2sMSfa11QRW8ZJc41NTOBJIQFvCVe
+ bFvICpIQEfjILPHj8yuwbiGBPkaJxz88QGw2AUOJrrcg3ZwcvAJ2Eu9/nwGzWQRUJT6efgxW
+ LyqQJPF76VqoGkGJkzOfsIDYnALWEmdW/2QEsZkFzCTmbX7IDGHLS2x/OwfKFpe49WQ+0wRG
+ wVlI2mchaZmFpGUWkpYFjCyrGEVSS4tz03OLjfSKE3OLS/PS9ZLzczcxAiN027GfW3Ywrnz1
+ Ue8QIxMH4yFGCQ5mJRFed+G98UK8KYmVValF+fFFpTmpxYcYTYH+mcgsJZqcD0wReSXxhmYG
+ poYmZpYGppZmxkrivCZH1sQLCaQnlqRmp6YWpBbB9DFxcEo1MO2NNwvpVTzfHaYqeDN7ZYjF
+ k9KI6z6vj7Qsm22SGxUpZKlwoN81+J8f67QJVbe7RHy4dmdo2d0KMVrz2uxsZcXBXfvvTitZ
+ u1Bs78bU9RVZr7kj7R1Cmb8Hej8WuLLefg+Dj95Sq86MTpHj22pDe+d/MtAVv/Cnj/kUw7cc
+ u7LJqpLNf2U650x6uPLulrm3LBNfMEdes9jlMEltt3wJy1d29tj04kmhlvFlt+y/7paSWHBA
+ 7MCqepn01mvhe93avVoXrj/MXbpps0LuyRmH+mzP7OlRvvX2FZfvskPbD0cvXi6/O2+zrvLS
+ yVorbBieLtYMuXY80FEp1jzt+US9YOnSK4KnlErvb9oQlGThpsRSnJFoqMVcVJwIADxDY4ZZ
+ AwAA
+X-CMS-MailID: 20201125213025eucas1p24fd0cb6e4383297f8527b2075ce3e4ea
+X-Msg-Generator: CA
+X-RootMTR: 20201125203125eucas1p1456f09a6d130e2f015707b4e5f9dbfc1
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201125203125eucas1p1456f09a6d130e2f015707b4e5f9dbfc1
+References: <CGME20201125203125eucas1p1456f09a6d130e2f015707b4e5f9dbfc1@eucas1p1.samsung.com>
+ <20201125203114.130967-1-ribalda@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,333 +159,181 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Nov 25, 2020 at 06:24:13PM +0000, Robin Murphy wrote:
-> On 2020-11-25 17:29, Robin Murphy wrote:
-> >The only user of tlb_flush_leaf is a particularly hairy corner of the
-> >Arm short-descriptor code, which wants a synchronous invalidation to
-> >minimise the races inherent in trying to split a large page mapping.
-> >This is already far enough into "here be dragons" territory that no
-> >sensible caller should ever hit it, and thus it really doesn't need
-> >optimising. Although using tlb_flush_walk there may technically be
-> >more heavyweight than needed, it does the job and saves everyone else
-> >having to carry around useless baggage.
-> >
-> >Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> >---
-> >
-> >Reviewing the Mediatek TLB optimisation patches just left me thinking
-> >"why do we even have this?"... Panfrost folks, this has zero functional
-> >impact to you, merely wants an ack for straying outside drivers/iommu.
-> 
-> Oops, same goes for MSM folks too - I honestly failed to even notice that
-> some of the "msm_iommu" code actually lives in DRM. Maybe the fancy editor
-> makes life *too* easy and I should go back to grep and vim and having to pay
-> attention to paths... :)
+Hi
 
-Not a problem - having io-pgtable outside of drivers/iommu is new to most of us
-too.
+On 25.11.2020 21:31, Ricardo Ribalda wrote:
+> On architectures where the is no coherent caching such as ARM use the
+> dma_alloc_noncontiguos API and handle manually the cache flushing using
+> dma_sync_sg().
+>
+> With this patch on the affected architectures we can measure up to 20x
+> performance improvement in uvc_video_copy_data_work().
+>
+> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> ---
+>
+> v2: Thanks to Robin!
+>
+> Use dma_sync_sg instead of dma_sync_single
+>
+>
+>   drivers/media/usb/uvc/uvc_video.c | 83 ++++++++++++++++++++++++++-----
+>   drivers/media/usb/uvc/uvcvideo.h  |  2 +
+>   2 files changed, 73 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+> index a6a441d92b94..b2e6a9522999 100644
+> --- a/drivers/media/usb/uvc/uvc_video.c
+> +++ b/drivers/media/usb/uvc/uvc_video.c
+> @@ -1490,6 +1490,11 @@ static void uvc_video_encode_bulk(struct uvc_urb *uvc_urb,
+>   	urb->transfer_buffer_length = stream->urb_size - len;
+>   }
+>   
+> +static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
+> +{
+> +	return stream->dev->udev->bus->controller->parent;
+> +}
+> +
+>   static void uvc_video_complete(struct urb *urb)
+>   {
+>   	struct uvc_urb *uvc_urb = urb->context;
+> @@ -1539,6 +1544,10 @@ static void uvc_video_complete(struct urb *urb)
+>   	 * Process the URB headers, and optionally queue expensive memcpy tasks
+>   	 * to be deferred to a work queue.
+>   	 */
+> +	if (uvc_urb->pages) {
+> +		dma_sync_sg_for_cpu(stream_to_dmadev(stream), uvc_urb->sgt.sgl,
+> +				    uvc_urb->sgt.nents,	DMA_FROM_DEVICE);
 
-drm/msm LGTM.
+Please use dma_sync_sgtable_for_cpu(stream_to_dmadev(stream), 
+&uvc_urb->sgt, DMA_FROM_DEVICE);
 
-Jordan
+I also think that there should be a call to 
+dma_sync_sgtable_for_device() before starting the potential DMA 
+transfer. Just to make sure that CPU wont trash the newly captured data 
+and for the API completeness.
 
-> Robin.
-> 
-> >  drivers/gpu/drm/msm/msm_iommu.c             |  1 -
-> >  drivers/gpu/drm/panfrost/panfrost_mmu.c     |  7 ------
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  7 ------
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 25 +++------------------
-> >  drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  8 -------
-> >  drivers/iommu/io-pgtable-arm-v7s.c          |  3 +--
-> >  drivers/iommu/io-pgtable-arm.c              |  1 -
-> >  drivers/iommu/ipmmu-vmsa.c                  |  1 -
-> >  drivers/iommu/msm_iommu.c                   |  7 ------
-> >  drivers/iommu/mtk_iommu.c                   |  1 -
-> >  include/linux/io-pgtable.h                  | 11 ---------
-> >  11 files changed, 4 insertions(+), 68 deletions(-)
-> >
-> >diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> >index 22ac7c692a81..50d881794758 100644
-> >--- a/drivers/gpu/drm/msm/msm_iommu.c
-> >+++ b/drivers/gpu/drm/msm/msm_iommu.c
-> >@@ -139,7 +139,6 @@ static void msm_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops null_tlb_ops = {
-> >  	.tlb_flush_all = msm_iommu_tlb_flush_all,
-> >  	.tlb_flush_walk = msm_iommu_tlb_flush_walk,
-> >-	.tlb_flush_leaf = msm_iommu_tlb_flush_walk,
-> >  	.tlb_add_page = msm_iommu_tlb_add_page,
-> >  };
-> >
-> >diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> >index 776448c527ea..c186914cc4f9 100644
-> >--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> >+++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> >@@ -347,16 +347,9 @@ static void mmu_tlb_flush_walk(unsigned long iova, size_t size, size_t granule,
-> >  	mmu_tlb_sync_context(cookie);
-> >  }
-> >
-> >-static void mmu_tlb_flush_leaf(unsigned long iova, size_t size, size_t granule,
-> >-			       void *cookie)
-> >-{
-> >-	mmu_tlb_sync_context(cookie);
-> >-}
-> >-
-> >  static const struct iommu_flush_ops mmu_tlb_ops = {
-> >  	.tlb_flush_all	= mmu_tlb_inv_context_s1,
-> >  	.tlb_flush_walk = mmu_tlb_flush_walk,
-> >-	.tlb_flush_leaf = mmu_tlb_flush_leaf,
-> >  };
-> >
-> >  int panfrost_mmu_pgtable_alloc(struct panfrost_file_priv *priv)
-> >diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >index e634bbe60573..fb684a393118 100644
-> >--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >@@ -1741,16 +1741,9 @@ static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
-> >  	arm_smmu_tlb_inv_range(iova, size, granule, false, cookie);
-> >  }
-> >
-> >-static void arm_smmu_tlb_inv_leaf(unsigned long iova, size_t size,
-> >-				  size_t granule, void *cookie)
-> >-{
-> >-	arm_smmu_tlb_inv_range(iova, size, granule, true, cookie);
-> >-}
-> >-
-> >  static const struct iommu_flush_ops arm_smmu_flush_ops = {
-> >  	.tlb_flush_all	= arm_smmu_tlb_inv_context,
-> >  	.tlb_flush_walk = arm_smmu_tlb_inv_walk,
-> >-	.tlb_flush_leaf = arm_smmu_tlb_inv_leaf,
-> >  	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
-> >  };
-> >
-> >diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >index dad7fa86fbd4..0b8c59922a2b 100644
-> >--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> >@@ -333,14 +333,6 @@ static void arm_smmu_tlb_inv_walk_s1(unsigned long iova, size_t size,
-> >  	arm_smmu_tlb_sync_context(cookie);
-> >  }
-> >
-> >-static void arm_smmu_tlb_inv_leaf_s1(unsigned long iova, size_t size,
-> >-				     size_t granule, void *cookie)
-> >-{
-> >-	arm_smmu_tlb_inv_range_s1(iova, size, granule, cookie,
-> >-				  ARM_SMMU_CB_S1_TLBIVAL);
-> >-	arm_smmu_tlb_sync_context(cookie);
-> >-}
-> >-
-> >  static void arm_smmu_tlb_add_page_s1(struct iommu_iotlb_gather *gather,
-> >  				     unsigned long iova, size_t granule,
-> >  				     void *cookie)
-> >@@ -357,14 +349,6 @@ static void arm_smmu_tlb_inv_walk_s2(unsigned long iova, size_t size,
-> >  	arm_smmu_tlb_sync_context(cookie);
-> >  }
-> >
-> >-static void arm_smmu_tlb_inv_leaf_s2(unsigned long iova, size_t size,
-> >-				     size_t granule, void *cookie)
-> >-{
-> >-	arm_smmu_tlb_inv_range_s2(iova, size, granule, cookie,
-> >-				  ARM_SMMU_CB_S2_TLBIIPAS2L);
-> >-	arm_smmu_tlb_sync_context(cookie);
-> >-}
-> >-
-> >  static void arm_smmu_tlb_add_page_s2(struct iommu_iotlb_gather *gather,
-> >  				     unsigned long iova, size_t granule,
-> >  				     void *cookie)
-> >@@ -373,8 +357,8 @@ static void arm_smmu_tlb_add_page_s2(struct iommu_iotlb_gather *gather,
-> >  				  ARM_SMMU_CB_S2_TLBIIPAS2L);
-> >  }
-> >
-> >-static void arm_smmu_tlb_inv_any_s2_v1(unsigned long iova, size_t size,
-> >-				       size_t granule, void *cookie)
-> >+static void arm_smmu_tlb_inv_walk_s2_v1(unsigned long iova, size_t size,
-> >+					size_t granule, void *cookie)
-> >  {
-> >  	arm_smmu_tlb_inv_context_s2(cookie);
-> >  }
-> >@@ -401,21 +385,18 @@ static void arm_smmu_tlb_add_page_s2_v1(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops arm_smmu_s1_tlb_ops = {
-> >  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
-> >  	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s1,
-> >-	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf_s1,
-> >  	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
-> >  };
-> >
-> >  static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
-> >  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-> >  	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2,
-> >-	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf_s2,
-> >  	.tlb_add_page	= arm_smmu_tlb_add_page_s2,
-> >  };
-> >
-> >  static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
-> >  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-> >-	.tlb_flush_walk	= arm_smmu_tlb_inv_any_s2_v1,
-> >-	.tlb_flush_leaf	= arm_smmu_tlb_inv_any_s2_v1,
-> >+	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2_v1,
-> >  	.tlb_add_page	= arm_smmu_tlb_add_page_s2_v1,
-> >  };
-> >
-> >diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> >index b30d6c966e2c..7f280c8d5c53 100644
-> >--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> >+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> >@@ -185,13 +185,6 @@ static void qcom_iommu_tlb_flush_walk(unsigned long iova, size_t size,
-> >  	qcom_iommu_tlb_sync(cookie);
-> >  }
-> >
-> >-static void qcom_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
-> >-				      size_t granule, void *cookie)
-> >-{
-> >-	qcom_iommu_tlb_inv_range_nosync(iova, size, granule, true, cookie);
-> >-	qcom_iommu_tlb_sync(cookie);
-> >-}
-> >-
-> >  static void qcom_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
-> >  				    unsigned long iova, size_t granule,
-> >  				    void *cookie)
-> >@@ -202,7 +195,6 @@ static void qcom_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops qcom_flush_ops = {
-> >  	.tlb_flush_all	= qcom_iommu_tlb_inv_context,
-> >  	.tlb_flush_walk = qcom_iommu_tlb_flush_walk,
-> >-	.tlb_flush_leaf = qcom_iommu_tlb_flush_leaf,
-> >  	.tlb_add_page	= qcom_iommu_tlb_add_page,
-> >  };
-> >
-> >diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> >index a688f22cbe3b..3cf72c100add 100644
-> >--- a/drivers/iommu/io-pgtable-arm-v7s.c
-> >+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> >@@ -584,7 +584,7 @@ static arm_v7s_iopte arm_v7s_split_cont(struct arm_v7s_io_pgtable *data,
-> >  	__arm_v7s_pte_sync(ptep, ARM_V7S_CONT_PAGES, &iop->cfg);
-> >
-> >  	size *= ARM_V7S_CONT_PAGES;
-> >-	io_pgtable_tlb_flush_leaf(iop, iova, size, size);
-> >+	io_pgtable_tlb_flush_walk(iop, iova, size, size);
-> >  	return pte;
-> >  }
-> >
-> >@@ -866,7 +866,6 @@ static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
-> >  	.tlb_flush_all	= dummy_tlb_flush_all,
-> >  	.tlb_flush_walk	= dummy_tlb_flush,
-> >-	.tlb_flush_leaf	= dummy_tlb_flush,
-> >  	.tlb_add_page	= dummy_tlb_add_page,
-> >  };
-> >
-> >diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> >index a7a9bc08dcd1..938830e07dcf 100644
-> >--- a/drivers/iommu/io-pgtable-arm.c
-> >+++ b/drivers/iommu/io-pgtable-arm.c
-> >@@ -1079,7 +1079,6 @@ static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
-> >  	.tlb_flush_all	= dummy_tlb_flush_all,
-> >  	.tlb_flush_walk	= dummy_tlb_flush,
-> >-	.tlb_flush_leaf	= dummy_tlb_flush,
-> >  	.tlb_add_page	= dummy_tlb_add_page,
-> >  };
-> >
-> >diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> >index 0f18abda0e20..d71f10257f15 100644
-> >--- a/drivers/iommu/ipmmu-vmsa.c
-> >+++ b/drivers/iommu/ipmmu-vmsa.c
-> >@@ -325,7 +325,6 @@ static void ipmmu_tlb_flush(unsigned long iova, size_t size,
-> >  static const struct iommu_flush_ops ipmmu_flush_ops = {
-> >  	.tlb_flush_all = ipmmu_tlb_flush_all,
-> >  	.tlb_flush_walk = ipmmu_tlb_flush,
-> >-	.tlb_flush_leaf = ipmmu_tlb_flush,
-> >  };
-> >
-> >  /* -----------------------------------------------------------------------------
-> >diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> >index 3615cd6241c4..040e85f70861 100644
-> >--- a/drivers/iommu/msm_iommu.c
-> >+++ b/drivers/iommu/msm_iommu.c
-> >@@ -174,12 +174,6 @@ static void __flush_iotlb_walk(unsigned long iova, size_t size,
-> >  	__flush_iotlb_range(iova, size, granule, false, cookie);
-> >  }
-> >
-> >-static void __flush_iotlb_leaf(unsigned long iova, size_t size,
-> >-			       size_t granule, void *cookie)
-> >-{
-> >-	__flush_iotlb_range(iova, size, granule, true, cookie);
-> >-}
-> >-
-> >  static void __flush_iotlb_page(struct iommu_iotlb_gather *gather,
-> >  			       unsigned long iova, size_t granule, void *cookie)
-> >  {
-> >@@ -189,7 +183,6 @@ static void __flush_iotlb_page(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops msm_iommu_flush_ops = {
-> >  	.tlb_flush_all = __flush_iotlb,
-> >  	.tlb_flush_walk = __flush_iotlb_walk,
-> >-	.tlb_flush_leaf = __flush_iotlb_leaf,
-> >  	.tlb_add_page = __flush_iotlb_page,
-> >  };
-> >
-> >diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> >index c072cee532c2..8e56cec532e7 100644
-> >--- a/drivers/iommu/mtk_iommu.c
-> >+++ b/drivers/iommu/mtk_iommu.c
-> >@@ -240,7 +240,6 @@ static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
-> >  static const struct iommu_flush_ops mtk_iommu_flush_ops = {
-> >  	.tlb_flush_all = mtk_iommu_tlb_flush_all,
-> >  	.tlb_flush_walk = mtk_iommu_tlb_flush_range_sync,
-> >-	.tlb_flush_leaf = mtk_iommu_tlb_flush_range_sync,
-> >  	.tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
-> >  };
-> >
-> >diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> >index 4cde111e425b..ec9fae37c0e4 100644
-> >--- a/include/linux/io-pgtable.h
-> >+++ b/include/linux/io-pgtable.h
-> >@@ -25,8 +25,6 @@ enum io_pgtable_fmt {
-> >   * @tlb_flush_walk: Synchronously invalidate all intermediate TLB state
-> >   *                  (sometimes referred to as the "walk cache") for a virtual
-> >   *                  address range.
-> >- * @tlb_flush_leaf: Synchronously invalidate all leaf TLB state for a virtual
-> >- *                  address range.
-> >   * @tlb_add_page:   Optional callback to queue up leaf TLB invalidation for a
-> >   *                  single page.  IOMMUs that cannot batch TLB invalidation
-> >   *                  operations efficiently will typically issue them here, but
-> >@@ -40,8 +38,6 @@ struct iommu_flush_ops {
-> >  	void (*tlb_flush_all)(void *cookie);
-> >  	void (*tlb_flush_walk)(unsigned long iova, size_t size, size_t granule,
-> >  			       void *cookie);
-> >-	void (*tlb_flush_leaf)(unsigned long iova, size_t size, size_t granule,
-> >-			       void *cookie);
-> >  	void (*tlb_add_page)(struct iommu_iotlb_gather *gather,
-> >  			     unsigned long iova, size_t granule, void *cookie);
-> >  };
-> >@@ -220,13 +216,6 @@ io_pgtable_tlb_flush_walk(struct io_pgtable *iop, unsigned long iova,
-> >  	iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
-> >  }
-> >
-> >-static inline void
-> >-io_pgtable_tlb_flush_leaf(struct io_pgtable *iop, unsigned long iova,
-> >-			  size_t size, size_t granule)
-> >-{
-> >-	iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> >-}
-> >-
-> >  static inline void
-> >  io_pgtable_tlb_add_page(struct io_pgtable *iop,
-> >  			struct iommu_iotlb_gather * gather, unsigned long iova,
-> >--
-> >2.17.1
-> >
-> >_______________________________________________
-> >iommu mailing list
-> >iommu@lists.linux-foundation.org
-> >https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> >
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> +	}
+>   	stream->decode(uvc_urb, buf, buf_meta);
+>   
+>   	/* If no async work is needed, resubmit the URB immediately. */
+> @@ -1566,8 +1575,16 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
+>   			continue;
+>   
+>   #ifndef CONFIG_DMA_NONCOHERENT
+> -		usb_free_coherent(stream->dev->udev, stream->urb_size,
+> -				  uvc_urb->buffer, uvc_urb->dma);
+> +		if (uvc_urb->pages) {
+> +			sg_free_table(&uvc_urb->sgt);
+> +			vunmap(uvc_urb->buffer);
+> +			dma_free_noncontiguous(stream_to_dmadev(stream),
+> +					       stream->urb_size,
+> +					       uvc_urb->pages, uvc_urb->dma);
+> +		} else {
+> +			usb_free_coherent(stream->dev->udev, stream->urb_size,
+> +					  uvc_urb->buffer, uvc_urb->dma);
+> +		}
+>   #else
+>   		kfree(uvc_urb->buffer);
+>   #endif
+> @@ -1577,6 +1594,56 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
+>   	stream->urb_size = 0;
+>   }
+>   
+> +#ifndef CONFIG_DMA_NONCOHERENT
+> +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
+> +				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
+> +{
+> +	struct device *dma_dev = dma_dev = stream_to_dmadev(stream);
+> +
+> +	if (!dma_can_alloc_noncontiguous(dma_dev)) {
+> +		uvc_urb->buffer = usb_alloc_coherent(stream->dev->udev,
+> +						     stream->urb_size,
+> +						     gfp_flags | __GFP_NOWARN,
+> +						     &uvc_urb->dma);
+> +		return uvc_urb->buffer != NULL;
+> +	}
+> +
+> +	uvc_urb->pages = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
+> +						 &uvc_urb->dma,
+> +						 gfp_flags | __GFP_NOWARN, 0);
+> +	if (!uvc_urb->pages)
+> +		return false;
+> +
+> +	uvc_urb->buffer = vmap(uvc_urb->pages,
+> +			       PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT,
+> +			       VM_DMA_COHERENT, PAGE_KERNEL);
+> +	if (!uvc_urb->buffer) {
+> +		dma_free_noncontiguous(dma_dev, stream->urb_size,
+> +				       uvc_urb->pages, uvc_urb->dma);
+> +		return false;
+> +	}
+> +
+> +	if (sg_alloc_table_from_pages(&uvc_urb->sgt, uvc_urb->pages,
+> +				PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT, 0,
+> +				stream->urb_size, GFP_KERNEL)) {
+> +		vunmap(uvc_urb->buffer);
+> +		dma_free_noncontiguous(dma_dev, stream->urb_size,
+> +				       uvc_urb->pages, uvc_urb->dma);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +#else
+> +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
+> +				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
+> +{
+> +	uvc_urb->buffer = kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
+> +
+> +	return uvc_urb->buffer != NULL;
+> +}
+> +#endif
+> +
+>   /*
+>    * Allocate transfer buffers. This function can be called with buffers
+>    * already allocated when resuming from suspend, in which case it will
+> @@ -1607,19 +1674,11 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
+>   
+>   	/* Retry allocations until one succeed. */
+>   	for (; npackets > 1; npackets /= 2) {
+> +		stream->urb_size = psize * npackets;
+>   		for (i = 0; i < UVC_URBS; ++i) {
+>   			struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
+>   
+> -			stream->urb_size = psize * npackets;
+> -#ifndef CONFIG_DMA_NONCOHERENT
+> -			uvc_urb->buffer = usb_alloc_coherent(
+> -				stream->dev->udev, stream->urb_size,
+> -				gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
+> -#else
+> -			uvc_urb->buffer =
+> -			    kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
+> -#endif
+> -			if (!uvc_urb->buffer) {
+> +			if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
+>   				uvc_free_urb_buffers(stream);
+>   				break;
+>   			}
+> diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+> index a3dfacf069c4..3e6618a2ac82 100644
+> --- a/drivers/media/usb/uvc/uvcvideo.h
+> +++ b/drivers/media/usb/uvc/uvcvideo.h
+> @@ -532,6 +532,8 @@ struct uvc_urb {
+>   
+>   	char *buffer;
+>   	dma_addr_t dma;
+> +	struct page **pages;
+> +	struct sg_table sgt;
+>   
+>   	unsigned int async_operations;
+>   	struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
 
+Best regards
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
