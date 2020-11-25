@@ -6,57 +6,56 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FA1C56201
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 18:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9B1C56202
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 18:29:48 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 328E2205F4
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 18:29:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 328E2205F4
+	by mail.kernel.org (Postfix) with ESMTPS id 3DB16206CA
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 18:29:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DB16206CA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BFE938761D;
-	Wed, 25 Nov 2020 18:29:39 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CB84A8761D;
+	Wed, 25 Nov 2020 18:29:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id W9pybjxFvzYT; Wed, 25 Nov 2020 18:29:37 +0000 (UTC)
+	with ESMTP id sZrZIoi1wyxa; Wed, 25 Nov 2020 18:29:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2DECA8750D;
-	Wed, 25 Nov 2020 18:29:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2E62F8750D;
+	Wed, 25 Nov 2020 18:29:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD7C5C0891;
-	Wed, 25 Nov 2020 18:29:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6714DC0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18AB1C0891;
+	Wed, 25 Nov 2020 18:29:47 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1F93C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 471E62D47F
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:35 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8E7EB87228
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JGE02mhfPKXB for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 18:29:33 +0000 (UTC)
+ with ESMTP id oriKSzOi-OOz for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 18:29:44 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 6046F234AA
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:33 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4D8A18717A
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 18:29:44 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id D64BA68B02; Wed, 25 Nov 2020 19:29:28 +0100 (CET)
-Date: Wed, 25 Nov 2020 19:29:28 +0100
+ id 6C9CA68B02; Wed, 25 Nov 2020 19:29:41 +0100 (CET)
+Date: Wed, 25 Nov 2020 19:29:41 +0100
 From: Christoph Hellwig <hch@lst.de>
 To: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH] dma-mapping: fix an uninitialized pointer read due to
- typo in argp assignment
-Message-ID: <20201125182928.GA10377@lst.de>
-References: <20201125135535.1880307-1-colin.king@canonical.com>
- <1b430a80dec14cb9aa612ff7e5dddac4@hisilicon.com>
+Subject: Re: [PATCH] dma-mapping: Fix sizeof() mismatch on tsk allocation
+Message-ID: <20201125182941.GB10377@lst.de>
+References: <20201125140523.1880669-1-colin.king@canonical.com>
+ <a6c5e5ed9a66485da301c1e91b56ccc7@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1b430a80dec14cb9aa612ff7e5dddac4@hisilicon.com>
+In-Reply-To: <a6c5e5ed9a66485da301c1e91b56ccc7@hisilicon.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -80,8 +79,7 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Ooops, that was my edit.  I'll make sure to fold the fix into the
-original commit.
+I'll fold this one in as well.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
