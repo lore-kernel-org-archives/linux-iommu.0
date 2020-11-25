@@ -2,105 +2,75 @@ Return-Path: <SRS0=GPDh=E7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE534C56201
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9715C56201
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:37:59 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29984206F7
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:26:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cibaq2ZE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29984206F7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
+	by mail.kernel.org (Postfix) with ESMTPS id F3D6F2083E
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:37:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3D6F2083E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AFF9286EA1;
-	Wed, 25 Nov 2020 16:26:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A9BAC86EB9;
+	Wed, 25 Nov 2020 16:37:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zRFLKBCX9pMP; Wed, 25 Nov 2020 16:26:03 +0000 (UTC)
+	with ESMTP id fSmSALK62Af7; Wed, 25 Nov 2020 16:37:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4038F86EAA;
-	Wed, 25 Nov 2020 16:26:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 191AF86EAC;
+	Wed, 25 Nov 2020 16:37:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D953C0891;
-	Wed, 25 Nov 2020 16:26:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 005A9C0891;
+	Wed, 25 Nov 2020 16:37:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE90C0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:26:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B25D0C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:37:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 87752876C0
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:26:01 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 9FA9B876BE
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:37:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3AxVyhNlYdVa for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 16:26:01 +0000 (UTC)
+ with ESMTP id WOswM38Lt8Y2 for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 16:37:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
- [209.85.160.195])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DB3AB876BC
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:26:00 +0000 (UTC)
-Received: by mail-qt1-f195.google.com with SMTP id l7so1979099qtp.8
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 08:26:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=h5OiZu6vTvK6XWjc+RkVgvjVORaQjHWO8Ke4kDMuing=;
- b=cibaq2ZE0223rWmS9l3E8vhTt5nrAe+bT4Iqd2VUPAWWUh52VJj5Qnj9no7+2fPkSg
- ZnAaEvpRQpK9TYQBvwODG2owhPWA1udPCI0wDheOGLfoCp6SBHIZeBIvAeTXOB4cvpQC
- 5xBeRlc6T64A0qV4ZmNYOc9INo+DVSbzRPvsUA6FC8NKiah4f9rwPcM79VFzT0CZdphV
- uBmyB+/Cj3YbGT0t+oYXel4jNPia7HJGK0F2ujRE24Ju3dkP4gn61e3dyZR91fpYX9G7
- UPawm9zER+hW6nC1m42IXtO/rqRbMjxs+5b8+dZIJ4AqE8PJ/yjbepgZMQHrovVl4rkM
- 4y/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
- :references:mime-version:content-disposition:in-reply-to;
- bh=h5OiZu6vTvK6XWjc+RkVgvjVORaQjHWO8Ke4kDMuing=;
- b=Vf3bmf7n1LWYGm2HlG3jSOY81VylA6P/DtsRUSZzaI6D4POD0K3MHixJB4mEK62UdJ
- LxH62suY4mhSQLckHk1En6gUebSSjHWiFHJHcgWB3Ub2o7VZ6toWCpKbNUM6m9BSUXxC
- PVJHOd//KGymu2oWlHIulxWrHoeIqR6MhjkSYlzOLUC5UZNbzZvdCqF26IfEwt6yZc/N
- 0dbZa81nD5Qvw94DAVpghjY6msYmTQ4bhSM2TFPUwrDRisj87s8AhET12V/DNN1R//jM
- OxVNoYWqnEVK7+Oc3aKq10czbHjcwGcK+hXLQ7DHlirOPyEbBAIjudwIhhc4m4WxNf1b
- 6Cdg==
-X-Gm-Message-State: AOAM5324IRj5LKpyfNDeAVuVliXQ1EH2Qix300u5F8fdS7UxfS+0wcsm
- CzpEAQPGyoTqaFiDzhRvxvs=
-X-Google-Smtp-Source: ABdhPJyZdMGnJBPHMk1TvP4dbDSPI58cBVyatSXb16RvjJtS8B1sGM6iwNLE1SPYu811OfQEHedgQA==
-X-Received: by 2002:ac8:5c05:: with SMTP id i5mr3874253qti.34.1606321559878;
- Wed, 25 Nov 2020 08:25:59 -0800 (PST)
-Received: from localhost.localdomain
- (209-6-208-110.s8556.c3-0.smr-cbr2.sbo-smr.ma.cable.rcncustomer.com.
- [209.6.208.110])
- by smtp.gmail.com with ESMTPSA id n41sm3132846qtb.18.2020.11.25.08.25.58
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 25 Nov 2020 08:25:59 -0800 (PST)
-Date: Wed, 25 Nov 2020 11:25:56 -0500
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 1/1] x86/tboot: Don't disable swiotlb when iommu is
- forced on
-Message-ID: <20201125162556.GA30183@localhost.localdomain>
-References: <20201125014124.4070776-1-baolu.lu@linux.intel.com>
- <160630605367.4096500.10722779964348157570.b4-ty@kernel.org>
- <20201125154153.GA29929@localhost.localdomain>
- <20201125155130.GA16839@willie-the-truck>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id E7AF8876AD
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:37:53 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 514B331B;
+ Wed, 25 Nov 2020 08:37:53 -0800 (PST)
+Received: from [10.57.59.159] (unknown [10.57.59.159])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6FFA53F7BB;
+ Wed, 25 Nov 2020 08:37:50 -0800 (PST)
+Subject: Re: [PATCH v2 1/6] iommu: Move iotlb_sync_map out from __iommu_map
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+References: <20201119061836.15238-1-yong.wu@mediatek.com>
+ <20201119061836.15238-2-yong.wu@mediatek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <cf0f81dd-e240-965b-5c75-914d3d48eb27@arm.com>
+Date: Wed, 25 Nov 2020 16:37:48 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20201125155130.GA16839@willie-the-truck>
-Cc: Ashok Raj <ashok.raj@intel.com>, catalin.marinas@arm.com, x86@kernel.org,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Ning Sun <ning.sun@intel.com>, tboot-devel@lists.sourceforge.net,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Adrian Huang <ahuang12@lenovo.com>, Thomas Gleixner <tglx@linutronix.de>,
- kernel-team@android.com
+In-Reply-To: <20201119061836.15238-2-yong.wu@mediatek.com>
+Content-Language: en-GB
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, jun.wen@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,49 +83,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Nov 25, 2020 at 03:51:30PM +0000, Will Deacon wrote:
-> Hi Konrad,
-> 
-> On Wed, Nov 25, 2020 at 10:41:53AM -0500, Konrad Rzeszutek Wilk wrote:
-> > On Wed, Nov 25, 2020 at 02:05:15PM +0000, Will Deacon wrote:
-> > > On Wed, 25 Nov 2020 09:41:24 +0800, Lu Baolu wrote:
-> > > > After commit 327d5b2fee91c ("iommu/vt-d: Allow 32bit devices to uses DMA
-> > > > domain"), swiotbl could also be used for direct memory access if IOMMU
-> > > > is enabled but a device is configured to pass through the DMA translation.
-> > > > Keep swiotlb when IOMMU is forced on, otherwise, some devices won't work
-> > > > if "iommu=pt" kernel parameter is used.
-> > > 
-> > > Applied to arm64 (for-next/iommu/fixes), thanks!
-> > > 
-> > > [1/1] x86/tboot: Don't disable swiotlb when iommu is forced on
-> > >       https://git.kernel.org/arm64/c/e2be2a833ab5
-> > 
-> > But tboot never ran on ARM. It is a Intel specifc.
-> > 
-> > I think either me or Thomas should take this patch.
-> 
-> FWIW, I did check with Thomas before I picked it up. I know it looks weird
-> going via arm64, but that's only because I'm temporarily handling the IOMMU
-> tree there (including vt-d changes) while Joerg is away. Since this fixes a
-> vt-d regression, I thought I'd pick it up along with the other IOMMU fixes I
-> have queued for -rc6.
-> 
+On 2020-11-19 06:18, Yong Wu wrote:
+> In the end of __iommu_map, It alway call iotlb_sync_map.
+> This patch moves iotlb_sync_map out from __iommu_map since it is
+> unnecessary to call this for each sg segment especially iotlb_sync_map
+> is flush tlb all currently.
 
-Aah, I missed the memo :-)
+I don't see a way to avoid the boilerplate that wouldn't end up making 
+things even more ugly and complicated, so:
 
-> That said, if you insist, then I can revert it. I'm really only trying to
-> help here.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Nah. Enjoy picking up patches!
-
-Thanks!
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/iommu.c | 24 +++++++++++++++++++-----
+>   1 file changed, 19 insertions(+), 5 deletions(-)
 > 
-> Will
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 8c470f451a32..decef851fa3a 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2407,9 +2407,6 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   		size -= pgsize;
+>   	}
+>   
+> -	if (ops->iotlb_sync_map)
+> -		ops->iotlb_sync_map(domain);
+> -
+>   	/* unroll mapping in case something went wrong */
+>   	if (ret)
+>   		iommu_unmap(domain, orig_iova, orig_size - size);
+> @@ -2422,15 +2419,29 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   	      phys_addr_t paddr, size_t size, int prot)
+>   {
+> +	const struct iommu_ops *ops = domain->ops;
+> +	int ret;
+> +
+>   	might_sleep();
+> -	return __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
+> +	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
+> +	if (ret == 0 && ops->iotlb_sync_map)
+> +		ops->iotlb_sync_map(domain);
+> +
+> +	return ret;
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_map);
+>   
+>   int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
+>   	      phys_addr_t paddr, size_t size, int prot)
+>   {
+> -	return __iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
+> +	const struct iommu_ops *ops = domain->ops;
+> +	int ret;
+> +
+> +	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
+> +	if (ret == 0 && ops->iotlb_sync_map)
+> +		ops->iotlb_sync_map(domain);
+> +
+> +	return ret;
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_map_atomic);
+>   
+> @@ -2514,6 +2525,7 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>   			     struct scatterlist *sg, unsigned int nents, int prot,
+>   			     gfp_t gfp)
+>   {
+> +	const struct iommu_ops *ops = domain->ops;
+>   	size_t len = 0, mapped = 0;
+>   	phys_addr_t start;
+>   	unsigned int i = 0;
+> @@ -2544,6 +2556,8 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>   			sg = sg_next(sg);
+>   	}
+>   
+> +	if (ops->iotlb_sync_map)
+> +		ops->iotlb_sync_map(domain);
+>   	return mapped;
+>   
+>   out_err:
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
