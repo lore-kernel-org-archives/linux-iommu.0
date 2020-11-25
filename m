@@ -2,77 +2,65 @@ Return-Path: <SRS0=GPDh=E7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EF7C56202
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD53C63798
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F0EB320684
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="urmeyfJA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0EB320684
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 87C8E20715
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 14:05:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87C8E20715
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 94F0B2E14F;
-	Wed, 25 Nov 2020 14:05:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 150E7875A7;
+	Wed, 25 Nov 2020 14:05:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bT0HsoNMhkTI; Wed, 25 Nov 2020 14:05:35 +0000 (UTC)
+	with ESMTP id AJhFk83TLpo3; Wed, 25 Nov 2020 14:05:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BD8D02E0EF;
-	Wed, 25 Nov 2020 14:05:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F097E875A5;
+	Wed, 25 Nov 2020 14:05:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8FC9C0891;
-	Wed, 25 Nov 2020 14:05:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8EAFC0891;
+	Wed, 25 Nov 2020 14:05:37 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A33A1C0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 43DF8C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 896C587598
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 32AA28759D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AzShs7hQcgce for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 14:05:34 +0000 (UTC)
+ with ESMTP id HD9m8E6Ots0E for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 14:05:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 159B88759D
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E6B8887598
  for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:05:34 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
- [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 047E720684;
- Wed, 25 Nov 2020 14:05:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606313133;
- bh=nlropR2GVshViNQ37mRXiDY92PPVrpHL27XsaeQ2YQo=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=urmeyfJAGKiqg0PdUHFJzhGcTKe5Nb2ymqRQJpmLq1BY+8OJlFntcjnjMjO3ksliE
- pMnsTccb9vj9awndZMZjxQA85RPe+X2PrUtn33+WI3AcDJcaNTWEj1M1cqY9+pc93+
- 2+pjUsoWb/N+LmmpW+osDxnaZ3JePZNdLJLQwNjg=
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH RESEND v2 0/5] iommu/tegra-smmu: Some pending reviewed
- changes
-Date: Wed, 25 Nov 2020 14:05:18 +0000
-Message-Id: <160630228218.3309190.17273821531692081062.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201125101013.14953-1-nicoleotsuka@gmail.com>
-References: <20201125101013.14953-1-nicoleotsuka@gmail.com>
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+ by youngberry.canonical.com with esmtpsa
+ (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
+ (envelope-from <colin.king@canonical.com>)
+ id 1khvQB-0000Hp-Df; Wed, 25 Nov 2020 14:05:23 +0000
+From: Colin King <colin.king@canonical.com>
+To: Barry Song <song.bao.hua@hisilicon.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org
+Subject: [PATCH] dma-mapping: Fix sizeof() mismatch on tsk allocation
+Date: Wed, 25 Nov 2020 14:05:23 +0000
+Message-Id: <20201125140523.1880669-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
- linux-kernel@vger.kernel.org, jonathanh@nvidia.com,
- iommu@lists.linux-foundation.org, thierry.reding@gmail.com,
- linux-tegra@vger.kernel.org, kernel-team@android.com
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,36 +78,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 25 Nov 2020 02:10:08 -0800, Nicolin Chen wrote:
-> Changelog
-> v1->v2:
->  * Added Thierry's acks to PATCH-3~5
-> 
-> This is a merged set of resend for previously two series of patches
-> that were reviewed/acked a month ago yet have not got applied.
-> 
-> [...]
+From: Colin Ian King <colin.king@canonical.com>
 
-Applied to arm64 (for-next/iommu/tegra-smmu), thanks!
+An incorrect sizeof() is being used, sizeof(tsk) is not correct, it should
+be sizeof(*tsk). Fix it.
 
-[1/5] iommu/tegra-smmu: Unwrap tegra_smmu_group_get
-      https://git.kernel.org/arm64/c/cf910f61aff3
-[2/5] iommu/tegra-smmu: Expand mutex protection range
-      https://git.kernel.org/arm64/c/d5f583bf8654
-[3/5] iommu/tegra-smmu: Use fwspec in tegra_smmu_(de)attach_dev
-      https://git.kernel.org/arm64/c/8750d207dc98
-[4/5] iommu/tegra-smmu: Rework tegra_smmu_probe_device()
-      https://git.kernel.org/arm64/c/25938c73cd79
-[5/5] iommu/tegra-smmu: Add PCI support
-      https://git.kernel.org/arm64/c/541f29bb0643
+Addresses-Coverity: ("Sizeof not portable (SIZEOF_MISMATCH)")
+Fixes: bfd2defed94d ("dma-mapping: add benchmark support for streaming DMA APIs")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ kernel/dma/map_benchmark.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cheers,
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index e1e37603d01b..b1496e744c68 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -121,7 +121,7 @@ static int do_map_benchmark(struct map_benchmark_data *map)
+ 	int ret = 0;
+ 	int i;
+ 
+-	tsk = kmalloc_array(threads, sizeof(tsk), GFP_KERNEL);
++	tsk = kmalloc_array(threads, sizeof(*tsk), GFP_KERNEL);
+ 	if (!tsk)
+ 		return -ENOMEM;
+ 
 -- 
-Will
+2.29.2
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
