@@ -5,65 +5,64 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA0FC63798
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:38:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15821C63798
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:38:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D7B432087C
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:38:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7B432087C
+	by mail.kernel.org (Postfix) with ESMTPS id 9D92E21527
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 16:38:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D92E21527
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7D0D5872E1;
-	Wed, 25 Nov 2020 16:38:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E5F212E1A7;
+	Wed, 25 Nov 2020 16:38:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id heEr4XqCZ95W; Wed, 25 Nov 2020 16:38:29 +0000 (UTC)
+	with ESMTP id zZjbdMk9tjfE; Wed, 25 Nov 2020 16:38:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 951ED872ED;
-	Wed, 25 Nov 2020 16:38:29 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CDA41203B4;
+	Wed, 25 Nov 2020 16:38:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81858C0891;
-	Wed, 25 Nov 2020 16:38:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B50C6C0891;
+	Wed, 25 Nov 2020 16:38:42 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5C31C0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F0BCC0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B6D762E19F
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:27 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D97402E19F
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ueGZuACFROcw for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 16:38:26 +0000 (UTC)
+ with ESMTP id a3kmRXX0SKbq for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 16:38:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id C64EA203B4
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:25 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3A373203B4
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 16:38:39 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47A0631B;
- Wed, 25 Nov 2020 08:38:25 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF38131B;
+ Wed, 25 Nov 2020 08:38:38 -0800 (PST)
 Received: from [10.57.59.159] (unknown [10.57.59.159])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BEBEA3F7BB;
- Wed, 25 Nov 2020 08:38:22 -0800 (PST)
-Subject: Re: [PATCH v2 3/6] iommu/mediatek: Add iotlb_sync_map to sync whole
- the iova range
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4EE6E3F7BB;
+ Wed, 25 Nov 2020 08:38:36 -0800 (PST)
+Subject: Re: [PATCH v2 4/6] iommu: Add granule_ignore when tlb gather
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>
 References: <20201119061836.15238-1-yong.wu@mediatek.com>
- <20201119061836.15238-4-yong.wu@mediatek.com>
+ <20201119061836.15238-5-yong.wu@mediatek.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <751e08a1-d3c3-29f9-5c62-560370ac0703@arm.com>
-Date: Wed, 25 Nov 2020 16:38:21 +0000
+Message-ID: <49bae447-d662-e6cf-7500-ab78e3b75dc4@arm.com>
+Date: Wed, 25 Nov 2020 16:38:35 +0000
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20201119061836.15238-4-yong.wu@mediatek.com>
+In-Reply-To: <20201119061836.15238-5-yong.wu@mediatek.com>
 Content-Language: en-GB
 Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -90,60 +89,59 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2020-11-19 06:18, Yong Wu wrote:
-> Remove IO_PGTABLE_QUIRK_TLBI_ON_MAP to avoid tlb sync for each a small
-> chunk memory, Use the new iotlb_sync_map to tlb_sync once for whole the
-> iova range of iommu_map.
+> Add a granule_ignore option when tlb gather for some HW which don't care
+> about granule when it flush tlb.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
-> After reading msm_iommu.c, It looks IO_PGTABLE_QUIRK_TLBI_ON_MAP can be
-> removed.
-> ---
->   drivers/iommu/mtk_iommu.c | 10 +++++++++-
->   1 file changed, 9 insertions(+), 1 deletion(-)
+>   include/linux/iommu.h | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index c072cee532c2..8c2d4a225666 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -323,7 +323,6 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
->   	dom->cfg = (struct io_pgtable_cfg) {
->   		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
->   			IO_PGTABLE_QUIRK_NO_PERMS |
-> -			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
->   			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
->   		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
->   		.ias = 32,
-> @@ -454,6 +453,14 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
->   				       data);
->   }
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 794d4085edd3..1aad32238510 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -171,6 +171,7 @@ enum iommu_dev_features {
+>    * @start: IOVA representing the start of the range to be flushed
+>    * @end: IOVA representing the end of the range to be flushed (exclusive)
+>    * @pgsize: The interval at which to perform the flush
+> + * @granule_ignore: For tlb flushing that could be regardless of granule.
+>    *
+>    * This structure is intended to be updated by multiple calls to the
+>    * ->unmap() function in struct iommu_ops before eventually being passed
+> @@ -180,6 +181,7 @@ struct iommu_iotlb_gather {
+>   	unsigned long		start;
+>   	unsigned long		end;
+>   	size_t			pgsize;
+> +	bool			granule_ignore;
+
+I can't see that this would ever need to vary on a per-unmap-operation 
+basis, so this doesn't seem like the right level of abstraction. AFAICS 
+it should simply be hard-coded in the driver logic.
+
+>   };
 >   
-> +static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-> +			       size_t size)
-> +{
-> +	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-> +
-> +	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
+>   /**
+> @@ -544,7 +546,7 @@ static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
+>   	 * a different granularity, then sync the TLB so that the gather
+>   	 * structure can be rewritten.
+>   	 */
+> -	if (gather->pgsize != size ||
+> +	if ((!gather->granule_ignore && gather->pgsize != size) ||
 
-So we have a conflict/dependency against the MT8192 series here - I 
-guess we need to make a decision up-front about which series should go 
-first. Other than that, though:
+I also think this is a slippery slope in the wrong direction anyway - 
+there is likely to be a fair bit of hardware-dependent variation around 
+how low-level TLB maintenance works (also consider drivers that may want 
+to convert a sufficiently large range to an "invalidate all" operation), 
+so if a generic helper function doesn't do the right thing for a given 
+driver, that driver should simply not use the helper, and directly 
+implement the logic it does need.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Robin.
 
-> +}
-> +
->   static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
->   					  dma_addr_t iova)
->   {
-> @@ -540,6 +547,7 @@ static const struct iommu_ops mtk_iommu_ops = {
->   	.unmap		= mtk_iommu_unmap,
->   	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
->   	.iotlb_sync	= mtk_iommu_iotlb_sync,
-> +	.iotlb_sync_map	= mtk_iommu_sync_map,
->   	.iova_to_phys	= mtk_iommu_iova_to_phys,
->   	.probe_device	= mtk_iommu_probe_device,
->   	.release_device	= mtk_iommu_release_device,
+>   	    end < gather->start || start > gather->end) {
+>   		if (gather->pgsize)
+>   			iommu_iotlb_sync(domain, gather);
 > 
 _______________________________________________
 iommu mailing list
