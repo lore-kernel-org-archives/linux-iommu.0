@@ -5,74 +5,74 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E70C5519F
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 07:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DF8C6379D
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 07:01:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E00E4221F7
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 07:01:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 43D192151B
+	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 07:01:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="cxgeXqDe"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E00E4221F7
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="M30QrNYo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43D192151B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 71EAF27325;
-	Wed, 25 Nov 2020 07:01:29 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D7A10273D3;
+	Wed, 25 Nov 2020 07:01:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TIaIi9gBJwOW; Wed, 25 Nov 2020 07:01:27 +0000 (UTC)
+	with ESMTP id k2iDxYu82IDO; Wed, 25 Nov 2020 07:01:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DABA32052C;
-	Wed, 25 Nov 2020 07:01:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 344A1272F7;
+	Wed, 25 Nov 2020 07:01:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D34A7C163C;
-	Wed, 25 Nov 2020 07:01:24 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D15A2C0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13325C163C;
+	Wed, 25 Nov 2020 07:01:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47D04C0052
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C081D873BF
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:23 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 404008685B
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P1OH8P0lcNP0 for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 07:01:22 +0000 (UTC)
+ with ESMTP id CDLs1rjPoJ4S for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Nov 2020 07:01:26 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from z5.mailgun.us (z5.mailgun.us [104.130.96.5])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2F0A8873A4
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:19 +0000 (UTC)
+Received: from m42-4.mailgun.net (m42-4.mailgun.net [69.72.42.4])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6B8358679E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 07:01:24 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1606287682; h=Content-Transfer-Encoding: MIME-Version:
+ s=smtp; t=1606287686; h=Content-Transfer-Encoding: MIME-Version:
  References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=jmF22qJsqKvzqEoH4PRu4Eifu86sau7rd5JyWavvoYQ=;
- b=cxgeXqDeynWUw49JmYN6XelE3Gam8XCl8FN71G+Ygv567XJiQMdtS0T8AyWYB/KRM+uhzZRy
- fEzLXJ1xFojbmH5wgP7w7uWOOtv5AQjvpGobZK62fbYHClVjLVkzZMFPKtmigCKC45Oftdbs
- W4fXV6pVPGHkBtMnwjybL4p9jdU=
-X-Mailgun-Sending-Ip: 104.130.96.5
+ Sender; bh=SuWGjInWRQ7Jtz7hUHTGJz8+gLtbxW0IcU/nO1ir5EU=;
+ b=M30QrNYo0LhFQ0T9OAF1zovyZJKL/oTjVzIZZKj5mZD9mcCKAjqulOXXzHexgKnwvaCtJBwl
+ X0M7EM7D3x9j/1IPsV1JMCuvltTVkQcNn6+2kov+XY+nMjJCgCRau5RDvrgEln8yzuV+aqx7
+ Yq7cjqxdRlMu0OBQAeQ9fBBsV8U=
+X-Mailgun-Sending-Ip: 69.72.42.4
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 5fbe01267f0cfa6a168daf7a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 25 Nov 2020 07:00:54
+ smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
+ 5fbe011b9e87e163525fe87e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 25 Nov 2020 07:00:43
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 4D5ABC43466; Wed, 25 Nov 2020 07:00:53 +0000 (UTC)
+ id 6467DC43465; Wed, 25 Nov 2020 07:00:42 +0000 (UTC)
 Received: from blr-ubuntu-253.qualcomm.com
  (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 56B04C433ED;
- Wed, 25 Nov 2020 07:00:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 56B04C433ED
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id A486CC433C6;
+ Wed, 25 Nov 2020 07:00:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A486CC433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
@@ -81,10 +81,9 @@ From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
  Rob Clark <robdclark@gmail.com>
-Subject: [PATCHv10 4/9] iommu/arm-smmu: Move non-strict mode to use
- io_pgtable_domain_attr
-Date: Wed, 25 Nov 2020 12:30:13 +0530
-Message-Id: <c191265f3db1f6b3e136d4057ca917666680a066.1606287059.git.saiprakash.ranjan@codeaurora.org>
+Subject: [PATCHv10 2/9] iommu/io-pgtable-arm: Add support to use system cache
+Date: Wed, 25 Nov 2020 12:30:11 +0530
+Message-Id: <f818676b4a2a9ad1edb92721947d47db41ed6a7c.1606287059.git.saiprakash.ranjan@codeaurora.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1606287059.git.saiprakash.ranjan@codeaurora.org>
 References: <cover.1606287059.git.saiprakash.ranjan@codeaurora.org>
@@ -110,69 +109,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Now that we have a struct io_pgtable_domain_attr with quirks,
-use that for non_strict mode as well thereby removing the need
-for more members of arm_smmu_domain in the future.
+Add a quirk IO_PGTABLE_QUIRK_ARM_OUTER_WBWA to override
+the outer-cacheability attributes set in the TCR for a
+non-coherent page table walker when using system cache.
 
 Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 15 +++++++++------
- drivers/iommu/arm/arm-smmu/arm-smmu.h |  1 -
- 2 files changed, 9 insertions(+), 7 deletions(-)
+ drivers/iommu/io-pgtable-arm.c | 10 ++++++++--
+ include/linux/io-pgtable.h     |  4 ++++
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4b9b10fe50ed..d8979bb71fc0 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -786,9 +786,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 			goto out_clear_smmu;
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index a7a9bc08dcd1..7c9ea9d7874a 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -761,7 +761,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NON_STRICT |
+-			    IO_PGTABLE_QUIRK_ARM_TTBR1))
++			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
++			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -773,10 +774,15 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 		tcr->sh = ARM_LPAE_TCR_SH_IS;
+ 		tcr->irgn = ARM_LPAE_TCR_RGN_WBWA;
+ 		tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
++		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA)
++			goto out_free_data;
+ 	} else {
+ 		tcr->sh = ARM_LPAE_TCR_SH_OS;
+ 		tcr->irgn = ARM_LPAE_TCR_RGN_NC;
+-		tcr->orgn = ARM_LPAE_TCR_RGN_NC;
++		if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
++			tcr->orgn = ARM_LPAE_TCR_RGN_NC;
++		else
++			tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
  	}
  
--	if (smmu_domain->non_strict)
--		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
--
- 	if (smmu_domain->pgtbl_cfg.quirks)
- 		pgtbl_cfg.quirks |= smmu_domain->pgtbl_cfg.quirks;
- 
-@@ -1526,9 +1523,12 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 		break;
- 	case IOMMU_DOMAIN_DMA:
- 		switch (attr) {
--		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
--			*(int *)data = smmu_domain->non_strict;
-+		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE: {
-+			bool non_strict = smmu_domain->pgtbl_cfg.quirks &
-+					  IO_PGTABLE_QUIRK_NON_STRICT;
-+			*(int *)data = non_strict;
- 			return 0;
-+		}
- 		default:
- 			return -ENODEV;
- 		}
-@@ -1578,7 +1578,10 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 	case IOMMU_DOMAIN_DMA:
- 		switch (attr) {
- 		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
--			smmu_domain->non_strict = *(int *)data;
-+			if (*(int *)data)
-+				smmu_domain->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+			else
-+				smmu_domain->pgtbl_cfg.quirks &= ~IO_PGTABLE_QUIRK_NON_STRICT;
- 			break;
- 		default:
- 			ret = -ENODEV;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index bb5a419f240f..cb7ca3a444c9 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -368,7 +368,6 @@ struct arm_smmu_domain {
- 	const struct iommu_flush_ops	*flush_ops;
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
--	bool				non_strict;
- 	struct mutex			init_mutex; /* Protects smmu pointer */
- 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
- 	struct iommu_domain		domain;
+ 	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 215fd9d69540..fb4d5a763e0c 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -86,6 +86,9 @@ struct io_pgtable_cfg {
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
++	 *
++	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
++	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+@@ -93,6 +96,7 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+ 	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
+ 	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
 of Code Aurora Forum, hosted by The Linux Foundation
