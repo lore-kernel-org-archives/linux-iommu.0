@@ -5,66 +5,83 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345B7C63777
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 08:34:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F16C56202
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 08:50:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 93D4120B80
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 08:34:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93D4120B80
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id EF281208CA
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 08:50:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF281208CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CA1E48034E;
-	Thu, 26 Nov 2020 08:34:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 704A087769;
+	Thu, 26 Nov 2020 08:50:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ek-Z7VdIsp6l; Thu, 26 Nov 2020 08:34:05 +0000 (UTC)
+	with ESMTP id NLbKyifjBdIZ; Thu, 26 Nov 2020 08:50:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8FB68870B9;
-	Thu, 26 Nov 2020 08:34:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2022D87732;
+	Thu, 26 Nov 2020 08:50:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C39EC163C;
-	Thu, 26 Nov 2020 08:34:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A398DC0052
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:34:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EF1EFC163C;
+	Thu, 26 Nov 2020 08:50:27 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BFB41C0052
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:50:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8E2842039A
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:34:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B041387534
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:50:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qE9OrpTyg-wJ for <iommu@lists.linux-foundation.org>;
- Thu, 26 Nov 2020 08:34:01 +0000 (UTC)
+ with ESMTP id y812cPO3nRJu for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Nov 2020 08:50:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id F2EF120378
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:34:00 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5426D31B;
- Thu, 26 Nov 2020 00:34:00 -0800 (PST)
-Received: from [192.168.1.179] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 06B263F70D;
- Thu, 26 Nov 2020 00:33:58 -0800 (PST)
-Subject: Re: [PATCH] iommu/io-pgtable: Remove tlb_flush_leaf
-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org
-References: <9844ab0c5cb3da8b2f89c6c2da16941910702b41.1606324115.git.robin.murphy@arm.com>
-From: Steven Price <steven.price@arm.com>
-Message-ID: <954cd979-a3e4-ddde-8a3e-353124fc1cda@arm.com>
-Date: Thu, 26 Nov 2020 08:33:49 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 514D786FE8
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 08:50:19 +0000 (UTC)
+IronPort-SDR: /gUWmS107c68jw4RjGeyJaT7/6mI43d+BlhYJdK0kQjz/xnaGYRzZn7pP/jwP9iRf95RsYnqBZ
+ xAqzR4h3N+SQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9816"; a="236388152"
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="236388152"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2020 00:50:18 -0800
+IronPort-SDR: 0ckRKnhBtLlrKe8kX3O58++wCeYNqa8uzQDWFbhBPT0Es9yZXN3LFAFJos4EYK1zxawGWUpSYN
+ dybkCpwIi6Fg==
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="547637576"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.39])
+ ([10.254.208.39])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2020 00:50:15 -0800
+Subject: Re: [PATCH v2 1/1] vfio/type1: Add vfio_group_domain()
+To: "Liu, Yi L" <yi.l.liu@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>
+References: <20201126012726.1185171-1-baolu.lu@linux.intel.com>
+ <DM5PR11MB143560E51C84BAF83AE54AC0C3F90@DM5PR11MB1435.namprd11.prod.outlook.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <e90e57bf-1ca1-0cbe-02ab-cce647c50b40@linux.intel.com>
+Date: Thu, 26 Nov 2020 16:50:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <9844ab0c5cb3da8b2f89c6c2da16941910702b41.1606324115.git.robin.murphy@arm.com>
-Content-Language: en-GB
-Cc: robh@kernel.org, tomeu.vizoso@collabora.com,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <DM5PR11MB143560E51C84BAF83AE54AC0C3F90@DM5PR11MB1435.namprd11.prod.outlook.com>
+Content-Language: en-US
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,319 +94,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 25/11/2020 17:29, Robin Murphy wrote:
-> The only user of tlb_flush_leaf is a particularly hairy corner of the
-> Arm short-descriptor code, which wants a synchronous invalidation to
-> minimise the races inherent in trying to split a large page mapping.
-> This is already far enough into "here be dragons" territory that no
-> sensible caller should ever hit it, and thus it really doesn't need
-> optimising. Although using tlb_flush_walk there may technically be
-> more heavyweight than needed, it does the job and saves everyone else
-> having to carry around useless baggage.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
-LGTM
-
-Reviewed-by: Steven Price <steven.price@arm.com>
-
-> ---
-> 
-> Reviewing the Mediatek TLB optimisation patches just left me thinking
-> "why do we even have this?"... Panfrost folks, this has zero functional
-> impact to you, merely wants an ack for straying outside drivers/iommu.
-> 
-> Robin.
-> 
->   drivers/gpu/drm/msm/msm_iommu.c             |  1 -
->   drivers/gpu/drm/panfrost/panfrost_mmu.c     |  7 ------
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  7 ------
->   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 25 +++------------------
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  8 -------
->   drivers/iommu/io-pgtable-arm-v7s.c          |  3 +--
->   drivers/iommu/io-pgtable-arm.c              |  1 -
->   drivers/iommu/ipmmu-vmsa.c                  |  1 -
->   drivers/iommu/msm_iommu.c                   |  7 ------
->   drivers/iommu/mtk_iommu.c                   |  1 -
->   include/linux/io-pgtable.h                  | 11 ---------
->   11 files changed, 4 insertions(+), 68 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> index 22ac7c692a81..50d881794758 100644
-> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> @@ -139,7 +139,6 @@ static void msm_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops null_tlb_ops = {
->   	.tlb_flush_all = msm_iommu_tlb_flush_all,
->   	.tlb_flush_walk = msm_iommu_tlb_flush_walk,
-> -	.tlb_flush_leaf = msm_iommu_tlb_flush_walk,
->   	.tlb_add_page = msm_iommu_tlb_add_page,
->   };
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> index 776448c527ea..c186914cc4f9 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> @@ -347,16 +347,9 @@ static void mmu_tlb_flush_walk(unsigned long iova, size_t size, size_t granule,
->   	mmu_tlb_sync_context(cookie);
->   }
-> 
-> -static void mmu_tlb_flush_leaf(unsigned long iova, size_t size, size_t granule,
-> -			       void *cookie)
-> -{
-> -	mmu_tlb_sync_context(cookie);
-> -}
-> -
->   static const struct iommu_flush_ops mmu_tlb_ops = {
->   	.tlb_flush_all	= mmu_tlb_inv_context_s1,
->   	.tlb_flush_walk = mmu_tlb_flush_walk,
-> -	.tlb_flush_leaf = mmu_tlb_flush_leaf,
->   };
-> 
->   int panfrost_mmu_pgtable_alloc(struct panfrost_file_priv *priv)
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index e634bbe60573..fb684a393118 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1741,16 +1741,9 @@ static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
->   	arm_smmu_tlb_inv_range(iova, size, granule, false, cookie);
->   }
-> 
-> -static void arm_smmu_tlb_inv_leaf(unsigned long iova, size_t size,
-> -				  size_t granule, void *cookie)
-> -{
-> -	arm_smmu_tlb_inv_range(iova, size, granule, true, cookie);
-> -}
-> -
->   static const struct iommu_flush_ops arm_smmu_flush_ops = {
->   	.tlb_flush_all	= arm_smmu_tlb_inv_context,
->   	.tlb_flush_walk = arm_smmu_tlb_inv_walk,
-> -	.tlb_flush_leaf = arm_smmu_tlb_inv_leaf,
->   	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
->   };
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index dad7fa86fbd4..0b8c59922a2b 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -333,14 +333,6 @@ static void arm_smmu_tlb_inv_walk_s1(unsigned long iova, size_t size,
->   	arm_smmu_tlb_sync_context(cookie);
->   }
-> 
-> -static void arm_smmu_tlb_inv_leaf_s1(unsigned long iova, size_t size,
-> -				     size_t granule, void *cookie)
-> -{
-> -	arm_smmu_tlb_inv_range_s1(iova, size, granule, cookie,
-> -				  ARM_SMMU_CB_S1_TLBIVAL);
-> -	arm_smmu_tlb_sync_context(cookie);
-> -}
-> -
->   static void arm_smmu_tlb_add_page_s1(struct iommu_iotlb_gather *gather,
->   				     unsigned long iova, size_t granule,
->   				     void *cookie)
-> @@ -357,14 +349,6 @@ static void arm_smmu_tlb_inv_walk_s2(unsigned long iova, size_t size,
->   	arm_smmu_tlb_sync_context(cookie);
->   }
-> 
-> -static void arm_smmu_tlb_inv_leaf_s2(unsigned long iova, size_t size,
-> -				     size_t granule, void *cookie)
-> -{
-> -	arm_smmu_tlb_inv_range_s2(iova, size, granule, cookie,
-> -				  ARM_SMMU_CB_S2_TLBIIPAS2L);
-> -	arm_smmu_tlb_sync_context(cookie);
-> -}
-> -
->   static void arm_smmu_tlb_add_page_s2(struct iommu_iotlb_gather *gather,
->   				     unsigned long iova, size_t granule,
->   				     void *cookie)
-> @@ -373,8 +357,8 @@ static void arm_smmu_tlb_add_page_s2(struct iommu_iotlb_gather *gather,
->   				  ARM_SMMU_CB_S2_TLBIIPAS2L);
->   }
-> 
-> -static void arm_smmu_tlb_inv_any_s2_v1(unsigned long iova, size_t size,
-> -				       size_t granule, void *cookie)
-> +static void arm_smmu_tlb_inv_walk_s2_v1(unsigned long iova, size_t size,
-> +					size_t granule, void *cookie)
->   {
->   	arm_smmu_tlb_inv_context_s2(cookie);
->   }
-> @@ -401,21 +385,18 @@ static void arm_smmu_tlb_add_page_s2_v1(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops arm_smmu_s1_tlb_ops = {
->   	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
->   	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s1,
-> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf_s1,
->   	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
->   };
-> 
->   static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
->   	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->   	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2,
-> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_leaf_s2,
->   	.tlb_add_page	= arm_smmu_tlb_add_page_s2,
->   };
-> 
->   static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
->   	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-> -	.tlb_flush_walk	= arm_smmu_tlb_inv_any_s2_v1,
-> -	.tlb_flush_leaf	= arm_smmu_tlb_inv_any_s2_v1,
-> +	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2_v1,
->   	.tlb_add_page	= arm_smmu_tlb_add_page_s2_v1,
->   };
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index b30d6c966e2c..7f280c8d5c53 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -185,13 +185,6 @@ static void qcom_iommu_tlb_flush_walk(unsigned long iova, size_t size,
->   	qcom_iommu_tlb_sync(cookie);
->   }
-> 
-> -static void qcom_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
-> -				      size_t granule, void *cookie)
-> -{
-> -	qcom_iommu_tlb_inv_range_nosync(iova, size, granule, true, cookie);
-> -	qcom_iommu_tlb_sync(cookie);
-> -}
-> -
->   static void qcom_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
->   				    unsigned long iova, size_t granule,
->   				    void *cookie)
-> @@ -202,7 +195,6 @@ static void qcom_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops qcom_flush_ops = {
->   	.tlb_flush_all	= qcom_iommu_tlb_inv_context,
->   	.tlb_flush_walk = qcom_iommu_tlb_flush_walk,
-> -	.tlb_flush_leaf = qcom_iommu_tlb_flush_leaf,
->   	.tlb_add_page	= qcom_iommu_tlb_add_page,
->   };
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index a688f22cbe3b..3cf72c100add 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -584,7 +584,7 @@ static arm_v7s_iopte arm_v7s_split_cont(struct arm_v7s_io_pgtable *data,
->   	__arm_v7s_pte_sync(ptep, ARM_V7S_CONT_PAGES, &iop->cfg);
-> 
->   	size *= ARM_V7S_CONT_PAGES;
-> -	io_pgtable_tlb_flush_leaf(iop, iova, size, size);
-> +	io_pgtable_tlb_flush_walk(iop, iova, size, size);
->   	return pte;
->   }
-> 
-> @@ -866,7 +866,6 @@ static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
->   	.tlb_flush_all	= dummy_tlb_flush_all,
->   	.tlb_flush_walk	= dummy_tlb_flush,
-> -	.tlb_flush_leaf	= dummy_tlb_flush,
->   	.tlb_add_page	= dummy_tlb_add_page,
->   };
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index a7a9bc08dcd1..938830e07dcf 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -1079,7 +1079,6 @@ static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
->   	.tlb_flush_all	= dummy_tlb_flush_all,
->   	.tlb_flush_walk	= dummy_tlb_flush,
-> -	.tlb_flush_leaf	= dummy_tlb_flush,
->   	.tlb_add_page	= dummy_tlb_add_page,
->   };
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 0f18abda0e20..d71f10257f15 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -325,7 +325,6 @@ static void ipmmu_tlb_flush(unsigned long iova, size_t size,
->   static const struct iommu_flush_ops ipmmu_flush_ops = {
->   	.tlb_flush_all = ipmmu_tlb_flush_all,
->   	.tlb_flush_walk = ipmmu_tlb_flush,
-> -	.tlb_flush_leaf = ipmmu_tlb_flush,
->   };
-> 
->   /* -----------------------------------------------------------------------------
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index 3615cd6241c4..040e85f70861 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -174,12 +174,6 @@ static void __flush_iotlb_walk(unsigned long iova, size_t size,
->   	__flush_iotlb_range(iova, size, granule, false, cookie);
->   }
-> 
-> -static void __flush_iotlb_leaf(unsigned long iova, size_t size,
-> -			       size_t granule, void *cookie)
-> -{
-> -	__flush_iotlb_range(iova, size, granule, true, cookie);
-> -}
-> -
->   static void __flush_iotlb_page(struct iommu_iotlb_gather *gather,
->   			       unsigned long iova, size_t granule, void *cookie)
->   {
-> @@ -189,7 +183,6 @@ static void __flush_iotlb_page(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops msm_iommu_flush_ops = {
->   	.tlb_flush_all = __flush_iotlb,
->   	.tlb_flush_walk = __flush_iotlb_walk,
-> -	.tlb_flush_leaf = __flush_iotlb_leaf,
->   	.tlb_add_page = __flush_iotlb_page,
->   };
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index c072cee532c2..8e56cec532e7 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -240,7 +240,6 @@ static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
->   static const struct iommu_flush_ops mtk_iommu_flush_ops = {
->   	.tlb_flush_all = mtk_iommu_tlb_flush_all,
->   	.tlb_flush_walk = mtk_iommu_tlb_flush_range_sync,
-> -	.tlb_flush_leaf = mtk_iommu_tlb_flush_range_sync,
->   	.tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
->   };
-> 
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 4cde111e425b..ec9fae37c0e4 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -25,8 +25,6 @@ enum io_pgtable_fmt {
->    * @tlb_flush_walk: Synchronously invalidate all intermediate TLB state
->    *                  (sometimes referred to as the "walk cache") for a virtual
->    *                  address range.
-> - * @tlb_flush_leaf: Synchronously invalidate all leaf TLB state for a virtual
-> - *                  address range.
->    * @tlb_add_page:   Optional callback to queue up leaf TLB invalidation for a
->    *                  single page.  IOMMUs that cannot batch TLB invalidation
->    *                  operations efficiently will typically issue them here, but
-> @@ -40,8 +38,6 @@ struct iommu_flush_ops {
->   	void (*tlb_flush_all)(void *cookie);
->   	void (*tlb_flush_walk)(unsigned long iova, size_t size, size_t granule,
->   			       void *cookie);
-> -	void (*tlb_flush_leaf)(unsigned long iova, size_t size, size_t granule,
-> -			       void *cookie);
->   	void (*tlb_add_page)(struct iommu_iotlb_gather *gather,
->   			     unsigned long iova, size_t granule, void *cookie);
->   };
-> @@ -220,13 +216,6 @@ io_pgtable_tlb_flush_walk(struct io_pgtable *iop, unsigned long iova,
->   	iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
->   }
-> 
-> -static inline void
-> -io_pgtable_tlb_flush_leaf(struct io_pgtable *iop, unsigned long iova,
-> -			  size_t size, size_t granule)
-> -{
-> -	iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> -}
-> -
->   static inline void
->   io_pgtable_tlb_add_page(struct io_pgtable *iop,
->   			struct iommu_iotlb_gather * gather, unsigned long iova,
-> --
-> 2.17.1
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgWWksCgpPbiAyMDIwLzExLzI2IDE1OjIxLCBMaXUsIFlpIEwgd3JvdGU6Cj4gT24gVGh1cnMs
+IE5vdiAyNiwgMjAyMCwgYXQgOToyNyBBTSwgTHUgQmFvbHUgd3JvdGU6Cj4+IEFkZCB0aGUgQVBJ
+IGZvciBnZXR0aW5nIHRoZSBkb21haW4gZnJvbSBhIHZmaW8gZ3JvdXAuIFRoaXMgY291bGQgYmUg
+dXNlZAo+PiBieSB0aGUgcGh5c2ljYWwgZGV2aWNlIGRyaXZlcnMgd2hpY2ggcmVseSBvbiB0aGUg
+dmZpby9tZGV2IGZyYW1ld29yayBmb3IKPj4gbWVkaWF0ZWQgZGV2aWNlIHVzZXIgbGV2ZWwgYWNj
+ZXNzLiBUaGUgdHlwaWNhbCB1c2UgY2FzZSBsaWtlIGJlbG93Ogo+Pgo+PiAJdW5zaWduZWQgaW50
+IHBhc2lkOwo+PiAJc3RydWN0IHZmaW9fZ3JvdXAgKnZmaW9fZ3JvdXA7Cj4+IAlzdHJ1Y3QgaW9t
+bXVfZG9tYWluICppb21tdV9kb21haW47Cj4+IAlzdHJ1Y3QgZGV2aWNlICpkZXYgPSBtZGV2X2Rl
+dihtZGV2KTsKPj4gCXN0cnVjdCBkZXZpY2UgKmlvbW11X2RldmljZSA9IG1kZXZfZ2V0X2lvbW11
+X2RldmljZShkZXYpOwo+Pgo+PiAJaWYgKCFpb21tdV9kZXZpY2UgfHwKPj4gCSAgICAhaW9tbXVf
+ZGV2X2ZlYXR1cmVfZW5hYmxlZChpb21tdV9kZXZpY2UsIElPTU1VX0RFVl9GRUFUX0FVWCkpCj4+
+IAkJcmV0dXJuIC1FSU5WQUw7Cj4+Cj4+IAl2ZmlvX2dyb3VwID0gdmZpb19ncm91cF9nZXRfZXh0
+ZXJuYWxfdXNlcl9mcm9tX2RldihkZXYpOyhkZXYpOwo+IAo+IGR1cGxpY2F0ZSAoZGV2KTsg8J+Y
+im90aGVyIHBhcnRzIGxvb2tzIGdvb2QgdG8gbWUuIHBlcmhhcHMsIHlvdSBjYW4gYWxzbwoKV2ls
+bCBmaXggdGhpcyB0eXBvLiBUaGFua3MhCgo+IGRlc2NyaWJlIHRoYXQgdGhlIHJlbGVhc2UgZnVu
+Y3Rpb24gb2YgYSBzdWItZGV2aWNlIGZkIHNob3VsZCBhbHNvIGNhbGwKPiB2ZmlvX2dyb3VwX3B1
+dF9leHRlcm5hbF91c2VyKCkgdG8gcmVsZWFzZSBpdHMgcmVmZXJlbmNlIG9uIHRoZSB2ZmlvX2dy
+b3VwLgoKVGhpcyBpcyBqdXN0IGEgc2FtcGxlIGNvZGUuIFRoZSBjYWxsZXJzIGFyZSBmcmVlIHRv
+IGRlY2lkZSB3aGVuIHRvIGdldAphbmQgcmVsZWFzZSB0aGUgdmZpb19ncm91cC4KCj4gCj4gUmVn
+YXJkcywKPiBZaSBMaXUKCkJlc3QgcmVnYXJkcywKYmFvbHUKCj4gCj4+IAlpZiAoSVNfRVJSX09S
+X05VTEwodmZpb19ncm91cCkpCj4+IAkJcmV0dXJuIC1FRkFVTFQ7Cj4+Cj4+IAlpb21tdV9kb21h
+aW4gPSB2ZmlvX2dyb3VwX2RvbWFpbih2ZmlvX2dyb3VwKTsKPj4gCWlmIChJU19FUlJfT1JfTlVM
+TChpb21tdV9kb21haW4pKSB7Cj4+IAkJdmZpb19ncm91cF9wdXRfZXh0ZXJuYWxfdXNlcih2Zmlv
+X2dyb3VwKTsKPj4gCQlyZXR1cm4gLUVGQVVMVDsKPj4gCX0KPj4KPj4gCXBhc2lkID0gaW9tbXVf
+YXV4X2dldF9wYXNpZChpb21tdV9kb21haW4sIGlvbW11X2RldmljZSk7Cj4+IAlpZiAocGFzaWQg
+PCAwKSB7Cj4+IAkJdmZpb19ncm91cF9wdXRfZXh0ZXJuYWxfdXNlcih2ZmlvX2dyb3VwKTsKPj4g
+CQlyZXR1cm4gLUVGQVVMVDsKPj4gCX0KPj4KPj4gCS8qIFByb2dyYW0gZGV2aWNlIGNvbnRleHQg
+d2l0aCBwYXNpZCB2YWx1ZS4gKi8KPj4gCS4uLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9s
+dSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPgo+PiAtLS0KPj4gICBkcml2ZXJzL3ZmaW8vdmZp
+by5jICAgICAgICAgICAgIHwgMTggKysrKysrKysrKysrKysrKysrCj4+ICAgZHJpdmVycy92Zmlv
+L3ZmaW9faW9tbXVfdHlwZTEuYyB8IDIzICsrKysrKysrKysrKysrKysrKysrKysrCj4+ICAgaW5j
+bHVkZS9saW51eC92ZmlvLmggICAgICAgICAgICB8ICAzICsrKwo+PiAgIDMgZmlsZXMgY2hhbmdl
+ZCwgNDQgaW5zZXJ0aW9ucygrKQo+Pgo+PiBDaGFuZ2UgbG9nOgo+PiAgIC0gdjE6IGh0dHBzOi8v
+bG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMjAxMTEyMDIyNDA3LjIwNjM4OTYtMS1iYW9s
+dS5sdUBsaW51eC5pbnRlbC5jb20vCj4+ICAgLSBDaGFuZ2VkIGFjY29yZGluZyB0byBjb21tZW50
+cyBAIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMjAxMTE2MTI1NjMxLjJk
+MDQzZmNkQHc1MjAuaG9tZS8KPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby92ZmlvLmMg
+Yi9kcml2ZXJzL3ZmaW8vdmZpby5jCj4+IGluZGV4IDIxNTFiYzdmODdhYi4uNjJjNjUyMTExYzg4
+IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3ZmaW8vdmZpby5jCj4+ICsrKyBiL2RyaXZlcnMvdmZp
+by92ZmlvLmMKPj4gQEAgLTIzMzEsNiArMjMzMSwyNCBAQCBpbnQgdmZpb191bnJlZ2lzdGVyX25v
+dGlmaWVyKHN0cnVjdCBkZXZpY2UgKmRldiwKPj4gZW51bSB2ZmlvX25vdGlmeV90eXBlIHR5cGUs
+Cj4+ICAgfQo+PiAgIEVYUE9SVF9TWU1CT0wodmZpb191bnJlZ2lzdGVyX25vdGlmaWVyKTsKPj4K
+Pj4gK3N0cnVjdCBpb21tdV9kb21haW4gKnZmaW9fZ3JvdXBfZG9tYWluKHN0cnVjdCB2ZmlvX2dy
+b3VwICpncm91cCkKPj4gK3sKPj4gKwlzdHJ1Y3QgdmZpb19jb250YWluZXIgKmNvbnRhaW5lcjsK
+Pj4gKwlzdHJ1Y3QgdmZpb19pb21tdV9kcml2ZXIgKmRyaXZlcjsKPj4gKwo+PiArCWlmICghZ3Jv
+dXApCj4+ICsJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOwo+PiArCj4+ICsJY29udGFpbmVyID0g
+Z3JvdXAtPmNvbnRhaW5lcjsKPj4gKwlkcml2ZXIgPSBjb250YWluZXItPmlvbW11X2RyaXZlcjsK
+Pj4gKwlpZiAobGlrZWx5KGRyaXZlciAmJiBkcml2ZXItPm9wcy0+Z3JvdXBfZG9tYWluKSkKPj4g
+KwkJcmV0dXJuIGRyaXZlci0+b3BzLT5ncm91cF9kb21haW4oY29udGFpbmVyLT5pb21tdV9kYXRh
+LAo+PiArCQkJCQkJIGdyb3VwLT5pb21tdV9ncm91cCk7Cj4+ICsJZWxzZQo+PiArCQlyZXR1cm4g
+RVJSX1BUUigtRU5PVFRZKTsKPj4gK30KPj4gK0VYUE9SVF9TWU1CT0wodmZpb19ncm91cF9kb21h
+aW4pOwo+PiArCj4+ICAgLyoqCj4+ICAgICogTW9kdWxlL2NsYXNzIHN1cHBvcnQKPj4gICAgKi8K
+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMgYi9kcml2ZXJz
+L3ZmaW8vdmZpb19pb21tdV90eXBlMS5jCj4+IGluZGV4IDY3ZTgyNzYzODk5NS4uNzgzZjE4ZjIx
+Yjk1IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90eXBlMS5jCj4+ICsr
+KyBiL2RyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMKPj4gQEAgLTI5ODAsNiArMjk4MCwy
+OCBAQCBzdGF0aWMgaW50IHZmaW9faW9tbXVfdHlwZTFfZG1hX3J3KHZvaWQgKmlvbW11X2RhdGEs
+Cj4+IGRtYV9hZGRyX3QgdXNlcl9pb3ZhLAo+PiAgIAlyZXR1cm4gcmV0Owo+PiAgIH0KPj4KPj4g
+K3N0YXRpYyB2b2lkICp2ZmlvX2lvbW11X3R5cGUxX2dyb3VwX2RvbWFpbih2b2lkICppb21tdV9k
+YXRhLAo+PiArCQkJCQkgICBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwKQo+PiArewo+
+PiArCXN0cnVjdCB2ZmlvX2lvbW11ICppb21tdSA9IGlvbW11X2RhdGE7Cj4+ICsJc3RydWN0IGlv
+bW11X2RvbWFpbiAqZG9tYWluID0gTlVMTDsKPj4gKwlzdHJ1Y3QgdmZpb19kb21haW4gKmQ7Cj4+
+ICsKPj4gKwlpZiAoIWlvbW11IHx8ICFpb21tdV9ncm91cCkKPj4gKwkJcmV0dXJuIEVSUl9QVFIo
+LUVJTlZBTCk7Cj4+ICsKPj4gKwltdXRleF9sb2NrKCZpb21tdS0+bG9jayk7Cj4+ICsJbGlzdF9m
+b3JfZWFjaF9lbnRyeShkLCAmaW9tbXUtPmRvbWFpbl9saXN0LCBuZXh0KSB7Cj4+ICsJCWlmIChm
+aW5kX2lvbW11X2dyb3VwKGQsIGlvbW11X2dyb3VwKSkgewo+PiArCQkJZG9tYWluID0gZC0+ZG9t
+YWluOwo+PiArCQkJYnJlYWs7Cj4+ICsJCX0KPj4gKwl9Cj4+ICsJbXV0ZXhfdW5sb2NrKCZpb21t
+dS0+bG9jayk7Cj4+ICsKPj4gKwlyZXR1cm4gZG9tYWluOwo+PiArfQo+PiArCj4+ICAgc3RhdGlj
+IGNvbnN0IHN0cnVjdCB2ZmlvX2lvbW11X2RyaXZlcl9vcHMgdmZpb19pb21tdV9kcml2ZXJfb3Bz
+X3R5cGUxID0gewo+PiAgIAkubmFtZQkJCT0gInZmaW8taW9tbXUtdHlwZTEiLAo+PiAgIAkub3du
+ZXIJCQk9IFRISVNfTU9EVUxFLAo+PiBAQCAtMjk5Myw2ICszMDE1LDcgQEAgc3RhdGljIGNvbnN0
+IHN0cnVjdCB2ZmlvX2lvbW11X2RyaXZlcl9vcHMgdmZpb19pb21tdV9kcml2ZXJfb3BzX3R5cGUx
+ID0gewo+PiAgIAkucmVnaXN0ZXJfbm90aWZpZXIJPSB2ZmlvX2lvbW11X3R5cGUxX3JlZ2lzdGVy
+X25vdGlmaWVyLAo+PiAgIAkudW5yZWdpc3Rlcl9ub3RpZmllcgk9IHZmaW9faW9tbXVfdHlwZTFf
+dW5yZWdpc3Rlcl9ub3RpZmllciwKPj4gICAJLmRtYV9ydwkJCT0gdmZpb19pb21tdV90eXBlMV9k
+bWFfcncsCj4+ICsJLmdyb3VwX2RvbWFpbgkJPSB2ZmlvX2lvbW11X3R5cGUxX2dyb3VwX2RvbWFp
+biwKPj4gICB9Owo+Pgo+PiAgIHN0YXRpYyBpbnQgX19pbml0IHZmaW9faW9tbXVfdHlwZTFfaW5p
+dCh2b2lkKQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC92ZmlvLmggYi9pbmNsdWRlL2xp
+bnV4L3ZmaW8uaAo+PiBpbmRleCAzOGQzYzZhOGRjN2UuLmEwNjEzYTZmMjFjYyAxMDA2NDQKPj4g
+LS0tIGEvaW5jbHVkZS9saW51eC92ZmlvLmgKPj4gKysrIGIvaW5jbHVkZS9saW51eC92ZmlvLmgK
+Pj4gQEAgLTkwLDYgKzkwLDcgQEAgc3RydWN0IHZmaW9faW9tbXVfZHJpdmVyX29wcyB7Cj4+ICAg
+CQkJCQkgICAgICAgc3RydWN0IG5vdGlmaWVyX2Jsb2NrICpuYik7Cj4+ICAgCWludAkJKCpkbWFf
+cncpKHZvaWQgKmlvbW11X2RhdGEsIGRtYV9hZGRyX3QgdXNlcl9pb3ZhLAo+PiAgIAkJCQkgIHZv
+aWQgKmRhdGEsIHNpemVfdCBjb3VudCwgYm9vbCB3cml0ZSk7Cj4+ICsJdm9pZAkJKigqZ3JvdXBf
+ZG9tYWluKSh2b2lkICppb21tdV9kYXRhLCBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3VwKTsKPj4g
+ICB9Owo+Pgo+PiAgIGV4dGVybiBpbnQgdmZpb19yZWdpc3Rlcl9pb21tdV9kcml2ZXIoY29uc3Qg
+c3RydWN0IHZmaW9faW9tbXVfZHJpdmVyX29wcyAqb3BzKTsKPj4gQEAgLTEyNiw2ICsxMjcsOCBA
+QCBleHRlcm4gaW50IHZmaW9fZ3JvdXBfdW5waW5fcGFnZXMoc3RydWN0IHZmaW9fZ3JvdXAgKmdy
+b3VwLAo+PiAgIGV4dGVybiBpbnQgdmZpb19kbWFfcncoc3RydWN0IHZmaW9fZ3JvdXAgKmdyb3Vw
+LCBkbWFfYWRkcl90IHVzZXJfaW92YSwKPj4gICAJCSAgICAgICB2b2lkICpkYXRhLCBzaXplX3Qg
+bGVuLCBib29sIHdyaXRlKTsKPj4KPj4gK2V4dGVybiBzdHJ1Y3QgaW9tbXVfZG9tYWluICp2Zmlv
+X2dyb3VwX2RvbWFpbihzdHJ1Y3QgdmZpb19ncm91cCAqZ3JvdXApOwo+PiArCj4+ICAgLyogZWFj
+aCB0eXBlIGhhcyBpbmRlcGVuZGVudCBldmVudHMgKi8KPj4gICBlbnVtIHZmaW9fbm90aWZ5X3R5
+cGUgewo+PiAgIAlWRklPX0lPTU1VX05PVElGWSA9IDAsCj4+IC0tCj4+IDIuMjUuMQo+IApfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
