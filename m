@@ -2,78 +2,100 @@ Return-Path: <SRS0=3/Zu=FA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73980C56202
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:25:51 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A5DC64E75
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:44:58 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BC76A206B7
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:25:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC76A206B7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B937C20658
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:44:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nYGL5wwM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B937C20658
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8ABC9203A7;
-	Thu, 26 Nov 2020 11:25:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 42CF3872B3;
+	Thu, 26 Nov 2020 11:44:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NC5XKlTA1cjP; Thu, 26 Nov 2020 11:25:46 +0000 (UTC)
+	with ESMTP id tsbMGpKCXNGm; Thu, 26 Nov 2020 11:44:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E4D9D2039D;
-	Thu, 26 Nov 2020 11:25:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C5E58871E1;
+	Thu, 26 Nov 2020 11:44:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C31EEC0891;
-	Thu, 26 Nov 2020 11:25:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C383C0052
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:25:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91EE5C0891;
+	Thu, 26 Nov 2020 11:44:56 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 729B0C0052
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:44:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1A94E20415
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:25:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6EBE48774E
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:44:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SfKGFDIjiJHr for <iommu@lists.linux-foundation.org>;
- Thu, 26 Nov 2020 11:25:44 +0000 (UTC)
+ with ESMTP id QNmnvZ6IGZRi for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Nov 2020 11:44:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by silver.osuosl.org (Postfix) with ESMTPS id EED232039D
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:25:43 +0000 (UTC)
-IronPort-SDR: wSrXGluQIK0ce7Mgw5w80ikttTJgVUm5je11Bb/JvdIKLnHomDHFnWbU/0xuQZiPC03l1TOYQd
- 6UXu+BCsedNw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9816"; a="256981503"
-X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="256981503"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Nov 2020 03:25:43 -0800
-IronPort-SDR: ZDe5wQuiXoqnHNL9e4SSQvkbpLDRt7yN7NloaHHfX5Oj4KwuGZJRBj0n++9x8TmFwGvuO5kAiq
- yZCVhMHC8ulA==
-X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="479322412"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.39])
- ([10.254.208.39])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Nov 2020 03:25:41 -0800
-Subject: Re: [PATCH] iommu/vt-d: Don't read VCCAP register unless it exists
-To: David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>
-References: <de32b150ffaa752e0cff8571b17dfb1213fbe71c.camel@infradead.org>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <5617b4d2-938b-15b2-a9f9-3cd52c788d58@linux.intel.com>
-Date: Thu, 26 Nov 2020 19:25:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+ [209.85.215.195])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CEB7587734
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:44:53 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id t37so1541798pga.7
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 03:44:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=UpERwUmn/OuG9/9GiqizbXJDLzVxL1S8PfGCKpa9aUg=;
+ b=nYGL5wwMzInwZKf69/TnCeMo02Cht0pAdcQoAUSgCVe5YzuaNqWcOj9BMSrJG11J2f
+ KNcl4S4BCDyYQZ9xw4Y7s1+6wFphhly5hk8wMuIGqUaPzSzSN98tnParN/VVKeaQNJV1
+ KhMm0oyRhW/8xPEbWsyFARG/ib75aDcW85H82wQyIIf/H75HSWxzBXzqqRPWQh1WqZcX
+ iPdAS4W+W92oDObcecbFDg5zHufOPtH8/afpKxrogGEW3TTkAY+fxXaJ14gouOOTshdj
+ lDZUplgZzM2IrqxRyA5OetWAyeNjvrdA+uf3NtbZL7nOSM1+RgxdRJ0hsNWi3qqnzHJX
+ thgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=UpERwUmn/OuG9/9GiqizbXJDLzVxL1S8PfGCKpa9aUg=;
+ b=Y5VIIt10A4cQQRVgAeuya7XEqPvoyhHOR6dxA4ywI3gkA+cTfX00vjiud/CbOecYM5
+ Y0dGpmJ/D7Es5IpJO0jvgMcAUdOrkleXpdHiVWySeCesB2OH6HBuhKkJ6W+nsjAeIU6v
+ 1Mw23jMlslsskiGDip1DWOlpMIS9lW3mVMZkoQyjD3rCkOVnp12U9AWyYGyWcebOVtSX
+ 9AUqnTcEcSCX/THhu0BjbvmYbojpVWMsyQHgiBJe9BwCkxkGuQtIvMCldkuLAH/0TGZf
+ 5bunrb6xDdi29RpDwlGvu0tgFXydW9xICzOAk48I1HXNKAAP+sa8PLdRseYWR2RzZ7qw
+ 8xxw==
+X-Gm-Message-State: AOAM530maIzdX+FKqXs9rlaBwKHnwf1CISP+4x1g3ZSuVtblVgI2kVnd
+ kHh4/uatc/0pH/LzUabHZYQ=
+X-Google-Smtp-Source: ABdhPJw/1d59DXda0KuVqjExWVYT3bxoXf2mR5gIjPc+28YwR+iFHQlRFLWrBosK+geb9FM5JmT/vA==
+X-Received: by 2002:a63:62c6:: with SMTP id w189mr2343708pgb.440.1606391093464; 
+ Thu, 26 Nov 2020 03:44:53 -0800 (PST)
+Received: from localhost ([2401:fa00:8f:203:a6ae:11ff:fe11:4b46])
+ by smtp.gmail.com with ESMTPSA id d15sm6575313pjr.27.2020.11.26.03.44.52
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 26 Nov 2020 03:44:52 -0800 (PST)
+Date: Thu, 26 Nov 2020 20:44:50 +0900
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Ricardo Ribalda <ribalda@chromium.org>
+Subject: Re: [PATCH v3 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
+Message-ID: <20201126114450.GB3723071@google.com>
+References: <20201125221917.150463-1-ribalda@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <de32b150ffaa752e0cff8571b17dfb1213fbe71c.camel@infradead.org>
-Content-Language: en-US
-Cc: iommu <iommu@lists.linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <20201125221917.150463-1-ribalda@chromium.org>
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,71 +108,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/11/26 19:13, David Woodhouse wrote:
-> From: David Woodhouse <dwmw@amazon.co.uk>
-> 
-> My virtual IOMMU implementation is whining that the guest is reading a
-> register that doesn't exist. Only read the VCCAP_REG if the corresponding
-> capability is set in ECAP_REG to indicate that it actually exists.
-> 
-> Fixes: 3375303e8287 ("iommu/vt-d: Add custom allocator for IOASID")
-> Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
-> Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
-> Cc: stable@vger.kernel.org # v5.7+
+On (20/11/25 23:19), Ricardo Ribalda wrote:
+[..]
+> +	if (uvc_urb->pages)
+> +		dma_sync_sgtable_for_device(stream_to_dmadev(uvc_urb->stream),
+> +					    &uvc_urb->sgt, DMA_FROM_DEVICE);
 
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+[..]
 
-Best regards,
-baolu
+> +	if (uvc_urb->pages)
+> +		dma_sync_sgtable_for_cpu(stream_to_dmadev(stream),
+> +					 &uvc_urb->sgt, DMA_FROM_DEVICE);
 
-> ---
->   drivers/iommu/intel/dmar.c  | 3 ++-
->   drivers/iommu/intel/iommu.c | 4 ++--
->   2 files changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 404b40af31cb..38d1d40cfe34 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -967,7 +967,8 @@ static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
->   		warn_invalid_dmar(phys_addr, " returns all ones");
->   		goto unmap;
->   	}
-> -	iommu->vccap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
-> +	if (ecap_vcs(iommu->ecap))
-> +		iommu->vccap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
->   
->   	/* the registers might be more than one page */
->   	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 8651f6d4dfa0..0823761f3a7c 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1833,7 +1833,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
->   		if (ecap_prs(iommu->ecap))
->   			intel_svm_finish_prq(iommu);
->   	}
-> -	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap))
-> +	if (vccap_pasid(iommu->vccap))
->   		ioasid_unregister_allocator(&iommu->pasid_allocator);
->   
->   #endif
-> @@ -3209,7 +3209,7 @@ static void register_pasid_allocator(struct intel_iommu *iommu)
->   	 * is active. All vIOMMU allocators will eventually be calling the same
->   	 * host allocator.
->   	 */
-> -	if (!ecap_vcs(iommu->ecap) || !vccap_pasid(iommu->vccap))
-> +	if (!vccap_pasid(iommu->vccap))
->   		return;
->   
->   	pr_info("Register custom PASID allocator\n");
-> 
-> 
+[..]
+
+> +	uvc_urb->pages = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
+> +						 &uvc_urb->dma,
+> +						 gfp_flags | __GFP_NOWARN, 0);
+
+Do we need to pass __GFP_NOWARN? It seems that
+
+dma_alloc_noncontiguous()
+  __iommu_dma_alloc_noncontiguous()
+    __iommu_dma_alloc_pages()
+
+does this internally.
+
+> +	if (!uvc_urb->pages)
+> +		return false;
+> +
+> +	uvc_urb->buffer = vmap(uvc_urb->pages,
+> +			       PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT,
+> +			       VM_DMA_COHERENT, PAGE_KERNEL);
+
+This is not related to Ricardo's patch, just a side note:
+
+  I think VM_DMA_COHERENT needs to be renamed. I found it a bit confusing
+  to see DMA_COHERENT mapping being dma_sync-ed. It turned out that the
+  flag has different meaning.
+
+	-ss
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
