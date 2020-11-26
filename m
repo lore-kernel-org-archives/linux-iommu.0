@@ -2,70 +2,181 @@ Return-Path: <SRS0=3/Zu=FA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3392CC56202
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 03:43:08 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBFCC56202
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 07:21:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9DC372075A
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 03:43:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DC372075A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id E43532075A
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 07:21:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="wcEFRF7P"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E43532075A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1E10287620;
-	Thu, 26 Nov 2020 03:43:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5E2BC871C3;
+	Thu, 26 Nov 2020 07:21:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GMaAsggSTBBo; Thu, 26 Nov 2020 03:43:06 +0000 (UTC)
+	with ESMTP id ysBglaCH0r7t; Thu, 26 Nov 2020 07:21:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5D5458761C;
-	Thu, 26 Nov 2020 03:43:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7586C871C1;
+	Thu, 26 Nov 2020 07:21:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 40B67C163C;
-	Thu, 26 Nov 2020 03:43:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7C590C0052
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 03:43:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 586C2C0891;
+	Thu, 26 Nov 2020 07:21:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75767C0052
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 07:21:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 73C638761C
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 03:43:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 59F6F2DE2A
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 07:21:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XrUPFtnCj2mM for <iommu@lists.linux-foundation.org>;
- Thu, 26 Nov 2020 03:43:02 +0000 (UTC)
+ with ESMTP id nZX5nxH8nsRk for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Nov 2020 07:21:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 823B487620
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 03:43:02 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4ChNqp6jSHzkgHQ;
- Thu, 26 Nov 2020 11:42:30 +0800 (CST)
-Received: from thunder-town.china.huawei.com (10.174.178.208) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 26 Nov 2020 11:42:50 +0800
-From: Zhen Lei <thunder.leizhen@huawei.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "Joerg Roedel" <joro@8bytes.org>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu
- <iommu@lists.linux-foundation.org>, linux-kernel
- <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/1] iommu/arm-smmu-v3: add support for BBML
-Date: Thu, 26 Nov 2020 11:42:30 +0800
-Message-ID: <20201126034230.777-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id A014120115
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 07:21:53 +0000 (UTC)
+IronPort-SDR: EtYVH6RvGCl+k2kjsmQ0k4bxiqFCNgQ1A97FROwKRf8BI/OwN4nI8DAr3+n7Sqhu/24sLU+OQy
+ R9HmJdLmld1Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9816"; a="172346749"
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="172346749"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Nov 2020 23:21:52 -0800
+IronPort-SDR: ABYMLQHiLnNZJ3jI1zGeNsezNTj7njNs+bSk0wD+q/qFIFE65iX1n5oyKIVIrEmmeNur4SlqGQ
+ SwIUFpiHUd8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="479248530"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+ by orsmga004.jf.intel.com with ESMTP; 25 Nov 2020 23:21:52 -0800
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 25 Nov 2020 23:21:52 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 25 Nov 2020 23:21:51 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 25 Nov 2020 23:21:51 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.102)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Wed, 25 Nov 2020 23:21:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NdweIBmNMi0Tn5dnVWZL+pGk+2p3HwCf5hLgDA70lRefuDOZ7FadeZpASjV9B2VxTZTaVtYi1Xkm+DsoJqf218JX9Cpa62/sAd8h5CMRw8KYuzmWTlE/yEKAATWtzXyNpTt7Rdm6fkiSDHkLv/VplKImjUPgmeHntGKkKFuWe5zEmjJmjMZDiyBQBC6TKwZdwwOCdDxRq4T+rAR2HN9cOGvb99eVqNtJZmc32JE2MXlYzDb5Pni1Enm2ZHFxWKQKk/To1D7oVh9HSUjLEJSPifO5/YQhB7F5ybIsHeTptyWFPL5CsObyjkfW7PGxckMIgMOXXImRWIWrr4ET9F3SjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eVsYE1B93aecnIzA+RN4kwcFNOPDASJ0qh9F0WUGc5Q=;
+ b=BQ+1GsjfoHC7zHRuGQhRbMpFgrEQjhfsSGq23SL/n4pchrBtasdLAU0XejHrHGQn+242/urEiUHlRRLrfzrI2i+p8W1b8lv0EMkuNsGrKFAVgEF1TYC9GgSt3AJw0HDfQPLVLZKmGh6v8I13XVc4d+iY/ShVpYj5Mn6dgJyICbhbqxQfgiiq62b9MZJmexUKLa+Tw+YMLXu3GdQbAK5CBSNPr9dmSrR9Jhe2nKkIWPC5V2TSoa3aXMb5rV5D8emvl9ZT8ZoFBjBAiNwqRD0uYMDcN6tVk+dGcDPmVL1HGRM4YBexiylxWmxCoOEAQO4PhUYbpFmcvseixIEazBMpDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eVsYE1B93aecnIzA+RN4kwcFNOPDASJ0qh9F0WUGc5Q=;
+ b=wcEFRF7PHsHGc/brmXrwJolCQy8dztr76E23Zm8Pq9WzTN20gaorZJLJV3ZbsRUj8ZCK4ebDF1FXAwKODiXpr0kVA4lfqwj7b+6/Grry2qs5tJM8qUCCXkR2QJEPXIVgG+ap5Mwt3TEunXJZ3P41+x67ucm3wnQTKshSBa9Di6A=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB4075.namprd11.prod.outlook.com (2603:10b6:5:198::25) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3589.20; Thu, 26 Nov 2020 07:21:50 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::a1ec:ba6b:5057:be2f%11]) with mapi id 15.20.3589.030; Thu, 26 Nov
+ 2020 07:21:50 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Alex Williamson
+ <alex.williamson@redhat.com>, Cornelia Huck <cohuck@redhat.com>
+Subject: RE: [PATCH v2 1/1] vfio/type1: Add vfio_group_domain()
+Thread-Topic: [PATCH v2 1/1] vfio/type1: Add vfio_group_domain()
+Thread-Index: AQHWw5ReQyBL40n+Qkqaex+H7WDSEanZ9uKg
+Date: Thu, 26 Nov 2020 07:21:50 +0000
+Message-ID: <DM5PR11MB143560E51C84BAF83AE54AC0C3F90@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <20201126012726.1185171-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20201126012726.1185171-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.55.46.46]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 58cdb67a-8652-4efb-16b1-08d891dbf135
+x-ms-traffictypediagnostic: DM6PR11MB4075:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB4075834DDB57B2F5329EAAAAC3F90@DM6PR11MB4075.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fNvJnB+eDoY8cAxbMwwAyvjVDx1WWOL3fFxusXt1m3EK9qZ8rb0wGAC+e2EjXt3nZYXB8cYTvFnAqqiWtoMIUem5yWe5ExhSV3VAoo3dpT1JyWoVPJokEp9AoKOY5W1z6pdNFD7L6Acz/VLy2yXY5qN5CNS2B0HIR/Y22aFf9wgkqV2sNdul/TE3OGxk8AWasd7V43GHrW5x71A+usxi8Llfw01IPPHmWxfyUzLyn9RSV86JQs31bGtPPTY+JywOjl52rbDCn5g8d6LdiUhJc6ogv8gIio/LFn76iwUCHaxRKa1iQoG39E/u7YiAHo9+U1fOGUVE42K1kGj3yDq9ZydCxieCSKS4H9rzA0/xB8MrsEolakHpsVHJntWr4I/enMRTAvAYEzdLVB3ODUBbdw==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(39860400002)(136003)(376002)(346002)(366004)(478600001)(8936002)(33656002)(55016002)(316002)(71200400001)(4326008)(86362001)(7416002)(110136005)(66946007)(54906003)(76116006)(66476007)(52536014)(9686003)(64756008)(66446008)(83380400001)(6506007)(2906002)(966005)(8676002)(5660300002)(186003)(26005)(66556008)(7696005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?utf-8?B?QThrRG42U3AyNXBKM1dvODZlZjJRL1FGM1U5Yy9vc2VkRURLRkhrSWVORklU?=
+ =?utf-8?B?TWRFSTcrSENpbnhBMy9qZG9aK210NkhnU1oySjVoK3FVM1JPN3FpWGVjcDhV?=
+ =?utf-8?B?NkF2MlFySzJzaGg4L1MyenljTlAxcG9YUEY5eEFlSURabm5INHByQ3BhbG0v?=
+ =?utf-8?B?SFpZcVhtRWc1VHZjYVZmQ2ZWOVlwcVJkdW1yQ3RvOUFWaHBNd3dCVWFhRyti?=
+ =?utf-8?B?cTQwaEd4a2pGdXc3WU9uZE1wTUVMODczY2hwd2FhSTJOMWZsR09JSDN3SjZ4?=
+ =?utf-8?B?M1RVZHd5c1VqRjJqdlhjd2Rod1Z6OE5GdVY1SU5DNnU2WFpMNVFNbUR1dTM1?=
+ =?utf-8?B?L0dpOGNhaTZKb0RnL1lhNFBuTEVlT0dCTUlXd1BUTjBNQWZteHErbjFZVWhV?=
+ =?utf-8?B?L1FmR3RyM1BORTYzV3Y1VUdZdGw4ZGhtRWJIZ0NwaTJqWFlzY3pndmpVYXVq?=
+ =?utf-8?B?N3RWWkVLeUxWZjZwS1p2WDRMbXA4bEU5Q0hpQ0p4d0xscWJLTHVnVno3REwz?=
+ =?utf-8?B?VDJRVHQ0UkNMdGZTTTN6ZXBNR2tKS1FlK3hhcmhBNUdmcEEvMWZMaGsvbUoz?=
+ =?utf-8?B?VGF4QU9TYmRzYkZNYXcxY0FqYWlmUUNxeldsNVJIa3BmS1pOcjZycHJDdnNm?=
+ =?utf-8?B?ZzMrSHBTLzNSNHdwQlg3SC9qRUtCa1dsZ3ErYm1yRlAxWDRHeUVmQ055amVW?=
+ =?utf-8?B?S3lkN29YVWJsNlNESzlVOHU3ejFTcGl6bTV1QU5FNUh3eS8rc1RyblNxMGZz?=
+ =?utf-8?B?UUZwMnBQWUdWU01Nc2xBNjVTQUVvVmVncEpFM1FtVTRidzYybUd5dkNXVVZN?=
+ =?utf-8?B?SFB0Y2huNTNRdGd6QjAxNk1yWDJwTnNnZWR4a1Q5eTNGektBenVRNUVZN2xN?=
+ =?utf-8?B?UTJLMXJWS1Q5WHdlYjZFa011SERhVWpPUExnWmQ0cldKSkg5ZGhoN1RGVW96?=
+ =?utf-8?B?cFR1MEVtVzRPN0tvUmY2RjBoeVlwbGNqL3RQZFVIQm1VZk1kMWFTSitwSnNT?=
+ =?utf-8?B?QmtVMFN6RGxvQ3dRTnEvQ3laL1lwcmxQMlNsWE5OdkUyYnF2OGhNWHVqV2ha?=
+ =?utf-8?B?QVVIYUxYdkx2azNodC9kd1Rzb01DcGxJKzRoMDUzakphVHZDa2EzdFJ0RmNz?=
+ =?utf-8?B?VFZTbWVlZ24xSmY1UWJuZ0ZEZW4wZ0c2UU01elQvcDJDb0JqbkcrSzFpaUIv?=
+ =?utf-8?B?ZWpJTmtOVVduNmtZbUs0ZVRPS3prNG14cTFBODRnRnVUSFkvakFLKy9UazM1?=
+ =?utf-8?B?Zjl1dVdFQ2NaS2JrRE1WS2pGR3o0VHNkaG5TUmUrU0R2dk50VEJEVU1NSFFs?=
+ =?utf-8?Q?n5QYLsDhf7V/U=3D?=
 MIME-Version: 1.0
-X-Originating-IP: [10.174.178.208]
-X-CFilter-Loop: Reflected
-Cc: Yang Yingliang <yangyingliang@huawei.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58cdb67a-8652-4efb-16b1-08d891dbf135
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Nov 2020 07:21:50.1909 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FC6uoVN8SSTMzpO8u2znNXo9zwwuodTVt3t/fa/q6R2XGdUQGPN7jcMqEU0rpCUYsiH+xz3AkbFPBQejcrzcrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4075
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Robin
+ Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,190 +189,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When changing from a set of pages/smaller blocks to a larger block for an
-address, the software should follow the sequence of BBML processing.
-
-When changing from a block to a set of pages/smaller blocks for an
-address, there's no need to use nT bit. If an address in the large block
-is accessed before page table switching, the TLB caches the large block
-mapping. After the page table is switched and before TLB invalidation
-finished, new access requests are still based on large block mapping.
-After the block or page is invalidated, the system reads the small block
-or page mapping from the memory; If the address in the large block is not
-accessed before page table switching, the TLB has no cache. After the
-page table is switched, a new access is initiated to read the small block
-or page mapping from the memory.
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 +
- drivers/iommu/io-pgtable-arm.c              | 46 ++++++++++++++++-----
- include/linux/io-pgtable.h                  |  1 +
- 4 files changed, 40 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e634bbe60573..14a1a11565fb 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1977,6 +1977,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
- 		.tlb		= &arm_smmu_flush_ops,
- 		.iommu_dev	= smmu->dev,
-+		.bbml		= smmu->bbml,
- 	};
- 
- 	if (smmu_domain->non_strict)
-@@ -3291,6 +3292,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 
- 	/* IDR3 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
-+	smmu->bbml = FIELD_GET(IDR3_BBML, reg);
- 	if (FIELD_GET(IDR3_RIL, reg))
- 		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index d4b7f40ccb02..aa7eb460fa09 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -51,6 +51,7 @@
- #define IDR1_SIDSIZE			GENMASK(5, 0)
- 
- #define ARM_SMMU_IDR3			0xc
-+#define IDR3_BBML			GENMASK(12, 11)
- #define IDR3_RIL			(1 << 10)
- 
- #define ARM_SMMU_IDR5			0x14
-@@ -617,6 +618,7 @@ struct arm_smmu_device {
- 
- 	int				gerr_irq;
- 	int				combined_irq;
-+	int				bbml;
- 
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index a7a9bc08dcd1..341581337ad0 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -72,6 +72,7 @@
- 
- #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
- #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
-+#define ARM_LPAE_PTE_nT			(((arm_lpae_iopte)1) << 16)
- #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
- #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
- #define ARM_LPAE_PTE_SH_OS		(((arm_lpae_iopte)2) << 8)
-@@ -255,7 +256,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 
- static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 				phys_addr_t paddr, arm_lpae_iopte prot,
--				int lvl, arm_lpae_iopte *ptep)
-+				int lvl, arm_lpae_iopte *ptep, arm_lpae_iopte nT)
- {
- 	arm_lpae_iopte pte = prot;
- 
-@@ -265,37 +266,60 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
- 
- 	pte |= paddr_to_iopte(paddr, data);
-+	pte |= nT;
- 
- 	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
- }
- 
-+static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
-+				    arm_lpae_iopte *ptep);
- static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 			     unsigned long iova, phys_addr_t paddr,
- 			     arm_lpae_iopte prot, int lvl,
- 			     arm_lpae_iopte *ptep)
- {
- 	arm_lpae_iopte pte = *ptep;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 
- 	if (iopte_leaf(pte, lvl, data->iop.fmt)) {
- 		/* We require an unmap first */
- 		WARN_ON(!selftest_running);
- 		return -EEXIST;
- 	} else if (iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
--		/*
--		 * We need to unmap and free the old table before
--		 * overwriting it with a block entry.
--		 */
- 		arm_lpae_iopte *tblp;
-+		struct io_pgtable *iop = &data->iop;
- 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
- 
--		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
--		if (__arm_lpae_unmap(data, NULL, iova, sz, lvl, tblp) != sz) {
--			WARN_ON(1);
--			return -EINVAL;
-+		switch (cfg->bbml) {
-+		case 0:
-+			/*
-+			 * We need to unmap and free the old table before
-+			 * overwriting it with a block entry.
-+			 */
-+			tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
-+			if (__arm_lpae_unmap(data, NULL, iova, sz, lvl, tblp) != sz) {
-+				WARN_ON(1);
-+				return -EINVAL;
-+			}
-+			break;
-+		case 1:
-+			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep, ARM_LPAE_PTE_nT);
-+
-+			io_pgtable_tlb_flush_walk(iop, iova, sz, ARM_LPAE_GRANULE(data));
-+			tblp = iopte_deref(pte, data);
-+			__arm_lpae_free_pgtable(data, lvl + 1, tblp);
-+			break;
-+		case 2:
-+			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep, 0);
-+
-+			io_pgtable_tlb_flush_walk(iop, iova, sz, ARM_LPAE_GRANULE(data));
-+			tblp = iopte_deref(pte, data);
-+			__arm_lpae_free_pgtable(data, lvl + 1, tblp);
-+			return 0;
- 		}
- 	}
- 
--	__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
-+	__arm_lpae_init_pte(data, paddr, prot, lvl, ptep, 0);
- 	return 0;
- }
- 
-@@ -537,7 +561,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 		if (i == unmap_idx)
- 			continue;
- 
--		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
-+		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i], 0);
- 	}
- 
- 	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 4cde111e425b..0a45c2818686 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -98,6 +98,7 @@ struct io_pgtable_cfg {
- 	unsigned int			ias;
- 	unsigned int			oas;
- 	bool				coherent_walk;
-+	int				bbml;
- 	const struct iommu_flush_ops	*tlb;
- 	struct device			*iommu_dev;
- 
--- 
-2.26.0.106.g9fadedd
-
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1cnMsIE5vdiAyNiwgMjAyMCwgYXQgOToyNyBBTSwgTHUgQmFvbHUgd3JvdGU6DQo+IEFk
+ZCB0aGUgQVBJIGZvciBnZXR0aW5nIHRoZSBkb21haW4gZnJvbSBhIHZmaW8gZ3JvdXAuIFRoaXMg
+Y291bGQgYmUgdXNlZA0KPiBieSB0aGUgcGh5c2ljYWwgZGV2aWNlIGRyaXZlcnMgd2hpY2ggcmVs
+eSBvbiB0aGUgdmZpby9tZGV2IGZyYW1ld29yayBmb3INCj4gbWVkaWF0ZWQgZGV2aWNlIHVzZXIg
+bGV2ZWwgYWNjZXNzLiBUaGUgdHlwaWNhbCB1c2UgY2FzZSBsaWtlIGJlbG93Og0KPiANCj4gCXVu
+c2lnbmVkIGludCBwYXNpZDsNCj4gCXN0cnVjdCB2ZmlvX2dyb3VwICp2ZmlvX2dyb3VwOw0KPiAJ
+c3RydWN0IGlvbW11X2RvbWFpbiAqaW9tbXVfZG9tYWluOw0KPiAJc3RydWN0IGRldmljZSAqZGV2
+ID0gbWRldl9kZXYobWRldik7DQo+IAlzdHJ1Y3QgZGV2aWNlICppb21tdV9kZXZpY2UgPSBtZGV2
+X2dldF9pb21tdV9kZXZpY2UoZGV2KTsNCj4gDQo+IAlpZiAoIWlvbW11X2RldmljZSB8fA0KPiAJ
+ICAgICFpb21tdV9kZXZfZmVhdHVyZV9lbmFibGVkKGlvbW11X2RldmljZSwgSU9NTVVfREVWX0ZF
+QVRfQVVYKSkNCj4gCQlyZXR1cm4gLUVJTlZBTDsNCj4gDQo+IAl2ZmlvX2dyb3VwID0gdmZpb19n
+cm91cF9nZXRfZXh0ZXJuYWxfdXNlcl9mcm9tX2RldihkZXYpOyhkZXYpOw0KDQpkdXBsaWNhdGUg
+KGRldik7IPCfmIpvdGhlciBwYXJ0cyBsb29rcyBnb29kIHRvIG1lLiBwZXJoYXBzLCB5b3UgY2Fu
+IGFsc28NCmRlc2NyaWJlIHRoYXQgdGhlIHJlbGVhc2UgZnVuY3Rpb24gb2YgYSBzdWItZGV2aWNl
+IGZkIHNob3VsZCBhbHNvIGNhbGwNCnZmaW9fZ3JvdXBfcHV0X2V4dGVybmFsX3VzZXIoKSB0byBy
+ZWxlYXNlIGl0cyByZWZlcmVuY2Ugb24gdGhlIHZmaW9fZ3JvdXAuDQoNClJlZ2FyZHMsDQpZaSBM
+aXUgDQoNCj4gCWlmIChJU19FUlJfT1JfTlVMTCh2ZmlvX2dyb3VwKSkNCj4gCQlyZXR1cm4gLUVG
+QVVMVDsNCj4gDQo+IAlpb21tdV9kb21haW4gPSB2ZmlvX2dyb3VwX2RvbWFpbih2ZmlvX2dyb3Vw
+KTsNCj4gCWlmIChJU19FUlJfT1JfTlVMTChpb21tdV9kb21haW4pKSB7DQo+IAkJdmZpb19ncm91
+cF9wdXRfZXh0ZXJuYWxfdXNlcih2ZmlvX2dyb3VwKTsNCj4gCQlyZXR1cm4gLUVGQVVMVDsNCj4g
+CX0NCj4gDQo+IAlwYXNpZCA9IGlvbW11X2F1eF9nZXRfcGFzaWQoaW9tbXVfZG9tYWluLCBpb21t
+dV9kZXZpY2UpOw0KPiAJaWYgKHBhc2lkIDwgMCkgew0KPiAJCXZmaW9fZ3JvdXBfcHV0X2V4dGVy
+bmFsX3VzZXIodmZpb19ncm91cCk7DQo+IAkJcmV0dXJuIC1FRkFVTFQ7DQo+IAl9DQo+IA0KPiAJ
+LyogUHJvZ3JhbSBkZXZpY2UgY29udGV4dCB3aXRoIHBhc2lkIHZhbHVlLiAqLw0KPiAJLi4uDQo+
+IA0KPiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0K
+PiAtLS0NCj4gIGRyaXZlcnMvdmZpby92ZmlvLmMgICAgICAgICAgICAgfCAxOCArKysrKysrKysr
+KysrKysrKysNCj4gIGRyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5cGUxLmMgfCAyMyArKysrKysr
+KysrKysrKysrKysrKysrKw0KPiAgaW5jbHVkZS9saW51eC92ZmlvLmggICAgICAgICAgICB8ICAz
+ICsrKw0KPiAgMyBmaWxlcyBjaGFuZ2VkLCA0NCBpbnNlcnRpb25zKCspDQo+IA0KPiBDaGFuZ2Ug
+bG9nOg0KPiAgLSB2MTogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUvMjAyMDEx
+MTIwMjI0MDcuMjA2Mzg5Ni0xLWJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbS8NCj4gIC0gQ2hhbmdl
+ZCBhY2NvcmRpbmcgdG8gY29tbWVudHMgQCBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1p
+b21tdS8yMDIwMTExNjEyNTYzMS4yZDA0M2ZjZEB3NTIwLmhvbWUvDQo+IA0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy92ZmlvL3ZmaW8uYyBiL2RyaXZlcnMvdmZpby92ZmlvLmMNCj4gaW5kZXggMjE1
+MWJjN2Y4N2FiLi42MmM2NTIxMTFjODggMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvdmZpby92Zmlv
+LmMNCj4gKysrIGIvZHJpdmVycy92ZmlvL3ZmaW8uYw0KPiBAQCAtMjMzMSw2ICsyMzMxLDI0IEBA
+IGludCB2ZmlvX3VucmVnaXN0ZXJfbm90aWZpZXIoc3RydWN0IGRldmljZSAqZGV2LA0KPiBlbnVt
+IHZmaW9fbm90aWZ5X3R5cGUgdHlwZSwNCj4gIH0NCj4gIEVYUE9SVF9TWU1CT0wodmZpb191bnJl
+Z2lzdGVyX25vdGlmaWVyKTsNCj4gDQo+ICtzdHJ1Y3QgaW9tbXVfZG9tYWluICp2ZmlvX2dyb3Vw
+X2RvbWFpbihzdHJ1Y3QgdmZpb19ncm91cCAqZ3JvdXApDQo+ICt7DQo+ICsJc3RydWN0IHZmaW9f
+Y29udGFpbmVyICpjb250YWluZXI7DQo+ICsJc3RydWN0IHZmaW9faW9tbXVfZHJpdmVyICpkcml2
+ZXI7DQo+ICsNCj4gKwlpZiAoIWdyb3VwKQ0KPiArCQlyZXR1cm4gRVJSX1BUUigtRUlOVkFMKTsN
+Cj4gKw0KPiArCWNvbnRhaW5lciA9IGdyb3VwLT5jb250YWluZXI7DQo+ICsJZHJpdmVyID0gY29u
+dGFpbmVyLT5pb21tdV9kcml2ZXI7DQo+ICsJaWYgKGxpa2VseShkcml2ZXIgJiYgZHJpdmVyLT5v
+cHMtPmdyb3VwX2RvbWFpbikpDQo+ICsJCXJldHVybiBkcml2ZXItPm9wcy0+Z3JvdXBfZG9tYWlu
+KGNvbnRhaW5lci0+aW9tbXVfZGF0YSwNCj4gKwkJCQkJCSBncm91cC0+aW9tbXVfZ3JvdXApOw0K
+PiArCWVsc2UNCj4gKwkJcmV0dXJuIEVSUl9QVFIoLUVOT1RUWSk7DQo+ICt9DQo+ICtFWFBPUlRf
+U1lNQk9MKHZmaW9fZ3JvdXBfZG9tYWluKTsNCj4gKw0KPiAgLyoqDQo+ICAgKiBNb2R1bGUvY2xh
+c3Mgc3VwcG9ydA0KPiAgICovDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vdmZpb19pb21t
+dV90eXBlMS5jIGIvZHJpdmVycy92ZmlvL3ZmaW9faW9tbXVfdHlwZTEuYw0KPiBpbmRleCA2N2U4
+Mjc2Mzg5OTUuLjc4M2YxOGYyMWI5NSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy92ZmlvL3ZmaW9f
+aW9tbXVfdHlwZTEuYw0KPiArKysgYi9kcml2ZXJzL3ZmaW8vdmZpb19pb21tdV90eXBlMS5jDQo+
+IEBAIC0yOTgwLDYgKzI5ODAsMjggQEAgc3RhdGljIGludCB2ZmlvX2lvbW11X3R5cGUxX2RtYV9y
+dyh2b2lkICppb21tdV9kYXRhLA0KPiBkbWFfYWRkcl90IHVzZXJfaW92YSwNCj4gIAlyZXR1cm4g
+cmV0Ow0KPiAgfQ0KPiANCj4gK3N0YXRpYyB2b2lkICp2ZmlvX2lvbW11X3R5cGUxX2dyb3VwX2Rv
+bWFpbih2b2lkICppb21tdV9kYXRhLA0KPiArCQkJCQkgICBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmlv
+bW11X2dyb3VwKQ0KPiArew0KPiArCXN0cnVjdCB2ZmlvX2lvbW11ICppb21tdSA9IGlvbW11X2Rh
+dGE7DQo+ICsJc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluID0gTlVMTDsNCj4gKwlzdHJ1Y3Qg
+dmZpb19kb21haW4gKmQ7DQo+ICsNCj4gKwlpZiAoIWlvbW11IHx8ICFpb21tdV9ncm91cCkNCj4g
+KwkJcmV0dXJuIEVSUl9QVFIoLUVJTlZBTCk7DQo+ICsNCj4gKwltdXRleF9sb2NrKCZpb21tdS0+
+bG9jayk7DQo+ICsJbGlzdF9mb3JfZWFjaF9lbnRyeShkLCAmaW9tbXUtPmRvbWFpbl9saXN0LCBu
+ZXh0KSB7DQo+ICsJCWlmIChmaW5kX2lvbW11X2dyb3VwKGQsIGlvbW11X2dyb3VwKSkgew0KPiAr
+CQkJZG9tYWluID0gZC0+ZG9tYWluOw0KPiArCQkJYnJlYWs7DQo+ICsJCX0NCj4gKwl9DQo+ICsJ
+bXV0ZXhfdW5sb2NrKCZpb21tdS0+bG9jayk7DQo+ICsNCj4gKwlyZXR1cm4gZG9tYWluOw0KPiAr
+fQ0KPiArDQo+ICBzdGF0aWMgY29uc3Qgc3RydWN0IHZmaW9faW9tbXVfZHJpdmVyX29wcyB2Zmlv
+X2lvbW11X2RyaXZlcl9vcHNfdHlwZTEgPSB7DQo+ICAJLm5hbWUJCQk9ICJ2ZmlvLWlvbW11LXR5
+cGUxIiwNCj4gIAkub3duZXIJCQk9IFRISVNfTU9EVUxFLA0KPiBAQCAtMjk5Myw2ICszMDE1LDcg
+QEAgc3RhdGljIGNvbnN0IHN0cnVjdCB2ZmlvX2lvbW11X2RyaXZlcl9vcHMgdmZpb19pb21tdV9k
+cml2ZXJfb3BzX3R5cGUxID0gew0KPiAgCS5yZWdpc3Rlcl9ub3RpZmllcgk9IHZmaW9faW9tbXVf
+dHlwZTFfcmVnaXN0ZXJfbm90aWZpZXIsDQo+ICAJLnVucmVnaXN0ZXJfbm90aWZpZXIJPSB2Zmlv
+X2lvbW11X3R5cGUxX3VucmVnaXN0ZXJfbm90aWZpZXIsDQo+ICAJLmRtYV9ydwkJCT0gdmZpb19p
+b21tdV90eXBlMV9kbWFfcncsDQo+ICsJLmdyb3VwX2RvbWFpbgkJPSB2ZmlvX2lvbW11X3R5cGUx
+X2dyb3VwX2RvbWFpbiwNCj4gIH07DQo+IA0KPiAgc3RhdGljIGludCBfX2luaXQgdmZpb19pb21t
+dV90eXBlMV9pbml0KHZvaWQpDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3ZmaW8uaCBi
+L2luY2x1ZGUvbGludXgvdmZpby5oDQo+IGluZGV4IDM4ZDNjNmE4ZGM3ZS4uYTA2MTNhNmYyMWNj
+IDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xpbnV4L3ZmaW8uaA0KPiArKysgYi9pbmNsdWRlL2xp
+bnV4L3ZmaW8uaA0KPiBAQCAtOTAsNiArOTAsNyBAQCBzdHJ1Y3QgdmZpb19pb21tdV9kcml2ZXJf
+b3BzIHsNCj4gIAkJCQkJICAgICAgIHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOw0KPiAgCWlu
+dAkJKCpkbWFfcncpKHZvaWQgKmlvbW11X2RhdGEsIGRtYV9hZGRyX3QgdXNlcl9pb3ZhLA0KPiAg
+CQkJCSAgdm9pZCAqZGF0YSwgc2l6ZV90IGNvdW50LCBib29sIHdyaXRlKTsNCj4gKwl2b2lkCQkq
+KCpncm91cF9kb21haW4pKHZvaWQgKmlvbW11X2RhdGEsIHN0cnVjdCBpb21tdV9ncm91cCAqZ3Jv
+dXApOw0KPiAgfTsNCj4gDQo+ICBleHRlcm4gaW50IHZmaW9fcmVnaXN0ZXJfaW9tbXVfZHJpdmVy
+KGNvbnN0IHN0cnVjdCB2ZmlvX2lvbW11X2RyaXZlcl9vcHMgKm9wcyk7DQo+IEBAIC0xMjYsNiAr
+MTI3LDggQEAgZXh0ZXJuIGludCB2ZmlvX2dyb3VwX3VucGluX3BhZ2VzKHN0cnVjdCB2ZmlvX2dy
+b3VwICpncm91cCwNCj4gIGV4dGVybiBpbnQgdmZpb19kbWFfcncoc3RydWN0IHZmaW9fZ3JvdXAg
+Kmdyb3VwLCBkbWFfYWRkcl90IHVzZXJfaW92YSwNCj4gIAkJICAgICAgIHZvaWQgKmRhdGEsIHNp
+emVfdCBsZW4sIGJvb2wgd3JpdGUpOw0KPiANCj4gK2V4dGVybiBzdHJ1Y3QgaW9tbXVfZG9tYWlu
+ICp2ZmlvX2dyb3VwX2RvbWFpbihzdHJ1Y3QgdmZpb19ncm91cCAqZ3JvdXApOw0KPiArDQo+ICAv
+KiBlYWNoIHR5cGUgaGFzIGluZGVwZW5kZW50IGV2ZW50cyAqLw0KPiAgZW51bSB2ZmlvX25vdGlm
+eV90eXBlIHsNCj4gIAlWRklPX0lPTU1VX05PVElGWSA9IDAsDQo+IC0tDQo+IDIuMjUuMQ0KDQpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
