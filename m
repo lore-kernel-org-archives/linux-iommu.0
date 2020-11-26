@@ -1,99 +1,119 @@
-Return-Path: <SRS0=GPDh=E7=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=3/Zu=FA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2FEC56201
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 22:19:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FD7C56202
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 00:37:45 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C0080221F8
-	for <iommu@archiver.kernel.org>; Wed, 25 Nov 2020 22:19:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CBF3420B1F
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 00:37:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="kWVTpXkV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0080221F8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="Lb1r96H2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBF3420B1F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 35FE2876C5;
-	Wed, 25 Nov 2020 22:19:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 701F38761A;
+	Thu, 26 Nov 2020 00:37:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Bo-ixsQnLNSw; Wed, 25 Nov 2020 22:19:25 +0000 (UTC)
+	with ESMTP id ITyQGa6oKjRx; Thu, 26 Nov 2020 00:37:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0D804876AA;
-	Wed, 25 Nov 2020 22:19:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E80BD87618;
+	Thu, 26 Nov 2020 00:37:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3DD9C0891;
-	Wed, 25 Nov 2020 22:19:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ECFCAC0052
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 22:19:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CBE02C0891;
+	Thu, 26 Nov 2020 00:37:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0E4C1C0052
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 00:37:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DAF20869DD
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 22:19:23 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E8DDF87619
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 00:37:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kHzAJBjjwMKj for <iommu@lists.linux-foundation.org>;
- Wed, 25 Nov 2020 22:19:21 +0000 (UTC)
+ with ESMTP id 0FRPao1XjjlL for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Nov 2020 00:37:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
- [209.85.221.66])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 984E3868BB
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 22:19:21 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id l1so6158wrb.9
- for <iommu@lists.linux-foundation.org>; Wed, 25 Nov 2020 14:19:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=0nXA0SjyfP7UjKs2H2srLJc/UeEiXr6hG+khI2TPCZk=;
- b=kWVTpXkVtm/GnkaqLGeRkrJws6uGCS0exSo42bI4nIxdLa6YEOQjv13oW86dc5ji27
- SDW+Ju4m0FmnUoTeTwMgyVGqYFvMr8SKfRifcxJZ2awsK03pDIDUmB87RqOAMQTcZCD6
- u9og8svtcSxFxibOE5sf+gxV4hqIscwRbbnsY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=0nXA0SjyfP7UjKs2H2srLJc/UeEiXr6hG+khI2TPCZk=;
- b=uLkcUcnkg2zBYQ9BgfkWmSw4xAxqdWfAjQNomMtz09PHiVqDfV/420oRjAmgRHo+2B
- L8Gmvf9ZqGY+WHnW4OgM382uDF/herOj1tGvb/xGVj/6RAqeMRxtRmH3pbJKwjg5d9kj
- pJMIMUlkHp5A9oJRz4rVE7Q6u1Yu8JCrM1uaTaBwz0sl67f/NQcnfkXvI72If9ztrRUS
- 5Z8DWhqVTGwxFeGpRdQI2uHoMJPHD3JpWuHwMR1yRVHH3BphU9aBoDLZ0g5mYftAEHOt
- dgsVPLl7RnksEC00ksZJoCbbv4stnhJFWYPzK92roOztfWNKSjz/N/X0FzPGjkPth17W
- r2Lg==
-X-Gm-Message-State: AOAM531kDsy2EpjG2Uzrq24kN5h0nGo0Hky3Dz1rC3x2ID7fiJq7p3ux
- ebN9mJEDyD8endJxsSI5REgyZg==
-X-Google-Smtp-Source: ABdhPJw5LIWbEX/qCR9k2hfcMtdI2NeQ0XgrvDGhVmXPcdrykxh+KRZmaLS+V4nVDR6Q7exJZQqydg==
-X-Received: by 2002:a5d:4e87:: with SMTP id e7mr64856wru.352.1606342760076;
- Wed, 25 Nov 2020 14:19:20 -0800 (PST)
-Received: from alco.lan ([80.71.134.83])
- by smtp.gmail.com with ESMTPSA id l16sm6514099wrx.5.2020.11.25.14.19.19
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 25 Nov 2020 14:19:19 -0800 (PST)
-From: Ricardo Ribalda <ribalda@chromium.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Tomasz Figa <tfiga@chromium.org>,
- Sergey Senozhatsky <senozhatsky@google.com>
-Subject: [PATCH v3 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
-Date: Wed, 25 Nov 2020 23:19:17 +0100
-Message-Id: <20201125221917.150463-1-ribalda@chromium.org>
-X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
+ [216.228.121.143])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2F68E87618
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 00:37:42 +0000 (UTC)
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B5fbef8dc0000>; Wed, 25 Nov 2020 16:37:48 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 26 Nov
+ 2020 00:37:30 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 26 Nov 2020 00:37:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PS42/3hnAb4YCtwFwqUP/hQLhYWoz5f/T6mWKpwtHdjktkn9Ah/ngH/g6cMXhBlbj1C+iBen3YPNoZ+sbqgSS3mEiLFAxyollJ2cvfh8JotqD7HZRI5yniT/Vnb0+VQ3FiU+0j1HqyPQfiQFGH3wl7fcpXhHOE6XiUEmxrPvSXEpFjkYfZJL34DN09LNp3VQF3fi7GnRw1/Z79MOdo46RrkQxvm0M1BeqG365sejJTfUV1st4J+YPd4GVmSGpCheE+6zj+aqss98qIFNqS58skxtWFqQoQgkDt3YvVJFwJsfmweRuunXW9cs4+kiJTC0LGifEYbdPEo9xBEdG/ErYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JbzsTp3wxHd9dOviT+Eu4ZEFLammA3l7NwDYpVtYxtU=;
+ b=JgeEURBFwyizjlGKGJSB0QllUfUhOxS8EsliE3d9ZjnUhiaO79mZP1zzK9qijvdrzoiDyeHa22+yuC8aWRTtMq0VUedGCX4SsKuARaH8l6q1ZfAp7p+t+uVcevGxfBkXcUOnqwKOxCvk+G33teDmmLg+1QujmPC+qyEJiVFHUeWmSZtrlQJ7UyfWiQBU37MOZMClxe3CrYQgOow8Kg6oW9O6vWB0xfqw8xh8rIecZHtQeH8W2eZr/piSdmyq6A6DI1gaF3SiFJGcqcCnLHvtC+NeEqmlBNlnDO0hfE4Ljudcw5r/nJZ/PVGEwg9SLwcqzDd9OO4upgAra4DsXT1IkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB3827.namprd12.prod.outlook.com (2603:10b6:a03:1ab::16)
+ by BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.21; Thu, 26 Nov
+ 2020 00:37:28 +0000
+Received: from BY5PR12MB3827.namprd12.prod.outlook.com
+ ([fe80::7503:d9f2:9040:b0d7]) by BY5PR12MB3827.namprd12.prod.outlook.com
+ ([fe80::7503:d9f2:9040:b0d7%7]) with mapi id 15.20.3589.030; Thu, 26 Nov 2020
+ 00:37:28 +0000
+Date: Wed, 25 Nov 2020 20:37:26 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 12/13] iommu/arm-smmu-v3: Implement
+ iommu_sva_bind/unbind()
+Message-ID: <20201126003726.GR4800@nvidia.com>
+References: <20200918101852.582559-1-jean-philippe@linaro.org>
+ <20200918101852.582559-13-jean-philippe@linaro.org>
+ <20201124235800.GA242277@nvidia.com> <20201125092749.GA2445658@myrica>
+Content-Disposition: inline
+In-Reply-To: <20201125092749.GA2445658@myrica>
+X-ClientProxiedBy: MN2PR20CA0043.namprd20.prod.outlook.com
+ (2603:10b6:208:235::12) To BY5PR12MB3827.namprd12.prod.outlook.com
+ (2603:10b6:a03:1ab::16)
 MIME-Version: 1.0
-Cc: Ricardo Ribalda <ribalda@chromium.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by
+ MN2PR20CA0043.namprd20.prod.outlook.com (2603:10b6:208:235::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend
+ Transport; Thu, 26 Nov 2020 00:37:27 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1ki5Hq-001Ste-1M; Wed, 25 Nov 2020 20:37:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1606351068; bh=JbzsTp3wxHd9dOviT+Eu4ZEFLammA3l7NwDYpVtYxtU=;
+ h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+ From:To:CC:Subject:Message-ID:References:Content-Type:
+ Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+ X-MS-Exchange-MessageSentRepresentingType;
+ b=Lb1r96H2PGUQX1q4HjZrOCcGcxSYiNc1NNa4IJdvHR8dW39dbzWxQ2L5Sgaf9NLGm
+ n7wjlh1Slm6hrDAaDUjpPEtXKo8571i5Py9Knr1Q7tF8ZN1UVMYRUsXkVl/p6e1F9Y
+ ivoo1bRG7BCQzwvA9owL4p8A0jJeLvjxRsDyMYI7Ouk6TCBAnrCSCs0BSrLRHPgbIQ
+ Fgf0i7xDPOwtyCx9zcvsqoDAErddqc+M1fmOrcooe24LpgX3pmmAMez9svIZTQJRmQ
+ jQkbjHYfIBxL0YimWEOSPjo4tw29w30FfgQ/+gSVaLnm6gCXfnRPmONCDmez04TbjQ
+ GnxWUOPpGVylw==
+Cc: fenghua.yu@intel.com, catalin.marinas@arm.com, robin.murphy@arm.com,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org, zhangfei.gao@linaro.org,
+ will@kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,193 +131,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On architectures where the is no coherent caching such as ARM use the
-dma_alloc_noncontiguos API and handle manually the cache flushing using
-dma_sync_sgtable().
+On Wed, Nov 25, 2020 at 10:27:49AM +0100, Jean-Philippe Brucker wrote:
+> > I'm strongly
+> > trying to discourage static lists matching mm's like smmu_mn is
+> > doing. This is handled by the core code, don't open code it..
+> 
+> We discussed this at v6, which wonkily stored the mn ops in the domain to
+> obtain a unique notifier per {mm, domain}. A clean solution requires
+> changing mm_notifier_get() to use an opaque token. Rather than testing
+> {mm, ops} uniqueness it would compare {mm, ops, token}. I figured it
+> wasn't worth the effort for a single driver, especially since the SMMU
+> driver would still have one list matching because it needs to deal with
+> both {mm, domain} and {mm, device} uniqueness.
+> https://lore.kernel.org/linux-iommu/20200501121552.GA6012@infradead.org/
 
-With this patch on the affected architectures we can measure up to 20x
-performance improvement in uvc_video_copy_data_work().
+Oh, that was a long time ago.. OK
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
----
-
-v3: Thanks to Marek Szyprowski
-
-Use dma_sync_sgtable and _for_cpu()
-
- drivers/media/usb/uvc/uvc_video.c | 93 +++++++++++++++++++++++++++----
- drivers/media/usb/uvc/uvcvideo.h  |  2 +
- 2 files changed, 83 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
-index a6a441d92b94..06ebd7a3877b 100644
---- a/drivers/media/usb/uvc/uvc_video.c
-+++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1097,6 +1097,11 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
- 	return data[0];
- }
- 
-+static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
-+{
-+	return stream->dev->udev->bus->controller->parent;
-+}
-+
- /*
-  * uvc_video_decode_data_work: Asynchronous memcpy processing
-  *
-@@ -1118,6 +1123,9 @@ static void uvc_video_copy_data_work(struct work_struct *work)
- 		uvc_queue_buffer_release(op->buf);
- 	}
- 
-+	if (uvc_urb->pages)
-+		dma_sync_sgtable_for_device(stream_to_dmadev(uvc_urb->stream),
-+					    &uvc_urb->sgt, DMA_FROM_DEVICE);
- 	ret = usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
- 	if (ret < 0)
- 		uvc_printk(KERN_ERR, "Failed to resubmit video URB (%d).\n",
-@@ -1539,10 +1547,17 @@ static void uvc_video_complete(struct urb *urb)
- 	 * Process the URB headers, and optionally queue expensive memcpy tasks
- 	 * to be deferred to a work queue.
- 	 */
-+	if (uvc_urb->pages)
-+		dma_sync_sgtable_for_cpu(stream_to_dmadev(stream),
-+					 &uvc_urb->sgt, DMA_FROM_DEVICE);
- 	stream->decode(uvc_urb, buf, buf_meta);
- 
- 	/* If no async work is needed, resubmit the URB immediately. */
- 	if (!uvc_urb->async_operations) {
-+		if (uvc_urb->pages)
-+			dma_sync_sgtable_for_device(stream_to_dmadev(stream),
-+						    &uvc_urb->sgt,
-+						    DMA_FROM_DEVICE);
- 		ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
- 		if (ret < 0)
- 			uvc_printk(KERN_ERR,
-@@ -1566,8 +1581,16 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
- 			continue;
- 
- #ifndef CONFIG_DMA_NONCOHERENT
--		usb_free_coherent(stream->dev->udev, stream->urb_size,
--				  uvc_urb->buffer, uvc_urb->dma);
-+		if (uvc_urb->pages) {
-+			sg_free_table(&uvc_urb->sgt);
-+			vunmap(uvc_urb->buffer);
-+			dma_free_noncontiguous(stream_to_dmadev(stream),
-+					       stream->urb_size,
-+					       uvc_urb->pages, uvc_urb->dma);
-+		} else {
-+			usb_free_coherent(stream->dev->udev, stream->urb_size,
-+					  uvc_urb->buffer, uvc_urb->dma);
-+		}
- #else
- 		kfree(uvc_urb->buffer);
- #endif
-@@ -1577,6 +1600,56 @@ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
- 	stream->urb_size = 0;
- }
- 
-+#ifndef CONFIG_DMA_NONCOHERENT
-+static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-+				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
-+{
-+	struct device *dma_dev = dma_dev = stream_to_dmadev(stream);
-+
-+	if (!dma_can_alloc_noncontiguous(dma_dev)) {
-+		uvc_urb->buffer = usb_alloc_coherent(stream->dev->udev,
-+						     stream->urb_size,
-+						     gfp_flags | __GFP_NOWARN,
-+						     &uvc_urb->dma);
-+		return uvc_urb->buffer != NULL;
-+	}
-+
-+	uvc_urb->pages = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
-+						 &uvc_urb->dma,
-+						 gfp_flags | __GFP_NOWARN, 0);
-+	if (!uvc_urb->pages)
-+		return false;
-+
-+	uvc_urb->buffer = vmap(uvc_urb->pages,
-+			       PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT,
-+			       VM_DMA_COHERENT, PAGE_KERNEL);
-+	if (!uvc_urb->buffer) {
-+		dma_free_noncontiguous(dma_dev, stream->urb_size,
-+				       uvc_urb->pages, uvc_urb->dma);
-+		return false;
-+	}
-+
-+	if (sg_alloc_table_from_pages(&uvc_urb->sgt, uvc_urb->pages,
-+				PAGE_ALIGN(stream->urb_size) >> PAGE_SHIFT, 0,
-+				stream->urb_size, GFP_KERNEL)) {
-+		vunmap(uvc_urb->buffer);
-+		dma_free_noncontiguous(dma_dev, stream->urb_size,
-+				       uvc_urb->pages, uvc_urb->dma);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+#else
-+static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
-+				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
-+{
-+	uvc_urb->buffer = kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
-+
-+	return uvc_urb->buffer != NULL;
-+}
-+#endif
-+
- /*
-  * Allocate transfer buffers. This function can be called with buffers
-  * already allocated when resuming from suspend, in which case it will
-@@ -1607,19 +1680,11 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
- 
- 	/* Retry allocations until one succeed. */
- 	for (; npackets > 1; npackets /= 2) {
-+		stream->urb_size = psize * npackets;
- 		for (i = 0; i < UVC_URBS; ++i) {
- 			struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
- 
--			stream->urb_size = psize * npackets;
--#ifndef CONFIG_DMA_NONCOHERENT
--			uvc_urb->buffer = usb_alloc_coherent(
--				stream->dev->udev, stream->urb_size,
--				gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
--#else
--			uvc_urb->buffer =
--			    kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
--#endif
--			if (!uvc_urb->buffer) {
-+			if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
- 				uvc_free_urb_buffers(stream);
- 				break;
- 			}
-@@ -1891,6 +1956,10 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
- 
- 	/* Submit the URBs. */
- 	for_each_uvc_urb(uvc_urb, stream) {
-+		if (uvc_urb->pages)
-+			dma_sync_sgtable_for_device(stream_to_dmadev(stream),
-+						    &uvc_urb->sgt,
-+						    DMA_FROM_DEVICE);
- 		ret = usb_submit_urb(uvc_urb->urb, gfp_flags);
- 		if (ret < 0) {
- 			uvc_printk(KERN_ERR, "Failed to submit URB %u (%d).\n",
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index a3dfacf069c4..3e6618a2ac82 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -532,6 +532,8 @@ struct uvc_urb {
- 
- 	char *buffer;
- 	dma_addr_t dma;
-+	struct page **pages;
-+	struct sg_table sgt;
- 
- 	unsigned int async_operations;
- 	struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
--- 
-2.29.2.454.gaff20da3a2-goog
-
+Thanks,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
