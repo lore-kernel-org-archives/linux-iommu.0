@@ -2,77 +2,78 @@ Return-Path: <SRS0=3/Zu=FA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB6CC56202
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 10:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F220BC56202
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:01:54 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 63B6521527
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 10:52:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="YJXkgxaV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63B6521527
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4B00B2173E
+	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 11:01:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B00B2173E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B96612E141;
-	Thu, 26 Nov 2020 10:52:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 983AA2E1FB;
+	Thu, 26 Nov 2020 11:01:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HIgOUu9KYV-J; Thu, 26 Nov 2020 10:52:55 +0000 (UTC)
+	with ESMTP id FAu0-o+yPEI7; Thu, 26 Nov 2020 11:01:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2F8612284F;
-	Thu, 26 Nov 2020 10:52:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 547572E133;
+	Thu, 26 Nov 2020 11:01:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E8B65C163C;
-	Thu, 26 Nov 2020 10:52:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CCB01C0052
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 10:52:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CDACC163C;
+	Thu, 26 Nov 2020 11:01:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0294AC0052
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:01:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C81F987829
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 10:52:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E3E058769F
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:01:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 05W-0uARUg-H for <iommu@lists.linux-foundation.org>;
- Thu, 26 Nov 2020 10:52:53 +0000 (UTC)
+ with ESMTP id XGNBImLl7m7S for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Nov 2020 11:01:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 31FC487826
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 10:52:53 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
- [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 20E2420DD4;
- Thu, 26 Nov 2020 10:52:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1606387972;
- bh=CdLlb1z7XnjJYWndkvYNE80/TxKCto2us3OCs2U4aPw=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=YJXkgxaV5CbnWrqz9QTFxLRPsgOxBrwKZRlu3fdo7aUfupQb8tEba6CNakQALmJHC
- vJggjhdo3I5I9yc5xGxKKwoG/A4pOJXYQDWqkW8cKqfrS1WpoY1k6RZ5V6j9hng2ED
- RBDjI7xRLc8/uFNqZkf/BXzCz074OMjY7ZVn1fz8=
-From: Will Deacon <will@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu: Fix htmldocs warnings in
- sysfs-kernel-iommu_groups
-Date: Thu, 26 Nov 2020 10:52:46 +0000
-Message-Id: <160638413065.1109527.15725909042368207035.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201126090603.1511589-1-baolu.lu@linux.intel.com>
-References: <20201126090603.1511589-1-baolu.lu@linux.intel.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EEAD187697
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 11:01:41 +0000 (UTC)
+IronPort-SDR: UIHalJajT2UNIbMGkQNudqa2RUKqsZrL3L/ZHUyuPfFJcgPH8Eroz6+/TDZ3GCalQDAQgDMq+r
+ MDlRSPXJFDeg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9816"; a="151527705"
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="151527705"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2020 03:01:41 -0800
+IronPort-SDR: Om6vgDtmXzckxRMzuk+Reuc8HaZOQeNd/UuAAr+/lzBarbHv1aFMn7wMMR+U5lfqjz5W2e1drU
+ iMnYzAvzUePg==
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; d="scan'208";a="479317121"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.39])
+ ([10.254.208.39])
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2020 03:01:39 -0800
+Subject: Re: Question about domain_init (v5.3-v5.7)
+To: Jerry Snitselaar <jsnitsel@redhat.com>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ stable@kernel.vger.org
+References: <87h7pd6v2k.fsf@redhat.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <bd1fd204-3596-b16c-5617-7e691ceac83b@linux.intel.com>
+Date: Thu, 26 Nov 2020 19:01:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Will Deacon <will@kernel.org>,
- catalin.marinas@arm.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, kernel-team@android.com
+In-Reply-To: <87h7pd6v2k.fsf@redhat.com>
+Content-Language: en-US
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,32 +86,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 26 Nov 2020 17:06:03 +0800, Lu Baolu wrote:
-> Below warnings are fixed:
+Hi Jerry,
+
+On 2020/11/26 4:27, Jerry Snitselaar wrote:
 > 
-> Documentation/ABI/testing/sysfs-kernel-iommu_groups:38: WARNING: Unexpected indentation.
-> Documentation/ABI/testing/sysfs-kernel-iommu_groups:38: WARNING: Block quote ends without a blank line; unexpected unindent.
-> Documentation/ABI/testing/sysfs-kernel-iommu_groups:38: WARNING: Enumerated list ends without a blank line; unexpected unindent.
-> Documentation/ABI/testing/sysfs-kernel-iommu_groups:38: WARNING: Unexpected indentation.
-> Documentation/ABI/testing/sysfs-kernel-iommu_groups:38: WARNING: Block quote ends without a blank line; unexpected unindent.
+> Is there a reason we check the requested guest address width against the
+> iommu's mgaw, instead of the agaw that we already know for the iommu?
+> I've run into a case with a new system where the mgaw reported is 57,
+> but if they set PAE to 46 instead of 52 in the bios, then sagaw reports
+> the highest supported agaw is 48 and the domain_init code fails here. In
 
-Applied to arm64 (for-next/iommu/default-domains), thanks!
+Isn't this a platform bug? If it's too late to fix it in the BIOS, you
+maybe have to add a platform specific quirk to set mgaw to the highest
+supported agaw?
 
-[1/1] iommu: Fix htmldocs warnings in sysfs-kernel-iommu_groups
-      https://git.kernel.org/arm64/c/62c9917d9c10
+Best regards,
+baolu
 
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+> other places like prepare_domain_attach_device, the dmar domain agaw
+> gets adjusted down to the iommu agaw. The agaw of the iommu gets
+> determined based off what is reported for sagaw. I'm wondering if it
+> can't instead do:
+> 
+> ---
+>   drivers/iommu/intel-iommu.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6ca5c92ef2e5..a8e41ec36d9e 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1862,8 +1862,8 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+>   	domain_reserve_special_ranges(domain);
+> 
+>   	/* calculate AGAW */
+> -	if (guest_width > cap_mgaw(iommu->cap))
+> -	        guest_width = cap_mgaw(iommu->cap);
+> +	if (guest_width > agaw_to_width(iommu->agaw))
+> +	        guest_width = agaw_to_width(iommu->agaw);
+>   	domain->gaw = guest_width;
+>   	adjust_width = guestwidth_to_adjustwidth(guest_width);
+>   	agaw = width_to_agaw(adjust_width);
+> --
+> 2.27.0
+> 
+> 
+> Thoughts? With the former code the ehci device for the ilo fails when
+> trying to get a private domain.
+> 
+> Thanks,
+> Jerry
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
