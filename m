@@ -1,108 +1,74 @@
-Return-Path: <SRS0=3/Zu=FA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=F28s=FB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D3FCC63777
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 21:35:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BEFC63777
+	for <iommu@archiver.kernel.org>; Fri, 27 Nov 2020 01:40:42 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BC37520872
-	for <iommu@archiver.kernel.org>; Thu, 26 Nov 2020 21:35:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="haJwrw/l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC37520872
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7D96422228
+	for <iommu@archiver.kernel.org>; Fri, 27 Nov 2020 01:40:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D96422228
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2E5FB2E25D;
-	Thu, 26 Nov 2020 21:35:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 092BB87982;
+	Fri, 27 Nov 2020 01:40:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7aP41iQVkar2; Thu, 26 Nov 2020 21:35:41 +0000 (UTC)
+	with ESMTP id bCnJ6DM+ora7; Fri, 27 Nov 2020 01:40:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A0FD220494;
-	Thu, 26 Nov 2020 21:35:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 623BB8797C;
+	Fri, 27 Nov 2020 01:40:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77B74C0891;
-	Thu, 26 Nov 2020 21:35:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 420A5C0891;
+	Fri, 27 Nov 2020 01:40:40 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8E3BC0052
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 21:35:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42CCFC0052
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Nov 2020 01:40:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DA631878ED
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 21:35:39 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 258F98797F
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Nov 2020 01:40:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6MuxXVB3G1FU for <iommu@lists.linux-foundation.org>;
- Thu, 26 Nov 2020 21:35:38 +0000 (UTC)
+ with ESMTP id IICSP68knR1k for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Nov 2020 01:40:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id A6F4F878DF
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 21:35:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1606426536;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=z982jnqmuXNIrAhimGtzkblqKSt24Z3qnI8EZ/1iDQY=;
- b=haJwrw/lHDJi6u7357ieuFEuzotNvbt9IjFVV8S88ui+F2R+1v+GgPSW6B8LB0IIIsrwwW
- hmZOwVQEIWbT9UIukwqGiZtT7YiFhWTqpH/zCqDjuQxBtPFV87xvr1cMUsuSNQgHkWmmeb
- FvCKeOsNUsabPDIRrOph1io96SqbY9M=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-zCnYnPmwPbCGvb3vE5Nrwg-1; Thu, 26 Nov 2020 16:35:34 -0500
-X-MC-Unique: zCnYnPmwPbCGvb3vE5Nrwg-1
-Received: by mail-pf1-f197.google.com with SMTP id 9so2384073pfn.5
- for <iommu@lists.linux-foundation.org>; Thu, 26 Nov 2020 13:35:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:references:user-agent:from:to:cc:subject
- :in-reply-to:date:message-id:mime-version;
- bh=z982jnqmuXNIrAhimGtzkblqKSt24Z3qnI8EZ/1iDQY=;
- b=bcE2M6niNFOJDs6xBcCRVJDta58Sg1S6te1NqnTmJp4a6RyeQ/KwH21mpQ7C1FANun
- QYQmc1rmKvlR8HpInZZW18I7z8e7ZqwK04qp4jUyxOSdsvZcr4w5eki46NdnIe+t+rvw
- 4Tnzw6LHs5UohbfelRL7i637kWkfG2mqjPI00lYUmIN6F7SeTqm19xFI7LhmqU6Q+klt
- BfLGE8TgqJNisu4BMxh6EklF8AERSj2gyfAi8SvnLD1MXcBJs0tWq4auHi/ni2TolujV
- 42ot0bxde0mcaX54wQbkCKb2LVcrqI3KDn9idpjd8GmskUFIxysSzssCdX8cMxXjJcOS
- Sleg==
-X-Gm-Message-State: AOAM53395ByIPElwiFWvJY3bdct+iAF6vRhQxf6Fytkoy6yCrVcVoWGf
- FCkCy/q/t6B+XcW48Y/y28SdvCDvGkUMg5mWeG5kGqbhTV+9/DnFkgXvL9tfNkAIoQ8KzSStV5y
- ySoaDwyd9K9mNYKeT+9xr95WhOza1Gw==
-X-Received: by 2002:a17:90a:de86:: with SMTP id
- n6mr5636641pjv.214.1606426533156; 
- Thu, 26 Nov 2020 13:35:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzAlUToijww7RFSIadHfTUIsFRgP0jROP7USN5shf1kH7HUlqvESAgcIckwBz8UQwmCwAYwNw==
-X-Received: by 2002:a17:90a:de86:: with SMTP id
- n6mr5636628pjv.214.1606426532884; 
- Thu, 26 Nov 2020 13:35:32 -0800 (PST)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
- by smtp.gmail.com with ESMTPSA id z126sm5587671pfz.120.2020.11.26.13.35.31
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 26 Nov 2020 13:35:31 -0800 (PST)
-References: <87h7pd6v2k.fsf@redhat.com>
- <bd1fd204-3596-b16c-5617-7e691ceac83b@linux.intel.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: Question about domain_init (v5.3-v5.7)
-In-reply-to: <bd1fd204-3596-b16c-5617-7e691ceac83b@linux.intel.com>
-Date: Thu, 26 Nov 2020 14:35:30 -0700
-Message-ID: <87a6v3hkd9.fsf@jsnitsel.users.ipa.redhat.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 809DB8797C
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Nov 2020 01:40:38 +0000 (UTC)
+IronPort-SDR: xGupATE75cLPDIRUBuuM4gCQtnvIwIBLrtgqxBLLwpToNyfwvMhCT+931ZFLoGPSJv5cu+aS/2
+ w7O34hmx+4eA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9817"; a="159386851"
+X-IronPort-AV: E=Sophos;i="5.78,373,1599548400"; d="scan'208";a="159386851"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2020 17:40:37 -0800
+IronPort-SDR: luTU8T4gGrJ+vN0Tv7JZLe7oT+Nn79S7H6CmHj0LDER5vank1jJsa/uHNMPirlRiAITy28qwGO
+ rDr0n2OTakPg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,373,1599548400"; d="scan'208";a="535902890"
+Received: from allen-box.sh.intel.com ([10.239.159.28])
+ by fmsmga006.fm.intel.com with ESMTP; 26 Nov 2020 17:40:35 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/1] iommu/vt-d: Remove set but not used variable
+Date: Fri, 27 Nov 2020 09:33:08 +0800
+Message-Id: <20201127013308.1833610-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jsnitsel@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: stable@kernel.vger.org, iommu@lists.linux-foundation.org,
+Cc: kernel test robot <lkp@intel.com>, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -121,62 +87,42 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Lu Baolu @ 2020-11-26 04:01 MST:
+drivers/iommu/intel/iommu.c:5643:27: warning: variable 'last_pfn' set but not used [-Wunused-but-set-variable]
+5643 |  unsigned long start_pfn, last_pfn;
+     |                           ^~~~~~~~
 
-> Hi Jerry,
->
-> On 2020/11/26 4:27, Jerry Snitselaar wrote:
->> Is there a reason we check the requested guest address width against
->> the
->> iommu's mgaw, instead of the agaw that we already know for the iommu?
->> I've run into a case with a new system where the mgaw reported is 57,
->> but if they set PAE to 46 instead of 52 in the bios, then sagaw reports
->> the highest supported agaw is 48 and the domain_init code fails here. In
->
-> Isn't this a platform bug? If it's too late to fix it in the BIOS, you
-> maybe have to add a platform specific quirk to set mgaw to the highest
-> supported agaw?
->
-> Best regards,
-> baolu
+This variable is never used, so remove it.
 
-Is there somewhere you can point me to that discusses how they should be
-setting the mgaw? I misunderstood when I previously asked you about
-whether the mgaw could be a value that was greater than any of sagaw.
-If it is a bios issue, then they should fix it there.
+Fixes: 2a2b8eaa5b256 ("iommu: Handle freelists when using deferred flushing in iommu drivers")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
->
->> other places like prepare_domain_attach_device, the dmar domain agaw
->> gets adjusted down to the iommu agaw. The agaw of the iommu gets
->> determined based off what is reported for sagaw. I'm wondering if it
->> can't instead do:
->> ---
->>   drivers/iommu/intel-iommu.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->> diff --git a/drivers/iommu/intel-iommu.c
->> b/drivers/iommu/intel-iommu.c
->> index 6ca5c92ef2e5..a8e41ec36d9e 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -1862,8 +1862,8 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
->>   	domain_reserve_special_ranges(domain);
->>   	/* calculate AGAW */
->> -	if (guest_width > cap_mgaw(iommu->cap))
->> -	        guest_width = cap_mgaw(iommu->cap);
->> +	if (guest_width > agaw_to_width(iommu->agaw))
->> +	        guest_width = agaw_to_width(iommu->agaw);
->>   	domain->gaw = guest_width;
->>   	adjust_width = guestwidth_to_adjustwidth(guest_width);
->>   	agaw = width_to_agaw(adjust_width);
->> --
->> 2.27.0
->> 
->> Thoughts? With the former code the ehci device for the ilo fails when
->> trying to get a private domain.
->> Thanks,
->> Jerry
->> 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index f9379b4a32fb..8c6c3c0812d2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4942,13 +4942,12 @@ static void intel_iommu_tlb_sync(struct iommu_domain *domain,
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	unsigned long iova_pfn = IOVA_PFN(gather->start);
+ 	size_t size = gather->end - gather->start;
+-	unsigned long start_pfn, last_pfn;
++	unsigned long start_pfn;
+ 	unsigned long nrpages;
+ 	int iommu_id;
+ 
+ 	nrpages = aligned_nrpages(gather->start, size);
+ 	start_pfn = mm_to_dma_pfn(iova_pfn);
+-	last_pfn = start_pfn + nrpages - 1;
+ 
+ 	for_each_domain_iommu(iommu_id, dmar_domain)
+ 		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
+-- 
+2.25.1
 
 _______________________________________________
 iommu mailing list
