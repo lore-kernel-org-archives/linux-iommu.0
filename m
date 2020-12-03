@@ -2,82 +2,83 @@ Return-Path: <SRS0=qXOr=FH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8A2C4361A
-	for <iommu@archiver.kernel.org>; Thu,  3 Dec 2020 14:55:11 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2FAC433FE
+	for <iommu@archiver.kernel.org>; Thu,  3 Dec 2020 15:02:59 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 15D17206D6
-	for <iommu@archiver.kernel.org>; Thu,  3 Dec 2020 14:55:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15D17206D6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id D7E44206D6
+	for <iommu@archiver.kernel.org>; Thu,  3 Dec 2020 15:02:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7E44206D6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8421287B37;
-	Thu,  3 Dec 2020 14:55:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4B2C687C5A;
+	Thu,  3 Dec 2020 15:02:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GBdwXec5R8d6; Thu,  3 Dec 2020 14:55:09 +0000 (UTC)
+	with ESMTP id OTZZFJ-Q05yh; Thu,  3 Dec 2020 15:02:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5B05D87B30;
-	Thu,  3 Dec 2020 14:55:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4E3D487BE5;
+	Thu,  3 Dec 2020 15:02:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43388C0FA8;
-	Thu,  3 Dec 2020 14:55:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F0A8C163C;
+	Thu,  3 Dec 2020 15:02:57 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9C90BC0FA7
- for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 14:55:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D81A9C0FA7
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 06:53:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8B0D886DAF
- for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 14:55:08 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BFB38870EF
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 06:53:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id y1U7kXDZdWR7 for <iommu@lists.linux-foundation.org>;
- Thu,  3 Dec 2020 14:55:05 +0000 (UTC)
+ with ESMTP id fBNS8Bxyr8RN for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Dec 2020 06:53:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 5706B875A7
- for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 14:55:05 +0000 (UTC)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4CmzND2Zsqz67LbF;
- Thu,  3 Dec 2020 22:53:00 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 3 Dec 2020 15:54:57 +0100
-Received: from [10.47.8.200] (10.47.8.200) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 3 Dec 2020
- 14:54:56 +0000
-Subject: Re: [RESEND PATCH v3 0/4] iommu/iova: Solve longterm IOVA issue
-To: Dmitry Safonov <0x7f454c46@gmail.com>, Will Deacon <will@kernel.org>
-References: <1605608734-84416-1-git-send-email-john.garry@huawei.com>
- <160685669713.992935.17438167536143205811.b4-ty@kernel.org>
- <CAJwJo6YmF+tW2_it2BLCP6fLBrUR6kfx7jG0hsNy6uYG203Jfw@mail.gmail.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <6e09d847-fb7f-1ec1-02bf-f0c8b315845f@huawei.com>
-Date: Thu, 3 Dec 2020 14:54:27 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8CFF0870ED
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Dec 2020 06:53:17 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 078BE11FB
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Dec 2020 22:53:17 -0800 (PST)
+Received: from mail-pg1-f175.google.com (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E96A73F575
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Dec 2020 22:53:16 -0800 (PST)
+Received: by mail-pg1-f175.google.com with SMTP id i38so831306pgb.5
+ for <iommu@lists.linux-foundation.org>; Wed, 02 Dec 2020 22:53:16 -0800 (PST)
+X-Gm-Message-State: AOAM532qYQpIbxiUTx4zAg9uWUiuttzz7W/HEUxHYZwUZoWPPmOl4ZKN
+ QEbiW+NaKjB9Pn4GHsPVuw6ZvsOLEObgDO8yHtU=
+X-Google-Smtp-Source: ABdhPJygtekmLjjncvjFwG4SdpDCdLwfKHAXG6gTy9UWIl0OW84LFK0WMjkvnr+8NjJZe42RTQB3PnaS/Udv9iPQkrg=
+X-Received: by 2002:a62:790f:0:b029:18a:ae57:353f with SMTP id
+ u15-20020a62790f0000b029018aae57353fmr1698141pfc.78.1606978392331; Wed, 02
+ Dec 2020 22:53:12 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAJwJo6YmF+tW2_it2BLCP6fLBrUR6kfx7jG0hsNy6uYG203Jfw@mail.gmail.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.8.200]
-X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Catalin Marinas <catalin.marinas@arm.com>, robin.murphy@arm.com,
- linuxarm@huawei.com, iommu@lists.linux-foundation.org,
- xiyou.wangcong@gmail.com, kernel-team@android.com,
- open list <linux-kernel@vger.kernel.org>
+References: <20201112125519.3987595-1-jean-philippe@linaro.org>
+In-Reply-To: <20201112125519.3987595-1-jean-philippe@linaro.org>
+From: Vivek Gautam <vivek.gautam@arm.com>
+Date: Thu, 3 Dec 2020 12:22:59 +0530
+X-Gmail-Original-Message-ID: <CAFp+6iHAiZ22t9gOv04HfYGeFdmKxTYhLb0yXDPo0bgcSfHUSg@mail.gmail.com>
+Message-ID: <CAFp+6iHAiZ22t9gOv04HfYGeFdmKxTYhLb0yXDPo0bgcSfHUSg@mail.gmail.com>
+Subject: Re: [PATCH v8 0/9] iommu: I/O page faults for SMMUv3
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+X-Mailman-Approved-At: Thu, 03 Dec 2020 15:02:56 +0000
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
+ sudeep.holla@arm.com, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Robin Murphy <robin.murphy@arm.com>, linux-acpi@vger.kernel.org,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ robh+dt <robh+dt@kernel.org>, guohanjun@huawei.com,
+ Bjorn Helgaas <bhelgaas@google.com>, zhangfei.gao@linaro.org,
+ Will Deacon <will@kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,38 +91,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMDMvMTIvMjAyMCAwNjowNCwgRG1pdHJ5IFNhZm9ub3Ygd3JvdGU6Cj4gT24gVHVlLCAxIERl
-YyAyMDIwIGF0IDIxOjUwLCBXaWxsIERlYWNvbjx3aWxsQGtlcm5lbC5vcmc+ICB3cm90ZToKPj4g
-T24gVHVlLCAxNyBOb3YgMjAyMCAxODoyNTozMCArMDgwMCwgSm9obiBHYXJyeSB3cm90ZToKPj4+
-IFRoaXMgc2VyaWVzIGNvbnRhaW5zIGEgcGF0Y2ggdG8gc29sdmUgdGhlIGxvbmd0ZXJtIElPVkEg
-aXNzdWUgd2hpY2gKPj4+IGxlaXpoZW4gb3JpZ2luYWxseSB0cmllZCB0byBhZGRyZXNzIGF0IFsw
-XS4KPj4+Cj4+PiBBIHNpZXZlZCBrZXJuZWwgbG9nIGlzIGF0IHRoZSBmb2xsb3dpbmcsIHNob3dp
-bmcgcGVyaW9kaWMgZHVtcHMgb2YgSU9WQQo+Pj4gc2l6ZXMsIHBlciBDUFUgYW5kIHBlciBkZXBv
-dCBiaW4sIHBlciBJT1ZBIHNpemUgZ3JhbnVsZToKPj4+IGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJj
-b250ZW50LmNvbS9oaXNpbGljb24va2VybmVsLWRldi90b3BpYy1pb21tdS01LjEwLWlvdmEtZGVi
-dWctdjMvYWdpbmdfdGVzdAo+Pj4KPj4+IFsuLi5dCj4+IEFwcGxpZWQgdGhlIGZpbmFsIHBhdGNo
-IHRvIGFybTY0IChmb3ItbmV4dC9pb21tdS9pb3ZhKSwgdGhhbmtzIQo+Pgo+PiBbNC80XSBpb21t
-dTogYXZvaWQgdGFraW5nIGlvdmFfcmJ0cmVlX2xvY2sgdHdpY2UKPj4gICAgICAgIGh0dHBzOi8v
-Z2l0Lmtlcm5lbC5vcmcvYXJtNjQvYy8zYTY1MWIzYTI3YTEKPiBHbGFkIGl0IG1hZGUgaW4gbmV4
-dCwgMiB5ZWFycyBhZ28gSSBjb3VsZG4ndCBjb252aW5jZSBpb21tdSBtYWludGFpbmVyCj4gaXQn
-cyB3b3J0aCBpdCAoYnV0IHdpdGggYSBkaWZmZXJlbnQganVzdGlmaWNhdGlvbik6Cj4gaHR0cHM6
-Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUvMjAxODA2MjExODA4MjMuODA1LTMtZGltYUBh
-cmlzdGEuY29tLwoKSGkgRG1pdHJ5LAoKSSB3YXMgdW5hd2FyZSBvZiB5b3VyIHNlcmllcywgYW5k
-IGl04oCZcyB1bmZvcnR1bmF0ZSB0aGF0IHlvdXIgCm9wdGltaXphdGlvbiBuZXZlciBtYWRlIGl0
-LiBIb3dldmVyIEkgd2FzIGhhdmluZyBhIHF1aWNrIGxvb2sgdGhlcmUsIAphbmQsIGluIGNhc2Ug
-eW91IGRpZCBub3Qgbm90aWNlLCB0aGF0IHRoZSBjb2RlIHdoaWNoIHlvdSB3ZXJlIHByb3Bvc2lu
-ZyAKY2hhbmdpbmcgaW4gcGF0Y2ggIzEgZm9yIGludGVsLWlvbW11LmMgd2FzIHJlbW92ZWQgaW4g
-ZTcwYjA4MWM2ZjM3IAooImlvbW11L3Z0LWQ6IFJlbW92ZSBJT1ZBIGhhbmRsaW5nIGNvZGUgZnJv
-bSB0aGUgbm9uLWRtYV9vcHMgcGF0aCIpLgoKQlRXLCBzcGxpdF9hbmRfcmVtb3ZlX2lvdmEoKSBo
-YXMgbm8gaW4tdHJlZSB1c2VycyBhbnltb3JlLCBzbyBJIGNhbiBzZW5kIAphIHBhdGNoIHRvIGRl
-bGV0ZSBpZiBub2JvZHkgZWxzZSB3YW50cyB0by4KCkJUVzIsIHRoZXJlJ3Mgc29tZSBtb3JlIHBh
-dGNoZXMgaW4gbXkgc2VyaWVzIHdoaWNoIGNvdWxkIHVzZSBhIHJldmlldyBpZiAKeW91J3JlIGZl
-ZWxpbmcgdmVyeSBoZWxwZnVsIDopCgpDaGVlcnMsCkpvaG4KX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Jean,
+
+
+On Thu, Nov 12, 2020 at 6:33 PM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> Add support for stall and PRI to the SMMUv3 driver, along with a common
+> I/O Page Fault handler.
+>
+> These patches were last sent as part of v7 of the larger SVA series [1].
+> Main changes since v7:
+> * Dropped CONFIG_IOMMU_PAGE_FAULT, reuse CONFIG_IOMMU_SVA_LIB instead.
+> * Extracted devicetree support into patch 4.
+> * Added patch 5 for ACPI support.
+> * Dropped event queue flush on unbind(). Since device drivers must
+>   complete DMA transactions before calling unbind(), there cannot be any
+>   pending stalled event.
+> * A few small fixes.
+>
+> The series depends on "iommu/sva: Add PASID helpers" [2], since it
+> provides the function to search an mm_struct by PASID.
+>
+> Has anyone been testing the PRI patches on hardware? I still only have a
+> software model to test them, so as much as I'd like to cross this off my
+> list, we could leave out patches 7-9 for now.
+>
+I have been testing this series for sometime now with a RDN1Edge platform model.
+The public model for N1-Edge rd FVP can be found at [A].
+With reference software [B] and your kernel branch with smmute [C], I
+was able to
+test smmute by initiating different DMA transactions. With model logs I was able
+to validate ATS and PRI command flows as well.
+So I am happy to give my tested-by tag.
+
+Tested-by: Vivek Gautam <vivek.gautam@arm.com>
+
+Best regards
+Vivek
+
+[A] https://developer.arm.com/tools-and-software/open-source-software/arm-platforms-software/arm-ecosystem-fvps
+[B] https://git.linaro.org/landing-teams/working/arm/arm-reference-platforms.git/about/docs/rdn1edge/user-guide.rst
+[C] https://jpbrucker.net/git/linux/log/?h=sva/smmute-2020-11-12
+
+> [1] https://lore.kernel.org/linux-iommu/20200519175502.2504091-1-jean-philippe@linaro.org/
+> [2] https://lore.kernel.org/linux-iommu/20201106155048.997886-1-jean-philippe@linaro.org/
+>
+> Jean-Philippe Brucker (9):
+>   iommu: Add a page fault handler
+>   iommu/arm-smmu-v3: Maintain a SID->device structure
+>   dt-bindings: document stall property for IOMMU masters
+>   of/iommu: Support dma-can-stall property
+>   ACPI/IORT: Enable stall support for platform devices
+>   iommu/arm-smmu-v3: Add stall support for platform devices
+>   PCI/ATS: Add PRI stubs
+>   PCI/ATS: Export PRI functions
+>   iommu/arm-smmu-v3: Add support for PRI
+>
+>  drivers/iommu/Makefile                        |   1 +
+>  .../devicetree/bindings/iommu/iommu.txt       |  18 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  69 +-
+>  drivers/iommu/iommu-sva-lib.h                 |  53 ++
+>  include/linux/iommu.h                         |   4 +
+>  include/linux/pci-ats.h                       |   7 +
+>  drivers/acpi/arm64/iort.c                     |   1 +
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  52 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 605 +++++++++++++++---
+>  drivers/iommu/io-pgfault.c                    | 462 +++++++++++++
+>  drivers/iommu/of_iommu.c                      |   5 +-
+>  drivers/pci/ats.c                             |   4 +
+>  12 files changed, 1191 insertions(+), 90 deletions(-)
+>  create mode 100644 drivers/iommu/io-pgfault.c
+>
+> --
+> 2.29.1
+>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
