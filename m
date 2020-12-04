@@ -2,87 +2,102 @@ Return-Path: <SRS0=gcKa=FI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CADC4361A
-	for <iommu@archiver.kernel.org>; Fri,  4 Dec 2020 15:10:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0A9C4361A
+	for <iommu@archiver.kernel.org>; Fri,  4 Dec 2020 18:09:50 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 584E222B3F
-	for <iommu@archiver.kernel.org>; Fri,  4 Dec 2020 15:10:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 584E222B3F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id EA36922C7B
+	for <iommu@archiver.kernel.org>; Fri,  4 Dec 2020 18:09:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA36922C7B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 05BEF8718D;
-	Fri,  4 Dec 2020 15:10:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9251687D70;
+	Fri,  4 Dec 2020 18:09:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A2arlmk2bgqW; Fri,  4 Dec 2020 15:10:29 +0000 (UTC)
+	with ESMTP id szEJE-gKs8UI; Fri,  4 Dec 2020 18:09:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A6A9187144;
-	Fri,  4 Dec 2020 15:10:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E2ADC87D69;
+	Fri,  4 Dec 2020 18:09:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8BC70C0FA8;
-	Fri,  4 Dec 2020 15:10:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42946C013B
- for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 15:10:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B19DAC0FA8;
+	Fri,  4 Dec 2020 18:09:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88CBDC013B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 18:09:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 240CB2E319
- for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 15:10:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 67CE8878DA
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 18:09:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EdwsvGMUBRcm for <iommu@lists.linux-foundation.org>;
- Fri,  4 Dec 2020 15:10:26 +0000 (UTC)
+ with ESMTP id C5EenqPaIOuq for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Dec 2020 18:09:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com
- [209.85.221.178])
- by silver.osuosl.org (Postfix) with ESMTPS id B71EE2E308
- for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 15:10:26 +0000 (UTC)
-Received: by mail-vk1-f178.google.com with SMTP id h133so325652vka.6
- for <iommu@lists.linux-foundation.org>; Fri, 04 Dec 2020 07:10:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
- bh=yr79ws+aRz6CL7NXpRXk5pCdKTWdLSe/OS1y/B0KD0M=;
- b=NvSd3sW9jejAsqzbQ8VNUZXEgnsZkSZ4hHX/4e1e3qzmGEn8EU0c8eYbVQerzT+oqk
- Es2k198+8bDXd0R9Jg1MwM3ATc1xpuj0E7qLRQvVWOZgveVkUHSEYIV9Q6ANd8ycjRIi
- t8P3VSyZGXL4jaZWLALkfEklsGuV5B/gNnZpiADYL+xUk7w4AkQ5cqEkn7Wz1i6+VZMA
- 0Czx04Zpwb56q3wQq93mLth3GacZRK7JNOKWwK5zA1gIIoXYUPN74/U3XtMvRRde9XS/
- NTRxfRrI3GJTQJ1Mz+S/37AfxDeN0Uoa981r1YKPZXmGKofQ/SLtlrv9joThmeCjgrU7
- myWQ==
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com
+ [209.85.218.48])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 05A60834BE
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Dec 2020 18:09:46 +0000 (UTC)
+Received: by mail-ej1-f48.google.com with SMTP id x16so9974006ejj.7
+ for <iommu@lists.linux-foundation.org>; Fri, 04 Dec 2020 10:09:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=WGJjavSrPVqb+TK1+7wxOVM38Oyh3+YMEGZxF1BbFxY=;
+ b=OR9T9EvlAy/dd04tieJ4P4P7sxrRaGs5vyqVAop2GSalR+eMijdf4g5uH7NI+T/EYx
+ IN7yoR5i61tyFpqb1grxBk30bJCixxluGHbaXLMA+RibdGWv8nmamTaEbVD7Vgkt0lRS
+ 0OFeQbu9Zc8wVEzLEwMVPMDEXBYdTM+OfNmrr1l4aWPC6JBhVwhtIjLFsY2KYIYuOJQE
+ dKD0QUJa4EqkyBRx4QNmG5/Yz/RpTn0hL+4Eq6th7oXoJsKvqBv+d8ix4rhJvFhVfzw5
+ hHhzSEe4lcFltTZ0iG7Zv7RiPKyNZ7iuk4zEr99vdNEg9OgumIMIQUWuoRFOEN0eh2TQ
+ ITpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to;
- bh=yr79ws+aRz6CL7NXpRXk5pCdKTWdLSe/OS1y/B0KD0M=;
- b=h7DdaJidrgpczMEbfrRY4/SL/QzGM8nxdN1SUBwc8iPPAQ4/BUm4yg/2u32NcalBtM
- MEgt773a1kPl5CBiaoMVJ69Njo9uCMbV55gq8VEcZAoOWwFjekAwS+08AuvpmcLLhdn/
- lv9wd4joaz7WpqHPq5GgwnkLlAmhmWNZgMlKrZjVZjk8aKpNE+AdDCybfTP0s/toEIUR
- aomSFtHVYmmqdfrYhnJJf34DWvsjxKImET06Husd2IrZ9qfe8OiwCOt28r6EcDw75BHH
- qtetZTYxCyj9mRVw+XXIZ0LA6zchrB/EFUpK6SNojAMXAgCX7LPzXpQqxNo4Hb8LdF7P
- T6Zg==
-X-Gm-Message-State: AOAM533zC8E1j4FVpV2bf+zZQNIyNnDEUIEOosHrjEBcp3H2tpABIXms
- vBvhJ1+C9NbemRdqdqmJlIKhnv+syp3g3MYivygGmC/Uo/Fkgw==
-X-Google-Smtp-Source: ABdhPJyNjjH/OXdabOq/MGbooJy0zHuZOwfxqCxBO8Ho5gK+foLJqVIE5j1G/wmTwRpORPVa8Y7DBHM1A3J2YB57EqE=
-X-Received: by 2002:a1f:b40c:: with SMTP id d12mr3950280vkf.17.1607094625258; 
- Fri, 04 Dec 2020 07:10:25 -0800 (PST)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=WGJjavSrPVqb+TK1+7wxOVM38Oyh3+YMEGZxF1BbFxY=;
+ b=UKmJxUWHoNgd08v8bdoRK3sttszxecBKebTVNTbenIpW3/VAfQwkJW9eu78/0LYJIY
+ Er8P5qJCrzxCJgLUXcfCRBx1x/nfYEWFgpgzTE2Lfk8YwsNKqiiW4Vu4Q3/d0cr+u+ZS
+ t9miR9FCFBo9F1xCRDkUhsNZ3oGt1LUB0gLI6Kpmav+66FQhfNS+l0EKjFVQ8492l6EN
+ xdKgKx3pnLprUMTitmYJJSZ9+yqhKlXWyKi5rdwsL9BYSQrfMcDroUXvoGUvdIBIFeb/
+ CjViaXPpR2EGWCSp20wFtGJrHr3QLHkgIlGyDL6T3Zd2oAT3W3gK46OvlT1e2kkvrloq
+ C6uQ==
+X-Gm-Message-State: AOAM531G1UJJvaEieShZF4R0ABUCIJPpsYO6yu3iORuVKfrqEnSr3q3f
+ /lwhBYm17SEmVCO0y7YAFU1yYA==
+X-Google-Smtp-Source: ABdhPJzp+L/vpZbifDWJ9cIQRJaEl9MBlfuAuYBV+m+sCBd1z2CQwzBQVOhVqoOHo6Yj9Nyf1+ACoQ==
+X-Received: by 2002:a17:906:60d2:: with SMTP id
+ f18mr8007391ejk.528.1607105384457; 
+ Fri, 04 Dec 2020 10:09:44 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id v8sm3802640edt.3.2020.12.04.10.09.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 04 Dec 2020 10:09:43 -0800 (PST)
+Date: Fri, 4 Dec 2020 19:09:24 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Al Stone <ahs3@redhat.com>
+Subject: Re: [EXTERNAL] Re: Question regarding VIOT proposal
+Message-ID: <20201204180924.GA1922896@myrica>
+References: <MW2PR2101MB1130313B4AE39B7EAC09349B80EE0@MW2PR2101MB1130.namprd21.prod.outlook.com>
+ <20201105134503.GA950007@myrica>
+ <MW2PR2101MB113096E822AD835F658808B480EE0@MW2PR2101MB1130.namprd21.prod.outlook.com>
+ <20201106135745.GB974750@myrica>
+ <MW2PR2101MB11301F2185D1C9016310728E80F21@MW2PR2101MB1130.namprd21.prod.outlook.com>
+ <20201203230127.GD4343@redhat.com>
 MIME-Version: 1.0
-References: <CAH6h+heGo0bV20LRV5dP2VvH1j-kD_DMSK=aHr4ZpbBuuHT1DA@mail.gmail.com>
-In-Reply-To: <CAH6h+heGo0bV20LRV5dP2VvH1j-kD_DMSK=aHr4ZpbBuuHT1DA@mail.gmail.com>
-From: Marc Smith <msmith626@gmail.com>
-Date: Fri, 4 Dec 2020 10:10:14 -0500
-Message-ID: <CAH6h+hecOE_RYKYcZW7=2fNKT+=ebBHa-10u=1vW5+AKr_gSzg@mail.gmail.com>
-Subject: Re: AMD-Vi: Event logged [IO_PAGE_FAULT device=42:00.0 domain=0x005e
- address=0xfffffffdf8030000 flags=0x0008]
-To: iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20201203230127.GD4343@redhat.com>
+Cc: "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "mst@redhat.com" <mst@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Boeuf,
+ Sebastien" <sebastien.boeuf@intel.com>,
+ Alexander Grest <Alexander.Grest@microsoft.com>,
+ Yinghan Yang <Yinghan.Yang@microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,167 +115,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 3, 2020 at 1:18 AM Marc Smith <msmith626@gmail.com> wrote:
->
-> Hi,
->
-> First, I must preface this email by apologizing in advance for asking
-> about a distro kernel (RHEL in this case); so not truly reporting this
-> problem and requesting a fix here (I know this should be taken up with
-> the vendor), rather hoping someone can give me a few hints/pointers on
-> where to look next for debugging this issue.
->
-> I'm using RHEL 7.8.2003 (CentOS) with a 3.10.0-1127.18.2.el7 kernel.
-> The systems use a Supermicro H12SSW-NT board (AMD), and we have the
-> IOMMU enabled along with SR-IOV. I have several virtual machines (QEMU
-> KVM) that run on these servers, and I'm passing PCIe end-points into
-> the VMs (in some cases the whole PCIe EP itself, and for some devices
-> I use SR-IOV and pass in the VFs to the VMs). The VM's run Linux as
-> their guest OS (a couple different distros).
->
-> While the servers (VMs) are idle, I don't experience any problems. But
-> when I start doing a lot of I/O in the virtual machines (iSCSI across
-> Ethernet interfaces, disk I/O via SAS HBAs that are passed into the
-> VM, etc.) I notice the following after some time at the host layer
-> ("hypervisor"):
-> Nov 29 10:50:00 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=42:00.0 domain=0x005e address=0xfffffffdf8030000 flags=0x0008]
-> Nov 29 22:02:03 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=c8:02.1 domain=0x005f address=0xfffffffdf8060000 flags=0x0008]
-> Nov 30 02:13:54 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=42:00.0 domain=0x005e address=0xfffffffdf8020000 flags=0x0008]
-> Nov 30 02:28:44 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=c8:02.0 domain=0x005e address=0xfffffffdf8020000 flags=0x0008]
-> Nov 30 10:48:53 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=01:00.0 domain=0x005e address=0xfffffffdf8040000 flags=0x0008]
-> Dec  2 07:05:22 node1 kernel: AMD-Vi: Event logged [IO_PAGE_FAULT
-> device=c8:03.0 domain=0x005e address=0xfffffffdf8010000 flags=0x0008]
->
-> These events happen to all PCIe devices that are passed into the VMs,
-> although not all at once... as you can see on the timestamps above,
-> they are not very frequent when under heavy load (in the log snippet
-> above, the system was doing a big workload over several days). For the
-> Ethernet devices that are passed into the VMs, I noticed that they
-> experience transmit hangs / resets in the virtual machines, and when
-> these occur, they correspond to a matching IO_PAGE_FAULT that belongs
-> to that PCI device.
->
-> FWIW, those NIC hangs look like this (visible in the VM guest OS):
-> [17879.279091] NETDEV WATCHDOG: s1p1 (bnxt_en): transmit queue 2 timed out
-> [17879.279111] WARNING: CPU: 5 PID: 0 at net/sched/sch_generic.c:447
-> dev_watchdog+0x121/0x17e
-> ...
-> [17879.279213] bnxt_en 0000:01:09.0 s1p1: TX timeout detected,
-> starting reset task!
-> [17883.075299] bnxt_en 0000:01:09.0 s1p1: Resp cmpl intr err msg: 0x51
-> [17883.075302] bnxt_en 0000:01:09.0 s1p1: hwrm_ring_free type 1
-> failed. rc:fffffff0 err:0
-> [17886.957100] bnxt_en 0000:01:09.0 s1p1: Resp cmpl intr err msg: 0x51
-> [17886.957103] bnxt_en 0000:01:09.0 s1p1: hwrm_ring_free type 2
-> failed. rc:fffffff0 err:0
-> [17890.843023] bnxt_en 0000:01:09.0 s1p1: Resp cmpl intr err msg: 0x51
-> [17890.843025] bnxt_en 0000:01:09.0 s1p1: hwrm_ring_free type 2
-> failed. rc:fffffff0 err:0
->
-> We see these NIC hangs in the VMs occur with both Broadcom and
-> Mellanox Ethernet adapters that are passed into the VMs, so I don't
-> think it's the NICs causing the IO_PAGE_FAULT events observed in the
-> hypervisor. Plus we see IO_PAGE_FAULT's for devices other than
-> Ethernet adapters.
->
->
-> I have several of these same servers (all using the same motherboard,
-> processor, memory, BIOS, etc.) and they all experience this behavior
-> with the IO_PAGE_FAULT events, so I don't believe it to be any one
-> faulty server / component. I guess my question is I'm not sure where
-> to dig/push next. Is this perhaps an issue with the BIOS/firmware on
-> these motherboards? Something with the chipset (AMD IOMMU)? A
-> colleague has suggested that even the AGESA may be related. Or should
-> I be focusing on the Linux kernel, the AMD IOMMU driver (software)?
->
-> I've been poking around other similar bug reports, and I see the
-> IO_PAGE_FAULT and NIC reset / transmit hang seem to be related in
-> other posts. This commit looked promising:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e50ce03976fbc8ae995a000c4b10c737467beaa
->
-> But I see RH has already back-ported it into their
-> 3.10.0-1127.18.2.el7 kernel source. I'm open to trying a newer Linux
-> vanilla kernel (eg, 5.4.x) but would prefer to resolve this in the
-> RHEL kernel I'm using now. I'll take a look at this next, although due
-> to the complex nature of this hypervisor/VM setup, it's a bit tedious
-> to test.
->
->
-> Kernel messages from boot (using the amd_iommu_dump=1 parameter):
-> ...
-> [    0.214395] AMD-Vi: Using IVHD type 0x11
-> [    0.214627] AMD-Vi: device: c0:00.2 cap: 0040 seg: 0 flags: b0 info 0000
-> [    0.214628] AMD-Vi:        mmio-addr: 00000000f3700000
-> [    0.214634] AMD-Vi:   DEV_SELECT_RANGE_START  devid: c0:01.0 flags: 00
-> [    0.214635] AMD-Vi:   DEV_RANGE_END           devid: ff:1f.6
-> [    0.214763] AMD-Vi:   DEV_SPECIAL(IOAPIC[241])               devid: c0:00.1
-> [    0.214765] AMD-Vi: device: 80:00.2 cap: 0040 seg: 0 flags: b0 info 0000
-> [    0.214766] AMD-Vi:        mmio-addr: 00000000f2600000
-> [    0.214771] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 80:01.0 flags: 00
-> [    0.214772] AMD-Vi:   DEV_RANGE_END           devid: bf:1f.6
-> [    0.214900] AMD-Vi:   DEV_SPECIAL(IOAPIC[242])               devid: 80:00.1
-> [    0.214901] AMD-Vi: device: 40:00.2 cap: 0040 seg: 0 flags: b0 info 0000
-> [    0.214902] AMD-Vi:        mmio-addr: 00000000b4800000
-> [    0.214906] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 40:01.0 flags: 00
-> [    0.214907] AMD-Vi:   DEV_RANGE_END           devid: 7f:1f.6
-> [    0.215036] AMD-Vi:   DEV_SPECIAL(IOAPIC[243])               devid: 40:00.1
-> [    0.215037] AMD-Vi: device: 00:00.2 cap: 0040 seg: 0 flags: b0 info 0000
-> [    0.215038] AMD-Vi:        mmio-addr: 00000000fc800000
-> [    0.215044] AMD-Vi:   DEV_SELECT_RANGE_START  devid: 00:01.0 flags: 00
-> [    0.215045] AMD-Vi:   DEV_RANGE_END           devid: 3f:1f.6
-> [    0.215173] AMD-Vi:   DEV_ALIAS_RANGE                 devid:
-> ff:00.0 flags: 00 devid_to: 00:14.4
-> [    0.215174] AMD-Vi:   DEV_RANGE_END           devid: ff:1f.7
-> [    0.215179] AMD-Vi:   DEV_SPECIAL(HPET[0])           devid: 00:14.0
-> [    0.215180] AMD-Vi:   DEV_SPECIAL(IOAPIC[240])               devid: 00:14.0
-> [    0.215181] AMD-Vi:   DEV_SPECIAL(IOAPIC[244])               devid: 00:00.1
-> ...
-> [    4.345723] AMD-Vi: Found IOMMU at 0000:c0:00.2 cap 0x40
-> [    4.345724] AMD-Vi: Extended features (0x58f77ef22294ade):
-> [    4.345724]  PPR X2APIC NX GT IA GA PC GA_vAPIC
-> [    4.345728] AMD-Vi: Found IOMMU at 0000:80:00.2 cap 0x40
-> [    4.345729] AMD-Vi: Extended features (0x58f77ef22294ade):
-> [    4.345729]  PPR X2APIC NX GT IA GA PC GA_vAPIC
-> [    4.345731] AMD-Vi: Found IOMMU at 0000:40:00.2 cap 0x40
-> [    4.345732] AMD-Vi: Extended features (0x58f77ef22294ade):
-> [    4.345733]  PPR X2APIC NX GT IA GA PC GA_vAPIC
-> [    4.345735] AMD-Vi: Found IOMMU at 0000:00:00.2 cap 0x40
-> [    4.345735] AMD-Vi: Extended features (0x58f77ef22294ade):
-> [    4.345736]  PPR X2APIC NX GT IA GA PC GA_vAPIC
-> [    4.345737] AMD-Vi: Interrupt remapping enabled
-> [    4.345738] AMD-Vi: virtual APIC enabled
-> [    4.345739] AMD-Vi: X2APIC enabled
-> [    4.345805] pci 0000:c0:00.2: irq 26 for MSI/MSI-X
-> [    4.345947] pci 0000:80:00.2: irq 27 for MSI/MSI-X
-> [    4.346073] pci 0000:40:00.2: irq 28 for MSI/MSI-X
-> [    4.346208] pci 0000:00:00.2: irq 29 for MSI/MSI-X
-> [    4.346305] AMD-Vi: IO/TLB flush on unmap enabled
-> ...
->
-> I have also tried using 'amd_iommu=fullflush' (as denoted in the
-> kernel message above) on a hunch after reviewing other user's posts
-> with similar IO_PAGE_FAULT events, but this doesn't seem to change
-> anything -- the events still occur with or without this kernel
-> parameter.
->
-> So, any guidance/tips/advice on how to tackle this would be greatly
-> appreciated. Thank you for your consideration and time!
+Hi,
 
-I booted the systems with "amd_iommu_intr=legacy" and the problem went
-away! No more IO_PAGE_FAULT's in the hypervisor, and no NIC
-hangs/resets in the virtual machines! No noticeable degradation of I/O
-performance either. Confirmed on two systems.
+On Thu, Dec 03, 2020 at 04:01:27PM -0700, Al Stone wrote:
+> On 03 Dec 2020 22:21, Yinghan Yang wrote:
+> > Hi Jean,
+> > 
+> > I'm sorry for the delayed response. I think the new "PCI range node" description makes sense. Could you please make this change in the proposal?
+> > 
+> > Other than that, the proposal looks good to go.
 
---Marc
+Thanks for the feedback, I made the change
 
->
->
-> --Marc
+> > 
+> > Thanks,
+> > Yinghan
+> 
+> Jean, were you going to update your existing doc first?  If you
+> do that, then I can cut and paste the changes into the existing
+> ASWG proposal.  Or do you need to send out an RFC to the mailing
+> list first and finalize it there?
+
+I updated the doc: https://jpbrucker.net/virtio-iommu/viot/viot-v9.pdf
+You can incorporate it into the ASWG proposal.
+Changes since v8:
+* One typo (s/programing/programming/)
+* Modified the PCI Range node to include a segment range.
+
+I also updated the Linux and QEMU implementations on branch
+virtio-iommu/devel in https://jpbrucker.net/git/linux/ and
+https://jpbrucker.net/git/qemu/
+
+Thanks again for helping with this
+
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
