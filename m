@@ -1,76 +1,86 @@
-Return-Path: <SRS0=T4ib=FJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=W7UB=FK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F19C433FE
-	for <iommu@archiver.kernel.org>; Sat,  5 Dec 2020 22:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D89EC433FE
+	for <iommu@archiver.kernel.org>; Sun,  6 Dec 2020 14:58:56 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 79B6223101
-	for <iommu@archiver.kernel.org>; Sat,  5 Dec 2020 22:18:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79B6223101
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id D4C7B22D08
+	for <iommu@archiver.kernel.org>; Sun,  6 Dec 2020 14:58:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D4C7B22D08
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mails.tsinghua.edu.cn
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8C14B868D6;
-	Sat,  5 Dec 2020 22:18:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7C95686D06;
+	Sun,  6 Dec 2020 14:58:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IppOz5qQrW2x; Sat,  5 Dec 2020 22:18:35 +0000 (UTC)
+	with ESMTP id zHGhWsCf7D5c; Sun,  6 Dec 2020 14:58:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B5FF087405;
-	Sat,  5 Dec 2020 22:18:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CC2FD86CEF;
+	Sun,  6 Dec 2020 14:58:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9E5EC1D9F;
-	Sat,  5 Dec 2020 22:18:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8D870C0FA7
- for <iommu@lists.linux-foundation.org>; Sat,  5 Dec 2020 22:18:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD875C0893;
+	Sun,  6 Dec 2020 14:58:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 317F5C013B
+ for <iommu@lists.linux-foundation.org>; Sun,  6 Dec 2020 09:50:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8A66B86FA2
- for <iommu@lists.linux-foundation.org>; Sat,  5 Dec 2020 22:18:33 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1C24A86A5D
+ for <iommu@lists.linux-foundation.org>; Sun,  6 Dec 2020 09:50:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ckXK4htCZajL for <iommu@lists.linux-foundation.org>;
- Sat,  5 Dec 2020 22:18:31 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 172FF870A9
- for <iommu@lists.linux-foundation.org>; Sat,  5 Dec 2020 22:18:31 +0000 (UTC)
-IronPort-SDR: 8jFcjwEtL/f1nTyZP1AgopQ5D8MIItF+VoJL6YZkDZPml6Ekx7RcVHIpw3FBoPxE9XvhVznBvC
- VDVCOn1Fs04w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9826"; a="173691332"
-X-IronPort-AV: E=Sophos;i="5.78,395,1599548400"; d="scan'208";a="173691332"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 Dec 2020 14:18:30 -0800
-IronPort-SDR: CxiXNuLPII+ptf5BoWsN+xFFOkTs5NwYTNel7ZUTvVoRyk/uhywJiMebICO5qIPXdk5BjeZwWm
- Rr+iuUX3Yueg==
-X-IronPort-AV: E=Sophos;i="5.78,395,1599548400"; d="scan'208";a="362584200"
-Received: from km-skylake-client-platform.sc.intel.com ([10.3.52.146])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 Dec 2020 14:18:30 -0800
-From: Kyung Min Park <kyung.min.park@intel.com>
-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH v2 3/3] iommu/vt-d: Disable SVM in the platform when IOMMUs
- have inconsistencies
-Date: Sat,  5 Dec 2020 13:57:43 -0800
-Message-Id: <20201205215743.27803-4-kyung.min.park@intel.com>
+ with ESMTP id bo_cQzdSRmoW for <iommu@lists.linux-foundation.org>;
+ Sun,  6 Dec 2020 09:50:21 +0000 (UTC)
+X-Greylist: delayed 00:06:22 by SQLgrey-1.7.6
+Received: from zg8tmtm5lju5ljm3lje2naaa.icoremail.net
+ (zg8tmtm5lju5ljm3lje2naaa.icoremail.net [139.59.37.164])
+ by fraxinus.osuosl.org (Postfix) with SMTP id B6B6986A5C
+ for <iommu@lists.linux-foundation.org>; Sun,  6 Dec 2020 09:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mails.tsinghua.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:
+ Date:Message-Id; bh=Rn+s176T+b0b7abg9LOATZ7bU+jEonK9aGIm4/7ezkM=;
+ b=b1VT2DEKouHoJ6Fx8Obex1aWG1jSzBmZr2z/Rr8TS+zXvLb4Y9SUTyjYaQR3lb
+ y5CN7UJiJ83phxJKGWOUMZ5rLeuKQ1JZ1q4SBv/Z9C0/1KqKBtl/xeYKRjAwYsjo
+ GO2CWsP4yMo6yicBC0ZT9M3uzkmLdI/0tjdXkkNPKedcA=
+Received: from ubuntu.localdomain (unknown [166.111.83.82])
+ by web3 (Coremail) with SMTP id ygQGZQBXPgrYp8xf5chCAA--.59458S4;
+ Sun, 06 Dec 2020 17:43:52 +0800 (CST)
+From: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] drivers/iommu: fix a null-ptr-deref bug in msm_iommu.c
+Date: Sun,  6 Dec 2020 01:43:51 -0800
+Message-Id: <20201206094351.47860-1-tzh18@mails.tsinghua.edu.cn>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201205215743.27803-1-kyung.min.park@intel.com>
-References: <20201205215743.27803-1-kyung.min.park@intel.com>
-Cc: ravi.v.shankar@intel.com, kevin.tian@intel.com, ashok.raj@intel.com,
- dwmw2@infradead.org, ricardo.neri@intel.com,
- Kyung Min Park <kyung.min.park@intel.com>, will@kernel.org
+X-CM-TRANSID: ygQGZQBXPgrYp8xf5chCAA--.59458S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrZw1xZrW5tFWUtF4ruF1kuFg_yoWfJwb_CF
+ yrZr97Jr17JFsrCF12vr1fur90kw1vvrn3GFWvg3Z3WryUWr17J3yjvrWUGay7urW7XFyj
+ vr9rCF1fArW7KjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+ 9fnUUIcSsGvfJTRUUUbs8FF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+ 6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+ A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+ Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+ 1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+ w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMc
+ vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v
+ 4I1lc2xSY4AK67AK6r4fMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI
+ 8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AK
+ xVWUXVWUAwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
+ 8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2
+ jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43
+ ZEXa7VUjCD73UUUUU==
+X-CM-SenderInfo: pw2kimo6pdxz3vow2x5qjk3toohg3hdfq/1tbiAgICEV7nE6Rz3QABsy
+X-Mailman-Approved-At: Sun, 06 Dec 2020 14:58:51 +0000
+Cc: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,98 +99,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some IOMMU Capabilities must be consistent for Shared Virtual Memory (SVM).
-Audit IOMMU Capability/Extended Capabilities and check if IOMMUs have
-the consistent value for features as below. When the features are not
-matched among IOMMUs, disable SVMs in the platform during DMAR
-initialization. Audit IOMMUs again when a device is hot plugged.
+At line 600 in drivers/iommu/msm_iommu.c, the ret-val of kzalloc should be checked to avoid null-ptr-deref bug.
 
-Disable Shared Virtual Memory when below features are mistmatched:
-  - First Level Translation Support (FLTS)
-  - Process Address Space ID Support (PASID)
-  - Extended Accessed Flag Support (EAFS)
-  - Supervisor Support (SRS)
-  - Execute Request Support (ERS)
-  - Page Request Support (PRS)
-
-Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
+Signed-off-by: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
 ---
- drivers/iommu/intel/cap_audit.c | 11 +++++++++++
- drivers/iommu/intel/cap_audit.h |  6 ++++++
- drivers/iommu/intel/svm.c       |  3 ++-
- 3 files changed, 19 insertions(+), 1 deletion(-)
+ drivers/iommu/msm_iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/intel/cap_audit.c b/drivers/iommu/intel/cap_audit.c
-index 0bc77a9bdeed..3bbeb4634bc6 100644
---- a/drivers/iommu/intel/cap_audit.c
-+++ b/drivers/iommu/intel/cap_audit.c
-@@ -130,6 +130,12 @@ static int cap_audit_hotplug(struct intel_iommu *iommu, enum cap_audit_type type
- 	MINIMAL_FEATURE_HOTPLUG(iommu, ecap, mhmv, ECAP_MHMV_MASK, mismatch);
- 	MINIMAL_FEATURE_HOTPLUG(iommu, ecap, iro, ECAP_IRO_MASK, mismatch);
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3615cd6241c4..e3c576e5babb 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -598,6 +598,10 @@ static void insert_iommu_master(struct device *dev,
  
-+	if (IS_ENABLED(CONFIG_INTEL_IOMMU_SVM) &&
-+	    intel_cap_svm_santiy() && !ecap_svm_sanity(iommu->ecap)) {
-+		pr_warn("Abort Hot Plug IOMMU: SVM inconsistent\n");
-+		mismatch = true;
-+	}
-+
- out:
- 	if (mismatch) {
- 		intel_iommu_cap_sanity = old_cap;
-@@ -206,3 +212,8 @@ bool intel_cap_flts_sanity(void)
- {
- 	return ecap_flts(intel_iommu_ecap_sanity);
- }
-+
-+bool intel_cap_svm_santiy(void)
-+{
-+	return ecap_svm_sanity(intel_iommu_ecap_sanity);
-+}
-diff --git a/drivers/iommu/intel/cap_audit.h b/drivers/iommu/intel/cap_audit.h
-index 1ce1dc314950..beb2589e97e0 100644
---- a/drivers/iommu/intel/cap_audit.h
-+++ b/drivers/iommu/intel/cap_audit.h
-@@ -60,6 +60,11 @@
- #define ECAP_QI_MASK		BIT_ULL(1)
- #define ECAP_C_MASK		BIT_ULL(0)
- 
-+#define MINIMAL_SVM_ECAP (ECAP_FLTS_MASK | ECAP_PASID_MASK | ECAP_EAFS_MASK | \
-+			  ECAP_SRS_MASK | ECAP_ERS_MASK | ECAP_PRS_MASK)
-+
-+#define ecap_svm_sanity(e)	(!(((e) & MINIMAL_SVM_ECAP) ^ MINIMAL_SVM_ECAP))
-+
- #define DO_CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
- do { \
- 	if (cap##_##feature(a) != cap##_##feature(b)) { \
-@@ -107,6 +112,7 @@ bool intel_cap_smts_sanity(void);
- bool intel_cap_pasid_sanity(void);
- bool intel_cap_nest_sanity(void);
- bool intel_cap_flts_sanity(void);
-+bool intel_cap_svm_santiy(void);
- 
- static inline bool scalable_mode_support(void)
- {
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 3242ebd0bca3..7761e40a2d5a 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -22,6 +22,7 @@
- #include <asm/fpu/api.h>
- 
- #include "pasid.h"
-+#include "cap_audit.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-@@ -98,7 +99,7 @@ static inline bool intel_svm_capable(struct intel_iommu *iommu)
- 
- void intel_svm_check(struct intel_iommu *iommu)
- {
--	if (!pasid_supported(iommu))
-+	if (!intel_cap_svm_santiy())
- 		return;
- 
- 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
+ 	if (list_empty(&(*iommu)->ctx_list)) {
+ 		master = kzalloc(sizeof(*master), GFP_ATOMIC);
++		if (!master) {
++			dev_err(dev, "Failed to allocate IOMMU context bank instance\n");
++			return;
++		}
+ 		master->of_node = dev->of_node;
+ 		list_add(&master->list, &(*iommu)->ctx_list);
+ 		dev_iommu_priv_set(dev, master);
 -- 
 2.17.1
 
