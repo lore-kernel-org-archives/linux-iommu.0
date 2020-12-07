@@ -2,153 +2,144 @@ Return-Path: <SRS0=GTcZ=FL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18104C4361B
-	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 22:20:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31295C433FE
+	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 22:21:52 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9946B23976
-	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 22:20:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9946B23976
+	by mail.kernel.org (Postfix) with ESMTPS id CDC392396F
+	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 22:21:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CDC392396F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 496388721E;
-	Mon,  7 Dec 2020 22:20:26 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 962BF2E267;
+	Mon,  7 Dec 2020 22:21:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MgmbubPiSDGk; Mon,  7 Dec 2020 22:21:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id DF8B52E224;
+	Mon,  7 Dec 2020 22:21:49 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3808C0FA7;
+	Mon,  7 Dec 2020 22:21:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B94B6C013B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:21:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A7515872E2
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:21:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Blr6I-8OnSL7; Mon,  7 Dec 2020 22:20:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9F72B870FB;
-	Mon,  7 Dec 2020 22:20:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 84F59C0FA7;
-	Mon,  7 Dec 2020 22:20:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 664CBC013B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:20:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 60E3587987
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:20:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9z+YkF6Rx9VW for <iommu@lists.linux-foundation.org>;
- Mon,  7 Dec 2020 22:20:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2073.outbound.protection.outlook.com [40.107.223.73])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 40CA387983
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:20:23 +0000 (UTC)
+ with ESMTP id XATB5sO-cNmA for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Dec 2020 22:21:46 +0000 (UTC)
+X-Greylist: delayed 00:15:15 by SQLgrey-1.7.6
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com
+ (mail-eopbgr750054.outbound.protection.outlook.com [40.107.75.54])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 80CD28721E
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 22:21:46 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SitXOdDDoDC4dYMZp98DLVgfB+WHl0X1IM8FUe9FP2V9jkKyGxN/DjMJAcryJNmzu2xH+g/Ru4fYz2RXBSX6eLS9CiTs5+XrFx9r1jw7X5ETo0FDIqrexybeaaLpZm9CDR4tTdnoG2riXNUX5IjC0E1BLKQ0cxpkQVKLLFilDL8yxSaTXJhGej8uVK5hmgD8JwokG1aDGz46VQvnZOcKP1CnnmjeO6Pu5Ao0NqOyvQcDWuJHQZlbzPy88zJNa4aibmhIXsfBSZ2PV0jvrcK6YPftd7OhK/p0c75iY6Q9U1jinYBEIk79au9qBOk6DXgtkwbTtqddHVb+P3TuPUUrgg==
+ b=iY26EszfvwNvqM6iYG4SVZ4SZPRV7w32Sj23gNYFha5Ws0q6P2AL8rZXMB/MDVVx4mn0Z7u9UzKcIIa+xYrgTHXP4vEbROxacTPIcCU5gpFHHBe9sdgPVX6uvPImjo1iTmCTxOzPAfGeb6fftJ/LHfThcXv26B13sOoClykBFwK2w4z1tMmish4Z9XqE4oR71RfXCX7sB4SAsnBEG/g57dVa4XlcyWatLoQBXiL/jwwPBQQrACMh7QWAg7EAbeNfbrNd8BgxELuqFksvWU7GQGGkbBsFRhkXuTNS7hQ2ybMavZLMv863qHEEzo0W1rugfhd+v21jYPDPc4PXybsZXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K03og3SnhegWj4PSPPPz5JDEG9HLiTivWCPKuqp3jS8=;
- b=Z0U9TKO3Y+G+UvJ0mZYyrY0rLIl1kW06gx/6RbeG9oAJAEQ+Z/xNfDYJhpDI3rk+cj9TmlLXL0g+ZHQu237k/235IqRiFttzuzrmPgg4DOezplorNOCG5NHtrSi6d5k1486IguDIYxgLOkTK7dUgDO4SdcS0CGQAaSUHeSZjbG9gsNdhVk9mEJ6tg1qHxaFB6vJfW33uP3x+yH5YvnI0jBqp2esqf2m01j/DX/uQJfvlDHNUCIXVgThn+7SdPZrPGnF8dg7B5G5CG5cuQq3U/yp5T5mT6d7NXIWYMap8LtRCruf2V+HGNlq4DFR//9XbMd7rTzBbxe4qa9xg1hG2HQ==
+ bh=VvPfYH99InzV9MvhdLTus7a7tBKF88V3igWEiRPnxo4=;
+ b=dqxd9GsuDuYPFPKMrpxwMSYlTHl2WqI4lLR/kqb0f/D2dlBrCRyHXRWEY76SSp+2gtPpzIbMST0zHMjY+x11/h5NBD5dCHOXLD/OQ8DTMJSAAD12JnTWPcFJ98Q7VibuIT8Hl1cNgSW6FZpilg4zSRVm+5xXbbrLHV17YFwHZKYUAnm8alGM3ecJBxnXlCUDtZZKhRiebfyTuvf1azzBfi/LRrYTg1TQkZuZJRz5mmY+chvM3pYfeuTCFadEM7uiuoGacwSxTY9OPy9tr7rjXU6ojVCDbfzP+KoJwgcAmirDyYzv6XiDJx6Xq4iD7mZNOZPQ8pWSmTnUcx62ZkxesQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K03og3SnhegWj4PSPPPz5JDEG9HLiTivWCPKuqp3jS8=;
- b=fvmQFv86n1HKsk+QUdv/uhHPpCPCDrmtHimuCmUyTNSaHDC4pUzm/rYjqIrOek3fpSXYebMg8KdFTUVdbF50CfdPK/wgyZFhxx54NKfsVE0FlZFsaowq+pb5NWbSCp7+lJH8wrfCOS/Duga41rluHQYmj9LgJG+p5pTsx9OY6K4=
+ bh=VvPfYH99InzV9MvhdLTus7a7tBKF88V3igWEiRPnxo4=;
+ b=F9INFXcBSTqQuiGpewUcc2A7sePsO2O932OodM4HTwQZkgxiUkMgflKh5j+sSjw9JuIKbFuZFzjwwDkA1dcQ1lvtkdu4AqOmLl6v/pFtvJ8j9sKNz5pqqTnsfJyc+xBX3XJJOdsiPji7ZUcbhmCJCi85eTZ1ROfV/JhoNntZEN4=
+Authentication-Results: alien8.de; dkim=none (message not signed)
+ header.d=none;alien8.de; dmarc=none action=none header.from=amd.com;
 Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
- by SA0PR12MB4384.namprd12.prod.outlook.com (2603:10b6:806:9f::22)
+ by SN1PR12MB2512.namprd12.prod.outlook.com (2603:10b6:802:31::14)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Mon, 7 Dec
- 2020 22:20:21 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Mon, 7 Dec
+ 2020 22:06:27 +0000
 Received: from SN6PR12MB2767.namprd12.prod.outlook.com
  ([fe80::d8f2:fde4:5e1d:afec]) by SN6PR12MB2767.namprd12.prod.outlook.com
  ([fe80::d8f2:fde4:5e1d:afec%3]) with mapi id 15.20.3632.021; Mon, 7 Dec 2020
- 22:20:21 +0000
-From: "Kalra, Ashish" <Ashish.Kalra@amd.com>
+ 22:06:26 +0000
+Date: Mon, 7 Dec 2020 22:06:24 +0000
+From: Ashish Kalra <ashish.kalra@amd.com>
 To: Borislav Petkov <bp@alien8.de>
 Subject: Re: [PATCH v7] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
  guests.
-Thread-Topic: [PATCH v7] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
- guests.
-Thread-Index: AQHWySQLBB68k2x6+UCJ0Df9iPf5sanrkYWAgACmmgCAAAJHgIAAAZ75
-Date: Mon, 7 Dec 2020 22:20:20 +0000
-Message-ID: <60FF61F4-9A7D-4467-A148-2956903C74AA@amd.com>
+Message-ID: <20201207220624.GB6855@ashkalra_ubuntu_server>
 References: <20201203032559.3388-1-Ashish.Kalra@amd.com>
  <20201207121007.GD20489@zn.tnic>
- <20201207220624.GB6855@ashkalra_ubuntu_server>,
- <20201207221433.GI20489@zn.tnic>
-In-Reply-To: <20201207221433.GI20489@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: oracle.com; dkim=none (message not signed)
- header.d=none;oracle.com; dmarc=none action=none header.from=amd.com;
-x-originating-ip: [136.49.12.8]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 855eebd5-b12c-4021-cadf-08d89afe4904
-x-ms-traffictypediagnostic: SA0PR12MB4384:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SA0PR12MB4384CAB5E4F07BD8DE47F3318ECE0@SA0PR12MB4384.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hoqjZua6jk3FksFKlbZNH3whBoqFW1ZmvyS/qkTBgdIXGH1qtozzBZTKqRtHVO9qxLrc5MvdsB7GrekZP7QBNBYokKlKFNxLnCBLPK6TbcGEKD0On9RU0kQld0TZxp1/fvDklFHGA7JiFOfAolBW7dCyNiimpp00pEI+26uG+7UyMvCkxaj+nk4q7REZBEHltmuTk4HgKknGIniY/WnhFqVOVT5ne+s97YokDyLtniAK8RMt1JLzkAeiK9Rs+8bbm3AjSmMFgYsx8IzYnzDLyQLq0/iPmUUY+N0CADeL9k61VGNgB7Kqzs4LcLrjsktpwC/SPTPGPwX1y4DmpWCBoAgB8faXeV56S4HSFjgChNQ/Vtw+venFGE+XqoYSHcag
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:SN6PR12MB2767.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(376002)(396003)(346002)(366004)(39860400002)(136003)(8936002)(6512007)(36756003)(2906002)(478600001)(316002)(4744005)(33656002)(5660300002)(86362001)(54906003)(186003)(2616005)(4326008)(66556008)(26005)(66476007)(8676002)(6916009)(53546011)(71200400001)(76116006)(66946007)(6506007)(66446008)(7416002)(6486002)(64756008)(45980500001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?utf-8?B?c3BUTTg4SlcrOUNIL2RUNitHTjZOamR3RXVjSkpmS0RzQTExL2hSTFR5QjNi?=
- =?utf-8?B?Q2lOQng0N0UzTHZPZzR5b2QvU25JaWlFMjVaUEpJTkdMdG5idVNGMnVxU1Qy?=
- =?utf-8?B?bXlYSTFaSmROS2ZBc1NOK2pFT2lkMjgzaHUzNXVVdWxyUnh1NFZHN0xqMEl5?=
- =?utf-8?B?UitsUnRGdGV4ZHZ4eXhKcE5LakFVSnBDSGF4aHdaNk9ZMWk0Z05sMXEvYWZy?=
- =?utf-8?B?WS82d2QyNW1qbGpUN1IwZWhiZHJLQThVWWQ1a1BPZGpIOUF5ckpoUWhUSUkr?=
- =?utf-8?B?NmxtWHg0SjNrTjZtaEdvSFVjTCtoR21PNXMzNEVESHNkczYrdHIxMGRxUFYr?=
- =?utf-8?B?czNUeDVzM0crMHQrYjJVa3N5OGFTb2xjSVltKzd6NUcxZlN3REF4all1MHR2?=
- =?utf-8?B?VkVycFpzMytLOU9obHpSaVNMaDNENEQwK1hVQk1FZ0hGZi9JamRtT1owbFdk?=
- =?utf-8?B?QVRjQXluUm80dXZqZWJHR0ZuV0xSSG50ME5SbDFaOUt4bzc5eGZlWWhiM2lM?=
- =?utf-8?B?WHpsUkRzNG10M091MEV3RUVrRzNZRlYrRG5VeWxIZTNNNnEwWmxxRnBZRnFQ?=
- =?utf-8?B?YkpUTGxvcDB1aEluMW1pTFhrYjFCVHAyeDVFTTdUejBUNkdpMDV4RkFuakZx?=
- =?utf-8?B?WTN2c1Z0VDgvY3dxVVhLRUoxRElEeVVkWm1FSHpqYWpsa3J5NW42V1ZwSzBM?=
- =?utf-8?B?WXVQdnBZL0tvK0N1OVJJWGpWSUFITndyRUJCMGQ5cjllYTR3VVhoNzJTaXY2?=
- =?utf-8?B?NTArTThZekRjSVJwelpiS1JTUGxmWVF2a0xMaUNNVzZkVmJSWEdXalRLL2JN?=
- =?utf-8?B?a29YVzNDcE5TMG4vRHh3ZmUwYlFWdm1JQm94ajE5NWNMOG4yeEhIL09MVmdp?=
- =?utf-8?B?REdLSkhlbjdUWmFFQ045MUh1blQ5b3VXbWROL2RjWk5pajNTMHNwR25PSUJi?=
- =?utf-8?B?aCtXS0lGempTbkY2Mm54NUVrUnpja0pvZUtTWExZU3NJQklON1hxUlZ6aCtM?=
- =?utf-8?B?d2xzZ1IrYnovRkljdVBMWFhUUVFKcm10OWlzbkxYNkhYaVJoMEl6UkxRYmJI?=
- =?utf-8?B?M3NQQit1eXBZZzBNcXdFNlZOdHEyOVpZOXhpRFZxa3B2WU1XRUJCcG03K2NW?=
- =?utf-8?B?aVNIMlZVQnllSGp1QmJORlZPeUw4Z2lucDg2amdleUdKcjBsdmtGQW15Q1du?=
- =?utf-8?B?L25kTDBPTG1ralFOUjYwZCt0YW13RHdvZlhlSmV4YnljUkF5cjhneEVTZlV6?=
- =?utf-8?B?QUg3OFlWa3hLSktVMUxMbGV1QnBYc0tVOHlLaGZKbE9kRU1mTDg2eVhpNmhI?=
- =?utf-8?Q?vwnZNHkTbJqUE=3D?=
+Content-Disposition: inline
+In-Reply-To: <20201207121007.GD20489@zn.tnic>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [165.204.77.1]
+X-ClientProxiedBy: SA0PR11CA0063.namprd11.prod.outlook.com
+ (2603:10b6:806:d2::8) To SN6PR12MB2767.namprd12.prod.outlook.com
+ (2603:10b6:805:75::23)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from ashkalra_ubuntu_server (165.204.77.1) by
+ SA0PR11CA0063.namprd11.prod.outlook.com (2603:10b6:806:d2::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3632.17 via Frontend Transport; Mon, 7 Dec 2020 22:06:26 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 7ef5675c-3c90-4489-1204-08d89afc57e2
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2512:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN1PR12MB25122892EAF28163CC0F509C8ECE0@SN1PR12MB2512.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rWA2ZMWRH3MjKZiUKrncwUB+KvBgPUCgfdENsqoiJ06RZ5aSnVfjBhU47zkTm/7JYnmlKk8qYG3zZGkZmG5kSk6ofM0SkhoG/BpHTcfwn2Usiag3TPBsICNxXZNJ3v9Cv/VVOxNvVFFU6t/zXl2QZzAO+M9bdUcPnTcosJAchu5upFK77iwrW9X7cpEQ1ht7PTfSeZWnXDc6V83XwNtkED80WZKYfWzBfYgng5Yuvs+0Tz4r3i6xQ4e2NbivYmsFWzP7ARJuQufsJqnbCJR8hy/IVQqaJvW0G1/LCwVCKxDxKbj2hEQR1cy0LCE7gsWUhMnAFLo1d5xnSFj7XGbM+VrN8PmpKr9AyUOy++ihpPY2Wxz5QQiGXurit6G+PUcXCvq0zA2Yn7slAc8DAjM2Tg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:SN6PR12MB2767.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(376002)(136003)(39860400002)(346002)(396003)(5660300002)(86362001)(33656002)(478600001)(9686003)(26005)(966005)(83380400001)(2906002)(44832011)(186003)(8676002)(52116002)(66476007)(1076003)(16526019)(66946007)(8936002)(7416002)(33716001)(66556008)(316002)(45080400002)(956004)(4326008)(6496006)(6916009)(55016002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Vu1KE1s9xPP7eM+1tVAPge65dNeWxz9oWBUcPbaBLxSyK0w4a2kfq10w0mgt?=
+ =?us-ascii?Q?CJqkSZap+N8hbDufwk5tmPYqvrWHmfdkvjjVouLaK1v71UT/JbUpV4TNkhvt?=
+ =?us-ascii?Q?K5lLpRyWDLQvQXoUqwA7WAtYJB1YKUItEj09Tfs+Ft1TrV+fhqG8OZpfkoVL?=
+ =?us-ascii?Q?QU+RRpZ0EYxfH0o0zV3lPfdzwgNf8y+Ync6M1caNtImVECQX3VwIdZXQanCy?=
+ =?us-ascii?Q?fIp+oemGk3+Xc4MQJyiKpZ6diH4+CraT4vT1QdTSswr0cQN9uFyMpasjyDLp?=
+ =?us-ascii?Q?w2JiHVH4pnR3yutXCAFME4QtYwAvgm+7ouxPeihRrz646v2qoc0UZLFmuVPi?=
+ =?us-ascii?Q?zKo5X7A5ISfHP1u2/GC4kGymhtXKP8uNM2Uqe6CUvhS0doKZ2QGNHRWpvsoO?=
+ =?us-ascii?Q?t7IUX7VwgpxbwS8nXhak/N1xMZ/bC0dNvPpFjL60aoVs9KjO+kh1rqugPD8k?=
+ =?us-ascii?Q?s/iIoGc4P6DJ1Ntfy8yGtoolEwDa43v1Z3EmJPpKmFQyPjYLpnGHMvUprWkF?=
+ =?us-ascii?Q?BXQewDVReyNq0Ga0UZD2j29jw95CKeFH3HpDg2V7gwPF19VgjI+0sKch8vXJ?=
+ =?us-ascii?Q?wG6zLj0CNljl2C3l2PlB4RGTSZnk4QKgEiZOIHcFtDyavYci+k/4+OgT9Oim?=
+ =?us-ascii?Q?mN9RdzlLdm9XhxKeHgAQs4t/VEv7v7dBn+AdjnMd/whcy5Juu1OIe/fIR1mh?=
+ =?us-ascii?Q?KNW2NUIETJdISIwQzRCNxVWEuX4AwAIugS6REmAZX8EmYf1ojTYQli6BCi8z?=
+ =?us-ascii?Q?TVg9xCSLDVa+/kVvcNXaoaneFUjizLjQA/n7IToSeSF/Q5fxeLYyFIBPDvPs?=
+ =?us-ascii?Q?G9lGceKuuGnF9GlVL80mQ9d3pL2r5CRULEvHtzSbAaDDe/4DzxMsy7CrkSpn?=
+ =?us-ascii?Q?cT1JtyRQ80Bkz9l/a+/JzNRXWzDzvWTQRwxCu522WHg0GGjj2qZt+NUzUJC0?=
+ =?us-ascii?Q?pQCaOY0ctuzbSI3tphcGf7iKki5jrHKNGCon6n412mNhgytKix6Et8zUZkEQ?=
+ =?us-ascii?Q?LAdr?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 855eebd5-b12c-4021-cadf-08d89afe4904
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2020 22:20:20.9507 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xPGQZPXI1+4SnzF0QUcgad+io5MYPDfxK70xXZjJgZNcut4HvbWBINrC59ArYpu97e3zfcipmXqOeEe7zT2i7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4384
-Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "Grimm,
- Jon" <Jon.Grimm@amd.com>, "Singh, Brijesh" <brijesh.singh@amd.com>,
- "dave.hansen@linux-intel.com" <dave.hansen@linux-intel.com>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "x86@kernel.org" <x86@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "mingo@redhat.com" <mingo@redhat.com>, "luto@kernel.org" <luto@kernel.org>,
- "hpa@zytor.com" <hpa@zytor.com>, "rientjes@google.com" <rientjes@google.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>, "hch@lst.de" <hch@lst.de>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 22:06:26.8615 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ef5675c-3c90-4489-1204-08d89afc57e2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HL+KzgQj2xyMNd3CS1QREwqaydWnVB20+J/fCfITq3k1lq6AfeTHdALJGJ7+Qc529nGma7S7PF8jJoeuzd0Ogg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2512
+Cc: Thomas.Lendacky@amd.com, Jon.Grimm@amd.com, brijesh.singh@amd.com,
+ dave.hansen@linux-intel.com, konrad.wilk@oracle.com, peterz@infradead.org,
+ x86@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, luto@kernel.org, hpa@zytor.com, rientjes@google.com,
+ tglx@linutronix.de, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -161,26 +152,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQoNCj4gT24gRGVjIDcsIDIwMjAsIGF0IDQ6MTQgUE0sIEJvcmlzbGF2IFBldGtvdiA8YnBAYWxp
-ZW44LmRlPiB3cm90ZToNCj4gDQo+IO+7v09uIE1vbiwgRGVjIDA3LCAyMDIwIGF0IDEwOjA2OjI0
-UE0gKzAwMDAsIEFzaGlzaCBLYWxyYSB3cm90ZToNCj4+IFRoaXMgaXMgcmVsYXRlZCB0byB0aGUg
-ZWFybGllciBzdGF0aWMgYWRqdXN0bWVudCBvZiB0aGUgU1dJT1RMQiBidWZmZXJzDQo+PiBhcyBw
-ZXIgZ3Vlc3QgbWVtb3J5IHNpemUgYW5kIEtvbnJhZCdzIGZlZWRiYWNrIG9uIHRoZSBzYW1lLCBh
-cyBjb3BpZWQNCj4+IGJlbG93IDogDQo+PiANCj4+Pj4gVGhhdCBpcyBlYXRpbmcgMTI4TUIgZm9y
-IDFHQiwgYWthIDEyJSBvZiB0aGUgZ3Vlc3QgbWVtb3J5IGFsbG9jYXRlZCBzdGF0aWNhbGx5IGZv
-ciB0aGlzLg0KPj4+PiANCj4+Pj4gQW5kIGZvciBndWVzdHMgdGhhdCBhcmUgMkdCLCB0aGF0IGlz
-IDEyJSB1bnRpbCBpdCBnZXRzIHRvIDNHQiB3aGVuIA0KPj4+PiBpdCBpcyA4JSBhbmQgdGhlbiA2
-JSBhdCA0R0IuDQo+Pj4+IA0KPj4+PiBJIHdvdWxkIHByZWZlciB0aGlzIHRvIGJlIGJhc2VkIG9u
-IHlvdXIgbWVtb3J5IGNvdW50LCB0aGF0IGlzIDYlIG9mIA0KPj4+PiB0b3RhbCBtZW1vcnkuDQo+
-IA0KPiBTbyBubyBydWxlIG9mIHRodW1iIGFuZCBubyBtZWFzdXJlbWVudHM/IEp1c3QgYSBtYWdp
-YyBudW1iZXIgNi4NCg0KSXQgaXMgbW9yZSBvZiBhbiBhcHByb3hpbWF0aW9uIG9mIHRoZSBlYXJs
-aWVyIHN0YXRpYyBhZGp1c3RtZW50IHdoaWNoIHdhcyAxMjhNIGZvciA8MUcgZ3Vlc3RzLCAyNTZN
-IGZvciAxRy00RyBndWVzdHMgYW5kIDUxMk0gZm9yID40RyBndWVzdHMuDQoNClRoYW5rcywNCkFz
-aGlzaApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
-dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
-aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hello Boris, 
+
+On Mon, Dec 07, 2020 at 01:10:07PM +0100, Borislav Petkov wrote:
+> On Thu, Dec 03, 2020 at 03:25:59AM +0000, Ashish Kalra wrote:
+> > diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> > index 1bcfbcd2bfd7..46549bd3d840 100644
+> > --- a/arch/x86/mm/mem_encrypt.c
+> > +++ b/arch/x86/mm/mem_encrypt.c
+> > @@ -485,7 +485,38 @@ static void print_mem_encrypt_feature_info(void)
+> >  	pr_cont("\n");
+> >  }
+> 
+> Any text about why 6% was chosen? A rule of thumb or so? Measurements?
+>
+
+This is related to the earlier static adjustment of the SWIOTLB buffers
+as per guest memory size and Konrad's feedback on the same, as copied
+below : 
+
+>>That is eating 128MB for 1GB, aka 12% of the guest memory allocated statically for this.
+>> 
+>> And for guests that are 2GB, that is 12% until it gets to 3GB when 
+>> it is 8% and then 6% at 4GB.
+>> 
+>> I would prefer this to be based on your memory count, that is 6% of 
+>> total memory. 
+
+Thanks,
+Ashish
+
+> > +#define SEV_ADJUST_SWIOTLB_SIZE_PERCENT	6
+> > +
+> >  /* Architecture __weak replacement functions */
+> > +unsigned long __init arch_swiotlb_adjust(unsigned long iotlb_default_size)
+> > +{
+> > +	unsigned long size = iotlb_default_size;
+> > +
+> > +	/*
+> > +	 * For SEV, all DMA has to occur via shared/unencrypted pages.
+> > +	 * SEV uses SWOTLB to make this happen without changing device
+> > +	 * drivers. However, depending on the workload being run, the
+> > +	 * default 64MB of SWIOTLB may not be enough and`SWIOTLB may
+> > +	 * run out of buffers for DMA, resulting in I/O errors and/or
+> > +	 * performance degradation especially with high I/O workloads.
+> > +	 * Adjust the default size of SWIOTLB for SEV guests using
+> > +	 * a percentage of guest memory for SWIOTLB buffers.
+> > +	 * Also as the SWIOTLB bounce buffer memory is allocated
+> > +	 * from low memory, ensure that the adjusted size is within
+> > +	 * the limits of low available memory.
+> > +	 *
+> > +	 */
+> > +	if (sev_active()) {
+> > +		phys_addr_t total_mem = memblock_phys_mem_size();
+> 
+> Please integrate scripts/checkpatch.pl into your patch creation
+> workflow. Some of the warnings/errors *actually* make sense:
+> 
+> WARNING: Missing a blank line after declarations
+> #95: FILE: arch/x86/mm/mem_encrypt.c:511:
+> +               phys_addr_t total_mem = memblock_phys_mem_size();
+> +               size = total_mem * SEV_ADJUST_SWIOTLB_SIZE_PERCENT / 100;
+> 
+> But no need to resend now - just a hint for the future.
+> 
+> Konrad, ack?
+> 
+> On a 2G guest here, it says:
+> 
+> [    0.018373] SWIOTLB bounce buffer size adjusted to 122MB for SEV
+> 
+> so it makes sense to me.
+> 
+> Thx.
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpeople.kernel.org%2Ftglx%2Fnotes-about-netiquette&amp;data=04%7C01%7CAshish.Kalra%40amd.com%7C5c7096203e774538383308d89aa95b4a%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637429399488203154%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=G8JOTIQ5eVyOU50iBAI3%2FotUlGV1EBuOZectZNWlUyE%3D&amp;reserved=0
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
