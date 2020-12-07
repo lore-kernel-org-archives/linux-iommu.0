@@ -2,72 +2,90 @@ Return-Path: <SRS0=GTcZ=FL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B91DC433FE
-	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 18:11:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7044EC433FE
+	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 21:48:50 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 82CE52389F
-	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 18:11:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82CE52389F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id ADD4E235F9
+	for <iommu@archiver.kernel.org>; Mon,  7 Dec 2020 21:48:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADD4E235F9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E97428648E;
-	Mon,  7 Dec 2020 18:11:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 48D9820411;
+	Mon,  7 Dec 2020 21:48:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xjM2NQHbzOYt; Mon,  7 Dec 2020 21:48:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id E39E72E162;
+	Mon,  7 Dec 2020 21:48:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4F4BC0893;
+	Mon,  7 Dec 2020 21:48:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2B5E5C013B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 21:48:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1A16186FC1
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 21:48:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hd70SLZZ32Fk; Mon,  7 Dec 2020 18:11:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5540C8644F;
-	Mon,  7 Dec 2020 18:11:38 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 45ED5C0FA7;
-	Mon,  7 Dec 2020 18:11:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60B4FC013B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 18:11:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 446F7877CA
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 18:11:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id USmE6d5c+IH3 for <iommu@lists.linux-foundation.org>;
- Mon,  7 Dec 2020 18:11:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id C070C877E9
- for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 18:11:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 031441042;
- Mon,  7 Dec 2020 10:11:34 -0800 (PST)
-Received: from [10.57.61.6] (unknown [10.57.61.6])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE4623F66B;
- Mon,  7 Dec 2020 10:11:32 -0800 (PST)
-Subject: Re: [PATCH] iommu: arm-smmu-impl: add NXP hook to preserve
- bootmappings
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>, will@kernel.org,
- joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20201125155009.18453-1-laurentiu.tudor@nxp.com>
- <30296756-9b8d-4851-87f0-8c4bd41110e9@arm.com>
- <74e4f42a-83bf-fa88-a807-5c3a60aad4e6@nxp.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <04a0e0d7-cf83-e0a1-78dc-034289e8d0e4@arm.com>
-Date: Mon, 7 Dec 2020 18:11:24 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
-MIME-Version: 1.0
-In-Reply-To: <74e4f42a-83bf-fa88-a807-5c3a60aad4e6@nxp.com>
-Content-Language: en-GB
-Cc: diana.craciun@nxp.com
+ with ESMTP id JpZaxndvt8kS for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Dec 2020 21:48:45 +0000 (UTC)
+X-Greylist: delayed 00:06:08 by SQLgrey-1.7.6
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com
+ [209.85.210.202])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8FB7786FB2
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Dec 2020 21:48:45 +0000 (UTC)
+Received: by mail-pf1-f202.google.com with SMTP id x26so10795353pfo.23
+ for <iommu@lists.linux-foundation.org>; Mon, 07 Dec 2020 13:48:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=sender:date:message-id:mime-version:subject:from:to:cc;
+ bh=pDfU68hJbVrMhlby67/fptgGuh7zYii/tAwKwJs5ABQ=;
+ b=XdTC5hS/AEdpujA2auDl0oiHQKAaDQNA+nqMfmnrCYYh60Dkvw/1dR+Uqim2ZTfKsp
+ txd6ggR8/zez7Zopxjyt7hFhg16FOh9vUa/pXxIDhK+3h4EDtFXrjhqL5cntIgghjp78
+ ulJUbMrWsBU+5TEyIgHX8fexxcALt9nHZBo3XCOJPIqefrFS0wzdLA7WXahxLjvxiGkl
+ v0n+2BtTMPhtMBsVBEKn3ddkOgQDAN6kf3O1t4yOqCsAkjcSdX1RYDrxh56ZF07FMCyl
+ cdYnuWXwrQg9M7pCQyE28aW30Zxaev8zo58FYDpaSSNWOoUB952tGlfLyFT5aFK2dMyW
+ hpTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+ :to:cc;
+ bh=pDfU68hJbVrMhlby67/fptgGuh7zYii/tAwKwJs5ABQ=;
+ b=avEr9vQph6+gugR9QWdmucHknEOaJPyF3lxo99TDLN1CpiIZhpSPEJPlU93qwQ8vLX
+ xBbBgPH2lYOXzdAH9nLor9RUX4b0O4FMPummy2uEdmzBq21uAK3xbTR22MYX4VTpcVxo
+ c75J4qALrFobffP45Jfd9mg0JGYdB6Q+/amLvnvKeIDmjws0n7dUQyDNXJz3sjrHL+Ru
+ QARK+QUpOrghLDYcmyXFUDKqls3t7EWdMegvkTylXG4YSyuQ/IMGpvxwD+RA4+PNPIxd
+ t0jdD69dHeYt/syPmBdiXn28eGwktne2j6QHf9RXCuFqEnDeSy5mHjwKOzcYUVGNuYM9
+ ye8w==
+X-Gm-Message-State: AOAM532zfFPM5DW3l912K64IInlGD+pTFbFGpcFDcErxQrICo2YDg1IW
+ 5tn0t5e6Du0qhVTJEvQwJMWuX58o1w==
+X-Google-Smtp-Source: ABdhPJw1DKVB1ysvlps113dHRHd8Gdmd9wuw9y2HR7LIJxoQyNpy8ztEFdTjgj9WPEQ8k+rl387OW7IIVw==
+X-Received: from jxgao.kir.corp.google.com
+ ([2620:0:1008:11:3e52:82ff:fe62:cb61])
+ (user=jxgao job=sendgmr) by 2002:a17:902:b70d:b029:da:5196:1181 with SMTP id
+ d13-20020a170902b70db02900da51961181mr18297299pls.81.1607377356798; Mon, 07
+ Dec 2020 13:42:36 -0800 (PST)
+Date: Mon,  7 Dec 2020 13:42:04 -0800
+Message-Id: <20201207214204.1839028-1-jxgao@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
+Subject: [PATCH] [PATCH] Keep offset when mapping data via SWIOTLB.
+To: kbusch@kernel.org
+Cc: sagi@grimberg.me, konrad.wilk@oracle.com, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, axboe@fb.com, iommu@lists.linux-foundation.org,
+ David Rientjes <rientjes@google.com>, Jianxiong Gao <jxgao@google.com>,
+ robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,131 +98,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Jianxiong Gao via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jianxiong Gao <jxgao@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMC0xMi0wMiAxMDoyOSwgTGF1cmVudGl1IFR1ZG9yIHdyb3RlOgo+IEhpIFJvYmluLAo+
-IAo+IFNvcnJ5IGZvciB0aGUgbGF0ZSByZXBseSwgd2UgaGFkIGEgZmV3IGRheXMgb2Ygb3ZlciBo
-ZXJlLiBDb21tZW50cyBpbmxpbmUuCj4gCj4gT24gMTEvMjUvMjAyMCA4OjEwIFBNLCBSb2JpbiBN
-dXJwaHkgd3JvdGU6Cj4+IE9uIDIwMjAtMTEtMjUgMTU6NTAsIGxhdXJlbnRpdS50dWRvckBueHAu
-Y29tIHdyb3RlOgo+Pj4gRnJvbTogTGF1cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhw
-LmNvbT4KPj4+Cj4+PiBBZGQgYSBOWFAgc3BlY2lmaWMgaG9vayB0byBwcmVzZXJ2ZSBTTU1VIG1h
-cHBpbmdzIHByZXNlbnQgYXQKPj4+IGJvb3QgdGltZSAoY3JlYXRlZCBieSB0aGUgYm9vdCBsb2Fk
-ZXIpLiBUaGVzZSBhcmUgbmVlZGVkIGZvcgo+Pj4gTUMgZmlybXdhcmUgcHJlc2VudCBvbiBzb21l
-IE5YUCBjaGlwcyB0byBjb250aW51ZSB3b3JraW5nCj4+PiBhY3Jvc3Mga2VybmVsIGJvb3QgYW5k
-IFNNTVUgaW5pdGlhbGl6YXRpb24uCj4+Pgo+Pj4gU2lnbmVkLW9mZi1ieTogTGF1cmVudGl1IFR1
-ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4KPj4+IC0tLQo+Pj4gIMKgIGRyaXZlcnMvaW9t
-bXUvYXJtL2FybS1zbW11L2FybS1zbW11LWltcGwuYyB8IDMzICsrKysrKysrKysrKysrKysrKysr
-KysKPj4+ICDCoCAxIGZpbGUgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKQo+Pj4KPj4+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9hcm0tc21tdS1pbXBsLmMKPj4+IGIv
-ZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUtaW1wbC5jCj4+PiBpbmRleCA3ZmVk
-ODljOWQxOGEuLmNhMDdkOWQ0YmU2OSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJt
-L2FybS1zbW11L2FybS1zbW11LWltcGwuYwo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0vYXJt
-LXNtbXUvYXJtLXNtbXUtaW1wbC5jCj4+PiBAQCAtMTg3LDYgKzE4NywzNiBAQCBzdGF0aWMgY29u
-c3Qgc3RydWN0IGFybV9zbW11X2ltcGwKPj4+IG1ydmxfbW11NTAwX2ltcGwgPSB7Cj4+PiAgwqDC
-oMKgwqDCoCAucmVzZXQgPSBhcm1fbW11NTAwX3Jlc2V0LAo+Pj4gIMKgIH07Cj4+PiAgwqAgK3N0
-YXRpYyBpbnQgbnhwX2NmZ19wcm9iZShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQo+Pj4g
-K3sKPj4+ICvCoMKgwqAgaW50IGksIGNudCA9IDA7Cj4+PiArwqDCoMKgIHUzMiBzbXI7Cj4+PiAr
-Cj4+PiArwqDCoMKgIGZvciAoaSA9IDA7IGkgPCBzbW11LT5udW1fbWFwcGluZ19ncm91cHM7IGkr
-Kykgewo+Pj4gK8KgwqDCoMKgwqDCoMKgIHNtciA9IGFybV9zbW11X2dyMF9yZWFkKHNtbXUsIEFS
-TV9TTU1VX0dSMF9TTVIoaSkpOwo+Pj4gKwo+Pj4gK8KgwqDCoMKgwqDCoMKgIGlmIChGSUVMRF9H
-RVQoQVJNX1NNTVVfU01SX1ZBTElELCBzbXIpKSB7Cj4+Cj4+IEkgYmV0IHRoaXMgaXMgZnVuIG92
-ZXIga2V4ZWMuLi4KPiAKPiBSaWdodC4gSSBoYXZlbid0IGV2ZW4gY29uc2lkZXJlZCBrZXhlYy4K
-PiAKPj4gTm90ZSB0aGF0IHRoZSBRdWFsY29tbSBzcGVjaWFsIGNhc2UgZ290IGEgYml0IG9mIGEg
-ZnJlZSBwYXNzIHNpbmNlIGl0Cj4+IGludm9sdmVzIHdvcmtpbmcgYXJvdW5kIGEgdG90YWxseSBi
-cm9rZW4gaHlwZXJ2aXNvciwgcGx1cyBnZXRzIHRvIHBsYXkKPj4gdGhlICJub2JvZHkgc2FuZSB3
-aWxsIHJ1biBhbiBlbnRlcnByaXNlIGRpc3RybyBvbiB0aGVpciBwaG9uZSIgY2FyZCB0bwo+PiBh
-biBleHRlbnQ7IEkgZG9uJ3QgdGhpbmsgdGhlIGxpa2VzIG9mIExheWVyc2NhcGUga2l0IGdldCBp
-dCBxdWl0ZSBzbwo+PiBlYXN5IDspCj4gCj4gSSBhZ3JlZSB0aGF0IHRoaXMgaXMgbm90IGlkZWFs
-LCBidXQgdGhlIHBsYW4gaGVyZSB3YXMgdG8gaGF2ZSBzb21ldGhpbmcKPiB0byBib290IHZhbmls
-bGEga2VybmVsIE9PQiBvbiBvdXIgY2hpcHMsIHdoaWNoIGlzIHNvbWV0aGluZyBvbiBteSBtaW5k
-Cj4gZm9yIHF1aXRlIGEgd2hpbGUgbm93LiBJIGRvIHJlYWxpemUgdGhhdCB3ZSB3b24ndCBnZXQg
-YXdheSB3aXRoIGl0Cj4gaW4gdGhlIGxvbmcgcnVuLgo+IAo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgc21tdS0+c21yc1tpXS5pZCA9IEZJRUxEX0dFVChBUk1fU01NVV9TTVJfSUQsIHNtcik7
-Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzbW11LT5zbXJzW2ldLm1hc2sgPSBGSUVMRF9H
-RVQoQVJNX1NNTVVfU01SX01BU0ssIHNtcik7Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBz
-bW11LT5zbXJzW2ldLnZhbGlkID0gdHJ1ZTsKPj4+ICsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHNtbXUtPnMyY3JzW2ldLnR5cGUgPSBTMkNSX1RZUEVfQllQQVNTOwo+Pj4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgc21tdS0+czJjcnNbaV0ucHJpdmNmZyA9IFMyQ1JfUFJJVkNGR19ERUZB
-VUxUOwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc21tdS0+czJjcnNbaV0uY2JuZHggPSAw
-eGZmOwo+Pj4gKwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY250Kys7Cj4+PiArwqDCoMKg
-wqDCoMKgwqAgfQo+Pj4gK8KgwqDCoCB9Cj4+PiArCj4+PiArwqDCoMKgIGRldl9ub3RpY2Uoc21t
-dS0+ZGV2LCAiXHRwcmVzZXJ2ZWQgJWQgYm9vdCBtYXBwaW5nJXNcbiIsIGNudCwKPj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBjbnQgPT0gMSA/ICIiIDogInMiKTsKPj4KPj4gVGhhdCBnZXRzIHlv
-dSBhcm91bmQgdGhlIGluaXRpYWwgU01NVSByZXNldCwgYnV0IHdoYXQgaGFwcGVucyBmb3IgdGhl
-Cj4+IGFyYml0cmFyaWx5IGxvbmcgcGVyaW9kIG9mIHRpbWUgYmV0d2VlbiB0aGUgTUMgZGV2aWNl
-IGdldHRpbmcgYXR0YWNoZWQKPj4gdG8gYSBkZWZhdWx0IGRvbWFpbiBhbmQgdGhlIE1DIGRyaXZl
-ciBhY3R1YWxseSBwcm9iaW5nIGFuZCAocHJlc3VtYWJseSkKPj4gYmVpbmcgYWJsZSB0byBtYXAg
-YW5kIHJlaW5pdGlhbGlzZSBpdHMgZmlybXdhcmU/Cj4gCj4gUGVyaGFwcyBJJ20gbWlzc2luZyBz
-b21ldGhpbmcsIGJ1dCB3b24ndCB0aGUgTUMgZmlybXdhcmUgbGl2ZSBiYXNlZCBvbgo+IHRoaXMg
-YnlwYXNzIG1hcHBpbmcgY3JlYXRlZCBieSB0aGUgYm9vdGxvYWRlciBhbmQgdGhhdCBnZXRzIHBy
-ZXNlcnZlZD8KCkFsbCB5b3UncmUgZG9pbmcgaGVyZSBpcyBlZmZlY3RpdmVseSBmb3JjaW5nICJh
-cm0tc21tdS5kaXNhYmxlX2J5cGFzcz0wIiAKZm9yIHRoZSBzcGVjaWZpYyBzdHJlYW1zIGlkZW50
-aWZpZWQgYnkgdGhlIGJvb3QtdGltZSBTTVIgc3RhdGUuIE9uY2UgCmlvbW11X3Byb2JlX2Rldmlj
-ZSgpIGdldHMgY2FsbGVkIGFuZCB0aGUgU01NVSBkcml2ZXIgYmVjb21lcyBhd2FyZSBvZiAKdGhv
-c2Ugc3RyZWFtcywgdGhhdCBpbml0aWFsIHN0YXRlIGJlY29tZXMgbW9vdC4KCldoYXQgSSBqdXN0
-IG5vdyByZWFsaXNlLCBob3dldmVyLCBpcyB0aGF0IGluIHRoaXMgc3BlY2lmaWMgY2FzZSB5b3Ug
-CnByb2JhYmx5IGRvIGdldCBhd2F5IHdpdGggaXQgYXMgYSBkaXJ0eSB0cmljayBiZWNhdXNlIHRo
-ZXJlIGlzIG5vIAp2aXNpYmxlIGFzc29jaWF0aW9uIGJldHdlZW4gdGhlIE1DICpwbGF0Zm9ybSBk
-ZXZpY2UqIGFuZCB0aGUgU01NVS4gVGh1cyAKYXMgaXQgc3RhbmRzIHRvZGF5LCBub2JvZHkgd2ls
-bCBiZSBjYWxsaW5nIGlvbW11X3Byb2JlX2RldmljZSgpIGZvciBhbnkgCm9mIHRoZSByZWxldmFu
-dCBzdHJlYW1zIHVudGlsIHRoZSBNQyBkcml2ZXIgaGFzIHByb2JlZCBhbmQgY2FuIHN0YXJ0IApj
-cmVhdGluZyB0aGUgZnNsX21jX2J1cyBkZXZpY2VzIGFuZCBpbnRlcnByZXRpbmcgdGhlIGlvbW11
-LW1hcCAtIApwcmVzdW1hYmx5IGJ5IHRoYXQgcG9pbnQgdGhlIHBsYXRmb3JtIGRyaXZlciBoYXMg
-aGFkIHBsZW50eSBvZiB0aW1lIHRvIApxdWllc2NlIERNQSBhbmQgZ3JvdmVsIHRoZSBwaHlzaWNh
-bCBhZGRyZXNzIG9mIHRoZSBmaXJtd2FyZSByZWdpb24gb3V0IApvZiB0aGUgaGFyZHdhcmUsIHN1
-Y2ggdGhhdCBpdCBjYW4gdGhlbiBiZSByZW1hcHBlZCBmcm9tIHRoZSBwZXJzcGVjdGl2ZSAKb2Yg
-dGhlIG5ldyBmc2xfbWNfYnVzIGRldmljZSB0byBjb250aW51ZS4KCj4+PiArCj4+PiArwqDCoMKg
-IHJldHVybiAwOwo+Pj4gK30KPj4+ICsKPj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGFybV9zbW11
-X2ltcGwgbnhwX2ltcGwgPSB7Cj4+PiArwqDCoMKgIC5jZmdfcHJvYmUgPSBueHBfY2ZnX3Byb2Jl
-LAo+Pj4gK307Cj4+Cj4+IEkgYmVsaWV2ZSB5b3UncmUgbW9zdGx5IHVzaW5nIE1NVS01MDAsIHNv
-IHlvdSBwcm9iYWJseSBkb24ndCB3YW50IHRvCj4+IHNpbXBseSB0aHJvdyBvdXQgdGhlIHJlbGV2
-YW50IGVycmF0YSB3b3JrYXJvdW5kcy4KPj4KPj4+ICDCoCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNl
-ICphcm1fc21tdV9pbXBsX2luaXQoc3RydWN0IGFybV9zbW11X2RldmljZQo+Pj4gKnNtbXUpCj4+
-PiAgwqAgewo+Pj4gQEAgLTIyNiw1ICsyNTYsOCBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICph
-cm1fc21tdV9pbXBsX2luaXQoc3RydWN0Cj4+PiBhcm1fc21tdV9kZXZpY2UgKnNtbXUpCj4+PiAg
-wqDCoMKgwqDCoCBpZiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJtYXJ2ZWxsLGFwODA2
-LXNtbXUtNTAwIikpCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIHNtbXUtPmltcGwgPSAmbXJ2bF9t
-bXU1MDBfaW1wbDsKPj4+ICDCoCArwqDCoMKgIGlmIChvZl9wcm9wZXJ0eV9yZWFkX2Jvb2wobnAs
-ICJueHAsa2VlcC1ib290LW1hcHBpbmdzIikpCj4+PiArwqDCoMKgwqDCoMKgwqAgc21tdS0+aW1w
-bCA9ICZueHBfaW1wbDsKPj4KPj4gTm9ybWFsbHkgeW91J2QgZ2V0IGEgIndoYXQgYWJvdXQgQUNQ
-ST8iIGhlcmUsIGJ1dCBnaXZlbiB0aGUgbnVtYmVyIG9mCj4+IGNhbGxzIGFuZCBlbWFpbCB0aHJl
-YWRzIHdlJ3ZlIGhhZCBzcGVjaWZpY2FsbHkgYWJvdXQgdHJ5aW5nIHRvIG1ha2UgQUNQSQo+PiBz
-dXBwb3J0IGZvciB0aGVzZSBwbGF0Zm9ybXMgd29yaywgdGhhdCBnZXRzIHVwZ3JhZGVkIHRvIGF0
-IGxlYXN0IGEgIldIQVQKPj4gQUJPVVQgQUNQSSE/IiA6UAo+IEkgZG8gaGF2ZSBBQ1BJIGluIG1p
-bmQsIGJ1dCBmb3Igbm93IEkganVzdCB3YW50ZWQgdG8gaGF2ZSBhCj4gZmlyc3QgaW1wcmVzc2lv
-biBvbiB0aGUgYXBwcm9hY2guIE9uZSBpZGVhIEkgd2FzIHBvbmRlcmluZyBvbiB3YXMgdG8KPiBo
-YXZlIHRoaXMgcHJvcGVydHkgaW4gdGhlIE1DIG5vZGUgKHF1aWNrIHJlbWluZGVyOiBNQyBpcyBl
-eHBvc2VkIGFzIGEgTkMKPiBpbiBBQ1BJLCBzaG91bGQgYmUgYWJsZSB0byByZXBsaWNhdGUgdGhl
-IHByb3BlcnR5IGluIHRoZXJlIHRvbykuIEluIHRoZQo+IG1lYW4gdGltZSwgd2UgYXJlIGluIGNv
-bGxhYm9yYXRpb24gd2l0aCBvdXIgcGFydG5lcnMgb24gdXNpbmcgUk1SUiBieQo+IGFkZGluZyBz
-dXBwb3J0IGZvciBpdCBpbiB0aGUgYXJtLXNtbXUtdjIgZHJpdmVyLgoKSSBmZWVsIHByZXR0eSBj
-b25maWRlbnQgaW4gc2F5aW5nIHRoYXQgbm9ib2R5J3MgZ29pbmcgdG8gYWdyZWUgdG8gYWRkIGEg
-CnBsYXRmb3JtLXNwZWNpZmljIHByb3BlcnR5IHRvIElPUlQgdG8gZGVzY3JpYmUgb25lIGNhc2Ug
-b2YgdGhlIGV4YWN0IAp0aGluZyB0aGF0IFJNUnMgd2VyZSBzcGVjY2VkIG91dCB0byBkZWFsIHdp
-dGggaW4gZ2VuZXJhbC4KCj4+IEJ1dCBzZXJpb3VzbHksIHRoZSBjYXNlIG9mIGRldmljZSBmaXJt
-d2FyZSBpbiBtZW1vcnkgYmVpbmcgYWN0aXZlIGJlZm9yZQo+PiBoYW5kb3ZlciB0byBMaW51eCBp
-cyAqbGl0ZXJhbGx5KiB0aGUgb3JpZ2luYWwgcmVhc29uIGJlaGluZCBJT1JUIFJNUnMuCj4+IFdl
-IGFscmVhZHkga25vdyB3ZSBuZWVkIGEgd2F5IHRvIHNwZWNpZnkgdGhlIGVxdWl2YWxlbnQgdGhp
-bmcgZm9yIERUCj4+IHN5c3RlbXMsIHN1Y2ggdGhhdCBib3RoIGNhbiBiZSBoYW5kbGVkIGNvbW1v
-bmx5LiBJIHJlYWxseSBkb24ndCB3YW50IHRvCj4+IGhhdmUgdG8gc3VwcG9ydCBhIHZlbmRvci1z
-cGVjaWZpYyBtZWNoYW5pc20gZm9yIG5vdC1ldmVuLWZ1bGx5LXNvbHZpbmcgYQo+PiBjb21wbGV0
-ZWx5IGdlbmVyaWMgaXNzdWUsIHNvcnJ5Lgo+Pgo+IAo+IEkgcmVtZW1iZXIgdGhhdCBzb21lIG1v
-bnRocyBhZ28gdGhlcmUgd2FzIGEgcHJvcG9zYWwgZnJvbSBudmlkaWEgWzFdIHRvCj4gbWFwIHBl
-ci1kZXZpY2UgcmVzZXJ2ZWQgbWVtb3J5IGludG8gU01NVS4gV291bGQgaXQgbWFrZSBzZW5zZSB0
-byByZXZpdmUKPiBpdCBhcyBpdCBzZWVtZWQgYSB2aWFibGUgc29sdXRpb24gZm9yIG91ciBjYXNl
-IHRvbz8KCk5vdGUgdGhhdCB0aGVyZSdzIGFscmVhZHkgYmVlbiBhIG5ld2VyIHNwaW4gb24gdGhh
-dC4gVGhlIGRpc2N1c3Npb24gaXMgCnNwcmVhZCBhcm91bmQgYSBmZXcgcGxhY2VzIChbMV0gYW5k
-IFsyXSBhdCBsZWFzdCksIGJ1dCBJIHRoaW5rIGl0J3MgCmNsZWFyIHRoYXQgVGhpZXJyeSdzIGNh
-c2UgaXMganVzdCBhbm90aGVyIGZsYXZvdXIgb2YgdGhlIHNhbWUgb3ZlcmFsbCAKcHJvYmxlbSwg
-c28gaWYgd2UgY2FuIGZpZ3VyZSBvdXQgcm9idXN0IERUIGJpbmRpbmdzIHRvIGNvbnZleSB0aGUg
-CmVxdWl2YWxlbnQgaW5mb3JtYXRpb24gdG8gSU9SVCBSTVJzIHRoZW4gaXQgbGFyZ2VseSBhbGwg
-ZmFsbHMgaW4gdG9nZXRoZXIuCgpUaGFua3MsClJvYmluLgoKWzFdIApodHRwczovL2xvcmUua2Vy
-bmVsLm9yZy9saW51eC1pb21tdS8yMDIwMDkwNDEzMDAwMC42OTE5MzMtMS10aGllcnJ5LnJlZGlu
-Z0BnbWFpbC5jb20vClsyXSAKaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUvMjAy
-MDEwMjcxMTI2NDYuNDQ2ODAtMS1zaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20v
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
-aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
-LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+NVMe driver and other applications depend on the data offset
+to operate correctly. Currently when unaligned data is mapped via
+SWIOTLB, the data is mapped as slab aligned with the SWIOTLB. When
+booting with --swiotlb=force option and using NVMe as interface,
+running mkfs.xfs on Rhel fails because of the unalignment issue.
+This patch makes sure the mapped data preserves
+its offset of the orginal address. Tested on latest kernel that
+this patch fixes the issue.
+
+Signed-off-by: Jianxiong Gao <jxgao@google.com>
+Acked-by: David Rientjes <rientjes@google.com>
+---
+ kernel/dma/swiotlb.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 781b9dca197c..56a35e71b3fd 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -483,6 +483,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+ 	max_slots = mask + 1
+ 		    ? ALIGN(mask + 1, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT
+ 		    : 1UL << (BITS_PER_LONG - IO_TLB_SHIFT);
++ 
++	/*
++	 * We need to keep the offset when mapping, so adding the offset
++	 * to the total set we need to allocate in SWIOTLB
++	 */
++	alloc_size += offset_in_page(orig_addr);
+ 
+ 	/*
+ 	 * For mappings greater than or equal to a page, we limit the stride
+@@ -567,6 +573,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+ 	 */
+ 	for (i = 0; i < nslots; i++)
+ 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
++	/*
++	 * When keeping the offset of the original data, we need to advance
++	 * the tlb_addr by the offset of orig_addr.
++	 */
++	tlb_addr += orig_addr & (PAGE_SIZE - 1);
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+ 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+ 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
+-- 
+2.27.0
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
