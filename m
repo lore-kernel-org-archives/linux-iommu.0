@@ -2,94 +2,95 @@ Return-Path: <SRS0=OQvg=FN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B06ACC4361B
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 14:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C445EC433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:21:53 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 03E30207B1
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 14:27:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03E30207B1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5C15923AC4
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:21:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C15923AC4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=solid-run.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D7B7C877EB;
-	Wed,  9 Dec 2020 14:27:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4435187A29;
+	Wed,  9 Dec 2020 15:21:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Xkon1ROy6fBF; Wed,  9 Dec 2020 14:27:10 +0000 (UTC)
+	with ESMTP id 9wYorH-cl8Ch; Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E38CB87218;
-	Wed,  9 Dec 2020 14:27:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 375F187A3D;
+	Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2529C0FA7;
-	Wed,  9 Dec 2020 14:27:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2113C013B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 14:27:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D451C1DA2;
+	Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4AEFAC013B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 08:06:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DF7CF87711
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 14:27:09 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3B06E8773A
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 08:06:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aeI5ngO1jDwP for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 14:27:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 47AD887218
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 14:27:07 +0000 (UTC)
-Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.55])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4CrfVx558zzQp1g;
- Wed,  9 Dec 2020 22:26:33 +0800 (CST)
-Received: from dggema766-chm.china.huawei.com (10.1.198.208) by
- DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Wed, 9 Dec 2020 22:27:01 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggema766-chm.china.huawei.com (10.1.198.208) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Wed, 9 Dec 2020 22:27:01 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2106.002; Wed, 9 Dec 2020 14:26:59 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Eric Auger <eric.auger@redhat.com>, "eric.auger.pro@gmail.com"
- <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>
-Subject: RE: [PATCH v13 05/15] iommu/smmuv3: Get prepared for nested stage
- support
-Thread-Topic: [PATCH v13 05/15] iommu/smmuv3: Get prepared for nested stage
- support
-Thread-Index: AQHWvZ3YzXx0Iv4/TkmqLZQuADrJXqnu73jQ
-Date: Wed, 9 Dec 2020 14:26:59 +0000
-Message-ID: <d31ca662eb124fd3ba0c88936dcc098f@huawei.com>
-References: <20201118112151.25412-1-eric.auger@redhat.com>
- <20201118112151.25412-6-eric.auger@redhat.com>
-In-Reply-To: <20201118112151.25412-6-eric.auger@redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.1.56]
+ with ESMTP id 2xIk2583-3TS for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Dec 2020 08:06:39 +0000 (UTC)
+X-Greylist: delayed 01:03:20 by SQLgrey-1.7.6
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com
+ [209.85.208.179])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EE3E98769E
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 08:06:38 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id t22so18120142ljk.0
+ for <iommu@lists.linux-foundation.org>; Tue, 08 Dec 2020 00:06:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=XF/scYns4rnWCahd4eLxZHPg0XavrYpCgynXjwRuQRQ=;
+ b=BAp0uJHEOg1F+PuOm0Aa0FSMMLy4lAs/bjDrNUgtT3EIoLnELtr22FcDOtpn5WGK70
+ Gm7GoypHw76coKsU7OHZ/dyWywsRjtT2o3IcqLJk5C7Bli8uxugicc33MDDKi/bhPrSa
+ KJ60r/MNFWvnVX5b+0dEwj/hncjzMElxKOoKcOb62gFht4Bn3gEf1k5eofGu4AtikplG
+ ztGE12B9tEFH9ky80AUDQMTOCQxhlufwHqIV7mTDXRcg2CGeDzD1N2DvL5MGpSUZHc/W
+ m3zz+TwWtaIc8MMNJdwCsKPjdlSzSSMm3AeRSKNiFTY6DC/NTxAOqaYYAxlXOoVNwe+7
+ Qz9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=XF/scYns4rnWCahd4eLxZHPg0XavrYpCgynXjwRuQRQ=;
+ b=fe1W6YPHYRptRrHTh4sDAKLJxRx6JdOefpzjZJdGfAUYKyLFZhVmgOLXI7xl+HbD/w
+ DohEXOUmYhwu3VZki3gfOlefsw8js1L46MjyXiLPAYXFuL+0G527uRePCwFJJFQsNoVk
+ EBQwcsEuJxL3cvGRX9avKbb7jST5xafBiWSU3Y6ZRiLQa6LxqgvWlaKgvp1TCRIOyDFj
+ 0k2AYc6vDMVo/1HH7cqk0r2icgjdIozG03GmNrJV3x85wOqo8VQCMONKhbluFl/Ts2E2
+ zD+ZXr0gF5QlVldgsZ34wS0SCLPyXL61wi7T7Le/2Oi3ZKtXP7FRauVddPUsItplGX06
+ 9ybA==
+X-Gm-Message-State: AOAM531fHYb98Kwm5oYg5iU+u/xyR5guTUVSMbJSYDi6JktswgmhFZHL
+ OkiH2qVkbvzSZLec+bayt33/CpY89XsA7KhkOjNPT0LU8hQ=
+X-Google-Smtp-Source: ABdhPJyE8NZ6yWrc0vbDO+ir8oCTTD5SWkg6QzGTCX6hRbunid8e0Gzqf860QW/NPwtzM5aZrddkla6ML98jgiyE0I8=
+X-Received: by 2002:a50:f307:: with SMTP id p7mr23213989edm.368.1607410996396; 
+ Mon, 07 Dec 2020 23:03:16 -0800 (PST)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- qubingbing <qubingbing@hisilicon.com>
+References: <20201125155009.18453-1-laurentiu.tudor@nxp.com>
+ <30296756-9b8d-4851-87f0-8c4bd41110e9@arm.com>
+ <74e4f42a-83bf-fa88-a807-5c3a60aad4e6@nxp.com>
+ <04a0e0d7-cf83-e0a1-78dc-034289e8d0e4@arm.com>
+In-Reply-To: <04a0e0d7-cf83-e0a1-78dc-034289e8d0e4@arm.com>
+From: Jon Nettleton <jon@solid-run.com>
+Date: Tue, 8 Dec 2020 08:02:39 +0100
+Message-ID: <CABdtJHtiX_9iVCscQELH9ws2brFLRAvqG+Hpt2e+PDP+DsLBSA@mail.gmail.com>
+Subject: Re: [PATCH] iommu: arm-smmu-impl: add NXP hook to preserve
+ bootmappings
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailman-Approved-At: Wed, 09 Dec 2020 15:21:50 +0000
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Diana Madalina Craciun <diana.craciun@nxp.com>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,244 +108,198 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Eric,
+On Mon, Dec 7, 2020 at 7:12 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2020-12-02 10:29, Laurentiu Tudor wrote:
+> > Hi Robin,
+> >
+> > Sorry for the late reply, we had a few days of over here. Comments inline.
+> >
+> > On 11/25/2020 8:10 PM, Robin Murphy wrote:
+> >> On 2020-11-25 15:50, laurentiu.tudor@nxp.com wrote:
+> >>> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >>>
+> >>> Add a NXP specific hook to preserve SMMU mappings present at
+> >>> boot time (created by the boot loader). These are needed for
+> >>> MC firmware present on some NXP chips to continue working
+> >>> across kernel boot and SMMU initialization.
+> >>>
+> >>> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >>> ---
+> >>>    drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 33 ++++++++++++++++++++++
+> >>>    1 file changed, 33 insertions(+)
+> >>>
+> >>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> >>> b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> >>> index 7fed89c9d18a..ca07d9d4be69 100644
+> >>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> >>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> >>> @@ -187,6 +187,36 @@ static const struct arm_smmu_impl
+> >>> mrvl_mmu500_impl = {
+> >>>        .reset = arm_mmu500_reset,
+> >>>    };
+> >>>    +static int nxp_cfg_probe(struct arm_smmu_device *smmu)
+> >>> +{
+> >>> +    int i, cnt = 0;
+> >>> +    u32 smr;
+> >>> +
+> >>> +    for (i = 0; i < smmu->num_mapping_groups; i++) {
+> >>> +        smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
+> >>> +
+> >>> +        if (FIELD_GET(ARM_SMMU_SMR_VALID, smr)) {
+> >>
+> >> I bet this is fun over kexec...
+> >
+> > Right. I haven't even considered kexec.
+> >
+> >> Note that the Qualcomm special case got a bit of a free pass since it
+> >> involves working around a totally broken hypervisor, plus gets to play
+> >> the "nobody sane will run an enterprise distro on their phone" card to
+> >> an extent; I don't think the likes of Layerscape kit get it quite so
+> >> easy ;)
+> >
+> > I agree that this is not ideal, but the plan here was to have something
+> > to boot vanilla kernel OOB on our chips, which is something on my mind
+> > for quite a while now. I do realize that we won't get away with it
+> > in the long run.
+> >
+> >>> +            smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
+> >>> +            smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
+> >>> +            smmu->smrs[i].valid = true;
+> >>> +
+> >>> +            smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
+> >>> +            smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
+> >>> +            smmu->s2crs[i].cbndx = 0xff;
+> >>> +
+> >>> +            cnt++;
+> >>> +        }
+> >>> +    }
+> >>> +
+> >>> +    dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
+> >>> +           cnt == 1 ? "" : "s");
+> >>
+> >> That gets you around the initial SMMU reset, but what happens for the
+> >> arbitrarily long period of time between the MC device getting attached
+> >> to a default domain and the MC driver actually probing and (presumably)
+> >> being able to map and reinitialise its firmware?
+> >
+> > Perhaps I'm missing something, but won't the MC firmware live based on
+> > this bypass mapping created by the bootloader and that gets preserved?
+>
+> All you're doing here is effectively forcing "arm-smmu.disable_bypass=0"
+> for the specific streams identified by the boot-time SMR state. Once
+> iommu_probe_device() gets called and the SMMU driver becomes aware of
+> those streams, that initial state becomes moot.
+>
+> What I just now realise, however, is that in this specific case you
+> probably do get away with it as a dirty trick because there is no
+> visible association between the MC *platform device* and the SMMU. Thus
+> as it stands today, nobody will be calling iommu_probe_device() for any
+> of the relevant streams until the MC driver has probed and can start
+> creating the fsl_mc_bus devices and interpreting the iommu-map -
+> presumably by that point the platform driver has had plenty of time to
+> quiesce DMA and grovel the physical address of the firmware region out
+> of the hardware, such that it can then be remapped from the perspective
+> of the new fsl_mc_bus device to continue.
+>
+> >>> +
+> >>> +    return 0;
+> >>> +}
+> >>> +
+> >>> +static const struct arm_smmu_impl nxp_impl = {
+> >>> +    .cfg_probe = nxp_cfg_probe,
+> >>> +};
+> >>
+> >> I believe you're mostly using MMU-500, so you probably don't want to
+> >> simply throw out the relevant errata workarounds.
+> >>
+> >>>    struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device
+> >>> *smmu)
+> >>>    {
+> >>> @@ -226,5 +256,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct
+> >>> arm_smmu_device *smmu)
+> >>>        if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
+> >>>            smmu->impl = &mrvl_mmu500_impl;
+> >>>    +    if (of_property_read_bool(np, "nxp,keep-boot-mappings"))
+> >>> +        smmu->impl = &nxp_impl;
+> >>
+> >> Normally you'd get a "what about ACPI?" here, but given the number of
+> >> calls and email threads we've had specifically about trying to make ACPI
+> >> support for these platforms work, that gets upgraded to at least a "WHAT
+> >> ABOUT ACPI!?" :P
+> > I do have ACPI in mind, but for now I just wanted to have a
+> > first impression on the approach. One idea I was pondering on was to
+> > have this property in the MC node (quick reminder: MC is exposed as a NC
+> > in ACPI, should be able to replicate the property in there too). In the
+> > mean time, we are in collaboration with our partners on using RMRR by
+> > adding support for it in the arm-smmu-v2 driver.
+>
+> I feel pretty confident in saying that nobody's going to agree to add a
+> platform-specific property to IORT to describe one case of the exact
+> thing that RMRs were specced out to deal with in general.
+>
+> >> But seriously, the case of device firmware in memory being active before
+> >> handover to Linux is *literally* the original reason behind IORT RMRs.
+> >> We already know we need a way to specify the equivalent thing for DT
+> >> systems, such that both can be handled commonly. I really don't want to
+> >> have to support a vendor-specific mechanism for not-even-fully-solving a
+> >> completely generic issue, sorry.
+> >>
+> >
+> > I remember that some months ago there was a proposal from nvidia [1] to
+> > map per-device reserved memory into SMMU. Would it make sense to revive
+> > it as it seemed a viable solution for our case too?
+>
+> Note that there's already been a newer spin on that. The discussion is
+> spread around a few places ([1] and [2] at least), but I think it's
+> clear that Thierry's case is just another flavour of the same overall
+> problem, so if we can figure out robust DT bindings to convey the
+> equivalent information to IORT RMRs then it largely all falls in together.
+>
+> Thanks,
+> Robin.
 
-> -----Original Message-----
-> From: Eric Auger [mailto:eric.auger@redhat.com]
-> Sent: 18 November 2020 11:22
-> To: eric.auger.pro@gmail.com; eric.auger@redhat.com;
-> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
-> kvm@vger.kernel.org; kvmarm@lists.cs.columbia.edu; will@kernel.org;
-> joro@8bytes.org; maz@kernel.org; robin.murphy@arm.com;
-> alex.williamson@redhat.com
-> Cc: jean-philippe@linaro.org; zhangfei.gao@linaro.org;
-> zhangfei.gao@gmail.com; vivek.gautam@arm.com; Shameerali Kolothum
-> Thodi <shameerali.kolothum.thodi@huawei.com>;
-> jacob.jun.pan@linux.intel.com; yi.l.liu@intel.com; tn@semihalf.com;
-> nicoleotsuka@gmail.com; yuzenghui <yuzenghui@huawei.com>
-> Subject: [PATCH v13 05/15] iommu/smmuv3: Get prepared for nested stage
-> support
-> 
-> When nested stage translation is setup, both s1_cfg and
-> s2_cfg are set.
-> 
-> We introduce a new smmu domain abort field that will be set
-> upon guest stage1 configuration passing.
-> 
-> arm_smmu_write_strtab_ent() is modified to write both stage
-> fields in the STE and deal with the abort field.
-> 
-> In nested mode, only stage 2 is "finalized" as the host does
-> not own/configure the stage 1 context descriptor; guest does.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> 
-> ---
-> v10 -> v11:
-> - Fix an issue reported by Shameer when switching from with vSMMU
->   to without vSMMU. Despite the spec does not seem to mention it
->   seems to be needed to reset the 2 high 64b when switching from
->   S1+S2 cfg to S1 only. Especially dst[3] needs to be reset (S2TTB).
->   On some implementations, if the S2TTB is not reset, this causes
->   a C_BAD_STE error
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 64
-> +++++++++++++++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 +
->  2 files changed, 56 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 18ac5af1b284..412ea1bafa50 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1181,8 +1181,10 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  	 * three cases at the moment:
->  	 *
->  	 * 1. Invalid (all zero) -> bypass/fault (init)
-> -	 * 2. Bypass/fault -> translation/bypass (attach)
-> -	 * 3. Translation/bypass -> bypass/fault (detach)
-> +	 * 2. Bypass/fault -> single stage translation/bypass (attach)
-> +	 * 3. Single or nested stage Translation/bypass -> bypass/fault (detach)
-> +	 * 4. S2 -> S1 + S2 (attach_pasid_table)
-> +	 * 5. S1 + S2 -> S2 (detach_pasid_table)
->  	 *
->  	 * Given that we can't update the STE atomically and the SMMU
->  	 * doesn't read the thing in a defined order, that leaves us
-> @@ -1193,7 +1195,8 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  	 * 3. Update Config, sync
->  	 */
->  	u64 val = le64_to_cpu(dst[0]);
-> -	bool ste_live = false;
-> +	bool s1_live = false, s2_live = false, ste_live;
-> +	bool abort, nested = false, translate = false;
->  	struct arm_smmu_device *smmu = NULL;
->  	struct arm_smmu_s1_cfg *s1_cfg;
->  	struct arm_smmu_s2_cfg *s2_cfg;
-> @@ -1233,6 +1236,8 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  		default:
->  			break;
->  		}
-> +		nested = s1_cfg->set && s2_cfg->set;
+Robin,
 
-This is a problem when the Guest is booted with iommu.passthrough = 1 as we
-set s1_cfg.set = false for IOMMU_PASID_CONFIG_BYPASS. 
+I have been working with Laurentiu on getting a proper implementation in place.
+Based on the patchset you noted in [2] I have already added preliminary RMR
+support to edk2 and have a working patchset for our HoneyComb using the LX2160a.
 
-Results in BUG_ON(ste_live && !nested).
+Laurentiu pointed me to the Nvidia patchset [1] which I had somehow missed in my
+research.  That filled in quite a bit of the gap that [2] was missing
+since it was
+only implemented or the smmu_v3 driver.  I still need to finish merging the two
+patchsets together for something fully functional but here are my observations.
+If you have any preliminary input I would love to hear it.
 
-Can we instead have nested = true set a bit above in the code, where we set
-s2_cfg->set = true for the ARM_SMMU_DOMAIN_NESTED case?
+ RMR's in ACPI and using the DT reserved_memory mappings seem to be
+functionally achieving the same thing and just need different parsing methods
+to collect the information.  Would there be objections to parsing DT and using
+that to build the same rmr_list that was introduced in [2]?  Functionally we
+are collecting the same information, the start address and length of the memory
+region and then the SMMU IDs that are attached to it.
 
-Please take a look.
+The main difference being that RMR's as you noted are spec'd for this so all
+the information is neatly collected in the IORT table, while DT would require
+parsing the reserved_memory regions tagged with the "active" property and
+then loop through the devices to find the nodes using this memory region
+and parsing out the SMMU information from that node.
+
+Does this all seem reasonable?
 
 Thanks,
-Shameer
+Jon
 
-> +		translate = s1_cfg->set || s2_cfg->set;
->  	}
-> 
->  	if (val & STRTAB_STE_0_V) {
-> @@ -1240,23 +1245,36 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  		case STRTAB_STE_0_CFG_BYPASS:
->  			break;
->  		case STRTAB_STE_0_CFG_S1_TRANS:
-> +			s1_live = true;
-> +			break;
->  		case STRTAB_STE_0_CFG_S2_TRANS:
-> -			ste_live = true;
-> +			s2_live = true;
-> +			break;
-> +		case STRTAB_STE_0_CFG_NESTED:
-> +			s1_live = true;
-> +			s2_live = true;
->  			break;
->  		case STRTAB_STE_0_CFG_ABORT:
-> -			BUG_ON(!disable_bypass);
->  			break;
->  		default:
->  			BUG(); /* STE corruption */
->  		}
->  	}
-> 
-> +	ste_live = s1_live || s2_live;
-> +
->  	/* Nuke the existing STE_0 value, as we're going to rewrite it */
->  	val = STRTAB_STE_0_V;
-> 
->  	/* Bypass/fault */
-> -	if (!smmu_domain || !(s1_cfg->set || s2_cfg->set)) {
-> -		if (!smmu_domain && disable_bypass)
-> +
-> +	if (!smmu_domain)
-> +		abort = disable_bypass;
-> +	else
-> +		abort = smmu_domain->abort;
-> +
-> +	if (abort || !translate) {
-> +		if (abort)
->  			val |= FIELD_PREP(STRTAB_STE_0_CFG,
-> STRTAB_STE_0_CFG_ABORT);
->  		else
->  			val |= FIELD_PREP(STRTAB_STE_0_CFG,
-> STRTAB_STE_0_CFG_BYPASS);
-> @@ -1274,8 +1292,16 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  		return;
->  	}
-> 
-> +	BUG_ON(ste_live && !nested);
-> +
-> +	if (ste_live) {
-> +		/* First invalidate the live STE */
-> +		dst[0] = cpu_to_le64(STRTAB_STE_0_CFG_ABORT);
-> +		arm_smmu_sync_ste_for_sid(smmu, sid);
-> +	}
-> +
->  	if (s1_cfg->set) {
-> -		BUG_ON(ste_live);
-> +		BUG_ON(s1_live);
->  		dst[1] = cpu_to_le64(
->  			 FIELD_PREP(STRTAB_STE_1_S1DSS,
-> STRTAB_STE_1_S1DSS_SSID0) |
->  			 FIELD_PREP(STRTAB_STE_1_S1CIR,
-> STRTAB_STE_1_S1C_CACHE_WBRA) |
-> @@ -1294,7 +1320,14 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  	}
-> 
->  	if (s2_cfg->set) {
-> -		BUG_ON(ste_live);
-> +		u64 vttbr = s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK;
-> +
-> +		if (s2_live) {
-> +			u64 s2ttb = le64_to_cpu(dst[3] & STRTAB_STE_3_S2TTB_MASK);
-> +
-> +			BUG_ON(s2ttb != vttbr);
-> +		}
-> +
->  		dst[2] = cpu_to_le64(
->  			 FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
->  			 FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
-> @@ -1304,9 +1337,12 @@ static void arm_smmu_write_strtab_ent(struct
-> arm_smmu_master *master, u32 sid,
->  			 STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2AA64 |
->  			 STRTAB_STE_2_S2R);
-> 
-> -		dst[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
-> +		dst[3] = cpu_to_le64(vttbr);
-> 
->  		val |= FIELD_PREP(STRTAB_STE_0_CFG,
-> STRTAB_STE_0_CFG_S2_TRANS);
-> +	} else {
-> +		dst[2] = 0;
-> +		dst[3] = 0;
->  	}
-> 
->  	if (master->ats_enabled)
-> @@ -1982,6 +2018,14 @@ static int arm_smmu_domain_finalise(struct
-> iommu_domain *domain,
->  		return 0;
->  	}
-> 
-> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED &&
-> +	    (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1) ||
-> +	     !(smmu->features & ARM_SMMU_FEAT_TRANS_S2))) {
-> +		dev_info(smmu_domain->smmu->dev,
-> +			 "does not implement two stages\n");
-> +		return -EINVAL;
-> +	}
-> +
->  	/* Restrict the stage to what we can actually support */
->  	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
->  		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 07f59252dd21..269779dee8d1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -206,6 +206,7 @@
->  #define STRTAB_STE_0_CFG_BYPASS		4
->  #define STRTAB_STE_0_CFG_S1_TRANS	5
->  #define STRTAB_STE_0_CFG_S2_TRANS	6
-> +#define STRTAB_STE_0_CFG_NESTED		7
-> 
->  #define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
->  #define STRTAB_STE_0_S1FMT_LINEAR	0
-> @@ -682,6 +683,7 @@ struct arm_smmu_domain {
->  	enum arm_smmu_domain_stage	stage;
->  	struct arm_smmu_s1_cfg	s1_cfg;
->  	struct arm_smmu_s2_cfg	s2_cfg;
-> +	bool				abort;
-> 
->  	struct iommu_domain		domain;
-> 
-> --
-> 2.21.3
-
+>
+> [1]
+> https://lore.kernel.org/linux-iommu/20200904130000.691933-1-thierry.reding@gmail.com/
+> [2]
+> https://lore.kernel.org/linux-iommu/20201027112646.44680-1-shameerali.kolothum.thodi@huawei.com/
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
