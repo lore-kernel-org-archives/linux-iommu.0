@@ -2,67 +2,64 @@ Return-Path: <SRS0=rc6t=FM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732A5C4361B
-	for <iommu@archiver.kernel.org>; Tue,  8 Dec 2020 15:54:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E750C4167B
+	for <iommu@archiver.kernel.org>; Tue,  8 Dec 2020 15:54:44 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E22A023AC0
-	for <iommu@archiver.kernel.org>; Tue,  8 Dec 2020 15:54:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E22A023AC0
+	by mail.kernel.org (Postfix) with ESMTPS id 023BC23AC1
+	for <iommu@archiver.kernel.org>; Tue,  8 Dec 2020 15:54:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 023BC23AC1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6216E203B9;
-	Tue,  8 Dec 2020 15:54:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8C72D86FB1;
+	Tue,  8 Dec 2020 15:54:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7Ll914yhpuUK; Tue,  8 Dec 2020 15:54:40 +0000 (UTC)
+	with ESMTP id n3-RFnzbquto; Tue,  8 Dec 2020 15:54:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 949F420336;
-	Tue,  8 Dec 2020 15:54:40 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B2FA486FB7;
+	Tue,  8 Dec 2020 15:54:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 776F1C0FA7;
-	Tue,  8 Dec 2020 15:54:40 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 40C09C013B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A1774C0FA7;
+	Tue,  8 Dec 2020 15:54:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2BB2C013B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 279A987492
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B1AF286FA0
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wh3hON7N1PXj for <iommu@lists.linux-foundation.org>;
- Tue,  8 Dec 2020 15:54:38 +0000 (UTC)
+ with ESMTP id l4QeqmExLh+i for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Dec 2020 15:54:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9737B8748F
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:38 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id AE75E86FA7
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 15:54:40 +0000 (UTC)
 From: Will Deacon <will@kernel.org>
 Authentication-Results: mail.kernel.org;
  dkim=permerror (bad message/signature format)
-To: Joerg Roedel <joro@8bytes.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- Kunkun Jiang <jiangkunkun@huawei.com>, Robin Murphy <robin.murphy@arm.com>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RESEND] iommu/io-pgtalbe-arm: Remove "iopte_type(pte,
- l)" extra parameter "l"
-Date: Tue,  8 Dec 2020 15:54:29 +0000
-Message-Id: <160743594324.2814527.17080141528844810125.b4-ty@kernel.org>
+To: joro@8bytes.org,
+	John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH 0/3] IOMMU: Some IOVA code tidy-up
+Date: Tue,  8 Dec 2020 15:54:30 +0000
+Message-Id: <160743688897.2940119.3009790405455404921.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201207120150.1891-1-jiangkunkun@huawei.com>
-References: <20201207120150.1891-1-jiangkunkun@huawei.com>
+In-Reply-To: <1607020492-189471-1-git-send-email-john.garry@huawei.com>
+References: <1607020492-189471-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Cc: kernel-team@android.com, Will Deacon <will@kernel.org>,
- catalin.marinas@arm.com, wanghaibin.wang@huawei.com,
- Keqian Zhu <zhukeqian1@huawei.com>
+Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
+ 0x7f454c46@gmail.com, linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, kernel-team@android.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,14 +77,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 7 Dec 2020 20:01:50 +0800, Kunkun Jiang wrote:
-> Knowing from the code, the macro "iopte_type(pte, l)" doesn't use the
-> parameter "l" (level). So we'd better to remove it.
+On Fri, 4 Dec 2020 02:34:49 +0800, John Garry wrote:
+> This series contains some minor tidy-ups by deleting an unreferenced
+> function and unexporting some functions, highlighted by:
+> https://lore.kernel.org/linux-iommu/6e09d847-fb7f-1ec1-02bf-f0c8b315845f@huawei.com/T/#med5a019f9d3835c162c16a48f34d05cc0111b0ca
+> 
+> John Garry (3):
+>   iommu: Delete split_and_remove_iova()
+>   iommu: Stop exporting alloc_iova_mem()
+>   iommu: Stop exporting free_iova_mem()
+> 
+> [...]
 
-Applied to arm64 (for-next/iommu/misc), thanks!
+Applied to arm64 (for-next/iommu/iova), thanks!
 
-[1/1] iommu/io-pgtalbe-arm: Remove "iopte_type(pte, l)" extra parameter "l"
-      https://git.kernel.org/arm64/c/f37eb48466d2
+[1/3] iommu: Delete split_and_remove_iova()
+      https://git.kernel.org/arm64/c/2f24dfb71208
+[2/3] iommu: Stop exporting alloc_iova_mem()
+      https://git.kernel.org/arm64/c/51b70b817b18
+[3/3] iommu: Stop exporting free_iova_mem()
+      https://git.kernel.org/arm64/c/176cfc187c24
 
 Cheers,
 -- 
