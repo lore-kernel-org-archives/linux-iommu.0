@@ -6,100 +6,96 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF850C4361B
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 19:16:04 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE3BC433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 19:18:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1341023AAC
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 19:16:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1341023AAC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 44CCC23C90
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 19:18:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44CCC23C90
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7F3B520460;
-	Wed,  9 Dec 2020 19:16:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9E8C1876CD;
+	Wed,  9 Dec 2020 19:18:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fBLksh6hmPiG; Wed,  9 Dec 2020 19:16:02 +0000 (UTC)
+	with ESMTP id Yji1ysYoFCaP; Wed,  9 Dec 2020 19:18:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2A6942033E;
-	Wed,  9 Dec 2020 19:16:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7DFAA87693;
+	Wed,  9 Dec 2020 19:18:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00D56C0893;
-	Wed,  9 Dec 2020 19:16:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D8B8C013B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:16:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 68A98C0893;
+	Wed,  9 Dec 2020 19:18:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD9B6C013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:18:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 63EE087ACA
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:16:00 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C4EB487693
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:18:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WZaKlngx8Svm for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 19:15:59 +0000 (UTC)
+ with ESMTP id f02h2osrzyTN for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 19:18:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9669287AC1
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:15:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1607541358;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=PjbYSkTUKJTra9F+rU4vKjR/ApBdCFoCJ6AA7j7gnIY=;
- b=TRW+/wOuQ3ent7EvF0fjt+PUA5g2Z6dhX2xrgU0a+hs3Eq6DXFOjURjEl2p0vgLtkWhdv7
- jzhqdOJ1gq5Np0wAeTDzp3Lf18mJuDuBX1uRRaeB+P+uUEi+YoUnFmTJSg4u4UcO2EqKCa
- z22U25RfzPFGe+gPqudmVJOPINvUUNU=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-568-Qbn10QMbNrKlnub5LOPAlQ-1; Wed, 09 Dec 2020 14:15:53 -0500
-X-MC-Unique: Qbn10QMbNrKlnub5LOPAlQ-1
-Received: by mail-lj1-f197.google.com with SMTP id r22so2604617ljd.4
- for <iommu@lists.linux-foundation.org>; Wed, 09 Dec 2020 11:15:53 -0800 (PST)
+Received: from mail-lj1-f195.google.com (mail-lj1-f195.google.com
+ [209.85.208.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 01BD987684
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 19:18:15 +0000 (UTC)
+Received: by mail-lj1-f195.google.com with SMTP id f11so3744715ljm.8
+ for <iommu@lists.linux-foundation.org>; Wed, 09 Dec 2020 11:18:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linux-foundation.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=TOdxg1NYtVXt5G5UnjVeP8cr61+u8IQ69hUIDhx99vI=;
+ b=Z9p/tmKsmOC83zvCFtHtvphx12PkgBTkQDx5VUQMHPKdW/yXt4ZVKmDtW3EHXknybH
+ 3ttqK6IydOkQMKlbM7Ps646F0xkUlhv/kD2h2saS2KzzTX0xNXxEMDzkP09sKpOOhv6G
+ hQacjVksK2YnSqwF/GbSYU1xxowa8yAnv12pU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=PjbYSkTUKJTra9F+rU4vKjR/ApBdCFoCJ6AA7j7gnIY=;
- b=ZNGNJEVm45zqypG2OGFzyvHULeI96U88IBvmeJUlsyCoiighNUHEfTbpzfcKAaJlqu
- v1nIjQ5nWGpxPDutNQmX0WXXG0QnLZksjssQy1R4b74cU0h4DZnbbPSAAtuMnBudwkHq
- K+wnoLT3qVvCaitxAeLnlEEKul5ftWcL/0530Hh+ex/EmiCUWzo/SD6bO6rl45N0i7Hr
- B+F3UpsHLBa8Ik5cx3MLXnX2HttMfGS8jJA2Y5OMNM+haKVfdDNcz9pqT/URDANGLxaz
- tdTFDm+NlOI4B1sP6U926Kk+y1S6iSRkFPuzbN7mTfpy+4yo8Hu60pr1fotz951/vcHI
- QioA==
-X-Gm-Message-State: AOAM530URzbGCY95xV+uAp9YtBa1xeL5zuZ3v6Rkmz+J3A168jBYwLnn
- 8CljFXKysUxeGe3Ci8LYGxtjRdyq/mktZdBommuXZkeshHjjFw6aKCWJ5hdF8wCld6OZ2/jYv16
- qLc1zDR5GYgWTA3k0JziD1DIhzhpf+tKxel42OkamviD2yQ==
-X-Received: by 2002:a05:651c:10c:: with SMTP id
- a12mr1658536ljb.414.1607541352071; 
- Wed, 09 Dec 2020 11:15:52 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9/CimOc3N+72fFhCbbXRSFzpfZduUqobE3ByMI+lzkU6larzWtaAlzRFEmIhhoEYzS/VQ4tAHzGnleY0WZpw=
-X-Received: by 2002:a05:651c:10c:: with SMTP id
- a12mr1658530ljb.414.1607541351897; 
- Wed, 09 Dec 2020 11:15:51 -0800 (PST)
+ bh=TOdxg1NYtVXt5G5UnjVeP8cr61+u8IQ69hUIDhx99vI=;
+ b=inhWQaaFb4pA6ketLdgDfZv8nwnf3rsATE7idVPT/xL0iPPrhqbOe/Eh2nRC4AYBj8
+ Wjn7q4FZb/iiuJQJf66kWHD6/iQPSFq5xBw8zhHZ63tYfdY8VNFC0fGVuXTRe80EcK06
+ vFUt1E7m25Ss4biK7bdK36d6Yt94f3Ga1OgkDLZj4jFVeWK0RM926U1au+YV6oT3P7v6
+ 4XZnc/NUpTagrdHCsziHqvq9R7vTBx6FC2MzY2AheyxcT34lVjy0ARWObHrOEjQvkT8N
+ 5B53PwYvUkHhLpCFb87gJEuuwuxxNoqhxS0HRjtyBeXjEDutNz77LpPbFH1A6tpveNkU
+ ofjA==
+X-Gm-Message-State: AOAM530cNKRzzV0wHjUPliFtpXqzW2Hw8hgnyjj6bim+BVGVuco+pV49
+ vBOpyUkdLboUNL3HYvXIA5/K9uyhaq+OKv+7
+X-Google-Smtp-Source: ABdhPJwXUIawCrOazlxOYd7W+VziZvYNEXNk1FG3XUbSZGZvrTdp5O76V2YIGxgg7zcioUa7Y5uLlg==
+X-Received: by 2002:a05:651c:1b2:: with SMTP id
+ c18mr1633465ljn.385.1607541493655; 
+ Wed, 09 Dec 2020 11:18:13 -0800 (PST)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com.
+ [209.85.167.53])
+ by smtp.gmail.com with ESMTPSA id v28sm335586ljv.29.2020.12.09.11.18.12
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 09 Dec 2020 11:18:12 -0800 (PST)
+Received: by mail-lf1-f53.google.com with SMTP id y19so4600514lfa.13
+ for <iommu@lists.linux-foundation.org>; Wed, 09 Dec 2020 11:18:12 -0800 (PST)
+X-Received: by 2002:ac2:41d9:: with SMTP id d25mr1412125lfi.377.1607541492434; 
+ Wed, 09 Dec 2020 11:18:12 -0800 (PST)
 MIME-Version: 1.0
 References: <20201209141237.GA8092@willie-the-truck>
  <CAHk-=wht4inbTVVMt2TNDxR_cVjSNaBU3JYyKtRMVovWePb65g@mail.gmail.com>
  <20201209185020.GC8778@willie-the-truck> <87tusulrog.fsf@redhat.com>
 In-Reply-To: <87tusulrog.fsf@redhat.com>
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-Date: Wed, 9 Dec 2020 12:15:25 -0700
-Message-ID: <CALzcdduYs4dng6R9j_dFFE5O13Kbpq9Rg05EFaQS1RSCHebYqg@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 9 Dec 2020 11:17:56 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wg370+69ZoXFdUABwwqNaej3hrjcqAsb56J++h2oXKJpg@mail.gmail.com>
+Message-ID: <CAHk-=wg370+69ZoXFdUABwwqNaej3hrjcqAsb56J++h2oXKJpg@mail.gmail.com>
 Subject: Re: [GIT PULL] IOMMU fix for 5.10 (-final)
-To: Will Deacon <will@kernel.org>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jsnitsel@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+To: Jerry Snitselaar <jsnitsel@redhat.com>
 Cc: Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>, Will Deacon <will@kernel.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org
+ iommu <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,64 +113,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 9, 2020 at 12:12 PM Jerry Snitselaar <jsnitsel@redhat.com> wrote:
->
->
-> Will Deacon @ 2020-12-09 11:50 MST:
->
-> > On Wed, Dec 09, 2020 at 10:07:46AM -0800, Linus Torvalds wrote:
-> >> On Wed, Dec 9, 2020 at 6:12 AM Will Deacon <will@kernel.org> wrote:
-> >> >
-> >> > Please pull this one-liner AMD IOMMU fix for 5.10. It's actually a fix
-> >> > for a fix, where the size of the interrupt remapping table was increased
-> >> > but a related constant for the size of the interrupt table was forgotten.
-> >>
-> >> Pulled.
-> >
-> > Thanks.
-> >
-> >> However, why didn't this then add some sanity checking for the two
-> >> different #defines to be in sync?
-> >>
-> >> IOW, something like
-> >>
-> >>    #define AMD_IOMMU_IRQ_TABLE_SHIFT 9
-> >>
-> >>    #define MAX_IRQS_PER_TABLE (1 << AMD_IOMMU_IRQ_TABLE_SHIFT)
-> >>    #define DTE_IRQ_TABLE_LEN ((u64)AMD_IOMMU_IRQ_TABLE_SHIFT << 1)
+On Wed, Dec 9, 2020 at 11:12 AM Jerry Snitselaar <jsnitsel@redhat.com> wrote:
 >
 > Since the field in the device table entry format expects it to be n
 > where there are 2^n entries in the table I guess it should be:
 >
 > #define DTE_IRQ_TABLE_LEN 9
 > #define MAX_IRQS_PER_TABLE (1 << DTE_IRQ_TABLE_LEN)
->
-No, ignore that. I'm being stupid.
 
+No, that "DTE_IRQ_TABLE_LEN" is not the size shift - it's the size
+shift value in that DTE field, which is shifted up by 1.
 
-> >>
-> >> or whatever. Hmm?
-> >
-> > This looks like a worthwhile change to me, but I don't have any hardware
-> > so I've been very reluctant to make even "obvious" driver changes here.
-> >
-> > Suravee -- please can you post a patch implementing the above?
-> >
-> >> That way this won't happen again, but perhaps equally importantly the
-> >> linkage will be more clear, and there won't be those random constants.
-> >>
-> >> Naming above is probably garbage - I assume there's some actual
-> >> architectural name for that irq table length field in the DTE?
-> >
-> > The one in the spec is even better: "IntTabLen".
-> >
-> > Will
-> > _______________________________________________
-> > iommu mailing list
-> > iommu@lists.linux-foundation.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+That's why the current code does that
 
+   #define DTE_IRQ_TABLE_LEN       (9ULL << 1)
+
+there..
+
+Which was why I suggested that new #define that is the *actual* shift
+value, and then the DTE thing and the MAX_IRQS_PER_TABLE values would
+depend on that.
+
+           Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
