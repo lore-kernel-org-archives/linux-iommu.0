@@ -7,65 +7,65 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4C9C19425
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:46 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55931C433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:51 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AD71E23B87
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD71E23B87
+	by mail.kernel.org (Postfix) with ESMTPS id 1434C20731
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1434C20731
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7870886CF3;
-	Wed,  9 Dec 2020 08:03:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F31D28493F;
+	Wed,  9 Dec 2020 08:03:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dGKS7K4cwFZ9; Wed,  9 Dec 2020 08:03:44 +0000 (UTC)
+	with ESMTP id 7YVCd6AD4EFj; Wed,  9 Dec 2020 08:03:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 171BB86C92;
-	Wed,  9 Dec 2020 08:03:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 484C28473A;
+	Wed,  9 Dec 2020 08:03:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0172CC0FA7;
-	Wed,  9 Dec 2020 08:03:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 34D1AC0FA7;
+	Wed,  9 Dec 2020 08:03:49 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3762C0FA7
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0465BC013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DCFFA86C92
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E119786CF3
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PnE02CTHBC7w for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+ with ESMTP id t-HdMEi-pJwe for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 08:03:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4D12A86C24
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
-X-UUID: 63a27a26ea324f8aa7f21aef5bd6e102-20201209
-X-UUID: 63a27a26ea324f8aa7f21aef5bd6e102-20201209
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4EC7C86C92
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:47 +0000 (UTC)
+X-UUID: 711a3382d9ae4e35adb8b2637ae0397b-20201209
+X-UUID: 711a3382d9ae4e35adb8b2637ae0397b-20201209
 Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
  mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 863069981; Wed, 09 Dec 2020 16:03:39 +0800
+ with ESMTP id 1396262683; Wed, 09 Dec 2020 16:03:43 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 9 Dec 2020 16:03:17 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 9 Dec 2020 16:03:38 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Dec 2020 16:03:16 +0800
+ Transport; Wed, 9 Dec 2020 16:03:41 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v5 12/27] iommu/io-pgtable-arm-v7s: Quad lvl1 pgtable for
- MediaTek
-Date: Wed, 9 Dec 2020 16:00:47 +0800
-Message-ID: <20201209080102.26626-13-yong.wu@mediatek.com>
+Subject: [PATCH v5 15/27] iommu/mediatek: Add fail handle for sysfs_add and
+ device_register
+Date: Wed, 9 Dec 2020 16:00:50 +0800
+Message-ID: <20201209080102.26626-16-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20201209080102.26626-1-yong.wu@mediatek.com>
 References: <20201209080102.26626-1-yong.wu@mediatek.com>
@@ -95,50 +95,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The standard input iova bits is 32. MediaTek quad the lvl1 pagetable
-(4 * lvl1). No change for lvl2 pagetable. Then the iova bits can reach
-34bit.
+Add fail handle for iommu_device_sysfs_add and iommu_device_register.
 
+Fixes: b16c0170b53c ("iommu/mediatek: Make use of iommu_device_register interface")
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/io-pgtable-arm-v7s.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 0b3c5b904ddc..5601dc8bf810 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -45,9 +45,10 @@
- /*
-  * We have 32 bits total; 12 bits resolved at level 1, 8 bits at level 2,
-  * and 12 bits in a page.
-+ * MediaTek extend 2 bits to reach 34bits, 14 bits at lvl1 and 8 bits at lvl2.
-  */
- #define ARM_V7S_ADDR_BITS		32
--#define _ARM_V7S_LVL_BITS(lvl, cfg)	((lvl) == 1 ? 12 : 8)
-+#define _ARM_V7S_LVL_BITS(lvl, cfg)	((lvl) == 1 ? ((cfg)->ias - 20) : 8)
- #define ARM_V7S_LVL_SHIFT(lvl)		((lvl) == 1 ? 20 : 12)
- #define ARM_V7S_TABLE_SHIFT		10
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 39478cfbe0f1..09c8c58feb78 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -746,7 +746,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  
-@@ -61,7 +62,7 @@
- #define _ARM_V7S_IDX_MASK(lvl, cfg)	(ARM_V7S_PTES_PER_LVL(lvl, cfg) - 1)
- #define ARM_V7S_LVL_IDX(addr, lvl, cfg)	({				\
- 	int _l = lvl;							\
--	((u32)(addr) >> ARM_V7S_LVL_SHIFT(_l)) & _ARM_V7S_IDX_MASK(_l, cfg); \
-+	((addr) >> ARM_V7S_LVL_SHIFT(_l)) & _ARM_V7S_IDX_MASK(_l, cfg); \
- })
+ 	ret = iommu_device_register(&data->iommu);
+ 	if (ret)
+-		return ret;
++		goto out_sysfs_remove;
  
- /*
-@@ -754,7 +755,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- {
- 	struct arm_v7s_io_pgtable *data;
+ 	spin_lock_init(&data->tlb_lock);
+ 	list_add_tail(&data->list, &m4ulist);
+@@ -754,7 +754,16 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
  
--	if (cfg->ias > ARM_V7S_ADDR_BITS)
-+	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
- 		return NULL;
+-	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
++	ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
++	if (ret)
++		goto out_dev_unreg;
++	return ret;
++
++out_dev_unreg:
++	iommu_device_unregister(&data->iommu);
++out_sysfs_remove:
++	iommu_device_sysfs_remove(&data->iommu);
++	return ret;
+ }
  
- 	if (cfg->oas > (arm_v7s_is_mtk_enabled(cfg) ? 35 : ARM_V7S_ADDR_BITS))
+ static int mtk_iommu_remove(struct platform_device *pdev)
 -- 
 2.18.0
 
