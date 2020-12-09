@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D10C4361B
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 09:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E2DC433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 09:13:42 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8535523B81
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 09:03:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8535523B81
+	by mail.kernel.org (Postfix) with ESMTPS id 7500323B40
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 09:13:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7500323B40
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 347B186BD3;
-	Wed,  9 Dec 2020 09:03:43 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0585684D35;
+	Wed,  9 Dec 2020 09:13:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4IDqOBiGZvaD; Wed,  9 Dec 2020 09:03:40 +0000 (UTC)
+	with ESMTP id JzJSOV6F6Y4r; Wed,  9 Dec 2020 09:13:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2F20486AD9;
-	Wed,  9 Dec 2020 09:03:40 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9010384AD8;
+	Wed,  9 Dec 2020 09:13:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0871FC0FA7;
-	Wed,  9 Dec 2020 09:03:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73F2BC0893;
+	Wed,  9 Dec 2020 09:13:40 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98AFFC013B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:03:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3BA1C013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:13:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 82CA987532
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:03:38 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B81BF8772F
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:13:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Sf0zpnu6Xvrs for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 09:03:35 +0000 (UTC)
+ with ESMTP id aIbzcSXcpYLH for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 09:13:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 40E528704C
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:03:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BD99787726
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 09:13:36 +0000 (UTC)
 Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CrWKQ3ZT5zM1q1;
- Wed,  9 Dec 2020 17:02:50 +0800 (CST)
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CrWXx03ptzM2Rx;
+ Wed,  9 Dec 2020 17:12:49 +0800 (CST)
 Received: from [127.0.0.1] (10.174.177.9) by DGGEMS401-HUB.china.huawei.com
  (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Wed, 9 Dec 2020
- 17:03:25 +0800
-Subject: Re: [RESEND PATCH v3 2/4] iommu/iova: Avoid double-negatives in
- magazine helpers
+ 17:13:24 +0800
+Subject: Re: [RESEND PATCH v3 3/4] iommu/iova: Flush CPU rcache for when a
+ depot fills
 To: John Garry <john.garry@huawei.com>, <robin.murphy@arm.com>,
  <joro@8bytes.org>, <will@kernel.org>
 References: <1605608734-84416-1-git-send-email-john.garry@huawei.com>
- <1605608734-84416-3-git-send-email-john.garry@huawei.com>
+ <1605608734-84416-4-git-send-email-john.garry@huawei.com>
 From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <7eb70f4b-b050-24ca-f1fa-d8f3c9ddce65@huawei.com>
-Date: Wed, 9 Dec 2020 17:03:24 +0800
+Message-ID: <76e057e3-9db8-21fc-3a8a-b9e924a95cf4@huawei.com>
+Date: Wed, 9 Dec 2020 17:13:23 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1605608734-84416-3-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1605608734-84416-4-git-send-email-john.garry@huawei.com>
 Content-Language: en-US
 X-Originating-IP: [10.174.177.9]
 X-CFilter-Loop: Reflected
@@ -89,159 +89,112 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 On 2020/11/17 18:25, John Garry wrote:
-> A similar crash to the following could be observed if initial CPU rcache
-> magazine allocations fail in init_iova_rcaches():
+> Leizhen reported some time ago that IOVA performance may degrade over time
+> [0], but unfortunately his solution to fix this problem was not given
+> attention.
 > 
-> Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-> Mem abort info:
->    ESR = 0x96000004
->    EC = 0x25: DABT (current EL), IL = 32 bits
->    SET = 0, FnV = 0
->    EA = 0, S1PTW = 0
-> Data abort info:
->    ISV = 0, ISS = 0x00000004
->    CM = 0, WnR = 0
-> [0000000000000000] user address but active_mm is swapper
-> Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> Modules linked in:
-> CPU: 11 PID: 696 Comm: irq/40-hisi_sas Not tainted 5.9.0-rc7-dirty #109
-> Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 - V1.16.01 03/15/2019
-> Call trace:
->   free_iova_fast+0xfc/0x280
->   iommu_dma_free_iova+0x64/0x70
->   __iommu_dma_unmap+0x9c/0xf8
->   iommu_dma_unmap_sg+0xa8/0xc8
->   dma_unmap_sg_attrs+0x28/0x50
->   cq_thread_v3_hw+0x2dc/0x528
->   irq_thread_fn+0x2c/0xa0
->   irq_thread+0x130/0x1e0
->   kthread+0x154/0x158
->   ret_from_fork+0x10/0x34
+> To summarize, the issue is that as time goes by, the CPU rcache and depot
+> rcache continue to grow. As such, IOVA RB tree access time also continues
+> to grow.
 > 
-> Code: f9400060 f102001f 54000981 d4210000 (f9400043)
+> At a certain point, a depot may become full, and also some CPU rcaches may
+> also be full when inserting another IOVA is attempted. For this scenario,
+> currently the "loaded" CPU rcache is freed and a new one is created. This
+> freeing means that many IOVAs in the RB tree need to be freed, which
+> makes IO throughput performance fall off a cliff in some storage scenarios:
 > 
->  ---[ end trace 4afcbdfc61b60467 ]---
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6314MB/0KB/0KB /s] [1616K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [5669MB/0KB/0KB /s] [1451K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6673MB/0KB/0KB /s] [1708K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6761MB/0KB/0KB /s] [1731K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6685MB/0KB/0KB /s] [1711K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6178MB/0KB/0KB /s] [1582K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6731MB/0KB/0KB /s] [1723K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2387MB/0KB/0KB /s] [611K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2689MB/0KB/0KB /s] [688K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2278MB/0KB/0KB /s] [583K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1288MB/0KB/0KB /s] [330K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1632MB/0KB/0KB /s] [418K/0/0 iops]
+> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1765MB/0KB/0KB /s] [452K/0/0 iops]
 > 
-> The issue is that expression !iova_magazine_full(NULL) evaluates true; this
-> falls over in in __iova_rcache_insert() when we attempt to cache a mag
-> and cpu_rcache->loaded == NULL:
+> And continue in this fashion, without recovering. Note that in this
+> example it was required to wait 16 hours for this to occur. Also note that
+> IO throughput also becomes gradually becomes more unstable leading up to
+> this point.
 > 
-> if (!iova_magazine_full(cpu_rcache->loaded)) {
-> 	can_insert = true;
-> ...
+> This problem is only seen for non-strict mode. For strict mode, the rcaches
+> stay quite compact.
 > 
-> if (can_insert)
-> 	iova_magazine_push(cpu_rcache->loaded, iova_pfn);
+> As a solution to this issue, judge that the IOVA caches have grown too big
+> when cached magazines need to be free, and just flush all the CPUs rcaches
+> instead.
 > 
-> As above, can_insert is evaluated true, which it shouldn't be, and we try
-> to insert pfns in a NULL mag, which is not safe.
+> The depot rcaches, however, are not flushed, as they can be used to
+> immediately replenish active CPUs.
 > 
-> To avoid this, stop using double-negatives, like !iova_magazine_full() and
-> !iova_magazine_empty(), and use positive tests, like
-> iova_magazine_has_space() and iova_magazine_has_pfns(), respectively; these
-> can safely deal with cpu_rcache->{loaded, prev} = NULL.
+> In future, some IOVA compaction could be implemented to solve the
+> instabilty issue, which I figure could be quite complex to implement.
 > 
+> [0] https://lore.kernel.org/linux-iommu/20190815121104.29140-3-thunder.leizhen@huawei.com/
+> 
+> Analyzed-by: Zhen Lei <thunder.leizhen@huawei.com>
+> Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
 > Signed-off-by: John Garry <john.garry@huawei.com>
 > ---
->  drivers/iommu/iova.c | 29 +++++++++++++++++------------
->  1 file changed, 17 insertions(+), 12 deletions(-)
+>  drivers/iommu/iova.c | 16 ++++++----------
+>  1 file changed, 6 insertions(+), 10 deletions(-)
 > 
 > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 81b7399dd5e8..1f3f0f8b12e0 100644
+> index 1f3f0f8b12e0..386005055aca 100644
 > --- a/drivers/iommu/iova.c
 > +++ b/drivers/iommu/iova.c
-> @@ -827,14 +827,18 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
->  	mag->size = 0;
->  }
->  
-> -static bool iova_magazine_full(struct iova_magazine *mag)
-> +static bool iova_magazine_has_space(struct iova_magazine *mag)
+> @@ -901,7 +901,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>  				 struct iova_rcache *rcache,
+>  				 unsigned long iova_pfn)
 >  {
-> -	return (mag && mag->size == IOVA_MAG_SIZE);
-> +	if (!mag)
-> +		return false;
-> +	return mag->size < IOVA_MAG_SIZE;
->  }
->  
-> -static bool iova_magazine_empty(struct iova_magazine *mag)
-> +static bool iova_magazine_has_pfns(struct iova_magazine *mag)
->  {
-> -	return (!mag || mag->size == 0);
-> +	if (!mag)
-> +		return false;
-> +	return mag->size;
->  }
->  
->  static unsigned long iova_magazine_pop(struct iova_magazine *mag,
-> @@ -843,7 +847,7 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->  	int i;
->  	unsigned long pfn;
->  
-> -	BUG_ON(iova_magazine_empty(mag));
-> +	BUG_ON(!iova_magazine_has_pfns(mag));
->  
->  	/* Only fall back to the rbtree if we have no suitable pfns at all */
->  	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
-> @@ -859,7 +863,7 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->  
->  static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
->  {
-> -	BUG_ON(iova_magazine_full(mag));
-> +	BUG_ON(!iova_magazine_has_space(mag));
->  
->  	mag->pfns[mag->size++] = pfn;
->  }
-> @@ -905,9 +909,9 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->  	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
->  	spin_lock_irqsave(&cpu_rcache->lock, flags);
->  
-> -	if (!iova_magazine_full(cpu_rcache->loaded)) {
-> +	if (iova_magazine_has_space(cpu_rcache->loaded)) {
->  		can_insert = true;
-> -	} else if (!iova_magazine_full(cpu_rcache->prev)) {
-> +	} else if (iova_magazine_has_space(cpu_rcache->prev)) {
->  		swap(cpu_rcache->prev, cpu_rcache->loaded);
->  		can_insert = true;
->  	} else {
-> @@ -916,8 +920,9 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->  		if (new_mag) {
->  			spin_lock(&rcache->lock);
->  			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
-> -				rcache->depot[rcache->depot_size++] =
-> -						cpu_rcache->loaded;
-> +				if (cpu_rcache->loaded)
-
-Looks like it just needs to change this place. Compiler ensures that mag->size
-will not be accessed when mag is NULL.
-
-static bool iova_magazine_full(struct iova_magazine *mag)
-{
-        return (mag && mag->size == IOVA_MAG_SIZE);
-}
-
-static bool iova_magazine_empty(struct iova_magazine *mag)
-{
-        return (!mag || mag->size == 0);
-}
-
-
-> +					rcache->depot[rcache->depot_size++] =
-> +							cpu_rcache->loaded;
->  			} else {
->  				mag_to_free = cpu_rcache->loaded;
+> -	struct iova_magazine *mag_to_free = NULL;
+>  	struct iova_cpu_rcache *cpu_rcache;
+>  	bool can_insert = false;
+>  	unsigned long flags;
+> @@ -923,13 +922,12 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>  				if (cpu_rcache->loaded)
+>  					rcache->depot[rcache->depot_size++] =
+>  							cpu_rcache->loaded;
+> -			} else {
+> -				mag_to_free = cpu_rcache->loaded;
+> +				can_insert = true;
+> +				cpu_rcache->loaded = new_mag;
 >  			}
-> @@ -968,9 +973,9 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
->  	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
->  	spin_lock_irqsave(&cpu_rcache->lock, flags);
+>  			spin_unlock(&rcache->lock);
+> -
+> -			cpu_rcache->loaded = new_mag;
+> -			can_insert = true;
+> +			if (!can_insert)
+> +				iova_magazine_free(new_mag);
+>  		}
+>  	}
 >  
-> -	if (!iova_magazine_empty(cpu_rcache->loaded)) {
-> +	if (iova_magazine_has_pfns(cpu_rcache->loaded)) {
->  		has_pfn = true;
-> -	} else if (!iova_magazine_empty(cpu_rcache->prev)) {
-> +	} else if (iova_magazine_has_pfns(cpu_rcache->prev)) {
->  		swap(cpu_rcache->prev, cpu_rcache->loaded);
->  		has_pfn = true;
->  	} else {
+> @@ -938,10 +936,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>  
+>  	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+>  
+> -	if (mag_to_free) {
+> -		iova_magazine_free_pfns(mag_to_free, iovad);
+> -		iova_magazine_free(mag_to_free);
+mag_to_free has been stripped out, that's why lock protection is not required here.
+
+> -	}
+> +	if (!can_insert)
+> +		free_all_cpu_cached_iovas(iovad);
+Lock protection required.
+
+>  
+>  	return can_insert;
+>  }
 > 
 
 _______________________________________________
