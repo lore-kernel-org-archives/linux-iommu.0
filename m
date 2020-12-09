@@ -2,96 +2,180 @@ Return-Path: <SRS0=OQvg=FN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA25EC4361B
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:21:53 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C4AC4361B
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:46:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2FC2923AAC
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FC2923AAC
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 258B522B3A
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 15:46:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 258B522B3A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=lenovo.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C033487A4B;
-	Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B73B52010F;
+	Wed,  9 Dec 2020 15:46:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lbsJ8ii5RF5x; Wed,  9 Dec 2020 15:21:52 +0000 (UTC)
+	with ESMTP id 1qN2PQ1UPoy4; Wed,  9 Dec 2020 15:46:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F129F87A2B;
-	Wed,  9 Dec 2020 15:21:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2F24E1FFFE;
+	Wed,  9 Dec 2020 15:46:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8F51C0893;
-	Wed,  9 Dec 2020 15:21:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C4B1C0893;
+	Wed,  9 Dec 2020 15:46:47 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 397F6C013B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 06:45:43 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0EDC4C013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 15:46:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3493787ACE
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 06:45:43 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EF49E873AE
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 15:46:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dBlxcyeURbRT for <iommu@lists.linux-foundation.org>;
- Tue,  8 Dec 2020 06:45:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
- [209.85.166.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7502887AC2
- for <iommu@lists.linux-foundation.org>; Tue,  8 Dec 2020 06:45:42 +0000 (UTC)
-Received: by mail-io1-f66.google.com with SMTP id p187so15920998iod.4
- for <iommu@lists.linux-foundation.org>; Mon, 07 Dec 2020 22:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=rL+wsfeGY2xDh+eJecj0/Gh1nF+19yExPVK7v/8qFIE=;
- b=gHQYkqd3gUpNiE3eFTHhEY1QZosGBKPzz1G2wSesgr7IGUX137cklLEbo0JhMWEXj/
- Hy8fUorKiyGsl3oUbQjfHgecDty1jczRUDnbj0D0giPCKkZyH1u7Eny23TYnNGSp7SD+
- OZ/N2fhFQ6ERSQIqcnt6aKZncMgTM8oaofsRAO+MXdbjtud+Pdv3xcHMxJiCdoGlbVJE
- GgYdlA3DgrT1c3weQZcrZ4IdK12xoGcKdXg6R+uK8z3rhFFffHT+PYzDZ5vEgpI/WYCo
- eIUS1Dh3j2bEHulhuB7D6d402Aeyr+WuahtL7zNnxTN88GRuLoe5g8qgvrWPxXWltwwz
- 0g0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=rL+wsfeGY2xDh+eJecj0/Gh1nF+19yExPVK7v/8qFIE=;
- b=U4G9J6JG/EjQiQfbE6MYp9xEgVrLNN6q3Cj0pWpq6bByORSOYk34ky48QhEt/ot3EC
- pkzuIV54BSqlvNygn8+CCN16iCng3doow3shuOuon77Puua8OZmgyr6KFSnXB1AirXTC
- nUO7UGsWc26VpWIgI0ZWaHr9+DmETGSoGxgP9MCoJI+EjWj8g/dQSGb1MyzRBlhDmR7m
- QgdRbWQ4r+bbeSaLJlV2DLMU+AveK0T17OaHGSjDjNcC/kH8dKcwdGe+vVX2GwD6beXr
- z6KQ9nSbouz20AES59zhZCINBtJYMhwn5Aeu35mta/QYGN2W/B3xPpG7ABUe3vZ7I177
- r+yg==
-X-Gm-Message-State: AOAM530iAzxxMpSCGRITOzz69kQT7UPDNoxgmFAoeXv3l+2I9S77s7Uz
- HhLFRrOiv5horkV2DRQS3zT13Z1qoQQbCMigqsZ0Hw==
-X-Google-Smtp-Source: ABdhPJy9yv69fikO0FgVWJSIfA3iHtF7Z+gC1ugnKkndIs2+bA2lGUHDGuzIu0DqIxf1yXjNxUl4lpajogqbIsxQC5c=
-X-Received: by 2002:a02:b709:: with SMTP id g9mr25410086jam.90.1607409941575; 
- Mon, 07 Dec 2020 22:45:41 -0800 (PST)
+ with ESMTP id AYHGbko3YkhU for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 15:46:44 +0000 (UTC)
+X-Greylist: delayed 00:13:47 by SQLgrey-1.7.6
+Received: from mail1.bemta23.messagelabs.com (mail1.bemta23.messagelabs.com
+ [67.219.246.4])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 001D786FF2
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 15:46:43 +0000 (UTC)
+Received: from [100.112.2.115] (using TLSv1.2 with cipher
+ DHE-RSA-AES256-GCM-SHA384 (256 bits))
+ by server-4.bemta.az-b.us-east-1.aws.symcld.net id AD/6B-42660-72EE0DF5;
+ Wed, 09 Dec 2020 15:32:55 +0000
+X-Brightmail-Tracker: H4sIAAAAAAAAA1VSe0xbdRjld+9te4ftvLRjfCJo0s2ZgbfhQqY
+ 1c1FnjB2EuJkFU43SSyltZ1tqb6vgYwE7wmsIExZKF56CLEiQFTNENrFjQceyUKsxDcM4pEYe
+ m5sdCvLobLls6n/n/M73O+d8yUfi0hFhIqkrsutsFtYkF8YShtnpWHrX777ctPAlhdJV6RMp2
+ 0b2KitP9YuUx6b2PEOogt4WTDXk/kmk8vRUClX1gW50kHhFYLTkFRZpBIZAOW1dlBT1BvqwEn
+ T1vioUS0qpEgx83osET+YQ3C7/TsCTOwgqSjoQT1YQzF6+uUEQ1YXDD6HGyNiWCBkjYGgtlRf
+ 6EVSv3EZRgaCGcXCNP8V/b8agqqN60/gXBD3tJyKRJCmkUuCKh41+2EaZoGbAS0QxTh2AwUmv
+ KIpl1LOwtrgu4Gf2Q2PZh5tYAdW/+kR82E44W9G8ESyhNODqPo/z7bbD0ngvxnsmwGSwdQMDR
+ UHnuQmcx/EwNxMW8BtUIRiZGyZ4YS80hOtFPE4Gf2s14nE2/HhnRcDjFAhf8W2avgE1axeF0b
+ 2A2gXnSlP554egp2Z60zIJrgUGhdEsoGYw8B9fxuoQ4/5PPx4/Bm3DISGPU+GT9gXcvbFbHFx
+ qChJtiOhBj+fZjHqD3cwaTTSTlkYzTDqdTjPpGQr2HTpP4eBoHcvZaUbBvs0puGKz1pSvsOjs
+ HhS5pXwr9u4XaHn+luICeoDE5PGSk35frnRrXmF+sYHlDLk2h0nHXUBJJCkHSdP1iBZn0+l1R
+ QVGU+Qi78pAiuXbJKMLEVnCWVkzZ9Tz0jiiybq55g5cSlgKLbrEBEnfjcgQFR0yOCz3LO7etR
+ 8lJ8okKCYmRiq26mxmo/3/+jxKIJFcJimIuoiNFvu9pPlICSxSQuyfiJaws/9KiSXYS++XpQy
+ uHg1nvrb9fPuk8+Rvyd+8mvX5C9nl8WduqY/IuOCst/To36c1A41bFPOS72XixrYCbnrkD9ln
+ awPZ/c7MUB+znvNilv3rxUeNTfsOdR7Sp4uJ0sOjnuCe42cCp5bY2lCWubX44GHPzYXXG5y1x
+ P2l1zM//pYwdQW27o/rGstxZ7hqNeNIvKr+dPjJj8Z2HNAvPne6zu2g1UszSQO7/zw2sTp1Q5
+ uzAwqSZ69NVTSEvLg217L7rV51nNpx9cv6p52xb3LUkRbnw8zOSpVn/fKD2YPMB5XuhZe1+1R
+ LozFpGcr3OsVDzzd0h59QIu0q+1dLmWviq9SfrWeXNY9Y5ARnYJkU3Max/wCd5KhSUgQAAA==
+X-Env-Sender: ahuang12@lenovo.com
+X-Msg-Ref: server-17.tower-386.messagelabs.com!1607527974!170912!1
+X-Originating-IP: [104.232.225.10]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.60.3; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 25323 invoked from network); 9 Dec 2020 15:32:54 -0000
+Received: from unknown (HELO lenovo.com) (104.232.225.10)
+ by server-17.tower-386.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384
+ encrypted SMTP; 9 Dec 2020 15:32:54 -0000
+Received: from HKGWPEMAIL04.lenovo.com (unknown [10.128.3.72])
+ (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by Forcepoint Email with ESMTPS id 8A1E96392516181825C7;
+ Wed,  9 Dec 2020 10:32:53 -0500 (EST)
+Received: from HKGWPEMAIL02.lenovo.com (10.128.3.70) by
+ HKGWPEMAIL04.lenovo.com (10.128.3.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2044.4; Wed, 9 Dec 2020 23:32:51 +0800
+Received: from HKEXEDGE01.lenovo.com (10.128.62.71) by HKGWPEMAIL02.lenovo.com
+ (10.128.3.70) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2044.4 via Frontend
+ Transport; Wed, 9 Dec 2020 23:32:51 +0800
+Received: from APC01-PU1-obe.outbound.protection.outlook.com (104.47.126.55)
+ by mail.lenovo.com (10.128.62.71) with Microsoft SMTP Server (version=TLS1_2, 
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2044.4; Wed, 9 Dec 2020
+ 23:32:51 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=akZnAK/pb7yf/5YyvvIzh6zgEYF8aZgjX0lWdOtcxjDPEF/j3a362UB8e8VoNP4rnHGTSZ1tPAHe7y+B0olbUZb+wwX95/VsZ4Xk7yrIumgEg1FCo7g2pOewXpAuLx2M87Mhwzh6zyZCB4ayBfgeuuwx/ZlDEOi8/pAcCqfAuk9r5sG7oVIMZb9je0pU5WWB8dxMadK3LwsUIC28fgOpNE5dmhOC63YdchAGgHvj5e2OkJBVttbdQthyUxIuUItkK3JMsHP1R/4CBt0Q9V9oAsP7OOwXP7gbCDmXhxpj403Fvjqn1p/brtjq7J+1wp72OtidS1eqP6ah6smCuZx+Zw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wm2nHP3FP9SmZebLPH1ixhWbfVhhDvE9LFWsWJPAu7M=;
+ b=SS0cOI2N87kUSiqe8i0r+uUqPs9bJ7bvd4d2u1ofIyvm5NIGn+BNOi0F7jlfJ5WVXlpu63lo/cr1OB+NhT7C/wWOqhIRyxhsxkHB9kwPmrWBLln953kcecv0wdWi5XdX9+OZOWcQMRz/uCmFYsPmAiyWPGEzZB4z68LULqdWdj1+tTu4YYbr3XEzy7Oy3xgfkXBFpWiT6/1upEoscQ/EpZYQBXBKoVmehoC/vmmnxF83yDXFr63fM+yT4eT0VvOkJPR1tcHEesvdj7H5tV4Rn3PI7WaaPyv/U8sMU3D8REJqS6+6vTthBQoXMfLTBzlD9M3u+FPUKGJuqmq88LngTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=lenovo.com; dmarc=pass action=none header.from=lenovo.com;
+ dkim=pass header.d=lenovo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=LenovoBeijing.onmicrosoft.com; s=selector2-LenovoBeijing-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wm2nHP3FP9SmZebLPH1ixhWbfVhhDvE9LFWsWJPAu7M=;
+ b=tRp4mhuESp1m10KctQOmhLmqBFwA90XD3N36gMmwWzWKBBzaQ1CZsZp1TsIVSbP0fzkpNRZ12jhWDBUKV1Ao1bZv8LqhRsnIsWGyuuY6G5tlvHTtVk4k4RM9QGbmc8QrqbGpWgwxyigtTV/vBhSOS9g/LbRKOeRQWliIm/g7708=
+Received: from HK2PR0302MB2594.apcprd03.prod.outlook.com (2603:1096:202:c::8)
+ by HK0PR03MB3444.apcprd03.prod.outlook.com (2603:1096:203:53::18)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.8; Wed, 9 Dec
+ 2020 15:32:50 +0000
+Received: from HK2PR0302MB2594.apcprd03.prod.outlook.com
+ ([fe80::2db3:5dbc:5c8a:180f]) by HK2PR0302MB2594.apcprd03.prod.outlook.com
+ ([fe80::2db3:5dbc:5c8a:180f%9]) with mapi id 15.20.3654.012; Wed, 9 Dec 2020
+ 15:32:50 +0000
+From: Adrian Huang12 <ahuang12@lenovo.com>
+To: Adrian Huang <adrianhuang0701@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>
+Subject: RE: [PATCH 1/1] iommu/amd: Remove unnecessary assignment
+Thread-Topic: [PATCH 1/1] iommu/amd: Remove unnecessary assignment
+Thread-Index: AdbOQHD/M+tredDiSAuDOmapqMcZmw==
+Date: Wed, 9 Dec 2020 15:32:50 +0000
+Message-ID: <HK2PR0302MB2594BB6B721306895329A28DB3CC0@HK2PR0302MB2594.apcprd03.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2001:b011:e003:31f3:a5da:649d:d62b:3a5c]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 463a513e-73da-4f86-0349-08d89c57b016
+x-ms-traffictypediagnostic: HK0PR03MB3444:
+x-microsoft-antispam-prvs: <HK0PR03MB34449B78EF80EB1F1650C1B5B3CC0@HK0PR03MB3444.apcprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sVs5pNR49FflQnHhhAJxog3amkFRVwUlEFasy4sekLTSVNq3HRIzzCYsitceS7PtLDZccme/RLJjUL8h56m7VlHsXYm5MQrFasQhGwCvMLpF7QYy5ZftLnUtisKI+NFz8BssPpWBeOzLVI2Qchr9tbMWfz3XphM4NfvUE7mQBYQsNM5g4cQNKqLESFRzbdFu6HOvGNHziMh57QGTZRE0iq8BTBPe6W0jh9R1jPRAyCcKr03etv7aXxknFAvuQL6lfyKRVCaZw9hy9XpCgAnq4q/zVNepAzMUdDvV5RsqRw7S8ffH71KGv1e7JWSslC3w
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:HK2PR0302MB2594.apcprd03.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(136003)(366004)(346002)(8936002)(5660300002)(8676002)(2906002)(66446008)(66556008)(66946007)(66476007)(64756008)(76116006)(4326008)(508600001)(110136005)(33656002)(52536014)(6506007)(83380400001)(71200400001)(55016002)(9686003)(53546011)(186003)(86362001)(7696005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?roZvDrReWaRHs2EAcn/tbN8cWUBdsr4IRVgOWibEjIUBlAGEUF31M1maZCxf?=
+ =?us-ascii?Q?MX4eRNS43fAzC/MWkyORo2hiYkWqBFyMBXz0g42+zMxJ6BcxNTHcw3/qknxk?=
+ =?us-ascii?Q?s6Uj7EsE+hTXj3TRWeOaur0dbhhnm0/J8tihmxQbVLe9zcdJ7fYFCLvd3KMj?=
+ =?us-ascii?Q?5znsJn4i9yDMqFoBn77jYju3i/D/KBr4zMS6mGzOuz7xRZOFHQEPRp4Lzlnb?=
+ =?us-ascii?Q?przB+CM5arPbtYx4PZU5pbavgfFN1eZ8g3+jJ79jJL3e2h19grdJ+jd2wfOy?=
+ =?us-ascii?Q?3Q0uAYCvwkRhKxd5zt6LHcWJfzb1NigHzodR+v5wgtXFv/68n5YldB26ul1+?=
+ =?us-ascii?Q?7eG2jDBRpoiMEOmwAt5jZ7aXUOj8xXkb10EKixlkGFwQ5meG+tisr1lx9z4s?=
+ =?us-ascii?Q?/rXxWD6TbvEyYsUdU4O65BAEqIEjlk8AklAMqIlE7d8NwCjToa1YwUiTpMU/?=
+ =?us-ascii?Q?BMtqyW+NMBeUDg6SdTedjgzBtWH0NKTofJJm4X/D6oLF0AGU2QNxczHcVcXd?=
+ =?us-ascii?Q?7HKBC3BExbQlpaeqmo+squWhkQrXtsILpPt+WI7qYGi4PW6PB8XNDow+5vO3?=
+ =?us-ascii?Q?6569xxoMhZ+PpG0rlor3SLA/7tehownbp+JGSuTCWt716PA07Ei/HAejf7kE?=
+ =?us-ascii?Q?aJoO6y/GJ15MTZnOFOZDQbKtYkBl2gKigq9mdgiH7jUpn5kzqTO6Lg4my17+?=
+ =?us-ascii?Q?BUI9kdRViWffWkI9y1rdOTlPvhIk3EYq0vVK3GS89obcFRsxye66zGQbxa1z?=
+ =?us-ascii?Q?tXLvQgt+ID27pq1Z1NFBhCgxOYQPUuXIZQyfyDhve+stVx1Ud2VFcvnXZNjw?=
+ =?us-ascii?Q?6QbH4L/62/a7+zEXGvnsYHz/3whqKE8+uHETSZ2snpwjIoJFbIETI8y8KNu2?=
+ =?us-ascii?Q?iUdF/SjRsAnP7e1VoZxTLGY4JfLNGXeCmxGW/Zaw3+E5D3p3G2Fuv1P3k4rD?=
+ =?us-ascii?Q?43XMHn7QLsytoOxFgCHjKiMnujhAAXtO6XnKru91eWQu2gf+0Yx919mAdcjc?=
+ =?us-ascii?Q?XT3uBwiX7Qi744tZ9OghmqxSIRejJaniBxfoqHhImZiIWYI=3D?=
+x-ms-exchange-transport-forked: True
 MIME-Version: 1.0
-References: <20201125221917.150463-1-ribalda@chromium.org>
- <20201130083410.GD32234@lst.de>
- <20201201033658.GE3723071@google.com> <20201201144916.GA14682@lst.de>
- <CAAFQd5BBEbmENrrZ-vMK9cKOap19XWmfcxwrxKfjWx-wEew8rg@mail.gmail.com>
-In-Reply-To: <CAAFQd5BBEbmENrrZ-vMK9cKOap19XWmfcxwrxKfjWx-wEew8rg@mail.gmail.com>
-Date: Tue, 8 Dec 2020 15:45:25 +0900
-Message-ID: <CAME7YmOEi6FUzpAeaM5VitiLzL6oRnbfD04NPwd0Fa-U48t7=g@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
-To: Tomasz Figa <tfiga@chromium.org>
-X-Mailman-Approved-At: Wed, 09 Dec 2020 15:21:50 +0000
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Ricardo Ribalda <ribalda@chromium.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR0302MB2594.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 463a513e-73da-4f86-0349-08d89c57b016
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2020 15:32:50.2166 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5c7d0b28-bdf8-410c-aa93-4df372b16203
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: s0tR1bDXoyUc0ADXEtAJ6E3BlX21Ek+MFm3CxtUHJA0cXSUBDwv6NNUyRMWnDbm2kNOWJ3UU2Qr+loWzuBKHCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR03MB3444
+X-OriginatorOrg: lenovo.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,116 +188,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sergey Senozhatsky via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sergey Senozhatsky <senozhatsky@google.com>
-Content-Type: multipart/mixed; boundary="===============1666694484821333903=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============1666694484821333903==
-Content-Type: multipart/alternative; boundary="00000000000093eb2605b5ee4ab3"
+Gentle ping.
 
---00000000000093eb2605b5ee4ab3
-Content-Type: text/plain; charset="UTF-8"
+-- Adrian
 
-On Tue, Dec 8, 2020 at 1:54 PM Tomasz Figa <tfiga@chromium.org> wrote:
-
->
-> In any case, Sergey is going to share a preliminary patch on how the
-> current API would be used in the V4L2 videobuf2 framework. That should
-> give us more input on how such a helper could look.
->
-
-
-My current WIP (deep WIP) series can be found at [0]. The patch that adds
-new
-DMA API support is at the head of the series [1]. New DMA API requires us to
-have several internal videobuf2 API changes before we can proceed [2]: v4l2
-and
-videobuf2 core do not pass enough information to the vb2 allocators now.
-Previously,
-if user space requests non-coherent allocation v4l2 would set queue
-dma_attr bit,
-videobuf2 core would pass queue->dma_attrs to vb2 allocator, which would
-those dma_attrs for dma_alloc(). So everything was transparent (sort of).
-Since we
-don't have that dma_attr flag anymore, there is no way for v4l2 to pass the
-request
-information (coherent or non-coherent) to the vb2 allocator. Hence we need
-to rework
-the vb2 allocator API. I currently pass vb2 pointer, but we decided to
-rework it again
-and to pass dedicated VB2_ALLOC_FLAGS from the videobuf2 core to the
-allocator. This is still in my private tree and not completely ready, will
-push those
-patches to github later.
-
-Another thing to notice is that the new API requires us to have two
-execution branches
-in allocators - one for the current API; and one for the new API (if it's
-supported and
-if user-space requested non-coherent allocation).
-
-[0] https://github.com/sergey-senozhatsky/linux-next-ss/commits/master
-[1]
-https://github.com/sergey-senozhatsky/linux-next-ss/commit/a45f48b483daee59594c62e4aaf01790aab960c8
-[2]
-https://github.com/sergey-senozhatsky/linux-next-ss/commit/b784145101c398da7fe9e2608b6001e58e05a9b5
-
--ss
-
---00000000000093eb2605b5ee4ab3
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr">On Tue, Dec 8, 2020 at 1:54 PM Tomasz Fig=
-a &lt;<a href=3D"mailto:tfiga@chromium.org">tfiga@chromium.org</a>&gt; wrot=
-e:<br></div><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" st=
-yle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padd=
-ing-left:1ex"><br>In any case, Sergey is going to share a preliminary patch=
- on how the<br>
-current API would be used in the V4L2 videobuf2 framework. That should<br>
-give us more input on how such a helper could look.<br></blockquote><div>=
-=C2=A0</div><div><br></div><div>My current WIP (deep WIP) series can be fou=
-nd at [0]. The patch that adds new</div><div>DMA API support is at the head=
- of the series [1]. New DMA API requires us to</div><div>have several inter=
-nal videobuf2 API changes before we can proceed [2]: v4l2 and</div><div>vid=
-eobuf2 core do not pass enough information to the vb2 allocators now. Previ=
-ously,</div><div>if user space requests non-coherent allocation v4l2 would =
-set queue dma_attr bit,</div><div>videobuf2 core would pass queue-&gt;dma_a=
-ttrs to vb2 allocator, which would=C2=A0</div><div>those dma_attrs for dma_=
-alloc(). So everything was transparent=C2=A0(sort of). Since we</div><div>d=
-on&#39;t have that dma_attr flag anymore, there is no way for v4l2 to pass =
-the request</div><div>information (coherent or non-coherent) to the vb2 all=
-ocator. Hence we need to rework</div><div>the vb2 allocator API. I currentl=
-y pass vb2 pointer, but we decided to rework it again</div><div>and to pass=
- dedicated VB2_ALLOC_FLAGS from the videobuf2 core to the=C2=A0</div><div>a=
-llocator. This is still in my private tree and not completely ready, will p=
-ush those</div><div>patches to github later.</div><div><br></div><div>Anoth=
-er thing to notice is that the new API requires us to have two execution br=
-anches</div><div>in allocators - one for the current API; and one for the n=
-ew API (if it&#39;s supported and</div><div>if user-space requested non-coh=
-erent allocation).</div><div><br></div><div>[0]=C2=A0<a href=3D"https://git=
-hub.com/sergey-senozhatsky/linux-next-ss/commits/master">https://github.com=
-/sergey-senozhatsky/linux-next-ss/commits/master</a></div><div>[1]=C2=A0<a =
-href=3D"https://github.com/sergey-senozhatsky/linux-next-ss/commit/a45f48b4=
-83daee59594c62e4aaf01790aab960c8">https://github.com/sergey-senozhatsky/lin=
-ux-next-ss/commit/a45f48b483daee59594c62e4aaf01790aab960c8</a></div><div>[2=
-]=C2=A0<a href=3D"https://github.com/sergey-senozhatsky/linux-next-ss/commi=
-t/b784145101c398da7fe9e2608b6001e58e05a9b5">https://github.com/sergey-senoz=
-hatsky/linux-next-ss/commit/b784145101c398da7fe9e2608b6001e58e05a9b5</a></d=
-iv><div><br></div><div>-ss</div></div></div>
-
---00000000000093eb2605b5ee4ab3--
-
---===============1666694484821333903==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> -----Original Message-----
+> From: Adrian Huang <adrianhuang0701@gmail.com>
+> Sent: Monday, October 12, 2020 3:01 PM
+> To: Joerg Roedel <joro@8bytes.org>
+> Cc: iommu@lists.linux-foundation.org; Adrian Huang
+> <adrianhuang0701@gmail.com>; Adrian Huang12 <ahuang12@lenovo.com>
+> Subject: [External] [PATCH 1/1] iommu/amd: Remove unnecessary assignment
+> 
+> From: Adrian Huang <ahuang12@lenovo.com>
+> 
+> The values of local variables are assigned after local variables are declared, so no
+> need to assign the initial value during the variable declaration.
+> 
+> And, no need to assign NULL for the local variable 'ivrs_base'
+> after invoking acpi_put_table().
+> 
+> Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
+> ---
+>  drivers/iommu/amd/init.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c index
+> 1ba6b4cc56e8..f171078f7ea0 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -1858,7 +1858,7 @@ static void print_iommu_info(void)  static int __init
+> amd_iommu_init_pci(void)  {
+>  	struct amd_iommu *iommu;
+> -	int ret = 0;
+> +	int ret;
+> 
+>  	for_each_iommu(iommu) {
+>  		ret = iommu_init_pci(iommu);
+> @@ -2494,8 +2494,8 @@ static void __init free_dma_resources(void)  static int
+> __init early_amd_iommu_init(void)  {
+>  	struct acpi_table_header *ivrs_base;
+> +	int i, remap_cache_sz, ret;
+>  	acpi_status status;
+> -	int i, remap_cache_sz, ret = 0;
+>  	u32 pci_id;
+> 
+>  	if (!amd_iommu_detected)
+> @@ -2637,7 +2637,6 @@ static int __init early_amd_iommu_init(void)
+>  out:
+>  	/* Don't leak any ACPI memory */
+>  	acpi_put_table(ivrs_base);
+> -	ivrs_base = NULL;
+> 
+>  	return ret;
+>  }
+> --
+> 2.17.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1666694484821333903==--
