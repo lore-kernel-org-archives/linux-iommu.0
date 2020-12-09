@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA3EC433FE
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 504DEC433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:44 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AFAA323B45
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AFAA323B45
+	by mail.kernel.org (Postfix) with ESMTPS id D5FE823B84
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 08:03:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5FE823B84
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3D5CF86CF3;
-	Wed,  9 Dec 2020 08:03:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8C12F8464A;
+	Wed,  9 Dec 2020 08:03:43 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N0d8p78fueUt; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id CE17B8466D;
+	Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7CBFC0FA7;
+	Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3F968C013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2796886C43
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pDEGQl0vrm2k; Wed,  9 Dec 2020 08:03:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A09B286C24;
-	Wed,  9 Dec 2020 08:03:31 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99CC3C0FA7;
-	Wed,  9 Dec 2020 08:03:31 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53227C013B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2B96787793
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8v2N8G2XkeC5 for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 08:03:30 +0000 (UTC)
+ with ESMTP id QPFBI-56XXNd for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 08:03:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4B80D8761F
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:30 +0000 (UTC)
-X-UUID: 7fc7868c12544669b8eb792985ebb7f4-20201209
-X-UUID: 7fc7868c12544669b8eb792985ebb7f4-20201209
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 75AD586C24
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 08:03:41 +0000 (UTC)
+X-UUID: 5c13e3c59afb44c49bff2796e05dc41d-20201209
+X-UUID: 5c13e3c59afb44c49bff2796e05dc41d-20201209
 Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1390104510; Wed, 09 Dec 2020 16:03:26 +0800
+ with ESMTP id 2048802256; Wed, 09 Dec 2020 16:03:39 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 9 Dec 2020 16:03:21 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 9 Dec 2020 16:03:33 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Dec 2020 16:03:24 +0800
+ Transport; Wed, 9 Dec 2020 16:03:33 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
  Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v5 13/27] iommu/mediatek: Add a flag for iova_34 bit case
-Date: Wed, 9 Dec 2020 16:00:48 +0800
-Message-ID: <20201209080102.26626-14-yong.wu@mediatek.com>
+Subject: [PATCH v5 14/27] iommu/mediatek: Move hw_init into attach_device
+Date: Wed, 9 Dec 2020 16:00:49 +0800
+Message-ID: <20201209080102.26626-15-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20201209080102.26626-1-yong.wu@mediatek.com>
 References: <20201209080102.26626-1-yong.wu@mediatek.com>
@@ -94,37 +94,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a HW flag for if the HW support 34bit IOVA. the previous SoC
-still use 32bit. normally the lvl1 pgtable size is 16KB when ias == 32.
-if ias == 34, lvl1 pgtable size is 16KB * 4. The purpose of this patch
-is to save 16KB*3 continuous memory for the previous SoC.
+In attach device, it will update the pagetable base address register.
+Move the hw_init function also here. Then it only need call
+pm_runtime_get/put one time here if m4u has power domain.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ec3c87d4b172..1bc5e881951c 100644
+index 1bc5e881951c..39478cfbe0f1 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -112,6 +112,7 @@
- #define HAS_SUB_COMM			BIT(5)
- #define WR_THROT_EN			BIT(6)
- #define HAS_LEGACY_IVRP_PADDR		BIT(7)
-+#define IOVA_34_EN			BIT(8)
+@@ -126,6 +126,8 @@ struct mtk_iommu_domain {
  
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -319,7 +320,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
- 			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
- 			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
- 		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
--		.ias = 32,
-+		.ias = MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN) ? 34 : 32,
- 		.oas = 35,
- 		.tlb = &mtk_iommu_flush_ops,
- 		.iommu_dev = data->dev,
+ static const struct iommu_ops mtk_iommu_ops;
+ 
++static int mtk_iommu_hw_init(const struct mtk_iommu_data *data);
++
+ /*
+  * In M4U 4GB mode, the physical address is remapped as below:
+  *
+@@ -381,12 +383,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	int ret;
+ 
+ 	if (!data)
+ 		return -ENODEV;
+ 
+ 	/* Update the pgtable base address register of the M4U HW */
+ 	if (!data->m4u_dom) {
++		ret = mtk_iommu_hw_init(data);
++		if (ret)
++			return ret;
+ 		data->m4u_dom = dom;
+ 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+ 		       data->base + REG_MMU_PT_BASE_ADDR);
+@@ -730,10 +736,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+-	ret = mtk_iommu_hw_init(data);
+-	if (ret)
+-		return ret;
+-
+ 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+ 				     "mtk-iommu.%pa", &ioaddr);
+ 	if (ret)
 -- 
 2.18.0
 
