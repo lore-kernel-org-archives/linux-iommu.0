@@ -2,67 +2,84 @@ Return-Path: <SRS0=OQvg=FN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF43C433FE
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 12:33:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FCA8C433FE
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 12:35:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C5D8323C18
-	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 12:33:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C5D8323C18
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6FD1223A1D
+	for <iommu@archiver.kernel.org>; Wed,  9 Dec 2020 12:35:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FD1223A1D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mails.tsinghua.edu.cn
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 116B186EC3;
-	Wed,  9 Dec 2020 12:33:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D9D2F2DDC9;
+	Wed,  9 Dec 2020 12:35:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fSlixBvmttcA; Wed,  9 Dec 2020 12:33:31 +0000 (UTC)
+	with ESMTP id qQUNe428Yf+n; Wed,  9 Dec 2020 12:35:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 49E6986DF0;
-	Wed,  9 Dec 2020 12:33:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DB26B2E242;
+	Wed,  9 Dec 2020 12:35:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3106EC0FA7;
-	Wed,  9 Dec 2020 12:33:31 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7FC5C013B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:33:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDC31C0FA7;
+	Wed,  9 Dec 2020 12:35:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 703F7C013B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:35:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C5DD1874D2
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:33:29 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 55F742E242
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:35:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cSI0v09-04gs for <iommu@lists.linux-foundation.org>;
- Wed,  9 Dec 2020 12:33:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DDCE1874D1
- for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:33:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B12931B;
- Wed,  9 Dec 2020 04:33:28 -0800 (PST)
-Received: from [10.57.61.6] (unknown [10.57.61.6])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 54E0B3F718;
- Wed,  9 Dec 2020 04:33:27 -0800 (PST)
-Subject: Re: [PATCH] dma-iommu: remove __iommu_dma_mmap
-To: Christoph Hellwig <hch@lst.de>, joro@8bytes.org, will@kernel.org
-References: <20201209112019.2625029-1-hch@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <7cce7842-6b53-d34e-88e8-30c6df76cb65@arm.com>
-Date: Wed, 9 Dec 2020 12:33:25 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
-MIME-Version: 1.0
-In-Reply-To: <20201209112019.2625029-1-hch@lst.de>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org
+ with ESMTP id 3ohKNYEkj3U4 for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Dec 2020 12:34:59 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from zg8tmtm5lju5ljm3lje2naaa.icoremail.net
+ (zg8tmtm5lju5ljm3lje2naaa.icoremail.net [139.59.37.164])
+ by silver.osuosl.org (Postfix) with SMTP id B707F2050E
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Dec 2020 12:34:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mails.tsinghua.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:
+ Date:Message-Id; bh=B2aGZVvzwAUzN2gSBED1w4X3+sMCVpQQjLP3aeJ+pqU=;
+ b=nLODwqH+dlA03ldgG+rcW7oQVPCUNKBCLzphmKOEdb+1t8hz0QzCIoLx7ivk/V
+ xDHJfFBwafN403qf3zmgNKdQfIvCbmFMNu6zTLeLTepvNIkEYrIbP7wENMMvuirR
+ Ygu2h1wfkTB0po4LOuSo+kDUyrRa+6TFEg2iUIP2+TruQ=
+Received: from ubuntu.localdomain (unknown [166.111.83.82])
+ by web2 (Coremail) with SMTP id yQQGZQC3qwFkxNBf6gMHAA--.17667S4;
+ Wed, 09 Dec 2020 20:34:44 +0800 (CST)
+From: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] drivers/iommu: fix a null-ptr-deref bug in fsl_pamu_domain.c
+Date: Wed,  9 Dec 2020 04:34:30 -0800
+Message-Id: <20201209123430.35310-1-tzh18@mails.tsinghua.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: yQQGZQC3qwFkxNBf6gMHAA--.17667S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrKw4kGr4xGr1DJw1kArWrZrb_yoW3urXEkF
+ y8ZF9xGryjyrsrCryIgrn3ZrWv9w4qvasF9FW0g3ZxAFy3Zw1kJw45ZrZ3Xa1xWw17CF17
+ AayDJFn3Ary8ujkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+ 9fnUUIcSsGvfJTRUUUbskFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+ 6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+ A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+ 6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+ Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+ 0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr
+ 1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
+ rcIFxwCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+ 1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+ 14v26r1Y6r17MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+ IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1lIxAIcVC2
+ z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73Uj
+ IFyTuYvjfUeAwIDUUUU
+X-CM-SenderInfo: pw2kimo6pdxz3vow2x5qjk3toohg3hdfq/1tbiAgQFEV7nE6ek0gAAsp
+Cc: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,62 +92,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-12-09 11:20, Christoph Hellwig wrote:
-> The function has a single caller, so open code it there and take
-> advantage of the precalculated page count variable.
+    At line 362 in drivers/iommu/fsl_pamu_domain.c, the ret-val of kmem_cache_zalloc should be checked to avoid null-ptr-deref bug.
 
-I can't shake the feeling that we've written this patch at least twice 
-before through all the refactoring, so definitely no objection from me 
-to an obvious cleanup:
+Signed-off-by: tangzhenhao <tzh18@mails.tsinghua.edu.cn>
+---
+ drivers/iommu/fsl_pamu_domain.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index b2110767caf4..9ebd5135f4a8 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -360,6 +360,10 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
+ 	}
+ 
+ 	info = kmem_cache_zalloc(iommu_devinfo_cache, GFP_ATOMIC);
++	if (!info) {
++		pr_debug("device_domain_info allocation failed\n");
++		return;
++	}
+ 
+ 	info->dev = dev;
+ 	info->liodn = liodn;
+-- 
+2.17.1
 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   drivers/iommu/dma-iommu.c | 17 +----------------
->   1 file changed, 1 insertion(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 0cbcd3fc3e7e8d..f6ea1dabc6a894 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -655,21 +655,6 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
->   	return NULL;
->   }
->   
-> -/**
-> - * __iommu_dma_mmap - Map a buffer into provided user VMA
-> - * @pages: Array representing buffer from __iommu_dma_alloc()
-> - * @size: Size of buffer in bytes
-> - * @vma: VMA describing requested userspace mapping
-> - *
-> - * Maps the pages of the buffer in @pages into @vma. The caller is responsible
-> - * for verifying the correct size and protection of @vma beforehand.
-> - */
-> -static int __iommu_dma_mmap(struct page **pages, size_t size,
-> -		struct vm_area_struct *vma)
-> -{
-> -	return vm_map_pages(vma, pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
-> -}
-> -
->   static void iommu_dma_sync_single_for_cpu(struct device *dev,
->   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
->   {
-> @@ -1102,7 +1087,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->   		struct page **pages = dma_common_find_pages(cpu_addr);
->   
->   		if (pages)
-> -			return __iommu_dma_mmap(pages, size, vma);
-> +			return vm_map_pages(vma, pages, nr_pages);
->   		pfn = vmalloc_to_pfn(cpu_addr);
->   	} else {
->   		pfn = page_to_pfn(virt_to_page(cpu_addr));
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
