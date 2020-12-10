@@ -2,91 +2,101 @@ Return-Path: <SRS0=6gDp=FO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF79EC433FE
-	for <iommu@archiver.kernel.org>; Thu, 10 Dec 2020 02:13:55 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BF3C4361B
+	for <iommu@archiver.kernel.org>; Thu, 10 Dec 2020 04:04:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40B2222A99
-	for <iommu@archiver.kernel.org>; Thu, 10 Dec 2020 02:13:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40B2222A99
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 62D1F23A02
+	for <iommu@archiver.kernel.org>; Thu, 10 Dec 2020 04:04:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 62D1F23A02
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C0971879A1;
-	Thu, 10 Dec 2020 02:13:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E76DD85EBE;
+	Thu, 10 Dec 2020 04:04:08 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 37NHXs3xqqyo; Thu, 10 Dec 2020 04:04:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 30060859E6;
+	Thu, 10 Dec 2020 04:04:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 298C7C0893;
+	Thu, 10 Dec 2020 04:04:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 334D6C013B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 04:04:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1474687551
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 04:04:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id z0Iu-jOJbPxa; Thu, 10 Dec 2020 02:13:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DCD2887A85;
-	Thu, 10 Dec 2020 02:13:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE522C0FA7;
-	Thu, 10 Dec 2020 02:13:52 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A35CDC013B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 02:13:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8802C204A7
- for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 02:13:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zRm9N+Zdp4K3 for <iommu@lists.linux-foundation.org>;
- Thu, 10 Dec 2020 02:13:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
- [209.85.215.194])
- by silver.osuosl.org (Postfix) with ESMTPS id 06C8B2049D
- for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 02:13:51 +0000 (UTC)
-Received: by mail-pg1-f194.google.com with SMTP id e2so2755310pgi.5
- for <iommu@lists.linux-foundation.org>; Wed, 09 Dec 2020 18:13:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id;
- bh=RvFbA4ErJMqYlH9Js56oIq8vsqszuPb9uU/s12PrRO4=;
- b=tDzClEbj48YLQQ+OsPsgV/x4LE/iyVGvbtxxGOt/Qw8j7Z4YFh1HKXFKFFKXFV/biN
- gNiw8jgfsIhLvHqV+mGkuRY9OSceMKzu8NLpCuVwV065C9g1mBqs2fGiK7oDEloSPGIw
- KguCa+JycdOvUstMGMKwv/ZdCf67amzfjODwyl+I34ozKrCkzlPHfIW26OFPk29shziS
- scUyD8vWx48dh9YtbXaHiNZPH6hdjsgpHWsXsGTePnNEj5ZfUHpdCLrmIEMyLcrcIwF/
- WZ1uP1FYabHf/NGDd77H0X3PvsTfoAslRfALkT1zaEM026WvS1H7ps62b45NpxxpAYT1
- BkBA==
+ with ESMTP id E8AjjqXMCECF for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Dec 2020 04:04:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
+ [209.85.218.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0D0628749D
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Dec 2020 04:04:04 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id w1so717235ejf.11
+ for <iommu@lists.linux-foundation.org>; Wed, 09 Dec 2020 20:04:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=intel-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=aiXzNIBEdezK7LvwdToUmyEveX4RTWL1Q1rKEHzG6GY=;
+ b=V12HS7Wn+bctaIkufygbNwtKV1pkBbE9hHZV8Lf9tSE5VPt6nBit0Nb1HWPIB+8XdO
+ UwbjHDBYoCvlSOrafC5rCuQbCx1D+/3PDyFehNe398RSQzHQ1rPu9pgXYXyg3wMVKY7l
+ FuBEUYEFzcobG0z1knWel86vWiyTyuA3aX6iyNBGyPUSEugrsJ77EmD5w3Zhr4gllpgD
+ NDD0P3wO1Rjasg3bPJKXdNNtxJFUZzyODiRBozAcezwWwmKvGT1tnVg88ssqoLYPKQyE
+ vxZa8+AdNxohhjfYmcfYxPAKri7o/zxhpGNApPEe/Ugj0ylq5uh8h/HdVnA0K5L3ljWV
+ 0UiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=RvFbA4ErJMqYlH9Js56oIq8vsqszuPb9uU/s12PrRO4=;
- b=Xx6C+ici64gVUIfJTn5G9cYztSagXIxeZk99njIKFJI/ycNnUuCempneeaqhPW/YSj
- gyS6xILyWsEyHkmzTq8LdGDVVuruVnpSMCONNINfNiOspATw29oztSvXRuFQlOnlgKBD
- FMBp5j/2TFdflRkxxAzlL0mEyLHnMm6A8LrS4HMYIYrtBHM9PJEur5b8ZHPGMNQEE6TZ
- LlmmVhxEZTwRbZFhvqU7cW416oRQoBpdvQrhdEpr0zVB3HIalnCvqMWqNNwx4htfyjuD
- uYd8TrvDihH0ikSVEuY8N6O03ROBI0Su9d9spVMw+QcJSTxRPMbA6Oo/IvAf7L11aaTw
- Qqbg==
-X-Gm-Message-State: AOAM531Y/AZuRKNA9BJHxkU+/YjAbDMdlOCtcr7eSAXAeywh1qDNg2ft
- 6V/zczPu1C8fdfuvjsRm5yw=
-X-Google-Smtp-Source: ABdhPJwqeEP87gh21Ajzb1cRxOLTq4ugQGuuxohnpvVfxnOkxuGwTgi1xgHK0HMKLjahodSx3ydy7Q==
-X-Received: by 2002:aa7:97bc:0:b029:19e:18c7:76b with SMTP id
- d28-20020aa797bc0000b029019e18c7076bmr4809748pfq.23.1607566430634; 
- Wed, 09 Dec 2020 18:13:50 -0800 (PST)
-Received: from AHUANG12-1LT7M0.lenovo.com
- (220-142-214-33.dynamic-ip.hinet.net. [220.142.214.33])
- by smtp.gmail.com with ESMTPSA id nk11sm3680849pjb.26.2020.12.09.18.13.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 09 Dec 2020 18:13:50 -0800 (PST)
-From: Adrian Huang <adrianhuang0701@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [RESEND PATCH 1/1] iommu/amd: Remove unnecessary assignment
-Date: Thu, 10 Dec 2020 10:13:30 +0800
-Message-Id: <20201210021330.2022-1-adrianhuang0701@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: Adrian Huang <ahuang12@lenovo.com>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=aiXzNIBEdezK7LvwdToUmyEveX4RTWL1Q1rKEHzG6GY=;
+ b=VXjEk54v8eFu8nHUmsQ4KJaYOxaYkTkFPynWuei6Hq3pK/cq7nfZ16ovV/hlDAB6B5
+ vKo/rRnMQq38UbqptDxCH6Dcx+7OVm/KmFZ1kKion+MIcOijb/n8tvlix6IJPj7rx69p
+ ccK+9rN9REaj973955KadmUCxYhbZ/1Cds47fW37HTlzoITJ6dmWBifYUNLoe5z02ZpB
+ b2oIYKRMg+jIYF6fOgTm9IToml87ykug3ROl8E9t3kDH8uoW2F7Sy+0KA0jiL91pvaGP
+ EeJbFg6pM5kvFahyHqYrSAKL6quMo9Du7xA+4QGpu0e0pnDqmDFmDuIsaHm4I1g3oyfE
+ suKg==
+X-Gm-Message-State: AOAM532441jxAzKP+E1iHN/ntcDSDyqs4nTWWMHKsBpW5FPyRJDGnJ4w
+ dAEhSm6y2IPT6uaUvQB5iLa3yDZi7MUTVKXQImOpBw==
+X-Google-Smtp-Source: ABdhPJz4kqsM2zajOVSAKgswV7LD/u9Of8EB4mcOSELuzl9N3rbE8Zn+Vb136NhMCEF83xMViBOj9nm8pJkMBp6g77Y=
+X-Received: by 2002:a17:906:518a:: with SMTP id
+ y10mr4811157ejk.323.1607573042542; 
+ Wed, 09 Dec 2020 20:04:02 -0800 (PST)
+MIME-Version: 1.0
+References: <20201106170036.18713-1-logang@deltatee.com>
+ <20201106170036.18713-5-logang@deltatee.com>
+ <20201109091258.GB28918@lst.de>
+ <4e336c7e-207b-31fa-806e-c4e8028524a5@deltatee.com>
+ <CAPcyv4ifGcrdOtUt8qr7pmFhmecGHqGVre9G0RorGczCGVECQQ@mail.gmail.com>
+ <fba1022b-1425-bb79-9af8-fe68e6f2c56e@deltatee.com>
+In-Reply-To: <fba1022b-1425-bb79-9af8-fe68e6f2c56e@deltatee.com>
+From: Dan Williams <dan.j.williams@intel.com>
+Date: Wed, 9 Dec 2020 20:04:00 -0800
+Message-ID: <CAPcyv4hr=kM6--OUdK+6XAAEVzENJmy-uD78yK-p62bW8vbu9g@mail.gmail.com>
+Subject: Re: [RFC PATCH 04/15] lib/scatterlist: Add flag for indicating P2PDMA
+ segments in an SGL
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Linux PCI <linux-pci@vger.kernel.org>,
+ Daniel Vetter <daniel.vetter@ffwll.ch>, Ira Weiny <iweiny@intel.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
+ linux-block@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
+ Matthew Wilcox <willy@infradead.org>, John Hubbard <jhubbard@nvidia.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,62 +109,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Adrian Huang <ahuang12@lenovo.com>
+On Wed, Dec 9, 2020 at 6:07 PM Logan Gunthorpe <logang@deltatee.com> wrote:
+>
+>
+>
+> On 2020-12-09 6:22 p.m., Dan Williams wrote:
+> > On Mon, Nov 9, 2020 at 8:47 AM Logan Gunthorpe <logang@deltatee.com> wrote:
+> >>
+> >>
+> >>
+> >> On 2020-11-09 2:12 a.m., Christoph Hellwig wrote:
+> >>> On Fri, Nov 06, 2020 at 10:00:25AM -0700, Logan Gunthorpe wrote:
+> >>>> We make use of the top bit of the dma_length to indicate a P2PDMA
+> >>>> segment.
+> >>>
+> >>> I don't think "we" can.  There is nothing limiting the size of a SGL
+> >>> segment.
+> >>
+> >> Yes, I expected this would be the unacceptable part. Any alternative ideas?
+> >
+> > Why is the SG_P2PDMA_FLAG needed as compared to checking the SGL
+> > segment-pages for is_pci_p2pdma_page()?
+>
+> Because the DMA and page segments in the SGL aren't necessarily aligned...
+>
+> The IOMMU implementations can coalesce multiple pages into fewer DMA
+> address ranges, so the page pointed to by sg->page_link may not be the
+> one that corresponds to the address in sg->dma_address for a given segment.
+>
+> If that makes sense -- it's not the easiest thing to explain.
 
-From: Adrian Huang <ahuang12@lenovo.com>
+It does...
 
-The values of local variables are assigned after local variables
-are declared, so no need to assign the initial value during the
-variable declaration.
-
-And, no need to assign NULL for the local variable 'ivrs_base'
-after invoking acpi_put_table().
-
-Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
----
- drivers/iommu/amd/init.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 23a790f8f550..103cbf8fc2d9 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1916,7 +1916,7 @@ static void print_iommu_info(void)
- static int __init amd_iommu_init_pci(void)
- {
- 	struct amd_iommu *iommu;
--	int ret = 0;
-+	int ret;
- 
- 	for_each_iommu(iommu) {
- 		ret = iommu_init_pci(iommu);
-@@ -2555,8 +2555,8 @@ static void __init free_dma_resources(void)
- static int __init early_amd_iommu_init(void)
- {
- 	struct acpi_table_header *ivrs_base;
-+	int i, remap_cache_sz, ret;
- 	acpi_status status;
--	int i, remap_cache_sz, ret = 0;
- 	u32 pci_id;
- 
- 	if (!amd_iommu_detected)
-@@ -2698,7 +2698,6 @@ static int __init early_amd_iommu_init(void)
- out:
- 	/* Don't leak any ACPI memory */
- 	acpi_put_table(ivrs_base);
--	ivrs_base = NULL;
- 
- 	return ret;
- }
--- 
-2.17.1
-
+Did someone already grab, or did you already consider the 3rd
+available bit in page_link? AFAICS only SG_CHAIN and SG_END are
+reserved. However, if you have a CONFIG_64BIT dependency for
+user-directed p2pdma that would seem to allow SG_P2PDMA_FLAG to be
+(0x4) in page_link.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
