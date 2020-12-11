@@ -2,85 +2,110 @@ Return-Path: <SRS0=kesm=FP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642ECC4361B
-	for <iommu@archiver.kernel.org>; Fri, 11 Dec 2020 18:57:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E05B9C433FE
+	for <iommu@archiver.kernel.org>; Fri, 11 Dec 2020 20:40:07 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 76E4923F29
-	for <iommu@archiver.kernel.org>; Fri, 11 Dec 2020 18:57:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76E4923F29
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=sect.tu-berlin.de
+	by mail.kernel.org (Postfix) with ESMTPS id 30EF82404C
+	for <iommu@archiver.kernel.org>; Fri, 11 Dec 2020 20:40:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30EF82404C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1E0DF8749D;
-	Fri, 11 Dec 2020 18:57:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id opDETqQUevdo; Fri, 11 Dec 2020 18:57:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0160787440;
-	Fri, 11 Dec 2020 18:57:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D391CC0FA7;
-	Fri, 11 Dec 2020 18:57:19 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60D77C013B;
- Fri, 11 Dec 2020 17:33:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4DC0E86EC6;
- Fri, 11 Dec 2020 17:33:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A13418760D;
+	Fri, 11 Dec 2020 20:40:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fKbKQgepXFyi; Fri, 11 Dec 2020 20:40:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id AB9DB875FF;
+	Fri, 11 Dec 2020 20:40:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81C11C0FA7;
+	Fri, 11 Dec 2020 20:40:05 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AFB6EC013B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Dec 2020 20:40:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id A6CE22041B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Dec 2020 20:40:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7otXC-Ik2nyy; Fri, 11 Dec 2020 17:33:47 +0000 (UTC)
-X-Greylist: delayed 00:05:58 by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from exchange.tu-berlin.de (exchange.tu-berlin.de [130.149.7.70])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4A99786C73;
- Fri, 11 Dec 2020 17:33:47 +0000 (UTC)
-Received: from SPMA-01.tubit.win.tu-berlin.de (localhost.localdomain
- [127.0.0.1])
- by localhost (Email Security Appliance) with SMTP id 17BBF7E03D2_FD3AC13B;
- Fri, 11 Dec 2020 17:27:47 +0000 (GMT)
-Received: from exchange.tu-berlin.de (exchange.tu-berlin.de [130.149.7.70])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (Client CN "exchange.tu-berlin.de",
- Issuer "DFN-Verein Global Issuing CA" (verified OK))
- by SPMA-01.tubit.win.tu-berlin.de (Sophos Email Appliance) with ESMTPS id
- BBADF7DBD42_FD3AC12F; Fri, 11 Dec 2020 17:27:46 +0000 (GMT)
-Received: from [192.168.1.8] (91.64.84.74) by ex-02.tubit.win.tu-berlin.de
- (172.26.26.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.529.5; Fri, 11 Dec 2020
- 18:27:46 +0100
-To: <virtualization@lists.linux-foundation.org>,
- <iommu@lists.linux-foundation.org>
-From: Felicitas Hetzelt <file@sect.tu-berlin.de>
-Subject: swiotlb/virtio: unchecked device dma address and length
-Message-ID: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
-Date: Fri, 11 Dec 2020 18:31:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+ with ESMTP id KVpvLgCSukte for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Dec 2020 20:40:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by silver.osuosl.org (Postfix) with ESMTPS id 53FD4203F7
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Dec 2020 20:40:02 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BBKddHG009641;
+ Fri, 11 Dec 2020 20:39:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=VJbiclNNRWf5xTx/cOG6L27Mu0uBf4+urMq60QMEkZQ=;
+ b=EhOUs7gvrNa7q1zY28PdvyObjpDx8qFhEnpy2F605x0pZuZtUv+42KWiJtC6ZMKWv9a0
+ Xr/nOmQpZQvZo/sWi0tgNYeJeIwcpPDwvyD6wOafFilC3nMaiNCdxiEiNV6wQLxIo0X9
+ BbU4u9pMbDM384jdixZPCf49MBVF8gdHprFGbWSBLjeDpGVtry/JLgse83r1szQHNSkb
+ Ve3zB63J1/Il4cbGcfsH4IwrFraBJl2TqYJa7NpQxumNKExcPVBkv7pIOd30PpP2Zlxa
+ yeaQeoR+7n2TxaZozPONQTWyz3NZa5ELk2J30zFH4YLj+O2RhSiCgP45pdrPxQwzedTl NA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by aserp2130.oracle.com with ESMTP id 357yqccqcn-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Fri, 11 Dec 2020 20:39:39 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BBKFt9q027268;
+ Fri, 11 Dec 2020 20:37:39 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3030.oracle.com with ESMTP id 358m54hysd-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 11 Dec 2020 20:37:38 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BBKbZ4E006505;
+ Fri, 11 Dec 2020 20:37:36 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Fri, 11 Dec 2020 12:37:35 -0800
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id 309196A0121; Fri, 11 Dec 2020 15:39:38 -0500 (EST)
+Date: Fri, 11 Dec 2020 15:39:38 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Jianxiong Gao <jxgao@google.com>
+Subject: Re: [PATCH] [PATCH] Keep offset when mapping data via SWIOTLB.
+Message-ID: <20201211203938.GA16598@char.us.oracle.com>
+References: <20201207214204.1839028-1-jxgao@google.com>
 MIME-Version: 1.0
-Content-Language: en-US
-X-ClientProxiedBy: ex-03.tubit.win.tu-berlin.de (172.26.26.164) To
- ex-02.tubit.win.tu-berlin.de (172.26.26.163)
-X-SASI-RCODE: 200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tu-berlin.de;
- h=to:cc:from:subject:message-id:date:mime-version:content-type:content-transfer-encoding;
- s=dkim-tub; bh=8rSY1R2pGMx93SfLPdXVjUsole9TQlrbbw1N+MlwkiE=;
- b=drIrtgEbH0U5f3OmKWDzXzTMS1fSA5kOycAN4cMyYxF8wldqP/Yaw3+tABCAurzzX0Scr+58SlTfxh2+6savts1FEwGgpsSr1LCZy11rSqr96MGQqOa86GoqlRT7kk6dnU/iV8Nu0fMAKJqGeByVqOh196rY3SsgNQlMOMyGRWk=
-X-Mailman-Approved-At: Fri, 11 Dec 2020 18:57:19 +0000
-Cc: "Radev, Martin" <martin.radev@aisec.fraunhofer.de>, david.kaplan@amd.com,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- konrad.wilk@oracle.com, Robert Buhren <robert@sect.tu-berlin.de>, "Morbitzer,
- Mathias" <mathias.morbitzer@aisec.fraunhofer.de>
+Content-Disposition: inline
+In-Reply-To: <20201207214204.1839028-1-jxgao@google.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9832
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ spamscore=0 suspectscore=0
+ bulkscore=0 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012110135
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9832
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+ mlxlogscore=999
+ clxscore=1015 malwarescore=0 bulkscore=0 phishscore=0 adultscore=0
+ spamscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012110136
+Cc: sagi@grimberg.me, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, axboe@fb.com, iommu@lists.linux-foundation.org,
+ David Rientjes <rientjes@google.com>, kbusch@kernel.org, robin.murphy@arm.com,
+ hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,44 +123,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello,
-we have been analyzing the Hypervisor-OS interface of Linux
-and discovered bugs in the swiotlb/virtio implementation that can be
-triggered from a malicious Hypervisor / virtual device.
-With SEV, the SWIOTLB implementation is forcefully enabled and would
-always be used. Thus, all virtio devices and others would use it under
-the hood.
+On Mon, Dec 07, 2020 at 01:42:04PM -0800, Jianxiong Gao wrote:
+> NVMe driver and other applications depend on the data offset
+> to operate correctly. Currently when unaligned data is mapped via
+> SWIOTLB, the data is mapped as slab aligned with the SWIOTLB. When
+> booting with --swiotlb=force option and using NVMe as interface,
+> running mkfs.xfs on Rhel fails because of the unalignment issue.
+> This patch makes sure the mapped data preserves
+> its offset of the orginal address. Tested on latest kernel that
+> this patch fixes the issue.
+> 
+> Signed-off-by: Jianxiong Gao <jxgao@google.com>
+> Acked-by: David Rientjes <rientjes@google.com>
 
-The reason for analyzing this interface is that, technologies such as
-Intel's Trusted Domain Extensions [1] and AMD's Secure Nested Paging [2]
-change the threat model assumed by various Linux kernel subsystems.
-These technologies take the presence of a fully malicious hypervisor
-into account and aim to provide protection for virtual machines in such
-an environment. Therefore, all input received from the hypervisor or an
-external device should be carefully validated. Note that these issues
-are of little (or no) relevance in a "normal" virtualization setup,
-nevertheless we believe that it is required to fix them if TDX or SNP is
-used.
+This breaks DHCP with upstream kernel (applied this on top v5.10-rc7)
+and used swiotlb=262144,force and now the dhclient is not working:
 
-We are happy to provide more information if needed!
+[  119.300502] bnxt_en 0000:3b:00.0 eno2np0: NIC Link is Up, 25000 Mbps full duplex, Flow control: ON - receive & transmit
+[  119.437573] bnxt_en 0000:3b:00.0 eno2np0: FEC autoneg off encoding: None
+[   90.064220] dracut-initqueue[1477]: Warning: dhcp for interface eno2np0 failed
+[  101.155295] dracut-initqueue[1477]: Warning: dhcp for interfa[  142.361359] bnxt_en 0000:3b:00.1 eno3np1: NIC Link is Up, 25000 Mbps full duplex, Flow control: ON - receive & transmit
+ce eno2np0 faile[  142.501860] bnxt_en 0000:3b:00.1 eno3np1: FEC autoneg off encoding: None
+d
+[  113.054108] dracut-initqueue[1477]: Warning: dhcp for interface eno3np1 failed
+[  123.867108] dracut-initqueue[1477]: Warning: dhcp for interface eno3np1 failed
+[  251.888002] dracut-initqueue[1477]: Warning: dracut-initqueue timeout - starting timeout scripts
 
-[1]
-https://software.intel.com/content/www/us/en/develop/articles/intel-trust-domain-extensions.html
+Dropping from linux-next.
 
-[2] https://www.amd.com/en/processors/amd-secure-encrypted-virtualization
-
-Bug:
-OOB memory write.
-dma_unmap_single -> swiotlb_tbl_unmap_single is invoked with dma_addr
-and length parameters that are under control of the device.
-This happens e.g. in virtio_ring:
-https://elixir.bootlin.com/linux/v5.10-rc7/source/drivers/virtio/virtio_ring.c#L378
-
-This raises two issues:
-1) swiotlb_tlb_unmap_single fails to check whether the index generated
-from the dma_addr is in range of the io_tlb_orig_addr array.
-2) when swiotlb_bounce is called the device controls the length of the
-memory copied to the cpu address.
+> ---
+>  kernel/dma/swiotlb.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 781b9dca197c..56a35e71b3fd 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -483,6 +483,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+>  	max_slots = mask + 1
+>  		    ? ALIGN(mask + 1, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT
+>  		    : 1UL << (BITS_PER_LONG - IO_TLB_SHIFT);
+> + 
+> +	/*
+> +	 * We need to keep the offset when mapping, so adding the offset
+> +	 * to the total set we need to allocate in SWIOTLB
+> +	 */
+> +	alloc_size += offset_in_page(orig_addr);
+>  
+>  	/*
+>  	 * For mappings greater than or equal to a page, we limit the stride
+> @@ -567,6 +573,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+>  	 */
+>  	for (i = 0; i < nslots; i++)
+>  		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
+> +	/*
+> +	 * When keeping the offset of the original data, we need to advance
+> +	 * the tlb_addr by the offset of orig_addr.
+> +	 */
+> +	tlb_addr += orig_addr & (PAGE_SIZE - 1);
+>  	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+>  	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+>  		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
+> -- 
+> 2.27.0
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
