@@ -7,56 +7,57 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2072C4361B
-	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 14:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F728C2BB48
+	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 14:25:42 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 435AA207B6
-	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 435AA207B6
+	by mail.kernel.org (Postfix) with ESMTPS id D7F1A207B6
+	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 14:25:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7F1A207B6
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AC5F987049;
-	Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AC2DB87036;
+	Mon, 14 Dec 2020 14:25:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MlQvu4xYYVx1; Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
+	with ESMTP id tyCZrSEQeFts; Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F34B187033;
-	Mon, 14 Dec 2020 14:25:39 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 18F6787043;
+	Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD5D5C0893;
-	Mon, 14 Dec 2020 14:25:39 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46DC3C013B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:44:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F65DC0893;
+	Mon, 14 Dec 2020 14:25:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02077C013B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:47:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 32E568672F
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:44:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E5937868A9
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:47:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8rr0YSKiDWV5 for <iommu@lists.linux-foundation.org>;
- Mon, 14 Dec 2020 13:44:26 +0000 (UTC)
+ with ESMTP id KS8wuQEAG_qh for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Dec 2020 13:47:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A12A78672C
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:44:26 +0000 (UTC)
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CvjK90zgmzhtBs;
- Mon, 14 Dec 2020 21:43:41 +0800 (CST)
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 9010584488
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 13:47:27 +0000 (UTC)
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CvjNX5XC4zks1j;
+ Mon, 14 Dec 2020 21:46:36 +0800 (CST)
 Received: from ubuntu.network (10.175.138.68) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 14 Dec 2020 21:44:09 +0800
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.498.0; Mon, 14 Dec 2020 21:47:15 +0800
 From: Zheng Yongjun <zhengyongjun3@huawei.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <iommu@lists.linux-foundation.org>, 
- <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] iommu/amd/init: convert comma to semicolon
-Date: Mon, 14 Dec 2020 21:44:38 +0800
-Message-ID: <20201214134438.4776-1-zhengyongjun3@huawei.com>
+To: <agross@kernel.org>, <bjorn.andersson@linaro.org>, <joro@8bytes.org>,
+ <will@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] iommu: msm_iommu: Delete useless kfree code
+Date: Mon, 14 Dec 2020 21:47:46 +0800
+Message-ID: <20201214134746.5044-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 X-Originating-IP: [10.175.138.68]
@@ -80,28 +81,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Replace a comma between expression statements by a semicolon.
+The parameter of kfree function is NULL, so kfree code is useless, delete it.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/iommu/amd/init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/msm_iommu.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 23a790f8f550..dad011e88268 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2053,8 +2053,8 @@ static int iommu_init_intcapxt(struct amd_iommu *iommu)
- 	 * whenever the irq affinity is changed from user-space.
- 	 */
- 	notify->irq = iommu->dev->irq;
--	notify->notify = _irq_notifier_notify,
--	notify->release = _irq_notifier_release,
-+	notify->notify = _irq_notifier_notify;
-+	notify->release = _irq_notifier_release;
- 	ret = irq_set_affinity_notifier(iommu->dev->irq, notify);
- 	if (ret) {
- 		pr_err("Failed to register irq affinity notifier (devid=%#x, irq %d)\n",
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3615cd6241c4..1286674a1322 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -319,7 +319,7 @@ static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
+ 
+ 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+-		goto fail_nomem;
++		return NULL;
+ 
+ 	INIT_LIST_HEAD(&priv->list_attached);
+ 
+@@ -328,10 +328,6 @@ static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
+ 	priv->domain.geometry.force_aperture = true;
+ 
+ 	return &priv->domain;
+-
+-fail_nomem:
+-	kfree(priv);
+-	return NULL;
+ }
+ 
+ static void msm_iommu_domain_free(struct iommu_domain *domain)
 -- 
 2.22.0
 
