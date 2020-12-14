@@ -2,70 +2,112 @@ Return-Path: <SRS0=68Au=FS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF58DC4361B
-	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 17:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B8CC4361B
+	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 21:48:09 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F45A229C5
-	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 17:38:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F45A229C5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id DB58820798
+	for <iommu@archiver.kernel.org>; Mon, 14 Dec 2020 21:48:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB58820798
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 11E0987452;
-	Mon, 14 Dec 2020 17:38:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 804F987634;
+	Mon, 14 Dec 2020 21:48:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ufGiCd1uYwig; Mon, 14 Dec 2020 17:38:04 +0000 (UTC)
+	with ESMTP id PnxZrvLKY4jS; Mon, 14 Dec 2020 21:48:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B4018872D7;
-	Mon, 14 Dec 2020 17:38:04 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C38498762E;
+	Mon, 14 Dec 2020 21:48:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A211DC088E;
-	Mon, 14 Dec 2020 17:38:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A7CE4C013B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 17:38:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9475FC088E;
+	Mon, 14 Dec 2020 21:48:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B3CCBC013B;
+ Mon, 14 Dec 2020 21:48:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9634886739
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 17:38:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 9B1028762F;
+ Mon, 14 Dec 2020 21:48:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2VW9MLM16IHA for <iommu@lists.linux-foundation.org>;
- Mon, 14 Dec 2020 17:38:01 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E6EEC86538
- for <iommu@lists.linux-foundation.org>; Mon, 14 Dec 2020 17:38:01 +0000 (UTC)
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Authentication-Results: mail.kernel.org;
- dkim=permerror (bad message/signature format)
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.9 057/105] arm-smmu-qcom: Ensure the qcom_scm driver has
- finished probing
-Date: Mon, 14 Dec 2020 18:28:31 +0100
-Message-Id: <20201214172558.015053959@linuxfoundation.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201214172555.280929671@linuxfoundation.org>
-References: <20201214172555.280929671@linuxfoundation.org>
-User-Agent: quilt/0.66
+ with ESMTP id vYFTs+0uPbnL; Mon, 14 Dec 2020 21:48:06 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D7B508762E;
+ Mon, 14 Dec 2020 21:48:05 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BELdbB7100596;
+ Mon, 14 Dec 2020 21:47:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=tNGcg/rZk4xJbneWDqbv2YPLOeYkzQb4eLkWEHfzmZ0=;
+ b=vSwtOhnBEOYP6JIt1mLvGzawcMjRfP32wfuo2smEc/C4QBEaK7NiGQPI+Uiu6nSim3m9
+ ZiIEZ2j+fUk2WMtuiFTp5ZqsUuIHIDpE5FZXrNzmb5xnSfKK3kxx92VvMoJWweneP4jV
+ Wp068EttEZ7OP7p2IZsAHcrLzw5p4jhCkDRyuIzLum+fwr+Nsb5EBx3USL2le6tIWTN8
+ 2Ja1zTOlkkD5U5HmUO1MtIJSi4zQ8J3ViZ5mxHzz9hFlyItzsjbRLPHDKsaUZWw3cL4W
+ ScxeYe6lZPmUfYBYQUTLbU45czOeNfYQVI9chXvDThmnVlA/dOgO2JpupgElbeNF1BUV RA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by aserp2120.oracle.com with ESMTP id 35cntkykcd-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Mon, 14 Dec 2020 21:47:56 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BELe5Xv079388;
+ Mon, 14 Dec 2020 21:47:55 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3030.oracle.com with ESMTP id 35d7sv4mgt-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 14 Dec 2020 21:47:55 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BELlkv0022618;
+ Mon, 14 Dec 2020 21:47:50 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Mon, 14 Dec 2020 13:47:46 -0800
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id 402D46A00F4; Mon, 14 Dec 2020 16:49:50 -0500 (EST)
+Date: Mon, 14 Dec 2020 16:49:50 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Felicitas Hetzelt <file@sect.tu-berlin.de>, ashish.kalra@amd.com,
+ jun.nakajima@intel.com, hch@lst.de
+Subject: Re: swiotlb/virtio: unchecked device dma address and length
+Message-ID: <20201214214950.GC18103@char.us.oracle.com>
+References: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
 MIME-Version: 1.0
-Cc: Maulik Shah <mkshah@codeaurora.org>, Sasha Levin <sashal@kernel.org>,
- Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>, Lina Iyer <ilina@codeaurora.org>,
- Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
+ bulkscore=0
+ mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012140143
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ phishscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 impostorscore=0 priorityscore=1501 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012140143
+Cc: "Radev, Martin" <martin.radev@aisec.fraunhofer.de>, david.kaplan@amd.com,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ virtualization@lists.linux-foundation.org,
+ Robert Buhren <robert@sect.tu-berlin.de>, iommu@lists.linux-foundation.org,
+ "Morbitzer, Mathias" <mathias.morbitzer@aisec.fraunhofer.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,97 +125,79 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: John Stultz <john.stultz@linaro.org>
+On Fri, Dec 11, 2020 at 06:31:21PM +0100, Felicitas Hetzelt wrote:
+> Hello,
 
-[ Upstream commit 72b55c96f3a5ae6e486c20b5dacf5114060ed042 ]
+Hi! Please see below my responses.
 
-Robin Murphy pointed out that if the arm-smmu driver probes before
-the qcom_scm driver, we may call qcom_scm_qsmmu500_wait_safe_toggle()
-before the __scm is initialized.
+> we have been analyzing the Hypervisor-OS interface of Linux
+> and discovered bugs in the swiotlb/virtio implementation that can be
+> triggered from a malicious Hypervisor / virtual device.
+> With SEV, the SWIOTLB implementation is forcefully enabled and would
+> always be used. Thus, all virtio devices and others would use it under
+> the hood.
+> 
+> The reason for analyzing this interface is that, technologies such as
+> Intel's Trusted Domain Extensions [1] and AMD's Secure Nested Paging [2]
+> change the threat model assumed by various Linux kernel subsystems.
+> These technologies take the presence of a fully malicious hypervisor
+> into account and aim to provide protection for virtual machines in such
+> an environment. Therefore, all input received from the hypervisor or an
+> external device should be carefully validated. Note that these issues
+> are of little (or no) relevance in a "normal" virtualization setup,
+> nevertheless we believe that it is required to fix them if TDX or SNP is
+> used.
+> 
+> We are happy to provide more information if needed!
+> 
+> [1]
+> https://software.intel.com/content/www/us/en/develop/articles/intel-trust-domain-extensions.html
+> 
+> [2] https://www.amd.com/en/processors/amd-secure-encrypted-virtualization
+> 
+> Bug:
+> OOB memory write.
+> dma_unmap_single -> swiotlb_tbl_unmap_single is invoked with dma_addr
+> and length parameters that are under control of the device.
+> This happens e.g. in virtio_ring:
+> https://elixir.bootlin.com/linux/v5.10-rc7/source/drivers/virtio/virtio_ring.c#L378
 
-Now, getting this to happen is a bit contrived, as in my efforts it
-required enabling asynchronous probing for both drivers, moving the
-firmware dts node to the end of the dtsi file, as well as forcing a
-long delay in the qcom_scm_probe function.
+Heya!
 
-With those tweaks we ran into the following crash:
-[    2.631040] arm-smmu 15000000.iommu:         Stage-1: 48-bit VA -> 48-bit IPA
-[    2.633372] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-...
-[    2.633402] [0000000000000000] user address but active_mm is swapper
-[    2.633409] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[    2.633415] Modules linked in:
-[    2.633427] CPU: 5 PID: 117 Comm: kworker/u16:2 Tainted: G        W         5.10.0-rc1-mainline-00025-g272a618fc36-dirty #3971
-[    2.633430] Hardware name: Thundercomm Dragonboard 845c (DT)
-[    2.633448] Workqueue: events_unbound async_run_entry_fn
-[    2.633456] pstate: 80c00005 (Nzcv daif +PAN +UAO -TCO BTYPE=--)
-[    2.633465] pc : qcom_scm_qsmmu500_wait_safe_toggle+0x78/0xb0
-[    2.633473] lr : qcom_smmu500_reset+0x58/0x78
-[    2.633476] sp : ffffffc0105a3b60
-...
-[    2.633567] Call trace:
-[    2.633572]  qcom_scm_qsmmu500_wait_safe_toggle+0x78/0xb0
-[    2.633576]  qcom_smmu500_reset+0x58/0x78
-[    2.633581]  arm_smmu_device_reset+0x194/0x270
-[    2.633585]  arm_smmu_device_probe+0xc94/0xeb8
-[    2.633592]  platform_drv_probe+0x58/0xa8
-[    2.633597]  really_probe+0xec/0x398
-[    2.633601]  driver_probe_device+0x5c/0xb8
-[    2.633606]  __driver_attach_async_helper+0x64/0x88
-[    2.633610]  async_run_entry_fn+0x4c/0x118
-[    2.633617]  process_one_work+0x20c/0x4b0
-[    2.633621]  worker_thread+0x48/0x460
-[    2.633628]  kthread+0x14c/0x158
-[    2.633634]  ret_from_fork+0x10/0x18
-[    2.633642] Code: a9034fa0 d0007f73 29107fa0 91342273 (f9400020)
+Thank you for pointing this out! I've a couple of questions and hope you can
+help me out with them.
 
-To avoid this, this patch adds a check on qcom_scm_is_available() in
-the qcom_smmu_impl_init() function, returning -EPROBE_DEFER if its
-not ready.
+Also CC-ing AMD / TDX folks.
+> 
+> This raises two issues:
+> 1) swiotlb_tlb_unmap_single fails to check whether the index generated
+> from the dma_addr is in range of the io_tlb_orig_addr array.
 
-This allows the driver to try to probe again later after qcom_scm has
-finished probing.
+That is fairly simple to implement I would think. That is it can check
+that the dma_addr is from the PA in the io_tlb pool when SWIOTLB=force
+is used.
 
-Reported-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: John Stultz <john.stultz@linaro.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Andy Gross <agross@kernel.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Lina Iyer <ilina@codeaurora.org>
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Link: https://lore.kernel.org/r/20201112220520.48159-1-john.stultz@linaro.org
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> 2) when swiotlb_bounce is called the device controls the length of the
+> memory copied to the cpu address.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index be4318044f96c..702fbaa6c9ada 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -69,6 +69,10 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
- {
- 	struct qcom_smmu *qsmmu;
- 
-+	/* Check to make sure qcom_scm has finished probing */
-+	if (!qcom_scm_is_available())
-+		return ERR_PTR(-EPROBE_DEFER);
-+
- 	qsmmu = devm_kzalloc(smmu->dev, sizeof(*qsmmu), GFP_KERNEL);
- 	if (!qsmmu)
- 		return ERR_PTR(-ENOMEM);
--- 
-2.27.0
+So.. this sounds very similar to the Intel Thunder.. something issue
+where this exact issue was fixed by handing the DMA off to the SWIOTLB
+bounce code.
 
+But if that is broken, then that CVE is still not fixed?
 
+So the issue here is that swiotlb_tbl_unmap_single(..,mapping_size,) is
+under the attacker control. Ugh.
 
+One way could be to have a io_tlb_orig_addr-ish array with the length
+of mappings to double check?
+
+Couple more questions:
+ - Did you have already some PoC fixes for this? 
+ - Is there a CVE associated with this?
+ - Is there a paper on this you all are working on?
+
+Thank you!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
