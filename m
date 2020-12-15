@@ -2,116 +2,99 @@ Return-Path: <SRS0=8938=FT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1278C2BB9A
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:35:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E9BC4361B
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 15:54:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 696062250F
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:35:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 696062250F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9224522582
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 15:54:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9224522582
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 03FEE2078C;
-	Tue, 15 Dec 2020 14:35:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4B5A3875F3;
+	Tue, 15 Dec 2020 15:54:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SgA4CK2xB159; Tue, 15 Dec 2020 14:35:44 +0000 (UTC)
+	with ESMTP id pP6fl2qzn3CG; Tue, 15 Dec 2020 15:54:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BC6CD20361;
-	Tue, 15 Dec 2020 14:35:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7E16E87134;
+	Tue, 15 Dec 2020 15:54:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B477C0893;
-	Tue, 15 Dec 2020 14:35:44 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36BEAC013B;
- Tue, 15 Dec 2020 14:35:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6223FC088E;
+	Tue, 15 Dec 2020 15:54:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4128CC013B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 15:54:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2F92C868A4;
- Tue, 15 Dec 2020 14:35:43 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 38F8084995
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 15:54:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b9pS2ra+oUmP; Tue, 15 Dec 2020 14:35:41 +0000 (UTC)
+ with ESMTP id 4wt0rsTc96jg for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Dec 2020 15:54:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E7A6C86833;
- Tue, 15 Dec 2020 14:35:40 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BFETgLj184657;
- Tue, 15 Dec 2020 14:35:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=d+hWdLWQC22vSxV2iPJWhnu2WrFAwrEzioZFIsCEB2w=;
- b=rujV94qs73yfJhxZtX9YxGAGFOD5zT64JPjmJKpWxzGlachvp/MB0BVZq+YaVADdCVPS
- I5M4PBQCQpUuP0ha/F0uo2QT/BvQehedHmBqlVk7FKNeqYkwfeCFr9AIcbVGZxzkUeUS
- 20vrwviFx3wDPCN+cUwXfOZ3QIjS7qQOIJG9Q3Z9ZTpuxC7J158w8wdgQUTNZRUbQYeZ
- lspVezSJgquB4eMylrgt8FRmRRjpBU+MkIjniY/CWBUF/psCQRjsedH598xLLkEIRdMh
- lYaFxQh32Jm/yWA3UWMnVjy465ky9hCfA12SIMgXscchODcVYCI7XXT6xyqD4ollJMrr fA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by aserp2130.oracle.com with ESMTP id 35ckcbb0ca-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 15 Dec 2020 14:35:32 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BFEUA8x183783;
- Tue, 15 Dec 2020 14:35:31 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by userp3030.oracle.com with ESMTP id 35d7sw9m4w-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 15 Dec 2020 14:35:31 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BFEZT0I019469;
- Tue, 15 Dec 2020 14:35:29 GMT
-Received: from char.us.oracle.com (/10.152.32.25)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Tue, 15 Dec 2020 06:35:28 -0800
-Received: by char.us.oracle.com (Postfix, from userid 1000)
- id 7443F6A00F4; Tue, 15 Dec 2020 09:37:34 -0500 (EST)
-Date: Tue, 15 Dec 2020 09:37:34 -0500
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-To: Felicitas Hetzelt <file@sect.tu-berlin.de>, baolu.lu@linux.intel.com
-Subject: Re: swiotlb/virtio: unchecked device dma address and length
-Message-ID: <20201215143734.GC28810@char.us.oracle.com>
-References: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
- <20201214214950.GC18103@char.us.oracle.com>
- <20201215084720.GA9981@ashkalra_ubuntu_server>
- <c90f5ea4-b8b2-98d7-546a-dc71fb618230@sect.tu-berlin.de>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 41DF1848ED
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 15:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1608047651;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=tPEqUf9K/9QpL3MMNAVvudGcFr4JwyB646HzAagpF+Q=;
+ b=aS95BRmN62TySJIblZRYPGlFEMwqIDRr1LfzD8/6l1Rng4f4kAE3grU7ee2W2dRN/o8WNm
+ qz+De8UqC6WIMZMeTm49+I31qRnWZ00MSaBGxhV9BGmX7gZKyuQjij+DfKBfe40dc336pj
+ vUsWQ+whTwKsmC6z5t6q5ff45OcH2WA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-XRpPflBjPsmL5JDWg5sD-Q-1; Tue, 15 Dec 2020 10:54:06 -0500
+X-MC-Unique: XRpPflBjPsmL5JDWg5sD-Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C2A7192CC41;
+ Tue, 15 Dec 2020 15:54:03 +0000 (UTC)
+Received: from x1.home (ovpn-112-193.phx2.redhat.com [10.3.112.193])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 917E81962E;
+ Tue, 15 Dec 2020 15:54:00 +0000 (UTC)
+Date: Tue, 15 Dec 2020 08:53:59 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: zhukeqian <zhukeqian1@huawei.com>
+Subject: Re: [PATCH 4/7] vfio: iommu_type1: Fix missing dirty page when
+ promote pinned_scope
+Message-ID: <20201215085359.053e73ed@x1.home>
+In-Reply-To: <d2073c05-b6c9-04b4-782c-b89680834633@huawei.com>
+References: <20201210073425.25960-1-zhukeqian1@huawei.com>
+ <20201210073425.25960-5-zhukeqian1@huawei.com>
+ <20201214170459.50cb8729@omen.home>
+ <d2073c05-b6c9-04b4-782c-b89680834633@huawei.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c90f5ea4-b8b2-98d7-546a-dc71fb618230@sect.tu-berlin.de>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- bulkscore=0
- mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012150104
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
- mlxlogscore=999
- priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0 phishscore=0
- malwarescore=0 impostorscore=0 lowpriorityscore=0 clxscore=1011
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012150104
-Cc: Thomas.Lendacky@amd.com, Ashish Kalra <ashish.kalra@amd.com>,
- brijesh.singh@amd.com, "Radev, Martin" <martin.radev@aisec.fraunhofer.de>,
- david.kaplan@amd.com, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>, Jon.Grimm@amd.com,
- virtualization@lists.linux-foundation.org,
- Robert Buhren <robert@sect.tu-berlin.de>, iommu@lists.linux-foundation.org,
- "Morbitzer, Mathias" <mathias.morbitzer@aisec.fraunhofer.de>, hch@lst.de
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: jiangkunkun@huawei.com, Andrew Morton <akpm@linux-foundation.org>,
+ kvm@vger.kernel.org, Suzuki K Poulose <suzuki.poulose@arm.com>, Marc
+ Zyngier <maz@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ linux-kernel@vger.kernel.org,
+ Sean Christopherson <sean.j.christopherson@intel.com>,
+ Alexios Zavras <alexios.zavras@intel.com>, iommu@lists.linux-foundation.org,
+ Mark Brown <broonie@kernel.org>, James Morse <james.morse@arm.com>,
+ Julien Thierry <julien.thierry.kdev@gmail.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, wanghaibin.wang@huawei.com, Thomas
+ Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+ kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,114 +112,98 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Dec 15, 2020 at 11:54:08AM +0100, Felicitas Hetzelt wrote:
-> Hello,
-> thank you all for looking into this! To answer some of the questions:
->  - Did you have already some PoC fixes for this:
->    We don't have a full PoC or fix currently. Thought we have a PoC
->    with which were able to overwrite memory outside of the mapped
->    dma region.
->  - Is there a CVE associated with this?
->    No
->  - Is there a paper on this you all are working on?
->    Yes, we were planning to use this bug (among others
->    in a paper)
+On Tue, 15 Dec 2020 17:37:11 +0800
+zhukeqian <zhukeqian1@huawei.com> wrote:
+
+> Hi Alex,
 > 
-> Could you point us to the intel thunder issue that you mentioned?
-
-ThunderClap was it!
-
-https://lwn.net/Articles/786558/
-
-Cc-ing Lu Baolu ..
-
-Hm, this was a year ago and it looks like there are some extra SWIOTLB
-patches to be done ?
-
+> On 2020/12/15 8:04, Alex Williamson wrote:
+> > On Thu, 10 Dec 2020 15:34:22 +0800
+> > Keqian Zhu <zhukeqian1@huawei.com> wrote:
+> >   
+> >> When we pin or detach a group which is not dirty tracking capable,
+> >> we will try to promote pinned_scope of vfio_iommu.
+> >>
+> >> If we succeed to do so, vfio only report pinned_scope as dirty to
+> >> userspace next time, but these memory written before pin or detach
+> >> is missed.
+> >>
+> >> The solution is that we must populate all dma range as dirty before
+> >> promoting pinned_scope of vfio_iommu.  
+> > 
+> > Please don't bury fixes patches into a series with other optimizations
+> > and semantic changes.  Send it separately.
+> >   
+> OK, I will.
 > 
-> On 12/15/20 9:47 AM, Ashish Kalra wrote:
-> > On Mon, Dec 14, 2020 at 04:49:50PM -0500, Konrad Rzeszutek Wilk wrote:
-> >> On Fri, Dec 11, 2020 at 06:31:21PM +0100, Felicitas Hetzelt wrote:
-> >>> Hello,
 > >>
-> >> Hi! Please see below my responses.
+> >> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+> >> ---
+> >>  drivers/vfio/vfio_iommu_type1.c | 18 ++++++++++++++++++
+> >>  1 file changed, 18 insertions(+)
 > >>
-> >>> we have been analyzing the Hypervisor-OS interface of Linux
-> >>> and discovered bugs in the swiotlb/virtio implementation that can be
-> >>> triggered from a malicious Hypervisor / virtual device.
-> >>> With SEV, the SWIOTLB implementation is forcefully enabled and would
-> >>> always be used. Thus, all virtio devices and others would use it under
-> >>> the hood.
-> >>>
-> >>> The reason for analyzing this interface is that, technologies such as
-> >>> Intel's Trusted Domain Extensions [1] and AMD's Secure Nested Paging [2]
-> >>> change the threat model assumed by various Linux kernel subsystems.
-> >>> These technologies take the presence of a fully malicious hypervisor
-> >>> into account and aim to provide protection for virtual machines in such
-> >>> an environment. Therefore, all input received from the hypervisor or an
-> >>> external device should be carefully validated. Note that these issues
-> >>> are of little (or no) relevance in a "normal" virtualization setup,
-> >>> nevertheless we believe that it is required to fix them if TDX or SNP is
-> >>> used.
-> >>>
-> >>> We are happy to provide more information if needed!
-> >>>
-> >>> [1]
-> >>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fsoftware.intel.com%2Fcontent%2Fwww%2Fus%2Fen%2Fdevelop%2Farticles%2Fintel-trust-domain-extensions.html&amp;data=04%7C01%7Cashish.kalra%40amd.com%7C1d1cbca182a84c0e504708d8a079eec0%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637435792867090126%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=THAJlYGLSOx3bKQYH62TLKH50By7Wnsu0z92snfNY84%3D&amp;reserved=0
-> >>>
-> >>> [2] https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.amd.com%2Fen%2Fprocessors%2Famd-secure-encrypted-virtualization&amp;data=04%7C01%7Cashish.kalra%40amd.com%7C1d1cbca182a84c0e504708d8a079eec0%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637435792867090126%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=M3jmYCWaEvmAzIy%2F4z5XstsPf812SbEkuNX5PVVr0HY%3D&amp;reserved=0
-> >>>
-> >>> Bug:
-> >>> OOB memory write.
-> >>> dma_unmap_single -> swiotlb_tbl_unmap_single is invoked with dma_addr
-> >>> and length parameters that are under control of the device.
-> >>> This happens e.g. in virtio_ring:
-> >>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Felixir.bootlin.com%2Flinux%2Fv5.10-rc7%2Fsource%2Fdrivers%2Fvirtio%2Fvirtio_ring.c%23L378&amp;data=04%7C01%7Cashish.kalra%40amd.com%7C1d1cbca182a84c0e504708d8a079eec0%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637435792867090126%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=j0CIi%2F8hBkVx45XGBtT4Ri52uWIOdOts%2BSbJ0kCB5B0%3D&amp;reserved=0
-> >>
-> >> Heya!
-> >>
-> >> Thank you for pointing this out! I've a couple of questions and hope you can
-> >> help me out with them.
-> >>
-> >> Also CC-ing AMD / TDX folks.
-> >>>
+> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> >> index bd9a94590ebc..00684597b098 100644
+> >> --- a/drivers/vfio/vfio_iommu_type1.c
+> >> +++ b/drivers/vfio/vfio_iommu_type1.c
+> >> @@ -1633,6 +1633,20 @@ static struct vfio_group *vfio_iommu_find_iommu_group(struct vfio_iommu *iommu,
+> >>  	return group;
+> >>  }
+> >>  
+> >> +static void vfio_populate_bitmap_all(struct vfio_iommu *iommu)
+> >> +{
+> >> +	struct rb_node *n;
+> >> +	unsigned long pgshift = __ffs(iommu->pgsize_bitmap);
+> >> +
+> >> +	for (n = rb_first(&iommu->dma_list); n; n = rb_next(n)) {
+> >> +		struct vfio_dma *dma = rb_entry(n, struct vfio_dma, node);
+> >> +		unsigned long nbits = dma->size >> pgshift;
+> >> +
+> >> +		if (dma->iommu_mapped)
+> >> +			bitmap_set(dma->bitmap, 0, nbits);
+> >> +	}
+> >> +}  
 > > 
-> > Adding more relevant folks in AMD.
 > > 
-> > Needless to say, the swiotlb code needs to validate this external untrusted input dma_addr and length parameters.
+> > If we detach a group which results in only non-IOMMU backed mdevs,
+> > don't we also clear dma->iommu_mapped as part of vfio_unmap_unpin()
+> > such that this test is invalid?  Thanks,  
+> 
+> Good spot :-). The code will skip bitmap_set under this situation.
+> 
+> We should set the bitmap unconditionally when vfio_iommu is promoted,
+> as we must have IOMMU backed domain before promoting the vfio_iommu.
+> 
+> Besides, I think we should also mark dirty in vfio_remove_dma if dirty
+> tracking is active. Right?
+
+There's no remaining bitmap to mark dirty if the vfio_dma is removed.
+In this case it's the user's responsibility to collect remaining dirty
+pages using the VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP support in the
+VFIO_IOMMU_UNMAP_DMA ioctl.  Thanks,
+
+Alex
+
+> >> +
+> >>  static void promote_pinned_page_dirty_scope(struct vfio_iommu *iommu)
+> >>  {
+> >>  	struct vfio_domain *domain;
+> >> @@ -1657,6 +1671,10 @@ static void promote_pinned_page_dirty_scope(struct vfio_iommu *iommu)
+> >>  	}
+> >>  
+> >>  	iommu->pinned_page_dirty_scope = true;
+> >> +
+> >> +	/* Set all bitmap to avoid missing dirty page */
+> >> +	if (iommu->dirty_page_tracking)
+> >> +		vfio_populate_bitmap_all(iommu);
+> >>  }
+> >>  
+> >>  static bool vfio_iommu_has_sw_msi(struct list_head *group_resv_regions,  
 > > 
-> > Thanks,
-> > Ashish
-> > 
-> >>> This raises two issues:
-> >>> 1) swiotlb_tlb_unmap_single fails to check whether the index generated
-> >>> from the dma_addr is in range of the io_tlb_orig_addr array.
-> >>
-> >> That is fairly simple to implement I would think. That is it can check
-> >> that the dma_addr is from the PA in the io_tlb pool when SWIOTLB=force
-> >> is used.
-> >>
-> >>> 2) when swiotlb_bounce is called the device controls the length of the
-> >>> memory copied to the cpu address.
-> >>
-> >> So.. this sounds very similar to the Intel Thunder.. something issue
-> >> where this exact issue was fixed by handing the DMA off to the SWIOTLB
-> >> bounce code.
-> >>
-> >> But if that is broken, then that CVE is still not fixed?
-> >>
-> >> So the issue here is that swiotlb_tbl_unmap_single(..,mapping_size,) is
-> >> under the attacker control. Ugh.
-> >>
-> >> One way could be to have a io_tlb_orig_addr-ish array with the length
-> >> of mappings to double check?
-> >>
-> >> Couple more questions:
-> >>  - Did you have already some PoC fixes for this? 
-> >>  - Is there a CVE associated with this?
-> >>  - Is there a paper on this you all are working on?
-> >>
-> >> Thank you!
+> > .
+> >   
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
