@@ -2,67 +2,114 @@ Return-Path: <SRS0=8938=FT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F407C4361B
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:05:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B576FC4361B
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:28:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D68B62250F
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:05:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D68B62250F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4CFC922518
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 14:28:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CFC922518
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 62DE486D7C;
-	Tue, 15 Dec 2020 14:05:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F320D87669;
+	Tue, 15 Dec 2020 14:28:08 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TcxOcXKyJIDS; Tue, 15 Dec 2020 14:28:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5AC6D8748A;
+	Tue, 15 Dec 2020 14:28:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CFCAC0893;
+	Tue, 15 Dec 2020 14:28:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 10F42C013B;
+ Tue, 15 Dec 2020 14:28:07 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id F189386A10;
+ Tue, 15 Dec 2020 14:28:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9RTpOj5gW88h; Tue, 15 Dec 2020 14:05:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2DA2B86D7E;
-	Tue, 15 Dec 2020 14:05:13 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EBC61C088E;
-	Tue, 15 Dec 2020 14:05:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2BFC8C013B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 14:05:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0E6E62076E
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 14:05:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BnjIcp14nUKr for <iommu@lists.linux-foundation.org>;
- Tue, 15 Dec 2020 14:05:09 +0000 (UTC)
+ with ESMTP id JDYIfkCDgBdJ; Tue, 15 Dec 2020 14:28:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 72D7720554
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 14:05:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 797B130E;
- Tue, 15 Dec 2020 06:05:08 -0800 (PST)
-Received: from [10.57.34.90] (unknown [10.57.34.90])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EF31D3F66B;
- Tue, 15 Dec 2020 06:05:07 -0800 (PST)
-Subject: Re: [PATCH] drivers/iommu: fix null-ptr-deref bug of
- rk_iommu_from_dev's ret-val
-To: tangzhenhao <tzh18@mails.tsinghua.edu.cn>, iommu@lists.linux-foundation.org
-References: <20201215041541.47373-1-tzh18@mails.tsinghua.edu.cn>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c75b3bd9-089b-8b10-f932-a0b425761d89@arm.com>
-Date: Tue, 15 Dec 2020 14:05:03 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 398CD86D7E;
+ Tue, 15 Dec 2020 14:28:04 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BFEOq6b012031;
+ Tue, 15 Dec 2020 14:27:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=YISo3GcXt/J6AEvokQ5mIG078k8oLtJfKd6u+cT9SyY=;
+ b=REJHBqvEo+qXfKS8wc0YJNL8FAskGapTvGq/YQj4ElTjUfkEJBKU/vUxFH95j02A4LI3
+ GSY0KwrXLQUrII6IKLHPHroTpn6xMTibJp8aGN0uuf3NyNkxd4yEIcRHmIqcTTNgdOsH
+ k+ak2HU9cDCA1D7mYAKu8kfLEfnbBOg48pyZU9+Tp/kyHQayGOkzC7CLoY43oHNhN83M
+ 8ml9M3LJJ8sVoWLKs2fDXr4RgBhnnX1c2OAEl3u8KqYIapDKAsqnOF9KaSAmYjeCbNWn
+ u+7bTQb7ykCRc5cszfQTa3gRmCTRrIoKR2P5Oa6rqtldAXxcpY/NcHgypLXmuUtcb7/Y SQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+ by userp2130.oracle.com with ESMTP id 35cn9rat0m-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Tue, 15 Dec 2020 14:27:57 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+ by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BFELACP121153;
+ Tue, 15 Dec 2020 14:25:56 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3020.oracle.com with ESMTP id 35e6jr61wa-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 15 Dec 2020 14:25:56 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BFEPmiJ029664;
+ Tue, 15 Dec 2020 14:25:52 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 15 Dec 2020 06:25:48 -0800
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+ id CB0E66A00F4; Tue, 15 Dec 2020 09:27:55 -0500 (EST)
+Date: Tue, 15 Dec 2020 09:27:55 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Jason Wang <jasowang@redhat.com>
+Subject: Re: swiotlb/virtio: unchecked device dma address and length
+Message-ID: <20201215142755.GB28810@char.us.oracle.com>
+References: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
+ <20201214214950.GC18103@char.us.oracle.com>
+ <c3629a27-3590-1d9f-211b-c0b7be152b32@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201215041541.47373-1-tzh18@mails.tsinghua.edu.cn>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <c3629a27-3590-1d9f-211b-c0b7be152b32@redhat.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 mlxlogscore=999 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012150103
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ mlxlogscore=999
+ impostorscore=0 lowpriorityscore=0 clxscore=1015 spamscore=0
+ malwarescore=0 priorityscore=1501 phishscore=0 mlxscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012150103
+Cc: ashish.kalra@amd.com, Felicitas Hetzelt <file@sect.tu-berlin.de>, "Radev,
+ Martin" <martin.radev@aisec.fraunhofer.de>, david.kaplan@amd.com,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization@lists.linux-foundation.org,
+ Robert Buhren <robert@sect.tu-berlin.de>, iommu@lists.linux-foundation.org,
+ "Morbitzer, Mathias" <mathias.morbitzer@aisec.fraunhofer.de>, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,64 +122,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-12-15 04:15, tangzhenhao wrote:
-> From: Sugar <tzh18@mails.tsinghua.edu.cn>
+.snip.
+> > > This raises two issues:
+> > > 1) swiotlb_tlb_unmap_single fails to check whether the index generated
+> > > from the dma_addr is in range of the io_tlb_orig_addr array.
+> > That is fairly simple to implement I would think. That is it can check
+> > that the dma_addr is from the PA in the io_tlb pool when SWIOTLB=force
+> > is used.
 > 
-> we should check the ret-val of function rk_iommu_from_dev to avoid null-ptr-deref.
 > 
-> Signed-off-by: Sugar <tzh18@mails.tsinghua.edu.cn>
-> ---
->   drivers/iommu/rockchip-iommu.c | 6 ++++++
->   1 file changed, 6 insertions(+)
+> I'm not sure this can fix all the cases. It looks to me we should map
+> descriptor coherent but readonly (which is not supported by current DMA
+> API).
+
+I think I am missing something obvious here. The attacker is the hypervisor, aka
+the owner of the VirtIO device (ring0). The attacker is the one that
+provides the addr/len - having that readonly from a guest perspective
+does not change the fact that the hypervisor can modify the memory range
+by mapping it via a different virtual address in the hypervisor? (aka
+aliasing it).
 > 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index e5d86b7177de..311d9eec06f4 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1064,6 +1064,9 @@ static struct iommu_device *rk_iommu_probe_device(struct device *dev)
->   		return ERR_PTR(-ENODEV);
->   
->   	iommu = rk_iommu_from_dev(dev);
-> +	if (!iommu) {
-> +		return ERR_PTR(-ENODEV);
-> +	}
+> Otherwise, device can modify the desc[i].addr/desc[i].len at any time to
+> pretend a valid mapping.
 
-Under what circumstances can data be valid but data->iommu be NULL? Note 
-that if data (i.e. iommu->priv) itself was NULL we couldn't have reached 
-this point.
+With the swiotlb=force as long as addr/len are within the PA boundaries
+within the SWIOTLB pool this should be OK?
 
->   	data->link = device_link_add(dev, iommu->dev,
->   				     DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
-> @@ -1083,6 +1086,9 @@ static struct iommu_group *rk_iommu_device_group(struct device *dev)
->   	struct rk_iommu *iommu;
->   
->   	iommu = rk_iommu_from_dev(dev);
-> +	if (!iommu) {
-> +		return ERR_PTR(-ENODEV);
-> +	}
-
-How can this possibly be NULL if rk_iommu_probe_device() succeeded such 
-that iommu_group_get_for_dev() could be called in the first place?
-
->   
->   	return iommu_group_ref_get(iommu->group);
->   }
-> 
-
-If you've actually hit a bug in practice, please include a bit more 
-detail in the commit message so that everyone can understand the 
-circumstances of the crash better. If on the other hand you're only 
-trying to find theoretical bugs by code inspection, please try to 
-understand the code *in context*. Adding checks for conditions that can 
-only happen due to random memory corruption is not worthwhile.
-
-Thanks,
-Robin.
+After all that whole area is in cleartext and visible to the attacker.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
