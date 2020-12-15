@@ -5,80 +5,80 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8114AC4361B
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 07:50:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA08C4361B
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 07:50:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 267B92228A
-	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 07:50:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 267B92228A
+	by mail.kernel.org (Postfix) with ESMTPS id 8643E2228A
+	for <iommu@archiver.kernel.org>; Tue, 15 Dec 2020 07:50:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8643E2228A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D0E9F86C7A;
-	Tue, 15 Dec 2020 07:50:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3E8C3875DB;
+	Tue, 15 Dec 2020 07:50:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bqdeO7gnUmcU; Tue, 15 Dec 2020 07:50:00 +0000 (UTC)
+	with ESMTP id 5HuiWikY4hDv; Tue, 15 Dec 2020 07:50:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 53A2186BC9;
-	Tue, 15 Dec 2020 07:50:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 870778759F;
+	Tue, 15 Dec 2020 07:50:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C645C0893;
-	Tue, 15 Dec 2020 07:50:00 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 996DAC013B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:49:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73F33C0893;
+	Tue, 15 Dec 2020 07:50:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0F21C013B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:50:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 87D4086C77
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:49:58 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D5866204A9
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:50:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kfq8FNdWaoOL for <iommu@lists.linux-foundation.org>;
- Tue, 15 Dec 2020 07:49:57 +0000 (UTC)
+ with ESMTP id fQvcY5-0PrUt for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Dec 2020 07:50:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2060.outbound.protection.outlook.com [40.107.243.60])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4AF0786BC9
- for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:49:57 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
+ by silver.osuosl.org (Postfix) with ESMTPS id AFDFB20004
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Dec 2020 07:50:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Esv7BAtBPkLPGQlXootKLuVlDIEvytZOOancJHvVkGaBQlUa7BUS2bjnxsjBaYjg4WHvZU0ALHCtEPapU49ysXZhm+4vqtuNjnXJruJ4zFkAO1uqCSPouqkA+rie3l8CIqrxJZxt+0gI8u865wN8W/Rdxn0KVMVvXC0P+agAy4n9+/O2o9BT0c0euq1Iga2bsbLWYzFucYBxIRkQS3LlskCJKPM3WZD1k0muaSIo9Yua+0lr3V4jvkCr3XealdduRe8WbOc9b9SctkLqg+MtRVUEDGfZUdrxObEhsFtPIL30kCV9MtyTQSFrQv4bYnA/2CxHx7x9gYzJDpdF2E+mvQ==
+ b=T14zy6flJow8AjX8tzdsW6BnsG1W5txj4vBXPn6YXpz0G5DbWe89vvVJv/IbL0NdKc2OOjcwQLA7OSE9O7PKivx4TpLexk/4J6HGFmVq5klJEOrEjMnHwKBp2dws6NW+cLVzRXmV4xhAmMN/THj9Xxc4AQbh4BhewPSMd1FO5XqIiy1LgCzHWM6xtsU32fM+VY6RJFUsQleBQzjEfJBMdFBzUARcTKCGzYDyN0tdIPgrkfs21WiKpM+kOUtI8ERZd8qkb/wll4xbJwkJOmwrUxnZe+dMJpZbmhz/TpDMWaz5o6ydnbwbGkUou7062dqszhNLR6ZuAcKboiPI3ObePg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rf8lxjeXIhkwTR35IPlsDPxJvymskOa2FAtLJmulFgs=;
- b=KeYKE3wJHCW0ZZek6OzoVnO3paFp5vkmdWiCo87SSzmchUNNWiBdIjmAMw3EiUCjR9zf1meNLJzey012WKWEFFVdKOLBR8The7odt1MJdcpgJ4Nhs4UfGtWO2D8HBy5HCb92yOrdpQEfeTh6VHUNsN0nS2NGVpGr/GKb5Vu+au8GBHq8/5r6q36oqZS21N/xjPC1XDSpopdAERmymWCY3eDmSIfuX/AfDSixKf6Xd7dq8eJBQEEWstYCjjOuM+NkUToxZLm9MEHzAFSopuTgXy439S6Va9mDMoZQ4oYXQtIqL3ZKE4lM9IndVskLitAQ6wZy4PJ3ztMaHI0VovrRxA==
+ bh=j20cs2xxBCH7+YRis9xpxmLsxCDFLkBh9K6UV9/TsSI=;
+ b=HmUZLTHSrNIK6DYNPAMm2X2rp5qOn9RGa3Fa5VqktHe+sBi25lUrhLmsOPpSYBcTzTRwpirTAYYQZFUUUEbMcqrK4uyDVx5EkFAXpUnhvlbvtkGyL2uzH2sr4RsnZo6fbvOjtX456QmYPDeT9nl3//YRAwrJxAGs5Fd0cXHerDK+BLen4qjP88GN8O4LRJMW7TFZH+vz85gm0qdgYwEJ9G5L+gOjiI38wT9Ap2e+bsVogPJXc61ZQNEDMYzx1v1K6byuwzJRi5PQFBA78CuXOe1LuYRNj1OwxeG0mtl1zv1uWe9qg4mGxTdsfKO2P3QY21Mlvwjl5s8/wovtDe9v5A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rf8lxjeXIhkwTR35IPlsDPxJvymskOa2FAtLJmulFgs=;
- b=WiCQB2foA1jqNAwkrwV1z2a2Vq1rLcO11e8JP26Juc15kFNoS9fVhu8EJ7JKIC5rPoJxvP6ugP/d6f3P53ucyAP1cH0eZkq/uPjha0QTY1CVjt+AY8K2O7PGviThlsM4w7Ohbzv7VcwvjaYYrc6NZ+M2VnxqoqQqZpRYrIyQvrA=
+ bh=j20cs2xxBCH7+YRis9xpxmLsxCDFLkBh9K6UV9/TsSI=;
+ b=IN4ZdZqnZD6TTPpuacnMfdsDZUrlD+z+b4gXZBUDJeiuXdj0r/kP6EoQviNShpH7n0h8ED2dy3wXgucTaZDVvMEC7Tg8ZqJL5bRuHfAWW8192j4RXO4Nmk/Srpawms4eZDFacMTCKPom5MBZnYE3AJAaUgdr0xl3VMmWMCOzqSY=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
 Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
- by BY5PR12MB3794.namprd12.prod.outlook.com (2603:10b6:a03:1aa::28)
+ by BYAPR12MB3127.namprd12.prod.outlook.com (2603:10b6:a03:d8::33)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Tue, 15 Dec
- 2020 07:34:37 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Tue, 15 Dec
+ 2020 07:34:55 +0000
 Received: from BYAPR12MB4597.namprd12.prod.outlook.com
  ([fe80::dd10:efd2:e325:53c7]) by BYAPR12MB4597.namprd12.prod.outlook.com
  ([fe80::dd10:efd2:e325:53c7%3]) with mapi id 15.20.3654.021; Tue, 15 Dec 2020
- 07:34:37 +0000
+ 07:34:55 +0000
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux-foundation.org
-Subject: [PATCH v4 01/13] iommu/amd: Re-define amd_iommu_domain_encode_pgtable
- as inline
-Date: Tue, 15 Dec 2020 01:36:53 -0600
-Message-Id: <20201215073705.123786-2-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 13/13] iommu/amd: Adopt IO page table framework for AMD
+ IOMMU v1 page table
+Date: Tue, 15 Dec 2020 01:37:05 -0600
+Message-Id: <20201215073705.123786-14-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201215073705.123786-1-suravee.suthikulpanit@amd.com>
 References: <20201215073705.123786-1-suravee.suthikulpanit@amd.com>
@@ -91,49 +91,49 @@ X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from ethanolx5673host.amd.com (165.204.78.2) by
  SN2PR01CA0060.prod.exchangelabs.com (2603:10b6:800::28) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3654.12 via Frontend Transport; Tue, 15 Dec 2020 07:34:36 +0000
+ 15.20.3654.12 via Frontend Transport; Tue, 15 Dec 2020 07:34:53 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: ec4d75a6-6032-4d71-0365-08d8a0cbe04e
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3794:
+X-MS-Office365-Filtering-Correlation-Id: 4a3323fc-9102-4a54-d100-08d8a0cbead1
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3127:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BY5PR12MB379445B86BB87115A50EC2A0F3C60@BY5PR12MB3794.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-Microsoft-Antispam-PRVS: <BYAPR12MB312758B9BEDF816532EA25A9F3C60@BYAPR12MB3127.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5cESSP+nJh3lg3WG3h06tcM0NsXpkhV2rR7aXm1huec0grGLWzIujUpWIHYL4EXPtNtcn3/f/YYwVDCrD4vtOpjTlCIi9A2JJ4AIgnuNAvKSH2nn3j+FITRx9kY3x3uPmQGlMyLF/9qHaQF/W+VkjOUbC1vV3z7PozNMQumGHYAt5z9/yThcoRcUlMP3x4a4OMbLTZVCvcflh4WYGiYofHMaNeamfFo97FpzYxkX9nood01ARu/GfOAz07P/tKFRsVpKNgqxR6iEM7mojKOWW4xBuktCHwDCq1yP7kf+fvhqrN3oqU7hXrqC3f+Ds4thUpfbYv1+6BhtSaNxYDlVo83lFryyc88G1iKolls2/E4wNWGhufnzCY+UlpHY2/X5
+X-Microsoft-Antispam-Message-Info: EoON74h/dC8A5FaHwyu4A7e7FHnJiwveyd9eOOdw9PN9UX6dHVA7EunWLrrpWddyjkILh6Hn1psMQRjxfnKqEcQWkN4O6y3eBEoOv4pGPiy8wkCnJvwLj5JCrtYewmcofO+eA8Ws68yNPPQmIVOC3BAuAu3q4mHttNCTGGEksPkWMMV+2omyfvvu7sDRbMJkCbYeRHDLOKJUWaYVq69uyPZRDqvCbplDdrv2pkwk3qxdDK7KEfPZgni9O2mkA5KcnfjVCCgzTPCh5kIm6UV8AGBbEWdYsRxszutP5VAfRrHCLXm91pTzLw1d1E0NC85Cdc7KoNmToR65IvVwHAGUx9nKg3w+vS4wyoUXZ/kUWYUYwhlUT8jzEbq/mYFf/m92
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(136003)(366004)(346002)(376002)(6666004)(2616005)(66556008)(16526019)(86362001)(956004)(66946007)(6486002)(34490700003)(26005)(52116002)(186003)(66476007)(1076003)(7696005)(36756003)(83380400001)(5660300002)(44832011)(2906002)(8676002)(508600001)(8936002)(4326008);
+ SFS:(4636009)(136003)(366004)(346002)(376002)(66556008)(66476007)(66946007)(6486002)(34490700003)(2906002)(186003)(4326008)(508600001)(8676002)(956004)(6666004)(86362001)(2616005)(52116002)(7696005)(44832011)(36756003)(1076003)(5660300002)(16526019)(26005)(8936002)(83380400001);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?NsnsXlB2/IxG18/pWb/y0Om0b5JMjJDhwFRLBroQNVw29znBUkY6U8uFAskC?=
- =?us-ascii?Q?kJsN5+pF1VdYLIzdiuvjrY8OXEBl/i4pqDVt3xbSXdsto7et7Bm0xWnYgqVI?=
- =?us-ascii?Q?wwGxMWpjzuqW9+JnT4YXJDFbLXWE6H55+kHkhEAKnj1x+T2p6EPv1iNHdZbv?=
- =?us-ascii?Q?e0cELG9ElRRkGhxVv6BH6iWQRhbEci4j3ByY0QEzGWDo221hHrN/emIt/peZ?=
- =?us-ascii?Q?LImUJU7cQCqpqHJPa6AtidoOfmfLIsa6rFo3iWOniGt6vKyXVvTFqyl0n5Wn?=
- =?us-ascii?Q?xC5OPgNU0CbgM1dsboRWA3q1O+GkmsMffvysDre/gALjamdz1y5Jux/KGkCf?=
- =?us-ascii?Q?/Dnc0jm5E6gi9Tb6wTwYmKfQT7ZYU2iFAw+DvpygPVbI38y4SE9t5Xziv/bD?=
- =?us-ascii?Q?0dneieh5rqdiIGQ410wQuC5ksAqcoiNnNdUqYRjRx9xU+RvPosNINuRH+OaE?=
- =?us-ascii?Q?wm9Tv5R9XRA7fRPh2iOlG4AfzwvEsdES2VMqkp3CNa1PYtiuA7Dc17KaIsYo?=
- =?us-ascii?Q?0liW8TTi3hHT5EGVQ7Ejvg6t+gAwsJhXhv6dYDL2PHmXh+le1qoMEvevAl3S?=
- =?us-ascii?Q?cfT9/HaLjx34OZW8iZHKVwJlIkzdQ3k0bLhvSyp26ZX8AI1LhuxOHl1K74sp?=
- =?us-ascii?Q?muPFi76CxtLZKvzlwMWmajN3b9W+zuAn1d6cP+6hLv5Hq8P2qSf8owgJ/zku?=
- =?us-ascii?Q?dGWVbplyHq53S367+dShbF+V5fPzN/6N+1OZMGER9x4BqjWTIh2K5vH7GSDx?=
- =?us-ascii?Q?zhb3q4WFVgxRCsgBG3ZLoIz19LQRxmoviyLAZXX39VXJT79p8T0B12ZfY1s+?=
- =?us-ascii?Q?gcRUKd2+mxUQul/jxJSCNXbBkKhloKNL4eVamUQJhS79HXKWkIS8BEC+/vjs?=
- =?us-ascii?Q?rUdbx1sHy/OFImxKUnFC0sWZppuW9JN+cVwm8/njbm9aPtwtXtwiShqOiJVv?=
- =?us-ascii?Q?zOhxypFrsBfwhAr0Ucr4IoMrr4ezQ6Oh0VgMYqc6npJ/kEgaFILbMd6xzl63?=
- =?us-ascii?Q?D3rk?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?IeCcKWsc/2+qvcxVQYthZAK0mBrinRG4lIh8Gmoqhlu2wEJBUYn48izj7gwV?=
+ =?us-ascii?Q?DbwzdaN0rB+7lHupez37UR67KkRPjByR8R20Jssbf+xR1tl1Op+DH4jxVBvv?=
+ =?us-ascii?Q?9XYhaN9C6rMb3DlOt50m13VNhUmCGP3hSvlbk+WKThf+xDbewlcpGxJjrjjA?=
+ =?us-ascii?Q?Xe/7+L7wJ+I0s8gWRAxOQ2z2osEikzFdbLcZeMmL3pxktlGI4hm05YxhtlYx?=
+ =?us-ascii?Q?oLXjPE+DJspcxWGHOnwqK5eoyoKKh5WL3GuM5LkiqMcaiZXD6H6W4YUrX5xk?=
+ =?us-ascii?Q?P2jDJywgjOq/RlbfLCtVAp09fbtpEUX2+XYzW3wrGfeIfRowfiBlvrmB6n9n?=
+ =?us-ascii?Q?+DRF1BfDnOZwHzlAypqXAYQXgWFEqYdlUIMXb19BR30P/RH/rjZNowLtJlu/?=
+ =?us-ascii?Q?BA0YJi2eOB+ger+hn24NC/CJT+rJ46/0uVW4OBXsBVUbDpOFMQZ1dbex08I3?=
+ =?us-ascii?Q?7FXIdiLh9M/fk2hO7QW92o/EbCVzhRzAo7xzrTHQMuQzfzybv1FJQf/srdk2?=
+ =?us-ascii?Q?ihALWBUv96gnmAThxBwPsik9FuFFLN7sTPQJBmv6KEck/3tswNE/RBo8HOUB?=
+ =?us-ascii?Q?sPCEIg1fzUoNJSC5I9r8V5B+/BCkkwvSaCQN150TkfC3sq0/JWDgd2ytoPoC?=
+ =?us-ascii?Q?NNGkQ7iJ6SWaQZkMbj3xEUKubApIYuPYVu1VgLtMkYM/js902WaSe6V0s3+V?=
+ =?us-ascii?Q?oz5zl6Ck2LAlsIeZT+BWQFfy/eaLn2OkEJr4h0G5lK+AHn1RXLUJ7FAPMtV1?=
+ =?us-ascii?Q?y2Ymu1lahlSikg6QllowmJnKBkxMowK0tPRljR1tj9rtOMJvKuDUPTTqHuLM?=
+ =?us-ascii?Q?FBYyb/bXDx0/xzbgi2VdT1isabywuVxWiJP2dEia6bvpwPKrQ7lRk6eQpLSj?=
+ =?us-ascii?Q?ug6NQvU98fyzf934FH9d3+IvJVMPMXI49xl13IouH/VNBjqqi+4Iqpu/tPzR?=
+ =?us-ascii?Q?U9N46CoBYq5xXr7tmwAZdzGeeGzvwZX0GzWK859unqs/iavlszG5v8OhY1No?=
+ =?us-ascii?Q?pS8P?=
 X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2020 07:34:37.4020 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2020 07:34:54.9310 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec4d75a6-6032-4d71-0365-08d8a0cbe04e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a3323fc-9102-4a54-d100-08d8a0cbead1
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q/ZxTssgIez54SD/hOX048SF1BiHrpnjJ/FNptE8pInsrQQqlsyzIP9ys8aGpPDUPeSyYT5VJaAhSrD8d6w4pA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3794
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5HJiSmdmPqPPPUZ6fw6uVHb4hvv+vumA4FQx62KDuGaXXYneEWU0Q5ndm28cyXldru+xUNzttBni71TFCo3BkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3127
 Cc: will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -152,59 +152,146 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move the function to header file to allow inclusion in other files.
+Switch to using IO page table framework for AMD IOMMU v1 page table.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h | 13 +++++++++++++
- drivers/iommu/amd/iommu.c     | 10 ----------
- 2 files changed, 13 insertions(+), 10 deletions(-)
+ drivers/iommu/amd/amd_iommu.h |  1 +
+ drivers/iommu/amd/init.c      |  2 ++
+ drivers/iommu/amd/iommu.c     | 48 ++++++++++++++++++++++++++---------
+ 3 files changed, 39 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 6b8cbdf71714..0817bc732d1a 100644
+index 3770b1a4d51c..91452e0ff072 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -102,6 +102,19 @@ static inline void *iommu_phys_to_virt(unsigned long paddr)
- 	return phys_to_virt(__sme_clr(paddr));
- }
+@@ -36,6 +36,7 @@ extern void amd_iommu_disable(void);
+ extern int amd_iommu_reenable(int);
+ extern int amd_iommu_enable_faulting(void);
+ extern int amd_iommu_guest_ir;
++extern enum io_pgtable_fmt amd_iommu_pgtable;
  
-+static inline
-+void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
-+{
-+	atomic64_set(&domain->pt_root, root);
-+}
+ /* IOMMUv2 specific functions */
+ struct iommu_domain;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 23a790f8f550..5fb4bea14cc4 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -147,6 +147,8 @@ struct ivmd_header {
+ bool amd_iommu_dump;
+ bool amd_iommu_irq_remap __read_mostly;
+ 
++enum io_pgtable_fmt amd_iommu_pgtable = AMD_IOMMU_V1;
 +
-+static inline
-+void amd_iommu_domain_clr_pt_root(struct protection_domain *domain)
-+{
-+	amd_iommu_domain_set_pt_root(domain, 0);
-+}
-+
-+
- extern bool translation_pre_enabled(struct amd_iommu *iommu);
- extern bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
- 					 struct device *dev);
+ int amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_VAPIC;
+ static int amd_iommu_xt_mode = IRQ_REMAP_XAPIC_MODE;
+ 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index b9cf59443843..7f6b0f60b958 100644
+index 1f04b251f0c6..571e8806e4a1 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -161,16 +161,6 @@ static void amd_iommu_domain_get_pgtable(struct protection_domain *domain,
- 	pgtable->mode = pt_root & 7; /* lowest 3 bits encode pgtable mode */
+@@ -31,6 +31,7 @@
+ #include <linux/irqdomain.h>
+ #include <linux/percpu.h>
+ #include <linux/iova.h>
++#include <linux/io-pgtable.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/io_apic.h>
+ #include <asm/apic.h>
+@@ -1901,7 +1902,7 @@ static void protection_domain_free(struct protection_domain *domain)
+ 	kfree(domain);
  }
  
--static void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
--{
--	atomic64_set(&domain->pt_root, root);
--}
--
--static void amd_iommu_domain_clr_pt_root(struct protection_domain *domain)
--{
--	amd_iommu_domain_set_pt_root(domain, 0);
--}
--
- static void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
- 					 u64 *root, int mode)
+-static int protection_domain_init(struct protection_domain *domain, int mode)
++static int protection_domain_init_v1(struct protection_domain *domain, int mode)
  {
+ 	u64 *pt_root = NULL;
+ 
+@@ -1924,34 +1925,55 @@ static int protection_domain_init(struct protection_domain *domain, int mode)
+ 	return 0;
+ }
+ 
+-static struct protection_domain *protection_domain_alloc(int mode)
++static struct protection_domain *protection_domain_alloc(unsigned int type)
+ {
++	struct io_pgtable_ops *pgtbl_ops;
+ 	struct protection_domain *domain;
++	int pgtable = amd_iommu_pgtable;
++	int mode = DEFAULT_PGTABLE_LEVEL;
++	int ret;
+ 
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+ 	if (!domain)
+ 		return NULL;
+ 
+-	if (protection_domain_init(domain, mode))
++	/*
++	 * Force IOMMU v1 page table when iommu=pt and
++	 * when allocating domain for pass-through devices.
++	 */
++	if (type == IOMMU_DOMAIN_IDENTITY) {
++		pgtable = AMD_IOMMU_V1;
++		mode = PAGE_MODE_NONE;
++	} else if (type == IOMMU_DOMAIN_UNMANAGED) {
++		pgtable = AMD_IOMMU_V1;
++	}
++
++	switch (pgtable) {
++	case AMD_IOMMU_V1:
++		ret = protection_domain_init_v1(domain, mode);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	if (ret)
+ 		goto out_err;
+ 
+-	return domain;
++	pgtbl_ops = alloc_io_pgtable_ops(pgtable, &domain->iop.pgtbl_cfg, domain);
++	if (!pgtbl_ops)
++		goto out_err;
+ 
++	return domain;
+ out_err:
+ 	kfree(domain);
+-
+ 	return NULL;
+ }
+ 
+ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ {
+ 	struct protection_domain *domain;
+-	int mode = DEFAULT_PGTABLE_LEVEL;
+-
+-	if (type == IOMMU_DOMAIN_IDENTITY)
+-		mode = PAGE_MODE_NONE;
+ 
+-	domain = protection_domain_alloc(mode);
++	domain = protection_domain_alloc(type);
+ 	if (!domain)
+ 		return NULL;
+ 
+@@ -2070,7 +2092,8 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 	int prot = 0;
+ 	int ret = -EINVAL;
+ 
+-	if (domain->iop.mode == PAGE_MODE_NONE)
++	if ((amd_iommu_pgtable == AMD_IOMMU_V1) &&
++	    (domain->iop.mode == PAGE_MODE_NONE))
+ 		return -EINVAL;
+ 
+ 	if (iommu_prot & IOMMU_READ)
+@@ -2093,7 +2116,8 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 	struct protection_domain *domain = to_pdomain(dom);
+ 	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
+ 
+-	if (domain->iop.mode == PAGE_MODE_NONE)
++	if ((amd_iommu_pgtable == AMD_IOMMU_V1) &&
++	    (domain->iop.mode == PAGE_MODE_NONE))
+ 		return 0;
+ 
+ 	return (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
 -- 
 2.17.1
 
