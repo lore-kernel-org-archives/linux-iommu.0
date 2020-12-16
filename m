@@ -2,95 +2,82 @@ Return-Path: <SRS0=vTls=FU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34075C4361B
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:04:00 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948CCC4361B
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:24:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7D2CB23371
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:03:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D2CB23371
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ACULAB.COM
+	by mail.kernel.org (Postfix) with ESMTPS id B301B2312E
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:24:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B301B2312E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9155687225;
-	Wed, 16 Dec 2020 11:03:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 39C0D86856;
+	Wed, 16 Dec 2020 11:24:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MDTVnugg2Uja; Wed, 16 Dec 2020 11:03:55 +0000 (UTC)
+	with ESMTP id j-y+4jh185Kj; Wed, 16 Dec 2020 11:24:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9441C87219;
-	Wed, 16 Dec 2020 11:03:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1112A8684F;
+	Wed, 16 Dec 2020 11:24:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51154C088E;
-	Wed, 16 Dec 2020 11:03:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3CE2FC013B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:03:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E189CC0893;
+	Wed, 16 Dec 2020 11:24:47 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 844A7C013B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E0D1920500
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:03:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7B7EA86855
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lkB8hvyO2-T9 for <iommu@lists.linux-foundation.org>;
- Wed, 16 Dec 2020 11:03:51 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from eu-smtp-delivery-151.mimecast.com
- (eu-smtp-delivery-151.mimecast.com [207.82.80.151])
- by silver.osuosl.org (Postfix) with ESMTPS id CE2EE203E7
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:03:50 +0000 (UTC)
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-94--UvXZFBAOeinyWm-PmDBBw-1; Wed, 16 Dec 2020 11:03:46 +0000
-X-MC-Unique: -UvXZFBAOeinyWm-PmDBBw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 16 Dec 2020 11:03:46 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000; 
- Wed, 16 Dec 2020 11:03:46 +0000
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Yong Wu' <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: RE: [PATCH v3 4/7] iommu: Switch gather->end to unsigned long long
-Thread-Topic: [PATCH v3 4/7] iommu: Switch gather->end to unsigned long long
-Thread-Index: AQHW05fCvUUyI8/vv0eBmqh9Irindan5jgVQ
-Date: Wed, 16 Dec 2020 11:03:46 +0000
-Message-ID: <6b4a1d37a90f4663adf6b4adb9f80e2b@AcuMS.aculab.com>
-References: <20201216103607.23050-1-yong.wu@mediatek.com>
- <20201216103607.23050-5-yong.wu@mediatek.com>
-In-Reply-To: <20201216103607.23050-5-yong.wu@mediatek.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ with ESMTP id U7IyWPKYk86Y for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Dec 2020 11:24:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 689A68684F
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:43 +0000 (UTC)
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cwt6t5pxrzkqBb;
+ Wed, 16 Dec 2020 19:23:50 +0800 (CST)
+Received: from [10.63.139.185] (10.63.139.185) by
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.498.0; Wed, 16 Dec 2020 19:24:31 +0800
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+To: Bjorn Helgaas <helgaas@kernel.org>, Zhangfei Gao <zhangfei.gao@linaro.org>
+References: <20200623150427.GA2403606@bjorn-Precision-5520>
+From: Zhou Wang <wangzhou1@hisilicon.com>
+Message-ID: <5FD9EE6E.1040505@hisilicon.com>
+Date: Wed, 16 Dec 2020 19:24:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.5.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Cc: "youlin.pei@mediatek.com" <youlin.pei@mediatek.com>,
- "anan.sun@mediatek.com" <anan.sun@mediatek.com>,
- Nicolas Boichat <drinkcat@chromium.org>,
- "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>,
- "chao.hao@mediatek.com" <chao.hao@mediatek.com>,
+In-Reply-To: <20200623150427.GA2403606@bjorn-Precision-5520>
+X-Originating-IP: [10.63.139.185]
+X-CFilter-Loop: Reflected
+Cc: Thanu Rangarajan <Thanu.Rangarajan@arm.com>,
+ jean-philippe <jean-philippe@linaro.org>,
+ Souvik Chakravarty <Souvik.Chakravarty@arm.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ linux-pci <linux-pci@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Tomasz Figa <tfiga@google.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Greg Kroah-Hartman <gregkh@google.com>,
- "kernel-team@android.com" <kernel-team@android.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>, "open
+ list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>, Bjorn
+ Helgaas <bhelgaas@google.com>, kenneth-lee-2012@foxmail.com,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,47 +95,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Yong Wu
-> Sent: 16 December 2020 10:36
+On 2020/6/23 23:04, Bjorn Helgaas wrote:
+> On Fri, Jun 19, 2020 at 10:26:54AM +0800, Zhangfei Gao wrote:
+>> Have studied _DSM method, two issues we met comparing using quirk.
+>>
+>> 1. Need change definition of either pci_host_bridge or pci_dev, like adding
+>> member can_stall,
+>> while pci system does not know stall now.
+>>
+>> a, pci devices do not have uuid: uuid need be described in dsdt, while pci
+>> devices are not defined in dsdt.
+>>     so we have to use host bridge.
 > 
-> Currently gather->end is "unsigned long" which may be overflow in
-> arch32 in the corner case: 0xfff00000 + 0x100000(iova + size).
-> Although it doesn't affect the size(end - start), it affects the checking
-> "gather->end < end"
+> PCI devices *can* be described in the DSDT.  IIUC these particular
+> devices are hardwired (not plug-in cards), so platform firmware can
+> know about them and could describe them in the DSDT.
 > 
-> Fixes: a7d20dc19d9e ("iommu: Introduce struct iommu_iotlb_gather for batching TLB flushes")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  include/linux/iommu.h | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>> b,  Parsing dsdt is in in pci subsystem.
+>> Like drivers/acpi/pci_root.c:
+>>        obj = acpi_evaluate_dsm(ACPI_HANDLE(bus->bridge), &pci_acpi_dsm_guid,
+>> 1,
+>>                                 IGNORE_PCI_BOOT_CONFIG_DSM, NULL);
+>>
+>> After parsing DSM in pci, we need record this info.
+>> Currently, can_stall info is recorded in iommu_fwspec,
+>> which is allocated in iommu_fwspec_init and called by iort_iommu_configure
+>> for uefi.
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 794d4085edd3..6e907a95d981 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -178,7 +178,7 @@ enum iommu_dev_features {
->   */
->  struct iommu_iotlb_gather {
->  	unsigned long		start;
-> -	unsigned long		end;
-> +	unsigned long long	end;
->  	size_t			pgsize;
->  };
+> You can look for a _DSM wherever it is convenient for you.  It could
+> be in an AMBA shim layer.
+> 
+>> 2. Guest kernel also need support sva.
+>> Using quirk, the guest can boot with sva enabled, since quirk is
+>> self-contained by kernel.
+>> If using  _DSM, a specific uefi or dtb has to be provided,
+>> currently we can useQEMU_EFI.fd from apt install qemu-efi
+> 
+> I don't quite understand what this means, but as I mentioned before, a
+> quirk for a *limited* number of devices is OK, as long as there is a
+> plan that removes the need for a quirk for future devices.
+> 
+> E.g., if the next platform version ships with a DTB or firmware with a
+> _DSM or other mechanism that enables the kernel to discover this
+> information without a kernel change, it's fine to use a quirk to cover
+> the early platform.
+> 
+> The principles are:
+> 
+>   - I don't want to have to update a quirk for every new Device ID
+>     that needs this.
 
-Doesn't that add two pad words on many 32bit systems?
-You probably ought to re-order the structure to keep the fields
-on their natural boundaries.
+Hi Bjorn and Zhangfei,
 
-I'm not sure what is being mapped here, but could it make sense
-to just avoid using the highest addresses?
-Then you never hit the problem.
+We plan to use ATS/PRI to support SVA in future PCI devices. However, for
+current devices, we need to add limited number of quirk to let them
+work. The device IDs of current quirk needed devices are ZIP engine(0xa250, 0xa251),
+SEC engine(0xa255, 0xa256), HPRE engine(0xa258, 0xa259), revision id are
+0x21 and 0x30.
 
-	David
+Let's continue to upstream these quirks!
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Best,
+Zhou
 
+> 
+>   - I don't really want to have to manage non-PCI information in the
+>     struct pci_dev.  If this is AMBA- or IOMMU-related, it should be
+>     stored in a structure related to AMBA or the IOMMU.
+> .
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
