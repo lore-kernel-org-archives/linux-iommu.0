@@ -2,76 +2,114 @@ Return-Path: <SRS0=vTls=FU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DF1C4361B
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 12:10:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E84C4361B
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 13:04:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1BEE623105
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 12:10:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BEE623105
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E957823357
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 13:04:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E957823357
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8A5A32010D;
-	Wed, 16 Dec 2020 12:10:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5E5E884EA3;
+	Wed, 16 Dec 2020 13:04:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R5NFl6Lx1tdz; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+	with ESMTP id Tgfn1Aelb7BL; Wed, 16 Dec 2020 13:04:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DC5A120033;
-	Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BA96184E5F;
+	Wed, 16 Dec 2020 13:04:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDE6AC088E;
-	Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94498C088E;
+	Wed, 16 Dec 2020 13:04:53 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D8B8C013B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AC36C013B;
+ Wed, 16 Dec 2020 13:04:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1CCC085EC6
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 853B984E74;
+ Wed, 16 Dec 2020 13:04:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2MP_BfJKS7s9 for <iommu@lists.linux-foundation.org>;
- Wed, 16 Dec 2020 12:10:27 +0000 (UTC)
+ with ESMTP id n-4L0-zmL9SW; Wed, 16 Dec 2020 13:04:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5015F85742
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A86551FB;
- Wed, 16 Dec 2020 04:10:26 -0800 (PST)
-Received: from [10.57.34.90] (unknown [10.57.34.90])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09D3C3F66E;
- Wed, 16 Dec 2020 04:10:23 -0800 (PST)
-Subject: Re: [PATCH v3 4/7] iommu: Switch gather->end to unsigned long long
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-References: <20201216103607.23050-1-yong.wu@mediatek.com>
- <20201216103607.23050-5-yong.wu@mediatek.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <16a9565e-5b01-e1c2-0f4a-d06db7f3b093@arm.com>
-Date: Wed, 16 Dec 2020 12:10:22 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 887CA84E5F;
+ Wed, 16 Dec 2020 13:04:50 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BGD3ttB123365;
+ Wed, 16 Dec 2020 13:04:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : in-reply-to :
+ references : mime-version : content-type : content-transfer-encoding :
+ subject : to : cc : from : message-id; s=corp-2020-01-29;
+ bh=ip3E0wXdiprHZ/4Ozz7KCIciubqnmFxqd3y8ROMIgt8=;
+ b=WvAKdtojUJOz3v/SW1mXM2pFoOByaEWl2vhtO+zsHmETOH9Wf48dYiPRObPNYb+K7VHw
+ wm1RDF0DE04WRlSX/KiP67TmiRbv7dUj7akl7jTpyUBZessx9a5u3M/m4HN0HYpT1CrC
+ O3tuG14X/8wJxh58GRV4Xfa0Oe76LShm0f2iYHl1Lzct5ZZv4f1LsHy9xTE7v6IUnmer
+ A1gewtgREbmhEb5Z+bOEy2Ot0nXcqfpoRN1QZMo1tqXsChpH1XWwKyBJjkFqBg7wskz5
+ Bi/JCUsGtrGX6J5f7gWPy299+BuT+4gLKCT8djUxCl0ruVk6xMk1f6kElVj04nB6Gw4H 9w== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by aserp2130.oracle.com with ESMTP id 35ckcbg4fn-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Wed, 16 Dec 2020 13:04:42 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BGD19kb084714;
+ Wed, 16 Dec 2020 13:04:41 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by aserp3020.oracle.com with ESMTP id 35e6erv40r-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 16 Dec 2020 13:04:41 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BGD4Zk2019221;
+ Wed, 16 Dec 2020 13:04:37 GMT
+Received: from [192.168.86.39] (/209.6.208.110)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Wed, 16 Dec 2020 05:04:35 -0800
+Date: Wed, 16 Dec 2020 08:04:32 -0500
+User-Agent: K-9 Mail for Android
+In-Reply-To: <613214145.36646222.1608100908658.JavaMail.zimbra@redhat.com>
+References: <d2ae0b1d-332b-42a1-87bf-7da2b749cac2@sect.tu-berlin.de>
+ <20201214214950.GC18103@char.us.oracle.com>
+ <c3629a27-3590-1d9f-211b-c0b7be152b32@redhat.com>
+ <20201215142755.GB28810@char.us.oracle.com>
+ <1330503106.36174346.1608098013639.JavaMail.zimbra@redhat.com>
+ <613214145.36646222.1608100908658.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201216103607.23050-5-yong.wu@mediatek.com>
-Content-Language: en-GB
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- Tomasz Figa <tfiga@google.com>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, chao.hao@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Greg Kroah-Hartman <gregkh@google.com>, kernel-team@android.com,
- linux-arm-kernel@lists.infradead.org
+Subject: Re: swiotlb/virtio: unchecked device dma address and length
+To: Jason Wang <jasowang@redhat.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Message-ID: <2CCB61BD-19F0-48A3-A8D2-0D22E51D3677@oracle.com>
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ mlxscore=0 phishscore=0
+ bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012160086
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ mlxlogscore=999
+ priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0 phishscore=0
+ malwarescore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012160086
+Cc: ashish kalra <ashish.kalra@amd.com>,
+ Felicitas Hetzelt <file@sect.tu-berlin.de>,
+ Martin Radev <martin.radev@aisec.fraunhofer.de>,
+ david kaplan <david.kaplan@amd.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization@lists.linux-foundation.org,
+ Robert Buhren <robert@sect.tu-berlin.de>, iommu@lists.linux-foundation.org,
+ Mathias Morbitzer <mathias.morbitzer@aisec.fraunhofer.de>, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,55 +122,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-12-16 10:36, Yong Wu wrote:
-> Currently gather->end is "unsigned long" which may be overflow in
-> arch32 in the corner case: 0xfff00000 + 0x100000(iova + size).
-> Although it doesn't affect the size(end - start), it affects the checking
-> "gather->end < end"
+On December 16, 2020 1:41:48 AM EST, Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+>----- Original Message -----
+>> 
+>> 
+>> ----- Original Message -----
+>> > .snip.
+>> > > > > This raises two issues:
+>> > > > > 1) swiotlb_tlb_unmap_single fails to check whether the index
+>> > > > > generated
+>> > > > > from the dma_addr is in range of the io_tlb_orig_addr array.
+>> > > > That is fairly simple to implement I would think. That is it
+>can check
+>> > > > that the dma_addr is from the PA in the io_tlb pool when
+>SWIOTLB=force
+>> > > > is used.
+>> > > 
+>> > > 
+>> > > I'm not sure this can fix all the cases. It looks to me we should
+>map
+>> > > descriptor coherent but readonly (which is not supported by
+>current DMA
+>> > > API).
+>> > 
+>> > I think I am missing something obvious here. The attacker is the
+>> > hypervisor,
+>> > aka
+>> > the owner of the VirtIO device (ring0). The attacker is the one
+>that
+>> > provides the addr/len - having that readonly from a guest
+>perspective
+>> > does not change the fact that the hypervisor can modify the memory
+>range
+>> > by mapping it via a different virtual address in the hypervisor?
+>(aka
+>> > aliasing it).
+>> 
+>> Right, but if we allow hypervisor to provide arbitrary addr/len, does
+>> it mean hypervisor can read encrypted content of encrypted memory of
+>> guest through swiotlb?
 
-This won't help the same situation at the top of a 64-bit address space, 
-though, and now that we have TTBR1 support for AArch64 format that is 
-definitely a thing. Better to just encode the end address as the actual 
-end address, i.e. iova + size - 1. We don't lose anything other than the 
-ability to encode zero-sized invalidations that don't make sense anyway.
+Yes .
+>> 
+>> Thanks
+>
+>Actually not. I think you're right.
 
-Robin.
 
-> Fixes: a7d20dc19d9e ("iommu: Introduce struct iommu_iotlb_gather for batching TLB flushes")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->   include/linux/iommu.h | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 794d4085edd3..6e907a95d981 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -178,7 +178,7 @@ enum iommu_dev_features {
->    */
->   struct iommu_iotlb_gather {
->   	unsigned long		start;
-> -	unsigned long		end;
-> +	unsigned long long	end;
->   	size_t			pgsize;
->   };
->   
-> @@ -537,7 +537,8 @@ static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
->   					       struct iommu_iotlb_gather *gather,
->   					       unsigned long iova, size_t size)
->   {
-> -	unsigned long start = iova, end = start + size;
-> +	unsigned long start = iova;
-> +	unsigned long long end = start + size;
->   
->   	/*
->   	 * If the new page is disjoint from the current range or is mapped at
-> 
+Your sentence is very confusing.
+
+On a DMA unmap SWIOTLB (when force is used) it trusts the driver from providing the correct DMA address and length which SWIOTLB uses to match to its associated original PA address.
+
+Think original PA having a mapping to a PA in the SWIOTLB pool.
+
+
+The length is not checked so the attacker can modify that to say a huge number and cause SWIOTLB bounce code to write or read data from non SWIOTLB PA into the SWIOTLB PA pool.
+
+
+
+
+>
+>Thanks
+>
+>> 
+>> > > 
+>> > > Otherwise, device can modify the desc[i].addr/desc[i].len at any
+>time to
+>> > > pretend a valid mapping.
+>> > 
+>> > With the swiotlb=force as long as addr/len are within the PA
+>boundaries
+>> > within the SWIOTLB pool this should be OK?
+>> > 
+>> > After all that whole area is in cleartext and visible to the
+>attacker.
+>> > 
+>> > 
+>> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
