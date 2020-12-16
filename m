@@ -2,82 +2,78 @@ Return-Path: <SRS0=vTls=FU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 948CCC4361B
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:24:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73215C2BBCA
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:36:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B301B2312E
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:24:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B301B2312E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id E2E0023382
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:36:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2E0023382
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 39C0D86856;
-	Wed, 16 Dec 2020 11:24:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7A7C5214F6;
+	Wed, 16 Dec 2020 11:36:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id j-y+4jh185Kj; Wed, 16 Dec 2020 11:24:48 +0000 (UTC)
+	with ESMTP id orK-dIhhhUZ7; Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1112A8684F;
-	Wed, 16 Dec 2020 11:24:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8BB602034B;
+	Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E189CC0893;
-	Wed, 16 Dec 2020 11:24:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CDDBC0893;
+	Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 844A7C013B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C413C013B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7B7EA86855
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id F2FCD8689A
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id U7IyWPKYk86Y for <iommu@lists.linux-foundation.org>;
- Wed, 16 Dec 2020 11:24:44 +0000 (UTC)
+ with ESMTP id 7BQ8NVycMbNj for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Dec 2020 11:36:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 689A68684F
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:24:43 +0000 (UTC)
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cwt6t5pxrzkqBb;
- Wed, 16 Dec 2020 19:23:50 +0800 (CST)
-Received: from [10.63.139.185] (10.63.139.185) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 16 Dec 2020 19:24:31 +0800
-Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
-To: Bjorn Helgaas <helgaas@kernel.org>, Zhangfei Gao <zhangfei.gao@linaro.org>
-References: <20200623150427.GA2403606@bjorn-Precision-5520>
-From: Zhou Wang <wangzhou1@hisilicon.com>
-Message-ID: <5FD9EE6E.1040505@hisilicon.com>
-Date: Wed, 16 Dec 2020 19:24:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101
- Thunderbird/38.5.1
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3C94786881
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:42 +0000 (UTC)
+X-UUID: 86b6c24a846540cd85cab6ea4107d6a8-20201216
+X-UUID: 86b6c24a846540cd85cab6ea4107d6a8-20201216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1493634832; Wed, 16 Dec 2020 19:36:39 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Dec 2020 19:36:36 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Dec 2020 19:36:35 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH] arm64: dts: mt8192: add m4u and smi nodes
+Date: Wed, 16 Dec 2020 19:36:30 +0800
+Message-ID: <20201216113630.26050-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-In-Reply-To: <20200623150427.GA2403606@bjorn-Precision-5520>
-X-Originating-IP: [10.63.139.185]
-X-CFilter-Loop: Reflected
-Cc: Thanu Rangarajan <Thanu.Rangarajan@arm.com>,
- jean-philippe <jean-philippe@linaro.org>,
- Souvik Chakravarty <Souvik.Chakravarty@arm.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
- linux-pci <linux-pci@vger.kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- wanghuiqiang <wanghuiqiang@huawei.com>, "open
- list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>,
- Sudeep Holla <sudeep.holla@arm.com>, Bjorn
- Helgaas <bhelgaas@google.com>, kenneth-lee-2012@foxmail.com,
- Linux ARM <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, weiyi.lu@mediatek.com,
+ srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ yi.kuo@mediatek.com, Project_Global_Chrome_Upstream_Group@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,75 +91,285 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/6/23 23:04, Bjorn Helgaas wrote:
-> On Fri, Jun 19, 2020 at 10:26:54AM +0800, Zhangfei Gao wrote:
->> Have studied _DSM method, two issues we met comparing using quirk.
->>
->> 1. Need change definition of either pci_host_bridge or pci_dev, like adding
->> member can_stall,
->> while pci system does not know stall now.
->>
->> a, pci devices do not have uuid: uuid need be described in dsdt, while pci
->> devices are not defined in dsdt.
->>     so we have to use host bridge.
-> 
-> PCI devices *can* be described in the DSDT.  IIUC these particular
-> devices are hardwired (not plug-in cards), so platform firmware can
-> know about them and could describe them in the DSDT.
-> 
->> b,  Parsing dsdt is in in pci subsystem.
->> Like drivers/acpi/pci_root.c:
->>        obj = acpi_evaluate_dsm(ACPI_HANDLE(bus->bridge), &pci_acpi_dsm_guid,
->> 1,
->>                                 IGNORE_PCI_BOOT_CONFIG_DSM, NULL);
->>
->> After parsing DSM in pci, we need record this info.
->> Currently, can_stall info is recorded in iommu_fwspec,
->> which is allocated in iommu_fwspec_init and called by iort_iommu_configure
->> for uefi.
-> 
-> You can look for a _DSM wherever it is convenient for you.  It could
-> be in an AMBA shim layer.
-> 
->> 2. Guest kernel also need support sva.
->> Using quirk, the guest can boot with sva enabled, since quirk is
->> self-contained by kernel.
->> If using  _DSM, a specific uefi or dtb has to be provided,
->> currently we can useQEMU_EFI.fd from apt install qemu-efi
-> 
-> I don't quite understand what this means, but as I mentioned before, a
-> quirk for a *limited* number of devices is OK, as long as there is a
-> plan that removes the need for a quirk for future devices.
-> 
-> E.g., if the next platform version ships with a DTB or firmware with a
-> _DSM or other mechanism that enables the kernel to discover this
-> information without a kernel change, it's fine to use a quirk to cover
-> the early platform.
-> 
-> The principles are:
-> 
->   - I don't want to have to update a quirk for every new Device ID
->     that needs this.
+Add mt8192 IOMMU and smi larb/common nodes.
 
-Hi Bjorn and Zhangfei,
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+This patch base on:
+1. mt8192 dts base which is in the linux-next now.
+https://lore.kernel.org/linux-mediatek/20201030092207.26488-2-seiya.wang@mediatek.com/
 
-We plan to use ATS/PRI to support SVA in future PCI devices. However, for
-current devices, we need to add limited number of quirk to let them
-work. The device IDs of current quirk needed devices are ZIP engine(0xa250, 0xa251),
-SEC engine(0xa255, 0xa256), HPRE engine(0xa258, 0xa259), revision id are
-0x21 and 0x30.
+2. clock nodes and definitions:
+https://lore.kernel.org/linux-mediatek/1604887429-29445-1-git-send-email-weiyi.lu@mediatek.com/
 
-Let's continue to upstream these quirks!
+3. PM definitions:
+https://patchwork.kernel.org/project/linux-mediatek/patch/20201030113622.201188-15-enric.balletbo@collabora.com/
 
-Best,
-Zhou
+4. PM nodes:
+https://lore.kernel.org/linux-mediatek/1605782884-19741-1-git-send-email-weiyi.lu@mediatek.com/
 
-> 
->   - I don't really want to have to manage non-PCI information in the
->     struct pci_dev.  If this is AMBA- or IOMMU-related, it should be
->     stored in a structure related to AMBA or the IOMMU.
-> .
-> 
+5. iommu ports defintions:
+https://lore.kernel.org/linux-iommu/20201209080102.26626-1-yong.wu@mediatek.com/T/#t
+---
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 193 +++++++++++++++++++++++
+ 1 file changed, 193 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index a315568fcd9a..b84585de5ca8 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -8,6 +8,7 @@
+ #include <dt-bindings/clock/mt8192-clk.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/memory/mt8192-larb-port.h>
+ #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
+ #include <dt-bindings/power/mt8192-power.h>
+ 
+@@ -807,24 +808,116 @@
+ 			#clock-cells = <1>;
+ 		};
+ 
++		smi_common: smi@14002000 {
++			compatible = "mediatek,mt8192-smi-common";
++			reg = <0 0x14002000 0 0x1000>;
++			clocks = <&mmsys CLK_MM_SMI_COMMON>,
++				 <&mmsys CLK_MM_SMI_INFRA>,
++				 <&mmsys CLK_MM_SMI_GALS>,
++				 <&mmsys CLK_MM_SMI_GALS>;
++			clock-names = "apb", "smi", "gals0", "gals1";
++			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
++		};
++
++		larb0: larb@14003000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x14003000 0 0x1000>;
++			mediatek,larb-id = <0>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&mmsys CLK_MM_SMI_COMMON>,
++				 <&mmsys CLK_MM_SMI_INFRA>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
++		};
++
++		larb1: larb@14004000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x14004000 0 0x1000>;
++			mediatek,larb-id = <1>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&mmsys CLK_MM_SMI_COMMON>,
++				 <&mmsys CLK_MM_SMI_INFRA>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
++		};
++
++		iommu0: m4u@1401d000 {
++			compatible = "mediatek,mt8192-m4u";
++			reg = <0 0x1401d000 0 0x1000>;
++			mediatek,larbs = <&larb0 &larb1 &larb2
++					  &larb4 &larb5 &larb7
++					  &larb9 &larb11 &larb13
++					  &larb14 &larb16 &larb17
++					  &larb18 &larb19 &larb20>;
++			interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&mmsys CLK_MM_SMI_IOMMU>;
++			clock-names = "bclk";
++			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
++			#iommu-cells = <1>;
++		};
++
+ 		imgsys: syscon@15020000 {
+ 			compatible = "mediatek,mt8192-imgsys", "syscon";
+ 			reg = <0 0x15020000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb9: larb@1502e000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1502e000 0 0x1000>;
++			mediatek,larb-id = <9>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&imgsys CLK_IMG_LARB9>,
++				 <&imgsys CLK_IMG_LARB9>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_ISP>;
++		};
++
+ 		imgsys2: syscon@15820000 {
+ 			compatible = "mediatek,mt8192-imgsys2", "syscon";
+ 			reg = <0 0x15820000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb11: larb@1582e000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1582e000 0 0x1000>;
++			mediatek,larb-id = <11>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&imgsys2 CLK_IMG2_LARB11>,
++				 <&imgsys2 CLK_IMG2_LARB11>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
++		};
++
++		larb5: larb@1600d000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1600d000 0 0x1000>;
++			mediatek,larb-id = <5>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
++				 <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
++		};
++
+ 		vdecsys_soc: syscon@1600f000 {
+ 			compatible = "mediatek,mt8192-vdecsys_soc", "syscon";
+ 			reg = <0 0x1600f000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb4: larb@1602e000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1602e000 0 0x1000>;
++			mediatek,larb-id = <4>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&vdecsys CLK_VDEC_SOC_LARB1>,
++				 <&vdecsys CLK_VDEC_SOC_LARB1>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
++		};
++
+ 		vdecsys: syscon@1602f000 {
+ 			compatible = "mediatek,mt8192-vdecsys", "syscon";
+ 			reg = <0 0x1602f000 0 0x1000>;
+@@ -837,12 +930,79 @@
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb7: larb@17010000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x17010000 0 0x1000>;
++			mediatek,larb-id = <7>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&vencsys CLK_VENC_SET0_LARB>,
++				 <&vencsys CLK_VENC_SET1_VENC>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_VENC>;
++		};
++
+ 		camsys: syscon@1a000000 {
+ 			compatible = "mediatek,mt8192-camsys", "syscon";
+ 			reg = <0 0x1a000000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb13: larb@1a001000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1a001000 0 0x1000>;
++			mediatek,larb-id = <13>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&camsys CLK_CAM_CAM>,
++				 <&camsys CLK_CAM_LARB13>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
++		};
++
++		larb14: larb@1a002000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1a002000 0 0x1000>;
++			mediatek,larb-id = <14>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&camsys CLK_CAM_CAM>,
++				 <&camsys CLK_CAM_LARB14>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
++		};
++
++		larb16: larb@1a00f000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1a00f000 0 0x1000>;
++			mediatek,larb-id = <16>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&camsys_rawa CLK_CAM_RAWA_CAM>,
++				 <&camsys_rawa CLK_CAM_RAWA_LARBX>;
++			clock-names = "apb", "smi";
++			mediatek,smi-id = <16>;
++			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWA>;
++		};
++
++		larb17: larb@1a010000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1a010000 0 0x1000>;
++			mediatek,larb-id = <17>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&camsys_rawb CLK_CAM_RAWB_CAM>,
++				 <&camsys_rawb CLK_CAM_RAWB_LARBX>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWB>;
++		};
++
++		larb18: larb@1a011000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1a011000 0 0x1000>;
++			mediatek,larb-id = <18>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&camsys_rawc CLK_CAM_RAWC_LARBX>,
++				 <&camsys_rawc CLK_CAM_RAWC_CAM>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWC>;
++		};
++
+ 		camsys_rawa: syscon@1a04f000 {
+ 			compatible = "mediatek,mt8192-camsys_rawa", "syscon";
+ 			reg = <0 0x1a04f000 0 0x1000>;
+@@ -867,10 +1027,43 @@
+ 			#clock-cells = <1>;
+ 		};
+ 
++		larb20: larb@1b00f000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1b00f000 0 0x1000>;
++			mediatek,larb-id = <20>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
++				 <&ipesys CLK_IPE_LARB20>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
++		};
++
++		larb19: larb@1b10f000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1b10f000 0 0x1000>;
++			mediatek,larb-id = <19>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
++				 <&ipesys CLK_IPE_LARB19>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
++		};
++
+ 		mdpsys: syscon@1f000000 {
+ 			compatible = "mediatek,mt8192-mdpsys", "syscon";
+ 			reg = <0 0x1f000000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
++
++		larb2: larb@1f002000 {
++			compatible = "mediatek,mt8192-smi-larb";
++			reg = <0 0x1f002000 0 0x1000>;
++			mediatek,larb-id = <2>;
++			mediatek,smi = <&smi_common>;
++			clocks = <&mdpsys CLK_MDP_SMI0>,
++				 <&mdpsys CLK_MDP_SMI0>;
++			clock-names = "apb", "smi";
++			power-domains = <&spm MT8192_POWER_DOMAIN_MDP>;
++		};
+ 	};
+ };
+-- 
+2.18.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
