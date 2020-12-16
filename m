@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FF8C4361B
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 10:36:43 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DB3C4361B
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 10:36:49 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E09923104
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 10:36:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E09923104
+	by mail.kernel.org (Postfix) with ESMTPS id 4D37423104
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 10:36:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D37423104
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 54ED5868F6;
-	Wed, 16 Dec 2020 10:36:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C301286E6E;
+	Wed, 16 Dec 2020 10:36:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Yfo8+S3PlhPi; Wed, 16 Dec 2020 10:36:41 +0000 (UTC)
+	with ESMTP id ftl5+HHLv6Ld; Wed, 16 Dec 2020 10:36:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AA4AE868F2;
-	Wed, 16 Dec 2020 10:36:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EC47181AEE;
+	Wed, 16 Dec 2020 10:36:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 959B1C088E;
-	Wed, 16 Dec 2020 10:36:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4A4EC088E;
+	Wed, 16 Dec 2020 10:36:47 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CBEE2C013B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A3861C013B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id BA54385E7D
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:40 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9180285EB4
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tUOEEoa6IKbV for <iommu@lists.linux-foundation.org>;
- Wed, 16 Dec 2020 10:36:40 +0000 (UTC)
+ with ESMTP id h9Hv97awxMeN for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Dec 2020 10:36:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EB8CD85D8E
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:39 +0000 (UTC)
-X-UUID: 1a25c411904149898cff33a0774e6e54-20201216
-X-UUID: 1a25c411904149898cff33a0774e6e54-20201216
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+ by fraxinus.osuosl.org (Postfix) with ESMTP id ED1BE85D8E
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 10:36:45 +0000 (UTC)
+X-UUID: 28de3f7b3ddb4496a2ed0ef719652e17-20201216
+X-UUID: 28de3f7b3ddb4496a2ed0ef719652e17-20201216
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 634094253; Wed, 16 Dec 2020 18:36:35 +0800
+ with ESMTP id 669710968; Wed, 16 Dec 2020 18:36:44 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Dec 2020 18:36:32 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Dec 2020 18:36:41 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Dec 2020 18:36:31 +0800
+ Transport; Wed, 16 Dec 2020 18:36:40 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
  Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3 2/7] iommu: Add iova and size as parameters in
- iotlb_sync_map
-Date: Wed, 16 Dec 2020 18:36:02 +0800
-Message-ID: <20201216103607.23050-3-yong.wu@mediatek.com>
+Subject: [PATCH v3 3/7] iommu/mediatek: Add iotlb_sync_map to sync whole the
+ iova range
+Date: Wed, 16 Dec 2020 18:36:03 +0800
+Message-ID: <20201216103607.23050-4-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20201216103607.23050-1-yong.wu@mediatek.com>
 References: <20201216103607.23050-1-yong.wu@mediatek.com>
@@ -95,78 +95,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-iotlb_sync_map allow IOMMU drivers tlb sync after completing the whole
-mapping. This patch adds iova and size as the parameters in it. then the
-IOMMU driver could flush tlb with the whole range once after iova mapping
-to improve performance.
+Remove IO_PGTABLE_QUIRK_TLBI_ON_MAP to avoid tlb sync for each a small
+chunk memory, Use the new iotlb_sync_map to tlb_sync once for whole the
+iova range of iommu_map.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iommu.c      | 6 +++---
- drivers/iommu/tegra-gart.c | 3 ++-
- include/linux/iommu.h      | 3 ++-
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/iommu/mtk_iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index decef851fa3a..df87c8e825f7 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2425,7 +2425,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	might_sleep();
- 	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
- 	if (ret == 0 && ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain);
-+		ops->iotlb_sync_map(domain, iova, size);
- 
- 	return ret;
- }
-@@ -2439,7 +2439,7 @@ int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
- 
- 	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
- 	if (ret == 0 && ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain);
-+		ops->iotlb_sync_map(domain, iova, size);
- 
- 	return ret;
- }
-@@ -2557,7 +2557,7 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 	}
- 
- 	if (ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain);
-+		ops->iotlb_sync_map(domain, iova, mapped);
- 	return mapped;
- 
- out_err:
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index fac720273889..d15d13a98ed1 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -261,7 +261,8 @@ static int gart_iommu_of_xlate(struct device *dev,
- 	return 0;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 5878b11bc5e9..db7d43adb06b 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -376,7 +376,6 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+ 	dom->cfg = (struct io_pgtable_cfg) {
+ 		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+ 			IO_PGTABLE_QUIRK_NO_PERMS |
+-			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
+ 			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
+ 		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
+ 		.ias = MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN) ? 34 : 32,
+@@ -531,6 +530,14 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+ 				       dom->data);
  }
  
--static void gart_iommu_sync_map(struct iommu_domain *domain)
-+static void gart_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+				size_t size)
++static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
++			       size_t size)
++{
++	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++
++	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
++}
++
+ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t iova)
  {
- 	FLUSH_GART_REGS(gart_handle);
- }
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b95a6f8db6ff..794d4085edd3 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -244,7 +244,8 @@ struct iommu_ops {
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
--	void (*iotlb_sync_map)(struct iommu_domain *domain);
-+	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
-+			       size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+@@ -655,6 +662,7 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.unmap		= mtk_iommu_unmap,
+ 	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
+ 	.iotlb_sync	= mtk_iommu_iotlb_sync,
++	.iotlb_sync_map	= mtk_iommu_sync_map,
+ 	.iova_to_phys	= mtk_iommu_iova_to_phys,
+ 	.probe_device	= mtk_iommu_probe_device,
+ 	.release_device	= mtk_iommu_release_device,
 -- 
 2.18.0
 
