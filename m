@@ -2,78 +2,76 @@ Return-Path: <SRS0=vTls=FU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73215C2BBCA
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DF1C4361B
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 12:10:33 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E2E0023382
-	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 11:36:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2E0023382
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1BEE623105
+	for <iommu@archiver.kernel.org>; Wed, 16 Dec 2020 12:10:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1BEE623105
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7A7C5214F6;
-	Wed, 16 Dec 2020 11:36:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8A5A32010D;
+	Wed, 16 Dec 2020 12:10:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id orK-dIhhhUZ7; Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
+	with ESMTP id R5NFl6Lx1tdz; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8BB602034B;
-	Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DC5A120033;
+	Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CDDBC0893;
-	Wed, 16 Dec 2020 11:36:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0C413C013B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CDE6AC088E;
+	Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D8B8C013B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id F2FCD8689A
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:43 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1CCC085EC6
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7BQ8NVycMbNj for <iommu@lists.linux-foundation.org>;
- Wed, 16 Dec 2020 11:36:42 +0000 (UTC)
+ with ESMTP id 2MP_BfJKS7s9 for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Dec 2020 12:10:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3C94786881
- for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 11:36:42 +0000 (UTC)
-X-UUID: 86b6c24a846540cd85cab6ea4107d6a8-20201216
-X-UUID: 86b6c24a846540cd85cab6ea4107d6a8-20201216
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
- ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1493634832; Wed, 16 Dec 2020 19:36:39 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Dec 2020 19:36:36 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Dec 2020 19:36:35 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH] arm64: dts: mt8192: add m4u and smi nodes
-Date: Wed, 16 Dec 2020 19:36:30 +0800
-Message-ID: <20201216113630.26050-1-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5015F85742
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Dec 2020 12:10:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A86551FB;
+ Wed, 16 Dec 2020 04:10:26 -0800 (PST)
+Received: from [10.57.34.90] (unknown [10.57.34.90])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09D3C3F66E;
+ Wed, 16 Dec 2020 04:10:23 -0800 (PST)
+Subject: Re: [PATCH v3 4/7] iommu: Switch gather->end to unsigned long long
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+References: <20201216103607.23050-1-yong.wu@mediatek.com>
+ <20201216103607.23050-5-yong.wu@mediatek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <16a9565e-5b01-e1c2-0f4a-d06db7f3b093@arm.com>
+Date: Wed, 16 Dec 2020 12:10:22 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-X-MTK: N
+In-Reply-To: <20201216103607.23050-5-yong.wu@mediatek.com>
+Content-Language: en-GB
 Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, weiyi.lu@mediatek.com,
- srv_heupstream@mediatek.com, chao.hao@mediatek.com,
- linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
- yi.kuo@mediatek.com, Project_Global_Chrome_Upstream_Group@mediatek.com,
- Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, chao.hao@mediatek.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Greg Kroah-Hartman <gregkh@google.com>, kernel-team@android.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,290 +84,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add mt8192 IOMMU and smi larb/common nodes.
+On 2020-12-16 10:36, Yong Wu wrote:
+> Currently gather->end is "unsigned long" which may be overflow in
+> arch32 in the corner case: 0xfff00000 + 0x100000(iova + size).
+> Although it doesn't affect the size(end - start), it affects the checking
+> "gather->end < end"
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
-This patch base on:
-1. mt8192 dts base which is in the linux-next now.
-https://lore.kernel.org/linux-mediatek/20201030092207.26488-2-seiya.wang@mediatek.com/
+This won't help the same situation at the top of a 64-bit address space, 
+though, and now that we have TTBR1 support for AArch64 format that is 
+definitely a thing. Better to just encode the end address as the actual 
+end address, i.e. iova + size - 1. We don't lose anything other than the 
+ability to encode zero-sized invalidations that don't make sense anyway.
 
-2. clock nodes and definitions:
-https://lore.kernel.org/linux-mediatek/1604887429-29445-1-git-send-email-weiyi.lu@mediatek.com/
+Robin.
 
-3. PM definitions:
-https://patchwork.kernel.org/project/linux-mediatek/patch/20201030113622.201188-15-enric.balletbo@collabora.com/
-
-4. PM nodes:
-https://lore.kernel.org/linux-mediatek/1605782884-19741-1-git-send-email-weiyi.lu@mediatek.com/
-
-5. iommu ports defintions:
-https://lore.kernel.org/linux-iommu/20201209080102.26626-1-yong.wu@mediatek.com/T/#t
----
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 193 +++++++++++++++++++++++
- 1 file changed, 193 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index a315568fcd9a..b84585de5ca8 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -8,6 +8,7 @@
- #include <dt-bindings/clock/mt8192-clk.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/memory/mt8192-larb-port.h>
- #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
- #include <dt-bindings/power/mt8192-power.h>
- 
-@@ -807,24 +808,116 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		smi_common: smi@14002000 {
-+			compatible = "mediatek,mt8192-smi-common";
-+			reg = <0 0x14002000 0 0x1000>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_INFRA>,
-+				 <&mmsys CLK_MM_SMI_GALS>,
-+				 <&mmsys CLK_MM_SMI_GALS>;
-+			clock-names = "apb", "smi", "gals0", "gals1";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		larb0: larb@14003000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x14003000 0 0x1000>;
-+			mediatek,larb-id = <0>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_INFRA>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		larb1: larb@14004000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x14004000 0 0x1000>;
-+			mediatek,larb-id = <1>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_INFRA>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		iommu0: m4u@1401d000 {
-+			compatible = "mediatek,mt8192-m4u";
-+			reg = <0 0x1401d000 0 0x1000>;
-+			mediatek,larbs = <&larb0 &larb1 &larb2
-+					  &larb4 &larb5 &larb7
-+					  &larb9 &larb11 &larb13
-+					  &larb14 &larb16 &larb17
-+					  &larb18 &larb19 &larb20>;
-+			interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&mmsys CLK_MM_SMI_IOMMU>;
-+			clock-names = "bclk";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		imgsys: syscon@15020000 {
- 			compatible = "mediatek,mt8192-imgsys", "syscon";
- 			reg = <0 0x15020000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb9: larb@1502e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1502e000 0 0x1000>;
-+			mediatek,larb-id = <9>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&imgsys CLK_IMG_LARB9>,
-+				 <&imgsys CLK_IMG_LARB9>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_ISP>;
-+		};
-+
- 		imgsys2: syscon@15820000 {
- 			compatible = "mediatek,mt8192-imgsys2", "syscon";
- 			reg = <0 0x15820000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb11: larb@1582e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1582e000 0 0x1000>;
-+			mediatek,larb-id = <11>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&imgsys2 CLK_IMG2_LARB11>,
-+				 <&imgsys2 CLK_IMG2_LARB11>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
-+		};
-+
-+		larb5: larb@1600d000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1600d000 0 0x1000>;
-+			mediatek,larb-id = <5>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
-+				 <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
-+		};
-+
- 		vdecsys_soc: syscon@1600f000 {
- 			compatible = "mediatek,mt8192-vdecsys_soc", "syscon";
- 			reg = <0 0x1600f000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb4: larb@1602e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1602e000 0 0x1000>;
-+			mediatek,larb-id = <4>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vdecsys CLK_VDEC_SOC_LARB1>,
-+				 <&vdecsys CLK_VDEC_SOC_LARB1>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
-+		};
-+
- 		vdecsys: syscon@1602f000 {
- 			compatible = "mediatek,mt8192-vdecsys", "syscon";
- 			reg = <0 0x1602f000 0 0x1000>;
-@@ -837,12 +930,79 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		larb7: larb@17010000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x17010000 0 0x1000>;
-+			mediatek,larb-id = <7>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vencsys CLK_VENC_SET0_LARB>,
-+				 <&vencsys CLK_VENC_SET1_VENC>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VENC>;
-+		};
-+
- 		camsys: syscon@1a000000 {
- 			compatible = "mediatek,mt8192-camsys", "syscon";
- 			reg = <0 0x1a000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb13: larb@1a001000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a001000 0 0x1000>;
-+			mediatek,larb-id = <13>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys CLK_CAM_CAM>,
-+				 <&camsys CLK_CAM_LARB13>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
-+		};
-+
-+		larb14: larb@1a002000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a002000 0 0x1000>;
-+			mediatek,larb-id = <14>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys CLK_CAM_CAM>,
-+				 <&camsys CLK_CAM_LARB14>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
-+		};
-+
-+		larb16: larb@1a00f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a00f000 0 0x1000>;
-+			mediatek,larb-id = <16>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawa CLK_CAM_RAWA_CAM>,
-+				 <&camsys_rawa CLK_CAM_RAWA_LARBX>;
-+			clock-names = "apb", "smi";
-+			mediatek,smi-id = <16>;
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWA>;
-+		};
-+
-+		larb17: larb@1a010000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a010000 0 0x1000>;
-+			mediatek,larb-id = <17>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawb CLK_CAM_RAWB_CAM>,
-+				 <&camsys_rawb CLK_CAM_RAWB_LARBX>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWB>;
-+		};
-+
-+		larb18: larb@1a011000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a011000 0 0x1000>;
-+			mediatek,larb-id = <18>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawc CLK_CAM_RAWC_LARBX>,
-+				 <&camsys_rawc CLK_CAM_RAWC_CAM>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWC>;
-+		};
-+
- 		camsys_rawa: syscon@1a04f000 {
- 			compatible = "mediatek,mt8192-camsys_rawa", "syscon";
- 			reg = <0 0x1a04f000 0 0x1000>;
-@@ -867,10 +1027,43 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		larb20: larb@1b00f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1b00f000 0 0x1000>;
-+			mediatek,larb-id = <20>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
-+				 <&ipesys CLK_IPE_LARB20>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
-+		};
-+
-+		larb19: larb@1b10f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1b10f000 0 0x1000>;
-+			mediatek,larb-id = <19>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
-+				 <&ipesys CLK_IPE_LARB19>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
-+		};
-+
- 		mdpsys: syscon@1f000000 {
- 			compatible = "mediatek,mt8192-mdpsys", "syscon";
- 			reg = <0 0x1f000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
-+
-+		larb2: larb@1f002000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1f002000 0 0x1000>;
-+			mediatek,larb-id = <2>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&mdpsys CLK_MDP_SMI0>,
-+				 <&mdpsys CLK_MDP_SMI0>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_MDP>;
-+		};
- 	};
- };
--- 
-2.18.0
-
+> Fixes: a7d20dc19d9e ("iommu: Introduce struct iommu_iotlb_gather for batching TLB flushes")
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   include/linux/iommu.h | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 794d4085edd3..6e907a95d981 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -178,7 +178,7 @@ enum iommu_dev_features {
+>    */
+>   struct iommu_iotlb_gather {
+>   	unsigned long		start;
+> -	unsigned long		end;
+> +	unsigned long long	end;
+>   	size_t			pgsize;
+>   };
+>   
+> @@ -537,7 +537,8 @@ static inline void iommu_iotlb_gather_add_page(struct iommu_domain *domain,
+>   					       struct iommu_iotlb_gather *gather,
+>   					       unsigned long iova, size_t size)
+>   {
+> -	unsigned long start = iova, end = start + size;
+> +	unsigned long start = iova;
+> +	unsigned long long end = start + size;
+>   
+>   	/*
+>   	 * If the new page is disjoint from the current range or is mapped at
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
