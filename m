@@ -2,74 +2,73 @@ Return-Path: <SRS0=D+h4=F2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C24C433DB
-	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 18:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855ECC433E6
+	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 19:27:27 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A333822510
-	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 18:14:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A333822510
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1E1CD23133
+	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 19:27:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E1CD23133
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4283885F93;
-	Tue, 22 Dec 2020 18:14:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BFBB285F61;
+	Tue, 22 Dec 2020 19:27:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PsQlhu0x7jSU; Tue, 22 Dec 2020 18:14:58 +0000 (UTC)
+	with ESMTP id VlnJzUfFSgRd; Tue, 22 Dec 2020 19:27:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C7FFE85FA0;
-	Tue, 22 Dec 2020 18:14:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C51185F56;
+	Tue, 22 Dec 2020 19:27:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4FD6C1825;
-	Tue, 22 Dec 2020 18:14:58 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B246BC0893
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 18:14:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 12EC9C1787;
+	Tue, 22 Dec 2020 19:27:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AFD4C0893
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:27:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AC5418698E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 18:14:57 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7461385F56
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:27:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PVh3ICHvfm4e for <iommu@lists.linux-foundation.org>;
- Tue, 22 Dec 2020 18:14:57 +0000 (UTC)
+ with ESMTP id uH2VLUA67veu for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Dec 2020 19:27:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id EB9CE8517C
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 18:14:56 +0000 (UTC)
-IronPort-SDR: rBU6Px1fQ5izShgjX+n/zNZP59qlUBCV0VLQ8g5A3NyKFQCdpAI50R96kDEKHmKcifYczZOoBV
- hk+misARFRWA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9843"; a="163626505"
-X-IronPort-AV: E=Sophos;i="5.78,439,1599548400"; d="scan'208";a="163626505"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Dec 2020 10:14:56 -0800
-IronPort-SDR: IT3jjR6wg7YLiRusbaq/JwX4lXhMmYaiM4SoyICECJYOxyEiHnivk9V+JJg+JeZQ9LyxBirzoW
- CS8i/JcSn/rg==
-X-IronPort-AV: E=Sophos;i="5.78,439,1599548400"; d="scan'208";a="373496961"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Dec 2020 10:14:56 -0800
-Date: Tue, 22 Dec 2020 10:17:02 -0800
-From: Jacob Pan <jacob.jun.pan@intel.com>
-To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [PATCH 0/4] iommu/vtd-: Misc fixes on scalable mode
-Message-ID: <20201222101702.0e236af8@jacob-builder>
-In-Reply-To: <20201220000352.183523-1-yi.l.liu@intel.com>
-References: <20201220000352.183523-1-yi.l.liu@intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8F51285F4D
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:27:23 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C19081FB;
+ Tue, 22 Dec 2020 11:27:22 -0800 (PST)
+Received: from [10.57.34.90] (unknown [10.57.34.90])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D97A93F6CF;
+ Tue, 22 Dec 2020 11:27:20 -0800 (PST)
+Subject: Re: [PATCH v2 3/7] iommu/arm-smmu: Add dependency on io-pgtable
+ format modules
+To: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, freedreno@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org
+References: <1608597876-32367-1-git-send-email-isaacm@codeaurora.org>
+ <1608597876-32367-4-git-send-email-isaacm@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <3b0c191d-3fd0-73db-c1e3-4a80aa7953d7@arm.com>
+Date: Tue, 22 Dec 2020 19:27:18 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Cc: kevin.tian@intel.com, Kaijie.Guo@intel.com, ashok.raj@intel.com,
- iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com, will@kernel.org,
- jun.j.tian@intel.com
+In-Reply-To: <1608597876-32367-4-git-send-email-isaacm@codeaurora.org>
+Content-Language: en-GB
+Cc: pratikp@codeaurora.org, kernel-team@android.com, will@kernel.org,
+ pdaly@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,44 +81,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
+On 2020-12-22 00:44, Isaac J. Manjarres wrote:
+> The SMMU driver depends on the availability of the ARM LPAE and
+> ARM V7S io-pgtable format code to work properly. In preparation
 
-nit: The cover letter is 0/4, patches are 1/3 - 3/3. You also need to copy
-LKML.
+Nit: we don't really depend on v7s - we *can* use it if it's available, 
+address constraints are suitable, and the SMMU implementation actually 
+supports it (many don't), but we can still quite happily not use it even 
+so. LPAE is mandatory in the architecture so that's our only hard 
+requirement, embodied in the kconfig select.
 
-On Sun, 20 Dec 2020 08:03:49 +0800, Liu Yi L <yi.l.liu@intel.com> wrote:
+This does mean there may technically still be a corner case involving 
+ARM_SMMU=y and IO_PGTABLE_ARM_V7S=m, but at worst it's now a runtime 
+failure rather than a build error, so unless and until anyone 
+demonstrates that it actually matters I don't feel particularly inclined 
+to give it much thought.
 
-> Hi,
+Robin.
+
+> for having the io-pgtable formats as modules, add a "pre"
+> dependency with MODULE_SOFTDEP() to ensure that the io-pgtable
+> format modules are loaded before loading the ARM SMMU driver module.
 > 
-> This patchset aims to fix a bug regards to SVM usage on native, and
-perhaps 'native SVM usage'
-> also several bugs around subdevice (attached to device via auxiliary
-> manner) tracking and ineffective device_tlb flush.
+> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+> ---
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> Regards,
-> Yi Liu
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index d8c6bfd..a72649f 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -2351,3 +2351,4 @@ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+>   MODULE_AUTHOR("Will Deacon <will@kernel.org>");
+>   MODULE_ALIAS("platform:arm-smmu");
+>   MODULE_LICENSE("GPL v2");
+> +MODULE_SOFTDEP("pre: io-pgtable-arm io-pgtable-arm-v7s");
 > 
-> Liu Yi L (3):
->   iommu/vt-d: Move intel_iommu info from struct intel_svm to struct
->     intel_svm_dev
->   iommu/vt-d: Track device aux-attach with subdevice_domain_info.
->   iommu/vt-d: A fix to iommu_flush_dev_iotlb() for aux-domain
-> 
->  drivers/iommu/intel/iommu.c | 182 ++++++++++++++++++++++++++++++------
->  drivers/iommu/intel/svm.c   |   9 +-
->  include/linux/intel-iommu.h |  13 ++-
->  3 files changed, 168 insertions(+), 36 deletions(-)
-> 
-
-
-Thanks,
-
-Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
