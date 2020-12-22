@@ -2,90 +2,77 @@ Return-Path: <SRS0=D+h4=F2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE543C433E0
-	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 19:54:38 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBFFC433E0
+	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 20:19:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5218220700
-	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 19:54:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5218220700
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2EDCB229C5
+	for <iommu@archiver.kernel.org>; Tue, 22 Dec 2020 20:19:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EDCB229C5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E5C0F87190;
-	Tue, 22 Dec 2020 19:54:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8gpcqpvwOsQH; Tue, 22 Dec 2020 19:54:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CEAB187181;
-	Tue, 22 Dec 2020 19:54:36 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B314EC1787;
-	Tue, 22 Dec 2020 19:54:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 31D86C0893
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:54:35 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1C0468684F
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:54:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DF633867E2;
+	Tue, 22 Dec 2020 20:19:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5MkvC-fNv0dO; Tue, 22 Dec 2020 20:19:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id B5490868E2;
+	Tue, 22 Dec 2020 20:19:32 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9386BC1825;
+	Tue, 22 Dec 2020 20:19:32 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3FF0C0893
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 20:19:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id B3CEB2725F
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 20:19:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vRJzVdww9lhU for <iommu@lists.linux-foundation.org>;
- Tue, 22 Dec 2020 19:54:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-15.mailgun.net (m43-15.mailgun.net [69.72.43.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 641C18684E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 19:54:33 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1608666873; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=V8JRmC+JTwqXprUHV8OtTLYn1V/i01VrBgl64H9grZ4=;
- b=dvmKq9YO2h08RPtPw8Zi/yS5gjDIpzwfh1cJ1iVQjRtJq5PifhQuIrotqrYwCDOoyQ9nBdyO
- 8cquQ+ttTzVwoFrV/iby4mc+SCJaJY1nW93FDVsY84F8V4gtyoo8A6AQnnqnb512v/7WEbCX
- hoxSyFwR+jg+HHuvmKHISov+FZA=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 5fe24ef8da47198188ed48e0 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Dec 2020 19:54:32
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 47097C43463; Tue, 22 Dec 2020 19:54:32 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested) (Authenticated sender: isaacm)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id D42DFC433C6;
- Tue, 22 Dec 2020 19:54:29 +0000 (UTC)
+ with ESMTP id Z0EG7Zx3oAWr for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Dec 2020 20:19:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6312823492
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Dec 2020 20:19:29 +0000 (UTC)
+IronPort-SDR: dzAekvMlgaqoF5ZgCWQ+eVA8CpcwUg0AX4swjn2SjyJeAJMIOfClizyVaxlzYUWk73Ggj1zcL0
+ IXhaEXMa2wcg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9843"; a="237480919"
+X-IronPort-AV: E=Sophos;i="5.78,440,1599548400"; d="scan'208";a="237480919"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Dec 2020 12:19:23 -0800
+IronPort-SDR: T8xB+DjP6+ndmksCcWz5/zzjAJjN4m9x+3umEVpQukppRbr7XSPtyklCIvCbdKnN0eGpK2jrZX
+ 43Xe54Ofv1OA==
+X-IronPort-AV: E=Sophos;i="5.78,440,1599548400"; d="scan'208";a="341852209"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Dec 2020 12:19:23 -0800
+Date: Tue, 22 Dec 2020 12:21:28 -0800
+From: Jacob Pan <jacob.jun.pan@intel.com>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [PATCH 2/3] iommu/vt-d: Track device aux-attach with
+ subdevice_domain_info.
+Message-ID: <20201222122128.233d928d@jacob-builder>
+In-Reply-To: <20201220000352.183523-3-yi.l.liu@intel.com>
+References: <20201220000352.183523-1-yi.l.liu@intel.com>
+ <20201220000352.183523-3-yi.l.liu@intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Date: Tue, 22 Dec 2020 11:54:29 -0800
-From: isaacm@codeaurora.org
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 1/7] iommu/io-pgtable: Introduce dynamic io-pgtable fmt
- registration
-In-Reply-To: <4f388512-c3df-e9fc-ebd4-624ab36a6858@arm.com>
-References: <1608597876-32367-1-git-send-email-isaacm@codeaurora.org>
- <1608597876-32367-2-git-send-email-isaacm@codeaurora.org>
- <4f388512-c3df-e9fc-ebd4-624ab36a6858@arm.com>
-Message-ID: <8b48b371811a170053e2ca810ab63abf@codeaurora.org>
-X-Sender: isaacm@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: kernel-team@android.com, will@kernel.org, pdaly@codeaurora.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
- pratikp@codeaurora.org
+Cc: kevin.tian@intel.com, Kaijie.Guo@intel.com, ashok.raj@intel.com,
+ iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com, will@kernel.org,
+ jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,447 +85,262 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-12-22 11:27, Robin Murphy wrote:
-> On 2020-12-22 00:44, Isaac J. Manjarres wrote:
->> The io-pgtable code constructs an array of init functions for each
->> page table format at compile time. This is not ideal, as this
->> increases the footprint of the io-pgtable code, as well as prevents
->> io-pgtable formats from being built as kernel modules.
->> 
->> In preparation for modularizing the io-pgtable formats, switch to a
->> dynamic registration scheme, where each io-pgtable format can register
->> their init functions with the io-pgtable code at boot or module
->> insertion time.
->> 
->> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
->> ---
->>   drivers/iommu/io-pgtable-arm-v7s.c | 34 +++++++++++++-
->>   drivers/iommu/io-pgtable-arm.c     | 90 
->> ++++++++++++++++++++++++++----------
->>   drivers/iommu/io-pgtable.c         | 94 
->> ++++++++++++++++++++++++++++++++------
->>   include/linux/io-pgtable.h         | 51 +++++++++++++--------
->>   4 files changed, 209 insertions(+), 60 deletions(-)
->> 
->> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c 
->> b/drivers/iommu/io-pgtable-arm-v7s.c
->> index 1d92ac9..89aad2f 100644
->> --- a/drivers/iommu/io-pgtable-arm-v7s.c
->> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
->> @@ -28,6 +28,7 @@
->>   #include <linux/iommu.h>
->>   #include <linux/kernel.h>
->>   #include <linux/kmemleak.h>
->> +#include <linux/module.h>
->>   #include <linux/sizes.h>
->>   #include <linux/slab.h>
->>   #include <linux/spinlock.h>
->> @@ -835,7 +836,8 @@ static struct io_pgtable 
->> *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->>   	return NULL;
->>   }
->>   -struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns = {
->> +static struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns = {
->> +	.fmt	= ARM_V7S,
->>   	.alloc	= arm_v7s_alloc_pgtable,
->>   	.free	= arm_v7s_free_pgtable,
->>   };
->> @@ -982,5 +984,33 @@ static int __init arm_v7s_do_selftests(void)
->>   	pr_info("self test ok\n");
->>   	return 0;
->>   }
->> -subsys_initcall(arm_v7s_do_selftests);
->> +#else
->> +static int arm_v7s_do_selftests(void)
->> +{
->> +	return 0;
->> +}
->>   #endif
->> +
->> +static int __init arm_v7s_init(void)
->> +{
->> +	int ret;
->> +
->> +	ret = io_pgtable_ops_register(&io_pgtable_arm_v7s_init_fns);
->> +	if (ret < 0) {
->> +		pr_err("Failed to register ARM V7S format\n");
-> 
-> Super-nit: I think "v7s" should probably be lowercase there. Also
-> general consistency WRT to showing the error code and whether or not
-> to abbreviate "format" would be nice.
-> 
-Ok, I can fix this accordingly.
+Hi Yi,
 
->> +		return ret;
->> +	}
->> +
->> +	ret = arm_v7s_do_selftests();
->> +	if (ret < 0)
->> +		io_pgtable_ops_unregister(&io_pgtable_arm_v7s_init_fns);
->> +
->> +	return ret;
->> +}
->> +core_initcall(arm_v7s_init);
->> +
->> +static void __exit arm_v7s_exit(void)
->> +{
->> +	io_pgtable_ops_unregister(&io_pgtable_arm_v7s_init_fns);
->> +}
->> +module_exit(arm_v7s_exit);
->> diff --git a/drivers/iommu/io-pgtable-arm.c 
->> b/drivers/iommu/io-pgtable-arm.c
->> index 87def58..ff0ea2f 100644
->> --- a/drivers/iommu/io-pgtable-arm.c
->> +++ b/drivers/iommu/io-pgtable-arm.c
->> @@ -13,6 +13,7 @@
->>   #include <linux/bitops.h>
->>   #include <linux/io-pgtable.h>
->>   #include <linux/kernel.h>
->> +#include <linux/module.h>
->>   #include <linux/sizes.h>
->>   #include <linux/slab.h>
->>   #include <linux/types.h>
->> @@ -1043,29 +1044,32 @@ arm_mali_lpae_alloc_pgtable(struct 
->> io_pgtable_cfg *cfg, void *cookie)
->>   	return NULL;
->>   }
->>   -struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
->> -	.alloc	= arm_64_lpae_alloc_pgtable_s1,
->> -	.free	= arm_lpae_free_pgtable,
->> -};
->> -
->> -struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
->> -	.alloc	= arm_64_lpae_alloc_pgtable_s2,
->> -	.free	= arm_lpae_free_pgtable,
->> -};
->> -
->> -struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
->> -	.alloc	= arm_32_lpae_alloc_pgtable_s1,
->> -	.free	= arm_lpae_free_pgtable,
->> -};
->> -
->> -struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
->> -	.alloc	= arm_32_lpae_alloc_pgtable_s2,
->> -	.free	= arm_lpae_free_pgtable,
->> -};
->> -
->> -struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
->> -	.alloc	= arm_mali_lpae_alloc_pgtable,
->> -	.free	= arm_lpae_free_pgtable,
->> +static struct io_pgtable_init_fns io_pgtable_arm_lpae_init_fns[] = {
->> +	{
->> +		.fmt	= ARM_32_LPAE_S1,
->> +		.alloc	= arm_32_lpae_alloc_pgtable_s1,
->> +		.free	= arm_lpae_free_pgtable,
->> +	},
->> +	{
->> +		.fmt	= ARM_32_LPAE_S2,
->> +		.alloc	= arm_32_lpae_alloc_pgtable_s2,
->> +		.free	= arm_lpae_free_pgtable,
->> +	},
->> +	{
->> +		.fmt	= ARM_64_LPAE_S1,
->> +		.alloc	= arm_64_lpae_alloc_pgtable_s1,
->> +		.free	= arm_lpae_free_pgtable,
->> +	},
->> +	{
->> +		.fmt	= ARM_64_LPAE_S2,
->> +		.alloc	= arm_64_lpae_alloc_pgtable_s2,
->> +		.free	= arm_lpae_free_pgtable,
->> +	},
->> +	{
->> +		.fmt	= ARM_MALI_LPAE,
->> +		.alloc	= arm_mali_lpae_alloc_pgtable,
->> +		.free	= arm_lpae_free_pgtable,
->> +	},
->>   };
->>     #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
->> @@ -1250,5 +1254,43 @@ static int __init arm_lpae_do_selftests(void)
->>   	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
->>   	return fail ? -EFAULT : 0;
->>   }
->> -subsys_initcall(arm_lpae_do_selftests);
->> +#else
->> +static int __init arm_lpae_do_selftests(void)
->> +{
->> +	return 0;
->> +}
->>   #endif
->> +
->> +static int __init arm_lpae_init(void)
->> +{
->> +	int ret, i;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(io_pgtable_arm_lpae_init_fns); i++) {
->> +		ret = io_pgtable_ops_register(&io_pgtable_arm_lpae_init_fns[i]);
->> +		if (ret < 0) {
->> +			pr_err("Failed to register ARM LPAE fmt: %d\n");
->> +			goto err_io_pgtable_register;
->> +		}
->> +	}
->> +
->> +	ret = arm_lpae_do_selftests();
->> +	if (ret < 0)
->> +		goto err_io_pgtable_register;
->> +
->> +	return 0;
->> +
->> +err_io_pgtable_register:
->> +	for (i = i - 1; i >= 0; i--)
-> 
-> Personally I find "while (i--)" a bit clearer for this kind of
-> unwinding, but maybe post-decrement isn't to everyone's taste.
-> 
-I'm not particularly attached to the current approach, so a while loop
-is okay with me :).
+On Sun, 20 Dec 2020 08:03:51 +0800, Liu Yi L <yi.l.liu@intel.com> wrote:
 
->> +		io_pgtable_ops_unregister(&io_pgtable_arm_lpae_init_fns[i]);
->> +	return ret;
->> +}
->> +core_initcall(arm_lpae_init);
->> +
->> +static void __exit arm_lpae_exit(void)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(io_pgtable_arm_lpae_init_fns); i++)
->> +		io_pgtable_ops_unregister(&io_pgtable_arm_lpae_init_fns[i]);
->> +}
->> +module_exit(arm_lpae_exit);
->> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
->> index 94394c8..2c6eb2e 100644
->> --- a/drivers/iommu/io-pgtable.c
->> +++ b/drivers/iommu/io-pgtable.c
->> @@ -10,33 +10,45 @@
->>   #include <linux/bug.h>
->>   #include <linux/io-pgtable.h>
->>   #include <linux/kernel.h>
->> +#include <linux/rwlock.h>
->> +#include <linux/slab.h>
->>   #include <linux/types.h>
->>   -static const struct io_pgtable_init_fns *
->> -io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
->> -#ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE
->> -	[ARM_32_LPAE_S1] = &io_pgtable_arm_32_lpae_s1_init_fns,
->> -	[ARM_32_LPAE_S2] = &io_pgtable_arm_32_lpae_s2_init_fns,
->> -	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
->> -	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
->> -	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
->> -#endif
->> -#ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
->> -	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
->> -#endif
->> +struct io_pgtable_init_fns_node {
->> +	struct io_pgtable_init_fns *fns;
->> +	struct list_head list;
->>   };
->>   +static LIST_HEAD(io_pgtable_init_fns_list);
->> +static DEFINE_RWLOCK(io_pgtable_init_fns_list_lock);
->> +
->> +static struct io_pgtable_init_fns *io_pgtable_get_init_fns(enum 
->> io_pgtable_fmt fmt)
->> +{
->> +	struct io_pgtable_init_fns_node *iter;
->> +	struct io_pgtable_init_fns *fns = NULL;
->> +
->> +	read_lock(&io_pgtable_init_fns_list_lock);
->> +	list_for_each_entry(iter, &io_pgtable_init_fns_list, list)
->> +		if (iter->fns->fmt == fmt) {
->> +			fns = iter->fns;
->> +			break;
->> +		}
->> +	read_unlock(&io_pgtable_init_fns_list_lock);
->> +
->> +	return fns;
->> +}
-> 
-> I think it would be a lot easier to stick with a simple array indexed
-> by enum - that way you can just set/clear/test entries without needing
-> to worry about locking. Basically just remove the const and the
-> initialisers from the existing one ;)
-> 
-> (and if you think you're concerned about memory, consider that just
-> the list head plus lock is already half the size of the table)
-> 
-> Other than that, I think this all looks pretty promising - I'd suggest
-> sending a non-RFC after rc1 so that it gets everyone's proper
-> attention.
-> 
-> Thanks,
-> Robin.
-> 
+> In existing code, if wanting to loop all devices attached to a domain,
+> current code can only loop the devices which are attached to the domain
+> via normal manner. While for devices attached via auxiliary manner, this
+> is subdevice, they are not tracked in the domain. This patch adds struct
+How about "In the existing code, loop all devices attached to a domain does
+not include sub-devices attached via iommu_aux_attach_device()."
 
-Thanks for all of the feedback! With respect to the comment about 
-keeping the current array,
-don't we need some sort of lock to protect access to the data structure 
-(e.g. concurrent access
-if adding two ops for the same format)? Or do you mean that we should 
-use atomic operations to
-handle this cleanly?
+> subdevice_domain_info which is created per domain attachment via auxiliary
+> manner. So that such devices are also tracked in domain.
+> 
+> This was found by when I'm working on the belwo patch, There is no device
+> in domain->devices, thus unable to get the cap and ecap of iommu unit. But
+> this domain actually has one sub-device which is attached via aux-manner.
+> This patch fixes the issue.
+> 
+> https://lore.kernel.org/kvm/1599734733-6431-17-git-send-email-yi.l.liu@intel.com/
+> 
+> But looks like, it doesn't affect me only. Such auxiliary track should be
+> there for example if wanting to flush device_iotlb for a domain which has
+> devices attached by auxiliray manner, then this fix is also necessary.
+Perhaps:
+This fix goes beyond the patch above, such sub-device tracking is
+necessary for other cases. For example, flushing device_iotlb for a domain
+which has sub-devices attached by auxiliary manner.
+
+> This issue will also be fixed by another patch in this series with some
+> additional changes based on the sudevice tracking framework introduced in
+> this patch.
+> 
+> Co-developed-by: Xin Zeng <xin.zeng@intel.com>
+> Signed-off-by: Xin Zeng <xin.zeng@intel.com>
+> Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 92 ++++++++++++++++++++++++++++++++-----
+>  include/linux/intel-iommu.h | 11 ++++-
+>  2 files changed, 90 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index a49afa11673c..4274b4acc325 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1881,6 +1881,7 @@ static struct dmar_domain *alloc_domain(int flags)
+>  		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
+>  	domain->has_iotlb_device = false;
+>  	INIT_LIST_HEAD(&domain->devices);
+> +	INIT_LIST_HEAD(&domain->sub_devices);
+>  
+>  	return domain;
+>  }
+> @@ -5172,33 +5173,79 @@ is_aux_domain(struct device *dev, struct
+> iommu_domain *domain) domain->type == IOMMU_DOMAIN_UNMANAGED;
+>  }
+>  
+> +static inline
+> +void _auxiliary_link_device(struct dmar_domain *domain,
+> +			    struct subdevice_domain_info *subinfo,
+> +			    struct device *dev)
+> +{
+> +	subinfo->users++;
+> +}
+> +
+why pass in more arguments than subinfo? the function name does not match
+what it does, seems just refcount inc.
+
+> +static inline
+> +int _auxiliary_unlink_device(struct dmar_domain *domain,
+> +			     struct subdevice_domain_info *subinfo,
+> +			     struct device *dev)
+> +{
+> +	subinfo->users--;
+> +	return subinfo->users;
+ditto. why not just
+ 	return subinfo->users--;
+
+> +}
+> +
+>  static void auxiliary_link_device(struct dmar_domain *domain,
+>  				  struct device *dev)
+>  {
+>  	struct device_domain_info *info = get_domain_info(dev);
+> +	struct subdevice_domain_info *subinfo;
+>  
+>  	assert_spin_locked(&device_domain_lock);
+>  	if (WARN_ON(!info))
+>  		return;
+>  
+> +	subinfo = kzalloc(sizeof(*subinfo), GFP_ATOMIC);
+> +	if (!subinfo)
+> +		return;
+> +
+> +	subinfo->domain = domain;
+> +	subinfo->dev = dev;
+> +	list_add(&subinfo->link_domain, &info->auxiliary_domains);
+> +	list_add(&subinfo->link_phys, &domain->sub_devices);
+> +	_auxiliary_link_device(domain, subinfo, dev);
+or just opencode subinfo->users++?
+>  	domain->auxd_refcnt++;
+> -	list_add(&domain->auxd, &info->auxiliary_domains);
+>  }
+>  
+> -static void auxiliary_unlink_device(struct dmar_domain *domain,
+> -				    struct device *dev)
+> +static struct subdevice_domain_info *
+> +subdevice_domain_info_lookup(struct dmar_domain *domain, struct device
+> *dev) +{
+> +	struct subdevice_domain_info *subinfo;
+> +
+> +	assert_spin_locked(&device_domain_lock);
+> +
+> +	list_for_each_entry(subinfo, &domain->sub_devices, link_phys)
+> +		if (subinfo->dev == dev)
+> +			return subinfo;
+> +
+> +	return NULL;
+> +}
+> +
+> +static int auxiliary_unlink_device(struct dmar_domain *domain,
+> +				   struct subdevice_domain_info *subinfo,
+> +				   struct device *dev)
+>  {
+>  	struct device_domain_info *info = get_domain_info(dev);
+> +	int ret;
+>  
+>  	assert_spin_locked(&device_domain_lock);
+>  	if (WARN_ON(!info))
+> -		return;
+> +		return -EINVAL;
+>  
+> -	list_del(&domain->auxd);
+> +	ret = _auxiliary_unlink_device(domain, subinfo, dev);
+> +	if (ret == 0) {
+> +		list_del(&subinfo->link_domain);
+> +		list_del(&subinfo->link_phys);
+> +		kfree(subinfo);
+> +	}
+>  	domain->auxd_refcnt--;
+>  
+> -	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> -		ioasid_free(domain->default_pasid);
+> +	return ret;
+>  }
+>  
+>  static int aux_domain_add_dev(struct dmar_domain *domain,
+> @@ -5207,6 +5254,8 @@ static int aux_domain_add_dev(struct dmar_domain
+> *domain, int ret;
+>  	unsigned long flags;
+>  	struct intel_iommu *iommu;
+> +	struct device_domain_info *info = get_domain_info(dev);
+> +	struct subdevice_domain_info *subinfo;
+>  
+>  	iommu = device_to_iommu(dev, NULL, NULL);
+>  	if (!iommu)
+> @@ -5227,6 +5276,12 @@ static int aux_domain_add_dev(struct dmar_domain
+> *domain, }
+>  
+>  	spin_lock_irqsave(&device_domain_lock, flags);
+> +	subinfo = subdevice_domain_info_lookup(domain, dev);
+> +	if (subinfo) {
+> +		_auxiliary_link_device(domain, subinfo, dev);
+> +		spin_unlock_irqrestore(&device_domain_lock, flags);
+> +		return 0;
+> +	}
+>  	/*
+>  	 * iommu->lock must be held to attach domain to iommu and setup
+> the
+>  	 * pasid entry for second level translation.
+> @@ -5270,6 +5325,7 @@ static void aux_domain_remove_dev(struct
+> dmar_domain *domain, struct device_domain_info *info;
+>  	struct intel_iommu *iommu;
+>  	unsigned long flags;
+> +	struct subdevice_domain_info *subinfo;
+>  
+>  	if (!is_aux_domain(dev, &domain->domain))
+>  		return;
+> @@ -5278,14 +5334,26 @@ static void aux_domain_remove_dev(struct
+> dmar_domain *domain, info = get_domain_info(dev);
+>  	iommu = info->iommu;
+>  
+> -	auxiliary_unlink_device(domain, dev);
+> +	subinfo = subdevice_domain_info_lookup(domain, dev);
+> +	if (!subinfo) {
+> +		spin_unlock_irqrestore(&device_domain_lock, flags);
+> +		return;
+> +	}
+>  
+> -	spin_lock(&iommu->lock);
+> -	intel_pasid_tear_down_entry(iommu, dev, domain->default_pasid,
+> false);
+> -	domain_detach_iommu(domain, iommu);
+> -	spin_unlock(&iommu->lock);
+> +	if (auxiliary_unlink_device(domain, subinfo, dev) == 0) {
+> +		spin_lock(&iommu->lock);
+> +		intel_pasid_tear_down_entry(iommu,
+> +					    dev,
+> +					    domain->default_pasid,
+> +					    false);
+> +		domain_detach_iommu(domain, iommu);
+> +		spin_unlock(&iommu->lock);
+> +	}
+>  
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +
+> +	if (!domain->auxd_refcnt && domain->default_pasid > 0)
+> +		ioasid_free(domain->default_pasid);
+>  }
+>  
+>  static int prepare_domain_attach_device(struct iommu_domain *domain,
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 94522685a0d9..1fb3d6ab719a 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -537,7 +537,7 @@ struct dmar_domain {
+>  
+>  	bool has_iotlb_device;
+>  	struct list_head devices;	/* all devices' list */
+> -	struct list_head auxd;		/* link to device's
+> auxiliary list */
+> +	struct list_head sub_devices;	/* all devices' list
+> attached via aux-attach */ struct iova_domain iovad;	/* iova's
+> that belong to this domain */ 
+>  	struct dma_pte	*pgd;		/* virtual address */
+> @@ -636,6 +636,15 @@ struct device_domain_info {
+>  	struct pasid_table *pasid_table; /* pasid table */
+>  };
+>  
+> +/* Aux attach device domain info */
+> +struct subdevice_domain_info {
+> +	struct device *dev;
+> +	struct dmar_domain *domain;
+> +	struct list_head link_phys;	/* link to phys device
+> siblings */
+> +	struct list_head link_domain;	/* link to domain siblings
+> */
+> +	int users;
+> +};
+> +
+>  static inline void __iommu_flush_cache(
+>  	struct intel_iommu *iommu, void *addr, int size)
+>  {
+
 
 Thanks,
-Isaac
->> +
->>   struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
->>   					    struct io_pgtable_cfg *cfg,
->>   					    void *cookie)
->>   {
->>   	struct io_pgtable *iop;
->> -	const struct io_pgtable_init_fns *fns;
->> +	struct io_pgtable_init_fns *fns;
->>     	if (fmt >= IO_PGTABLE_NUM_FMTS)
->>   		return NULL;
->>   -	fns = io_pgtable_init_table[fmt];
->> +	fns = io_pgtable_get_init_fns(fmt);
->>   	if (!fns)
->>   		return NULL;
->>   @@ -59,12 +71,64 @@ EXPORT_SYMBOL_GPL(alloc_io_pgtable_ops);
->>   void free_io_pgtable_ops(struct io_pgtable_ops *ops)
->>   {
->>   	struct io_pgtable *iop;
->> +	struct io_pgtable_init_fns *fns;
->>     	if (!ops)
->>   		return;
->>     	iop = io_pgtable_ops_to_pgtable(ops);
->>   	io_pgtable_tlb_flush_all(iop);
->> -	io_pgtable_init_table[iop->fmt]->free(iop);
->> +	fns = io_pgtable_get_init_fns(iop->fmt);
->> +	if (fns)
->> +		fns->free(iop);
->>   }
->>   EXPORT_SYMBOL_GPL(free_io_pgtable_ops);
->> +
->> +int io_pgtable_ops_register(struct io_pgtable_init_fns *init_fns)
->> +{
->> +	struct io_pgtable_init_fns_node *iter, *fns_node;
->> +	int ret = 0;
->> +
->> +	if (!init_fns || init_fns->fmt >= IO_PGTABLE_NUM_FMTS ||
->> +	    !init_fns->alloc || !init_fns->free)
->> +		return -EINVAL;
->> +
->> +	fns_node = kzalloc(sizeof(*fns_node), GFP_KERNEL);
->> +	if (!fns_node)
->> +		return -ENOMEM;
->> +
->> +	write_lock(&io_pgtable_init_fns_list_lock);
->> +	list_for_each_entry(iter, &io_pgtable_init_fns_list, list)
->> +		if (iter->fns->fmt == init_fns->fmt) {
->> +			ret = -EEXIST;
->> +			kfree(fns_node);
->> +			break;
->> +		}
->> +
->> +	if (!ret) {
->> +		fns_node->fns = init_fns;
->> +		INIT_LIST_HEAD(&fns_node->list);
->> +		list_add_tail(&fns_node->list, &io_pgtable_init_fns_list);
->> +	}
->> +	write_unlock(&io_pgtable_init_fns_list_lock);
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(io_pgtable_ops_register);
->> +
->> +void io_pgtable_ops_unregister(struct io_pgtable_init_fns *init_fns)
->> +{
->> +	struct io_pgtable_init_fns_node *iter, *tmp;
->> +
->> +	if (!init_fns)
->> +		return;
->> +
->> +	write_lock(&io_pgtable_init_fns_list_lock);
->> +	list_for_each_entry_safe(iter, tmp, &io_pgtable_init_fns_list, list)
->> +		if (iter->fns == init_fns) {
->> +			list_del(&iter->list);
->> +			kfree(iter);
->> +			break;
->> +		}
->> +	write_unlock(&io_pgtable_init_fns_list_lock);
->> +}
->> +EXPORT_SYMBOL_GPL(io_pgtable_ops_unregister);
->> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
->> index ea727eb..45b367ce 100644
->> --- a/include/linux/io-pgtable.h
->> +++ b/include/linux/io-pgtable.h
->> @@ -163,6 +163,38 @@ struct io_pgtable_ops {
->>   };
->>     /**
->> + * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
->> + *                              particular format.
->> + *
->> + * @fmt:   The page table format.
->> + * @alloc: Allocate a set of page tables described by cfg.
->> + * @free:  Free the page tables associated with iop.
->> + */
->> +struct io_pgtable_init_fns {
->> +	enum io_pgtable_fmt fmt;
->> +	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void 
->> *cookie);
->> +	void (*free)(struct io_pgtable *iop);
->> +};
->> +
->> +/**
->> + * io_pgtable_ops_register() - Register the page table routines for a 
->> page table
->> + *                             format.
->> + *
->> + * @init_fns: The functions for allocating and freeing the page 
->> tables of
->> + *            a particular format.
->> + */
->> +int io_pgtable_ops_register(struct io_pgtable_init_fns *init_fns);
->> +
->> +/**
->> + * io_pgtable_ops_unregister() - Unregister the page table routines 
->> for a page
->> + *                               table format.
->> + *
->> + * @init_fns: The functions for allocating and freeing the page 
->> tables of
->> + *            a particular format.
->> + */
->> +void io_pgtable_ops_unregister(struct io_pgtable_init_fns *init_fns);
->> +
->> +/**
->>    * alloc_io_pgtable_ops() - Allocate a page table allocator for use 
->> by an IOMMU.
->>    *
->>    * @fmt:    The page table format.
->> @@ -233,23 +265,4 @@ io_pgtable_tlb_add_page(struct io_pgtable *iop,
->>   		iop->cfg.tlb->tlb_add_page(gather, iova, granule, iop->cookie);
->>   }
->>   -/**
->> - * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
->> - *                              particular format.
->> - *
->> - * @alloc: Allocate a set of page tables described by cfg.
->> - * @free:  Free the page tables associated with iop.
->> - */
->> -struct io_pgtable_init_fns {
->> -	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void 
->> *cookie);
->> -	void (*free)(struct io_pgtable *iop);
->> -};
->> -
->> -extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
->> -extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns;
->> -extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns;
->> -extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
->> -extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
->> -extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
->> -
->>   #endif /* __IO_PGTABLE_H */
->> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
