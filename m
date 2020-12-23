@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D70C433DB
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:23:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A270C433DB
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:24:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E495225AA
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:23:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E495225AA
+	by mail.kernel.org (Postfix) with ESMTPS id B5C902313F
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:24:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5C902313F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F09548676E;
-	Wed, 23 Dec 2020 02:23:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 624C2872D3;
+	Wed, 23 Dec 2020 02:24:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PXE4dtP28ZQ8; Wed, 23 Dec 2020 02:23:47 +0000 (UTC)
+	with ESMTP id J+wVeM-pKVms; Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 69CA786744;
-	Wed, 23 Dec 2020 02:23:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D625186F6D;
+	Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 514FBC1825;
-	Wed, 23 Dec 2020 02:23:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6EA9C0893
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:23:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8915C1825;
+	Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 055DDC0893
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C582485F72
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:23:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E831A872D3
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 34CfmRmTmiPF for <iommu@lists.linux-foundation.org>;
- Wed, 23 Dec 2020 02:23:45 +0000 (UTC)
+ with ESMTP id 14xA-SnJ9UGo for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 411B285F66
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:23:45 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D0512313F;
- Wed, 23 Dec 2020 02:23:44 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 6496486F6D
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E8AE22285;
+ Wed, 23 Dec 2020 02:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1608690225;
- bh=yU2Q8s/JIOzM5oFF2LA7kz+WsHoXm2IKUFG2CyuZP3Y=;
+ s=k20201202; t=1608690295;
+ bh=LFPNS1AsxzYl6KvbGpsDsMJTi8DK61Ijpwo7Hclcj/0=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=ZDqVbmR4yobf7nd67c2oVlEX3Hx26/7lLkfol6dIcPeCe27RspabvGwV7MKK0RIdw
- Eygr+ZLe0bga9zZm1ZzxlcA5Zh7qJUL1i/o5mxdU0rrtFRQQEL99t/Hlmd3JEWk0Ap
- tElxIeuPM+Y2kW6hJr3GiKPgDc9HEJ6x4xxZvaaFJRRJuCJ/yw7XxPPd66FSMcT2+r
- zrujZ8z3ES016Ri0e1/ZoWKM31CA5X1A5O6YqXkaaDDLINRLZSRXJRd/625heAVSpb
- a+dY5N0DdrCf1LMtQYLl2UxRMxX/1xZDfIoS1odOpaBJUP5Es7eay+KPJ6zh8ISgcD
- cME8F+04Lvokw==
+ b=p6S6GvHEJh5RYKe0HmiDE2e/yt9CdMquU2m7b6bnQInW+sUeB/+Y0ykTq1m5S7kTX
+ puFSg2pzm0TaG+wxM8u1D44f36gl5W75q+BeP0/S4H7ih4ixe5vLaBP37guYOEujRI
+ MDmaVfIBxC/2rme3LrqRc7nxxf95+wOGlollF1GzkxrZAY85mL//hQ2jD06PJ2TnxY
+ 6/0och6HSTkVg69KRxd/sJCO17QNzchZpibGh51/uwPyRFNJXXe4w/Aby06/K67csv
+ qV40csNd5D0xUtGYPTguKJcev/Zn+PYV/hAzVZmfJWuOxKf0NawgNceVaU+xXcUB/0
+ khsPMiWnQep7g==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 41/66] iommu/tegra-smmu: Expand mutex protection
+Subject: [PATCH AUTOSEL 4.9 31/48] iommu/tegra-smmu: Expand mutex protection
  range
-Date: Tue, 22 Dec 2020 21:22:27 -0500
-Message-Id: <20201223022253.2793452-41-sashal@kernel.org>
+Date: Tue, 22 Dec 2020 21:23:59 -0500
+Message-Id: <20201223022417.2794032-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201223022253.2793452-1-sashal@kernel.org>
-References: <20201223022253.2793452-1-sashal@kernel.org>
+In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
+References: <20201223022417.2794032-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -110,10 +110,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 21 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 848dac3e4580f..30f0c72d685fe 100644
+index 04cec050e42bf..ae796342717a6 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -244,26 +244,19 @@ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
+@@ -241,26 +241,19 @@ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
  {
  	unsigned long id;
  
@@ -141,7 +141,7 @@ index 848dac3e4580f..30f0c72d685fe 100644
  }
  
  static bool tegra_smmu_capable(enum iommu_cap cap)
-@@ -398,17 +391,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+@@ -395,17 +388,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
  				 struct tegra_smmu_as *as)
  {
  	u32 value;
@@ -167,7 +167,7 @@ index 848dac3e4580f..30f0c72d685fe 100644
  
  	/* We can't handle 64-bit DMA addresses */
  	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
-@@ -431,24 +428,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+@@ -428,24 +425,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
  	as->smmu = smmu;
  	as->use_count++;
  
