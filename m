@@ -7,73 +7,72 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271E3C433E0
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7800C433DB
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:22:08 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CA74622573
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:21:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CA74622573
+	by mail.kernel.org (Postfix) with ESMTPS id 698F122573
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:22:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 698F122573
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 74E8B872D4;
-	Wed, 23 Dec 2020 02:21:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 501EE86CAC;
+	Wed, 23 Dec 2020 02:22:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G8cNQ7f1j-Eu; Wed, 23 Dec 2020 02:21:05 +0000 (UTC)
+	with ESMTP id xm3Mre4N3skM; Wed, 23 Dec 2020 02:22:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8567487208;
-	Wed, 23 Dec 2020 02:21:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C1C7085CDB;
+	Wed, 23 Dec 2020 02:22:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 608FDC1825;
-	Wed, 23 Dec 2020 02:21:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00D4EC0893
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:21:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5703C1825;
+	Wed, 23 Dec 2020 02:22:07 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B157BC0893
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:22:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CA64A27266
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:21:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9F45986905
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:22:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q-Qs27QsqY+M for <iommu@lists.linux-foundation.org>;
- Wed, 23 Dec 2020 02:21:01 +0000 (UTC)
+ with ESMTP id kZuiToeOXfYk for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Dec 2020 02:22:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A45F2203CE
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:20:59 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7873D22AAF;
- Wed, 23 Dec 2020 02:20:58 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9801B86910
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:22:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EA92221E5;
+ Wed, 23 Dec 2020 02:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1608690059;
- bh=R0F5p3NMR/Y0iMl7B4a1GrLgzCX/q+M9bdVR81CyEPM=;
+ s=k20201202; t=1608690124;
+ bh=T7PdA5l7Rhy2gkLnrI5FMusQdDWLAYNVwKkmQuxAb1I=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=IjARXfFbbEOzctuWSZW6yh/8j9vcaVhNImAkbQYbTP2RMjHdLPSxIQX9js0SWBhvl
- 9dc6+VkeuElQ9baqh8lDa3PnQR62rLFEglp0qv/pb2b7fOlufiNHfO3fHLcGX5pAzu
- u5/qEDxFkn6sG6UQ6wUZCRd03w3VSsnOf5Dduahyuk2AH/ad/aprYHjkkxsJDbtc/O
- 2gNq6LkzJEktg+s78M23KB6HiQcRKEp31c5wkLnguzrn4r0k5hrLPVEbPOH7D+srKH
- 9AS9r6uhvjLKCT0Ou8mzp8XWS6CNoq3Jm07nmVbg3rXIk86c5YLlP+ZNWJ+/gt4cBG
- X4cgpeyPm80Jw==
+ b=pwk72SWK8hZkKTCiv87a9YGgHjSwnkXlXj4rAouywr5qNmGoMJcjOgdJD4z9rOV34
+ ZAhXy+MHh7BoWyvfzoWivbJUmWYmEupF4JailE8GuhqnEcg8gUtGDZsBblf9LvGTtW
+ v/V+kDLPQVKWzh6GgwAsjDnQk0zSWN7SnsmSdwpVU/Luk3GJaYYZOAk7TO7nSquAxv
+ isni/r9cpN02dXNVUmyWUk7AxdHaDWiNlLeNgUBT569tU06EnsAKyZuQXrkOHhwsR4
+ 3hl3tV0v6yWjf53AZBcmnJv3kBebl9EyZEd6YW6szr4Bkt3sH7jB8aZEWWJVdwQGQ9
+ nDbNoMXXhOwKQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 128/130] x86,
- swiotlb: Adjust SWIOTLB bounce buffer size for SEV guests
-Date: Tue, 22 Dec 2020 21:18:11 -0500
-Message-Id: <20201223021813.2791612-128-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 49/87] iommu/tegra-smmu: Expand mutex protection
+ range
+Date: Tue, 22 Dec 2020 21:20:25 -0500
+Message-Id: <20201223022103.2792705-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
-References: <20201223021813.2791612-1-sashal@kernel.org>
+In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
+References: <20201223022103.2792705-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Ashish Kalra <ashish.kalra@amd.com>,
- kbuild test robot <lkp@intel.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- iommu@lists.linux-foundation.org, Borislav Petkov <bp@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,190 +90,120 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
 
-[ Upstream commit e998879d4fb7991856916972168cf27c0d86ed12 ]
+[ Upstream commit d5f583bf8654c231b781096bc1a186065cda72b3 ]
 
-For SEV, all DMA to and from guest has to use shared (un-encrypted) pages.
-SEV uses SWIOTLB to make this happen without requiring changes to device
-drivers.  However, depending on the workload being run, the default 64MB
-of it might not be enough and it may run out of buffers to use for DMA,
-resulting in I/O errors and/or performance degradation for high
-I/O workloads.
+This is used to protect potential race condition at use_count.
+since probes of client drivers, calling attach_dev(), may run
+concurrently.
 
-Adjust the default size of SWIOTLB for SEV guests using a
-percentage of the total memory available to guest for the SWIOTLB buffers.
-
-Adds a new sev_setup_arch() function which is invoked from setup_arch()
-and it calls into a new swiotlb generic code function swiotlb_adjust_size()
-to do the SWIOTLB buffer adjustment.
-
-v5 fixed build errors and warnings as
-Reported-by: kbuild test robot <lkp@intel.com>
-
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-Co-developed-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Tested-by: Dmitry Osipenko <digetx@gmail.com>
+Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Link: https://lore.kernel.org/r/20201125101013.14953-3-nicoleotsuka@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/mem_encrypt.h |  2 ++
- arch/x86/kernel/setup.c            |  6 ++++++
- arch/x86/mm/mem_encrypt.c          | 31 ++++++++++++++++++++++++++++++
- include/linux/swiotlb.h            |  8 ++++++++
- kernel/dma/swiotlb.c               | 20 +++++++++++++++++--
- 5 files changed, 65 insertions(+), 2 deletions(-)
+ drivers/iommu/tegra-smmu.c | 34 +++++++++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index 848ce43b9040d..6c36956452ca6 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -36,6 +36,7 @@ void __init sme_map_bootdata(char *real_mode_data);
- void __init sme_unmap_bootdata(char *real_mode_data);
- 
- void __init sme_early_init(void);
-+void __init sev_setup_arch(void);
- 
- void __init sme_encrypt_kernel(struct boot_params *bp);
- void __init sme_enable(struct boot_params *bp);
-@@ -65,6 +66,7 @@ static inline void __init sme_map_bootdata(char *real_mode_data) { }
- static inline void __init sme_unmap_bootdata(char *real_mode_data) { }
- 
- static inline void __init sme_early_init(void) { }
-+static inline void __init sev_setup_arch(void) { }
- 
- static inline void __init sme_encrypt_kernel(struct boot_params *bp) { }
- static inline void __init sme_enable(struct boot_params *bp) { }
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 77ea96b794bd1..9dc0c94e1544f 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -1120,6 +1120,12 @@ void __init setup_arch(char **cmdline_p)
- 	memblock_set_current_limit(ISA_END_ADDRESS);
- 	e820__memblock_setup();
- 
-+	/*
-+	 * Needs to run after memblock setup because it needs the physical
-+	 * memory size.
-+	 */
-+	sev_setup_arch();
-+
- 	reserve_bios_regions();
- 
- 	if (efi_enabled(EFI_MEMMAP)) {
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 9268c12458c84..5911cfa31bc6d 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -196,6 +196,37 @@ void __init sme_early_init(void)
- 		swiotlb_force = SWIOTLB_FORCE;
- }
- 
-+void __init sev_setup_arch(void)
-+{
-+	phys_addr_t total_mem = memblock_phys_mem_size();
-+	unsigned long size;
-+
-+	if (!sev_active())
-+		return;
-+
-+	/*
-+	 * For SEV, all DMA has to occur via shared/unencrypted pages.
-+	 * SEV uses SWIOTLB to make this happen without changing device
-+	 * drivers. However, depending on the workload being run, the
-+	 * default 64MB of SWIOTLB may not be enough and SWIOTLB may
-+	 * run out of buffers for DMA, resulting in I/O errors and/or
-+	 * performance degradation especially with high I/O workloads.
-+	 *
-+	 * Adjust the default size of SWIOTLB for SEV guests using
-+	 * a percentage of guest memory for SWIOTLB buffers.
-+	 * Also, as the SWIOTLB bounce buffer memory is allocated
-+	 * from low memory, ensure that the adjusted size is within
-+	 * the limits of low available memory.
-+	 *
-+	 * The percentage of guest memory used here for SWIOTLB buffers
-+	 * is more of an approximation of the static adjustment which
-+	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
-+	 */
-+	size = total_mem * 6 / 100;
-+	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
-+	swiotlb_adjust_size(size);
-+}
-+
- static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index fa0ecb5e63809..63679cce95054 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -252,26 +252,19 @@ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
  {
- 	pgprot_t old_prot, new_prot;
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 0a8fced6aaec4..522a0942114ad 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -30,6 +30,9 @@ enum swiotlb_force {
-  */
- #define IO_TLB_SHIFT 11
+ 	unsigned long id;
  
-+/* default to 64MB */
-+#define IO_TLB_DEFAULT_SIZE (64UL<<20)
-+
- extern void swiotlb_init(int verbose);
- int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
- extern unsigned long swiotlb_nr_tbl(void);
-@@ -80,6 +83,7 @@ void __init swiotlb_exit(void);
- unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_active(void);
-+void __init swiotlb_adjust_size(unsigned long new_size);
- #else
- #define swiotlb_force SWIOTLB_NO_FORCE
- static inline bool is_swiotlb_buffer(phys_addr_t paddr)
-@@ -108,6 +112,10 @@ static inline bool is_swiotlb_active(void)
+-	mutex_lock(&smmu->lock);
+-
+ 	id = find_first_zero_bit(smmu->asids, smmu->soc->num_asids);
+-	if (id >= smmu->soc->num_asids) {
+-		mutex_unlock(&smmu->lock);
++	if (id >= smmu->soc->num_asids)
+ 		return -ENOSPC;
+-	}
+ 
+ 	set_bit(id, smmu->asids);
+ 	*idp = id;
+ 
+-	mutex_unlock(&smmu->lock);
+ 	return 0;
+ }
+ 
+ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
  {
- 	return false;
- }
-+
-+static inline void swiotlb_adjust_size(unsigned long new_size)
-+{
-+}
- #endif /* CONFIG_SWIOTLB */
- 
- extern void swiotlb_print_info(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index f99b79d7e1235..4c35ad1577e8d 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -151,8 +151,6 @@ void swiotlb_set_max_segment(unsigned int val)
- 		max_segment = rounddown(val, PAGE_SIZE);
+-	mutex_lock(&smmu->lock);
+ 	clear_bit(id, smmu->asids);
+-	mutex_unlock(&smmu->lock);
  }
  
--/* default to 64MB */
--#define IO_TLB_DEFAULT_SIZE (64UL<<20)
- unsigned long swiotlb_size_or_default(void)
+ static bool tegra_smmu_capable(enum iommu_cap cap)
+@@ -406,17 +399,21 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 				 struct tegra_smmu_as *as)
  {
- 	unsigned long size;
-@@ -162,6 +160,24 @@ unsigned long swiotlb_size_or_default(void)
- 	return size ? size : (IO_TLB_DEFAULT_SIZE);
- }
+ 	u32 value;
+-	int err;
++	int err = 0;
++
++	mutex_lock(&smmu->lock);
  
-+void __init swiotlb_adjust_size(unsigned long new_size)
-+{
-+	unsigned long size;
-+
-+	/*
-+	 * If swiotlb parameter has not been specified, give a chance to
-+	 * architectures such as those supporting memory encryption to
-+	 * adjust/expand SWIOTLB size for their use.
-+	 */
-+	if (!io_tlb_nslabs) {
-+		size = ALIGN(new_size, 1 << IO_TLB_SHIFT);
-+		io_tlb_nslabs = size >> IO_TLB_SHIFT;
-+		io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
-+
-+		pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
+ 	if (as->use_count > 0) {
+ 		as->use_count++;
+-		return 0;
++		goto unlock;
+ 	}
+ 
+ 	as->pd_dma = dma_map_page(smmu->dev, as->pd, 0, SMMU_SIZE_PD,
+ 				  DMA_TO_DEVICE);
+-	if (dma_mapping_error(smmu->dev, as->pd_dma))
+-		return -ENOMEM;
++	if (dma_mapping_error(smmu->dev, as->pd_dma)) {
++		err = -ENOMEM;
++		goto unlock;
 +	}
-+}
+ 
+ 	/* We can't handle 64-bit DMA addresses */
+ 	if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
+@@ -439,24 +436,35 @@ static int tegra_smmu_as_prepare(struct tegra_smmu *smmu,
+ 	as->smmu = smmu;
+ 	as->use_count++;
+ 
++	mutex_unlock(&smmu->lock);
 +
- void swiotlb_print_info(void)
+ 	return 0;
+ 
+ err_unmap:
+ 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
++unlock:
++	mutex_unlock(&smmu->lock);
++
+ 	return err;
+ }
+ 
+ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+ 				    struct tegra_smmu_as *as)
  {
- 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+-	if (--as->use_count > 0)
++	mutex_lock(&smmu->lock);
++
++	if (--as->use_count > 0) {
++		mutex_unlock(&smmu->lock);
+ 		return;
++	}
+ 
+ 	tegra_smmu_free_asid(smmu, as->id);
+ 
+ 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
+ 
+ 	as->smmu = NULL;
++
++	mutex_unlock(&smmu->lock);
+ }
+ 
+ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
 -- 
 2.27.0
 
