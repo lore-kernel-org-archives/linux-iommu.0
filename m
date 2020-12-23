@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A270C433DB
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AA1C433E0
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B5C902313F
-	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:24:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5C902313F
+	by mail.kernel.org (Postfix) with ESMTPS id 9B15D23331
+	for <iommu@archiver.kernel.org>; Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B15D23331
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 624C2872D3;
-	Wed, 23 Dec 2020 02:24:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4A848872D6;
+	Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id J+wVeM-pKVms; Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
+	with ESMTP id PrB7yL86t6in; Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D625186F6D;
-	Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2456C872D3;
+	Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8915C1825;
-	Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1195CC1825;
+	Wed, 23 Dec 2020 02:25:52 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 055DDC0893
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6662FC0893
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:25:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E831A872D3
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 605D1872D3
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:25:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 14xA-SnJ9UGo for <iommu@lists.linux-foundation.org>;
- Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
+ with ESMTP id vmKXaiDrgSMY for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Dec 2020 02:25:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6496486F6D
- for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:24:55 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E8AE22285;
- Wed, 23 Dec 2020 02:24:54 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 37BD686F6D
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Dec 2020 02:25:50 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E9BE2225AC;
+ Wed, 23 Dec 2020 02:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1608690295;
+ s=k20201202; t=1608690349;
  bh=LFPNS1AsxzYl6KvbGpsDsMJTi8DK61Ijpwo7Hclcj/0=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=p6S6GvHEJh5RYKe0HmiDE2e/yt9CdMquU2m7b6bnQInW+sUeB/+Y0ykTq1m5S7kTX
- puFSg2pzm0TaG+wxM8u1D44f36gl5W75q+BeP0/S4H7ih4ixe5vLaBP37guYOEujRI
- MDmaVfIBxC/2rme3LrqRc7nxxf95+wOGlollF1GzkxrZAY85mL//hQ2jD06PJ2TnxY
- 6/0och6HSTkVg69KRxd/sJCO17QNzchZpibGh51/uwPyRFNJXXe4w/Aby06/K67csv
- qV40csNd5D0xUtGYPTguKJcev/Zn+PYV/hAzVZmfJWuOxKf0NawgNceVaU+xXcUB/0
- khsPMiWnQep7g==
+ b=dUD9qr2tVUH39PzmU2+sQtMrlN5RBsMYE8GdG1z+pwIRfTYAVyF570RciT6BVfVl5
+ 6bSYLmuoSSmvHMPIqWsW+yOj/oM0XCA9j0uZukIQMLO82RBCd5IiIkB5WFfES6z29y
+ t9kBF2EIqqziMg4hRIvkueqPojXhyTaeJ82w0XGIwpqCgOKV8/6wGAJwUH2AleaHPl
+ Oe/1ugBNElUFk09IyS0N3rxJR274I5Jmj2xUC5uDGbGsK9IfxnpSR5leq+PRsLDKSZ
+ q7LxxGnIEQAI6VmuswegZYHgRaDTRs4zy3Tk9HQVo8S0joq/4A7pZqo4e/ZJUuq52d
+ ObBDdJT9L1Jyg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 31/48] iommu/tegra-smmu: Expand mutex protection
+Subject: [PATCH AUTOSEL 4.4 26/38] iommu/tegra-smmu: Expand mutex protection
  range
-Date: Tue, 22 Dec 2020 21:23:59 -0500
-Message-Id: <20201223022417.2794032-31-sashal@kernel.org>
+Date: Tue, 22 Dec 2020 21:25:04 -0500
+Message-Id: <20201223022516.2794471-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
-References: <20201223022417.2794032-1-sashal@kernel.org>
+In-Reply-To: <20201223022516.2794471-1-sashal@kernel.org>
+References: <20201223022516.2794471-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
