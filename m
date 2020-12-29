@@ -2,73 +2,74 @@ Return-Path: <SRS0=AIYf=GB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73BAEC433DB
-	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 01:49:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFF5C433E9
+	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 01:49:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 06058207DE
-	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 01:49:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 06058207DE
+	by mail.kernel.org (Postfix) with ESMTPS id 2B00C207DE
+	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 01:49:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B00C207DE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A8DBD871FE;
-	Tue, 29 Dec 2020 01:49:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C8EF185B4A;
+	Tue, 29 Dec 2020 01:49:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r3WZFjqEv4Ce; Tue, 29 Dec 2020 01:49:13 +0000 (UTC)
+	with ESMTP id mrgVU9j_B65i; Tue, 29 Dec 2020 01:49:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0D3AC8710F;
-	Tue, 29 Dec 2020 01:49:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4D028844DA;
+	Tue, 29 Dec 2020 01:49:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E2BBAC1D9C;
-	Tue, 29 Dec 2020 01:49:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 301BAC1D9C;
+	Tue, 29 Dec 2020 01:49:23 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 883C9C0174
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 78A29C0174
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6A1C9871FE
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:11 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 66F15871FE
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kaYtKGHwvK9m for <iommu@lists.linux-foundation.org>;
- Tue, 29 Dec 2020 01:49:10 +0000 (UTC)
+ with ESMTP id 3O8l1WlMjIYV for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Dec 2020 01:49:21 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from m43-15.mailgun.net (m43-15.mailgun.net [69.72.43.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id ED2278710F
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:09 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 41CE38710F
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 01:49:20 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1609206549; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=N8vblr7WLA9MBowjRomnjKEqPtQ1SL9FvyoDvOUsoR4=;
- b=ih+ISigX4Mq0zpMt2DJuBFd6BBbHAF/IZAbm7yjW8IucI7I0R3wY5YoB5+xEOmUYQ3ue2XpM
- KDQ9/xZIq/zE8zWHAFWKXs05pd/yFb4LiemLhrPwsH6h+Xg1gU9UWlfZPY1HS4MtL240E2e4
- ki/seoLLnsdhPtujLMXdnsBLbQE=
+ s=smtp; t=1609206560; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=0T+xlGHJP2wMYpgxmfrGKe+ecRzlLCw68x3Rb2S7kVs=;
+ b=F9p6LqXH/00AGMKvrU4CM/WK+nOaWA+RU70FQ6fO1NYTE2nDUW0db5T0URx5pm9QC/RjUjXj
+ G4kwRZUBuSjJ6UAMLqCXr97UOJvkdJdXD7wQ6vBGvqwMoVupnrI7AiE3V8V77YVOHJKD7gfB
+ hWmXfk0zFiyr5RyG0LbtskCDCpI=
 X-Mailgun-Sending-Ip: 69.72.43.15
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5fea8b146d2f42c666fbc322 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 29 Dec 2020 01:49:08
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 5fea8b1e120d248bb5006464 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 29 Dec 2020 01:49:18
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id C1BFCC433ED; Tue, 29 Dec 2020 01:49:08 +0000 (UTC)
+ id A041EC43469; Tue, 29 Dec 2020 01:49:17 +0000 (UTC)
 Received: from isaacm-linux.qualcomm.com (i-global254.qualcomm.com
  [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: isaacm)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 6F1E3C433C6;
- Tue, 29 Dec 2020 01:49:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6F1E3C433C6
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id CEBEEC43463;
+ Tue, 29 Dec 2020 01:49:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CEBEEC43463
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
@@ -78,10 +79,13 @@ To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  robdclark@gmail.com, sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
  steven.price@arm.com, alyssa.rosenzweig@collabora.com, robh@kernel.org,
  tomeu.vizoso@collabora.com
-Subject: [PATCH 0/7] iommu: Permit modular builds of io-pgtable drivers
-Date: Mon, 28 Dec 2020 17:48:54 -0800
-Message-Id: <1609206541-14562-1-git-send-email-isaacm@codeaurora.org>
+Subject: [PATCH 4/7] iommu/arm-smmu-v3: Add dependency on io-pgtable-arm
+ format module
+Date: Mon, 28 Dec 2020 17:48:58 -0800
+Message-Id: <1609206541-14562-5-git-send-email-isaacm@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1609206541-14562-1-git-send-email-isaacm@codeaurora.org>
+References: <1609206541-14562-1-git-send-email-isaacm@codeaurora.org>
 Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
  freedreno@lists.freedesktop.org, pdaly@codeaurora.org, pratikp@codeaurora.org,
  dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
@@ -104,64 +108,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The goal of the Generic Kernel Image (GKI) effort is to have a common
-kernel image that works across multiple Android devices. This involves
-generating a kernel image that has core features integrated into it,
-while SoC specific functionality can be added to the kernel for the
-device as a module.
+The SMMUv3 driver depends on the availability of the ARM LPAE io-pgtable
+format code to work properly. In preparation for having the io-pgtable
+formats as modules, add a "pre" dependency with MODULE_SOFTDEP() to
+ensure that the io-pgtable-arm format module is loaded before loading
+the ARM SMMUv3 driver module.
 
-Along with modularizing IOMMU drivers, this also means building the
-io-pgtable code as modules, which allows for SoC vendors to only include
-the io-pgtable implementations that they use. For example, GKI for arm64
-must include support for both the IOMMU ARM LPAE/V7S formats at the
-moment. Having the code for both formats as modules allows SoC vendors
-to only provide the page table format that they use, along with their
-IOMMU driver.
+Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The patches are split into 4 parts:
-
-1) Modularizing io-pgtable-arm[-v7s].c, while leaving the io-pgtable.c
-code as part of the core kernel, requires removing the references to
-the ARM LPAE and ARM V7S io-pgtable init functions, and using a
-dynamic method for formats to register their io-pgtable init functions.
-
-2) Taking references to the io-pgtable format drivers to ensure that they
-cannot be unloaded while in use.
-
-3) Adding pre MODULE_SOFTDEP() dependencies to drivers in the kernel
-that are tristate, and invoke [alloc/free]_io_pgtable_ops(). This makes
-it so that the io-pgtable format drivers are loaded before the driver
-that needs them.
-
-4) Changing the Kconfig options for the ARM LPAE nad ARM V7S to tristate
-and allowing the io-pgtable code to be enabled without having to select
-either page table format. The reason for doing this is so that a kernel
-can be built, such that it only provides the interface for io-pgtable
-formats to be registered as modules, as would be the case for the GKI.
-
-Thanks,
-Isaac
-
-Isaac J. Manjarres (7):
-  iommu/io-pgtable: Introduce dynamic io-pgtable format registration
-  iommu/io-pgtable: Add refcounting for io-pgtable format modules
-  iommu/arm-smmu: Add dependency on io-pgtable format modules
-  iommu/arm-smmu-v3: Add dependency on io-pgtable-arm format module
-  drm/msm: Add dependency on io-pgtable-arm format module
-  drm/panfrost: Add dependency on io-pgtable-arm format module
-  iommu/io-pgtable-arm: Allow building modular io-pgtable formats
-
- drivers/gpu/drm/msm/msm_drv.c               |   1 +
- drivers/gpu/drm/panfrost/panfrost_drv.c     |   1 +
- drivers/iommu/Kconfig                       |  11 +--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   1 +
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |   1 +
- drivers/iommu/io-pgtable-arm-v7s.c          |  36 +++++++++-
- drivers/iommu/io-pgtable-arm.c              | 104 +++++++++++++++++++++-------
- drivers/iommu/io-pgtable.c                  |  54 ++++++++++-----
- include/linux/io-pgtable.h                  |  52 +++++++++-----
- 9 files changed, 196 insertions(+), 65 deletions(-)
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 8ca7415..c498ac8 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3650,3 +3650,4 @@ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+ MODULE_AUTHOR("Will Deacon <will@kernel.org>");
+ MODULE_ALIAS("platform:arm-smmu-v3");
+ MODULE_LICENSE("GPL v2");
++MODULE_SOFTDEP("pre: io-pgtable-arm");
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
