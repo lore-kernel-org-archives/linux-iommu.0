@@ -7,74 +7,73 @@ X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B5AC433E6
-	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 11:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F754C433E0
+	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 11:06:13 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 473E420825
-	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 11:02:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 473E420825
+	by mail.kernel.org (Postfix) with ESMTPS id E0BE220825
+	for <iommu@archiver.kernel.org>; Tue, 29 Dec 2020 11:06:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E0BE220825
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9ADD5203ED;
-	Tue, 29 Dec 2020 11:02:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7C7B3271F5;
+	Tue, 29 Dec 2020 11:06:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IGF97TMHbMqM; Tue, 29 Dec 2020 11:02:54 +0000 (UTC)
+	with ESMTP id zEc8TD2ZoXLT; Tue, 29 Dec 2020 11:06:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 72A952037E;
-	Tue, 29 Dec 2020 11:02:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 36B6420031;
+	Tue, 29 Dec 2020 11:06:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51838C088B;
-	Tue, 29 Dec 2020 11:02:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1AFC1C088B;
+	Tue, 29 Dec 2020 11:06:11 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01E6CC0174
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:02:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1E04C0174
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:06:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DCA5786C4A
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:02:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9E0F586C64
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:06:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gcBkxI9LqKf3 for <iommu@lists.linux-foundation.org>;
- Tue, 29 Dec 2020 11:02:51 +0000 (UTC)
+ with ESMTP id 0UEEJJzqn6rB for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Dec 2020 11:06:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9A29286132
- for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:02:49 +0000 (UTC)
-X-UUID: 68d9bcd55862430491e5a0946e429603-20201229
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6C6EA86C50
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Dec 2020 11:06:07 +0000 (UTC)
+X-UUID: 8a05a6fe1c26428b9092d125bb033018-20201229
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=+tQiRgFVs1ecSRTznh8zWZJajSaxb1w3A0hIkVSyae4=; 
- b=n/UI6MboHADW2FQSsUHlHdjWIrXq+Sxe5kdG/k6qclB8szLc/DbiUfqpWOo69QgmuHvy2sCCXdSXRKinxGTlVqIPk80mL0I6yAo/jjvPcJQqn021vwGuKzKOfqBo1eTTDK5YK+Gx68pJ+272vloCV/Lel4XN1p1pARwl/1KmNLY=;
-X-UUID: 68d9bcd55862430491e5a0946e429603-20201229
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+ bh=kBXEFHEYE3UKfnPdFHxODX9PA3xu0wCHnxHyXHF9dIY=; 
+ b=Si8UijRGBrB9rSlu49RKJzwWB5SjW5u/piNa/3eYvTymuU5/8ji2OKRDc7+uRuPL8S+cQWoRrPZbLdOV6IB46BBGELbQ1D94hMnxCNGZTVwH1N/2mJyiy331L+UJ6azeXcHa64DykBLBw6KKi0rRrFRbCgfUFcbl51JNsFUs+rg=;
+X-UUID: 8a05a6fe1c26428b9092d125bb033018-20201229
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1009512425; Tue, 29 Dec 2020 19:02:22 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Tue, 29 Dec 2020 19:01:16 +0800
+ with ESMTP id 1241701737; Tue, 29 Dec 2020 19:06:03 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS32N1.mediatek.inc
+ (172.27.4.71) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Tue, 29 Dec 2020 19:06:02 +0800
 Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
  (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 29 Dec 2020 19:00:20 +0800
-Message-ID: <1609239620.26323.288.camel@mhfsdcap03>
-Subject: Re: [PATCH v5 15/27] iommu/mediatek: Add fail handle for sysfs_add
- and device_register
+ Transport; Tue, 29 Dec 2020 19:06:01 +0800
+Message-ID: <1609239960.26323.291.camel@mhfsdcap03>
+Subject: Re: [PATCH v5 17/27] iommu/mediatek: Add pm runtime callback
 From: Yong Wu <yong.wu@mediatek.com>
 To: Tomasz Figa <tfiga@chromium.org>
-Date: Tue, 29 Dec 2020 19:00:20 +0800
-In-Reply-To: <X+L+97OBxC6I5pUv@chromium.org>
+Date: Tue, 29 Dec 2020 19:06:00 +0800
+In-Reply-To: <X+MAh87dFsY2p8vF@chromium.org>
 References: <20201209080102.26626-1-yong.wu@mediatek.com>
- <20201209080102.26626-16-yong.wu@mediatek.com>
- <X+L+97OBxC6I5pUv@chromium.org>
+ <20201209080102.26626-18-yong.wu@mediatek.com>
+ <X+MAh87dFsY2p8vF@chromium.org>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 9BAE3647D5E474D2917586CBBFB4911DB1B0897182843908B89A805325F57F062000:8
+X-TM-SNTS-SMTP: 6193CBCDE50237FB6220DACC2EDA79262E49C0591F513503724C7571B2EDA9F12000:8
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -102,55 +101,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2020-12-23 at 17:25 +0900, Tomasz Figa wrote:
-> On Wed, Dec 09, 2020 at 04:00:50PM +0800, Yong Wu wrote:
-> > Add fail handle for iommu_device_sysfs_add and iommu_device_register.
+On Wed, 2020-12-23 at 17:32 +0900, Tomasz Figa wrote:
+> On Wed, Dec 09, 2020 at 04:00:52PM +0800, Yong Wu wrote:
+> > This patch adds pm runtime callback.
 > > 
-> > Fixes: b16c0170b53c ("iommu/mediatek: Make use of iommu_device_register interface")
+> > In pm runtime case, all the registers backup/restore and bclk are
+> > controlled in the pm_runtime callback, then pm_suspend is not needed in
+> > this case.
+> > 
+> > runtime PM is disabled when suspend, thus we call
+> > pm_runtime_status_suspended instead of pm_runtime_suspended.
+> > 
+> > And, m4u doesn't have its special pm runtime domain in previous SoC, in
+> > this case dev->power.runtime_status is RPM_SUSPENDED defaultly,
+> 
+> This sounds wrong and could lead to hard to debug errors when the driver
+> is changed in the future. Would it be possible to make the behavior
+> consistent across the SoCs instead, so that runtime PM status is ACTIVE
+> when needed, even on SoCs without an IOMMU PM domain?
+
+Appreciate the reviewing so detailly.
+
+I have tested this.
+a) always call pm_runtime_enable.
+b) always add device_link with smi_common.
+
+Then, the runtime PM status meet expectation. 
+
+We don't call pm_runtime_get_sync so often, thus, we don't always touch
+dev->power.lock. this is ok for us.
+
+I will use this in the next version.
+
+> 
+> > thus add
+> > a "dev->pm_domain" checking for the SoC that has pm runtime domain.
+> > 
 > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > > ---
-> >  drivers/iommu/mtk_iommu.c | 13 +++++++++++--
-> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >  drivers/iommu/mtk_iommu.c | 22 ++++++++++++++++++++--
+> >  1 file changed, 20 insertions(+), 2 deletions(-)
 > > 
 > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 39478cfbe0f1..09c8c58feb78 100644
+> > index 5614015e5b96..6fe3ee2b2bf5 100644
 > > --- a/drivers/iommu/mtk_iommu.c
 > > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -746,7 +746,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
-> >  
-> >  	ret = iommu_device_register(&data->iommu);
-> >  	if (ret)
-> > -		return ret;
-> > +		goto out_sysfs_remove;
-> >  
-> >  	spin_lock_init(&data->tlb_lock);
-> >  	list_add_tail(&data->list, &m4ulist);
-> > @@ -754,7 +754,16 @@ static int mtk_iommu_probe(struct platform_device *pdev)
-> >  	if (!iommu_present(&platform_bus_type))
-> >  		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
-> >  
-> > -	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
-> > +	ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
-> > +	if (ret)
-> > +		goto out_dev_unreg;
-> > +	return ret;
-> > +
-> > +out_dev_unreg:
-> 
-> Shouldn't other operations be undone as well? I can see that above
-> bus_set_iommu() is set and an entry is added to m4ulist.
-
-Oh. Yes. I will add them. and remove the fixes tag since they are not
-introduced by it. these error handle are not added in the first version.
-
-> 
-> > +	iommu_device_unregister(&data->iommu);
-> > +out_sysfs_remove:
-> > +	iommu_device_sysfs_remove(&data->iommu);
-> > +	return ret;
+> > @@ -808,7 +808,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+> >  	return 0;
 > >  }
 > >  
-> >  static int mtk_iommu_remove(struct platform_device *pdev)
+> > -static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+> > +static int __maybe_unused mtk_iommu_runtime_suspend(struct device *dev)
+> >  {
+> >  	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+> >  	struct mtk_iommu_suspend_reg *reg = &data->reg;
+> > @@ -826,7 +826,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+> >  	return 0;
+> >  }
+> >  
+> > -static int __maybe_unused mtk_iommu_resume(struct device *dev)
+> > +static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+> >  {
+> >  	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+> >  	struct mtk_iommu_suspend_reg *reg = &data->reg;
+> > @@ -853,7 +853,25 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+> >  	return 0;
+> >  }
+> >  
+> > +static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+> > +{
+> > +	/* runtime PM is disabled when suspend in pm_runtime case. */
+> > +	if (dev->pm_domain && pm_runtime_status_suspended(dev))
+> > +		return 0;
+> > +
+> > +	return mtk_iommu_runtime_suspend(dev);
+> > +}
+> > +
+> > +static int __maybe_unused mtk_iommu_resume(struct device *dev)
+> > +{
+> > +	if (dev->pm_domain && pm_runtime_status_suspended(dev))
+> > +		return 0;
+> > +
+> > +	return mtk_iommu_runtime_resume(dev);
+> > +}
+> 
+> Wouldn't it be enough to just use pm_runtime_force_suspend() and
+> pm_runtime_force_resume() as system sleep ops?
+
+After above solution, this is ok.
+
+Thanks.
+> 
+> > +
+> >  static const struct dev_pm_ops mtk_iommu_pm_ops = {
+> > +	SET_RUNTIME_PM_OPS(mtk_iommu_runtime_suspend, mtk_iommu_runtime_resume, NULL)
+> >  	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+> >  };
+> >  
 > > -- 
 > > 2.18.0
 > > 
