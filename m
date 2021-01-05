@@ -1,79 +1,79 @@
-Return-Path: <SRS0=ghm9=GH=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=smho=GI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D64C433DB
-	for <iommu@archiver.kernel.org>; Mon,  4 Jan 2021 23:39:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86104C433E0
+	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 00:20:02 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D7CE12253D
-	for <iommu@archiver.kernel.org>; Mon,  4 Jan 2021 23:39:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7CE12253D
+	by mail.kernel.org (Postfix) with ESMTPS id 5242B2255F
+	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 00:20:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5242B2255F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7C74A84FE6;
-	Mon,  4 Jan 2021 23:39:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E3116856E9;
+	Tue,  5 Jan 2021 00:20:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P43J9xcKrIGW; Mon,  4 Jan 2021 23:39:51 +0000 (UTC)
+	with ESMTP id PhizbJYdViv1; Tue,  5 Jan 2021 00:20:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AEFC584896;
-	Mon,  4 Jan 2021 23:39:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 68B07847DE;
+	Tue,  5 Jan 2021 00:20:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F170C088B;
-	Mon,  4 Jan 2021 23:39:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AACCC0893;
+	Tue,  5 Jan 2021 00:20:00 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 95ECDC013A
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jan 2021 23:39:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B3021C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 00:19:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 79EA186657
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jan 2021 23:39:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A26CB8608B
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 00:19:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id j2UpahcLjKCR for <iommu@lists.linux-foundation.org>;
- Mon,  4 Jan 2021 23:39:49 +0000 (UTC)
+ with ESMTP id OjW7EHzPhzAl for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jan 2021 00:19:56 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 6E78284896
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jan 2021 23:39:49 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 361F685C20
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 00:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
  In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=5f1vqAQo+1T9g1/8UsJer2XuptfvpNp2g7Wmtps+rjw=; b=ZbNuWcxZa2qtRewS2qicInQ1CZ
- AxYAhKpWTb8Rp+10GSHkb1s4XYWEErC+h5DfF2N6UHqFPU0n2/qX0qhZ2kLeE6tu1GTnaF4GB/T71
- bLkWkHDGsmdn7YGfST87GmigM06WoAe0FSrLhA1M18ihPzIMBqpHigxqr+P2UqgQNPoVrQBMBDYg5
- 0FWnU9f3zQ/UBZKVNxrWQaJAugLHuqTTo8FAOUKMc5jIOlu4H4UDoQNZmnZiW3+tMu4CLe2ut7a4d
- 5A+muBktbKQv9z8I8lkDwZpRZbg8CG4tZXJK7IkLC/+xIXqJh8Tly3SkgBTp9XVaR+hrtEY/Op13y
- k3uG89Vg==;
+ bh=g+AOKhUeUTWFOIQpi32HsWBW7smluNeXtvDauD7RssY=; b=lsSswGwcdJdB0MrHcGsXuXG2fK
+ TUTGjVsSIwquBNERcSr9UsqkRc9K0QSb9xhRuEx1dEk8IZo3mNRPnWW2KEdmVLwLCIgWxgl0KMz3g
+ SCzfazEzpwc7qwK7rmcGjMRA3ilmofKJkSx0E4hLwM8dZzhneL+iEHt4NKYrKpZtvJSQ15JJBq7N6
+ HPd6R/R9iwDAJEJTo2xL4/tm+R7i9hDPGaPKE2ZuUTvm3r37BUHLuN4zcTt1Gqaxr0kzcAdfujupw
+ baHANIXGfYXnVWqsDBIYtoVH8VM9MIwJZygDD+xFvBz1sDqlsSaoq+PLeatJzUqKmcPVWkwHiEMkO
+ R/0PFHfw==;
 Received: from 54-240-197-236.amazon.com ([54.240.197.236]
  helo=u3832b3a9db3152.ant.amazon.com)
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1kwZRw-0007X7-7F; Mon, 04 Jan 2021 23:39:46 +0000
-Message-ID: <7196ec6d2d210284f9ab8ace5c84803d037cdef9.camel@infradead.org>
-Subject: Re: Interrupts enabled after amd_iommu_resume+0x0/0x40
+ id 1kwa4b-0006qY-L2; Tue, 05 Jan 2021 00:19:41 +0000
+Message-ID: <8cfbd243321d91bad760117cc49f1770a7bd819c.camel@infradead.org>
+Subject: Re: [EXTERNAL] PROBLEM: commit f36a74b9345a leads to not booting
+ system with AMD 2990WX
 From: David Woodhouse <dwmw2@infradead.org>
-To: Borislav Petkov <bp@alien8.de>, iommu@lists.linux-foundation.org
-Date: Mon, 04 Jan 2021 23:39:41 +0000
-In-Reply-To: <20210104232353.GJ32151@zn.tnic>
-References: <20210104132250.GE32151@zn.tnic> <20210104232353.GJ32151@zn.tnic>
+To: Johnathan Smithinovic <johnathan.smithinovic@gmx.at>,
+ tglx@linutronix.de,  mingo@redhat.com, bp@alien8.de
+Date: Tue, 05 Jan 2021 00:19:39 +0000
+In-Reply-To: <ed4be9b4-24ac-7128-c522-7ef359e8185d@gmx.at>
+References: <ed4be9b4-24ac-7128-c522-7ef359e8185d@gmx.at>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Mime-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
  merlin.infradead.org. See http://www.infradead.org/rpr.html
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- lkml <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Will Deacon <will@kernel.org>
+Cc: iommu <iommu@lists.linux-foundation.org>, x86@kernel.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,86 +86,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4085349005619528054=="
+Content-Type: multipart/mixed; boundary="===============2269313963716570523=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============4085349005619528054==
+--===============2269313963716570523==
 Content-Type: multipart/signed; micalg="sha-256";
 	protocol="application/x-pkcs7-signature";
-	boundary="=-hGKyCMzp4IsR3YWFs3SP"
+	boundary="=-GsywGdKVRXSjjbFDzZQz"
 
 
---=-hGKyCMzp4IsR3YWFs3SP
+--=-GsywGdKVRXSjjbFDzZQz
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2021-01-05 at 00:23 +0100, Borislav Petkov wrote:
-> On Mon, Jan 04, 2021 at 02:22:50PM +0100, Borislav Petkov wrote:
-> > Hi folks,
-> >=20
-> > syscore_resume() doesn't like when the AMD iommu driver enables
-> > interrupts in its ->resume hook when I resume the box from suspend to
-> > RAM.
-> >=20
-> > All kinds of warnings get triggered too:
-> >=20
-> > [   17.386830] WARNING: CPU: 0 PID: 2 at kernel/time/timekeeping.c:824 =
-ktime_get+0x8d/0xa0
-> > [   17.386830] WARNING: CPU: 0 PID: 2 at kernel/time/timekeeping.c:867 =
-ktime_get_with_offset+0xda/0xf0
-> > [   17.386830] WARNING: CPU: 0 PID: 2 at kernel/time/timekeeping.c:824 =
-ktime_get+0x8d/0xa0
-> > [   17.386830] WARNING: CPU: 0 PID: 2 at kernel/time/timekeeping.c:867 =
-ktime_get_with_offset+0xda/0xf0
-> > [   17.386830] WARNING: CPU: 0 PID: 1576 at drivers/base/syscore.c:103 =
-syscore_resume+0x12d/0x160
-> >=20
-> > but when I comment out the
-> >=20
-> >        amd_iommu_enable_interrupts()
-> >=20
-> > call in the resume hook, all is fine and quiet and box resumes.
-> >=20
-> > I'll try to bisect later to try to pinpoint it better because I don't
-> > see what recent change would've caused this. But someone might have a
-> > better idea so CC the usual suspects.
+On Tue, 2021-01-05 at 00:05 +0100, Johnathan Smithinovic wrote:
+> commit f36a74b9345a leads to not booting system with AMD 2990WX
 >=20
-> Ok, bisected to:
 >=20
-> # first bad commit: [d1adcfbb520c43c10fc22fcdccdd4204e014fb53] iommu/amd:=
- Fix IOMMU interrupt generation in X2APIC mode
+> When trying to boot 5.11-rc2 as usual the messages of the bootloader stay=
+ on my
+> screen and not much appears to happen (fans run a bit slower than in GRUB=
+,
+> devices don't seem to get accessed). Without this commit everything seems=
+ to
+> work as usual.
 >=20
-> That patch reverts cleanly ontop of -rc2 and with it reverted, the
-> machine resumes fine.
+> (In the hope that it is helpful I appended messages mentioning "IO APIC"
+> from 5.11-rc2 with the mentioned commit reverted (and the kernel paramete=
+r
+> apic=3Ddebug added).
+> I'm sorry that I can't provide more details: I'm unsure how I can gather
+> more information since my Motherboard (ASUS ROG ZENITH EXTREME) does not =
+have
+> any documented serial ports and USB devices don't seem to get turned on.)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index f54cd79b43e4..6a1f7048dacc 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1973,8 +1973,6 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- 		return r;
- 	}
+No problem, that was enough to reproduce it in qemu just by simulating
+the same BIOS bug which causes it to *start* enabling, then abort, the
+IRQ remapping. Thanks for the report.
+
+Does this fix it?
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 7e2c445a1fae..f0adbc48fd17 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3854,6 +3854,9 @@ static int irq_remapping_select(struct irq_domain *d,=
+ struct irq_fwspec *fwspec,
+ 	struct amd_iommu *iommu;
+ 	int devid =3D -1;
 =20
--	iommu->int_enabled =3D true;
--
- 	return 0;
- }
-=20
-@@ -2169,6 +2167,7 @@ static int iommu_init_irq(struct amd_iommu *iommu)
- 	if (ret)
- 		return ret;
-=20
-+	iommu->int_enabled =3D true;
- enable_faults:
- 	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
-=20
++	if (!amd_iommu_irq_remap)
++		return 0;
++
+ 	if (x86_fwspec_is_ioapic(fwspec))
+ 		devid =3D get_ioapic_devid(fwspec->param[0]);
+ 	else if (x86_fwspec_is_hpet(fwspec))
 
 
-?
-
---=-hGKyCMzp4IsR3YWFs3SP
+--=-GsywGdKVRXSjjbFDzZQz
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -248,25 +228,25 @@ BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
 BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
 ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
 ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-MTA0MjMzOTQxWjAvBgkqhkiG9w0BCQQxIgQgF4YJwYZ6iDhFufaOQdHxysRkvEeGeRREh8Yzp+mA
-9UQwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+MTA1MDAxOTM5WjAvBgkqhkiG9w0BCQQxIgQgTfRM3Pl6GynIZI7YsB9XeI6YbQxP4yzs4oNeG+5q
+ddMwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
 TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
 PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
 A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
 bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAF7LAgU0j85M4iOAqlX2jMtIlgYbqptoftKhxVzSgxH1Gjm5iazCz58uiNbQvosS
-Dn1iE17WO/IC3XlKaMiqkUL8V/HLQNq7Ix+6/8WFMy0VupCMXaz/l/hOoKyYKnSxnJQ3vPTMQspw
-PfBKakOF2uButJm52ifrzUsdcE2xndkWOF15qLa6cW5TY+70QQpMSz+x1aa7w6/bG/fyGriX61tI
-GRrBf/bq5cSiHITQ0soTtqn8werLAwj/Mu9ewlFXTps+XF+JlJokEEBypmrbT4//guhrBoxIGV3X
-2wYSeZPt4wsc/JbOkIwbRpFegSxs1zBr8zQYmOFZzcZz3G2RzswAAAAAAAA=
+DQEBAQUABIIBAHo1qM7otYBRkgMrni6Mg3/BKdPxCtLRTUf5yY0QHlW/7q0umh+w2mKjXHa2wWAC
+lHj5V3DeQ9nPaTMEs6a8NqY/XfAUr8lt/Tu1wfWkDbRv2i8LA4wSK9donkihwE71yhq+NVtBJAcN
+djVCNB9UzexpsAjsSkEIHP6Vqe4JdxIsSniAukCJO+dHIf3+zPFMYhDF8QnkpkwONANFPdm/ADHy
+7o8+0Ku/sr7uxZtJ8hcWbrchA5QOKAtISXH4KUZ5cc4lyLpFaq0wfB9CiPVb0TF/fh2C8/Bd9Tdo
+KJtLpSAIoN13AB6+oU59DIOvZfIFbGjN6qyU3x8sGlA2di0CEBEAAAAAAAA=
 
 
---=-hGKyCMzp4IsR3YWFs3SP--
+--=-GsywGdKVRXSjjbFDzZQz--
 
 
---===============4085349005619528054==
+--===============2269313963716570523==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -276,5 +256,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4085349005619528054==--
+--===============2269313963716570523==--
 
