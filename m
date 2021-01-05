@@ -6,71 +6,67 @@ X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4D3C433DB
-	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 22:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D219C433E0
+	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 22:07:19 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E9BBC22E01
-	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9BBC22E01
+	by mail.kernel.org (Postfix) with ESMTPS id AF929230FA
+	for <iommu@archiver.kernel.org>; Tue,  5 Jan 2021 22:07:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF929230FA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B528386BB5;
-	Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9909186BB2;
+	Tue,  5 Jan 2021 22:07:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hntkiwhGv33O; Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
+	with ESMTP id lmhK5-Npx+T5; Tue,  5 Jan 2021 22:07:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1D01485C19;
-	Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4492A86B9F;
+	Tue,  5 Jan 2021 22:07:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 098D4C088B;
-	Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32BE6C088B;
+	Tue,  5 Jan 2021 22:07:18 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C345BC013A
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7DA29C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id BD00386F1B
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:14 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6B4FC86F1B
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hr4djVqCypil for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jan 2021 22:07:14 +0000 (UTC)
+ with ESMTP id WV6bhUIKjUe4 for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jan 2021 22:07:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6BD38871D5
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:14 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6515622EBE;
- Tue,  5 Jan 2021 22:07:12 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EEE65871D5
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jan 2021 22:07:15 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A528B22EBF;
+ Tue,  5 Jan 2021 22:07:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1609884434;
- bh=6X9xh0B9e7jk8zQM37gLnc6Rfvt46/YI3ULCrl4E+0Y=;
+ s=k20201202; t=1609884435;
+ bh=tsheRUiuvVXoAiX6SgiMXhmYuf9QGk7UvV4pmxzSUbA=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=ExbI2M6Ui3QyfRBhdrUi7GpiKAJoN6lx5R4MfJLgOWjxo94nPJ2V6ghl3wUF/luK7
- Y0Q6HsQvwtYkanU46yCVavoHUnH5sOBwbPdiVrKV2KqLeq+jPejkwETiOqTJFFYUGR
- n77h+H235XHE9447prM8u7AkJflwIH/tp1Xvr/lhDRUjb8WI1y1kqU0gb0DUOWmmLp
- otXxR6PDgOlhl3n7yom/QPeXzid6FSzwyZKoajluUI1Zvm6uyrY5TZPPb7nKIREldm
- NHuVs4IhlmtOgs/wOgCntK7Gr/o9Z9uE/NSJvYaX07Wn0a/KHW3hHCyqmhxZYM4VAu
- PNsHZdQiXlrVg==
+ b=W40u7p8GiX2ojjXhVZV3jacLPbHw+9iWZAuRtnNsZcnUkILt74wXGO7nxoTHirp+V
+ 7nNcX7rV0NyW5xc9sgbL6ddKhhgysMhvf/BkeHGenLnQ+3MeUzLBw6Gzzzi6oY779Q
+ EEG4B2fmSmCQHoPcBmgl2zvEOtv2JR0t8QSJIOKUNHexJzl1qgNx+MYv0Bj5PTZBxz
+ uRG3QuKRoOUg3A+7G9i+bp+N/5E3XsFWkNiHEtKuUIZubIBayOw0Cc1Y83gE8AhQaO
+ WNdv16PvziQUv+TxcRCvG/pA+ZtjH7/Gjmdw6iXPDcDT69RXbmt7S74Vxs9cnrjGVX
+ ZhZYFui+RfhbQ==
 From: Will Deacon <will@kernel.org>
-To: Johnathan Smithinovic <johnathan.smithinovic@gmx.at>, mingo@redhat.com,
- David Woodhouse <dwmw2@infradead.org>, tglx@linutronix.de, bp@alien8.de
-Subject: Re: [PATCH] iommu/amd: Stop irq_remapping_select() matching when
- remapping is disabled
-Date: Tue,  5 Jan 2021 22:07:02 +0000
-Message-Id: <160987465284.30865.16684216909917986687.b4-ty@kernel.org>
+To: Stefano Garzarella <sgarzare@redhat.com>, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH] iommu/iova: fix 'domain' typos
+Date: Tue,  5 Jan 2021 22:07:03 +0000
+Message-Id: <160987253811.25749.17357875257993494998.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <04bbe8bca87f81a3cfa93ec4299e53f47e00e5b3.camel@infradead.org>
-References: <ed4be9b4-24ac-7128-c522-7ef359e8185d@gmx.at>
- <04bbe8bca87f81a3cfa93ec4299e53f47e00e5b3.camel@infradead.org>
+In-Reply-To: <20201222164232.88795-1-sgarzare@redhat.com>
+References: <20201222164232.88795-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com, x86@kernel.org,
- linux-kernel@vger.kernel.org, iommu <iommu@lists.linux-foundation.org>,
- kernel-team@android.com
+Cc: catalin.marinas@arm.com, kernel-team@android.com,
+ linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,21 +84,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 05 Jan 2021 01:36:13 +0000, David Woodhouse wrote:
-> The AMD IOMMU initialisation registers the IRQ remapping domain for
-> each IOMMU before doing the final sanity check that every I/OAPIC is
-> covered.
-> 
-> This means that the AMD irq_remapping_select() function gets invoked
-> even when IRQ remapping has been disabled, eventually leading to a NULL
-> pointer dereference in alloc_irq_table().
-> 
-> [...]
+On Tue, 22 Dec 2020 17:42:32 +0100, Stefano Garzarella wrote:
+> Replace misspelled 'doamin' with 'domain' in several comments.
 
 Applied to arm64 (for-next/iommu/fixes), thanks!
 
-[1/1] iommu/amd: Stop irq_remapping_select() matching when remapping is disabled
-      https://git.kernel.org/arm64/c/b34f10c2dc59
+[1/1] iommu/iova: fix 'domain' typos
+      https://git.kernel.org/arm64/c/6775ae901ffd
 
 Cheers,
 -- 
