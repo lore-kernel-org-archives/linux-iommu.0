@@ -2,79 +2,105 @@ Return-Path: <SRS0=DPil=GJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD462C433E0
-	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 07:50:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D011DC433DB
+	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 10:10:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3222423106
-	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 07:50:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3222423106
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 58E122310E
+	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 10:10:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58E122310E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B7C4D844E0;
-	Wed,  6 Jan 2021 07:50:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D6F28846EE;
+	Wed,  6 Jan 2021 10:10:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QFrSOvFVQp_7; Wed,  6 Jan 2021 07:50:11 +0000 (UTC)
+	with ESMTP id Plu1--c4l0Dh; Wed,  6 Jan 2021 10:10:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B25658251D;
-	Wed,  6 Jan 2021 07:50:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 936C8836F1;
+	Wed,  6 Jan 2021 10:10:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E449C088B;
-	Wed,  6 Jan 2021 07:50:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73E5DC088B;
+	Wed,  6 Jan 2021 10:10:06 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A7A4C013A
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 07:50:10 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E07FAC013A
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 10:10:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5336A20363
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 07:50:10 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 92C8C204A8
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 10:10:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sDHdBp+jG8PN for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jan 2021 07:50:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 343CA20370
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 07:50:08 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7129D2070C;
- Wed,  6 Jan 2021 07:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1609919407;
- bh=Piu5gusr/UGLicaCqANy6GNdwM1M9LXLgq30KLvh2D4=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=STtQBirTvMJHJfy3BDpBJr1nF4y3j9P09tA52QukFa2+zVDJOvZxlpH0YuQb1dKaI
- tkZ/1YHajtxpOZBb2tYYK9x5sW39V1FMN5v9MY2fd4frFWPosjKHysaj5P3pqOj5H4
- cLt1ndn2T4gOT+l7NViKlEBYi94u2sh/OTHke2vk=
-Date: Wed, 6 Jan 2021 08:50:03 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [RFC PATCH v3 2/6] swiotlb: Add restricted DMA pool
-Message-ID: <X/VrqxcaAMi65CF0@kroah.com>
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-3-tientzu@chromium.org>
+ with ESMTP id PhoNio-jEuFA for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jan 2021 10:10:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com
+ [209.85.128.49])
+ by silver.osuosl.org (Postfix) with ESMTPS id 19EB0204AC
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 10:10:03 +0000 (UTC)
+Received: by mail-wm1-f49.google.com with SMTP id e25so2140898wme.0
+ for <iommu@lists.linux-foundation.org>; Wed, 06 Jan 2021 02:10:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=pYyg30QaTDPl/1SfAlH9RTsVh8+8mZmaYN21GkgmjzE=;
+ b=dU+TthxcMGjTtNTHgAxVXU4RoesYX0+g99WP06hov8k5+rSF25PGYGQgv+pYLH9ckG
+ cpOFnAM0PAAI7YejQrIJHu5grW+Yi0ZytOjyTDq/H1o74sD4vZRshf+L3csjqFLxW04I
+ B1gNIOTJzvmEka1ljIVPJmu6F0U/alZBd99XxiQxOUphUvxWFEaAi8os+miAjfa1icSB
+ 83os8+fz8W51CuiINLjCJmLG927DS2go5laF4PedUBdUlA1PKI1uIVChN1xY9eJjUpxV
+ RSjEOgm+EiZVG/ijwACZGfwbxljK4OLRJoJucnkx1tAOEGGVIF9ylAwN+JLGXggtn/n+
+ UvNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=pYyg30QaTDPl/1SfAlH9RTsVh8+8mZmaYN21GkgmjzE=;
+ b=lxQza24p9bojUc8aLYZIYyfpFIng7ey6YhiotmRi2K9KNKI8JwQIcv8Aov+g7W7iY3
+ K5ZX3dGRdNNqrsBgs0ag8aEy0bHYskjGuetMgh3ke5wFmjhaBfV6VaxGu+KUHgLFRsj+
+ BhFbSCw+9l58imc3xcSa5e67bw1hxetDUN29Km6eoXBg8Leoci33CLIgPxeq43GovOLc
+ Bn7l95xvsGpFJgIcUaAR1ashKc9Z12mUblgYlPiwUAvRI1qIeeZdjWoxPiGuEYFyh0RQ
+ tgHfW3geUNt1Tzp7mbv3b7Nl47npumLS820r3UVnm8oMSqqjqG0HFqZGVfidOtuDD5Lz
+ Z2SA==
+X-Gm-Message-State: AOAM533EsBzRMcxwytIxTm5uSnCPyX+nGal3sF3TGsoNXlXMyBY6MzQW
+ gVAOU8vBXRQx2zjhrwFXtG1nOg==
+X-Google-Smtp-Source: ABdhPJyYTgg3A5KVgYhik+U4iGyzXTzZ8PYLdEnALeRQjjVy1s7B3PnwykM8rNUrBWLGefy5aB2J7w==
+X-Received: by 2002:a1c:4c14:: with SMTP id z20mr3009430wmf.149.1609927801506; 
+ Wed, 06 Jan 2021 02:10:01 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id r7sm2394874wmh.2.2021.01.06.02.10.00
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 06 Jan 2021 02:10:00 -0800 (PST)
+Date: Wed, 6 Jan 2021 11:09:42 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Krishna Reddy <vdumpa@nvidia.com>
+Subject: Re: [PATCH v10 11/13] iommu/arm-smmu-v3: Add SVA device feature
+Message-ID: <X/WMZgVFs0F2H0vy@myrica>
+References: <20200918101852.582559-1-jean-philippe@linaro.org>
+ <20200918101852.582559-12-jean-philippe@linaro.org>
+ <BY5PR12MB3764F5D07E8EC48327E39C86B3C60@BY5PR12MB3764.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210106034124.30560-3-tientzu@chromium.org>
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- frowand.list@gmail.com, mingo@kernel.org, sstabellini@kernel.org,
- saravanak@google.com, mpe@ellerman.id.au, rafael.j.wysocki@intel.com,
- hch@lst.de, bgolaszewski@baylibre.com, xen-devel@lists.xenproject.org,
- treding@nvidia.com, devicetree@vger.kernel.org, will@kernel.org,
- konrad.wilk@oracle.com, dan.j.williams@intel.com, robh+dt@kernel.org,
- boris.ostrovsky@oracle.com, andriy.shevchenko@linux.intel.com, jgross@suse.com,
- drinkcat@chromium.org, linuxppc-dev@lists.ozlabs.org, rdunlap@infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- xypron.glpk@gmx.de, robin.murphy@arm.com
+In-Reply-To: <BY5PR12MB3764F5D07E8EC48327E39C86B3C60@BY5PR12MB3764.namprd12.prod.outlook.com>
+Cc: Sachin Nikam <Snikam@nvidia.com>,
+ "fenghua.yu@intel.com" <fenghua.yu@intel.com>,
+ Terje Bergstrom <tbergstrom@nvidia.com>,
+ Nate Watterson <nwatterson@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ Alistair Popple <apopple@nvidia.com>, Yu-Huan Hsu <YHsu@nvidia.com>,
+ Pritesh Raithatha <praithatha@nvidia.com>, Vikram Sethi <vsethi@nvidia.com>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,34 +118,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jan 06, 2021 at 11:41:20AM +0800, Claire Chang wrote:
-> Add the initialization function to create restricted DMA pools from
-> matching reserved-memory nodes in the device tree.
+Hi,
+
+On Tue, Dec 15, 2020 at 01:09:29AM +0000, Krishna Reddy wrote:
+> Hi Jean,
 > 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> ---
->  include/linux/device.h  |   4 ++
->  include/linux/swiotlb.h |   7 +-
->  kernel/dma/Kconfig      |   1 +
->  kernel/dma/swiotlb.c    | 144 ++++++++++++++++++++++++++++++++++------
->  4 files changed, 131 insertions(+), 25 deletions(-)
+> > +bool arm_smmu_master_sva_supported(struct arm_smmu_master *master) {
+> > +       if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
+> > +               return false;
+> +
+> > +       /* SSID and IOPF support are mandatory for the moment */
+> > +       return master->ssid_bits && arm_smmu_iopf_supported(master); }
+> > +
 > 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 89bb8b84173e..ca6f71ec8871 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -413,6 +413,7 @@ struct dev_links_info {
->   * @dma_pools:	Dma pools (if dma'ble device).
->   * @dma_mem:	Internal for coherent mem override.
->   * @cma_area:	Contiguous memory area for dma allocations
-> + * @dma_io_tlb_mem: Internal for swiotlb io_tlb_mem override.
+> Tegra Next Gen SOC has arm-smmu-v3 and It doesn't have support for PRI interface.
+> However, PCIe client device has capability to handle the page faults on its own when the ATS translation fails.
+> The PCIe device needs SVA feature enable without PRI interface supported at arm-smmu-v3.
+> At present, the SVA feature enable is allowed only if the smmu/client device has PRI support. 
+> There seem to be no functional reason to make pri_supported as a pre-requisite for SVA enable.
 
-Why does this have to be added here?  Shouldn't the platform-specific
-code handle it instead?
+The pri_supported check allows drivers to query whether the SMMU is
+compatible with their capability. It's pointless, for example, to enable
+SVA for a PRI-capable device if the SMMU doesn't support PRI.
 
-thanks,
+I agree that we should let a device driver enable SVA if it supports some
+form of IOPF. Perhaps we could extract the IOPF capability from
+IOMMU_DEV_FEAT_SVA, into a new IOMMU_DEV_FEAT_IOPF feature. Device drivers
+that rely on PRI or stall can first check FEAT_IOPF, then FEAT_SVA, and
+enable both separately. Enabling FEAT_SVA would require FEAT_IOPF enabled
+if supported. Let me try to write this up.
 
-greg k-h
+Thanks,
+Jean
+
+> Can SVA enable be supported for pri_supported not set case as well? 
+> Also, It is noticed that SVA  enable on Intel doesn't need pri_supported set. 
+> 
+> -KR
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
