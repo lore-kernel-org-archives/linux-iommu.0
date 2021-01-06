@@ -2,115 +2,94 @@ Return-Path: <SRS0=DPil=GJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C5FC433DB
-	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 18:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114CCC433DB
+	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 20:34:03 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E770422CAF
-	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 18:58:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E770422CAF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 98BFC2313E
+	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 20:34:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98BFC2313E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 63DEF868B4;
-	Wed,  6 Jan 2021 18:58:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3931B8691C;
+	Wed,  6 Jan 2021 20:34:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pToJbNdGTwT3; Wed,  6 Jan 2021 18:58:32 +0000 (UTC)
+	with ESMTP id QZNDOba1AsM3; Wed,  6 Jan 2021 20:34:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D99E863FF;
-	Wed,  6 Jan 2021 18:58:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B228786916;
+	Wed,  6 Jan 2021 20:34:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61A66C0891;
-	Wed,  6 Jan 2021 18:58:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 72D64C013A
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 18:58:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AB66EC0891;
+	Wed,  6 Jan 2021 20:34:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 67049C0891;
+ Wed,  6 Jan 2021 20:34:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5FE1C86D33
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 18:58:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 55B2A873D4;
+ Wed,  6 Jan 2021 20:34:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ttkztLFobwQe for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jan 2021 18:58:30 +0000 (UTC)
+ with ESMTP id 7fCt5T7c7d7v; Wed,  6 Jan 2021 20:33:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 60DAB86D32
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 18:58:30 +0000 (UTC)
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
- by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106It0hC028017;
- Wed, 6 Jan 2021 18:58:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=qgEi3Qa2hyF376sE4mh5A9+MilrONCFfI4KMkx2vQvA=;
- b=XbcsGl1XP/I/qKOicRYCGWl0CuALE4QAftUapu+rjN2oKyJJpd+mgeDnQE+VIjaegTwc
- pNVgp9Vf/szLcDU/3px/SNSlkRITzlqpN4PEHWvg+8ncgKpYIz2ge7iUcezzo8adAy/F
- XSujrBZctl3KJu+bPMJKe2wqb4lfcl9nb+kJ5pDapf38ZZzP/V5SQScw1EdT8j/INqKG
- EZMqn7KHrhXf7jC+64G57UpWXyce+gDU/LD+A4DWyRIOWyFTqi2POu42+olRuP/J3fRw
- R5UyKH8ecQNJZaBlrfmJp5ZwD86IDgwyhop2LHAMXqeJoeg2qokq0H36JsvvmgDo/4Tz Hg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by aserp2120.oracle.com with ESMTP id 35wepm9cyr-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
- Wed, 06 Jan 2021 18:58:07 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106IoQod159497;
- Wed, 6 Jan 2021 18:58:06 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by userp3020.oracle.com with ESMTP id 35w3qsd0gy-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 06 Jan 2021 18:58:06 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 106Iw1TS006276;
- Wed, 6 Jan 2021 18:58:01 GMT
-Received: from localhost.localdomain (/209.6.208.110)
- by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Wed, 06 Jan 2021 10:58:01 -0800
-Date: Wed, 6 Jan 2021 13:57:57 -0500
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [RFC PATCH v3 5/6] dt-bindings: of: Add restricted DMA pool
-Message-ID: <20210106185757.GB109735@localhost.localdomain>
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-6-tientzu@chromium.org>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com
+ [209.85.221.47])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D2CB4873CE;
+ Wed,  6 Jan 2021 20:33:58 +0000 (UTC)
+Received: by mail-wr1-f47.google.com with SMTP id i9so3592326wrc.4;
+ Wed, 06 Jan 2021 12:33:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=iQMtgq3pUcrjj3NVCdkiQSStjiewGBjHdwkFAPCFR6A=;
+ b=PFi8r3lV43CTYSgwKLbPbaLJ67V3TAW450IJDLOqhOlHJiyveD1HkfWvytDWmRjM5k
+ DbroOPErv9QVOoyj40eNmXhKJMPMvxtTUlIQNsPimLjb85MnpAz9fkYEnS7sGdPTClYT
+ oImqLKcuXA7sqL1MTV+t8GFdG+5NAUGrn3IkWg51Kce1CIT96uRGg14aX68QlmS39n44
+ BWmTPWH43VHazQ9A0W+O+cHrxw376mFThDF18TdfuDxM7db67hi/XPIhzG6PqikcO6fs
+ 1ey1i0TYiMdthQz8ZNoz5jIRJXs6sN2bujj0IgaHFWJEjB4Rr6iCUHqHn4jTkpAxDCNa
+ rl9Q==
+X-Gm-Message-State: AOAM530xP0rc5/229dqUs2hdHnnJe/SxyE5IjPmCDFfSR/hXjPwEmqWu
+ Bikup8hHu/lQvXP6gKwobQtoYyN+Xzk=
+X-Google-Smtp-Source: ABdhPJzua7u0Xi2cAQqaPz7tdaucPPPz5eFSOQ1Ul7ScWmk7+7JzInjstK7tIJXCPKNakTqmjaYS+A==
+X-Received: by 2002:adf:a495:: with SMTP id g21mr6160651wrb.198.1609965237426; 
+ Wed, 06 Jan 2021 12:33:57 -0800 (PST)
+Received: from
+ liuwe-devbox-debian-v2.j3c5onc20sse1dnehy4noqpfcg.zx.internal.cloudapp.net
+ ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id u9sm4499456wmb.32.2021.01.06.12.33.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 06 Jan 2021 12:33:57 -0800 (PST)
+From: Wei Liu <wei.liu@kernel.org>
+To: Linux on Hyper-V List <linux-hyperv@vger.kernel.org>
+Subject: [PATCH v4 04/17] iommu/hyperv: don't setup IRQ remapping when running
+ as root
+Date: Wed,  6 Jan 2021 20:33:37 +0000
+Message-Id: <20210106203350.14568-5-wei.liu@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210106203350.14568-1-wei.liu@kernel.org>
+References: <20210106203350.14568-1-wei.liu@kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210106034124.30560-6-tientzu@chromium.org>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9856
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- malwarescore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 phishscore=0 bulkscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101060106
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9856
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- bulkscore=0 spamscore=0
- impostorscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 mlxscore=0 malwarescore=0 clxscore=1015 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101060106
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- frowand.list@gmail.com, mingo@kernel.org, sstabellini@kernel.org,
- saravanak@google.com, mpe@ellerman.id.au, rafael.j.wysocki@intel.com,
- hch@lst.de, bgolaszewski@baylibre.com, xen-devel@lists.xenproject.org,
- treding@nvidia.com, devicetree@vger.kernel.org, will@kernel.org,
- dan.j.williams@intel.com, linuxppc-dev@lists.ozlabs.org, robh+dt@kernel.org,
- boris.ostrovsky@oracle.com, andriy.shevchenko@linux.intel.com, jgross@suse.com,
- drinkcat@chromium.org, gregkh@linuxfoundation.org, rdunlap@infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- xypron.glpk@gmx.de, robin.murphy@arm.com
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Joerg Roedel <jroedel@suse.de>, Stephen Hemminger <sthemmin@microsoft.com>,
+ Will Deacon <will@kernel.org>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ virtualization@lists.linux-foundation.org,
+ Vineeth Pillai <viremana@linux.microsoft.com>,
+ Vitaly Kuznetsov <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -128,54 +107,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jan 06, 2021 at 11:41:23AM +0800, Claire Chang wrote:
-> Introduce the new compatible string, restricted-dma-pool, for restricted
-> DMA. One can specify the address and length of the restricted DMA memory
-> region by restricted-dma-pool in the device tree.
-> 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> ---
->  .../reserved-memory/reserved-memory.txt       | 24 +++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> index e8d3096d922c..44975e2a1fd2 100644
-> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> @@ -51,6 +51,20 @@ compatible (optional) - standard definition
->            used as a shared pool of DMA buffers for a set of devices. It can
->            be used by an operating system to instantiate the necessary pool
->            management subsystem if necessary.
-> +        - restricted-dma-pool: This indicates a region of memory meant to be
-> +          used as a pool of restricted DMA buffers for a set of devices. The
-> +          memory region would be the only region accessible to those devices.
-> +          When using this, the no-map and reusable properties must not be set,
-> +          so the operating system can create a virtual mapping that will be used
-> +          for synchronization. The main purpose for restricted DMA is to
-> +          mitigate the lack of DMA access control on systems without an IOMMU,
-> +          which could result in the DMA accessing the system memory at
-> +          unexpected times and/or unexpected addresses, possibly leading to data
-> +          leakage or corruption. The feature on its own provides a basic level
-> +          of protection against the DMA overwriting buffer contents at
-> +          unexpected times. However, to protect against general data leakage and
-> +          system memory corruption, the system needs to provide way to restrict
-> +          the DMA to a predefined memory region.
+The IOMMU code needs more work. We're sure for now the IRQ remapping
+hooks are not applicable when Linux is the root partition.
 
-Heya!
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ drivers/iommu/hyperv-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I think I am missing something obvious here so please bear with my
-questions:
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index 1d21a0b5f724..b7db6024e65c 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -20,6 +20,7 @@
+ #include <asm/io_apic.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/hypervisor.h>
++#include <asm/mshyperv.h>
+ 
+ #include "irq_remapping.h"
+ 
+@@ -122,7 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+ 
+ 	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+ 	    x86_init.hyper.msi_ext_dest_id() ||
+-	    !x2apic_supported())
++	    !x2apic_supported() || hv_root_partition)
+ 		return -ENODEV;
+ 
+ 	fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
+-- 
+2.20.1
 
- - This code adds the means of having the SWIOTLB pool tied to a specific
-   memory correct?
-
- - Nothing stops the physical device from bypassing the SWIOTLB buffer.
-   That is if an errant device screwed up the length or DMA address, the
-   SWIOTLB would gladly do what the device told it do?
-
- - This has to be combined with SWIOTLB-force-ish to always use the
-   bounce buffer, otherwise you could still do DMA without using
-   SWIOTLB (by not hitting the criteria for needing to use SWIOTLB)?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
