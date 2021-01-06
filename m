@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DATE_IN_PAST_12_24,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55650C433E0
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 07:50:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3175C433DB
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 07:50:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DAEF12312A
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 07:50:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAEF12312A
+	by mail.kernel.org (Postfix) with ESMTPS id 958A223120
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 07:50:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 958A223120
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 66606863E3;
-	Thu,  7 Jan 2021 07:50:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6B9FB867B9;
+	Thu,  7 Jan 2021 07:50:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id chIsxJnxhUJj; Thu,  7 Jan 2021 07:50:30 +0000 (UTC)
+	with ESMTP id e9NEs3tpC9V6; Thu,  7 Jan 2021 07:50:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A15B9862C7;
-	Thu,  7 Jan 2021 07:50:30 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E1B0E8672B;
+	Thu,  7 Jan 2021 07:50:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BC7FC0891;
-	Thu,  7 Jan 2021 07:50:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CD11CC0891;
+	Thu,  7 Jan 2021 07:50:33 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 602B8C013A
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:29 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 99BADC013A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4EAC9867B9
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:29 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 88F46867B9
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dCTttQWuZJCp for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 07:50:28 +0000 (UTC)
+ with ESMTP id kUrS8zRp6QGM for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 07:50:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5E2D38672B
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:28 +0000 (UTC)
-IronPort-SDR: Y6JaDM+JBBc/lQ3O4LKlO+UXNjpm7nMrHugZNuMk6P803hIgnBG7nKGoSobO7TgMkZ28BAN+Yl
- AKMdauSTx5qA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="177542302"
-X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; d="scan'208";a="177542302"
+ by whitealder.osuosl.org (Postfix) with ESMTPS id C3BFF8672B
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 07:50:31 +0000 (UTC)
+IronPort-SDR: nA5rb6l9FU0y9MEYvsaEIQzVaqyz3WdaQFCpsihr57HCvhOubsYzMYn1qI8JYYkt+qkMH2iRWl
+ xgpnU9vatxmg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="177542317"
+X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; d="scan'208";a="177542317"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 Jan 2021 23:50:27 -0800
-IronPort-SDR: zjisfKMjLilhXgCl0lie53JqB2nhYL2h6jqPXSAtsys8QcNLV4BOSxopJsFH+SgYnxvX52IkHm
- XbzGEdOs/3cQ==
+ 06 Jan 2021 23:50:31 -0800
+IronPort-SDR: zvJu60gQiuMjKGjz4BpZ+r0uDdEysFv1uBDV1rpEAxymaJlovjnAkSEXhna7R+Ngg2yDn494zw
+ Ij/0+3SvLZUg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; d="scan'208";a="351169609"
+X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; d="scan'208";a="351169626"
 Received: from yiliu-dev.bj.intel.com (HELO iov-dev2.bj.intel.com)
  ([10.238.156.135])
- by fmsmga008.fm.intel.com with ESMTP; 06 Jan 2021 23:50:25 -0800
+ by fmsmga008.fm.intel.com with ESMTP; 06 Jan 2021 23:50:29 -0800
 From: Liu Yi L <yi.l.liu@intel.com>
 To: baolu.lu@linux.intel.com,
 	joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v4 2/3] iommu/vt-d: Track device aux-attach with
- subdevice_domain_info
-Date: Thu,  7 Jan 2021 00:03:56 +0800
-Message-Id: <1609949037-25291-3-git-send-email-yi.l.liu@intel.com>
+Subject: [PATCH v4 3/3] iommu/vt-d: Fix ineffective devTLB invalidation for
+ subdevices
+Date: Thu,  7 Jan 2021 00:03:57 +0800
+Message-Id: <1609949037-25291-4-git-send-email-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1609949037-25291-1-git-send-email-yi.l.liu@intel.com>
 References: <1609949037-25291-1-git-send-email-yi.l.liu@intel.com>
@@ -91,239 +91,118 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In the existing code, loop all devices attached to a domain does not
-include sub-devices attached via iommu_aux_attach_device().
-
-This was found by when I'm working on the below patch, There is no
-device in the domain->devices list, thus unable to get the cap and
-ecap of iommu unit. But this domain actually has subdevice which is
-attached via aux-manner. But it is tracked by domain. This patch is
-going to fix it.
-
-https://lore.kernel.org/kvm/1599734733-6431-17-git-send-email-yi.l.liu@intel.com/
-
-And this fix goes beyond the patch above, such sub-device tracking is
-necessary for other cases. For example, flushing device_iotlb for a
-domain which has sub-devices attached by auxiliary manner.
+iommu_flush_dev_iotlb() is called to invalidate caches on device. It only
+loops the devices which are full-attached to the domain. For sub-devices,
+this is ineffective. This results in invalid caching entries left on the
+device. Fix it by adding loop for subdevices as well. Also, the domain->
+has_iotlb_device needs to be updated when attaching to subdevices.
 
 Fixes: 67b8e02b5e761 ("iommu/vt-d: Aux-domain specific domain attach/detach")
-Co-developed-by: Xin Zeng <xin.zeng@intel.com>
-Signed-off-by: Xin Zeng <xin.zeng@intel.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 95 +++++++++++++++++++++++++++++++++------------
- include/linux/intel-iommu.h | 16 +++++---
- 2 files changed, 82 insertions(+), 29 deletions(-)
+ drivers/iommu/intel/iommu.c | 53 +++++++++++++++++++++++++++++++--------------
+ 1 file changed, 37 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 788119c..d7720a8 100644
+index d7720a8..65cf06d 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1877,6 +1877,7 @@ static struct dmar_domain *alloc_domain(int flags)
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
-+	INIT_LIST_HEAD(&domain->subdevices);
- 
- 	return domain;
- }
-@@ -2547,7 +2548,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	info->iommu = iommu;
- 	info->pasid_table = NULL;
- 	info->auxd_enabled = 0;
--	INIT_LIST_HEAD(&info->auxiliary_domains);
-+	INIT_LIST_HEAD(&info->subdevices);
- 
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
-@@ -4475,33 +4476,61 @@ is_aux_domain(struct device *dev, struct iommu_domain *domain)
- 			domain->type == IOMMU_DOMAIN_UNMANAGED;
+@@ -719,6 +719,8 @@ static int domain_update_device_node(struct dmar_domain *domain)
+ 	return nid;
  }
  
--static void auxiliary_link_device(struct dmar_domain *domain,
--				  struct device *dev)
-+static inline struct subdev_domain_info *
-+lookup_subdev_info(struct dmar_domain *domain, struct device *dev)
-+{
-+	struct subdev_domain_info *sinfo;
++static void domain_update_iotlb(struct dmar_domain *domain);
 +
-+	if (!list_empty(&domain->subdevices)) {
+ /* Some capabilities may be different across iommus */
+ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ {
+@@ -744,6 +746,8 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ 		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw - 1);
+ 	else
+ 		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw);
++
++	domain_update_iotlb(domain);
+ }
+ 
+ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+@@ -1464,17 +1468,22 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ 
+ 	assert_spin_locked(&device_domain_lock);
+ 
+-	list_for_each_entry(info, &domain->devices, link) {
+-		struct pci_dev *pdev;
+-
+-		if (!info->dev || !dev_is_pci(info->dev))
+-			continue;
+-
+-		pdev = to_pci_dev(info->dev);
+-		if (pdev->ats_enabled) {
++	list_for_each_entry(info, &domain->devices, link)
++		if (info->ats_enabled) {
+ 			has_iotlb_device = true;
+ 			break;
+ 		}
++
++	if (!has_iotlb_device) {
++		struct subdev_domain_info *sinfo;
++
 +		list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
-+			if (sinfo->pdev == dev)
-+				return sinfo;
++			info = get_domain_info(sinfo->pdev);
++			if (info && info->ats_enabled) {
++				has_iotlb_device = true;
++				break;
++			}
 +		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static int auxiliary_link_device(struct dmar_domain *domain,
-+				 struct device *dev)
- {
- 	struct device_domain_info *info = get_domain_info(dev);
-+	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
- 
- 	assert_spin_locked(&device_domain_lock);
- 	if (WARN_ON(!info))
--		return;
-+		return -EINVAL;
-+
-+	if (!sinfo) {
-+		sinfo = kzalloc(sizeof(*sinfo), GFP_ATOMIC);
-+		sinfo->domain = domain;
-+		sinfo->pdev = dev;
-+		list_add(&sinfo->link_phys, &info->subdevices);
-+		list_add(&sinfo->link_domain, &domain->subdevices);
-+	}
- 
--	domain->auxd_refcnt++;
--	list_add(&domain->auxd, &info->auxiliary_domains);
-+	return ++sinfo->users;
- }
- 
--static void auxiliary_unlink_device(struct dmar_domain *domain,
--				    struct device *dev)
-+static int auxiliary_unlink_device(struct dmar_domain *domain,
-+				   struct device *dev)
- {
- 	struct device_domain_info *info = get_domain_info(dev);
-+	struct subdev_domain_info *sinfo = lookup_subdev_info(domain, dev);
-+	int ret;
- 
- 	assert_spin_locked(&device_domain_lock);
--	if (WARN_ON(!info))
--		return;
-+	if (WARN_ON(!info || !sinfo || sinfo->users <= 0))
-+		return -EINVAL;
- 
--	list_del(&domain->auxd);
--	domain->auxd_refcnt--;
-+	ret = --sinfo->users;
-+	if (!ret) {
-+		list_del(&sinfo->link_phys);
-+		list_del(&sinfo->link_domain);
-+		kfree(sinfo);
-+	}
- 
--	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
-+	return ret;
- }
- 
- static int aux_domain_add_dev(struct dmar_domain *domain,
-@@ -4530,6 +4559,19 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
  	}
  
- 	spin_lock_irqsave(&device_domain_lock, flags);
-+	ret = auxiliary_link_device(domain, dev);
-+	if (ret <= 0)
-+		goto link_failed;
-+
-+	/*
-+	 * Subdevices from the same physical device can be attached to the
-+	 * same domain. For such cases, only the first subdevice attachment
-+	 * needs to go through the full steps in this function. So if ret >
-+	 * 1, just goto out.
-+	 */
-+	if (ret > 1)
-+		goto out;
-+
- 	/*
- 	 * iommu->lock must be held to attach domain to iommu and setup the
- 	 * pasid entry for second level translation.
-@@ -4548,10 +4590,9 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 						     domain->default_pasid);
- 	if (ret)
- 		goto table_failed;
--	spin_unlock(&iommu->lock);
--
--	auxiliary_link_device(domain, dev);
- 
-+	spin_unlock(&iommu->lock);
-+out:
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	return 0;
-@@ -4560,8 +4601,10 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 	domain_detach_iommu(domain, iommu);
- attach_failed:
- 	spin_unlock(&iommu->lock);
-+	auxiliary_unlink_device(domain, dev);
-+link_failed:
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
--	if (!domain->auxd_refcnt && domain->default_pasid > 0)
-+	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
- 		ioasid_put(domain->default_pasid);
- 
- 	return ret;
-@@ -4581,14 +4624,18 @@ static void aux_domain_remove_dev(struct dmar_domain *domain,
- 	info = get_domain_info(dev);
- 	iommu = info->iommu;
- 
--	auxiliary_unlink_device(domain, dev);
--
--	spin_lock(&iommu->lock);
--	intel_pasid_tear_down_entry(iommu, dev, domain->default_pasid, false);
--	domain_detach_iommu(domain, iommu);
--	spin_unlock(&iommu->lock);
-+	if (!auxiliary_unlink_device(domain, dev)) {
-+		spin_lock(&iommu->lock);
-+		intel_pasid_tear_down_entry(iommu, dev,
-+					    domain->default_pasid, false);
-+		domain_detach_iommu(domain, iommu);
-+		spin_unlock(&iommu->lock);
-+	}
- 
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
-+
-+	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
-+		ioasid_put(domain->default_pasid);
+ 	domain->has_iotlb_device = has_iotlb_device;
+@@ -1555,25 +1564,37 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
+ #endif
  }
  
- static int prepare_domain_attach_device(struct iommu_domain *domain,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 9452268..09c6a0b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -533,11 +533,10 @@ struct dmar_domain {
- 					/* Domain ids per IOMMU. Use u16 since
- 					 * domain ids are 16 bit wide according
- 					 * to VT-d spec, section 9.3 */
--	unsigned int	auxd_refcnt;	/* Refcount of auxiliary attaching */
- 
- 	bool has_iotlb_device;
- 	struct list_head devices;	/* all devices' list */
--	struct list_head auxd;		/* link to device's auxiliary list */
-+	struct list_head subdevices;	/* all subdevices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
- 
- 	struct dma_pte	*pgd;		/* virtual address */
-@@ -610,14 +609,21 @@ struct intel_iommu {
- 	struct dmar_drhd_unit *drhd;
- };
- 
-+/* Per subdevice private data */
-+struct subdev_domain_info {
-+	struct list_head link_phys;	/* link to phys device siblings */
-+	struct list_head link_domain;	/* link to domain siblings */
-+	struct device *pdev;		/* physical device derived from */
-+	struct dmar_domain *domain;	/* aux-domain */
-+	int users;			/* user count */
-+};
++static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
++				    u64 addr, unsigned int mask)
++{
++	u16 sid, qdep;
 +
- /* PCI domain-device relationship */
- struct device_domain_info {
- 	struct list_head link;	/* link to domain siblings */
- 	struct list_head global; /* link to global list */
- 	struct list_head table;	/* link to pasid table */
--	struct list_head auxiliary_domains; /* auxiliary domains
--					     * attached to this device
--					     */
-+	struct list_head subdevices; /* subdevices sibling */
- 	u32 segment;		/* PCI segment number */
- 	u8 bus;			/* PCI bus number */
- 	u8 devfn;		/* PCI devfn number */
++	if (!info || !info->ats_enabled)
++		return;
++
++	sid = info->bus << 8 | info->devfn;
++	qdep = info->ats_qdep;
++	qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
++			   qdep, addr, mask);
++}
++
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 				  u64 addr, unsigned mask)
+ {
+-	u16 sid, qdep;
+ 	unsigned long flags;
+ 	struct device_domain_info *info;
++	struct subdev_domain_info *sinfo;
+ 
+ 	if (!domain->has_iotlb_device)
+ 		return;
+ 
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry(info, &domain->devices, link) {
+-		if (!info->ats_enabled)
+-			continue;
++	list_for_each_entry(info, &domain->devices, link)
++		__iommu_flush_dev_iotlb(info, addr, mask);
+ 
+-		sid = info->bus << 8 | info->devfn;
+-		qdep = info->ats_qdep;
+-		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+-				qdep, addr, mask);
++	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
++		info = get_domain_info(sinfo->pdev);
++		__iommu_flush_dev_iotlb(info, addr, mask);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
 -- 
 2.7.4
 
