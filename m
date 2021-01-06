@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41084C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB38C433E6
 	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 13:39:28 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ED4732311A
-	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 13:39:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED4732311A
+	by mail.kernel.org (Postfix) with ESMTPS id 55ABA2311A
+	for <iommu@archiver.kernel.org>; Wed,  6 Jan 2021 13:39:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55ABA2311A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A6D24845A3;
-	Wed,  6 Jan 2021 13:39:27 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 167C284964;
+	Wed,  6 Jan 2021 13:39:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AZ9zpqlM7Bg1; Wed,  6 Jan 2021 13:39:24 +0000 (UTC)
+	with ESMTP id Jaa7Ne1jqPYB; Wed,  6 Jan 2021 13:39:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0000384496;
-	Wed,  6 Jan 2021 13:39:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 31818844B7;
+	Wed,  6 Jan 2021 13:39:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2E28C088B;
-	Wed,  6 Jan 2021 13:39:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1533DC1E6F;
+	Wed,  6 Jan 2021 13:39:24 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53DAFC013A
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 81948C013A
  for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 13:39:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4361A86FAB
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7DB9A86FAB
  for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 13:39:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ml4P1qIRsTWM for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jan 2021 13:39:18 +0000 (UTC)
+ with ESMTP id B1rrqBt1FMGQ for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jan 2021 13:39:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D183787205
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 13:39:17 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B6B2D87216
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jan 2021 13:39:19 +0000 (UTC)
 Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4D9r6L5Dv0zj05V;
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4D9r6L53K4zhwLG;
  Wed,  6 Jan 2021 21:38:18 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 6 Jan 2021 21:39:04 +0800
+ 14.3.498.0; Wed, 6 Jan 2021 21:39:03 +0800
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>
-Subject: [PATCH v2 6/6] iommu: Delete iommu_dev_has_feature()
-Date: Wed, 6 Jan 2021 21:35:11 +0800
-Message-ID: <1609940111-28563-7-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v2 3/6] iova: Stop exporting some more functions
+Date: Wed, 6 Jan 2021 21:35:08 +0800
+Message-ID: <1609940111-28563-4-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1609940111-28563-1-git-send-email-john.garry@huawei.com>
 References: <1609940111-28563-1-git-send-email-john.garry@huawei.com>
@@ -81,63 +81,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Function iommu_dev_has_feature() has never been referenced in the tree,
-and there does not appear to be anything coming soon to use it, so delete
-it.
+The following functions are not referenced outside dma-iommu.c (and
+iova.c), which can only be built-in:
+- init_iova_flush_queue()
+- free_iova_fast()
+- queue_iova()
+- alloc_iova_fast()
+
+So stop exporting them.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/iommu.c | 11 -----------
- include/linux/iommu.h |  7 -------
- 2 files changed, 18 deletions(-)
+ drivers/iommu/iova.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 20201ef97b8f..91f7871f5a37 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2853,17 +2853,6 @@ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
- /*
-  * Per device IOMMU features.
-  */
--bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	const struct iommu_ops *ops = dev->bus->iommu_ops;
--
--	if (ops && ops->dev_has_feat)
--		return ops->dev_has_feat(dev, feat);
--
--	return false;
--}
--EXPORT_SYMBOL_GPL(iommu_dev_has_feature);
--
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 72059fcfa108..91d94c014f47 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -626,7 +626,6 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
- int iommu_probe_device(struct device *dev);
- void iommu_release_device(struct device *dev);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 04f0a3ae1c63..f9c35852018d 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -112,7 +112,6 @@ int init_iova_flush_queue(struct iova_domain *iovad,
  
--bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
- bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
-@@ -975,12 +974,6 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
+ 	return 0;
  }
+-EXPORT_SYMBOL_GPL(init_iova_flush_queue);
  
--static inline bool
--iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	return false;
--}
--
- static inline bool
- iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features feat)
- {
+ static struct rb_node *
+ __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
+@@ -451,7 +450,6 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 
+ 	return new_iova->pfn_lo;
+ }
+-EXPORT_SYMBOL_GPL(alloc_iova_fast);
+ 
+ /**
+  * free_iova_fast - free iova pfn range into rcache
+@@ -469,7 +467,6 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+ 
+ 	free_iova(iovad, pfn);
+ }
+-EXPORT_SYMBOL_GPL(free_iova_fast);
+ 
+ #define fq_ring_for_each(i, fq) \
+ 	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
+@@ -598,7 +595,6 @@ void queue_iova(struct iova_domain *iovad,
+ 		mod_timer(&iovad->fq_timer,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+ }
+-EXPORT_SYMBOL_GPL(queue_iova);
+ 
+ /**
+  * put_iova_domain - destroys the iova doamin
 -- 
 2.26.2
 
