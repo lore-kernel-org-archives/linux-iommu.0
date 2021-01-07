@@ -2,79 +2,130 @@ Return-Path: <SRS0=iLvA=GK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57A3C433E6
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 09:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165DDC433DB
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 10:41:19 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8831C2333D
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 09:29:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8831C2333D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8A6092313B
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 10:41:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A6092313B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 714D987416;
-	Thu,  7 Jan 2021 09:29:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 11C8D8739D;
+	Thu,  7 Jan 2021 10:41:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lvNd2UuvxiPH; Thu,  7 Jan 2021 09:29:51 +0000 (UTC)
+	with ESMTP id lkUvKJcfR+G4; Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E7142871FE;
-	Thu,  7 Jan 2021 09:29:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 28D098739C;
+	Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0C4DC0891;
-	Thu,  7 Jan 2021 09:29:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E7347C013A
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 09:29:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B11DC088B;
+	Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2ADDFC013A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E36ED86A3B
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 09:29:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 052F5204D6
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PMGAPfkHmHp4 for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 09:29:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D87B186A7C
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 09:29:48 +0000 (UTC)
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DBLX02xl0zj491;
- Thu,  7 Jan 2021 17:28:48 +0800 (CST)
-Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 7 Jan 2021 17:29:34 +0800
-From: Keqian Zhu <zhukeqian1@huawei.com>
-To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <iommu@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
- <kvmarm@lists.cs.columbia.edu>, Alex Williamson <alex.williamson@redhat.com>, 
- Kirti Wankhede <kwankhede@nvidia.com>, Cornelia Huck <cohuck@redhat.com>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>
-Subject: [PATCH 5/5] vfio/iommu_type1: Move sanity_check_pfn_list to
- unmap_unpin_all
-Date: Thu, 7 Jan 2021 17:29:01 +0800
-Message-ID: <20210107092901.19712-6-zhukeqian1@huawei.com>
-X-Mailer: git-send-email 2.8.4.windows.1
-In-Reply-To: <20210107092901.19712-1-zhukeqian1@huawei.com>
-References: <20210107092901.19712-1-zhukeqian1@huawei.com>
-MIME-Version: 1.0
-X-Originating-IP: [10.174.184.42]
-X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Alexios Zavras <alexios.zavras@intel.com>,
- James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com,
- Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Julien Thierry <julien.thierry.kdev@gmail.com>
+ with ESMTP id KQdYSR3AtO6S for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 10:41:14 +0000 (UTC)
+X-Greylist: delayed 00:09:49 by SQLgrey-1.7.6
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+ by silver.osuosl.org (Postfix) with ESMTPS id CAA641FEAE
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:13 +0000 (UTC)
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+ by mailout3.samsung.com (KnoxPortal) with ESMTP id
+ 20210107103121epoutp03311c268798cbed89063e98b4c49143ec~X7Iz2r5pR2283822838epoutp03T
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:31:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com
+ 20210107103121epoutp03311c268798cbed89063e98b4c49143ec~X7Iz2r5pR2283822838epoutp03T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1610015482;
+ bh=zgnGkAl5H6GoKUAcYr+wE27/PBdE+8JptgJAmhAjafY=;
+ h=From:To:Cc:Subject:Date:References:From;
+ b=jbUuGpct6UFoDu/hTwtofLLe09pRuvs7uq4N5cZUaDkUcYiMsD0pQ9mxyN9gIlPco
+ w+r/1POzrzXlT17HNqdHdP4ByLDen8AelFRPa89DUoFNOVWLKtTKdEMsg8bkoh6R/y
+ wgHQS8OYyuO1As0BS1OUAekYBreImQnsDcbihJIQ=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+ epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+ 20210107103121epcas5p2a322f86c7f7f9d4734f37bddee79ddc1~X7IzbAEcp1382213822epcas5p2B;
+ Thu,  7 Jan 2021 10:31:21 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+ epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+ 44.8D.33964.9F2E6FF5; Thu,  7 Jan 2021 19:31:21 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+ epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b~X6R4CDmyx1773217732epcas5p1v;
+ Thu,  7 Jan 2021 09:28:26 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+ epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20210107092826epsmtrp28d27298a12781770605a65a82b78e522~X6R4Acp9C2963029630epsmtrp23;
+ Thu,  7 Jan 2021 09:28:26 +0000 (GMT)
+X-AuditID: b6c32a4b-ea1ff700000184ac-26-5ff6e2f95641
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+ epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+ 26.A2.08745.A34D6FF5; Thu,  7 Jan 2021 18:28:26 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+ [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20210107092825epsmtip28c5b3966d940a0ebee719140eb1f8f94~X6R2s12Ec1431714317epsmtip2O;
+ Thu,  7 Jan 2021 09:28:25 +0000 (GMT)
+From: Ajay Kumar <ajaykumar.rs@samsung.com>
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, joro@8bytes.org, robh+dt@kernel.org,
+ mark.rutland@arm.com, will@kernel.org, robin.murphy@arm.com
+Subject: [PATCH] iommu/arm-smmu-v3: Handle duplicated Stream IDs from other
+ masters
+Date: Thu,  7 Jan 2021 15:03:40 +0530
+Message-Id: <20210107093340.15279-1-ajaykumar.rs@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsWy7bCmpu7PR9/iDXbMlLQ48P4gi8WC/dYW
+ nbM3sFtsenyN1eLyrjlsFkuvX2SyaN17hN3i4IcnrBYtd0wdOD2eHJzH5LFm3hpGj02rOtk8
+ Ni+p95h8YzmjR9+WVYwenzfJBbBHcdmkpOZklqUW6dslcGXcb1nNVvBCuOL45dnMDYwLBLoY
+ OTkkBEwk/nRcYeti5OIQEtjNKDHvxCQ2kISQwCdGiZbeQojEZ0aJzuvHmGA69l19zA6R2MUo
+ 8XvSVaiOFiaJ9tXMIDabgLbEtuk3WUCKRATOMUpMWD8TLMEsoCmxdGk3mC0sECqx7nM3Yxcj
+ BweLgKrE5M+GIGFeAVuJWd/+MkMsk5dYveEAM8gcCYFT7BK3Ht1kg0i4SLz9PI8dwhaWeHV8
+ C5QtJfH53V42iIZ+Romn9/9Ada9mlHjw8ALUWHuJA1fmsIBsBrlo/S59iLCsxNRT65ggDuWT
+ 6P39BOplXokd80BsDiBbTWLrCj+IsIzEmYNXoEo8JGb+2skOCYhYifufN7FMYJSdhbBgASPj
+ KkbJ1ILi3PTUYtMC47zUcr3ixNzi0rx0veT83E2M4NSg5b2D8dGDD3qHGJk4GA8xSnAwK4nw
+ Whz7Ei/Em5JYWZValB9fVJqTWnyIUZqDRUmcd4fBg3ghgfTEktTs1NSC1CKYLBMHp1QDk5KD
+ m/GEjc1/2Peodh/Zz3QoYf+fD7IyGp9auf+l9sas5o2/dV8l54bc4gbHI4bVT/6ZVXYErLWu
+ ULw5y5x79XSus3YvPh9iSGvgPnZtUo1FxAqTsBkRSflzb1l3MOVqnTn2ur/izKYbn3IUY+w2
+ njl8c4b3whsaUknn5Q7/jQ77MOv8jkof1e2Nrz8ev+dqySr+c4rfGxMBpaLYRZIOx71vnV/d
+ f+Du1i0zsy8sUH3TmZJwjv/QtExfpeXXzjm8dMxceFPq+MHQ63y/0xSCtxQ2XPTa/ePTCl+L
+ U3PT3uyqlndKlO11vrV43+cZMc5rFqx6cGBxpVKjiPmBpemGL104nrf/vVo+T8rciu18wVkl
+ luKMREMt5qLiRAB6SC90fAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupjluLIzCtJLcpLzFFi42LZdlhJXtfqyrd4g3/zdCwOvD/IYrFgv7VF
+ 5+wN7BabHl9jtbi8aw6bxdLrF5ksWvceYbc4+OEJq0XLHVMHTo8nB+cxeayZt4bRY9OqTjaP
+ zUvqPSbfWM7o0bdlFaPH501yAexRXDYpqTmZZalF+nYJXBn3W1azFbwQrjh+eTZzA+MCgS5G
+ Tg4JAROJfVcfs3cxcnEICexglFh9ficzREJG4vmOpywQtrDEyn/PoYqamCRWt3xiB0mwCWhL
+ bJt+kwUkISJwg1Hi8o07rCAJZgFNiaVLu4EmsXMICwRLPAvsYuTgYBFQlZj82RCkgFfAVmLW
+ t79Qq+QlVm84wDyBkWcBI8MqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzgINPS2sG4
+ Z9UHvUOMTByMhxglOJiVRHgtjn2JF+JNSaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJ
+ anZqakFqEUyWiYNTqoEp7cMr5ncXr0p7bdP5dy8jY03xtIpZ8SztltHC59xnb+2OPH9E9HPJ
+ X8ltGQo3Dv8/nh0zjfVI9ia1T0IPl20+NEXZUmjzNi2ls7Ktcyac5FWr3uv8uqb12o5TGpWz
+ cjYIV/r0c8+1ZHm+NZM1wzSrdHtK6qSbbrGWlhetdWw3Rn9MtpY+N8n6x4HNNdYHDr59EPM1
+ NVzkQvPaKX+NZ3xTvsXHtLSWkf+Q6L9Np07IH8ic/tRv5VMWL9Fuz8q5YYmyzw3uZcgG2/8P
+ OGie9VKPW2uNhMxx+eWePDwFl1Y+qmzj35wWH3ax8tKjZytcrn1nNv1/Q9+Aa1Vx1u4s+y0L
+ mxbucPKp+JK3782E7b66SizFGYmGWsxFxYkARhXFXqECAAA=
+X-CMS-MailID: 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b
+X-Msg-Generator: CA
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b
+References: <CGME20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b@epcas5p1.samsung.com>
+Cc: Ajay Kumar <ajaykumar.rs@samsung.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,98 +138,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Both external domain and iommu backend domain can use pinning
-interface, thus both can add pfn to dma pfn_list. By moving
-the sanity_check_pfn_list to unmap_unpin_all can apply it to
-all types of domain.
+When PCI function drivers(ex:pci-endpoint-test) are probed for already
+initialized PCIe-RC(Root Complex), and PCIe-RC is already bound to SMMU,
+then we encounter a situation where the function driver tries to attach
+itself to the smmu with the same stream-id as PCIe-RC and re-initialize
+an already initialized STE. This causes ste_live BUG_ON() in the driver.
 
-Fixes: a54eb55045ae ("vfio iommu type1: Add support for mediated devices")
-Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+There is an already existing check in the driver to manage duplicated ids
+if duplicated ids are added in same master device, but there can be
+scenarios like above where we need to extend the check for other masters
+using the same stream-id.
+
+Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 38 ++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 20 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 9776a059904d..d796be8bcbc5 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2225,10 +2225,28 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	return ret;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e634bbe60573..a91c3c0e9ee8 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2022,10 +2022,26 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+ 	return step;
  }
  
-+static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
++static bool arm_smmu_check_duplicated_sid(struct arm_smmu_master *master,
++								int sid)
 +{
-+	struct rb_node *n;
++	int i;
 +
-+	n = rb_first(&iommu->dma_list);
-+	for (; n; n = rb_next(n)) {
-+		struct vfio_dma *dma;
++	for (i = 0; i < master->num_sids; ++i)
++		if (master->sids[i] == sid)
++			return true;
 +
-+		dma = rb_entry(n, struct vfio_dma, node);
-+
-+		if (WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list)))
-+			break;
-+	}
-+	/* mdev vendor driver must unregister notifier */
-+	WARN_ON(iommu->notifier.head);
++	return false;
 +}
 +
- static void vfio_iommu_unmap_unpin_all(struct vfio_iommu *iommu)
+ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
  {
- 	struct rb_node *node;
++	bool sid_in_other_masters;
+ 	int i, j;
+ 	struct arm_smmu_device *smmu = master->smmu;
++	unsigned long flags;
++	struct arm_smmu_domain *smmu_domain = master->domain;
++	struct arm_smmu_master *other_masters;
  
-+	vfio_sanity_check_pfn_list(iommu);
- 	while ((node = rb_first(&iommu->dma_list)))
- 		vfio_remove_dma(iommu, rb_entry(node, struct vfio_dma, node));
- }
-@@ -2256,23 +2274,6 @@ static void vfio_iommu_unmap_unpin_reaccount(struct vfio_iommu *iommu)
+ 	for (i = 0; i < master->num_sids; ++i) {
+ 		u32 sid = master->sids[i];
+@@ -2038,6 +2054,23 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
+ 		if (j < i)
+ 			continue;
+ 
++		/* Check for stream-ID duplication in masters in given domain */
++		sid_in_other_masters = false;
++		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++		list_for_each_entry(other_masters, &smmu_domain->devices,
++								domain_head) {
++			sid_in_other_masters =
++				arm_smmu_check_duplicated_sid(other_masters,
++									sid);
++			if (sid_in_other_masters)
++				break;
++		}
++		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++
++		/* Skip STE re-init if stream-id found in other masters */
++		if (sid_in_other_masters)
++			continue;
++
+ 		arm_smmu_write_strtab_ent(master, sid, step);
  	}
  }
- 
--static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
--{
--	struct rb_node *n;
--
--	n = rb_first(&iommu->dma_list);
--	for (; n; n = rb_next(n)) {
--		struct vfio_dma *dma;
--
--		dma = rb_entry(n, struct vfio_dma, node);
--
--		if (WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list)))
--			break;
--	}
--	/* mdev vendor driver must unregister notifier */
--	WARN_ON(iommu->notifier.head);
--}
--
- /*
-  * Called when a domain is removed in detach. It is possible that
-  * the removed domain decided the iova aperture window. Modify the
-@@ -2371,8 +2372,6 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			kfree(group);
- 
- 			if (list_empty(&iommu->external_domain->group_list)) {
--				vfio_sanity_check_pfn_list(iommu);
--
- 				/*
- 				 * During dirty page tracking, we can't remove
- 				 * vfio_dma because dirty log will lose.
-@@ -2503,7 +2502,6 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 
- 	if (iommu->external_domain) {
- 		vfio_release_domain(iommu->external_domain, true);
--		vfio_sanity_check_pfn_list(iommu);
- 		kfree(iommu->external_domain);
- 	}
- 
 -- 
-2.19.1
+2.17.1
 
 _______________________________________________
 iommu mailing list
