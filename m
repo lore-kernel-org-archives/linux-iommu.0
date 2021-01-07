@@ -6,70 +6,72 @@ X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33AFC433E0
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 14:22:58 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5ADEC433E6
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 14:22:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 85C4B23343
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 14:22:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 85C4B23343
+	by mail.kernel.org (Postfix) with ESMTPS id 8459123343
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 14:22:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8459123343
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 19C438648E;
-	Thu,  7 Jan 2021 14:22:58 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 14953274AA;
+	Thu,  7 Jan 2021 14:22:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4Hx2XEcyECi3; Thu,  7 Jan 2021 14:22:57 +0000 (UTC)
+	with ESMTP id L3VfApjVpPBA; Thu,  7 Jan 2021 14:22:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A491E84806;
+	by silver.osuosl.org (Postfix) with ESMTP id E23E6272E3;
 	Thu,  7 Jan 2021 14:22:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95E4AC088B;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BBAA1C1DA7;
 	Thu,  7 Jan 2021 14:22:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66DDAC013A
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6C42AC088B
  for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 14:22:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 633C386C61
+ by silver.osuosl.org (Postfix) with ESMTP id 4999C2042D
  for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 14:22:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c8qvnQjYp8td for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 14:22:52 +0000 (UTC)
+ with ESMTP id lS2+RQBB6iJM for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 14:22:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CF7BA8582C
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 14:22:52 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EB78723340;
- Thu,  7 Jan 2021 14:22:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 2F6DB272E3
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 14:22:55 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 028F223355;
+ Thu,  7 Jan 2021 14:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1610029372;
- bh=QwOHtluI5QjPAV+iXFS1yvi49MqVAvgoQ2rboBEBOpU=;
+ s=k20201202; t=1610029374;
+ bh=oNLPJObW2d3YofpkNjkaRbAPG15OxVo1dNrFQ+tYOAk=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=PNabRhPE10cp2uCbeRIIlWuNVwROfR7d1Jc8lv57+sBchnd9xm2/6paMrq6akzVjK
- iNAjoK2H75lpmOuav5qpv9FP/ICRMeeHZEuQfgtBLGyFg654hX80PXYa0ra5WtO5tY
- FZA1L5NVwnGtxKQKwk/LCO9FV/7S1tlEN36rY03NiiFBdCF4CGFVvMxAFDuRmzxLrI
- BP2uiFPG6YrInkO+Rjp+BNJsXcfXLGoV2zuSzn9AzbPWVzZ4jEXiH+EixoG5aKsbib
- DpPPHBfkh162vI9wlenvAj1Df58lqm0CndcltXf+GVwWmSWHLFD1qvFtji/bFSbc5q
- TIDX+aRQtmkgw==
+ b=vRO705TTCihW/nt+W1NTwTO30dWw+FCwmHKdGwCkUKgJIePLYAgeMuT7Z5ZzQ+IWn
+ HAecnqHoHDkHHAr+gdxLjoRDxDrI9UJwRSs4s+MkMC5lT/KvTbJ2I2B0KXxFutYKYT
+ bDPXEuPIvgn6uQy6hFIKM8cdCtaEgyJ2/UZC7/BPqCzHus/RwOSFAMDVuQ4JRBqpcq
+ +zSrbG69307ZWYgkOvqm42COAzZIP2Jw19THIvwdobP2YJfXjDAuT0GQtHuyW8vPHT
+ B2thw+fGL1JLK+qn+FJx+afc6yWSTv8I42k0BsZdte5J3ov0uO18kAZD/KmIJ4L+IY
+ Ks0qTuF9ZtQYA==
 From: Will Deacon <will@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/5] iommu/vt-d: Fix misuse of ALIGN in qi_flush_piotlb()
-Date: Thu,  7 Jan 2021 14:22:46 +0000
-Message-Id: <161002603532.2363893.7669085161472435807.b4-ty@kernel.org>
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Initialize SCTLR of the bypass
+ context
+Date: Thu,  7 Jan 2021 14:22:47 +0000
+Message-Id: <161002864635.3143366.6483038182849083276.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201231005323.2178523-1-baolu.lu@linux.intel.com>
-References: <20201231005323.2178523-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20210106005038.4152731-1-bjorn.andersson@linaro.org>
+References: <20210106005038.4152731-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Cc: Guo Kaijie <Kaijie.Guo@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
+Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- kernel-team@android.com
+ linux-arm-msm@vger.kernel.org, kernel-team@android.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,17 +89,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 31 Dec 2020 08:53:19 +0800, Lu Baolu wrote:
-> Use IS_ALIGNED() instead. Otherwise, an unaligned address will be ignored.
+On Tue, 5 Jan 2021 16:50:38 -0800, Bjorn Andersson wrote:
+> On SM8150 it's occasionally observed that the boot hangs in between the
+> writing of SMEs and context banks in arm_smmu_device_reset().
+> 
+> The problem seems to coincide with a display refresh happening after
+> updating the stream mapping, but before clearing - and there by
+> disabling translation - the context bank picked to emulate translation
+> bypass.
+> 
+> [...]
 
-Applied patches 1, 4 and 5 to arm64 (for-next/iommu/fixes), thanks!
+Applied to arm64 (for-next/iommu/fixes), thanks!
 
-[1/5] iommu/vt-d: Fix misuse of ALIGN in qi_flush_piotlb()
-      https://git.kernel.org/arm64/c/1efd17e7acb6
-[4/5] Revert "iommu: Add quirk for Intel graphic devices in map_sg"
-      https://git.kernel.org/arm64/c/4df7b2268ad8
-[5/5] iommu/vt-d: Fix lockdep splat in sva bind()/unbind()
-      https://git.kernel.org/arm64/c/420d42f6f9db
+[1/1] iommu/arm-smmu-qcom: Initialize SCTLR of the bypass context
+      https://git.kernel.org/arm64/c/aded8c7c2b72
 
 Cheers,
 -- 
