@@ -2,130 +2,81 @@ Return-Path: <SRS0=iLvA=GK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165DDC433DB
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 10:41:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F627C433DB
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 12:29:39 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A6092313B
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 10:41:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A6092313B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id DBDFA23358
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 12:29:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBDFA23358
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 11C8D8739D;
-	Thu,  7 Jan 2021 10:41:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 59FC0865C1;
+	Thu,  7 Jan 2021 12:29:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lkUvKJcfR+G4; Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
+	with ESMTP id ImX57zpXlCN4; Thu,  7 Jan 2021 12:29:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 28D098739C;
-	Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A0FA984BBE;
+	Thu,  7 Jan 2021 12:29:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B11DC088B;
-	Thu,  7 Jan 2021 10:41:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91C27C088B;
+	Thu,  7 Jan 2021 12:29:35 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2ADDFC013A
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CB8B4C013A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 12:29:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 052F5204D6
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:16 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id C2210233B0
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 12:29:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KQdYSR3AtO6S for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 10:41:14 +0000 (UTC)
-X-Greylist: delayed 00:09:49 by SQLgrey-1.7.6
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
- by silver.osuosl.org (Postfix) with ESMTPS id CAA641FEAE
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:41:13 +0000 (UTC)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
- by mailout3.samsung.com (KnoxPortal) with ESMTP id
- 20210107103121epoutp03311c268798cbed89063e98b4c49143ec~X7Iz2r5pR2283822838epoutp03T
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 10:31:21 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com
- 20210107103121epoutp03311c268798cbed89063e98b4c49143ec~X7Iz2r5pR2283822838epoutp03T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1610015482;
- bh=zgnGkAl5H6GoKUAcYr+wE27/PBdE+8JptgJAmhAjafY=;
- h=From:To:Cc:Subject:Date:References:From;
- b=jbUuGpct6UFoDu/hTwtofLLe09pRuvs7uq4N5cZUaDkUcYiMsD0pQ9mxyN9gIlPco
- w+r/1POzrzXlT17HNqdHdP4ByLDen8AelFRPa89DUoFNOVWLKtTKdEMsg8bkoh6R/y
- wgHQS8OYyuO1As0BS1OUAekYBreImQnsDcbihJIQ=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
- epcas5p2.samsung.com (KnoxPortal) with ESMTP id
- 20210107103121epcas5p2a322f86c7f7f9d4734f37bddee79ddc1~X7IzbAEcp1382213822epcas5p2B;
- Thu,  7 Jan 2021 10:31:21 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
- epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
- 44.8D.33964.9F2E6FF5; Thu,  7 Jan 2021 19:31:21 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
- epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
- 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b~X6R4CDmyx1773217732epcas5p1v;
- Thu,  7 Jan 2021 09:28:26 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
- epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20210107092826epsmtrp28d27298a12781770605a65a82b78e522~X6R4Acp9C2963029630epsmtrp23;
- Thu,  7 Jan 2021 09:28:26 +0000 (GMT)
-X-AuditID: b6c32a4b-ea1ff700000184ac-26-5ff6e2f95641
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
- epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
- 26.A2.08745.A34D6FF5; Thu,  7 Jan 2021 18:28:26 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
- [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20210107092825epsmtip28c5b3966d940a0ebee719140eb1f8f94~X6R2s12Ec1431714317epsmtip2O;
- Thu,  7 Jan 2021 09:28:25 +0000 (GMT)
-From: Ajay Kumar <ajaykumar.rs@samsung.com>
-To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, joro@8bytes.org, robh+dt@kernel.org,
- mark.rutland@arm.com, will@kernel.org, robin.murphy@arm.com
-Subject: [PATCH] iommu/arm-smmu-v3: Handle duplicated Stream IDs from other
- masters
-Date: Thu,  7 Jan 2021 15:03:40 +0530
-Message-Id: <20210107093340.15279-1-ajaykumar.rs@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsWy7bCmpu7PR9/iDXbMlLQ48P4gi8WC/dYW
- nbM3sFtsenyN1eLyrjlsFkuvX2SyaN17hN3i4IcnrBYtd0wdOD2eHJzH5LFm3hpGj02rOtk8
- Ni+p95h8YzmjR9+WVYwenzfJBbBHcdmkpOZklqUW6dslcGXcb1nNVvBCuOL45dnMDYwLBLoY
- OTkkBEwk/nRcYeti5OIQEtjNKDHvxCQ2kISQwCdGiZbeQojEZ0aJzuvHmGA69l19zA6R2MUo
- 8XvSVaiOFiaJ9tXMIDabgLbEtuk3WUCKRATOMUpMWD8TLMEsoCmxdGk3mC0sECqx7nM3Yxcj
- BweLgKrE5M+GIGFeAVuJWd/+MkMsk5dYveEAM8gcCYFT7BK3Ht1kg0i4SLz9PI8dwhaWeHV8
- C5QtJfH53V42iIZ+Romn9/9Ada9mlHjw8ALUWHuJA1fmsIBsBrlo/S59iLCsxNRT65ggDuWT
- 6P39BOplXokd80BsDiBbTWLrCj+IsIzEmYNXoEo8JGb+2skOCYhYifufN7FMYJSdhbBgASPj
- KkbJ1ILi3PTUYtMC47zUcr3ixNzi0rx0veT83E2M4NSg5b2D8dGDD3qHGJk4GA8xSnAwK4nw
- Whz7Ei/Em5JYWZValB9fVJqTWnyIUZqDRUmcd4fBg3ghgfTEktTs1NSC1CKYLBMHp1QDk5KD
- m/GEjc1/2Peodh/Zz3QoYf+fD7IyGp9auf+l9sas5o2/dV8l54bc4gbHI4bVT/6ZVXYErLWu
- ULw5y5x79XSus3YvPh9iSGvgPnZtUo1FxAqTsBkRSflzb1l3MOVqnTn2ur/izKYbn3IUY+w2
- njl8c4b3whsaUknn5Q7/jQ77MOv8jkof1e2Nrz8ev+dqySr+c4rfGxMBpaLYRZIOx71vnV/d
- f+Du1i0zsy8sUH3TmZJwjv/QtExfpeXXzjm8dMxceFPq+MHQ63y/0xSCtxQ2XPTa/ePTCl+L
- U3PT3uyqlndKlO11vrV43+cZMc5rFqx6cGBxpVKjiPmBpemGL104nrf/vVo+T8rciu18wVkl
- luKMREMt5qLiRAB6SC90fAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupjluLIzCtJLcpLzFFi42LZdlhJXtfqyrd4g3/zdCwOvD/IYrFgv7VF
- 5+wN7BabHl9jtbi8aw6bxdLrF5ksWvceYbc4+OEJq0XLHVMHTo8nB+cxeayZt4bRY9OqTjaP
- zUvqPSbfWM7o0bdlFaPH501yAexRXDYpqTmZZalF+nYJXBn3W1azFbwQrjh+eTZzA+MCgS5G
- Tg4JAROJfVcfs3cxcnEICexglFh9ficzREJG4vmOpywQtrDEyn/PoYqamCRWt3xiB0mwCWhL
- bJt+kwUkISJwg1Hi8o07rCAJZgFNiaVLu4EmsXMICwRLPAvsYuTgYBFQlZj82RCkgFfAVmLW
- t79Qq+QlVm84wDyBkWcBI8MqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzgINPS2sG4
- Z9UHvUOMTByMhxglOJiVRHgtjn2JF+JNSaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJ
- anZqakFqEUyWiYNTqoEp7cMr5ncXr0p7bdP5dy8jY03xtIpZ8SztltHC59xnb+2OPH9E9HPJ
- X8ltGQo3Dv8/nh0zjfVI9ia1T0IPl20+NEXZUmjzNi2ls7Ktcyac5FWr3uv8uqb12o5TGpWz
- cjYIV/r0c8+1ZHm+NZM1wzSrdHtK6qSbbrGWlhetdWw3Rn9MtpY+N8n6x4HNNdYHDr59EPM1
- NVzkQvPaKX+NZ3xTvsXHtLSWkf+Q6L9Np07IH8ic/tRv5VMWL9Fuz8q5YYmyzw3uZcgG2/8P
- OGie9VKPW2uNhMxx+eWePDwFl1Y+qmzj35wWH3ax8tKjZytcrn1nNv1/Q9+Aa1Vx1u4s+y0L
- mxbucPKp+JK3782E7b66SizFGYmGWsxFxYkARhXFXqECAAA=
-X-CMS-MailID: 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b
-X-Msg-Generator: CA
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b
-References: <CGME20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b@epcas5p1.samsung.com>
-Cc: Ajay Kumar <ajaykumar.rs@samsung.com>
+ with ESMTP id pGr6+2Is2brZ for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 12:29:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by silver.osuosl.org (Postfix) with ESMTP id 17465232FA
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 12:29:30 +0000 (UTC)
+X-UUID: f07051edf40443598b4c94e3d7b09d30-20210107
+X-UUID: f07051edf40443598b4c94e3d7b09d30-20210107
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 265079323; Thu, 07 Jan 2021 20:29:24 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 7 Jan 2021 20:29:22 +0800
+Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Jan 2021 20:29:21 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>
+Subject: [PATCH v4 0/7] MediaTek IOMMU improve tlb flush performance in
+ map/unmap
+Date: Thu, 7 Jan 2021 20:29:02 +0800
+Message-ID: <20210107122909.16317-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+MIME-Version: 1.0
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+ David Laight <David.Laight@ACULAB.COM>, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Greg Kroah-Hartman <gregkh@google.com>, kernel-team@android.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -138,85 +89,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When PCI function drivers(ex:pci-endpoint-test) are probed for already
-initialized PCIe-RC(Root Complex), and PCIe-RC is already bound to SMMU,
-then we encounter a situation where the function driver tries to attach
-itself to the smmu with the same stream-id as PCIe-RC and re-initialize
-an already initialized STE. This causes ste_live BUG_ON() in the driver.
+This patchset is to improve tlb flushing performance in iommu_map/unmap
+for MediaTek IOMMU.
 
-There is an already existing check in the driver to manage duplicated ids
-if duplicated ids are added in same master device, but there can be
-scenarios like above where we need to extend the check for other masters
-using the same stream-id.
+For iommu_map, currently MediaTek IOMMU use IO_PGTABLE_QUIRK_TLBI_ON_MAP
+to do tlb_flush for each a memory chunk. this is so unnecessary. we could
+improve it by tlb flushing one time at the end of iommu_map.
 
-Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+For iommu_unmap, currently we have already improve this performance by
+gather. But the current gather should take care its granule size. if the
+granule size is different, it will do tlb flush and gather again. Our HW
+don't care about granule size. thus I gather the range in our file.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e634bbe60573..a91c3c0e9ee8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2022,10 +2022,26 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
- 	return step;
- }
- 
-+static bool arm_smmu_check_duplicated_sid(struct arm_smmu_master *master,
-+								int sid)
-+{
-+	int i;
-+
-+	for (i = 0; i < master->num_sids; ++i)
-+		if (master->sids[i] == sid)
-+			return true;
-+
-+	return false;
-+}
-+
- static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
- {
-+	bool sid_in_other_masters;
- 	int i, j;
- 	struct arm_smmu_device *smmu = master->smmu;
-+	unsigned long flags;
-+	struct arm_smmu_domain *smmu_domain = master->domain;
-+	struct arm_smmu_master *other_masters;
- 
- 	for (i = 0; i < master->num_sids; ++i) {
- 		u32 sid = master->sids[i];
-@@ -2038,6 +2054,23 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
- 		if (j < i)
- 			continue;
- 
-+		/* Check for stream-ID duplication in masters in given domain */
-+		sid_in_other_masters = false;
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_for_each_entry(other_masters, &smmu_domain->devices,
-+								domain_head) {
-+			sid_in_other_masters =
-+				arm_smmu_check_duplicated_sid(other_masters,
-+									sid);
-+			if (sid_in_other_masters)
-+				break;
-+		}
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+		/* Skip STE re-init if stream-id found in other masters */
-+		if (sid_in_other_masters)
-+			continue;
-+
- 		arm_smmu_write_strtab_ent(master, sid, step);
- 	}
- }
+After this patchset, we could achieve only tlb flushing once in iommu_map
+and iommu_unmap.
+
+Regardless of sg, for each a segment, I did a simple test:
+  
+  size = 20 * SZ_1M;
+  /* the worst case, all are 4k mapping. */
+  ret = iommu_map(domain, 0x5bb02000, 0x123f1000, size, IOMMU_READ);
+  iommu_unmap(domain, 0x5bb02000, size);
+
+This is the comparing time(unit is us):
+              original-time  after-improve
+   map-20M    59943           2347
+   unmap-20M  264             36
+
+This patchset also flush tlb once in the iommu_map_sg case.
+
+patch [1/7][2/7][3/7] are for map while the others are for unmap.
+
+change note:
+v4: a. base on v5.11-rc1.
+    b. Add a little helper _iommu_map.
+    c. Fix a build fail for tegra-gart.c. I didn't notice there is another place
+    call gart_iommu_sync_map.
+    d. Switch gather->end to the read end address("start + end - 1").
+    
+v3: https://lore.kernel.org/linux-iommu/20201216103607.23050-1-yong.wu@mediatek.com/#r
+    Refactor the unmap flow suggested by Robin.
+     
+v2: https://lore.kernel.org/linux-iommu/20201119061836.15238-1-yong.wu@mediatek.com/
+    Refactor all the code.
+    base on v5.10-rc1.
+
+Yong Wu (7):
+  iommu: Move iotlb_sync_map out from __iommu_map
+  iommu: Add iova and size as parameters in iotlb_sync_map
+  iommu/mediatek: Add iotlb_sync_map to sync whole the iova range
+  iommu: Switch gather->end to the inclusive end
+  iommu/io-pgtable: Allow io_pgtable_tlb ops optional
+  iommu/mediatek: Gather iova in iommu_unmap to achieve tlb sync once
+  iommu/mediatek: Remove the tlb-ops for v7s
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+ drivers/iommu/iommu.c                       | 23 +++++++---
+ drivers/iommu/mtk_iommu.c                   | 47 +++++++++------------
+ drivers/iommu/tegra-gart.c                  |  7 ++-
+ include/linux/io-pgtable.h                  |  8 ++--
+ include/linux/iommu.h                       |  7 +--
+ 6 files changed, 52 insertions(+), 42 deletions(-)
+
 -- 
-2.17.1
+2.18.0
+
 
 _______________________________________________
 iommu mailing list
