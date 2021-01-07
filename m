@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BA6C4332D
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D33DAC433E6
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:47 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ADC3D2311A
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADC3D2311A
+	by mail.kernel.org (Postfix) with ESMTPS id 90AFD22CE3
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 90AFD22CE3
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 48C70868DE;
-	Thu,  7 Jan 2021 04:44:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7848E869F2;
+	Thu,  7 Jan 2021 04:44:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xKSBIvq7llal; Thu,  7 Jan 2021 04:44:44 +0000 (UTC)
+	with ESMTP id OEREgtbYswQC; Thu,  7 Jan 2021 04:44:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C28EA86A25;
-	Thu,  7 Jan 2021 04:44:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0E7C086A16;
+	Thu,  7 Jan 2021 04:44:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AB76CC1DA8;
-	Thu,  7 Jan 2021 04:44:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1897C0891
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E4C45C0891;
+	Thu,  7 Jan 2021 04:44:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02F42C013A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DE8C7860C2
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:40 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E40B5869F2
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qjhj1DEXjn3L for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 04:44:40 +0000 (UTC)
+ with ESMTP id gseHe4YeLV1A for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 04:44:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 5B80D86090
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:40 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 244D786A36
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:41 +0000 (UTC)
 Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DBDCG08Qdzj31g;
- Thu,  7 Jan 2021 12:43:54 +0800 (CST)
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DBDCF5MDtzhsSy;
+ Thu,  7 Jan 2021 12:43:53 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
  DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 7 Jan 2021 12:44:29 +0800
+ 14.3.498.0; Thu, 7 Jan 2021 12:44:28 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
  <kvmarm@lists.cs.columbia.edu>, Alex Williamson <alex.williamson@redhat.com>, 
  Cornelia Huck <cohuck@redhat.com>, Will Deacon <will@kernel.org>, "Marc
  Zyngier" <maz@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 4/6] vfio/iommu_type1: Drop parameter "pgsize" of
- vfio_dma_bitmap_alloc_all
-Date: Thu, 7 Jan 2021 12:43:59 +0800
-Message-ID: <20210107044401.19828-5-zhukeqian1@huawei.com>
+Subject: [PATCH 3/6] vfio/iommu_type1: Initially set the
+ pinned_page_dirty_scope
+Date: Thu, 7 Jan 2021 12:43:58 +0800
+Message-ID: <20210107044401.19828-4-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
 In-Reply-To: <20210107044401.19828-1-zhukeqian1@huawei.com>
 References: <20210107044401.19828-1-zhukeqian1@huawei.com>
@@ -91,44 +91,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We always use the smallest supported page size of vfio_iommu as
-pgsize. Remove parameter "pgsize" of vfio_dma_bitmap_alloc_all.
+For now there are 3 ways to promote the pinned_page_dirty_scope
+status of vfio_iommu:
+
+1. Through vfio pin interface.
+2. Detach a group without pinned_dirty_scope.
+3. Attach a group with pinned_dirty_scope.
+
+For point 3, the only chance to promote the pinned_page_dirty_scope
+status is when vfio_iommu is newly created. As we can safely set
+empty vfio_iommu to be at pinned status, then the point 3 can be
+removed to reduce operations.
 
 Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index b596c482487b..080c05b129ee 100644
+index 110ada24ee91..b596c482487b 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -236,9 +236,10 @@ static void vfio_dma_populate_bitmap(struct vfio_dma *dma, size_t pgsize)
- 	}
- }
+@@ -2045,11 +2045,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 			 * Non-iommu backed group cannot dirty memory directly,
+ 			 * it can only use interfaces that provide dirty
+ 			 * tracking.
+-			 * The iommu scope can only be promoted with the
+-			 * addition of a dirty tracking group.
+ 			 */
+ 			group->pinned_page_dirty_scope = true;
+-			promote_pinned_page_dirty_scope(iommu);
+ 			mutex_unlock(&iommu->lock);
  
--static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu, size_t pgsize)
-+static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu)
- {
- 	struct rb_node *n;
-+	size_t pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
+ 			return 0;
+@@ -2436,6 +2433,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
+ 	INIT_LIST_HEAD(&iommu->iova_list);
+ 	iommu->dma_list = RB_ROOT;
+ 	iommu->dma_avail = dma_entry_limit;
++	iommu->pinned_page_dirty_scope = true;
+ 	mutex_init(&iommu->lock);
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&iommu->notifier);
  
- 	for (n = rb_first(&iommu->dma_list); n; n = rb_next(n)) {
- 		struct vfio_dma *dma = rb_entry(n, struct vfio_dma, node);
-@@ -2761,12 +2762,9 @@ static int vfio_iommu_type1_dirty_pages(struct vfio_iommu *iommu,
- 		return -EINVAL;
- 
- 	if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
--		size_t pgsize;
--
- 		mutex_lock(&iommu->lock);
--		pgsize = 1 << __ffs(iommu->pgsize_bitmap);
- 		if (!iommu->dirty_page_tracking) {
--			ret = vfio_dma_bitmap_alloc_all(iommu, pgsize);
-+			ret = vfio_dma_bitmap_alloc_all(iommu);
- 			if (!ret)
- 				iommu->dirty_page_tracking = true;
- 		}
 -- 
 2.19.1
 
