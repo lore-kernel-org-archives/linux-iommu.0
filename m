@@ -2,91 +2,75 @@ Return-Path: <SRS0=iLvA=GK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB7DC433DB
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 02:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FEDC433E0
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:43 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFA7623100
-	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 02:51:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFA7623100
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 399092312A
+	for <iommu@archiver.kernel.org>; Thu,  7 Jan 2021 04:44:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 399092312A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7FDD28678B;
-	Thu,  7 Jan 2021 02:51:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DDAC386A4C;
+	Thu,  7 Jan 2021 04:44:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l1aFHqysLWT2; Thu,  7 Jan 2021 02:51:49 +0000 (UTC)
+	with ESMTP id 5hwaN8JZtn6K; Thu,  7 Jan 2021 04:44:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E278786789;
-	Thu,  7 Jan 2021 02:51:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 64C638692E;
+	Thu,  7 Jan 2021 04:44:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB533C0891;
-	Thu,  7 Jan 2021 02:51:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 427B3C1DA9;
+	Thu,  7 Jan 2021 04:44:41 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABD48C013A
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 02:51:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E65B9C0891
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7A1A720404
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 02:51:47 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id C957320462
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jdgjk2HPc2ID for <iommu@lists.linux-foundation.org>;
- Thu,  7 Jan 2021 02:51:46 +0000 (UTC)
+ with ESMTP id dp0hbSfeBIYh for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Jan 2021 04:44:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com
- [209.85.218.45])
- by silver.osuosl.org (Postfix) with ESMTPS id 256B52036D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 02:51:46 +0000 (UTC)
-Received: by mail-ej1-f45.google.com with SMTP id d17so7749360ejy.9
- for <iommu@lists.linux-foundation.org>; Wed, 06 Jan 2021 18:51:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=8LO5/Phbq28+31YDa1UZ1eQndglIwHyPOPdAo8T96Wc=;
- b=HQhQLnWS/ZJhdarKXSdd9H4qvqQ2V+N1W+bmCj0unK8v+b1kFb1bhI3HaS9/i50hzT
- kjnzni0TONbDtitbOV6IQqx+GH4UXTeabroXuypuTDDPupJ76lnHJOx66Ubp1AM2qBCP
- DdR/dJqziE60ULJpT4G1r7LtGQ4lkufUh1z85qvdRuzVd1H+YkUGZ32a4e6wu7cQF2AT
- qZI51OWODB4y0r+MMljmwvkatkq2Ym0xpyzFNmpM89mXs0bwDHxVo5YocIdmCoyUEgPk
- pn769EBOtvuoqxUfOSg3D7K1mvP8t0awPntTVNXSxKKzJka6xeC11b4yjF7HNVm95RtS
- ujHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=8LO5/Phbq28+31YDa1UZ1eQndglIwHyPOPdAo8T96Wc=;
- b=oEf40V53ZsbvdRTGPq5PKjS/cuThp3M06z8LLzZMH17eRI9VhbuAiLkCLaZFSDXgRP
- 4s7TvRlog1CsiaqHbeXPwW2iAcOxJbePe7k8sTngVJUMWZFyP8IL3SHKQ/6MJOU4LXLW
- Je4TQqeAJXl18P8opzF3MIqMEBZkJU5uwwHJRTYbkVo6VacGo20lQGobeyDMwVRyDpua
- ap/9LXv8q2O1welR2YIbie5x3TuF322Kw4sVS5w6ELIf6cLCaNho9aWRmGrcZlsFTids
- oQogRmEjQtS0x1qdaeQq5WTm11wfdxjbp7SEJIpa61fsvGgqyCMVvxOdG137Smlf8dJ3
- yzCA==
-X-Gm-Message-State: AOAM5303CpG04lqxKJlzfsJSfFEoDuDaCrOwCGUOLuTGU+e27fH8VwaJ
- JUKsOaFiTAYVVbotfa/2bRfWhsWpS8u0VVkPOCk=
-X-Google-Smtp-Source: ABdhPJzTIJZrgbwShljzLzrtpDr7Vf+8G5j4QQqhPuCnMXI9QmwqyOOOU6SGWBdt80TvLjY0rucjD3/iZWMmlgN8ZXw=
-X-Received: by 2002:a17:906:417:: with SMTP id
- d23mr4922263eja.19.1609987904487; 
- Wed, 06 Jan 2021 18:51:44 -0800 (PST)
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by silver.osuosl.org (Postfix) with ESMTPS id 763BF203AA
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Jan 2021 04:44:37 +0000 (UTC)
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DBDC84vtmzj2Xl;
+ Thu,  7 Jan 2021 12:43:48 +0800 (CST)
+Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 7 Jan 2021 12:44:25 +0800
+From: Keqian Zhu <zhukeqian1@huawei.com>
+To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <iommu@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
+ <kvmarm@lists.cs.columbia.edu>, Alex Williamson <alex.williamson@redhat.com>, 
+ Cornelia Huck <cohuck@redhat.com>, Will Deacon <will@kernel.org>, "Marc
+ Zyngier" <maz@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 0/6] vfio/iommu_type1: Some optimizations about dirty tracking
+Date: Thu, 7 Jan 2021 12:43:55 +0800
+Message-ID: <20210107044401.19828-1-zhukeqian1@huawei.com>
+X-Mailer: git-send-email 2.8.4.windows.1
 MIME-Version: 1.0
-References: <20201223062412.343-1-zhenzhong.duan@gmail.com>
- <20210104190240.GF6029@char.us.oracle.com>
-In-Reply-To: <20210104190240.GF6029@char.us.oracle.com>
-From: Zhenzhong Duan <zhenzhong.duan@gmail.com>
-Date: Thu, 7 Jan 2021 10:51:33 +0800
-Message-ID: <CAFH1YnP5p0o+Ux9O_VXtx2QFYQjc16tzsR4txJdA8pm-WmtORQ@mail.gmail.com>
-Subject: Re: [PATCH] x86/iommu: Fix two minimal issues in check_iommu_entries()
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: will@kernel.org, David Woodhouse <dwmw2@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- joe@perches.com, Thomas Gleixner <tglx@linutronix.de>, zhongjiang@huawei.com
+X-Originating-IP: [10.174.184.42]
+X-CFilter-Loop: Reflected
+Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, Alexios Zavras <alexios.zavras@intel.com>,
+ James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com,
+ Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Julien Thierry <julien.thierry.kdev@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,45 +88,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 5, 2021 at 3:04 AM Konrad Rzeszutek Wilk
-<konrad.wilk@oracle.com> wrote:
->
-> On Wed, Dec 23, 2020 at 02:24:12PM +0800, Zhenzhong Duan wrote:
-> > check_iommu_entries() checks for cyclic dependency in iommu entries
-> > and fixes the cyclic dependency by setting x->depend to NULL. But
-> > this repairing isn't correct if q is in front of p, there will be
-> > "EXECUTION ORDER INVALID!" report following. Fix it by NULLing
-> > whichever in the front.
-> >
-> > The second issue is about the report of exectuion order reverse,
-> > the order is reversed incorrectly in the report, fix it.
->
-> Heya!
->
-> When you debugged this, did you by any chance save the
-> serial logs and the debug logs to double-check it?
+Hi,
 
-Hi Konrad,
+In patch series[1], I put forward some fixes and optimizations for
+vfio_iommu_type1. This extracts and improves the optimization part
+of it.
 
-The iommu_table_entry is sorted by sort_iommu_table() and
-check_iommu_entries() finds nothing abnormal,
-so there is no related logs to check.
+[1] https://lore.kernel.org/linux-iommu/20201210073425.25960-1-zhukeqian1@huawei.com/T/#t
 
-Sorry for my poor english, I'm not saying there is order reverse, even
-if there is, it will be repaired by sort_iommu_table(). Then
-check_iommu_entries() report nothing.
-What I mean is about check_iommu_entries() itself, below printk isn't correct.
+Thanks,
+Keqian
 
-printk(KERN_ERR "EXECUTION ORDER INVALID! %pS should be called before %pS!\n",
-                               p->detect, q->detect);
 
-Should be:
+Keqian Zhu (6):
+  vfio/iommu_type1: Make an explicit "promote" semantic
+  vfio/iommu_type1: Ignore external domain when promote pinned_scope
+  vfio/iommu_type1: Initially set the pinned_page_dirty_scope
+  vfio/iommu_type1: Drop parameter "pgsize" of vfio_dma_bitmap_alloc_all
+  vfio/iommu_type1: Drop parameter "pgsize" of vfio_iova_dirty_bitmap
+  vfio/iommu_type1: Drop parameter "pgsize" of update_user_bitmap
 
-printk(KERN_ERR "EXECUTION ORDER INVALID! %pS should be called before %pS!\n",
-                               q->detect, p->detect);
+ drivers/vfio/vfio_iommu_type1.c | 67 +++++++++++++--------------------
+ 1 file changed, 26 insertions(+), 41 deletions(-)
 
-Regards
-Zhenzhong
+-- 
+2.19.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
