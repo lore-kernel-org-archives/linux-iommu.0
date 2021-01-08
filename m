@@ -2,92 +2,103 @@ Return-Path: <SRS0=te8u=GL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97431C433E0
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:19:32 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B505C433DB
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 16:45:15 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F0222399A
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:19:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F0222399A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id B9AC2239FD
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 16:45:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9AC2239FD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8E2EF204FA;
-	Fri,  8 Jan 2021 15:19:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 35A1487388;
+	Fri,  8 Jan 2021 16:45:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2ThB18-yCJsZ; Fri,  8 Jan 2021 15:19:26 +0000 (UTC)
+	with ESMTP id bbiYXmBeeYyq; Fri,  8 Jan 2021 16:45:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A1D0420423;
-	Fri,  8 Jan 2021 15:19:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4B81987105;
+	Fri,  8 Jan 2021 16:45:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8641CC088B;
-	Fri,  8 Jan 2021 15:19:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 33730C0891;
+	Fri,  8 Jan 2021 16:45:13 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9C711C013A
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:19:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35B43C013A
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 16:45:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 88A38866FB
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:19:25 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 24AB2872BD
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 16:45:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id f0NKCVraxjcP for <iommu@lists.linux-foundation.org>;
- Fri,  8 Jan 2021 15:19:23 +0000 (UTC)
+ with ESMTP id wMunPqXIlCJJ for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Jan 2021 16:45:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BCCE0866F5
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:19:22 +0000 (UTC)
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.57])
- by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4DC6DY2yL2z5D5C;
- Fri,  8 Jan 2021 23:18:05 +0800 (CST)
-Received: from dggema713-chm.china.huawei.com (10.3.20.77) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Fri, 8 Jan 2021 23:19:17 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggema713-chm.china.huawei.com (10.3.20.77) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Fri, 8 Jan 2021 23:19:16 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2106.002; Fri, 8 Jan 2021 15:19:14 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Eric Auger <eric.auger@redhat.com>, "eric.auger.pro@gmail.com"
- <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>
-Subject: RE: [PATCH v11 12/13] vfio/pci: Register a DMA fault response region
-Thread-Topic: [PATCH v11 12/13] vfio/pci: Register a DMA fault response region
-Thread-Index: AQHWvAgGhwjLBSYC0UyC6ARc2a6ugaoeJVMQ
-Date: Fri, 8 Jan 2021 15:19:14 +0000
-Message-ID: <510be72d8b934f78960157a76966a093@huawei.com>
-References: <20201116110030.32335-1-eric.auger@redhat.com>
- <20201116110030.32335-13-eric.auger@redhat.com>
-In-Reply-To: <20201116110030.32335-13-eric.auger@redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.94.9]
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com
+ [209.85.221.46])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4325C87105
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 16:45:11 +0000 (UTC)
+Received: by mail-wr1-f46.google.com with SMTP id t30so9659874wrb.0
+ for <iommu@lists.linux-foundation.org>; Fri, 08 Jan 2021 08:45:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=MG354YKqeHyUgNMxgEUcLfyaw4nS+tNiKDhutFtITdM=;
+ b=lyrXu56qrmAzlKwKP703dHpcw9vR0LK7NuBeN+mVDSUwHciK8SqHbgGhSAJvPt0uP3
+ gSNZttsPCUOHi+gebWpE6BiQW5oO5ifJFxV20x/F6+cXBf0q1wi2fBAzcYG8R0+fFfTL
+ 64v4riw2Co/e8UAxyfQPCpdDDnaV9ALjAFB2tQiyk6kQ3wstg8FwvV/tw6nrt5k6wT8V
+ 0tnkiGSYzx8OjbJt1ZDQpMSDZAGjduUQsYmOgtOT8qwku8Ll9ZfocmnVLp+4w50Ej6LT
+ gko1/W9ueD17eU36zGWjYl80ClJRm/hxavo3kgTkOoOHhbSWXahdFXVj4TtGwamJNf+p
+ uvpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=MG354YKqeHyUgNMxgEUcLfyaw4nS+tNiKDhutFtITdM=;
+ b=YpA6RY3S8UnxTXDbXF5cbxvIj0foRXFu07fW18aRyIH15KcWXT12u/p0Ci9LgtxpNZ
+ tTLO1csFYlJCVjaFTNjpSGe1tbwX5LmpULkaQrqEh8v6xktrsJRDRn7oZsa2fSRM05cw
+ jlUuf4k3IlDNiumegPuEHqyLquVo0eQ4HH2TsvL9u3qBqXyziOhE1o0hA+eKfdnJ/75v
+ BsytZQDfPPUPD/nYnV4bHkyXqb6NqDHBT5anNB443UQZ29EUENMxHX7fgJ5BGzTCCBnf
+ nPRalOH9BgmtLeo1IDiC5Z+0slf59kgnFxavjuC5cV7ySSmujigT19uftocbCIkUYil7
+ 3RmA==
+X-Gm-Message-State: AOAM531/kdWyWNBAA8lXdT1cW2/DBt6VCoERPr0sgejLmQbtq4dqKg4N
+ o1YHP/Ofz5LxoFApjq1dktU=
+X-Google-Smtp-Source: ABdhPJxatn/ZEj7UvGEu2+hg+JaQ5NTeu7t78CRbYwwW0Kh28KbdUYa3LZfTpEV2ZugSageaW42TZw==
+X-Received: by 2002:adf:fdce:: with SMTP id i14mr4577268wrs.58.1610124309479; 
+ Fri, 08 Jan 2021 08:45:09 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4?
+ (p200300ea8f0655006dbbaa764e1a5cc4.dip0.t-ipconnect.de.
+ [2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4])
+ by smtp.googlemail.com with ESMTPSA id g78sm12178501wme.33.2021.01.08.08.45.08
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 08 Jan 2021 08:45:08 -0800 (PST)
+Subject: Re: [PATCH v2] dma-mapping: add unlikely hint for error path in
+ dma_mapping_error
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Barry Song <song.bao.hua@hisilicon.com>
+References: <39581f9a-0066-ad98-094d-d41082145e23@gmail.com>
+ <ba14be47-6c77-94d6-9904-b4679e62091b@arm.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <9cd308a1-2222-8716-2002-c0dacfaa6d91@gmail.com>
+Date: Fri, 8 Jan 2021 17:45:05 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
- "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>
+In-Reply-To: <ba14be47-6c77-94d6-9904-b4679e62091b@arm.com>
+Content-Language: en-US
+Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,416 +111,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Eric,
-
-> -----Original Message-----
-> From: Eric Auger [mailto:eric.auger@redhat.com]
-> Sent: 16 November 2020 11:00
-> To: eric.auger.pro@gmail.com; eric.auger@redhat.com;
-> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
-> kvm@vger.kernel.org; kvmarm@lists.cs.columbia.edu; will@kernel.org;
-> joro@8bytes.org; maz@kernel.org; robin.murphy@arm.com;
-> alex.williamson@redhat.com
-> Cc: jean-philippe@linaro.org; zhangfei.gao@linaro.org;
-> zhangfei.gao@gmail.com; vivek.gautam@arm.com; Shameerali Kolothum
-> Thodi <shameerali.kolothum.thodi@huawei.com>;
-> jacob.jun.pan@linux.intel.com; yi.l.liu@intel.com; tn@semihalf.com;
-> nicoleotsuka@gmail.com; yuzenghui <yuzenghui@huawei.com>
-> Subject: [PATCH v11 12/13] vfio/pci: Register a DMA fault response region
-> 
-> In preparation for vSVA, let's register a DMA fault response region,
-> where the userspace will push the page responses and increment the
-> head of the buffer. The kernel will pop those responses and inject them
-> on iommu side.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/vfio/pci/vfio_pci.c         | 114 +++++++++++++++++++++++++---
->  drivers/vfio/pci/vfio_pci_private.h |   5 ++
->  drivers/vfio/pci/vfio_pci_rdwr.c    |  39 ++++++++++
->  include/uapi/linux/vfio.h           |  32 ++++++++
->  4 files changed, 181 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-> index 65a83fd0e8c0..e9a904ce3f0d 100644
-> --- a/drivers/vfio/pci/vfio_pci.c
-> +++ b/drivers/vfio/pci/vfio_pci.c
-> @@ -318,9 +318,20 @@ static void vfio_pci_dma_fault_release(struct
-> vfio_pci_device *vdev,
->  	kfree(vdev->fault_pages);
->  }
-> 
-> -static int vfio_pci_dma_fault_mmap(struct vfio_pci_device *vdev,
-> -				   struct vfio_pci_region *region,
-> -				   struct vm_area_struct *vma)
-> +static void
-> +vfio_pci_dma_fault_response_release(struct vfio_pci_device *vdev,
-> +				    struct vfio_pci_region *region)
-> +{
-> +	if (vdev->dma_fault_response_wq)
-> +		destroy_workqueue(vdev->dma_fault_response_wq);
-> +	kfree(vdev->fault_response_pages);
-> +	vdev->fault_response_pages = NULL;
-> +}
-> +
-> +static int __vfio_pci_dma_fault_mmap(struct vfio_pci_device *vdev,
-> +				     struct vfio_pci_region *region,
-> +				     struct vm_area_struct *vma,
-> +				     u8 *pages)
->  {
->  	u64 phys_len, req_len, pgoff, req_start;
->  	unsigned long long addr;
-> @@ -333,14 +344,14 @@ static int vfio_pci_dma_fault_mmap(struct
-> vfio_pci_device *vdev,
->  		((1U << (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
->  	req_start = pgoff << PAGE_SHIFT;
-> 
-> -	/* only the second page of the producer fault region is mmappable */
-> +	/* only the second page of the fault region is mmappable */
->  	if (req_start < PAGE_SIZE)
->  		return -EINVAL;
-> 
->  	if (req_start + req_len > phys_len)
->  		return -EINVAL;
-> 
-> -	addr = virt_to_phys(vdev->fault_pages);
-> +	addr = virt_to_phys(pages);
->  	vma->vm_private_data = vdev;
->  	vma->vm_pgoff = (addr >> PAGE_SHIFT) + pgoff;
-> 
-> @@ -349,13 +360,29 @@ static int vfio_pci_dma_fault_mmap(struct
-> vfio_pci_device *vdev,
->  	return ret;
->  }
-> 
-> -static int vfio_pci_dma_fault_add_capability(struct vfio_pci_device *vdev,
-> -					     struct vfio_pci_region *region,
-> -					     struct vfio_info_cap *caps)
-> +static int vfio_pci_dma_fault_mmap(struct vfio_pci_device *vdev,
-> +				   struct vfio_pci_region *region,
-> +				   struct vm_area_struct *vma)
-> +{
-> +	return __vfio_pci_dma_fault_mmap(vdev, region, vma,
-> vdev->fault_pages);
-> +}
-> +
-> +static int
-> +vfio_pci_dma_fault_response_mmap(struct vfio_pci_device *vdev,
-> +				struct vfio_pci_region *region,
-> +				struct vm_area_struct *vma)
-> +{
-> +	return __vfio_pci_dma_fault_mmap(vdev, region, vma,
-> vdev->fault_response_pages);
-> +}
-> +
-> +static int __vfio_pci_dma_fault_add_capability(struct vfio_pci_device *vdev,
-> +					       struct vfio_pci_region *region,
-> +					       struct vfio_info_cap *caps,
-> +					       u32 cap_id)
->  {
->  	struct vfio_region_info_cap_sparse_mmap *sparse = NULL;
->  	struct vfio_region_info_cap_fault cap = {
-> -		.header.id = VFIO_REGION_INFO_CAP_DMA_FAULT,
-> +		.header.id = cap_id,
->  		.header.version = 1,
->  		.version = 1,
->  	};
-> @@ -383,6 +410,14 @@ static int vfio_pci_dma_fault_add_capability(struct
-> vfio_pci_device *vdev,
->  	return ret;
->  }
-> 
-> +static int vfio_pci_dma_fault_add_capability(struct vfio_pci_device *vdev,
-> +					     struct vfio_pci_region *region,
-> +					     struct vfio_info_cap *caps)
-> +{
-> +	return __vfio_pci_dma_fault_add_capability(vdev, region, caps,
-> +						   VFIO_REGION_INFO_CAP_DMA_FAULT);
-> +}
-> +
->  static const struct vfio_pci_regops vfio_pci_dma_fault_regops = {
->  	.rw		= vfio_pci_dma_fault_rw,
->  	.release	= vfio_pci_dma_fault_release,
-> @@ -390,6 +425,13 @@ static const struct vfio_pci_regops
-> vfio_pci_dma_fault_regops = {
->  	.add_capability = vfio_pci_dma_fault_add_capability,
->  };
-> 
-> +static const struct vfio_pci_regops vfio_pci_dma_fault_response_regops = {
-> +	.rw		= vfio_pci_dma_fault_response_rw,
-> +	.release	= vfio_pci_dma_fault_response_release,
-> +	.mmap		= vfio_pci_dma_fault_response_mmap,
-> +	.add_capability = vfio_pci_dma_fault_add_capability,
-> +};
-> +
->  int vfio_pci_iommu_dev_fault_handler(struct iommu_fault *fault, void *data)
->  {
->  	struct vfio_pci_device *vdev = (struct vfio_pci_device *)data;
-> @@ -500,6 +542,55 @@ static int vfio_pci_dma_fault_init(struct
-> vfio_pci_device *vdev)
->  	return ret;
->  }
-> 
-> +#define DMA_FAULT_RESPONSE_RING_LENGTH 512
-> +
-> +static int vfio_pci_dma_fault_response_init(struct vfio_pci_device *vdev)
-> +{
-> +	struct vfio_region_dma_fault_response *header;
-> +	struct iommu_domain *domain;
-> +	size_t size;
-> +	bool nested;
-> +	int ret;
-> +
-> +	domain = iommu_get_domain_for_dev(&vdev->pdev->dev);
-> +	ret = iommu_domain_get_attr(domain, DOMAIN_ATTR_NESTING,
-> &nested);
-
-The above will fail((Thanks to Zengtao for reporting this) if the Guest is
-booted in "enable_unsafe_noiommu_mode" (CONFIG_VFIO_NOIOMMU)
-and dpdk testpmd is attempted.
-
-This is because even though there is an iommu group created for this
-mode, no iommu domain gets attached to it. And results in below
-crash,
-
-root@ubuntu:/mnt/dpdk/build/app# ./testpmd -w 0000:00:02.0 --file-prefix socket0 -l 0-1 -n 2 -- -i
-EAL: Detected 8 lcore(s)
-EAL: Detected 1 NUMA nodes
-EAL: Multi-process socket /var/run/dpdk/socket0/mp_socket
-EAL: Selected IOVA mode 'PA'
-EAL: No available hugepages reported in hugepages-32768kB
-EAL: No available hugepages reported in hugepages-64kB
-EAL: No available hugepages reported in hugepages-1048576kB
-EAL: Probing VFIO support...
-EAL: VFIO support initialized
-EAL:   Invalid NUMA socket, default to 0
-EAL:   using IOMMU type 8 (No-IOMMU)
-[   84.942213] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
-[   84.943047] Mem abort info:
----
-
-I have pushed a temp fix for this in my test branch here,
-https://github.com/hisilicon/kernel-dev/commit/7784d96fbac9c48e8093ec9dbf43a172b1cbe3c3
-
-Please take a look.
-
-(I am seeing another issue with testpmd + vsmmu. I will explain that in another thread).
-
-Thanks,
-Shameer
-
-
-
-  
-> +	if (ret || !nested)
-> +		return ret;
-> +
-> +	mutex_init(&vdev->fault_response_queue_lock);
-> +
-> +	/*
-> +	 * We provision 1 page for the header and space for
-> +	 * DMA_FAULT_RING_LENGTH fault records in the ring buffer.
-> +	 */
-> +	size = ALIGN(sizeof(struct iommu_page_response) *
-> +		     DMA_FAULT_RESPONSE_RING_LENGTH, PAGE_SIZE) +
-> PAGE_SIZE;
-> +
-> +	vdev->fault_response_pages = kzalloc(size, GFP_KERNEL);
-> +	if (!vdev->fault_response_pages)
-> +		return -ENOMEM;
-> +
-> +	ret = vfio_pci_register_dev_region(vdev,
-> +		VFIO_REGION_TYPE_NESTED,
-> +		VFIO_REGION_SUBTYPE_NESTED_DMA_FAULT_RESPONSE,
-> +		&vfio_pci_dma_fault_response_regops, size,
-> +		VFIO_REGION_INFO_FLAG_READ |
-> VFIO_REGION_INFO_FLAG_WRITE |
-> +		VFIO_REGION_INFO_FLAG_MMAP,
-> +		vdev->fault_response_pages);
-> +	if (ret)
-> +		goto out;
-> +
-> +	header = (struct vfio_region_dma_fault_response
-> *)vdev->fault_response_pages;
-> +	header->entry_size = sizeof(struct iommu_page_response);
-> +	header->nb_entries = DMA_FAULT_RESPONSE_RING_LENGTH;
-> +	header->offset = PAGE_SIZE;
-> +
-> +	return 0;
-> +out:
-> +	vdev->fault_response_pages = NULL;
-> +	return ret;
-> +}
-> +
->  static int vfio_pci_enable(struct vfio_pci_device *vdev)
->  {
->  	struct pci_dev *pdev = vdev->pdev;
-> @@ -602,6 +693,10 @@ static int vfio_pci_enable(struct vfio_pci_device
-> *vdev)
->  	if (ret)
->  		goto disable_exit;
-> 
-> +	ret = vfio_pci_dma_fault_response_init(vdev);
-> +	if (ret)
-> +		goto disable_exit;
-> +
->  	vfio_pci_probe_mmaps(vdev);
-> 
->  	return 0;
-> @@ -2227,6 +2322,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const
-> struct pci_device_id *id)
->  	INIT_LIST_HEAD(&vdev->ioeventfds_list);
->  	mutex_init(&vdev->vma_lock);
->  	INIT_LIST_HEAD(&vdev->vma_list);
-> +	INIT_LIST_HEAD(&vdev->dummy_resources_list);
->  	init_rwsem(&vdev->memory_lock);
-> 
->  	ret = vfio_add_group_dev(&pdev->dev, &vfio_pci_ops, vdev);
-> diff --git a/drivers/vfio/pci/vfio_pci_private.h
-> b/drivers/vfio/pci/vfio_pci_private.h
-> index e180b5435c8f..035634521cd0 100644
-> --- a/drivers/vfio/pci/vfio_pci_private.h
-> +++ b/drivers/vfio/pci/vfio_pci_private.h
-> @@ -144,7 +144,9 @@ struct vfio_pci_device {
->  	struct eventfd_ctx	*err_trigger;
->  	struct eventfd_ctx	*req_trigger;
->  	u8			*fault_pages;
-> +	u8			*fault_response_pages;
->  	struct mutex		fault_queue_lock;
-> +	struct mutex		fault_response_queue_lock;
->  	struct list_head	dummy_resources_list;
->  	struct mutex		ioeventfds_lock;
->  	struct list_head	ioeventfds_list;
-> @@ -189,6 +191,9 @@ extern long vfio_pci_ioeventfd(struct vfio_pci_device
-> *vdev, loff_t offset,
->  extern size_t vfio_pci_dma_fault_rw(struct vfio_pci_device *vdev,
->  				    char __user *buf, size_t count,
->  				    loff_t *ppos, bool iswrite);
-> +extern size_t vfio_pci_dma_fault_response_rw(struct vfio_pci_device *vdev,
-> +					     char __user *buf, size_t count,
-> +					     loff_t *ppos, bool iswrite);
-> 
->  extern int vfio_pci_init_perm_bits(void);
->  extern void vfio_pci_uninit_perm_bits(void);
-> diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-> index 164120607469..efde0793360b 100644
-> --- a/drivers/vfio/pci/vfio_pci_rdwr.c
-> +++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-> @@ -400,6 +400,45 @@ size_t vfio_pci_dma_fault_rw(struct vfio_pci_device
-> *vdev, char __user *buf,
->  	return ret;
->  }
-> 
-> +size_t vfio_pci_dma_fault_response_rw(struct vfio_pci_device *vdev, char
-> __user *buf,
-> +				      size_t count, loff_t *ppos, bool iswrite)
-> +{
-> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) -
-> VFIO_PCI_NUM_REGIONS;
-> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
-> +	void *base = vdev->region[i].data;
-> +	int ret = -EFAULT;
-> +
-> +	if (pos >= vdev->region[i].size)
-> +		return -EINVAL;
-> +
-> +	count = min(count, (size_t)(vdev->region[i].size - pos));
-> +
-> +	if (iswrite) {
-> +		struct vfio_region_dma_fault_response *header =
-> +			(struct vfio_region_dma_fault_response *)base;
-> +		uint32_t  new_head;
-> +
-> +		if (pos != 0 || count != 4)
-> +			return -EINVAL;
-> +
-> +		if (copy_from_user((void *)&new_head, buf, count))
-> +			return -EFAULT;
-> +
-> +		if (new_head >= header->nb_entries)
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&vdev->fault_response_queue_lock);
-> +		header->head = new_head;
-> +		mutex_unlock(&vdev->fault_response_queue_lock);
-> +	} else {
-> +		if (copy_to_user(buf, base + pos, count))
-> +			return -EFAULT;
-> +	}
-> +	*ppos += count;
-> +	ret = count;
-> +	return ret;
-> +}
-> +
->  static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
->  					bool test_mem)
->  {
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 1e5c82f9d14d..5d106db7a4c5 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -345,6 +345,7 @@ struct vfio_region_info_cap_type {
-> 
->  #define VFIO_REGION_TYPE_NESTED			(2)
->  #define VFIO_REGION_SUBTYPE_NESTED_DMA_FAULT	(1)
-> +#define VFIO_REGION_SUBTYPE_NESTED_DMA_FAULT_RESPONSE	(2)
-> 
->  /**
->   * struct vfio_region_gfx_edid - EDID region layout.
-> @@ -1022,6 +1023,17 @@ struct vfio_region_info_cap_fault {
->  	__u32 version;
->  };
-> 
-> +/*
-> + * Capability exposed by the DMA fault response region
-> + * @version: ABI version
-> + */
-> +#define VFIO_REGION_INFO_CAP_DMA_FAULT_RESPONSE	7
-> +
-> +struct vfio_region_info_cap_fault_response {
-> +	struct vfio_info_cap_header header;
-> +	__u32 version;
-> +};
-> +
->  /*
->   * DMA Fault Region Layout
->   * @tail: index relative to the start of the ring buffer at which the
-> @@ -1042,6 +1054,26 @@ struct vfio_region_dma_fault {
->  	__u32   head;
->  };
-> 
-> +/*
-> + * DMA Fault Response Region Layout
-> + * @head: index relative to the start of the ring buffer at which the
-> + *        producer (userspace) insert responses into the buffer
-> + * @entry_size: fault ring buffer entry size in bytes
-> + * @nb_entries: max capacity of the fault ring buffer
-> + * @offset: ring buffer offset relative to the start of the region
-> + * @tail: index relative to the start of the ring buffer at which the
-> + *        consumer (kernel) finds the next item in the buffer
-> + */
-> +struct vfio_region_dma_fault_response {
-> +	/* Write-Only */
-> +	__u32   head;
-> +	/* Read-Only */
-> +	__u32   entry_size;
-> +	__u32	nb_entries;
-> +	__u32	offset;
-> +	__u32   tail;
-> +};
-> +
->  /* -------- API for Type1 VFIO IOMMU -------- */
-> 
->  /**
-> --
-> 2.21.3
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTQuMTIuMjAyMCAxNDowMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjAtMTItMTMg
+MTY6MzIsIEhlaW5lciBLYWxsd2VpdCB3cm90ZToKPj4gWmlsbGlvbnMgb2YgZHJpdmVycyB1c2Ug
+dGhlIHVubGlrZWx5KCkgaGludCB3aGVuIGNoZWNraW5nIHRoZSByZXN1bHQgb2YKPj4gZG1hX21h
+cHBpbmdfZXJyb3IoKS4gVGhpcyBpcyBhbiBpbmxpbmUgZnVuY3Rpb24gYW55d2F5LCBzbyB3ZSBj
+YW4gbW92ZQo+PiB0aGUgaGludCBpbnRvIHRoaXMgZnVuY3Rpb24gYW5kIHJlbW92ZSBpdCBmcm9t
+IGRyaXZlcnMuCj4gCj4gUmV2aWV3ZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFy
+bS5jb20+Cj4gCj4gRldJVyBJIGNvbnNpZGVyIHRoaXMgY2FzZSBzaW1pbGFyIHRvIHRoZSBzYW1l
+IGhpbnQgaW4gV0FSTl9PTigpIGFuZCBmcmllbmRzIC0gaXQncyBhIHByZXR0eSBzZXZlcmUgY29u
+ZGl0aW9uIHRoYXQgc2hvdWxkIG5ldmVyIGJlIGV4cGVjdGVkIHRvIGJlIGhpdCBpbiBub3JtYWwg
+b3BlcmF0aW9uLCBzbyBpdCdzIGVudGlyZWx5IGxvZ2ljYWwgZm9yIGl0IHRvIGJlIGltcGxpY2l0
+bHkgdW5saWtlbHkuIEkgc3RydWdnbGUgdG8gaW1hZ2luZSBhbnkgY2FzZSB0aGF0IHdvdWxkIHNw
+ZWNpZmljYWxseSAqbm90KiB3YW50IHRoYXQgKG9yIHdvcnNlLCB3YW50IHRvIGhpbnQgaXQgYXMg
+bGlrZWx5KS4gU29tZSBETUEgQVBJIGJhY2tlbmRzIG1heSBzcGVuZCBjb25zaWRlcmFibGUgdGlt
+ZSB0cnlpbmcgYXMgaGFyZCBhcyBwb3NzaWJsZSB0byBtYWtlIGEgbWFwcGluZyB3b3JrIGJlZm9y
+ZSBldmVudHVhbGx5IGFkbWl0dGluZyBkZWZlYXQsIHNvIHRoZSBpZGVhIG9mIGV2ZXIgdHJ5aW5n
+IHRvIG9wdGltaXNlIGF0IHRoZSBkcml2ZXIgbGV2ZWwgZm9yIGZhaWx1cmUgaW4gaG90IHBhdGhz
+IGp1c3QgbWFrZXMgbm8gc2Vuc2UuCj4gCj4gVGhhbmtzLAo+IFJvYmluLgo+IAo+PiBTaWduZWQt
+b2ZmLWJ5OiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPgo+PiAtLS0KPj4g
+djI6Cj4+IFNwbGl0IHRoZSBiaWcgcGF0Y2ggaW50byB0aGUgY2hhbmdlIGZvciBkbWEtbWFwcGlu
+Zy5oIGFuZCBmb2xsb3ctdXAKPj4gcGF0Y2hlcyBwZXIgc3Vic3lzdGVtIHRoYXQgd2lsbCBnbyB0
+aHJvdWdoIHRoZSB0cmVlcyBvZiB0aGUgcmVzcGVjdGl2ZQo+PiBtYWludGFpbmVycy4KPj4gLS0t
+Cj4+IMKgIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8IDIgKy0KPj4gwqAga2VybmVsL2Rt
+YS9tYXBfYmVuY2htYXJrLmPCoCB8IDIgKy0KPj4gwqAgMiBmaWxlcyBjaGFuZ2VkLCAyIGluc2Vy
+dGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4
+L2RtYS1tYXBwaW5nLmggYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgKPj4gaW5kZXggMmU0
+OTk5NmE4Li42MTc3ZTIwYjUgMTAwNjQ0Cj4+IC0tLSBhL2luY2x1ZGUvbGludXgvZG1hLW1hcHBp
+bmcuaAo+PiArKysgYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgKPj4gQEAgLTk1LDcgKzk1
+LDcgQEAgc3RhdGljIGlubGluZSBpbnQgZG1hX21hcHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAq
+ZGV2LCBkbWFfYWRkcl90IGRtYV9hZGRyKQo+PiDCoCB7Cj4+IMKgwqDCoMKgwqAgZGVidWdfZG1h
+X21hcHBpbmdfZXJyb3IoZGV2LCBkbWFfYWRkcik7Cj4+IMKgIC3CoMKgwqAgaWYgKGRtYV9hZGRy
+ID09IERNQV9NQVBQSU5HX0VSUk9SKQo+PiArwqDCoMKgIGlmICh1bmxpa2VseShkbWFfYWRkciA9
+PSBETUFfTUFQUElOR19FUlJPUikpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVOT01F
+TTsKPj4gwqDCoMKgwqDCoCByZXR1cm4gMDsKPj4gwqAgfQo+PiBkaWZmIC0tZ2l0IGEva2VybmVs
+L2RtYS9tYXBfYmVuY2htYXJrLmMgYi9rZXJuZWwvZG1hL21hcF9iZW5jaG1hcmsuYwo+PiBpbmRl
+eCBiMTQ5NmU3NDQuLjkwMTQyMGE1ZCAxMDA2NDQKPj4gLS0tIGEva2VybmVsL2RtYS9tYXBfYmVu
+Y2htYXJrLmMKPj4gKysrIGIva2VybmVsL2RtYS9tYXBfYmVuY2htYXJrLmMKPj4gQEAgLTc4LDcg
+Kzc4LDcgQEAgc3RhdGljIGludCBtYXBfYmVuY2htYXJrX3RocmVhZCh2b2lkICpkYXRhKQo+PiDC
+oCDCoMKgwqDCoMKgwqDCoMKgwqAgbWFwX3N0aW1lID0ga3RpbWVfZ2V0KCk7Cj4+IMKgwqDCoMKg
+wqDCoMKgwqDCoCBkbWFfYWRkciA9IGRtYV9tYXBfc2luZ2xlKG1hcC0+ZGV2LCBidWYsIFBBR0Vf
+U0laRSwgbWFwLT5kaXIpOwo+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKHVubGlrZWx5KGRtYV9tYXBw
+aW5nX2Vycm9yKG1hcC0+ZGV2LCBkbWFfYWRkcikpKSB7Cj4+ICvCoMKgwqDCoMKgwqDCoCBpZiAo
+ZG1hX21hcHBpbmdfZXJyb3IobWFwLT5kZXYsIGRtYV9hZGRyKSkgewo+PiDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBwcl9lcnIoImRtYV9tYXBfc2luZ2xlIGZhaWxlZCBvbiAlc1xuIiwKPj4g
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXZfbmFtZShtYXAtPmRldikpOwo+
+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXQgPSAtRU5PTUVNOwo+PgoKSXMgdGhpcyBw
+YXRjaCBnb2luZyB0byBtYWtlIGl0IHRvIGxpbnV4LW5leHQ/Cl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
