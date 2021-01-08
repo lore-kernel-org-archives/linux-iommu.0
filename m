@@ -7,85 +7,84 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D57C433E9
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD753C433DB
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:02:51 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F296223A1E
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:02:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F296223A1E
+	by mail.kernel.org (Postfix) with ESMTPS id 7FC2523A1D
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 15:02:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7FC2523A1D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BDB8287336;
-	Fri,  8 Jan 2021 15:02:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 59FEB87360;
+	Fri,  8 Jan 2021 15:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uyohFjqhuQqb; Fri,  8 Jan 2021 15:02:45 +0000 (UTC)
+	with ESMTP id ILilHNhCN0Dg; Fri,  8 Jan 2021 15:02:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1E74987360;
-	Fri,  8 Jan 2021 15:02:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7FB158732C;
+	Fri,  8 Jan 2021 15:02:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04A4AC0891;
-	Fri,  8 Jan 2021 15:02:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6AA3C013A
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B8C6C1E6F;
+	Fri,  8 Jan 2021 15:02:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E2BCCC013A
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 94A18204FD
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:43 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CC09E87317
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B49YHWP+SsyG for <iommu@lists.linux-foundation.org>;
- Fri,  8 Jan 2021 15:02:42 +0000 (UTC)
+ with ESMTP id NPnvEmmmZsGc for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Jan 2021 15:02:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com
- [209.85.221.54])
- by silver.osuosl.org (Postfix) with ESMTPS id 22CCE204FA
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:42 +0000 (UTC)
-Received: by mail-wr1-f54.google.com with SMTP id q18so9348856wrn.1
- for <iommu@lists.linux-foundation.org>; Fri, 08 Jan 2021 07:02:42 -0800 (PST)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com
+ [209.85.221.41])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0775E8732C
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 15:02:47 +0000 (UTC)
+Received: by mail-wr1-f41.google.com with SMTP id t30so9342041wrb.0
+ for <iommu@lists.linux-foundation.org>; Fri, 08 Jan 2021 07:02:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=M6xu+NZsefpfo8WqjQL32PlY8NL0QuBVkGqSt5snD+A=;
- b=kxuUCMV1WAqpwwvoibNUsWYrlPgddFb1B3XDtYKriSKJqhZ7YxBdz7idYeFiPEusdj
- oSxwzMXDVtdAhRbiUIPtiWxDXm3EOdY0B1oZ4RFYK1eN63WYymsf6s1QMgxe1Fp+XJLm
- 7MYSyOGWzgv+FVOhkD8wVISPR0VlGxk9zmYIDuW8ATAmQ8SghsBmSoZJE31MhRs/IXU7
- jcMsXHSkhBXTuv9sJLCqbDDqfbxZnhaRfmDInXFrql1M/HVbnCpK9DeM9XJWQDFfFBiX
- CVAh4zvNMBGGzxZ42Xa9GLW4zEO7yuaspaFGL8sBAQLWZMjutowtPglRsb0G7rH8euGW
- 4JKQ==
+ bh=8RN8kwidJOzPyA7Qpg3RtqPE4flzC/x9Wg3rMV7wees=;
+ b=Fak3o+zy1duaz7jSvXKzMTPcG81rNMh00UGR6hiDG1yuhxLSQ0h3vd3WpSV7arh3RV
+ qJe6332Hy8nYJaxBYNayIHQD5Xkd1eCzyPT4ZxRBMRVpXG3kj2rAb7VRFuzCuNVwD5bD
+ cXoaGCab5mUM9vZfl6eJvNpd+XcMEU7m/GaWL7uRAx5jG2eTnBEVtYCjOnifCBfK8kY1
+ 77Tq+/+ndHgQ2WC8bjQk1SxdJe+kBe4xMcJHNbXFOaNsS2cWnI6xlGWAGtZXcYtKnW2D
+ Wl0BJiddYbKSNl5cZ5IQpZuuSAZzPnrI0FEXytcHQScVZeC6b+prft5hhEZyOvBJ0e+t
+ no7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=M6xu+NZsefpfo8WqjQL32PlY8NL0QuBVkGqSt5snD+A=;
- b=UDEjev2Z2ay42zxOYZG5iVz4wnthLxTh1pMoHPRyDbynJLXmb8utJcuO14THBiAAxq
- hJTdm8/3YWruoEVvRqEA3Th6b74jVZn4dHh4DgCrxng+X3GvEVz8xiO0Xd6zxMQ4B21Z
- yoip4xdDZYc3A0A7dkbvq6hKJxddf7WyJ1Oh0PjTqDPWHCZREE9VEcLNvdJWgDdfoMkA
- pN0jebm/ikTd3FFopUAb9CiQL4IRkg1dMd6fsNs1W+kS2IcUVREjMcw5iwj7TxWWdpQi
- zmBMdDHqxb+R+Zd+Z+jgkGVY/59U/o4eIBmpBF7FUlVmzNR4XSRpP3fH9YsljLt7xxRA
- lupg==
-X-Gm-Message-State: AOAM533vrSRea50zB4ORIYJAsqRrklcoiyBRxDHP+J4PXKi6GuSOnhEG
- +9RDKAoTaWzJEC0d2ZR7s1ZATQ==
-X-Google-Smtp-Source: ABdhPJxXGloEPafSPINGJsoqaUcfHJIL8u06StaksnduujJItHcYtBuA/olK4ECauRMs3Zhmv7TwtA==
-X-Received: by 2002:a05:6000:c9:: with SMTP id
- q9mr3946567wrx.259.1610118160590; 
- Fri, 08 Jan 2021 07:02:40 -0800 (PST)
+ bh=8RN8kwidJOzPyA7Qpg3RtqPE4flzC/x9Wg3rMV7wees=;
+ b=n8Ta3skNbMfSp061bkOLRl3IP8bWfSdhYujlnmtTaTjMtMcYKeYrF2LSLwlL0hP0h/
+ K9/mURdvCwqnwsWhQNEN4iEJCYGNH0Qhzxh1K1xtDU7BMboSBqW8lxyw8PZQsGS9Vwn7
+ epTycoFQ83NeurtD2GfPW1muAqpF0avvBmkRdZ9jCbAAdMZIHI7SFm/99Az4AuV7vZ4C
+ XVZPH5nRBYqf9Ah1l54hXtui+gt/pKlTBzsy6j62zHudUjWCcoWcQ4Ah83XdQoHLfDEp
+ YEG/3Xa7gcy/hy7PqxlsLgiPqR7X0mGp++k91tZDbLQ9O8ZxiyXl7+Dz3rGThhMW9ATe
+ WuPQ==
+X-Gm-Message-State: AOAM532wYVPiSVh8DRf2FeuLx0KF56m/hgstauTIBzghbJtzB6ewJMIq
+ qGIs/jAt0O1DBhF9MfQt5LitGA==
+X-Google-Smtp-Source: ABdhPJzmCME7Gtvq9iiLZjWDDsj68d4w8hOf5Ni1fB49vFhOqLmIi+oPyKBJ5yMjjTfIAjCKE04XBA==
+X-Received: by 2002:a5d:690d:: with SMTP id t13mr4077051wru.410.1610118153487; 
+ Fri, 08 Jan 2021 07:02:33 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id s13sm14258464wra.53.2021.01.08.07.02.39
+ by smtp.gmail.com with ESMTPSA id s13sm14258464wra.53.2021.01.08.07.02.32
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 08 Jan 2021 07:02:39 -0800 (PST)
+ Fri, 08 Jan 2021 07:02:32 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v9 09/10] ACPI/IORT: Enable stall support for platform devices
-Date: Fri,  8 Jan 2021 15:52:17 +0100
-Message-Id: <20210108145217.2254447-10-jean-philippe@linaro.org>
+Subject: [PATCH v9 04/10] iommu/vt-d: Support IOMMU_DEV_FEAT_IOPF
+Date: Fri,  8 Jan 2021 15:52:12 +0100
+Message-Id: <20210108145217.2254447-5-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210108145217.2254447-1-jean-philippe@linaro.org>
 References: <20210108145217.2254447-1-jean-philippe@linaro.org>
@@ -95,7 +94,8 @@ Cc: devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
  rjw@rjwysocki.net, iommu@lists.linux-foundation.org, robh+dt@kernel.org,
  linux-accelerators@lists.ozlabs.org, sudeep.holla@arm.com,
  vivek.gautam@arm.com, zhangfei.gao@linaro.org, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+ David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org,
+ lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,37 +113,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Copy the "Stall supported" bit, that tells whether a named component
-supports stall, into the dma-can-stall device property.
+Allow drivers to query and enable IOMMU_DEV_FEAT_IOPF, which amounts to
+checking whether PRI is enabled.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
-v9: dropped fwspec member in favor of device properties
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/acpi/arm64/iort.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index c9a8bbb74b09..42820d7eb869 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -968,13 +968,15 @@ static int iort_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
- static void iort_named_component_init(struct device *dev,
- 				      struct acpi_iort_node *node)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 788119c5b021..630639c753f9 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5263,6 +5263,8 @@ static int siov_find_pci_dvsec(struct pci_dev *pdev)
+ static bool
+ intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
  {
--	struct property_entry props[2] = {};
-+	struct property_entry props[3] = {};
- 	struct acpi_iort_named_component *nc;
++	struct device_domain_info *info = get_domain_info(dev);
++
+ 	if (feat == IOMMU_DEV_FEAT_AUX) {
+ 		int ret;
  
- 	nc = (struct acpi_iort_named_component *)node->node_data;
- 	props[0] = PROPERTY_ENTRY_U32("pasid-num-bits",
- 				      FIELD_GET(ACPI_IORT_NC_PASID_BITS,
- 						nc->node_flags));
-+	if (nc->node_flags & ACPI_IORT_NC_STALL_SUPPORTED)
-+		props[1] = PROPERTY_ENTRY_BOOL("dma-can-stall");
+@@ -5277,13 +5279,13 @@ intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
+ 		return !!siov_find_pci_dvsec(to_pci_dev(dev));
+ 	}
  
- 	if (device_add_properties(dev, props))
- 		dev_warn(dev, "Could not add device properties\n");
+-	if (feat == IOMMU_DEV_FEAT_SVA) {
+-		struct device_domain_info *info = get_domain_info(dev);
++	if (feat == IOMMU_DEV_FEAT_IOPF)
++		return info && info->pri_supported;
+ 
++	if (feat == IOMMU_DEV_FEAT_SVA)
+ 		return info && (info->iommu->flags & VTD_FLAG_SVM_CAPABLE) &&
+ 			info->pasid_supported && info->pri_supported &&
+ 			info->ats_supported;
+-	}
+ 
+ 	return false;
+ }
+@@ -5294,6 +5296,9 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+ 	if (feat == IOMMU_DEV_FEAT_AUX)
+ 		return intel_iommu_enable_auxd(dev);
+ 
++	if (feat == IOMMU_DEV_FEAT_IOPF)
++		return intel_iommu_dev_has_feat(dev, feat) ? 0 : -ENODEV;
++
+ 	if (feat == IOMMU_DEV_FEAT_SVA) {
+ 		struct device_domain_info *info = get_domain_info(dev);
+ 
 -- 
 2.29.2
 
