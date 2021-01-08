@@ -2,91 +2,90 @@ Return-Path: <SRS0=te8u=GL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B657C433DB
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 17:05:46 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CC8C433E0
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 18:10:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A896723A00
-	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 17:05:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A896723A00
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1ED1123A69
+	for <iommu@archiver.kernel.org>; Fri,  8 Jan 2021 18:10:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1ED1123A69
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4F451875AC;
-	Fri,  8 Jan 2021 17:05:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AF2D286881;
+	Fri,  8 Jan 2021 18:10:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id phPwWmLjPLoH; Fri,  8 Jan 2021 17:05:43 +0000 (UTC)
+	with ESMTP id 7V6Bxjrp7y8B; Fri,  8 Jan 2021 18:10:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 920E6875A9;
-	Fri,  8 Jan 2021 17:05:43 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 16F9D86D5C;
+	Fri,  8 Jan 2021 18:10:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7ABA9C0891;
-	Fri,  8 Jan 2021 17:05:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F35CEC0891;
+	Fri,  8 Jan 2021 18:10:03 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 556ECC013A
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 17:05:42 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C82D3C013A
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 18:10:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 437C986BA4
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 17:05:42 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BA54C85E6D
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 18:10:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0i9C_8IKLv33 for <iommu@lists.linux-foundation.org>;
- Fri,  8 Jan 2021 17:05:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1D43F85DB8
- for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 17:05:37 +0000 (UTC)
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
- by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4DC8bZ3685zXwW1;
- Sat,  9 Jan 2021 01:04:42 +0800 (CST)
-Received: from dggema715-chm.china.huawei.com (10.3.20.79) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Sat, 9 Jan 2021 01:05:33 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggema715-chm.china.huawei.com (10.3.20.79) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Sat, 9 Jan 2021 01:05:32 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2106.002; Fri, 8 Jan 2021 17:05:30 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Eric Auger <eric.auger@redhat.com>, "eric.auger.pro@gmail.com"
- <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>
-Subject: RE: [PATCH v13 00/15] SMMUv3 Nested Stage Setup (IOMMU part)
-Thread-Topic: [PATCH v13 00/15] SMMUv3 Nested Stage Setup (IOMMU part)
-Thread-Index: AQHWvZ3PFBCcuzrn5UiXiOG2BGlsE6oeOV7w
-Date: Fri, 8 Jan 2021 17:05:30 +0000
-Message-ID: <ad88f78cf56f4f7fb69728cbf22a1052@huawei.com>
-References: <20201118112151.25412-1-eric.auger@redhat.com>
-In-Reply-To: <20201118112151.25412-1-eric.auger@redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.94.9]
+ with ESMTP id U560wtUyT3QI for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Jan 2021 18:09:58 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m43-15.mailgun.net (m43-15.mailgun.net [69.72.43.15])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BC78786E65
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Jan 2021 18:09:20 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1610129361; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=0i7L7jWu8aynDM0LkuyTLjoMUIf8WxyfzKh7T7CAFJI=;
+ b=r0Cn1e5Fi43J0hICmWJDTrVDsi/OarocHH0jxwc7OROd9iSUUjKy0po2v3TEx5GfIimjSKzv
+ bp3+8IxMzbO6jT3VEZIpq4/6GrZfGox+5lxevJGu5qJoXywzuLhdLRkJS0QYafE0sRg07E6W
+ nBUMUHNV8iAzd/6vlSDFW0IPj48=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n10.prod.us-east-1.postgun.com with SMTP id
+ 5ff89fc89dccccecd367e6d0 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 08 Jan 2021 18:09:12
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id E28BDC43462; Fri,  8 Jan 2021 18:09:11 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested) (Authenticated sender: isaacm)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id D454EC433C6;
+ Fri,  8 Jan 2021 18:09:10 +0000 (UTC)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
- "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>
+Date: Fri, 08 Jan 2021 10:09:10 -0800
+From: isaacm@codeaurora.org
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Allow non-coherent masters to use
+ system cache
+In-Reply-To: <8cfefbff135a5287d177b6ab2ccc3304@codeaurora.org>
+References: <20201224064007.2339-1-saiprakash.ranjan@codeaurora.org>
+ <20210106115615.GA1763@willie-the-truck>
+ <cfced52002337025088a64aa159760b2@codeaurora.org>
+ <8cfefbff135a5287d177b6ab2ccc3304@codeaurora.org>
+Message-ID: <84ff10c38e99635bc222ca2dd29be2b5@codeaurora.org>
+X-Sender: isaacm@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Akhil P Oommen <akhilpo@codeaurora.org>,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,225 +98,108 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Eric,
-
-> -----Original Message-----
-> From: Eric Auger [mailto:eric.auger@redhat.com]
-> Sent: 18 November 2020 11:22
-> To: eric.auger.pro@gmail.com; eric.auger@redhat.com;
-> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
-> kvm@vger.kernel.org; kvmarm@lists.cs.columbia.edu; will@kernel.org;
-> joro@8bytes.org; maz@kernel.org; robin.murphy@arm.com;
-> alex.williamson@redhat.com
-> Cc: jean-philippe@linaro.org; zhangfei.gao@linaro.org;
-> zhangfei.gao@gmail.com; vivek.gautam@arm.com; Shameerali Kolothum
-> Thodi <shameerali.kolothum.thodi@huawei.com>;
-> jacob.jun.pan@linux.intel.com; yi.l.liu@intel.com; tn@semihalf.com;
-> nicoleotsuka@gmail.com; yuzenghui <yuzenghui@huawei.com>
-> Subject: [PATCH v13 00/15] SMMUv3 Nested Stage Setup (IOMMU part)
+On 2021-01-07 21:47, Sai Prakash Ranjan wrote:
+> On 2021-01-07 22:27, isaacm@codeaurora.org wrote:
+>> On 2021-01-06 03:56, Will Deacon wrote:
+>>> On Thu, Dec 24, 2020 at 12:10:07PM +0530, Sai Prakash Ranjan wrote:
+>>>> commit ecd7274fb4cd ("iommu: Remove unused IOMMU_SYS_CACHE_ONLY 
+>>>> flag")
+>>>> removed unused IOMMU_SYS_CACHE_ONLY prot flag and along with it went
+>>>> the memory type setting required for the non-coherent masters to use
+>>>> system cache. Now that system cache support for GPU is added, we 
+>>>> will
+>>>> need to mark the memory as normal sys-cached for GPU to use system 
+>>>> cache.
+>>>> Without this, the system cache lines are not allocated for GPU. We 
+>>>> use
+>>>> the IO_PGTABLE_QUIRK_ARM_OUTER_WBWA quirk instead of a page 
+>>>> protection
+>>>> flag as the flag cannot be exposed via DMA api because of no in-tree
+>>>> users.
+>>>> 
+>>>> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+>>>> ---
+>>>>  drivers/iommu/io-pgtable-arm.c | 3 +++
+>>>>  1 file changed, 3 insertions(+)
+>>>> 
+>>>> diff --git a/drivers/iommu/io-pgtable-arm.c 
+>>>> b/drivers/iommu/io-pgtable-arm.c
+>>>> index 7c9ea9d7874a..3fb7de8304a2 100644
+>>>> --- a/drivers/iommu/io-pgtable-arm.c
+>>>> +++ b/drivers/iommu/io-pgtable-arm.c
+>>>> @@ -415,6 +415,9 @@ static arm_lpae_iopte 
+>>>> arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>>>>  		else if (prot & IOMMU_CACHE)
+>>>>  			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+>>>>  				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>>>> +		else if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA)
+>>>> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
+>>>> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>>>>  	}
+>>> 
+>> While this approach of enabling system cache globally for both page
+>> tables and other buffers
+>> works for the GPU usecase, this isn't ideal for other clients that use
+>> system cache. For example,
+>> video clients only want to cache a subset of their buffers in the
+>> system cache, due to the sizing constraint
+>> imposed by how much of the system cache they can use. So, it would be
+>> ideal to have
+>> a way of expressing the desire to use the system cache on a per-buffer
+>> basis. Additionally,
+>> our video clients use the DMA layer, and since the requirement is for
+>> caching in the system cache
+>> to be a per buffer attribute, it seems like we would have to have a
+>> DMA attribute to express
+>> this on a per-buffer basis.
+>> 
 > 
-> This series brings the IOMMU part of HW nested paging support
-> in the SMMUv3. The VFIO part is submitted separately.
-> 
-> The IOMMU API is extended to support 2 new API functionalities:
-> 1) pass the guest stage 1 configuration
-> 2) pass stage 1 MSI bindings
-> 
-> Then those capabilities gets implemented in the SMMUv3 driver.
-> 
-> The virtualizer passes information through the VFIO user API
-> which cascades them to the iommu subsystem. This allows the guest
-> to own stage 1 tables and context descriptors (so-called PASID
-> table) while the host owns stage 2 tables and main configuration
-> structures (STE).
+> I did bring this up initially [1], also where is this video client
+> in upstream? AFAIK, only system cache user in upstream is GPU.
+> We cannot add any DMA attribute unless there is any user upstream
+Right, there wouldn't be an upstream user, which would be problematic,
+but I was thinking of having it so that when video or any of our other
+clients that use this attribute on a per buffer basis upstreams their
+code, it's not too much of a stretch to add the support.
+> as per [2], so when the support for such a client is added, wouldn't
+> ((data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA) || PROT_FLAG)
+> work?
+I don't think that will work, because we currently have clients who use 
+the
+system cache as follows:
+-cache only page tables in the system cache
+-cache only data buffers in the system cache
+-cache both page tables and all buffers in the system cache
+-cache both page tables and some buffers in the system cache
 
-I am seeing an issue with Guest testpmd run with this series.
-I have two different setups and testpmd works fine with the
-first one but not with the second.
+The approach you're suggesting doesn't allow for the last case, as 
+caching the
+page tables in the system cache involves setting 
+IO_PGTABLE_QUIRK_ARM_OUTER_WBWA,
+so we will end up losing the flexibility to cache some data buffers in 
+the system cache.
 
-1). Guest doesn't have kernel driver built-in for pass-through dev.
-
-root@ubuntu:/# lspci -v
-...
-00:02.0 Ethernet controller: Huawei Technologies Co., Ltd. Device a22e (rev 21)
-Subsystem: Huawei Technologies Co., Ltd. Device 0000
-Flags: fast devsel
-Memory at 8000100000 (64-bit, prefetchable) [disabled] [size=64K]
-Memory at 8000000000 (64-bit, prefetchable) [disabled] [size=1M]
-Capabilities: [40] Express Root Complex Integrated Endpoint, MSI 00
-Capabilities: [a0] MSI-X: Enable- Count=67 Masked-
-Capabilities: [b0] Power Management version 3
-Capabilities: [100] Access Control Services
-Capabilities: [300] Transaction Processing Hints
-
-root@ubuntu:/# echo vfio-pci > /sys/bus/pci/devices/0000:00:02.0/driver_override
-root@ubuntu:/# echo 0000:00:02.0 > /sys/bus/pci/drivers_probe
-
-root@ubuntu:/mnt/dpdk/build/app# ./testpmd -w 0000:00:02.0 --file-prefix socket0  -l 0-1 -n 2 -- -i
-EAL: Detected 8 lcore(s)
-EAL: Detected 1 NUMA nodes
-EAL: Multi-process socket /var/run/dpdk/socket0/mp_socket
-EAL: Selected IOVA mode 'VA'
-EAL: No available hugepages reported in hugepages-32768kB
-EAL: No available hugepages reported in hugepages-64kB
-EAL: No available hugepages reported in hugepages-1048576kB
-EAL: Probing VFIO support...
-EAL: VFIO support initialized
-EAL:   Invalid NUMA socket, default to 0
-EAL:   using IOMMU type 1 (Type 1)
-EAL: Probe PCI driver: net_hns3_vf (19e5:a22e) device: 0000:00:02.0 (socket 0)
-EAL: No legacy callbacks, legacy socket not created
-Interactive-mode selected
-testpmd: create a new mbuf pool <mbuf_pool_socket_0>: n=155456, size=2176, socket=0
-testpmd: preferred mempool ops selected: ring_mp_mc
-
-Warning! port-topology=paired and odd forward ports number, the last port will pair with itself.
-
-Configuring Port 0 (socket 0)
-Port 0: 8E:A6:8C:43:43:45
-Checking link statuses...
-Done
-testpmd>
-
-2). Guest have kernel driver built-in for pass-through dev.
-
-root@ubuntu:/# lspci -v
-...
-00:02.0 Ethernet controller: Huawei Technologies Co., Ltd. Device a22e (rev 21)
-Subsystem: Huawei Technologies Co., Ltd. Device 0000
-Flags: bus master, fast devsel, latency 0
-Memory at 8000100000 (64-bit, prefetchable) [size=64K]
-Memory at 8000000000 (64-bit, prefetchable) [size=1M]
-Capabilities: [40] Express Root Complex Integrated Endpoint, MSI 00
-Capabilities: [a0] MSI-X: Enable+ Count=67 Masked-
-Capabilities: [b0] Power Management version 3
-Capabilities: [100] Access Control Services
-Capabilities: [300] Transaction Processing Hints
-Kernel driver in use: hns3
-
-root@ubuntu:/# echo vfio-pci > /sys/bus/pci/devices/0000:00:02.0/driver_override
-root@ubuntu:/# echo 0000:00:02.0 > /sys/bus/pci/drivers/hns3/unbind
-root@ubuntu:/# echo 0000:00:02.0 > /sys/bus/pci/drivers_probe
-
-root@ubuntu:/mnt/dpdk/build/app# ./testpmd -w 0000:00:02.0 --file-prefix socket0 -l 0-1 -n 2 -- -i
-EAL: Detected 8 lcore(s)
-EAL: Detected 1 NUMA nodes
-EAL: Multi-process socket /var/run/dpdk/socket0/mp_socket
-EAL: Selected IOVA mode 'VA'
-EAL: No available hugepages reported in hugepages-32768kB
-EAL: No available hugepages reported in hugepages-64kB
-EAL: No available hugepages reported in hugepages-1048576kB
-EAL: Probing VFIO support...
-EAL: VFIO support initialized
-EAL:   Invalid NUMA socket, default to 0
-EAL:   using IOMMU type 1 (Type 1)
-EAL: Probe PCI driver: net_hns3_vf (19e5:a22e) device: 0000:00:02.0 (socket 0)
-0000:00:02.0 hns3_get_mbx_resp(): VF could not get mbx(11,0) head(1) tail(0) lost(1) from PF in_irq:0
-hns3vf_get_queue_info(): Failed to get tqp info from PF: -62
-hns3vf_init_vf(): Failed to fetch configuration: -62
-hns3vf_dev_init(): Failed to init vf: -62
-EAL: Releasing pci mapped resource for 0000:00:02.0
-EAL: Calling pci_unmap_resource for 0000:00:02.0 at 0x1100800000
-EAL: Calling pci_unmap_resource for 0000:00:02.0 at 0x1100810000
-EAL: Requested device 0000:00:02.0 cannot be used
-EAL: Bus (pci) probe failed.
-EAL: No legacy callbacks, legacy socket not created
-testpmd: No probed ethernet devices
-Interactive-mode selected
-testpmd: create a new mbuf pool <mbuf_pool_socket_0>: n=155456, size=2176, socket=0
-testpmd: preferred mempool ops selected: ring_mp_mc
-Done
-testpmd>
-
-And in this case, smmu(host) reports a translation fault,
-
-[ 6542.670624] arm-smmu-v3 arm-smmu-v3.2.auto: event 0x10 received:
-[ 6542.670630] arm-smmu-v3 arm-smmu-v3.2.auto: 0x00007d1200000010
-[ 6542.670631] arm-smmu-v3 arm-smmu-v3.2.auto: 0x000012000000007c
-[ 6542.670633] arm-smmu-v3 arm-smmu-v3.2.auto: 0x00000000fffef040
-[ 6542.670634] arm-smmu-v3 arm-smmu-v3.2.auto: 0x00000000fffef000
-
-Tested with Intel 82599 card(ixgbevf) as well. but same errror.
-
-Not able to root cause the problem yet. With the hope that, this is 
-related to tlb entries not being invlaidated properly, I tried explicitly
-issuing CMD_TLBI_NSNH_ALL and CMD_CFGI_CD_ALL just before
-the STE update, but no luck yet :(
-
-Please let me know if I am missing something here or has any clue if you
-can replicate this on your setup.
+Ideally, the page table quirk would drive the settings for the TCR, and 
+the prot flag
+drives the PTE for the mapping, as is done with the page table walker 
+being dma-coherent,
+while buffers are mapped as cacheable based on IOMMU_CACHE. Thoughts?
 
 Thanks,
-Shameer
-
+Isaac
 > 
-> Best Regards
+> [1]
+> https://lore.kernel.org/dri-devel/ecfda7ca80f6d7b4ff3d89b8758f4dc9@codeaurora.org/
+> [2] 
+> https://lore.kernel.org/linux-iommu/20191026053026.GA14545@lst.de/T/
 > 
-> Eric
-> 
-> This series can be found at:
-> https://github.com/eauger/linux/tree/5.10-rc4-2stage-v13
-> (including the VFIO part in his last version: v11)
-> 
-> The series includes a patch from Jean-Philippe. It is better to
-> review the original patch:
-> [PATCH v8 2/9] iommu/arm-smmu-v3: Maintain a SID->device structure
-> 
-> The VFIO series is sent separately.
-> 
-> History:
-> 
-> v12 -> v13:
-> - fixed compilation issue with CONFIG_ARM_SMMU_V3_SVA
->   reported by Shameer. This urged me to revisit patch 4 into
->   iommu/smmuv3: Allow s1 and s2 configs to coexist where
->   s1_cfg and s2_cfg are not dynamically allocated anymore.
->   Instead I use a new set field in existing structs
-> - fixed 2 others config checks
-> - Updated "iommu/arm-smmu-v3: Maintain a SID->device structure"
->   according to the last version
-> 
-> v11 -> v12:
-> - rebase on top of v5.10-rc4
-> 
-> Eric Auger (14):
->   iommu: Introduce attach/detach_pasid_table API
->   iommu: Introduce bind/unbind_guest_msi
->   iommu/smmuv3: Allow s1 and s2 configs to coexist
->   iommu/smmuv3: Get prepared for nested stage support
->   iommu/smmuv3: Implement attach/detach_pasid_table
->   iommu/smmuv3: Allow stage 1 invalidation with unmanaged ASIDs
->   iommu/smmuv3: Implement cache_invalidate
->   dma-iommu: Implement NESTED_MSI cookie
->   iommu/smmuv3: Nested mode single MSI doorbell per domain enforcement
->   iommu/smmuv3: Enforce incompatibility between nested mode and HW MSI
->     regions
->   iommu/smmuv3: Implement bind/unbind_guest_msi
->   iommu/smmuv3: Report non recoverable faults
->   iommu/smmuv3: Accept configs with more than one context descriptor
->   iommu/smmuv3: Add PASID cache invalidation per PASID
-> 
-> Jean-Philippe Brucker (1):
->   iommu/arm-smmu-v3: Maintain a SID->device structure
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 659
-> ++++++++++++++++++--
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 103 ++-
->  drivers/iommu/dma-iommu.c                   | 142 ++++-
->  drivers/iommu/iommu.c                       | 105 ++++
->  include/linux/dma-iommu.h                   |  16 +
->  include/linux/iommu.h                       |  41 ++
->  include/uapi/linux/iommu.h                  |  54 ++
->  7 files changed, 1042 insertions(+), 78 deletions(-)
-> 
-> --
-> 2.21.3
-
+> Thanks,
+> Sai
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
