@@ -2,89 +2,85 @@ Return-Path: <SRS0=1kRO=GO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A805C433E0
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:54:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A58C433DB
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 15:12:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE659221EC
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:54:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE659221EC
+	by mail.kernel.org (Postfix) with ESMTPS id 0930422795
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 15:12:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0930422795
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BFDDB85DDB;
-	Mon, 11 Jan 2021 14:54:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9308F2079C;
+	Mon, 11 Jan 2021 15:12:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OLxBfbX2Ukj8; Mon, 11 Jan 2021 14:54:48 +0000 (UTC)
+	with ESMTP id bX78sAMASDhO; Mon, 11 Jan 2021 15:12:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5984285A5A;
-	Mon, 11 Jan 2021 14:54:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 989B620363;
+	Mon, 11 Jan 2021 15:12:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4530DC088B;
-	Mon, 11 Jan 2021 14:54:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F1B4C013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:54:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80F77C088B;
+	Mon, 11 Jan 2021 15:12:52 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 659BEC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 15:12:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7EE43867CD
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:54:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4223620363
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 15:12:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZvB7V4sUGNno for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 14:54:43 +0000 (UTC)
+ with ESMTP id RRrURRxn7FaD for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 15:12:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from so254-31.mailgun.net (so254-31.mailgun.net [198.61.254.31])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E1E48863D0
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:54:40 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 9B2971FC71
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 15:12:47 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1610376883; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=EgoXBzkvRFRBe7rpnVTVbV7udtTIgKjckgseHfiFLac=;
- b=I57fnrMqQyWD8xD7h6zVubyxJEhfJKXP6y2+1SNZ0B6HD1/jXvS+8ynJ/EXhoa1WfhB+KGkq
- W4RlSFPTx23b+E30okrrL594lQsuUinUT0m2Dheqy+cPjCbxetf9lhL0DAYzCD4bdRd6cgrF
- ZceWS3uj3AyZwg+tNYEi/J3Wgv0=
+ s=smtp; t=1610377969; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=hirL+bx7ovoUKx/v5BmgMLJbirQ64ET+KGM2Ze9K26Y=;
+ b=o9UYlVVsOVrLQSWLS8a5E0s1vbzMzU9Jct/O64J5aWFzb7ve+1G8fFYmQtjJAXtBY8Vml/4i
+ yi5DPoyXjexMXKO+xKZtUDmHZb2mPgfVQDLNhgi4vnOl2vqxghcEuk/TMiD+5Aklujj9Q1uR
+ vD0NHqVw/d/3mpQqG7wdqPxjzEI=
 X-Mailgun-Sending-Ip: 198.61.254.31
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5ffc66adc88af061072789c4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Jan 2021 14:54:37
+ smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
+ 5ffc6aec8fb3cda82f05cf48 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Jan 2021 15:12:44
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 98785C433C6; Mon, 11 Jan 2021 14:54:36 +0000 (UTC)
-Received: from isaacm-linux.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ id 4A4D7C43463; Mon, 11 Jan 2021 15:12:43 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested) (Authenticated sender: isaacm)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id D88EEC43462;
- Mon, 11 Jan 2021 14:54:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D88EEC43462
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=fail smtp.mailfrom=isaacm@codeaurora.org
-From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-To: will@kernel.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org
-Subject: [PATCH v2 5/5] iommu/arm-smmu: Hook up map_sg()
-Date: Mon, 11 Jan 2021 06:54:22 -0800
-Message-Id: <1610376862-927-6-git-send-email-isaacm@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1610376862-927-1-git-send-email-isaacm@codeaurora.org>
-References: <1610376862-927-1-git-send-email-isaacm@codeaurora.org>
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>, pdaly@codeaurora.org,
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 55053C433C6;
+ Mon, 11 Jan 2021 15:12:42 +0000 (UTC)
+MIME-Version: 1.0
+Date: Mon, 11 Jan 2021 07:12:42 -0800
+From: isaacm@codeaurora.org
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCH 0/5] Optimize iommu_map_sg() performance
+In-Reply-To: <5a29b6e339c66e9c7cd9a608baa3f9e1@codeaurora.org>
+References: <1610157031-26301-1-git-send-email-isaacm@codeaurora.org>
+ <20210111062300.28541-1-saiprakash.ranjan@codeaurora.org>
+ <5a29b6e339c66e9c7cd9a608baa3f9e1@codeaurora.org>
+Message-ID: <6f57460f1b95373c615fdbad97edd9ed@codeaurora.org>
+X-Sender: isaacm@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: will@kernel.org, pdaly@codeaurora.org, robin.murphy@arm.com,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  pratikp@codeaurora.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -99,65 +95,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Now that everything is in place for iommu_map_sg() to defer
-mapping a scatter-gather list to the io-pgtable layer, implement
-the map_sg() callback in the SMMU driver, so that iommu_map_sg()
-can invoke it with the entire scatter-gather list that will be
-mapped.
+On 2021-01-10 23:52, Sai Prakash Ranjan wrote:
+> On 2021-01-11 11:52, Sai Prakash Ranjan wrote:
+>> Hi Isaac,
+>> 
+>> I gave this series a go on chromebook and saw these warnings
+>> and several device probe failures, logs attached below:
+>> 
+>> WARN corresponds to this code in arm_lpae_map_by_pgsize()
+>> 
+>> 	if (WARN_ON(iaext || (paddr + size) >> cfg->oas))
+>> 		return -ERANGE;
+>> 
+>> Logs:
+>> 
+>> [    2.411391] ------------[ cut here ]------------
+>> [    2.416149] WARNING: CPU: 6 PID: 56 at
+>> drivers/iommu/io-pgtable-arm.c:492 arm_lpae_map_sg+0x234/0x248
+>> [    2.425606] Modules linked in:
+>> [    2.428749] CPU: 6 PID: 56 Comm: kworker/6:1 Not tainted 5.10.5 
+>> #970
+>> [    2.440287] Workqueue: events deferred_probe_work_func
+>> [    2.445563] pstate: 20c00009 (nzCv daif +PAN +UAO -TCO BTYPE=--)
+>> [    2.451726] pc : arm_lpae_map_sg+0x234/0x248
+>> [    2.456112] lr : arm_lpae_map_sg+0xe0/0x248
+>> [    2.460410] sp : ffffffc010513750
+>> [    2.463820] x29: ffffffc010513790 x28: ffffffb943332000
+>> [    2.469281] x27: 0000000ffffff000 x26: ffffffb943d14900
+>> [    2.474738] x25: 0000000000001000 x24: 0000000103465000
+>> [    2.480196] x23: 0000000000000001 x22: 0000000103466000
+>> [    2.485645] x21: 0000000000000003 x20: 0000000000000a20
+>> [    2.491103] x19: ffffffc010513850 x18: 0000000000000001
+>> [    2.496562] x17: 0000000000000002 x16: 00000000ffffffff
+>> [    2.502021] x15: 0000000000000000 x14: 0000000000000000
+>> [    2.507479] x13: 0000000000000001 x12: 0000000000000000
+>> [    2.512928] x11: 0000001000000000 x10: 0000000000000000
+>> [    2.518385] x9 : 0000000000000001 x8 : 0000000040201000
+>> [    2.523844] x7 : 0000000000000a20 x6 : ffffffb943463000
+>> [    2.529302] x5 : 0000000000000003 x4 : 0000000000001000
+>> [    2.534760] x3 : 0000000000000001 x2 : ffffffb941f605a0
+>> [    2.540219] x1 : 0000000000000003 x0 : 0000000000000e40
+>> [    2.545679] Call trace:
+>> [    2.548196]  arm_lpae_map_sg+0x234/0x248
+>> [    2.552225]  arm_smmu_map_sg+0x80/0xc4
+>> [    2.556078]  __iommu_map_sg+0x6c/0x188
+>> [    2.559931]  iommu_map_sg_atomic+0x18/0x20
+>> [    2.564144]  iommu_dma_alloc_remap+0x26c/0x34c
+>> [    2.568703]  iommu_dma_alloc+0x9c/0x268
+>> [    2.572647]  dma_alloc_attrs+0x88/0xfc
+>> [    2.576503]  gsi_ring_alloc+0x50/0x144
+>> [    2.580356]  gsi_init+0x2c4/0x5c4
+>> [    2.583766]  ipa_probe+0x14c/0x2b4
+>> [    2.587263]  platform_drv_probe+0x94/0xb4
+>> [    2.591377]  really_probe+0x138/0x348
+>> [    2.595145]  driver_probe_device+0x80/0xb8
+>> [    2.599358]  __device_attach_driver+0x90/0xa8
+>> [    2.603829]  bus_for_each_drv+0x84/0xcc
+>> [    2.607772]  __device_attach+0xc0/0x148
+>> [    2.611713]  device_initial_probe+0x18/0x20
+>> [    2.616012]  bus_probe_device+0x38/0x94
+>> [    2.619953]  deferred_probe_work_func+0x78/0xb0
+>> [    2.624611]  process_one_work+0x210/0x3dc
+>> [    2.628726]  worker_thread+0x284/0x3e0
+>> [    2.632578]  kthread+0x148/0x1a8
+>> [    2.635891]  ret_from_fork+0x10/0x18
+>> [    2.639562] ---[ end trace 9bac18cad6a9862e ]---
+>> [    2.644414] ipa 1e40000.ipa: error -12 allocating channel 0 event 
+>> ring
+>> [    2.651656] ipa: probe of 1e40000.ipa failed with error -12
+>> [    2.660072] dwc3 a600000.dwc3: Adding to iommu group 8
+>> [    2.668632] xhci-hcd xhci-hcd.13.auto: xHCI Host Controller
+>> [    2.674680] xhci-hcd xhci-hcd.13.auto: new USB bus registered,
+>> assigned bus number 1
+>> 
+> 
+> <snip>...
+> 
+> Isaac provided a fix which he will post as v2 and no warnings were 
+> observed
+> with that fix.
+> 
+> Tested-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+> 
+> Thanks,
+> Sai
 
-Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
-Tested-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Thanks for testing out the patches. I've added the fix (there was an 
+off-by-one error in the calculation
+used to check if the IOVA/physical addresses are within limits) to 
+version 2 of the series:
+https://lore.kernel.org/linux-iommu/1610376862-927-1-git-send-email-isaacm@codeaurora.org/T/#t
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index d8c6bfd..52acc68 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1208,6 +1208,24 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	return ret;
- }
- 
-+static int arm_smmu_map_sg(struct iommu_domain *domain, unsigned long iova,
-+			   struct scatterlist *sg, unsigned int nents, int prot,
-+			   gfp_t gfp, size_t *mapped)
-+{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-+	int ret;
-+
-+	if (!ops)
-+		return -ENODEV;
-+
-+	arm_smmu_rpm_get(smmu);
-+	ret = ops->map_sg(ops, iova, sg, nents, prot, gfp, mapped);
-+	arm_smmu_rpm_put(smmu);
-+
-+	return ret;
-+}
-+
- static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			     size_t size, struct iommu_iotlb_gather *gather)
- {
-@@ -1624,6 +1642,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.domain_free		= arm_smmu_domain_free,
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.map			= arm_smmu_map,
-+	.map_sg			= arm_smmu_map_sg,
- 	.unmap			= arm_smmu_unmap,
- 	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 	.iotlb_sync		= arm_smmu_iotlb_sync,
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Thanks,
+Isaac
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
