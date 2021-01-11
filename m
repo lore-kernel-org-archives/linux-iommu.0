@@ -2,89 +2,97 @@ Return-Path: <SRS0=1kRO=GO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA568C433DB
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:36:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 449BAC433E0
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:49:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7215A225AC
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:36:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7215A225AC
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id C6D4822CB8
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:49:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6D4822CB8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E97E42270C;
-	Mon, 11 Jan 2021 21:36:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5F16187057;
+	Mon, 11 Jan 2021 21:49:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 76Sxv5g2A0hf; Mon, 11 Jan 2021 21:36:33 +0000 (UTC)
+	with ESMTP id R74Gkw4dJU21; Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 380A2204A5;
-	Mon, 11 Jan 2021 21:36:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BD4CD86F8C;
+	Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 19279C0893;
-	Mon, 11 Jan 2021 21:36:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0A4AC013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:36:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A509EC0893;
+	Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 927CEC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 91EEA865E2
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:36:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7285686FB6
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pAeoa55QeUq8 for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 21:36:30 +0000 (UTC)
+ with ESMTP id JYgqRD0iAOtt for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 21:49:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com
- [209.85.221.49])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 96ECB8613C
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:36:30 +0000 (UTC)
-Received: by mail-wr1-f49.google.com with SMTP id t16so297209wra.3
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 13:36:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=i0xMi6BcZcyDu0fcZnUeC0nFD2sQudz3pvIy74Uu1Co=;
- b=aoPFqdupBdo2m50fA72kLB51Y4eAj0rEvXhgPGXgU3pHawnWSdq+OOJo+x02/Ttmh/
- GT/usW8NL+/oXIuxlc+SjB3GIpvrLO3AqRas0wNI6fpXwnN2njXJcx7tzXn1i2zmDr5V
- 4pBDPqMBoBGacxzqtY5h7ZOC/kYBQeqihZfBx17J4OKktz2sNwOPRv276CKNOAYKINlF
- PzSZSUjORtpor/zgcG4uYxinJsR9F46Id/uhmHZyNxCLMdAMIW3p7iSIFaHG0yE02xYP
- hiewwhR/TQ0wpE4tWLB/7LtTzmTpni+aGYOK1X+x2doEpCEgYjDdFfbtY8HmzStCeiRb
- oylQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=i0xMi6BcZcyDu0fcZnUeC0nFD2sQudz3pvIy74Uu1Co=;
- b=acMAuzFwy6KSxWzL57JQo9+JfLlc0SCLktIPbvfDHQb+f+WMd/n/UV9qSI+8YSByM5
- rzkQmFEZ8KN7jJmwgfcaj5Uuej9gB7harYnA/NMFsjC/rOyO+yCONfEhkIVL7RxMQ3Bn
- DSxtCfBWwtMx+pPe2Dl+kEcSVIsZlk120VJSTCydpSZT8L0+m3o1Yao81CyXvMK560xY
- YI2TfhWtOVvAy9PZ3Ytg5AX55vtWOCvFvQsusSPoWFU8absCF57PMIyJGg2f7aT7+uW0
- pXV4Mv6O4kwcmBo6j3Sw4/8ENwihV/wLbJL1qG9KnNd/pmp1bns3FgsC0gd/Udtvwf4K
- XMgg==
-X-Gm-Message-State: AOAM532fYDEdO6rXvo+pvVY2BvYLlVfmnRcdrWNqZfqyYT1tSbGYoDeg
- gDPyRcxl3F6MEqNNYFJtE+4WOLaklWWVfyi73ONdpg==
-X-Google-Smtp-Source: ABdhPJwc4Tc/s46NcBJR4zTZePqRBiO7sGEbGyK0c71idGH77xhltZxnEMdsrKLPkDWH1LYE57mboh9Z32DxStHJfik=
-X-Received: by 2002:adf:ee4d:: with SMTP id w13mr1028748wro.216.1610400988919; 
- Mon, 11 Jan 2021 13:36:28 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2D0C786F8C
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1610401763;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=YcHYs6OZqBWCMgb0rpCE3M6MXEuKUj2tsDDbqZh/79Q=;
+ b=Hz2Y9oRlLLtMr3VK3hFnKgSjz/XHyxWZA316H6F4lON/5wdpYqWK+8ONUkDjxlnW0XTpjN
+ wHflJdjBnNUr9NIoDmyp72csv5bhcRuMBP+xRfBPB5mc2pdrXSEugpmhNfTu9hiJu6jYg1
+ qt2lzO7fsEFjgsevSv35ObPgMaYYJ6g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-70-ekx4pMUpPXWmh16-SihWQQ-1; Mon, 11 Jan 2021 16:49:19 -0500
+X-MC-Unique: ekx4pMUpPXWmh16-SihWQQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B8F1107ACF7;
+ Mon, 11 Jan 2021 21:49:16 +0000 (UTC)
+Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
+ [10.3.112.255])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 828CE60BE2;
+ Mon, 11 Jan 2021 21:49:14 +0000 (UTC)
+Date: Mon, 11 Jan 2021 14:49:13 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH 4/5] vfio/iommu_type1: Carefully use unmap_unpin_all
+ during dirty tracking
+Message-ID: <20210111144913.3092b1b1@omen.home.shazbot.org>
+In-Reply-To: <20210107092901.19712-5-zhukeqian1@huawei.com>
+References: <20210107092901.19712-1-zhukeqian1@huawei.com>
+ <20210107092901.19712-5-zhukeqian1@huawei.com>
 MIME-Version: 1.0
-References: <20210111154335.23388-1-marcorr@google.com>
- <dc6db6b4-88f1-4762-bd3b-edf3dd410366@arm.com>
- <CAA03e5HLN_iPzXRTJ_Dvx5h8KP-Qi+=6u+9mHnaoB9oBMMWs7Q@mail.gmail.com>
- <bbf6f07c-369b-e470-78ff-815cfb4dbf92@arm.com>
-In-Reply-To: <bbf6f07c-369b-e470-78ff-815cfb4dbf92@arm.com>
-Date: Mon, 11 Jan 2021 13:36:17 -0800
-Message-ID: <CAA03e5G6UohDjvA6P1mq4SdcPRQ_LFBvkhwUM9Uo6ztGU_9BQg@mail.gmail.com>
-Subject: Re: [PATCH] dma: mark unmapped DMA scatter/gather invalid
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jianxiong Gao <jxgao@google.com>, hch@lst.de
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
+ kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+ Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
+ kvmarm@lists.cs.columbia.edu, Marc Zyngier <maz@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, wanghaibin.wang@huawei.com,
+ Julien Thierry <julien.thierry.kdev@gmail.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Alexios Zavras <alexios.zavras@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,66 +105,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Marc Orr via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Marc Orr <marcorr@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> >>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> >>> index 0a4881e59aa7..3d9b17fe5771 100644
-> >>> --- a/kernel/dma/direct.c
-> >>> +++ b/kernel/dma/direct.c
-> >>> @@ -374,9 +374,11 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-> >>>        struct scatterlist *sg;
-> >>>        int i;
-> >>>
-> >>> -     for_each_sg(sgl, sg, nents, i)
-> >>> +     for_each_sg(sgl, sg, nents, i) {
-> >>>                dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
-> >>>                             attrs);
-> >>> +             sg->dma_address = DMA_MAPPING_ERROR;
-> >>
-> >> There are more DMA API backends than just dma-direct, so while this
-> >> might help paper over bugs when SWIOTLB is in use, it's not going to
-> >> have any effect when those same bugs are hit under other circumstances.
-> >> Once again, the moral of the story is that effort is better spent just
-> >> fixing the bugs ;)
-> >
-> > Thanks for the quick feedback. What is the correct fix? I understand
-> > the first half. The NVMe driver should be updated to not call unmap on
-> > an address that has already been unmapped within the DMA direct code.
-> > Where I'm less certain is how to communicate to the NVMe driver that
-> > the mapping failed. In particular, the NVMe code explicitly checks if
-> > the first DMA address in the scatter/gather list is set to
-> > DMA_MAPPING_ERROR. Thus, don't we need to update the DMA direct code
-> > to propagate DMA_MAPPING_ERROR back up to the driver, via the
-> > scatter/gather struct?
->
-> Erm, you check the return value of dma_map_sg(). If it's zero, the
-> request failed; if it's nonzero, that's how many DMA segments you now
-> have to process. See Documentation/core-api/dma-api.rst.
->
-> The only guarantee offered about the state of the scatterlist itself is
-> that if it is successfully mapped, then the dma_address and dma_length
-> fields are valid for that many segments, and if that is fewer than the
-> total number of physical segments then the next one after the final DMA
-> segment will have a dma_length of 0. In particular there are no
-> guarantees at all about the state if the mapping was unsuccessful.
->
-> If a driver is failing to keep track of the success/failure status and
-> later down the line trying to guess what to do with a list that may or
-> may not have been mapped, then frankly that driver should be redesigned
-> because that is a terrible anti-pattern. At the very very least it
-> should explicitly encode its own "known bad" state upon failure that it
-> can then reliably recognise later.
+On Thu, 7 Jan 2021 17:29:00 +0800
+Keqian Zhu <zhukeqian1@huawei.com> wrote:
 
-Got it now. I'll get to work on a patch for the NVMe driver to fix the
-bug. Thanks for all of these pointers. They are immensely helpful.
+> If we detach group during dirty page tracking, we shouldn't remove
+> vfio_dma, because dirty log will lose.
+> 
+> But we don't prevent unmap_unpin_all in vfio_iommu_release, because
+> under normal procedure, dirty tracking has been stopped.
 
-Thanks,
-Marc
+This looks like it's creating a larger problem than it's fixing, it's
+not our job to maintain the dirty bitmap regardless of what the user
+does.  If the user detaches the last group in a container causing the
+mappings within that container to be deconstructed before the user has
+collected dirty pages, that sounds like a user error.  A container with
+no groups is de-privileged and therefore loses all state.  Thanks,
+
+Alex
+
+> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
+> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 26b7eb2a5cfc..9776a059904d 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -2373,7 +2373,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  			if (list_empty(&iommu->external_domain->group_list)) {
+>  				vfio_sanity_check_pfn_list(iommu);
+>  
+> -				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+> +				/*
+> +				 * During dirty page tracking, we can't remove
+> +				 * vfio_dma because dirty log will lose.
+> +				 */
+> +				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) &&
+> +				    !iommu->dirty_page_tracking)
+>  					vfio_iommu_unmap_unpin_all(iommu);
+>  
+>  				kfree(iommu->external_domain);
+> @@ -2406,10 +2411,15 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  		 * iommu and external domain doesn't exist, then all the
+>  		 * mappings go away too. If it's the last domain with iommu and
+>  		 * external domain exist, update accounting
+> +		 *
+> +		 * Note: During dirty page tracking, we can't remove vfio_dma
+> +		 * because dirty log will lose. Just update accounting is a good
+> +		 * choice.
+>  		 */
+>  		if (list_empty(&domain->group_list)) {
+>  			if (list_is_singular(&iommu->domain_list)) {
+> -				if (!iommu->external_domain)
+> +				if (!iommu->external_domain &&
+> +				    !iommu->dirty_page_tracking)
+>  					vfio_iommu_unmap_unpin_all(iommu);
+>  				else
+>  					vfio_iommu_unmap_unpin_reaccount(iommu);
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
