@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3787C433DB
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:22:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6794C433E0
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:22:08 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 492D82220F
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:22:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 492D82220F
+	by mail.kernel.org (Postfix) with ESMTPS id 82D332220F
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:22:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82D332220F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 03A658703A;
-	Mon, 11 Jan 2021 11:22:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3EF0185CD0;
+	Mon, 11 Jan 2021 11:22:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4f-wGRCMgsKg; Mon, 11 Jan 2021 11:22:00 +0000 (UTC)
+	with ESMTP id T3GswfkNCWGK; Mon, 11 Jan 2021 11:22:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7E38887022;
-	Mon, 11 Jan 2021 11:22:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BC16085C95;
+	Mon, 11 Jan 2021 11:22:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7802EC0893;
-	Mon, 11 Jan 2021 11:22:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A72F6C0893;
+	Mon, 11 Jan 2021 11:22:07 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7CEE4C013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:21:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C9BAAC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:22:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7941C85F0A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:21:59 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B984085CA8
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:22:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Dk9-wkqhO0md for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 11:21:59 +0000 (UTC)
+ with ESMTP id iTCZ-4TjqPKn for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 11:22:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DCFA885CA8
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:21:58 +0000 (UTC)
-X-UUID: b710d73c20bb4a2e8f89df9aad4e615d-20210111
-X-UUID: b710d73c20bb4a2e8f89df9aad4e615d-20210111
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2412E85C95
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:22:05 +0000 (UTC)
+X-UUID: 0a0576617d9d4ce0b1d028c9af9874cd-20210111
+X-UUID: 0a0576617d9d4ce0b1d028c9af9874cd-20210111
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 604849001; Mon, 11 Jan 2021 19:21:55 +0800
+ with ESMTP id 177790766; Mon, 11 Jan 2021 19:22:03 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 11 Jan 2021 19:21:53 +0800
+ 15.0.1497.2; Mon, 11 Jan 2021 19:22:02 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Jan 2021 19:21:53 +0800
+ Transport; Mon, 11 Jan 2021 19:22:01 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v6 15/33] iommu/mediatek: Update oas for v7s
-Date: Mon, 11 Jan 2021 19:18:56 +0800
-Message-ID: <20210111111914.22211-16-yong.wu@mediatek.com>
+Subject: [PATCH v6 16/33] iommu/mediatek: Move hw_init into attach_device
+Date: Mon, 11 Jan 2021 19:18:57 +0800
+Message-ID: <20210111111914.22211-17-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210111111914.22211-1-yong.wu@mediatek.com>
 References: <20210111111914.22211-1-yong.wu@mediatek.com>
@@ -94,36 +94,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch only updates oas in different SoCs.
-
-If the SoC supports 4GB-mode and current dram size is 4GB, the oas is 33.
-otherwise, it's still 32. In the lastest SoC, the oas is 35bits.
+In attach device, it will update the pagetable base address register.
+Move the hw_init function also here. Then it only need call
+pm_runtime_get/put one time here if m4u has power domain.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bf1277d58121..1c4af574f5f7 100644
+index 1c4af574f5f7..87c4626c9072 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -301,10 +301,14 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
- 			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
- 		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
- 		.ias = MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN) ? 34 : 32,
--		.oas = 35,
- 		.iommu_dev = data->dev,
- 	};
+@@ -126,6 +126,8 @@ struct mtk_iommu_domain {
  
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
-+		dom->cfg.oas = data->enable_4GB ? 33 : 32;
-+	else
-+		dom->cfg.oas = 35;
+ static const struct iommu_ops mtk_iommu_ops;
+ 
++static int mtk_iommu_hw_init(const struct mtk_iommu_data *data);
 +
- 	dom->iop = alloc_io_pgtable_ops(ARM_V7S, &dom->cfg, data);
- 	if (!dom->iop) {
- 		dev_err(data->dev, "Failed to alloc io pgtable\n");
+ /*
+  * In M4U 4GB mode, the physical address is remapped as below:
+  *
+@@ -364,12 +366,15 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	int ret;
+ 
+ 	if (!data)
+ 		return -ENODEV;
+ 
+-	/* Update the pgtable base address register of the M4U HW */
+-	if (!data->m4u_dom) {
++	if (!data->m4u_dom) { /* Initialize the M4U HW */
++		ret = mtk_iommu_hw_init(data);
++		if (ret)
++			return ret;
+ 		data->m4u_dom = dom;
+ 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+ 		       data->base + REG_MMU_PT_BASE_ADDR);
+@@ -724,10 +729,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+-	ret = mtk_iommu_hw_init(data);
+-	if (ret)
+-		return ret;
+-
+ 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+ 				     "mtk-iommu.%pa", &ioaddr);
+ 	if (ret)
 -- 
 2.18.0
 
