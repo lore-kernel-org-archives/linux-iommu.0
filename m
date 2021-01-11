@@ -2,90 +2,88 @@ Return-Path: <SRS0=1kRO=GO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B0BC433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B88C433DB
 	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 18:39:17 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69680225AB
+	by mail.kernel.org (Postfix) with ESMTPS id 621072250E
 	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 18:39:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69680225AB
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 621072250E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0764A86631;
-	Mon, 11 Jan 2021 18:39:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D4353870F6;
+	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gMZ+ofw4bpyk; Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
+	with ESMTP id XREJak4crG6Q; Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6C36F87096;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3445086221;
 	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4ABA8C1DA7;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 16AABC088B;
 	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 813DEC013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:34:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8861DC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 64ADF870E9
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:34:00 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 64D6A227AA
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uis7gdzWcmYl for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 18:33:59 +0000 (UTC)
-X-Greylist: delayed 02:49:51 by SQLgrey-1.7.6
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com
- [209.85.210.201])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CA0B2870E8
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:33:59 +0000 (UTC)
-Received: by mail-pf1-f201.google.com with SMTP id l17so439657pff.17
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 10:33:59 -0800 (PST)
+ with ESMTP id zg61FY7uVg61 for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 18:03:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com
+ [209.85.221.47])
+ by silver.osuosl.org (Postfix) with ESMTPS id F117E204DC
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:37 +0000 (UTC)
+Received: by mail-wr1-f47.google.com with SMTP id 91so707866wrj.7
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 10:03:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=sender:date:message-id:mime-version:subject:from:to:cc;
- bh=FfPhYcgmpWfwmSV36aZsn2I7a8UwoF5mD7MCCfCIqsM=;
- b=hzZWrMpCqJJDhEcCP2t/Pa1Lp/Mjs7S51gLMqdSGernAmS6D1MVKbdz8bc3aUH6JsV
- YwxEi0Wo5x6CpbhjAiZYIRCQx1IjF1ebjNsbiiq8KU5sfGnJHhSwfmwD2ceKh6aEAw30
- 04G7l1e6RT+UWbUfrUr7ABpI/vAUo02eYnSCREkCVMiqxVhaZdkwCGZZCvoXWWI+23Kk
- FtcC60BODKq43VdlxVuUGYUMH+qPvAsJ17RFnX5oHSVmWhlVyaVbvBR8ltTQoI+yMBOM
- zjHP+j1uNC28b6zicrOmjH1B16kiJWLFecCe1oigeKVm7YZddi1L3UxN4OgoLaxzkaXC
- pplw==
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=OQ88+LI5HEr8LP9MECKHb0an/ILY1uHLC7MWc4xKUSQ=;
+ b=nCV1ZS4fAU6hFngRbC7jkRKIcsqPejpew4BRdQ4Ly13ypD++QeZmnDPhiU/2zSCw9+
+ Yw7jZGzmxtGbszhlZ7gehioXAMjzXypa6avlszOWtWRD5TWhsSiyX35H2teoKthN/ui7
+ FVrSPZ4/XeoXWDQS/byVZYdAJEjkdbdPwGIcM353b45f6urb2PimnhEhz9b+CsXbnx+c
+ sLXiNwVrm1OcQG4wBdhbBUOPlsIKUTsNFjPPkYNMBaL7Dv981SGRsghzVSVED+fLBYvr
+ N68wnXnivV/CmoxkQ/3xrBdU+nLPuHiJa2WEof02BjcSTON0Afo90YapNzD/LluttZfy
+ enDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
- :to:cc;
- bh=FfPhYcgmpWfwmSV36aZsn2I7a8UwoF5mD7MCCfCIqsM=;
- b=N5QB2LzHnF5PFWfEewwcu/sf8RJd+yAZhcFCwTx7MxuGtmz87jKZemD3CFU+ahW7Ge
- Grm5QZfy3gZ4zvRSn4P9uJWBaaqkrUV9IEz+F9O0uYFMACQPEODxfV2sUmNGa1nabYFJ
- tNuydtXYLWGV/fMaotErp+gl5YYa4X3HJ5OzFmlYEoQ2WQLNm/2ZZZhnenDhthHOHaYx
- 3zoU7No/rzbEDAXKe7ARxM3KN5RQG5Kcyce/lweBEJLTwUDfsFiKumTCK+XwDVlxlWWg
- AlVmF15h5hE6EamFL6s8u/wxxtiyGyCAv/a/eqchaRKtm8F8ZmT+NWu2DYLpXtgkXnRr
- bjmw==
-X-Gm-Message-State: AOAM531NVRN+i2/JtYYwqNXtkCIfoj+4XhWyNR8d6uzuj09Z3P6G1GZX
- c5Hh1TbPoA0ex+3MJ3YoXjkLxzIjEv5j
-X-Google-Smtp-Source: ABdhPJyLqwzeL4t2eytHl1iY8HQ1baI3DclZDFWZdkBLNL7yQv+KBJSfikwzJGitgqEBvIQ9yMlu+w/nBd/j
-X-Received: from marcorr.c.googlers.com ([fda3:e722:ac3:10:24:72f4:c0a8:1d18])
- (user=marcorr job=sendgmr) by 2002:a17:902:d90c:b029:da:9930:9da7
- with SMTP
- id c12-20020a170902d90cb02900da99309da7mr17350870plz.85.1610379848075; Mon,
- 11 Jan 2021 07:44:08 -0800 (PST)
-Date: Mon, 11 Jan 2021 07:43:35 -0800
-Message-Id: <20210111154335.23388-1-marcorr@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-Subject: [PATCH] dma: mark unmapped DMA scatter/gather invalid
-To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
- jxgao@google.com, iommu@lists.linux-foundation.org, 
- linux-kernel@vger.kernel.org
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=OQ88+LI5HEr8LP9MECKHb0an/ILY1uHLC7MWc4xKUSQ=;
+ b=bKwwyMceTuZ56Y7/YQZ2eKFTzOhLWmDWTz96VuRaDwuQaPGps1SH76E5920g5rXKUP
+ G2hhOdSg2SEl5uAHVb6NzEr1a6qm3G2UrgXs1sHDjtVPLKO3ezpiZ9mUz2HfPlpBvgJR
+ 2S5zxYVm14FsCdZe9DCUrCF2j1GLTCV2i8QgqOVkDAXGhOMNnmFraCqw6UyMtskngp2I
+ u+KFozrPiPn7F1YbMwaDH8+oFSr/fWxEB825qqIvgmEGk8leqWkMGXdLdCQW2ifb6RPJ
+ nAvFEJNZsX6M38z9S9zfeG8yAZQ4tKes4rcc8ryND9ug2DUBEtlsL/pKsAQCv7P2bADK
+ ESgQ==
+X-Gm-Message-State: AOAM530OSN3EOvDSgDfQHFRwi5mWBcsvGYbnprwGYdgY7IK3Q3EY5dV/
+ SCyFxYgLfMlpuie7MNpjrU9YIATn1e9jQUS4G9m7+Q==
+X-Google-Smtp-Source: ABdhPJzsKB2S8tXBu6i5PVjW2kuyXdlPhHhTEht6hD50Xozy9RUpd2RVduyv0+3+XkChb7CKfLEXBKj0UQa8VJy/PqY=
+X-Received: by 2002:a5d:5604:: with SMTP id l4mr311015wrv.127.1610388216078;
+ Mon, 11 Jan 2021 10:03:36 -0800 (PST)
+MIME-Version: 1.0
+References: <20210111154335.23388-1-marcorr@google.com>
+ <dc6db6b4-88f1-4762-bd3b-edf3dd410366@arm.com>
+In-Reply-To: <dc6db6b4-88f1-4762-bd3b-edf3dd410366@arm.com>
+Date: Mon, 11 Jan 2021 10:03:24 -0800
+Message-ID: <CAA03e5HLN_iPzXRTJ_Dvx5h8KP-Qi+=6u+9mHnaoB9oBMMWs7Q@mail.gmail.com>
+Subject: Re: [PATCH] dma: mark unmapped DMA scatter/gather invalid
+To: Robin Murphy <robin.murphy@arm.com>
 X-Mailman-Approved-At: Mon, 11 Jan 2021 18:39:13 +0000
-Cc: Marc Orr <marcorr@google.com>, stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jianxiong Gao <jxgao@google.com>, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,55 +103,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch updates dma_direct_unmap_sg() to mark each scatter/gather
-entry invalid, after it's unmapped. This fixes two issues:
+> On 2021-01-11 15:43, Marc Orr wrote:
 
-1. It makes the unmapping code able to tolerate a double unmap.
-2. It prevents the NVMe driver from erroneously treating an unmapped DMA
-address as mapped.
+minus stable@vger.kernel.org, per gregkh@'s email.
 
-The bug that motivated this patch was the following sequence, which
-occurred within the NVMe driver, with the kernel flag `swiotlb=force`.
+> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > index 0a4881e59aa7..3d9b17fe5771 100644
+> > --- a/kernel/dma/direct.c
+> > +++ b/kernel/dma/direct.c
+> > @@ -374,9 +374,11 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+> >       struct scatterlist *sg;
+> >       int i;
+> >
+> > -     for_each_sg(sgl, sg, nents, i)
+> > +     for_each_sg(sgl, sg, nents, i) {
+> >               dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
+> >                            attrs);
+> > +             sg->dma_address = DMA_MAPPING_ERROR;
+>
+> There are more DMA API backends than just dma-direct, so while this
+> might help paper over bugs when SWIOTLB is in use, it's not going to
+> have any effect when those same bugs are hit under other circumstances.
+> Once again, the moral of the story is that effort is better spent just
+> fixing the bugs ;)
 
-* NVMe driver calls dma_direct_map_sg()
-* dma_direct_map_sg() fails part way through the scatter gather/list
-* dma_direct_map_sg() calls dma_direct_unmap_sg() to unmap any entries
-  succeeded.
-* NVMe driver calls dma_direct_unmap_sg(), redundantly, leading to a
-  double unmap, which is a bug.
+Thanks for the quick feedback. What is the correct fix? I understand
+the first half. The NVMe driver should be updated to not call unmap on
+an address that has already been unmapped within the DMA direct code.
+Where I'm less certain is how to communicate to the NVMe driver that
+the mapping failed. In particular, the NVMe code explicitly checks if
+the first DMA address in the scatter/gather list is set to
+DMA_MAPPING_ERROR. Thus, don't we need to update the DMA direct code
+to propagate DMA_MAPPING_ERROR back up to the driver, via the
+scatter/gather struct?
 
-With this patch, a hadoop workload running on a cluster of three AMD
-SEV VMs, is able to succeed. Without the patch, the hadoop workload
-suffers application-level and even VM-level failures.
+I skimmed arch/arm/mm/dma-mapping.c, just now. I can see that this
+code sets the address within the scatter/gather struct to
+DMA_MAPPING_ERROR before trying to map an IO address and write it into
+the struct. Is this a good example to follow?
 
-Tested-by: Jianxiong Gao <jxgao@google.com>
-Tested-by: Marc Orr <marcorr@google.com>
-Reviewed-by: Jianxiong Gao <jxgao@google.com>
-Signed-off-by: Marc Orr <marcorr@google.com>
----
- kernel/dma/direct.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 0a4881e59aa7..3d9b17fe5771 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -374,9 +374,11 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
- 	struct scatterlist *sg;
- 	int i;
- 
--	for_each_sg(sgl, sg, nents, i)
-+	for_each_sg(sgl, sg, nents, i) {
- 		dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
- 			     attrs);
-+		sg->dma_address = DMA_MAPPING_ERROR;
-+	}
- }
- EXPORT_SYMBOL(dma_direct_unmap_sg);
- #endif
--- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+Thanks,
+Marc
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
