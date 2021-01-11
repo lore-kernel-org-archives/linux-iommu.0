@@ -7,65 +7,64 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55079C433E0
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:20:39 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4183C433E9
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:20:44 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D9A5421E92
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:20:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9A5421E92
+	by mail.kernel.org (Postfix) with ESMTPS id 97A6321E92
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 11:20:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97A6321E92
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 922C3204B0;
-	Mon, 11 Jan 2021 11:20:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 36C1485F19;
+	Mon, 11 Jan 2021 11:20:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MBFLo-tCXrsL; Mon, 11 Jan 2021 11:20:37 +0000 (UTC)
+	with ESMTP id UTdv64VE26ph; Mon, 11 Jan 2021 11:20:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 97A9D20030;
-	Mon, 11 Jan 2021 11:20:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C35E285CAA;
+	Mon, 11 Jan 2021 11:20:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82689C0893;
-	Mon, 11 Jan 2021 11:20:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B035FC0893;
+	Mon, 11 Jan 2021 11:20:43 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AECE4C013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:36 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF440C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AB19F85CD0
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id AEB9485F0A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zYiZXTfydbqC for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 11:20:36 +0000 (UTC)
+ with ESMTP id HQnStZlYEH9D for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 11:20:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1F9D485CAA
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:35 +0000 (UTC)
-X-UUID: 4fdcbdf3c18c43f0939b23679b1d26ce-20210111
-X-UUID: 4fdcbdf3c18c43f0939b23679b1d26ce-20210111
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 202C985CAA
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 11:20:41 +0000 (UTC)
+X-UUID: 32df15a92620427a9bb40d1eadbeb112-20210111
+X-UUID: 32df15a92620427a9bb40d1eadbeb112-20210111
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 2051502511; Mon, 11 Jan 2021 19:20:32 +0800
+ with ESMTP id 606885166; Mon, 11 Jan 2021 19:20:41 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 11 Jan 2021 19:20:30 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 11 Jan 2021 19:20:39 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Jan 2021 19:20:30 +0800
+ Transport; Mon, 11 Jan 2021 19:20:39 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v6 06/33] of/device: Move dma_range_map before
- of_iommu_configure
-Date: Mon, 11 Jan 2021 19:18:47 +0800
-Message-ID: <20210111111914.22211-7-yong.wu@mediatek.com>
+Subject: [PATCH v6 07/33] iommu: Avoid reallocate default domain for a group
+Date: Mon, 11 Jan 2021 19:18:48 +0800
+Message-ID: <20210111111914.22211-8-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210111111914.22211-1-yong.wu@mediatek.com>
 References: <20210111111914.22211-1-yong.wu@mediatek.com>
@@ -77,7 +76,7 @@ Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
  iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
  Krzysztof Kozlowski <krzk@kernel.org>, anan.sun@mediatek.com,
- Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,42 +94,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-"dev->dma_range_map" contains the devices' dma_ranges information,
-This patch moves dma_range_map before of_iommu_configure. The iommu
-driver may need to know the dma_address requirements of its iommu
-consumer devices.
+If group->default_domain exists, avoid reallocate it.
 
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Frank Rowand <frowand.list@gmail.com>
+In some iommu drivers, there may be several devices share a group. Avoid
+realloc the default domain for this case.
+
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/of/device.c | 3 ++-
+ drivers/iommu/iommu.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index aedfaaafd3e7..1d84636149df 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -170,9 +170,11 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 	dev_dbg(dev, "device is%sdma coherent\n",
- 		coherent ? " " : " not ");
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3d099a31ddca..f4b87e6abe80 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -266,7 +266,8 @@ int iommu_probe_device(struct device *dev)
+ 	 * support default domains, so the return value is not yet
+ 	 * checked.
+ 	 */
+-	iommu_alloc_default_domain(group, dev);
++	if (!group->default_domain)
++		iommu_alloc_default_domain(group, dev);
  
-+	dev->dma_range_map = map;
- 	iommu = of_iommu_configure(dev, np, id);
- 	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
- 		kfree(map);
-+		dev->dma_range_map = NULL;
- 		return -EPROBE_DEFER;
- 	}
- 
-@@ -181,7 +183,6 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 
- 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
- 
--	dev->dma_range_map = map;
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure_id);
+ 	if (group->default_domain) {
+ 		ret = __iommu_attach_device(group->default_domain, dev);
 -- 
 2.18.0
 
