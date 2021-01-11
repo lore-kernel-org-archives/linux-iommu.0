@@ -2,88 +2,71 @@ Return-Path: <SRS0=1kRO=GO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B88C433DB
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 18:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EA3C433E0
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 19:27:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 621072250E
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 18:39:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 621072250E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0FE1822CAF
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 19:27:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0FE1822CAF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D4353870F6;
-	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 975B7870C9;
+	Mon, 11 Jan 2021 19:27:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XREJak4crG6Q; Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
+	with ESMTP id id-S100m6VK2; Mon, 11 Jan 2021 19:27:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3445086221;
-	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3040687006;
+	Mon, 11 Jan 2021 19:27:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 16AABC088B;
-	Mon, 11 Jan 2021 18:39:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8861DC013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A4A4C0893;
+	Mon, 11 Jan 2021 19:27:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 69B88C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 19:27:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 64D6A227AA
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 64FD2863FD
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 19:27:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zg61FY7uVg61 for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 18:03:38 +0000 (UTC)
+ with ESMTP id oYk4lhNwkEY7 for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 19:27:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com
- [209.85.221.47])
- by silver.osuosl.org (Postfix) with ESMTPS id F117E204DC
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 18:03:37 +0000 (UTC)
-Received: by mail-wr1-f47.google.com with SMTP id 91so707866wrj.7
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 10:03:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=OQ88+LI5HEr8LP9MECKHb0an/ILY1uHLC7MWc4xKUSQ=;
- b=nCV1ZS4fAU6hFngRbC7jkRKIcsqPejpew4BRdQ4Ly13ypD++QeZmnDPhiU/2zSCw9+
- Yw7jZGzmxtGbszhlZ7gehioXAMjzXypa6avlszOWtWRD5TWhsSiyX35H2teoKthN/ui7
- FVrSPZ4/XeoXWDQS/byVZYdAJEjkdbdPwGIcM353b45f6urb2PimnhEhz9b+CsXbnx+c
- sLXiNwVrm1OcQG4wBdhbBUOPlsIKUTsNFjPPkYNMBaL7Dv981SGRsghzVSVED+fLBYvr
- N68wnXnivV/CmoxkQ/3xrBdU+nLPuHiJa2WEof02BjcSTON0Afo90YapNzD/LluttZfy
- enDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=OQ88+LI5HEr8LP9MECKHb0an/ILY1uHLC7MWc4xKUSQ=;
- b=bKwwyMceTuZ56Y7/YQZ2eKFTzOhLWmDWTz96VuRaDwuQaPGps1SH76E5920g5rXKUP
- G2hhOdSg2SEl5uAHVb6NzEr1a6qm3G2UrgXs1sHDjtVPLKO3ezpiZ9mUz2HfPlpBvgJR
- 2S5zxYVm14FsCdZe9DCUrCF2j1GLTCV2i8QgqOVkDAXGhOMNnmFraCqw6UyMtskngp2I
- u+KFozrPiPn7F1YbMwaDH8+oFSr/fWxEB825qqIvgmEGk8leqWkMGXdLdCQW2ifb6RPJ
- nAvFEJNZsX6M38z9S9zfeG8yAZQ4tKes4rcc8ryND9ug2DUBEtlsL/pKsAQCv7P2bADK
- ESgQ==
-X-Gm-Message-State: AOAM530OSN3EOvDSgDfQHFRwi5mWBcsvGYbnprwGYdgY7IK3Q3EY5dV/
- SCyFxYgLfMlpuie7MNpjrU9YIATn1e9jQUS4G9m7+Q==
-X-Google-Smtp-Source: ABdhPJzsKB2S8tXBu6i5PVjW2kuyXdlPhHhTEht6hD50Xozy9RUpd2RVduyv0+3+XkChb7CKfLEXBKj0UQa8VJy/PqY=
-X-Received: by 2002:a5d:5604:: with SMTP id l4mr311015wrv.127.1610388216078;
- Mon, 11 Jan 2021 10:03:36 -0800 (PST)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0B319863B7
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 19:27:51 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 081BF101E;
+ Mon, 11 Jan 2021 11:27:51 -0800 (PST)
+Received: from [10.57.56.43] (unknown [10.57.56.43])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E77C23F719;
+ Mon, 11 Jan 2021 11:27:49 -0800 (PST)
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Handle duplicated Stream IDs from
+ other masters
+To: Will Deacon <will@kernel.org>, Ajay Kumar <ajaykumar.rs@samsung.com>
+References: <CGME20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b@epcas5p1.samsung.com>
+ <20210107093340.15279-1-ajaykumar.rs@samsung.com>
+ <20210107130319.GA2986@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <5e047da1-6619-c716-927c-ae07a90f1597@arm.com>
+Date: Mon, 11 Jan 2021 19:27:48 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20210111154335.23388-1-marcorr@google.com>
- <dc6db6b4-88f1-4762-bd3b-edf3dd410366@arm.com>
-In-Reply-To: <dc6db6b4-88f1-4762-bd3b-edf3dd410366@arm.com>
-Date: Mon, 11 Jan 2021 10:03:24 -0800
-Message-ID: <CAA03e5HLN_iPzXRTJ_Dvx5h8KP-Qi+=6u+9mHnaoB9oBMMWs7Q@mail.gmail.com>
-Subject: Re: [PATCH] dma: mark unmapped DMA scatter/gather invalid
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailman-Approved-At: Mon, 11 Jan 2021 18:39:13 +0000
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jianxiong Gao <jxgao@google.com>, hch@lst.de
+In-Reply-To: <20210107130319.GA2986@willie-the-truck>
+Content-Language: en-GB
+Cc: mark.rutland@arm.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,54 +79,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Marc Orr via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Marc Orr <marcorr@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> On 2021-01-11 15:43, Marc Orr wrote:
+On 2021-01-07 13:03, Will Deacon wrote:
+> On Thu, Jan 07, 2021 at 03:03:40PM +0530, Ajay Kumar wrote:
+>> When PCI function drivers(ex:pci-endpoint-test) are probed for already
+>> initialized PCIe-RC(Root Complex), and PCIe-RC is already bound to SMMU,
+>> then we encounter a situation where the function driver tries to attach
+>> itself to the smmu with the same stream-id as PCIe-RC and re-initialize
+>> an already initialized STE. This causes ste_live BUG_ON() in the driver.
 
-minus stable@vger.kernel.org, per gregkh@'s email.
+Note that this is actually expected behaviour, since Stream ID aliasing 
+has remained officially not supported until a sufficiently compelling 
+reason to do so appears. I always thought the most likely scenario would 
+be a legacy PCI bridge with multiple devices behind it, but even that 
+seems increasingly improbable for a modern SMMUv3-based system to ever see.
 
-> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > index 0a4881e59aa7..3d9b17fe5771 100644
-> > --- a/kernel/dma/direct.c
-> > +++ b/kernel/dma/direct.c
-> > @@ -374,9 +374,11 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-> >       struct scatterlist *sg;
-> >       int i;
-> >
-> > -     for_each_sg(sgl, sg, nents, i)
-> > +     for_each_sg(sgl, sg, nents, i) {
-> >               dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
-> >                            attrs);
-> > +             sg->dma_address = DMA_MAPPING_ERROR;
->
-> There are more DMA API backends than just dma-direct, so while this
-> might help paper over bugs when SWIOTLB is in use, it's not going to
-> have any effect when those same bugs are hit under other circumstances.
-> Once again, the moral of the story is that effort is better spent just
-> fixing the bugs ;)
+> I don't understand why the endpoint is using the same stream ID as the root
+> complex in this case. Why is that? Is the grouping logic not working
+> properly?
 
-Thanks for the quick feedback. What is the correct fix? I understand
-the first half. The NVMe driver should be updated to not call unmap on
-an address that has already been unmapped within the DMA direct code.
-Where I'm less certain is how to communicate to the NVMe driver that
-the mapping failed. In particular, the NVMe code explicitly checks if
-the first DMA address in the scatter/gather list is set to
-DMA_MAPPING_ERROR. Thus, don't we need to update the DMA direct code
-to propagate DMA_MAPPING_ERROR back up to the driver, via the
-scatter/gather struct?
+It's not so much that it isn't working properly, it's more that it needs 
+to be implemented at all ;)
 
-I skimmed arch/arm/mm/dma-mapping.c, just now. I can see that this
-code sets the address within the scatter/gather struct to
-DMA_MAPPING_ERROR before trying to map an IO address and write it into
-the struct. Is this a good example to follow?
+>> There is an already existing check in the driver to manage duplicated ids
+>> if duplicated ids are added in same master device, but there can be
+>> scenarios like above where we need to extend the check for other masters
+>> using the same stream-id.
+>>
+>> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++++
+>>   1 file changed, 33 insertions(+)
+> 
+> It doesn't feel like the driver is the right place to fix this, as the same
+> issue could surely occur for other IOMMUs too, right? In which case, I think
+> we should avoid getting into the situation where different groups have
+> overlapping stream IDs.
 
-Thanks,
-Marc
+Yes, this patch does not represent the correct thing to do either way. 
+The main reason that Stream ID aliasing hasn't been supported so far is 
+that the required Stream ID to group lookup is rather awkward, and 
+adding all of that complexity just for the sake of a rather unlikely 
+possibility seemed dubious. However, PRI support has always had a more 
+pressing need to implement almost the same thing (Stream ID to device), 
+so once that lands we can finally get round to adding the rest of proper 
+group support relatively easily.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
