@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC91C433E0
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:15:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D9FC433E0
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:16:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 72FA72242A
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:15:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72FA72242A
+	by mail.kernel.org (Postfix) with ESMTPS id AA52922473
+	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 14:16:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA52922473
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 18813204CE;
-	Mon, 11 Jan 2021 14:15:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4814C87098;
+	Mon, 11 Jan 2021 14:16:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nK+Z7PXFnsMD; Mon, 11 Jan 2021 14:15:44 +0000 (UTC)
+	with ESMTP id JPGYWdfSfxl3; Mon, 11 Jan 2021 14:16:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 33705204C4;
-	Mon, 11 Jan 2021 14:15:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A285C8708D;
+	Mon, 11 Jan 2021 14:16:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E6A8C088B;
-	Mon, 11 Jan 2021 14:15:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82F1BC013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:15:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C16EC088B;
+	Mon, 11 Jan 2021 14:16:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EB1AC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:16:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 67369204CE
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:15:43 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4C142866DE
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:16:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vCg+sCOj4Dke for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 14:15:42 +0000 (UTC)
+ with ESMTP id NlEls5mjl8wp for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Jan 2021 14:16:06 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-15.mailgun.net (m43-15.mailgun.net [69.72.43.15])
- by silver.osuosl.org (Postfix) with ESMTPS id 9D2B1204C4
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:15:40 +0000 (UTC)
+Received: from so254-31.mailgun.net (so254-31.mailgun.net [198.61.254.31])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 6761A86686
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 14:16:04 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1610374542; h=Content-Transfer-Encoding: MIME-Version:
+ s=smtp; t=1610374566; h=Content-Transfer-Encoding: MIME-Version:
  References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=S7ghM8SZchF7c80cwqN9NHmmDjAUzAAus0Q+CMEfR2I=;
- b=Y8vwjZaoa6P7O+P/YOGDbnb+JhBCgosfvINLZFhGkNn4nlRZY+A1ccnxUNoaM2nf+/WQRV2W
- uuIr0mM+na5ZJR14Yj1KVW1vwgn7voxo+t1wTWW+YUOM/UBchGqIVxcbZZR32fmzdSELYeHP
- WzecO/cyLkO74hU8LCaF36kw+nk=
-X-Mailgun-Sending-Ip: 69.72.43.15
+ Sender; bh=+zvATLB17FSikJ474bJLjVIT/0w+t+4NoZVNMOXfLUE=;
+ b=MvTuOEGcjTgRTMMGrUNJ8blDb4+ZI83kzXlP+4T/iUmobPjnNwgj0HTfC2HT1OQk/amsqDFb
+ F+n5Bnj/GQgAueSpC+6RuNMahSYWJuh6ii2ZdRTQtjcUi7T7ifuH0YgCifcJK3q9mCC3niBD
+ 2v/GHKdlZN+k/s3Iuh5izQqIcIM=
+X-Mailgun-Sending-Ip: 198.61.254.31
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
- 5ffc5d89d84bad3547fb5d54 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Jan 2021 14:15:37
+ smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
+ 5ffc5d9046a6c7cde71d79b6 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Jan 2021 14:15:44
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id AF673C433C6; Mon, 11 Jan 2021 14:15:37 +0000 (UTC)
+ id DC746C43466; Mon, 11 Jan 2021 14:15:43 +0000 (UTC)
 Received: from blr-ubuntu-253.qualcomm.com
  (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 029ECC43467;
- Mon, 11 Jan 2021 14:15:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 029ECC43467
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id CF8F9C433C6;
+ Mon, 11 Jan 2021 14:15:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CF8F9C433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
@@ -80,9 +80,10 @@ To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
  Rob Clark <robdclark@gmail.com>, Akhil P Oommen <akhilpo@codeaurora.org>,
  isaacm@codeaurora.org
-Subject: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection flag
-Date: Mon, 11 Jan 2021 19:45:04 +0530
-Message-Id: <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
+Subject: [PATCH 3/3] drm/msm: Use IOMMU_LLC page protection flag to map gpu
+ buffers
+Date: Mon, 11 Jan 2021 19:45:05 +0530
+Message-Id: <6f8ec1a563cb6e408c5c1cae82b9417860d49549.1610372717.git.saiprakash.ranjan@codeaurora.org>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
 References: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
@@ -110,51 +111,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a new page protection flag IOMMU_LLC which can be used
-by non-coherent masters to set cacheable memory attributes
-for an outer level of cache called as last-level cache or
-system cache. Initial user of this page protection flag is
-the adreno gpu and then can later be used by other clients
-such as video where this can be used for per-buffer based
-mapping.
+Use the newly introduced IOMMU_LLC page protection flag to map
+GPU buffers. This will make sure that proper stage-1 PTE
+attributes are set for GPU buffers to use system cache. This
+also introduces MMU_FEATURE_USE_LLC features bit to check for
+GPUs supporting LLC and set them in the target specific address
+space creation, in this case we set them for A6XX GPUs.
 
 Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 3 +++
- include/linux/iommu.h          | 6 ++++++
- 2 files changed, 9 insertions(+)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 3 +++
+ drivers/gpu/drm/msm/msm_iommu.c       | 3 +++
+ drivers/gpu/drm/msm/msm_mmu.h         | 4 ++++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 7439ee7fdcdb..ebe653ef601b 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -415,6 +415,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		else if (prot & IOMMU_CACHE)
- 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
- 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-+		else if (prot & IOMMU_LLC)
-+			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
-+				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 3c7ad51732bb..23da21b6f0ff 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1266,6 +1266,9 @@ a6xx_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev)
+ 		return ERR_CAST(mmu);
  	}
  
- 	if (prot & IOMMU_CACHE)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ffaa389ea128..1f82057df531 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -31,6 +31,12 @@
-  * if the IOMMU page table format is equivalent.
-  */
- #define IOMMU_PRIV	(1 << 5)
-+/*
-+ * Non-coherent masters can use this page protection flag to set cacheable
-+ * memory attributes for only a transparent outer level of cache, also known as
-+ * the last-level or system cache.
-+ */
-+#define IOMMU_LLC	(1 << 6)
++	if (!IS_ERR_OR_NULL(a6xx_gpu->llc_slice))
++		mmu->features |= MMU_FEATURE_USE_LLC;
++
+ 	/*
+ 	 * Use the aperture start or SZ_16M, whichever is greater. This will
+ 	 * ensure that we align with the allocated pagetable range while still
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index 22ac7c692a81..a329f9836422 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -235,6 +235,9 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
+ 	if (iova & BIT_ULL(48))
+ 		iova |= GENMASK_ULL(63, 49);
  
- struct iommu_ops;
- struct iommu_group;
++	if (mmu->features & MMU_FEATURE_USE_LLC)
++		prot |= IOMMU_LLC;
++
+ 	ret = iommu_map_sgtable(iommu->domain, iova, sgt, prot);
+ 	WARN_ON(!ret);
+ 
+diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
+index 61ade89d9e48..efcd1939c98e 100644
+--- a/drivers/gpu/drm/msm/msm_mmu.h
++++ b/drivers/gpu/drm/msm/msm_mmu.h
+@@ -23,12 +23,16 @@ enum msm_mmu_type {
+ 	MSM_MMU_IOMMU_PAGETABLE,
+ };
+ 
++/* MMU features */
++#define MMU_FEATURE_USE_LLC	BIT(0)
++
+ struct msm_mmu {
+ 	const struct msm_mmu_funcs *funcs;
+ 	struct device *dev;
+ 	int (*handler)(void *arg, unsigned long iova, int flags);
+ 	void *arg;
+ 	enum msm_mmu_type type;
++	u32 features;
+ };
+ 
+ static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
 of Code Aurora Forum, hosted by The Linux Foundation
