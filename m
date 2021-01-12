@@ -8,79 +8,79 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC881C433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1692EC433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:48:33 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C7332312F
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C7332312F
+	by mail.kernel.org (Postfix) with ESMTPS id B371823130
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:48:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B371823130
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 069C884B65;
-	Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZzuzndhT5a86; Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9670584B1C;
-	Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BCFAC088B;
-	Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05EB8C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DD77686C3A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2FAAF86F75;
+	Tue, 12 Jan 2021 23:48:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id awehfbQoE+im; Tue, 12 Jan 2021 23:48:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 78B0686F64;
+	Tue, 12 Jan 2021 23:48:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CDD5C088B;
+	Tue, 12 Jan 2021 23:48:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77CB3C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:48:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 5600720436
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:48:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r6ooIVLdmLh1 for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
+ with ESMTP id f2OGHI1mWOaA for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 23:48:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com
- [209.85.214.172])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 45E6E86B58
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
-Received: by mail-pl1-f172.google.com with SMTP id q4so15364plr.7
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:41:51 -0800 (PST)
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com
+ [209.85.215.181])
+ by silver.osuosl.org (Postfix) with ESMTPS id 223CA20418
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:48:28 +0000 (UTC)
+Received: by mail-pg1-f181.google.com with SMTP id v19so233136pgj.12
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:48:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=jiJJEd6NpHk7kCu6CYi0ZOx+ayTWk5LzTwqK3Nr8GN4=;
- b=MNrJSs5yR5TAV4nJFeyDAe0GGDw0/pTlXcrpyP0L7R3V+gr2Lk4hfPKWiwiFM+qx5/
- Smd8qlJ6dgU/DkKE3VnYw7ycSyr3o3UOv5bYo8SJ9vbaOZ6C4EhheS1DWAVWe278M1Ra
- 1/X1N0cW/V6Wrv/8AaK6vyArWm2laMHdai7WRr7xxU2dcC3M4OCik/jeSbsqQDC623p1
- OToEnPGssKkEVG3tgVrBMhwTqCNRIxsvviwAUlsrSTNMPVdeOUTDaflEPg8bLmOk4j2T
- KYYIO63SDSa0mLFCDcHwHvVZ0DBmyOtl8oBp1BarP4CUElETFdI85krO8+INBge5NN0a
- NQ2A==
+ bh=ZruxYcBQXCXWok/YmCXjga0Z3PUTOQ6pNhSzq4bpJR4=;
+ b=g0a+XeY1WpelCJ57IOHLZ5ClC3bxDfY0fE91b/U+a2JYIHKaMmcVwduCeAlYvDQQoL
+ xjVCiINgK4qb5c/LcNp+C22h/uUgi0vdQ2TGhNzY6s+CaSrHxAQGfwwzQ0rH8W+88b31
+ +XIJb8l5Nq1FsvPziTU9NZKAoS+c5TQjnwVX/6Eb1twaMPfwDQB6B2io0xNovCRZS7Ij
+ F7Je6GW1bm2Mx6XSiUeKYKWTmiprOX72+CStoB8qTs5qJrO8vTUdnJMoWGnoJdNzQpBe
+ moohYHc39LCcIAkyfVB+kDMXKifn7ejJk+tALEXkSKv8wCTdSj3tqESBUNBzgPdtMQj4
+ jzPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=jiJJEd6NpHk7kCu6CYi0ZOx+ayTWk5LzTwqK3Nr8GN4=;
- b=Fh3gY/ppYT1orbh/W8A/kZlGZ0FC51Qfg6CNShL2tbk0Xy15xwydFfrjE5h8Ckg/gu
- nOAo3DX6IDOLAxUNnb2to/YeEa5X7EaihnUEPkQcxVG9CUDwe6wY8mNMwPqnVxBZMFrl
- syMqeQ/U4fzcZcmG+BFwVDFd/lv1dSfN2Z44h/v6wrQmeArNghTAxlSe7yy/RFcJ3t8S
- wcUOvKoPQkbi8kUrpodPpj6x1NlHw1ss7KhmVueTpeXANifgRQfFUXI9p0Qq8QNmuSWf
- LfkaN9id9zFD2303iiVzW8871GfrJG7rQ7KvcSov8F7O4vX/FwYD089QWOlcV80eRcA2
- mUkQ==
-X-Gm-Message-State: AOAM532Sd7u9JX+C+nnv/43hwkEOo/veRqPhwGC7XO4mVV+f+mwHjumu
- 64mmidCGHgCr9VSQcr8V5Us=
-X-Google-Smtp-Source: ABdhPJwrt/Z/EmHNy2d3yoZ568Za3OrumA7har7HRFuVqqkJomUyFjrO1CFroe8EilBTG4QSlZLX5w==
-X-Received: by 2002:a17:90a:5802:: with SMTP id h2mr137566pji.68.1610494910815; 
- Tue, 12 Jan 2021 15:41:50 -0800 (PST)
+ bh=ZruxYcBQXCXWok/YmCXjga0Z3PUTOQ6pNhSzq4bpJR4=;
+ b=dLC4SU6VCKpcletB6KwaZBCdJywMIzUzN3P1io+4bnugpMcHJvHxMaz8Gi5Njx7spm
+ dWwVwJsnN9LU6N1RnCeF4+oE41c+UlQHJFjhAnDXdHHMErKS40OFgEqPbv6oB9i3wvoD
+ I15HzJ/15yKkorACwN3Jru6E0B2JV299vSIOdXYH2swIrgRTbyKGVasYzhlni/imZqgT
+ 7PjEX57vN3Kw1rPY1DR3qmrpx48mphd5l+xmg+B8fDyMvLYQtQvewcEtoTE7C1ynhpzN
+ kGXxA9/7o3a07jNxK3ZTz43XJwoX7amLkp0sgmqu7u889vFiKb2/h1T5A4mmqOxaQxc/
+ Fc0A==
+X-Gm-Message-State: AOAM533G63NPxLdr5FyQka8S3KVd0tn4fBtCbHxHY8Jjzl2O7FauWFMx
+ iOWA2ZD9zKDUexl8mIMhRLo=
+X-Google-Smtp-Source: ABdhPJzcsesZOG8VoM+izCkYUl4yjaLgepIotHJQF1QgVivbf7byOhsDdoAO8dQh9VGDhIePy7ZM6A==
+X-Received: by 2002:a63:1865:: with SMTP id 37mr1523162pgy.206.1610495307478; 
+ Tue, 12 Jan 2021 15:48:27 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
- by smtp.googlemail.com with ESMTPSA id q2sm149460pjd.33.2021.01.12.15.41.47
+ by smtp.googlemail.com with ESMTPSA id k3sm57763pgm.94.2021.01.12.15.48.24
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Jan 2021 15:41:50 -0800 (PST)
-Subject: Re: [RFC PATCH v3 4/6] swiotlb: Add restricted DMA alloc/free support.
+ Tue, 12 Jan 2021 15:48:26 -0800 (PST)
+Subject: Re: [RFC PATCH v3 6/6] of: Add plumbing for restricted DMA pool
 To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
  mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
  joro@8bytes.org, will@kernel.org, frowand.list@gmail.com,
@@ -88,7 +88,7 @@ To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
  sstabellini@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
  robin.murphy@arm.com
 References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-5-tientzu@chromium.org>
+ <20210106034124.30560-7-tientzu@chromium.org>
 From: Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -144,12 +144,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cc23b28f-4ebf-3183-cb4c-7c6fd17f5663@gmail.com>
-Date: Tue, 12 Jan 2021 15:41:46 -0800
+Message-ID: <95e6dd76-5e18-e445-c351-19fba18f36de@gmail.com>
+Date: Tue, 12 Jan 2021 15:48:24 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106034124.30560-5-tientzu@chromium.org>
+In-Reply-To: <20210106034124.30560-7-tientzu@chromium.org>
 Content-Language: en-US
 Cc: drinkcat@chromium.org, devicetree@vger.kernel.org,
  heikki.krogerus@linux.intel.com, saravanak@google.com, peterz@infradead.org,
@@ -177,29 +177,92 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 1/5/21 7:41 PM, Claire Chang wrote:
-> Add the functions, swiotlb_alloc and swiotlb_free to support the
-> memory allocation from restricted DMA pool.
+> If a device is not behind an IOMMU, we look up the device node and set
+> up the restricted DMA when the restricted-dma-pool is presented.
 > 
 > Signed-off-by: Claire Chang <tientzu@chromium.org>
 > ---
 
 [snip]
 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 30ccbc08e229..126e9b3354d6 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -137,6 +137,11 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	void *ret;
->  	int err;
->  
-> +#ifdef CONFIG_SWIOTLB
-> +	if (unlikely(dev->dma_io_tlb_mem))
-> +		return swiotlb_alloc(dev, size, dma_handle, attrs);
-> +#endif
+> +int of_dma_set_restricted_buffer(struct device *dev)
+> +{
+> +	struct device_node *node;
+> +	int count, i;
+> +
+> +	if (!dev->of_node)
+> +		return 0;
+> +
+> +	count = of_property_count_elems_of_size(dev->of_node, "memory-region",
+> +						sizeof(phandle));
 
-While this is potentially a hot path, I am not sure of the unkikely is
-warranted, maybe best left as a plain conditional.
+You could have an early check for count < 0, along with an error
+message, if that is deemed useful.
+
+> +	for (i = 0; i < count; i++) {
+> +		node = of_parse_phandle(dev->of_node, "memory-region", i);
+> +		if (of_device_is_compatible(node, "restricted-dma-pool"))
+
+And you may want to add here an of_device_is_available(node). A platform
+that provides the Device Tree firmware and try to support multiple
+different SoCs may try to determine if an IOMMU is present, and if it
+is, it could be marking the restriced-dma-pool region with a 'status =
+"disabled"' property, or any variant of that scheme.
+
+> +			return of_reserved_mem_device_init_by_idx(
+> +				dev, dev->of_node, i);
+
+This does not seem to be supporting more than one memory region, did not
+you want something like instead:
+
+		ret = of_reserved_mem_device_init_by_idx(...);
+		if (ret)
+			return ret;
+
+> +	}
+> +
+> +	return 0;
+> +}
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index aedfaaafd3e7..e2c7409956ab 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -182,6 +182,10 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>  	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
+>  
+>  	dev->dma_range_map = map;
+> +
+> +	if (!iommu)
+> +		return of_dma_set_restricted_buffer(dev);
+> +
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(of_dma_configure_id);
+> diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
+> index d9e6a324de0a..28a2dfa197ba 100644
+> --- a/drivers/of/of_private.h
+> +++ b/drivers/of/of_private.h
+> @@ -161,12 +161,17 @@ struct bus_dma_region;
+>  #if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_HAS_DMA)
+>  int of_dma_get_range(struct device_node *np,
+>  		const struct bus_dma_region **map);
+> +int of_dma_set_restricted_buffer(struct device *dev);
+>  #else
+>  static inline int of_dma_get_range(struct device_node *np,
+>  		const struct bus_dma_region **map)
+>  {
+>  	return -ENODEV;
+>  }
+> +static inline int of_dma_get_restricted_buffer(struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+>  #endif
+>  
+>  #endif /* _LINUX_OF_PRIVATE_H */
+> 
+
+
 -- 
 Florian
 _______________________________________________
