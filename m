@@ -2,73 +2,95 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C87C433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 14:38:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 130A8C433E9
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 15:22:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F298E2312D
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 14:38:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F298E2312D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 97C7523130
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 15:22:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97C7523130
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A40EC203E2;
-	Tue, 12 Jan 2021 14:38:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0E60686FBF;
+	Tue, 12 Jan 2021 15:22:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ch5c8sBVGMHJ; Tue, 12 Jan 2021 14:38:29 +0000 (UTC)
+	with ESMTP id 9hCaVuQTfMOo; Tue, 12 Jan 2021 15:22:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2C3E120337;
-	Tue, 12 Jan 2021 14:38:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 21D6E86F85;
+	Tue, 12 Jan 2021 15:22:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C255C0893;
-	Tue, 12 Jan 2021 14:38:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E3EF1C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 14:38:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A015C088B;
+	Tue, 12 Jan 2021 15:22:18 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25DE4C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:07:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BA7C0203F5
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 14:38:26 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2150786193
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:07:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PisGbggqWXI2 for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 14:38:24 +0000 (UTC)
+ with ESMTP id ulignM9+l4ZK for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 15:07:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id D2FAB20337
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 14:38:24 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E183D20771;
- Tue, 12 Jan 2021 14:38:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1610462304;
- bh=/+TO0V946bI56guDMyc3LjAhDC0JejiP8ooVdPIrl4g=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=THx5fJ/dkXlArCPNjLkX4O8RcTplr7mtjL0MAAB8Sm4xRTo2VbqTU7XjwYSfvI5oh
- cGHb/HFyOIVXbDuKTV1h6iBgpMJA+3xkgZbZOZTZzIrLSu+0OcsZbzy9skwEjOQAlI
- kTWfE4Ao49KbpXvAnbAGVB9urVfMaZz8aoc9u2if1e0PP1yar7mZeuqwLz6imxqZQx
- J37xzvgvamtULJh6y9RJIBNdi0cDLxES9HR171UWVZg79Y/mtMiZWYKCANTQznnzgp
- TsjlvsDu2tIl2eWy28cmM0Yj5g2YNw/vmO7jw4agWitPcLK+E3E9WCNTIzwItFcfIB
- XyxgjZDqA0SqA==
-Date: Tue, 12 Jan 2021 14:38:19 +0000
-From: Will Deacon <will@kernel.org>
-To: Chuck Lever <chuck.lever@oracle.com>
-Subject: Re: performance regression noted in v5.11-rc after c062db039f40
-Message-ID: <20210112143819.GA9689@willie-the-truck>
-References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com
+ [209.85.128.53])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E477B85B6F
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:07:34 +0000 (UTC)
+Received: by mail-wm1-f53.google.com with SMTP id g10so675874wmh.2
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:07:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+ bh=QrSUhzeqlYOl8AzS2dSJWRipeoYaUiWJQ+wst9DqYus=;
+ b=L8k8rDxFkn1XMdMIHeaFstQYhTwmHZWx201jsZG2UZo0zXiirRYiaLS9l4YYRN+cU4
+ M1rz0h3fLFJBLH6AYmhy1ELtR+8UbFhrqzb8rmzApsRImgnPm4o+z8P+wXfbXPo4hKX2
+ 9+Q6QGDZsJaCvXavYNrDY919lJgmzFtbwzEATNF5Jr+EdOBWVTC1ZxEPN8mTiZhhjSdf
+ boGeVv0LIvMnc/dfmjpY3FQw4Ric5W6cBTudHFzg2DFV4+NQVKlNVLeTohzBQL+oqUvW
+ PznHqwDa2rLDyZwp/EzzGenkhjnibwT5QlNYtNPXXhtI9pdz8uF0MGMYak8DYQqOwGdr
+ boOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+ :content-disposition;
+ bh=QrSUhzeqlYOl8AzS2dSJWRipeoYaUiWJQ+wst9DqYus=;
+ b=e/bKngVWrprGUMowWdWGWQMl7bpfvg9gjBzcfiCggLUEGBfbUS2tBW77CBeI5iRdqB
+ A3GjWzzoJnVFs1rUMsUPUjJ95QXEugSS4LOHvYgX7FBjd7kzK5cLXVsqOKrZFvfJF3rw
+ wMWbkBo+e4MB2Udn7aJzrUZqrQ8c6JOkNrsECjxLwqjX7UFT7P+jS39h7xUotqWJT1GL
+ 88BEGFl8Vt0vPMQ3aAxL9CFCwV3LkfxfqLTpq5R6OMCt+bHO4jBjAgo1gogsckOKlfs2
+ ALkkWzn2jQE6b/Af3PazkGwkiQ5D9C5s6kQWAJIUkGf6jkkQd1ngIGmdyEyDN/c1Bw8g
+ WAFw==
+X-Gm-Message-State: AOAM532I8K5imfXbFeNcR4JvLL2sUtNYDiWe0PSFPBs0x3SqLPAA1pt8
+ leEnic4bncI20ttS8xp44SA=
+X-Google-Smtp-Source: ABdhPJwOlPiRU413ETPWokvCH5KEyBUnR7vgess0L0NVV2CBVS6AaEhmQmXOAkcGZZWQS3CTTx+fRg==
+X-Received: by 2002:a1c:2188:: with SMTP id h130mr3980398wmh.176.1610464053456; 
+ Tue, 12 Jan 2021 07:07:33 -0800 (PST)
+Received: from martin (p578aa711.dip0.t-ipconnect.de. [87.138.167.17])
+ by smtp.gmail.com with ESMTPSA id o3sm5128319wrc.93.2021.01.12.07.07.32
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 12 Jan 2021 07:07:32 -0800 (PST)
+Date: Tue, 12 Jan 2021 16:07:29 +0100
+From: Martin Radev <martin.b.radev@gmail.com>
+To: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, joro@8bytes.org,
+ kirill.shutemov@linux.intel.com, thomas.lendacky@amd.com
+Subject: [PATCH] swiotlb: Validate bounce size in the sync/unmap path
+Message-ID: <X/27MSbfDGCY9WZu@martin>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-rdma <linux-rdma@vger.kernel.org>, robin.murphy@arm.com,
- murphyt7@tcd.ie, iommu@lists.linux-foundation.org, logang@deltatee.com,
- hch@lst.de
+X-Mailman-Approved-At: Tue, 12 Jan 2021 15:22:16 +0000
+Cc: mathias.morbitzer@aisec.fraunhofer.de, file@sect.tu-berlin.de,
+ robert.buhren@sect.tu-berlin.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,136 +108,179 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-[Expanding cc list to include DMA-IOMMU and intel IOMMU folks]
+The size of the buffer being bounced is not checked if it happens
+to be larger than the size of the mapped buffer. Because the size
+can be controlled by a device, as it's the case with virtio devices,
+this can lead to memory corruption.
 
-On Fri, Jan 08, 2021 at 04:18:36PM -0500, Chuck Lever wrote:
-> Hi-
-> 
-> [ Please cc: me on replies, I'm not currently subscribed to
-> iommu@lists ].
-> 
-> I'm running NFS performance tests on InfiniBand using CX-3 Pro cards
-> at 56Gb/s. The test is iozone on an NFSv3/RDMA mount:
-> 
-> /home/cel/bin/iozone -M -+u -i0 -i1 -s1g -r256k -t12 -I
-> 
-> For those not familiar with the way storage protocols use RDMA, The
-> initiator/client sets up memory regions and the target/server uses
-> RDMA Read and Write to move data out of and into those regions. The
-> initiator/client uses only RDMA memory registration and invalidation
-> operations, and the target/server uses RDMA Read and Write.
-> 
-> My NFS client is a two-socket 12-core x86_64 system with its I/O MMU
-> enabled using the kernel command line options "intel_iommu=on
-> iommu=strict".
-> 
-> Recently I've noticed a significant (25-30%) loss in NFS throughput.
-> I was able to bisect on my client to the following commits.
-> 
-> Here's 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
-> map_sg"). This is about normal for this test.
-> 
-> 	Children see throughput for 12 initial writers 	= 4732581.09 kB/sec
->  	Parent sees throughput for 12 initial writers 	= 4646810.21 kB/sec
->  	Min throughput per process 			=  387764.34 kB/sec
->  	Max throughput per process 			=  399655.47 kB/sec
->  	Avg throughput per process 			=  394381.76 kB/sec
->  	Min xfer 					= 1017344.00 kB
->  	CPU Utilization: Wall time    2.671    CPU time    1.974    CPU utilization  73.89 %
->  	Children see throughput for 12 rewriters 	= 4837741.94 kB/sec
->  	Parent sees throughput for 12 rewriters 	= 4833509.35 kB/sec
->  	Min throughput per process 			=  398983.72 kB/sec
->  	Max throughput per process 			=  406199.66 kB/sec
->  	Avg throughput per process 			=  403145.16 kB/sec
->  	Min xfer 					= 1030656.00 kB
->  	CPU utilization: Wall time    2.584    CPU time    1.959    CPU utilization  75.82 %
->  	Children see throughput for 12 readers 		= 5921370.94 kB/sec
->  	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
->  	Min throughput per process 			=  491812.38 kB/sec
->  	Max throughput per process 			=  494777.28 kB/sec
->  	Avg throughput per process 			=  493447.58 kB/sec
->  	Min xfer 					= 1042688.00 kB
->  	CPU utilization: Wall time    2.122    CPU time    1.968    CPU utilization  92.75 %
->  	Children see throughput for 12 re-readers 	= 5947985.69 kB/sec
->  	Parent sees throughput for 12 re-readers 	= 5941348.51 kB/sec
->  	Min throughput per process 			=  492805.81 kB/sec
->  	Max throughput per process 			=  497280.19 kB/sec
->  	Avg throughput per process 			=  495665.47 kB/sec
->  	Min xfer 					= 1039360.00 kB
->  	CPU utilization: Wall time    2.111    CPU time    1.968    CPU utilization  93.22 %
-> 
-> Here's c062db039f40 ("iommu/vt-d: Update domain geometry in
-> iommu_ops.at(de)tach_dev"). It's losing some steam here.
-> 
-> 	Children see throughput for 12 initial writers 	= 4342419.12 kB/sec
->  	Parent sees throughput for 12 initial writers 	= 4310612.79 kB/sec
->  	Min throughput per process 			=  359299.06 kB/sec
->  	Max throughput per process 			=  363866.16 kB/sec
->  	Avg throughput per process 			=  361868.26 kB/sec
->  	Min xfer 					= 1035520.00 kB
->  	CPU Utilization: Wall time    2.902    CPU time    1.951    CPU utilization  67.22 %
->  	Children see throughput for 12 rewriters 	= 4408576.66 kB/sec
->  	Parent sees throughput for 12 rewriters 	= 4404280.87 kB/sec
->  	Min throughput per process 			=  364553.88 kB/sec
->  	Max throughput per process 			=  370029.28 kB/sec
->  	Avg throughput per process 			=  367381.39 kB/sec
->  	Min xfer 					= 1033216.00 kB
->  	CPU utilization: Wall time    2.836    CPU time    1.956    CPU utilization  68.97 %
->  	Children see throughput for 12 readers 		= 5406879.47 kB/sec
->  	Parent sees throughput for 12 readers 		= 5401862.78 kB/sec
->  	Min throughput per process 			=  449583.03 kB/sec
->  	Max throughput per process 			=  451761.69 kB/sec
->  	Avg throughput per process 			=  450573.29 kB/sec
->  	Min xfer 					= 1044224.00 kB
->  	CPU utilization: Wall time    2.323    CPU time    1.977    CPU utilization  85.12 %
->  	Children see throughput for 12 re-readers 	= 5410601.12 kB/sec
->  	Parent sees throughput for 12 re-readers 	= 5403504.40 kB/sec
->  	Min throughput per process 			=  449918.12 kB/sec
->  	Max throughput per process 			=  452489.28 kB/sec
->  	Avg throughput per process 			=  450883.43 kB/sec
->  	Min xfer 					= 1043456.00 kB
->  	CPU utilization: Wall time    2.321    CPU time    1.978    CPU utilization  85.21 %
-> 
-> And here's c588072bba6b ("iommu/vt-d: Convert intel iommu driver to
-> the iommu ops"). Significant throughput loss.
-> 
-> 	Children see throughput for 12 initial writers 	= 3812036.91 kB/sec
->  	Parent sees throughput for 12 initial writers 	= 3753683.40 kB/sec
->  	Min throughput per process 			=  313672.25 kB/sec
->  	Max throughput per process 			=  321719.44 kB/sec
->  	Avg throughput per process 			=  317669.74 kB/sec
->  	Min xfer 					= 1022464.00 kB
->  	CPU Utilization: Wall time    3.309    CPU time    1.986    CPU utilization  60.02 %
->  	Children see throughput for 12 rewriters 	= 3786831.94 kB/sec
->  	Parent sees throughput for 12 rewriters 	= 3783205.58 kB/sec
->  	Min throughput per process 			=  313654.44 kB/sec
->  	Max throughput per process 			=  317844.50 kB/sec
->  	Avg throughput per process 			=  315569.33 kB/sec
->  	Min xfer 					= 1035520.00 kB
->  	CPU utilization: Wall time    3.302    CPU time    1.945    CPU utilization  58.90 %
->  	Children see throughput for 12 readers 		= 4265828.28 kB/sec
->  	Parent sees throughput for 12 readers 		= 4261844.88 kB/sec
->  	Min throughput per process 			=  352305.00 kB/sec
->  	Max throughput per process 			=  357726.22 kB/sec
->  	Avg throughput per process 			=  355485.69 kB/sec
->  	Min xfer 					= 1032960.00 kB
->  	CPU utilization: Wall time    2.934    CPU time    1.942    CPU utilization  66.20 %
->  	Children see throughput for 12 re-readers 	= 4220651.19 kB/sec
->  	Parent sees throughput for 12 re-readers 	= 4216096.04 kB/sec
->  	Min throughput per process 			=  348677.16 kB/sec
->  	Max throughput per process 			=  353467.44 kB/sec
->  	Avg throughput per process 			=  351720.93 kB/sec
->  	Min xfer 					= 1035264.00 kB
->  	CPU utilization: Wall time    2.969    CPU time    1.952    CPU utilization  65.74 %
-> 
-> The regression appears to be 100% reproducible. 
-> 
-> 
-> --
-> Chuck Lever
-> 
-> 
-> 
+This patch saves the remaining buffer memory for each slab and uses
+that information for validation in the sync/unmap paths before
+swiotlb_bounce is called.
+
+Validating this argument is important under the threat models of
+AMD SEV-SNP and Intel TDX, where the HV is considered untrusted.
+
+Signed-off-by: Martin Radev <martin.b.radev@gmail.com>
+---
+ kernel/dma/swiotlb.c | 52 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 50 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 7c42df6e6100..98d79103aa1f 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -102,6 +102,11 @@ static unsigned int max_segment;
+ #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
+ static phys_addr_t *io_tlb_orig_addr;
+ 
++/*
++ * The mapped buffer's size should be validated during a sync operation.
++ */
++static size_t *io_tlb_orig_size;
++
+ /*
+  * Protect the above data structures in the map and unmap calls
+  */
+@@ -240,9 +245,16 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+ 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+ 		      __func__, alloc_size, PAGE_SIZE);
+ 
++	alloc_size = PAGE_ALIGN(io_tlb_nslabs * sizeof(size_t));
++	io_tlb_orig_size = memblock_alloc(alloc_size, PAGE_SIZE);
++	if (!io_tlb_orig_size)
++		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
++		      __func__, alloc_size, PAGE_SIZE);
++
+ 	for (i = 0; i < io_tlb_nslabs; i++) {
+ 		io_tlb_list[i] = IO_TLB_SEGSIZE - OFFSET(i, IO_TLB_SEGSIZE);
+ 		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
++		io_tlb_orig_size[i] = 0;
+ 	}
+ 	io_tlb_index = 0;
+ 	no_iotlb_memory = false;
+@@ -363,7 +375,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 	 * between io_tlb_start and io_tlb_end.
+ 	 */
+ 	io_tlb_list = (unsigned int *)__get_free_pages(GFP_KERNEL,
+-	                              get_order(io_tlb_nslabs * sizeof(int)));
++				      get_order(io_tlb_nslabs * sizeof(int)));
+ 	if (!io_tlb_list)
+ 		goto cleanup3;
+ 
+@@ -374,9 +386,18 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 	if (!io_tlb_orig_addr)
+ 		goto cleanup4;
+ 
++	io_tlb_orig_size = (size_t *)
++		__get_free_pages(GFP_KERNEL,
++				 get_order(io_tlb_nslabs *
++					   sizeof(size_t)));
++	if (!io_tlb_orig_size)
++		goto cleanup5;
++
++
+ 	for (i = 0; i < io_tlb_nslabs; i++) {
+ 		io_tlb_list[i] = IO_TLB_SEGSIZE - OFFSET(i, IO_TLB_SEGSIZE);
+ 		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
++		io_tlb_orig_size[i] = 0;
+ 	}
+ 	io_tlb_index = 0;
+ 	no_iotlb_memory = false;
+@@ -389,6 +410,10 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 
+ 	return 0;
+ 
++cleanup5:
++	free_pages((unsigned long)io_tlb_orig_addr, get_order(io_tlb_nslabs *
++							      sizeof(phys_addr_t)));
++
+ cleanup4:
+ 	free_pages((unsigned long)io_tlb_list, get_order(io_tlb_nslabs *
+ 	                                                 sizeof(int)));
+@@ -404,6 +429,8 @@ void __init swiotlb_exit(void)
+ 		return;
+ 
+ 	if (late_alloc) {
++		free_pages((unsigned long)io_tlb_orig_size,
++			   get_order(io_tlb_nslabs * sizeof(size_t)));
+ 		free_pages((unsigned long)io_tlb_orig_addr,
+ 			   get_order(io_tlb_nslabs * sizeof(phys_addr_t)));
+ 		free_pages((unsigned long)io_tlb_list, get_order(io_tlb_nslabs *
+@@ -413,6 +440,8 @@ void __init swiotlb_exit(void)
+ 	} else {
+ 		memblock_free_late(__pa(io_tlb_orig_addr),
+ 				   PAGE_ALIGN(io_tlb_nslabs * sizeof(phys_addr_t)));
++		memblock_free_late(__pa(io_tlb_orig_size),
++				   PAGE_ALIGN(io_tlb_nslabs * sizeof(size_t)));
+ 		memblock_free_late(__pa(io_tlb_list),
+ 				   PAGE_ALIGN(io_tlb_nslabs * sizeof(int)));
+ 		memblock_free_late(io_tlb_start,
+@@ -581,8 +610,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+ 	 * This is needed when we sync the memory.  Then we sync the buffer if
+ 	 * needed.
+ 	 */
+-	for (i = 0; i < nslots; i++)
++	for (i = 0; i < nslots; i++) {
+ 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
++		io_tlb_orig_size[index+i] = alloc_size - (i << IO_TLB_SHIFT);
++	}
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+ 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+ 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
+@@ -590,6 +621,17 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
+ 	return tlb_addr;
+ }
+ 
++static void validate_sync_size_and_truncate(struct device *hwdev, size_t orig_size, size_t *size)
++{
++	if (*size > orig_size) {
++		/* Warn and truncate mapping_size */
++		dev_WARN_ONCE(hwdev, 1,
++			"Attempt for buffer overflow. Original size: %zu. Mapping size: %zu.\n",
++			orig_size, *size);
++		*size = orig_size;
++	}
++}
++
+ /*
+  * tlb_addr is the physical address of the bounce buffer to unmap.
+  */
+@@ -602,6 +644,8 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
+ 	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+ 
++	validate_sync_size_and_truncate(hwdev, io_tlb_orig_size[index], &mapping_size);
++
+ 	/*
+ 	 * First, sync the memory before unmapping the entry
+ 	 */
+@@ -627,6 +671,7 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 		for (i = index + nslots - 1; i >= index; i--) {
+ 			io_tlb_list[i] = ++count;
+ 			io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
++			io_tlb_orig_size[i] = 0;
+ 		}
+ 		/*
+ 		 * Step 2: merge the returned slots with the preceding slots,
+@@ -645,12 +690,15 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 			     enum dma_sync_target target)
+ {
+ 	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
++	size_t orig_size = io_tlb_orig_size[index];
+ 	phys_addr_t orig_addr = io_tlb_orig_addr[index];
+ 
+ 	if (orig_addr == INVALID_PHYS_ADDR)
+ 		return;
+ 	orig_addr += (unsigned long)tlb_addr & ((1 << IO_TLB_SHIFT) - 1);
+ 
++	validate_sync_size_and_truncate(hwdev, orig_size, &size);
++
+ 	switch (target) {
+ 	case SYNC_FOR_CPU:
+ 		if (likely(dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
