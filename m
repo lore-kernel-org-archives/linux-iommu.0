@@ -2,71 +2,171 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94CBC433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 17:29:28 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CFFC433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 18:01:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C1DB2311F
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 17:29:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C1DB2311F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A8B8323133
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 18:01:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8B8323133
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F054086EA5;
-	Tue, 12 Jan 2021 17:29:27 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3529086243;
+	Tue, 12 Jan 2021 18:01:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5qjiY5ljA8Ag; Tue, 12 Jan 2021 18:01:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6AA3686234;
+	Tue, 12 Jan 2021 18:01:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C3B2C088B;
+	Tue, 12 Jan 2021 18:01:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 905AAC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 18:01:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7CC9F85D22
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 18:01:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OS5ufgWg-2sO; Tue, 12 Jan 2021 17:29:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1D3D786E6E;
-	Tue, 12 Jan 2021 17:29:27 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC64FC088B;
-	Tue, 12 Jan 2021 17:29:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DDC3AC013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 17:29:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9BDD220387
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 17:29:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id y9Q+Hrb3cPHk for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 17:29:22 +0000 (UTC)
+ with ESMTP id W-15RJkrhmxW for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 18:01:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 8FD7020352
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 17:29:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83E6B1063;
- Tue, 12 Jan 2021 09:29:21 -0800 (PST)
-Received: from [10.57.56.43] (unknown [10.57.56.43])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8BC073F719;
- Tue, 12 Jan 2021 09:29:20 -0800 (PST)
-Subject: Re: [PATCH] iommu: check for the deferred attach when attaching a
- device
-To: lijiang <lijiang@redhat.com>, linux-kernel@vger.kernel.org
-References: <20201226053959.4222-1-lijiang@redhat.com>
- <33b6f925-71e6-5d9e-74c3-3e1eaf13398e@redhat.com>
- <b385db3b-4506-6d75-49e1-e11064e65d6a@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <8273ce28-5ba6-2a39-5073-ec0f2b12dd2f@arm.com>
-Date: Tue, 12 Jan 2021 17:29:19 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com
+ [209.85.216.52])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7C9FE85BC4
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 18:01:13 +0000 (UTC)
+Received: by mail-pj1-f52.google.com with SMTP id iq13so2091775pjb.3
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 10:01:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=va30dobV2cprJIEYRAMJZ0NvTQmJlWLcGFXGaT2vIak=;
+ b=BSgHEVaU+wp7g4SWj2v4eN1mMBviAHg2joarj9Q5PqmN8t6EM2D6f1NyFTwwm/RHI0
+ o530n0t4+JxUQbuS7gDRYOL0VdFusmQMKTAGYtLo1Apuiz1GAX0v7lTywAjArhJbxLd4
+ VkEM/2ERiVdNuyl7zex52LNAJnTL+Ok9EGjto3tvmPt0E4q91je9Jtu1HVekg4QImqlf
+ Ukvg1OjSm3f5QJyWdErQltv+AJ0iHxmXhbNSBnhcqlDKTGZqQv2yVs1sh4hB03PRkf2K
+ /HBV+PIWSsfBRTZM8gmqQSl0rm/5btH8juEfiP+v6pXHCW8BfJFJ1UWGfNakFEpb+yF2
+ kqOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=va30dobV2cprJIEYRAMJZ0NvTQmJlWLcGFXGaT2vIak=;
+ b=rZEhFNGICBZWyodSWkW54eVPpCnZ589nMStKXcpufcb16NSIQCkKKpGyBeNB9eG8sx
+ W50OiRCOJ9L5rJ/zaKBnW6uegglmQ0h33VD96Zwyv0nXlgpMXUJG1uhFzi3IJNGzHstf
+ o/9gUQWLuJqQBzGoqElfWxsQuWThj9jX09lu8EKfwa5Mumig7F6qXhpD3ldlWG3Hdbty
+ UrctQWBYgthjYDkppOy1eIGeZcJLqJTr/BSXjtUuXe/DiSlyucGllhGFt9wubSsGD38t
+ 9rHuUL9fAw6S1orWMmWt1xx4OcViQ5txSKUP4PP9XutSO1hdzaSl+TIj41DwjCSqQcfq
+ mO8g==
+X-Gm-Message-State: AOAM533QknbCZLDhMgWVKw89hkpcl4rB2BzEwVU5kDGLgw2E0VhOYNkY
+ M3hp5YdpzDanI2YaQlc07dQ=
+X-Google-Smtp-Source: ABdhPJxLrOwZPK4BbGADYVcldoOiNOJ5fY7nnloJLfhNDEA/ZD8O29mpGXC5Cm138CV7PrM9YNS3vA==
+X-Received: by 2002:a17:902:521:b029:dc:2836:ec17 with SMTP id
+ 30-20020a1709020521b02900dc2836ec17mr258050plf.47.1610474472960; 
+ Tue, 12 Jan 2021 10:01:12 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+ by smtp.googlemail.com with ESMTPSA id i2sm4230154pjd.21.2021.01.12.10.01.07
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 12 Jan 2021 10:01:10 -0800 (PST)
+Subject: Re: [RFC PATCH v3 0/6] Restricted DMA
+To: Claire Chang <tientzu@chromium.org>
+References: <20210106034124.30560-1-tientzu@chromium.org>
+ <d7043239-12cf-3636-4726-2e3b90917dc6@gmail.com>
+ <CALiNf28sU1VtGB7LeTXExkMwQiCeg8N5arqyEjw0CPZP72R4dg@mail.gmail.com>
+ <78871151-947d-b085-db03-0d0bd0b55632@gmail.com>
+ <CALiNf29_PmLJTVLksSHp3NFAaL52idqehSMOtatJ=jaM2Muq1g@mail.gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <23a09b9a-70fc-a7a8-f3ea-b0bfa60507f0@gmail.com>
+Date: Tue, 12 Jan 2021 10:01:05 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <b385db3b-4506-6d75-49e1-e11064e65d6a@redhat.com>
-Content-Language: en-GB
-Cc: "Lendacky, Thomas" <thomas.lendacky@amd.com>,
- iommu@lists.linux-foundation.org, jroedel@suse.de, will@kernel.org
+In-Reply-To: <CALiNf29_PmLJTVLksSHp3NFAaL52idqehSMOtatJ=jaM2Muq1g@mail.gmail.com>
+Content-Language: en-US
+Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
+ benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
+ sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
+ mpe@ellerman.id.au, rafael.j.wysocki@intel.com, Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+ xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
+ linux-devicetree <devicetree@vger.kernel.org>, will@kernel.org,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, dan.j.williams@intel.com,
+ linuxppc-dev@lists.ozlabs.org, Rob Herring <robh+dt@kernel.org>,
+ boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
+ rdunlap@infradead.org, lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,87 +179,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMS0wNSAwNzo1MiwgbGlqaWFuZyB3cm90ZToKPiDlnKggMjAyMeW5tDAx5pyIMDXm
-l6UgMTE6NTUsIGxpamlhbmcg5YaZ6YGTOgo+PiBIaSwKPj4KPj4gQWxzbyBhZGQgSm9lcmcgdG8g
-Y2MgbGlzdC4KPj4KPiAKPiBBbHNvIGFkZCBtb3JlIHBlb3BsZSB0byBjYyBsaXN0LCBKZXJyeSBT
-bml0c2VsYWFyIGFuZCBUb20gTGVuZGFja3kuCj4gCj4gVGhhbmtzLgo+IAo+PiBUaGFua3MuCj4+
-IExpYW5ibwo+PiDlnKggMjAyMOW5tDEy5pyIMjbml6UgMTM6MzksIExpYW5ibyBKaWFuZyDlhpnp
-gZM6Cj4+PiBDdXJyZW50bHksIGJlY2F1c2UgZG9tYWluIGF0dGFjaCBhbGxvd3MgdG8gYmUgZGVm
-ZXJyZWQgZnJvbSBpb21tdQo+Pj4gZHJpdmVyIHRvIGRldmljZSBkcml2ZXIsIGFuZCB3aGVuIGlv
-bW11IGluaXRpYWxpemVzLCB0aGUgZGV2aWNlcwo+Pj4gb24gdGhlIGJ1cyB3aWxsIGJlIHNjYW5u
-ZWQgYW5kIHRoZSBkZWZhdWx0IGdyb3VwcyB3aWxsIGJlIGFsbG9jYXRlZC4KPj4+Cj4+PiBEdWUg
-dG8gdGhlIGFib3ZlIGNoYW5nZXMsIHNvbWUgZGV2aWNlcyBjb3VsZCBiZSBhZGRlZCB0byB0aGUg
-c2FtZQo+Pj4gZ3JvdXAgYXMgYmVsb3c6Cj4+Pgo+Pj4gWyAgICAzLjg1OTQxN10gcGNpIDAwMDA6
-MDE6MDAuMDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDE2Cj4+PiBbICAgIDMuODY0NTcyXSBwY2kg
-MDAwMDowMTowMC4xOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMTYKPj4+IFsgICAgMy44Njk3Mzhd
-IHBjaSAwMDAwOjAyOjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCAxNwo+Pj4gWyAgICAzLjg3
-NDg5Ml0gcGNpIDAwMDA6MDI6MDAuMTogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDE3Cj4+Pgo+Pj4g
-QnV0IHdoZW4gYXR0YWNoaW5nIHRoZXNlIGRldmljZXMsIGl0IGRvZXNuJ3QgYWxsb3cgdGhhdCBh
-IGdyb3VwIGhhcwo+Pj4gbW9yZSB0aGFuIG9uZSBkZXZpY2UsIG90aGVyd2lzZSBpdCB3aWxsIHJl
-dHVybiBhbiBlcnJvci4gVGhpcyBjb25mbGljdHMKPj4+IHdpdGggdGhlIGRlZmVycmVkIGF0dGFj
-aGluZy4gVW5mb3J0dW5hdGVseSwgaXQgaGFzIHR3byBkZXZpY2VzIGluIHRoZQo+Pj4gc2FtZSBn
-cm91cCBmb3IgbXkgc2lkZSwgZm9yIGV4YW1wbGU6Cj4+Pgo+Pj4gWyAgICA5LjYyNzAxNF0gaW9t
-bXVfZ3JvdXBfZGV2aWNlX2NvdW50KCk6IGRldmljZSBuYW1lWzBdOjAwMDA6MDE6MDAuMAo+Pj4g
-WyAgICA5LjYzMzU0NV0gaW9tbXVfZ3JvdXBfZGV2aWNlX2NvdW50KCk6IGRldmljZSBuYW1lWzFd
-OjAwMDA6MDE6MDAuMQo+Pj4gLi4uCj4+PiBbICAgMTAuMjU1NjA5XSBpb21tdV9ncm91cF9kZXZp
-Y2VfY291bnQoKTogZGV2aWNlIG5hbWVbMF06MDAwMDowMjowMC4wCj4+PiBbICAgMTAuMjYyMTQ0
-XSBpb21tdV9ncm91cF9kZXZpY2VfY291bnQoKTogZGV2aWNlIG5hbWVbMV06MDAwMDowMjowMC4x
-Cj4+Pgo+Pj4gRmluYWxseSwgd2hpY2ggY2F1c2VkIHRoZSBmYWlsdXJlIG9mIHRnMyBkcml2ZXIg
-d2hlbiB0ZzMgZHJpdmVyIGNhbGxzCj4+PiB0aGUgZG1hX2FsbG9jX2NvaGVyZW50KCkgdG8gYWxs
-b2NhdGUgY29oZXJlbnQgbWVtb3J5IGluIHRoZSB0ZzNfdGVzdF9kbWEoKS4KPj4+Cj4+PiBbICAg
-IDkuNjYwMzEwXSB0ZzMgMDAwMDowMTowMC4wOiBETUEgZW5naW5lIHRlc3QgZmFpbGVkLCBhYm9y
-dGluZwo+Pj4gWyAgICA5Ljc1NDA4NV0gdGczOiBwcm9iZSBvZiAwMDAwOjAxOjAwLjAgZmFpbGVk
-IHdpdGggZXJyb3IgLTEyCj4+PiBbICAgIDkuOTk3NTEyXSB0ZzMgMDAwMDowMTowMC4xOiBETUEg
-ZW5naW5lIHRlc3QgZmFpbGVkLCBhYm9ydGluZwo+Pj4gWyAgIDEwLjA0MzA1M10gdGczOiBwcm9i
-ZSBvZiAwMDAwOjAxOjAwLjEgZmFpbGVkIHdpdGggZXJyb3IgLTEyCj4+PiBbICAgMTAuMjg4OTA1
-XSB0ZzMgMDAwMDowMjowMC4wOiBETUEgZW5naW5lIHRlc3QgZmFpbGVkLCBhYm9ydGluZwo+Pj4g
-WyAgIDEwLjMzNDA3MF0gdGczOiBwcm9iZSBvZiAwMDAwOjAyOjAwLjAgZmFpbGVkIHdpdGggZXJy
-b3IgLTEyCj4+PiBbICAgMTAuNTc4MzAzXSB0ZzMgMDAwMDowMjowMC4xOiBETUEgZW5naW5lIHRl
-c3QgZmFpbGVkLCBhYm9ydGluZwo+Pj4gWyAgIDEwLjYyMjYyOV0gdGczOiBwcm9iZSBvZiAwMDAw
-OjAyOjAwLjEgZmFpbGVkIHdpdGggZXJyb3IgLTEyCj4+Pgo+Pj4gSW4gYWRkaXRpb24sIHRoZSBz
-aW1pbGFyIHNpdHVhdGlvbnMgYWxzbyBvY2N1ciBpbiBvdGhlciBkcml2ZXJzIHN1Y2gKPj4+IGFz
-IHRoZSBibnh0X2VuIGRyaXZlci4gVGhhdCBjYW4gYmUgcmVwcm9kdWNlZCBlYXNpbHkgaW4ga2R1
-bXAga2VybmVsCj4+PiB3aGVuIFNNRSBpcyBhY3RpdmUuCj4+Pgo+Pj4gQWRkIGEgY2hlY2sgZm9y
-IHRoZSBkZWZlcnJlZCBhdHRhY2ggaW4gdGhlIGlvbW11X2F0dGFjaF9kZXZpY2UoKSBhbmQKPj4+
-IGFsbG93IHRvIGF0dGFjaCB0aGUgZGVmZXJyZWQgZGV2aWNlIHJlZ2FyZGxlc3Mgb2YgaG93IG1h
-bnkgZGV2aWNlcwo+Pj4gYXJlIGluIGEgZ3JvdXAuCgpJcyB0aGlzIGlvbW11X2F0dGFjaF9kZXZp
-Y2UoKSBjYWxsIGlzIGNvbWluZyBmcm9tIGlvbW11LWRtYT8gKGlmIG5vdCwgCnRoZW4gd2hvZXZl
-cidzIGNhbGxpbmcgaXQgcHJvYmFibHkgc2hvdWxkbid0IGJlKQoKQXNzdW1pbmcgc28sIHRoZW4g
-cHJvYmFibHkgd2hhdCBzaG91bGQgaGFwcGVuIGlzIHRvIG1vdmUgdGhlIGhhbmRsaW5nIApjdXJy
-ZW50bHkgaW4gaW9tbXVfZG1hX2RlZmVycmVkX2F0dGFjaCgpIGludG8gdGhlIGNvcmUgc28gdGhh
-dCBpdCBjYW4gCmNhbGwgX19pb21tdV9hdHRhY2hfZGV2aWNlKCkgZGlyZWN0bHkgLSB0aGUgaW50
-ZW50IGlzIGp1c3QgdG8gcmVwbGF5IAp0aGF0IGV4YWN0IGNhbGwgc2tpcHBlZCBpbiBpb21tdV9n
-cm91cF9hZGRfZGV2aWNlKCksIHNvIHRoZSBsZWdhY3kgCmV4dGVybmFsIGlvbW11X2F0dGFjaF9k
-ZXZpY2UoKSBpbnRlcmZhY2UgaXNuJ3QgcmVhbGx5IHRoZSByaWdodCB0b29sIGZvciAKdGhlIGpv
-YiBhbnl3YXkuIFRoYXQncyBqdXN0IHNsaWdodGx5IGF3a3dhcmQgc2luY2UgaWRlYWxseSBpdCB3
-YW50cyB0byAKYmUgZG9uZSBpbiBhIHdheSB0aGF0IGRvZXNuJ3QgcmVzdWx0IGluIGEgcmVkdW5k
-YW50IG91dC1vZi1saW5lIGNhbGwgZm9yIAoha2R1bXAuCgpBbHRlcm5hdGl2ZWx5IEkgc3VwcG9z
-ZSBpdCAqY291bGQqIGp1c3QgY2FsbCBvcHMtPmF0dGFjaF9kZXYgZGlyZWN0bHksIApidXQgdGhl
-biB3ZSBtaXNzIG91dCBvbiB0aGUgdHJhY2Vwb2ludCwgYW5kIGRlZmVycmVkIGF0dGFjaCBpcyBh
-cmd1YWJseSAKb25lIG9mIHRoZSBjYXNlcyB3aGVyZSB0aGF0J3MgbW9zdCB1c2VmdWwgOi8KClJv
-YmluLgoKPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBMaWFuYm8gSmlhbmcgPGxpamlhbmdAcmVkaGF0
-LmNvbT4KPj4+IC0tLQo+Pj4gICBkcml2ZXJzL2lvbW11L2lvbW11LmMgfCA1ICsrKystCj4+PiAg
-IDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPj4+Cj4+PiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5j
-Cj4+PiBpbmRleCBmZmVlYmRhOGQ2ZGUuLmRjY2FiN2IxMzNmYiAxMDA2NDQKPj4+IC0tLSBhL2Ry
-aXZlcnMvaW9tbXUvaW9tbXUuYwo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+PiBA
-QCAtMTk2Nyw4ICsxOTY3LDExIEBAIGludCBpb21tdV9hdHRhY2hfZGV2aWNlKHN0cnVjdCBpb21t
-dV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRldmljZSAqZGV2KQo+Pj4gICAJICovCj4+PiAgIAlt
-dXRleF9sb2NrKCZncm91cC0+bXV0ZXgpOwo+Pj4gICAJcmV0ID0gLUVJTlZBTDsKPj4+IC0JaWYg
-KGlvbW11X2dyb3VwX2RldmljZV9jb3VudChncm91cCkgIT0gMSkKPj4+ICsJaWYgKCFpb21tdV9p
-c19hdHRhY2hfZGVmZXJyZWQoZG9tYWluLCBkZXYpICYmCj4+PiArCSAgICBpb21tdV9ncm91cF9k
-ZXZpY2VfY291bnQoZ3JvdXApICE9IDEpIHsKPj4+ICsJCWRldl9lcnJfcmF0ZWxpbWl0ZWQoZGV2
-LCAiR3JvdXAgaGFzIG1vcmUgdGhhbiBvbmUgZGV2aWNlXG4iKTsKPj4+ICAgCQlnb3RvIG91dF91
-bmxvY2s7Cj4+PiArCX0KPj4+ICAgCj4+PiAgIAlyZXQgPSBfX2lvbW11X2F0dGFjaF9ncm91cChk
-b21haW4sIGdyb3VwKTsKPj4+ICAgCj4+Pgo+IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4gaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
-bWFpbG1hbi9saXN0aW5mby9pb21tdQo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On 1/11/21 11:48 PM, Claire Chang wrote:
+> On Fri, Jan 8, 2021 at 1:59 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>
+>> On 1/7/21 9:42 AM, Claire Chang wrote:
+>>
+>>>> Can you explain how ATF gets involved and to what extent it does help,
+>>>> besides enforcing a secure region from the ARM CPU's perpsective? Does
+>>>> the PCIe root complex not have an IOMMU but can somehow be denied access
+>>>> to a region that is marked NS=0 in the ARM CPU's MMU? If so, that is
+>>>> still some sort of basic protection that the HW enforces, right?
+>>>
+>>> We need the ATF support for memory MPU (memory protection unit).
+>>> Restricted DMA (with reserved-memory in dts) makes sure the predefined memory
+>>> region is for PCIe DMA only, but we still need MPU to locks down PCIe access to
+>>> that specific regions.
+>>
+>> OK so you do have a protection unit of some sort to enforce which region
+>> in DRAM the PCIE bridge is allowed to access, that makes sense,
+>> otherwise the restricted DMA region would only be a hint but nothing you
+>> can really enforce. This is almost entirely analogous to our systems then.
+> 
+> Here is the example of setting the MPU:
+> https://github.com/ARM-software/arm-trusted-firmware/blob/master/plat/mediatek/mt8183/drivers/emi_mpu/emi_mpu.c#L132
+> 
+>>
+>> There may be some value in standardizing on an ARM SMCCC call then since
+>> you already support two different SoC vendors.
+>>
+>>>
+>>>>
+>>>> On Broadcom STB SoCs we have had something similar for a while however
+>>>> and while we don't have an IOMMU for the PCIe bridge, we do have a a
+>>>> basic protection mechanism whereby we can configure a region in DRAM to
+>>>> be PCIe read/write and CPU read/write which then gets used as the PCIe
+>>>> inbound region for the PCIe EP. By default the PCIe bridge is not
+>>>> allowed access to DRAM so we must call into a security agent to allow
+>>>> the PCIe bridge to access the designated DRAM region.
+>>>>
+>>>> We have done this using a private CMA area region assigned via Device
+>>>> Tree, assigned with a and requiring the PCIe EP driver to use
+>>>> dma_alloc_from_contiguous() in order to allocate from this device
+>>>> private CMA area. The only drawback with that approach is that it
+>>>> requires knowing how much memory you need up front for buffers and DMA
+>>>> descriptors that the PCIe EP will need to process. The problem is that
+>>>> it requires driver modifications and that does not scale over the number
+>>>> of PCIe EP drivers, some we absolutely do not control, but there is no
+>>>> need to bounce buffer. Your approach scales better across PCIe EP
+>>>> drivers however it does require bounce buffering which could be a
+>>>> performance hit.
+>>>
+>>> Only the streaming DMA (map/unmap) needs bounce buffering.
+>>
+>> True, and typically only on transmit since you don't really control
+>> where the sk_buff are allocated from, right? On RX since you need to
+>> hand buffer addresses to the WLAN chip prior to DMA, you can allocate
+>> them from a pool that already falls within the restricted DMA region, right?
+>>
+> 
+> Right, but applying bounce buffering to RX will make it more secure.
+> The device won't be able to modify the content after unmap. Just like what
+> iommu_unmap does.
+
+Sure, however the goals of using bounce buffering equally applies to RX
+and TX in that this is the only layer sitting between a stack (block,
+networking, USB, etc.) and the underlying device driver that scales well
+in order to massage a dma_addr_t to be within a particular physical range.
+
+There is however room for improvement if the drivers are willing to
+change their buffer allocation strategy. When you receive Wi-Fi frames
+you need to allocate buffers for the Wi-Fi device to DMA into, and that
+happens ahead of the DMA transfers by the Wi-Fi device. At buffer
+allocation time you could very well allocate these frames from the
+restricted DMA region without having to bounce buffer them since the
+host CPU is in control over where and when to DMA into.
+
+The issue is that each network driver may implement its own buffer
+allocation strategy, some may simply call netdev_alloc_skb() which gives
+zero control over where the buffer comes from unless you play tricks
+with NUMA node allocations and somehow declare that your restricted DMA
+region is a different NUMA node. If the driver allocates pages and then
+attaches a SKB to that page using build_skb(), then you have much more
+control over where that page comes from, and this is where using a
+device private CMA are helps, because you can just do
+dma_alloc_from_contiguous() and that will ensure that the pages are
+coming from your specific CMA area.
+
+Few questions on the implementation:
+
+- is there any warning or error being printed if the restricted DMA
+region is outside of a device's DMA addressable range?
+
+- are there are any helpful statistics that could be shown to indicate
+that the restricted DMA region was sized too small, e.g.: that
+allocation of a DMA buffer failed because we ran out of space in the
+swiotlb pool?
+
+> 
+>>> I also added alloc/free support in this series
+>>> (https://lore.kernel.org/patchwork/patch/1360995/), so dma_direct_alloc() will
+>>> try to allocate memory from the predefined memory region.
+>>>
+>>> As for the performance hit, it should be similar to the default swiotlb.
+>>> Here are my experiment results. Both SoCs lack IOMMU for PCIe.
+>>>
+>>> PCIe wifi vht80 throughput -
+>>>
+>>>   MTK SoC                  tcp_tx     tcp_rx    udp_tx   udp_rx
+>>>   w/o Restricted DMA  244.1     134.66   312.56   350.79
+>>>   w/ Restricted DMA    246.95   136.59   363.21   351.99
+>>>
+>>>   Rockchip SoC           tcp_tx     tcp_rx    udp_tx   udp_rx
+>>>   w/o Restricted DMA  237.87   133.86   288.28   361.88
+>>>   w/ Restricted DMA    256.01   130.95   292.28   353.19
+>>
+>> How come you get better throughput with restricted DMA? Is it because
+>> doing DMA to/from a contiguous region allows for better grouping of
+>> transactions from the DRAM controller's perspective somehow?
+> 
+> I'm not sure, but actually, enabling the default swiotlb for wifi also helps the
+> throughput a little bit for me.
+
+OK, it would be interesting if you could get to the bottom of why
+performance does increase with swiotlb.
+-- 
+Florian
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
