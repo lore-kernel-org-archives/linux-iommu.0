@@ -2,113 +2,103 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDD4C433DB
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 07:56:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6A5C4332B
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 09:16:58 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29C4522E00
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 07:56:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29C4522E00
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id D643222DFB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 09:16:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D643222DFB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AF7A886A2E;
-	Tue, 12 Jan 2021 07:56:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 4B921204E2;
+	Tue, 12 Jan 2021 09:16:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P1K9p2dwphik; Tue, 12 Jan 2021 07:56:16 +0000 (UTC)
+	with ESMTP id CnrI8ld9pAch; Tue, 12 Jan 2021 09:16:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 091718619F;
-	Tue, 12 Jan 2021 07:56:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E530D204BC;
+	Tue, 12 Jan 2021 09:16:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 03335C088B;
-	Tue, 12 Jan 2021 07:56:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE838C088B;
+	Tue, 12 Jan 2021 09:16:54 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37856C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:56:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DCA66C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 09:16:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 24E4485F7F
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:56:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CA7C4851FB
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 09:16:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IZZBTl1cuJEJ for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 07:56:12 +0000 (UTC)
+ with ESMTP id iRYsw1cs_VqW for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 09:16:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com
- [209.85.215.172])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2E1878481F
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:56:12 +0000 (UTC)
-Received: by mail-pg1-f172.google.com with SMTP id c22so885364pgg.13
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 23:56:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=M6gti34JNoWz5z3B8Kij1up+0ymqSqmekx/99+4faKU=;
- b=X6l/XLromsTlU6NHa0DWJ/v5avCPE+tbWy6cx1R1IpoHKfbhgU6MF+gZNi4A3oZMQA
- aDXLX9RnsLGW3PS+TKQP3dv3P0XkS3dWXlHp8BVT2WpAIYitmTledVhp8sQu29+3epTn
- 3vsNGErl3t1pJGKPEpwPU9LYUv1Ianz/yayzo=
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com
+ [209.85.208.48])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 59C23851CC
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 09:16:52 +0000 (UTC)
+Received: by mail-ed1-f48.google.com with SMTP id v26so1445479eds.13
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 01:16:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=V4Ma0KkD8d21UACM4ffQTckGsQRVOOOjeKQ7H9bkegg=;
+ b=tqns5ex3W/22GNSQjU3yHEUq6Lx0NP96Ysb/ui4paO62uBN1fxSQTYwaE9hkYeZZQ3
+ +OsoewHGvx/NJl0tGOelIJS7NW25gPVldz3D+LhuhiHgp1kwFsnVxvo1AxoWnGvC0v7f
+ fPLYq75eocGKThJXMhyHGVDEhGZUrQ9eq/oII/jJtfNIxEbXNRxcwJwgouUnjpfdx8ST
+ T8G5xSxjsCNmIYPDPyBO2+ILzXpirbSIuxR6yIkNmsNpTohxn35Qd+ULH8Tbw3mA5P3b
+ YBjYT2owuHJcg3U/sfVhyg9K17im8jtzLM3LMh81MoBbUZC0i4VOIwNQ9qdwdgdr35xk
+ iDQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=M6gti34JNoWz5z3B8Kij1up+0ymqSqmekx/99+4faKU=;
- b=gw1wq25UvXTwJO3GzegCgjKY6VbEkGBGByWc+h+cnVeK5j1u21uW5MeFzsD7HUiIaV
- 0T2QhPxVRfejxJZ6cRNqW2L9Cf5YeLe1V1NuLgfXT8seKNIufM6g9Jc+n4aOC2N3hZSn
- g8korZDex+REm4yA7DGO+WVzOe5Zuy1YlI3Y93gkmtQvetk/DJxD8jR7sn/7BBDczGNT
- uisE6StdYkBI7z3e4GsZnMOUdrzbB9nSxSlZ3H7fX2PknasQnLNGLr3KM+hKDoOt+f6u
- 56d+LRf8lvbJlNI3WS/1ZT8tViXUlN6VtKtab6TeyHkYxORdNyIVx92sNcP5it0Zw3Af
- fwvA==
-X-Gm-Message-State: AOAM532nhbsOnCZgWxD8T3cjNqhFnM77TLKPmgOY8hM+GLVK5ZGCyz8+
- rsI6jxfylplCY4MzvAyyldby5NWC5KOK+bN1
-X-Google-Smtp-Source: ABdhPJy6Xp4Sd/zlNFFppNa1LdZbYX74RuBb2WKH9lpPvETTEtZMjChckN2pFcEUD8QJvn+dcMA2rg==
-X-Received: by 2002:a6b:7d42:: with SMTP id d2mr2367101ioq.176.1610437709504; 
- Mon, 11 Jan 2021 23:48:29 -0800 (PST)
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com.
- [209.85.166.50])
- by smtp.gmail.com with ESMTPSA id t16sm1943076ilb.50.2021.01.11.23.48.28
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 11 Jan 2021 23:48:28 -0800 (PST)
-Received: by mail-io1-f50.google.com with SMTP id u26so2145660iof.3
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 23:48:28 -0800 (PST)
-X-Received: by 2002:a6b:7f0b:: with SMTP id l11mr2402150ioq.34.1610437707606; 
- Mon, 11 Jan 2021 23:48:27 -0800 (PST)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=V4Ma0KkD8d21UACM4ffQTckGsQRVOOOjeKQ7H9bkegg=;
+ b=g3GHu09cz3mU4+PYz/fDmvre4XcT2b0/kNedixPEvrKHR+WRUJ2fSFa3WFLWPGD/q0
+ uZpW88HCzfxjBR6YSk9I8VtlnMXLJKbHuhRBReThcAD8HFjlVEc90XD6xBH8A7fOxjb3
+ Qgk5Q151Jv5llt0GBThCJ834IfezMOjKmk6DEo94NjgtHVq8L3awimwa7Ks6aXDQTSJh
+ /TJidpxNJ615HDUqdLUv1Zbqfl+TJy2CrDHx2rcLocB3k17JHq+Lj8snho8tKN1Lu7A5
+ Jf8gYnvfHSP0xoQd87tC82uLj4zarAO9qtHB9b8HwjLfbaQ4VX4/RycAK2DbDRXRy3UU
+ 8xFQ==
+X-Gm-Message-State: AOAM532Dh7rtbRn/R6Fhif+V6arXHHMWyE+lPXftIexxqUxUT5rdASVz
+ F4qa7BdLQfuOa7RWHLUCpLNcyA==
+X-Google-Smtp-Source: ABdhPJxkiyPcGha8EA9sg/7lQmn+O5OBib7oEZX270HhCUOKgigDK4OOnz98pAkIlqJKozflypcvug==
+X-Received: by 2002:a05:6402:895:: with SMTP id
+ e21mr2679030edy.284.1610443010649; 
+ Tue, 12 Jan 2021 01:16:50 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id m7sm934913eji.118.2021.01.12.01.16.49
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 12 Jan 2021 01:16:50 -0800 (PST)
+Date: Tue, 12 Jan 2021 10:16:31 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v9 03/10] iommu: Separate IOMMU_DEV_FEAT_IOPF from
+ IOMMU_DEV_FEAT_SVA
+Message-ID: <X/1o72DTmzdCMhDz@myrica>
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-4-jean-philippe@linaro.org>
+ <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
 MIME-Version: 1.0
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <d7043239-12cf-3636-4726-2e3b90917dc6@gmail.com>
- <CALiNf28sU1VtGB7LeTXExkMwQiCeg8N5arqyEjw0CPZP72R4dg@mail.gmail.com>
- <78871151-947d-b085-db03-0d0bd0b55632@gmail.com>
-In-Reply-To: <78871151-947d-b085-db03-0d0bd0b55632@gmail.com>
-From: Claire Chang <tientzu@chromium.org>
-Date: Tue, 12 Jan 2021 15:48:16 +0800
-X-Gmail-Original-Message-ID: <CALiNf29_PmLJTVLksSHp3NFAaL52idqehSMOtatJ=jaM2Muq1g@mail.gmail.com>
-Message-ID: <CALiNf29_PmLJTVLksSHp3NFAaL52idqehSMOtatJ=jaM2Muq1g@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/6] Restricted DMA
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, rafael.j.wysocki@intel.com, Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>, will@kernel.org,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, dan.j.williams@intel.com,
- linuxppc-dev@lists.ozlabs.org, Rob Herring <robh+dt@kernel.org>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- rdunlap@infradead.org, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, vivek.gautam@arm.com,
+ guohanjun@huawei.com, will@kernel.org, linux-acpi@vger.kernel.org,
+ zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org, "Tian,
+ Kevin" <kevin.tian@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+ robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+ David Woodhouse <dwmw2@infradead.org>, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,107 +116,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jan 8, 2021 at 1:59 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 1/7/21 9:42 AM, Claire Chang wrote:
->
-> >> Can you explain how ATF gets involved and to what extent it does help,
-> >> besides enforcing a secure region from the ARM CPU's perpsective? Does
-> >> the PCIe root complex not have an IOMMU but can somehow be denied access
-> >> to a region that is marked NS=0 in the ARM CPU's MMU? If so, that is
-> >> still some sort of basic protection that the HW enforces, right?
-> >
-> > We need the ATF support for memory MPU (memory protection unit).
-> > Restricted DMA (with reserved-memory in dts) makes sure the predefined memory
-> > region is for PCIe DMA only, but we still need MPU to locks down PCIe access to
-> > that specific regions.
->
-> OK so you do have a protection unit of some sort to enforce which region
-> in DRAM the PCIE bridge is allowed to access, that makes sense,
-> otherwise the restricted DMA region would only be a hint but nothing you
-> can really enforce. This is almost entirely analogous to our systems then.
+Hi Baolu,
 
-Here is the example of setting the MPU:
-https://github.com/ARM-software/arm-trusted-firmware/blob/master/plat/mediatek/mt8183/drivers/emi_mpu/emi_mpu.c#L132
+On Tue, Jan 12, 2021 at 12:31:23PM +0800, Lu Baolu wrote:
+> Hi Jean,
+> 
+> On 1/8/21 10:52 PM, Jean-Philippe Brucker wrote:
+> > Some devices manage I/O Page Faults (IOPF) themselves instead of relying
+> > on PCIe PRI or Arm SMMU stall. Allow their drivers to enable SVA without
+> > mandating IOMMU-managed IOPF. The other device drivers now need to first
+> > enable IOMMU_DEV_FEAT_IOPF before enabling IOMMU_DEV_FEAT_SVA.
+> > 
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: David Woodhouse <dwmw2@infradead.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Zhangfei Gao <zhangfei.gao@linaro.org>
+> > Cc: Zhou Wang <wangzhou1@hisilicon.com>
+> > ---
+> >   include/linux/iommu.h | 20 +++++++++++++++++---
+> >   1 file changed, 17 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 583c734b2e87..701b2eeb0dc5 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -156,10 +156,24 @@ struct iommu_resv_region {
+> >   	enum iommu_resv_type	type;
+> >   };
+> > -/* Per device IOMMU features */
+> > +/**
+> > + * enum iommu_dev_features - Per device IOMMU features
+> > + * @IOMMU_DEV_FEAT_AUX: Auxiliary domain feature
+> > + * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
+> > + * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall. Generally using
+> > + *			 %IOMMU_DEV_FEAT_SVA requires %IOMMU_DEV_FEAT_IOPF, but
+> > + *			 some devices manage I/O Page Faults themselves instead
+> > + *			 of relying on the IOMMU. When supported, this feature
+> > + *			 must be enabled before and disabled after
+> > + *			 %IOMMU_DEV_FEAT_SVA.
+> 
+> Is this only for SVA? We may see more scenarios of using IOPF. For
+> example, when passing through devices to user level, the user's pages
+> could be managed dynamically instead of being allocated and pinned
+> statically.
 
->
-> There may be some value in standardizing on an ARM SMCCC call then since
-> you already support two different SoC vendors.
->
-> >
-> >>
-> >> On Broadcom STB SoCs we have had something similar for a while however
-> >> and while we don't have an IOMMU for the PCIe bridge, we do have a a
-> >> basic protection mechanism whereby we can configure a region in DRAM to
-> >> be PCIe read/write and CPU read/write which then gets used as the PCIe
-> >> inbound region for the PCIe EP. By default the PCIe bridge is not
-> >> allowed access to DRAM so we must call into a security agent to allow
-> >> the PCIe bridge to access the designated DRAM region.
-> >>
-> >> We have done this using a private CMA area region assigned via Device
-> >> Tree, assigned with a and requiring the PCIe EP driver to use
-> >> dma_alloc_from_contiguous() in order to allocate from this device
-> >> private CMA area. The only drawback with that approach is that it
-> >> requires knowing how much memory you need up front for buffers and DMA
-> >> descriptors that the PCIe EP will need to process. The problem is that
-> >> it requires driver modifications and that does not scale over the number
-> >> of PCIe EP drivers, some we absolutely do not control, but there is no
-> >> need to bounce buffer. Your approach scales better across PCIe EP
-> >> drivers however it does require bounce buffering which could be a
-> >> performance hit.
-> >
-> > Only the streaming DMA (map/unmap) needs bounce buffering.
->
-> True, and typically only on transmit since you don't really control
-> where the sk_buff are allocated from, right? On RX since you need to
-> hand buffer addresses to the WLAN chip prior to DMA, you can allocate
-> them from a pool that already falls within the restricted DMA region, right?
->
+Hm, isn't that precisely what SVA does?  I don't understand the
+difference. That said FEAT_IOPF doesn't have to be only for SVA. It could
+later be used as a prerequisite some another feature. For special cases
+device drivers can always use the iommu_register_device_fault_handler()
+API and handle faults themselves.
 
-Right, but applying bounce buffering to RX will make it more secure.
-The device won't be able to modify the content after unmap. Just like what
-iommu_unmap does.
+> If @IOMMU_DEV_FEAT_IOPF is defined as generic iopf support, the current
+> vendor IOMMU driver support may not enough.
 
-> > I also added alloc/free support in this series
-> > (https://lore.kernel.org/patchwork/patch/1360995/), so dma_direct_alloc() will
-> > try to allocate memory from the predefined memory region.
-> >
-> > As for the performance hit, it should be similar to the default swiotlb.
-> > Here are my experiment results. Both SoCs lack IOMMU for PCIe.
-> >
-> > PCIe wifi vht80 throughput -
-> >
-> >   MTK SoC                  tcp_tx     tcp_rx    udp_tx   udp_rx
-> >   w/o Restricted DMA  244.1     134.66   312.56   350.79
-> >   w/ Restricted DMA    246.95   136.59   363.21   351.99
-> >
-> >   Rockchip SoC           tcp_tx     tcp_rx    udp_tx   udp_rx
-> >   w/o Restricted DMA  237.87   133.86   288.28   361.88
-> >   w/ Restricted DMA    256.01   130.95   292.28   353.19
->
-> How come you get better throughput with restricted DMA? Is it because
-> doing DMA to/from a contiguous region allows for better grouping of
-> transactions from the DRAM controller's perspective somehow?
+IOMMU_DEV_FEAT_IOPF on its own doesn't do anything useful, it's mainly a
+way for device drivers to probe the IOMMU capability. Granted in patch
+10 the SMMU driver registers the IOPF queue on enable() but that could be
+done by FEAT_SVA enable() instead, if we ever repurpose FEAT_IOPF.
 
-I'm not sure, but actually, enabling the default swiotlb for wifi also helps the
-throughput a little bit for me.
-
->
-> >
-> > The CPU usage doesn't increase too much either.
-> > Although I didn't measure the CPU usage very precisely, it's ~3% with a single
-> > big core (Cortex-A72) and ~5% with a single small core (Cortex-A53).
-> >
-> > Thanks!
-> >
-> >>
-> >> Thanks!
-> >> --
-> >> Florian
->
->
-> --
-> Florian
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
