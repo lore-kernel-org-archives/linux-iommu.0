@@ -6,72 +6,68 @@ X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8877AC433DB
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7664CC433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:03:35 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 189B123123
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:03:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 189B123123
+	by mail.kernel.org (Postfix) with ESMTPS id 0CF0D23123
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:03:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CF0D23123
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 96ADF86027;
-	Tue, 12 Jan 2021 19:03:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A125485569;
+	Tue, 12 Jan 2021 19:03:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fKdM4moSWkYU; Tue, 12 Jan 2021 19:03:32 +0000 (UTC)
+	with ESMTP id x8Vvs1gvctQQ; Tue, 12 Jan 2021 19:03:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C25F848FA;
-	Tue, 12 Jan 2021 19:03:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4F32785570;
+	Tue, 12 Jan 2021 19:03:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1376FC08A1;
-	Tue, 12 Jan 2021 19:03:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B91AC0893;
+	Tue, 12 Jan 2021 19:03:34 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3FDCAC013A
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB5A0C013A
  for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:03:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 26677203C4
+ by silver.osuosl.org (Postfix) with ESMTP id C40E11FE49
  for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:03:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T1tsOSJOBE5V for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 19:03:29 +0000 (UTC)
+ with ESMTP id P7zEeA0NPL4y for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 19:03:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 06B521FE49
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:03:29 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B93E230F9;
- Tue, 12 Jan 2021 19:03:25 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id E95B62039E
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:03:30 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1144A23122;
+ Tue, 12 Jan 2021 19:03:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1610478208;
- bh=arJYye6Gv+8BuVsZc+5AV+LIkT34tlazeQkU3YPaluM=;
+ s=k20201202; t=1610478210;
+ bh=sq7HXLleUd62z0dDAFs3dJtqQSEIyugOuRy1f/SCVdE=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=DJx7vokyB5+qhEnSmUd0eR+wmyyCD0UMA411LAhNUBO5eknScs5nLleFxQ9uCG9OZ
- gsZ8SkoRr1t7DrFPG4dy756LV/FwGIKOjPCKFwSmmUbjWWjnl8xLcONV/tvActX/nY
- 6M9bJGW7vLRwM+tjCs4wYFWhd4/roFfBc1he8QPr+r3qrRYilSJqWBcqqFBY4Dhsqn
- L5h84UpX57SC6H+tNiFO0x8Lwwxi0CLS5n7++OaIbDQcfXYhB3ESsz3PTxewbFWMRa
- pcXjsB3pdqMQIq+LZezGBVWU0xfaavcgDVAPUakFmjiXUZlJIjfsKoY4/2NpYiz1vx
- bEesUrjXb23MQ==
+ b=A83JR4Llrtx0Yw1P9Nl5vk+uf1CJcZGR/8ndT0C2WzvNu8BZTfrSknpPx9vt5Ilx7
+ BX/pp/gYCHpm8d1QPL7uyqNbvautoyipOVf3aXeGfNTG86SQNgVkvxeBqBvHhhAau5
+ Um8Pjn20UMnIyDwcUdKA385ZCmQPyFuNwIjBeG6uNpGyngRopF6GGtj/N6TIWhLP7I
+ Y5J6YpWiK7UstuP2JDGaJ9s85ZhMVvP/vE3e0O4suRWvkhaMW8xKoevAGy+8wjvri7
+ waar3tvW6hni5DAJEXyQw9PMiW5FJRiGKJHBhfQhS85RZK1ZyfShkXrXNCP2J98E7+
+ bl/SZVdWIQY5g==
 From: Will Deacon <will@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@somainline.org>, phone-devel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu: arm-smmu-qcom: Add sdm630/msm8998 compatibles
- for qcom quirks
-Date: Tue, 12 Jan 2021 19:03:20 +0000
-Message-Id: <161046656595.1107648.16027501350781316856.b4-ty@kernel.org>
+To: dwmw2@infradead.org, joro@8bytes.org, baolu.lu@linux.intel.com,
+ Tian Tao <tiantao6@hisilicon.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix duplicate included linux/dma-map-ops.h
+Date: Tue, 12 Jan 2021 19:03:21 +0000
+Message-Id: <161047058104.1115665.8750505554416870263.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210109165622.149777-1-konrad.dybcio@somainline.org>
-References: <20210109165622.149777-1-konrad.dybcio@somainline.org>
+In-Reply-To: <1609118774-10083-1-git-send-email-tiantao6@hisilicon.com>
+References: <1609118774-10083-1-git-send-email-tiantao6@hisilicon.com>
 MIME-Version: 1.0
-Cc: John Stultz <john.stultz@linaro.org>, Will Deacon <will@kernel.org>,
- catalin.marinas@arm.com, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
- angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org,
- kernel-team@android.com, linux-arm-kernel@lists.infradead.org
+Cc: catalin.marinas@arm.com, iommu@lists.linux-foundation.org,
+ kernel-team@android.com, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,16 +85,14 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 9 Jan 2021 17:56:21 +0100, Konrad Dybcio wrote:
-> SDM630 and MSM8998 are among the SoCs that use Qualcomm's implementation
-> of SMMUv2 which has already proven to be problematic over the years. Add
-> their compatibles to the lookup list to prevent the platforms from being
-> shut down by the hypervisor at MMU probe.
+On Mon, 28 Dec 2020 09:26:14 +0800, Tian Tao wrote:
+> linux/dma-map-ops.h is included more than once, Remove the one that
+> isn't necessary.
 
 Applied to arm64 (for-next/iommu/fixes), thanks!
 
-[1/1] iommu: arm-smmu-qcom: Add sdm630/msm8998 compatibles for qcom quirks
-      https://git.kernel.org/arm64/c/b812834b5329
+[1/1] iommu/vt-d: Fix duplicate included linux/dma-map-ops.h
+      https://git.kernel.org/arm64/c/694a1c0adebe
 
 Cheers,
 -- 
