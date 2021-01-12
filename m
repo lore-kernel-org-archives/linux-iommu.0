@@ -2,80 +2,101 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=0.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,FORGED_MUA_MOZILLA,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F05AC433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 06:50:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8C3C433E0
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 07:08:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7741722AAF
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 06:50:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7741722AAF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB75122CAD
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 07:08:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB75122CAD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=foxmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D0F31204B4;
-	Tue, 12 Jan 2021 06:50:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nVaPne8U2acN; Tue, 12 Jan 2021 06:50:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0A3391FCB5;
-	Tue, 12 Jan 2021 06:50:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED71BC0893;
-	Tue, 12 Jan 2021 06:50:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AC0A2C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 06:50:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A0A8C84469
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 06:50:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 496FD85FA1;
+	Tue, 12 Jan 2021 07:08:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D-Gjpv9oXo8X; Tue, 12 Jan 2021 07:08:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D6E5285D37;
+	Tue, 12 Jan 2021 07:08:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB0A6C0893;
+	Tue, 12 Jan 2021 07:08:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 453A9C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:08:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 28F8C87094
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:08:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7VTS7DAbjHCn for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 06:50:48 +0000 (UTC)
+ with ESMTP id Pd7VjQcyBre8 for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 07:08:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4B2F485ABF
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 06:50:42 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 35D2712FC
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 22:50:41 -0800 (PST)
-Received: from mail-pl1-f179.google.com (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23B8E3FA45
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 22:50:41 -0800 (PST)
-Received: by mail-pl1-f179.google.com with SMTP id t6so907062plq.1
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 22:50:41 -0800 (PST)
-X-Gm-Message-State: AOAM533uk6VChRF3VmvSRSS7rSiZsfSEHJaxcEG3wxtUHc+fov5xfn0Z
- HXvOQtxYoVS7gtLWD7sYPiZm4hjfdVYO8X2PfgM=
-X-Google-Smtp-Source: ABdhPJxkM7Gy++KOxgg+Vg4KylRwV8QFQOGVeqrZZyEU2DDcq/JYCbjcYhWtGT34jkE/Co1DvCz6R7vLIIXujaJ2Oe4=
-X-Received: by 2002:a17:902:ee0b:b029:dc:1aa4:1123 with SMTP id
- z11-20020a170902ee0bb02900dc1aa41123mr3819896plb.18.1610434240490; Mon, 11
- Jan 2021 22:50:40 -0800 (PST)
+Received: from qq.com (out203-205-221-173.mail.qq.com [203.205.221.173])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DEA5287008
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 07:08:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+ s=s201512; t=1610435227;
+ bh=IVspVoyZIJAARCo6tSZ/fSyF7jV4s/QkY6ysZf9k7qc=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=hiOMLpFNzbJbjGnc32VUWQJ1w82sbMAUYkyaRFyhPYf4QKSasqM3U0qNlfOJoMsCv
+ 7uyn9X54m6kn+psibRAunFp2yrp3br3654+AQuIYgLeqsBWzq0Ycnc2wLn/GKVJYu3
+ SuPiV9clkvGp5yIv+CNXiCGDJ7eoxxQmuyT2spMM=
+Received: from [IPv6:240e:362:4bf:e00:19ba:7333:19c1:ecbe]
+ ([240e:362:4bf:e00:19ba:7333:19c1:ecbe])
+ by newxmesmtplogicsvrszc5.qq.com (NewEsmtp) with SMTP
+ id 16A17479; Tue, 12 Jan 2021 15:05:42 +0800
+X-QQ-mid: xmsmtpt1610435142tf8fz7hle
+Message-ID: <tencent_19C176B65A601349DA564348C7CAE0470406@qq.com>
+X-QQ-XMAILINFO: MgmB7lY4LTHyzvoOtMgoRSvz6WYHN5VyH0Ee8sisFgzZ2+xeSt1+IpuCzWVe/2
+ Ajl1hftPbsj4hc41kHF80/6kUzIMRdGtzdRuFhw/eMmv9TWO7wil8NNU2j7PVIzuDBlky8b6b6wH
+ pY+py1dyboxL4z/zuevg2nZfkVkf5FajqRX2o3PnQLIAK4ZlReYDXgaLaGJf/9EEtYOP6XrdP4u8
+ NXz+wg22MT/2Yim+nTJ5yren6qFAwP610UqkgWGPtUZ3aVi2yxvhbRiNq8s69QEs6Pna/KCBBN0b
+ H/rbnr/ztAjHo94WLTlsShb7ROOpdEBYhNHoTbLyTFI2K4C85+aIlgLeAnEm1bVCpgfDq+ABL9UU
+ yGl7C/q/8zd/PiNck/3SlwLm8fZRt8V8PRg6wG/jTNc0VkGsMgDIY6vNgqaarfiRLx5sdnFEqwTX
+ Xh2DKeF+UpLQEOTjkCJOjPxicRatmVlV2IVNWYl6SPKuCOYzmIvE3XvLFxmkQQJnRjqgRtuQOyCI
+ VDfFg18CjSBkwFFl4vzC7sf/roZ3jPWfGnYAHhz1wPIf+ktvqs2ZWAY2l4LgmSi2ihgZ1lpHszYm
+ ZK5IiUV5l4gShuj+8WJWsdvarHZDMZspDpiYEzq0mSVU72gJDDE1ukfh+7rRA5lswVXzJkHSghtQ
+ +6yALAxZe6zC4SMCAsLkq9InBINI+hna7S2kIhi48Soxg7MfeWjt/brjyMVmDW1tbMOTtIxN80Ur
+ 8kT1TCh/Nf1DGtzNtekCcmD/Xx4Iakud/GxQZbjDREq/OZeF/mUmS8uSz7l0G0guXXVi1Kiy/kNG
+ 8K0YVS5BmtpmRqgqN6nb+DS4rbxKNrOfip9B8sK7aQ6w==
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+To: Bjorn Helgaas <helgaas@kernel.org>, Zhou Wang <wangzhou1@hisilicon.com>
+References: <20201217203806.GA20785@bjorn-Precision-5520>
+From: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <83afc1a6-9ee3-5fd1-9700-9c835c7b5319@foxmail.com>
+Date: Tue, 12 Jan 2021 15:05:42 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
- <1599734733-6431-3-git-send-email-yi.l.liu@intel.com>
-In-Reply-To: <1599734733-6431-3-git-send-email-yi.l.liu@intel.com>
-From: Vivek Gautam <vivek.gautam@arm.com>
-Date: Tue, 12 Jan 2021 12:20:29 +0530
-X-Gmail-Original-Message-ID: <CAFp+6iFob_fy1cTgcEv0FOXBo70AEf3Z1UvXgPep62XXnLG9Gw@mail.gmail.com>
-Message-ID: <CAFp+6iFob_fy1cTgcEv0FOXBo70AEf3Z1UvXgPep62XXnLG9Gw@mail.gmail.com>
-Subject: Re: [PATCH v7 02/16] iommu/smmu: Report empty domain nesting info
-To: Liu Yi L <yi.l.liu@intel.com>
-Cc: yi.y.sun@intel.com, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- kevin.tian@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- jasowang@redhat.com, stefanha@gmail.com, Will Deacon <will@kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- alex.williamson@redhat.com, hao.wu@intel.com,
- Robin Murphy <robin.murphy@arm.com>, jun.j.tian@intel.com
+In-Reply-To: <20201217203806.GA20785@bjorn-Precision-5520>
+Content-Language: en-US
+Cc: linux-pci <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Len Brown <lenb@kernel.org>,
+ Thanu Rangarajan <Thanu.Rangarajan@arm.com>,
+ Souvik Chakravarty <Souvik.Chakravarty@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+ Bjorn Helgaas <bhelgaas@google.com>, wanghuiqiang <wanghuiqiang@huawei.com>,
+ kenneth-lee-2012@foxmail.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ "open list:HARDWARE RANDOM NUMBER GENERATOR CORE"
+ <linux-crypto@vger.kernel.org>, Sudeep Holla <sudeep.holla@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,119 +109,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
-
-
-On Thu, Sep 10, 2020 at 4:13 PM Liu Yi L <yi.l.liu@intel.com> wrote:
->
-> This patch is added as instead of returning a boolean for DOMAIN_ATTR_NESTING,
-> iommu_domain_get_attr() should return an iommu_nesting_info handle. For
-> now, return an empty nesting info struct for now as true nesting is not
-> yet supported by the SMMUs.
->
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Eric Auger <eric.auger@redhat.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> ---
-> v5 -> v6:
-> *) add review-by from Eric Auger.
->
-> v4 -> v5:
-> *) address comments from Eric Auger.
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29 +++++++++++++++++++++++++++--
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 29 +++++++++++++++++++++++++++--
->  2 files changed, 54 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 7196207..016e2e5 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3019,6 +3019,32 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
->         return group;
->  }
->
-> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain *smmu_domain,
-> +                                       void *data)
-> +{
-> +       struct iommu_nesting_info *info = (struct iommu_nesting_info *)data;
-> +       unsigned int size;
-> +
-> +       if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-> +               return -ENODEV;
-> +
-> +       size = sizeof(struct iommu_nesting_info);
-> +
-> +       /*
-> +        * if provided buffer size is smaller than expected, should
-> +        * return 0 and also the expected buffer size to caller.
-> +        */
-> +       if (info->argsz < size) {
-> +               info->argsz = size;
-> +               return 0;
-> +       }
-> +
-> +       /* report an empty iommu_nesting_info for now */
-> +       memset(info, 0x0, size);
-> +       info->argsz = size;
-> +       return 0;
-> +}
-> +
->  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
->                                     enum iommu_attr attr, void *data)
->  {
-> @@ -3028,8 +3054,7 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
->         case IOMMU_DOMAIN_UNMANAGED:
->                 switch (attr) {
->                 case DOMAIN_ATTR_NESTING:
-> -                       *(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
-> -                       return 0;
-> +                       return arm_smmu_domain_nesting_info(smmu_domain, data);
-
-Thanks for the patch.
-This would unnecessarily overflow 'data' for any caller that's expecting only
-an int data. Dump from one such issue that I was seeing when testing
-this change along with local kvmtool changes is pasted below [1].
-
-I could get around with the issue by adding another (iommu_attr) -
-DOMAIN_ATTR_NESTING_INFO that returns (iommu_nesting_info).
-
-Thanks & regards
-Vivek
-
-[1]--------------
-[  811.756516] vfio-pci 0000:08:00.1: vfio_ecap_init: hiding ecap 0x1b@0x108
-[  811.756516] Kernel panic - not syncing: stack-protector: Kernel
-stack is corrupted in: vfio_pci_open+0x644/0x648
-[  811.756516] CPU: 0 PID: 175 Comm: lkvm-cleanup-ne Not tainted
-5.10.0-rc5-00096-gf015061e14cf #43
-[  811.756516] Call trace:
-[  811.756516]  dump_backtrace+0x0/0x1b0
-[  811.756516]  show_stack+0x18/0x68
-[  811.756516]  dump_stack+0xd8/0x134
-[  811.756516]  panic+0x174/0x33c
-[  811.756516]  __stack_chk_fail+0x3c/0x40
-[  811.756516]  vfio_pci_open+0x644/0x648
-[  811.756516]  vfio_group_fops_unl_ioctl+0x4bc/0x648
-[  811.756516]  0x0
-[  811.756516] SMP: stopping secondary CPUs
-[  811.756597] Kernel Offset: disabled
-[  811.756597] CPU features: 0x0040006,6a00aa38
-[  811.756602] Memory Limit: none
-[  811.768497] ---[ end Kernel panic - not syncing: stack-protector:
-Kernel stack is corrupted in: vfio_pci_open+0x644/0x648 ]
--------------
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGksIEJqb3JuCgpPbiAyMDIwLzEyLzE4IOS4iuWNiDQ6MzgsIEJqb3JuIEhlbGdhYXMgd3JvdGU6
+Cj4KPj4+IFRoZSBwcmluY2lwbGVzIGFyZToKPj4+Cj4+PiAgICAtIEkgZG9uJ3Qgd2FudCB0byBo
+YXZlIHRvIHVwZGF0ZSBhIHF1aXJrIGZvciBldmVyeSBuZXcgRGV2aWNlIElECj4+PiAgICAgIHRo
+YXQgbmVlZHMgdGhpcy4KPj4gSGkgQmpvcm4gYW5kIFpoYW5nZmVpLAo+Pgo+PiBXZSBwbGFuIHRv
+IHVzZSBBVFMvUFJJIHRvIHN1cHBvcnQgU1ZBIGluIGZ1dHVyZSBQQ0kgZGV2aWNlcy4gSG93ZXZl
+ciwgZm9yCj4+IGN1cnJlbnQgZGV2aWNlcywgd2UgbmVlZCB0byBhZGQgbGltaXRlZCBudW1iZXIg
+b2YgcXVpcmsgdG8gbGV0IHRoZW0KPj4gd29yay4gVGhlIGRldmljZSBJRHMgb2YgY3VycmVudCBx
+dWlyayBuZWVkZWQgZGV2aWNlcyBhcmUgWklQIGVuZ2luZSgweGEyNTAsIDB4YTI1MSksCj4+IFNF
+QyBlbmdpbmUoMHhhMjU1LCAweGEyNTYpLCBIUFJFIGVuZ2luZSgweGEyNTgsIDB4YTI1OSksIHJl
+dmlzaW9uIGlkIGFyZQo+PiAweDIxIGFuZCAweDMwLgo+Pgo+PiBMZXQncyBjb250aW51ZSB0byB1
+cHN0cmVhbSB0aGVzZSBxdWlya3MhCj4gUGxlYXNlIHBvc3QgdGhlIHBhdGNoZXMgeW91IHByb3Bv
+c2UuICBJIGRvbid0IHRoaW5rIHRoZSBwcmV2aW91cyBvbmVzCj4gYXJlIGluIG15IHF1ZXVlLiAg
+UGxlYXNlIGluY2x1ZGUgdGhlIGxvcmUgVVJMIGZvciB0aGUgcHJldmlvdXMKPiBwb3N0aW5nKHMp
+IGluIHRoZSBjb3ZlciBsZXR0ZXIgc28gd2UgY2FuIGNvbm5lY3QgdGhlIGRpc2N1c3Npb24uCj4K
+SGF2ZSBzZW50IHRoZSB1cGRhdGVkIHBhdGNoCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4
+LXBjaS8xNjEwNDM0MTkyLTI3OTk1LTEtZ2l0LXNlbmQtZW1haWwtemhhbmdmZWkuZ2FvQGxpbmFy
+by5vcmcvVC8jdQoKV2UgZG8gbm90IG5lZWQgY2hhbmdlIGlvcnQgbm93IGJ1dCBqdXN0IHVzZSBh
+IHF1aXJrIGZvciBIaVNpbGljb24gCkt1blBlbmc5MjAgYW5kIEt1blBlbmc5MzAsCnNpbmNlIEpl
+YW4gbWFkZSBhIGNoYW5nZSBub3QgdXNpbmcgZndzcGVjLCB3aGljaCBtYWtlIHVzIGVhc2llci4K
+CiogVXNlIGRldmljZSBwcm9wZXJ0aWVzIGZvciBkbWEtY2FuLXN0YWxsLCBpbnN0ZWFkIG9mIGEg
+c3BlY2lhbCBmd3NwZWMKIMKgIG1lbWJlci4KCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4
+LWlvbW11LzIwMjEwMTA4MTQ1MjE3LjIyNTQ0NDctMS1qZWFuLXBoaWxpcHBlQGxpbmFyby5vcmcv
+CgpUaGFua3MKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
