@@ -2,85 +2,85 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E5FC433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:39:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC881C433E0
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A3152208B8
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:39:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3152208B8
+	by mail.kernel.org (Postfix) with ESMTPS id 7C7332312F
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C7332312F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2A8BB20418;
-	Tue, 12 Jan 2021 23:39:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 069C884B65;
+	Tue, 12 Jan 2021 23:41:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p91vPd6mk90p; Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
+	with ESMTP id ZzuzndhT5a86; Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 356C220436;
-	Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9670584B1C;
+	Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D19EC088B;
-	Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A3E0EC013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BCFAC088B;
+	Tue, 12 Jan 2021 23:41:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05EB8C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8F01920453
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DD77686C3A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Sj2xHRmOgM-1 for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 23:39:31 +0000 (UTC)
+ with ESMTP id r6ooIVLdmLh1 for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com
- [209.85.210.179])
- by silver.osuosl.org (Postfix) with ESMTPS id 9805120418
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:31 +0000 (UTC)
-Received: by mail-pf1-f179.google.com with SMTP id b3so73884pft.3
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:39:31 -0800 (PST)
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com
+ [209.85.214.172])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 45E6E86B58
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:41:51 +0000 (UTC)
+Received: by mail-pl1-f172.google.com with SMTP id q4so15364plr.7
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:41:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=Z1JTaErEPrP1NDii1O59Lox44MzvMpWGpFox9KE1gVY=;
- b=UKePpehyURF8t+N2rQ5ZHAhDwXpyKRgmiyV5YUyxDySmCwajsK6hrTUsMtjo+YsyNw
- N5kxarVDgFdxzmC2AQZM1P4GzsUArih2cguOAiQ0uZi57ZcEeEdGXk0PGC5+6R0rdJTN
- uayI09AMBs7G3DsdYfNiCIG09zpVbRgXFE2ew7+NBckBvqHNkZmDbMixyI+j4Y/V4WsG
- iCIt+EGp1TxyHM2FUsJ5ZsNd4OBN+ss4jXhcW7f8vd/chbDgmVolI+2PoxCgabTEtyoK
- /Iy+otUvMiDfP5HrvoTupYn9OBARRP5yAgas5cHeO56WsXTDDuHtTSiyHCu8Ex3k7ERz
- xA9g==
+ bh=jiJJEd6NpHk7kCu6CYi0ZOx+ayTWk5LzTwqK3Nr8GN4=;
+ b=MNrJSs5yR5TAV4nJFeyDAe0GGDw0/pTlXcrpyP0L7R3V+gr2Lk4hfPKWiwiFM+qx5/
+ Smd8qlJ6dgU/DkKE3VnYw7ycSyr3o3UOv5bYo8SJ9vbaOZ6C4EhheS1DWAVWe278M1Ra
+ 1/X1N0cW/V6Wrv/8AaK6vyArWm2laMHdai7WRr7xxU2dcC3M4OCik/jeSbsqQDC623p1
+ OToEnPGssKkEVG3tgVrBMhwTqCNRIxsvviwAUlsrSTNMPVdeOUTDaflEPg8bLmOk4j2T
+ KYYIO63SDSa0mLFCDcHwHvVZ0DBmyOtl8oBp1BarP4CUElETFdI85krO8+INBge5NN0a
+ NQ2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=Z1JTaErEPrP1NDii1O59Lox44MzvMpWGpFox9KE1gVY=;
- b=dwGpX0yxAJhri8xfbTfyfPKydyyuI4WBWUJY6PIAfFVtxLjo3sZwrs/Qr5/OKxtH92
- XtOBU9gXIAttpHdyqrHr+TDvaEV+9WFRBvrpEqPRAAO0OmkKX2FbNTGi1wuPbCpcmdrO
- fWLBRLFzNIpKHPkoj6U8e3JjhNsskrAkSy5WK15MRoZqaG8xYGjJrERgh6yat3rKQ+MQ
- NNMdcIbsZirrqcihSFlRSJvhsZPj/AffG0Ih3sh8Z7Q/D8XVziEphu5bjx9sAr3Wi+Q4
- qNgj7vSATfsP85ceFHHLFnja+SjeIPLUkqB/SSQr/+MvpFZySLUrW23imrYGE+ekvdks
- cHow==
-X-Gm-Message-State: AOAM531oMBimQ4FOIE9x/7FK8fgbUkEulKfmzdwM/hDoLEMvvmvus68Y
- oz613VI5SL9uFMBQkqDoz7Y=
-X-Google-Smtp-Source: ABdhPJyArjqVLqeIkvjKKBsKMdQRC3Og1Bx7l3Wh1YJGTJpOBPi6m2rYNCjntb6GGu54j6vcfyrGWA==
-X-Received: by 2002:a63:585a:: with SMTP id i26mr1465672pgm.330.1610494771102; 
- Tue, 12 Jan 2021 15:39:31 -0800 (PST)
+ bh=jiJJEd6NpHk7kCu6CYi0ZOx+ayTWk5LzTwqK3Nr8GN4=;
+ b=Fh3gY/ppYT1orbh/W8A/kZlGZ0FC51Qfg6CNShL2tbk0Xy15xwydFfrjE5h8Ckg/gu
+ nOAo3DX6IDOLAxUNnb2to/YeEa5X7EaihnUEPkQcxVG9CUDwe6wY8mNMwPqnVxBZMFrl
+ syMqeQ/U4fzcZcmG+BFwVDFd/lv1dSfN2Z44h/v6wrQmeArNghTAxlSe7yy/RFcJ3t8S
+ wcUOvKoPQkbi8kUrpodPpj6x1NlHw1ss7KhmVueTpeXANifgRQfFUXI9p0Qq8QNmuSWf
+ LfkaN9id9zFD2303iiVzW8871GfrJG7rQ7KvcSov8F7O4vX/FwYD089QWOlcV80eRcA2
+ mUkQ==
+X-Gm-Message-State: AOAM532Sd7u9JX+C+nnv/43hwkEOo/veRqPhwGC7XO4mVV+f+mwHjumu
+ 64mmidCGHgCr9VSQcr8V5Us=
+X-Google-Smtp-Source: ABdhPJwrt/Z/EmHNy2d3yoZ568Za3OrumA7har7HRFuVqqkJomUyFjrO1CFroe8EilBTG4QSlZLX5w==
+X-Received: by 2002:a17:90a:5802:: with SMTP id h2mr137566pji.68.1610494910815; 
+ Tue, 12 Jan 2021 15:41:50 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
- by smtp.googlemail.com with ESMTPSA id v125sm88579pgv.6.2021.01.12.15.39.26
+ by smtp.googlemail.com with ESMTPSA id q2sm149460pjd.33.2021.01.12.15.41.47
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Jan 2021 15:39:30 -0800 (PST)
-Subject: Re: [RFC PATCH v3 3/6] swiotlb: Use restricted DMA pool if available
+ Tue, 12 Jan 2021 15:41:50 -0800 (PST)
+Subject: Re: [RFC PATCH v3 4/6] swiotlb: Add restricted DMA alloc/free support.
 To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
  mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
  joro@8bytes.org, will@kernel.org, frowand.list@gmail.com,
@@ -88,7 +88,7 @@ To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
  sstabellini@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
  robin.murphy@arm.com
 References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-4-tientzu@chromium.org>
+ <20210106034124.30560-5-tientzu@chromium.org>
 From: Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -144,12 +144,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <7b9b598c-5ccd-f897-a962-14c0ed7af6de@gmail.com>
-Date: Tue, 12 Jan 2021 15:39:23 -0800
+Message-ID: <cc23b28f-4ebf-3183-cb4c-7c6fd17f5663@gmail.com>
+Date: Tue, 12 Jan 2021 15:41:46 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106034124.30560-4-tientzu@chromium.org>
+In-Reply-To: <20210106034124.30560-5-tientzu@chromium.org>
 Content-Language: en-US
 Cc: drinkcat@chromium.org, devicetree@vger.kernel.org,
  heikki.krogerus@linux.intel.com, saravanak@google.com, peterz@infradead.org,
@@ -177,25 +177,29 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 1/5/21 7:41 PM, Claire Chang wrote:
-> Regardless of swiotlb setting, the restricted DMA pool is preferred if
-> available.
-> 
-> The restricted DMA pools provide a basic level of protection against
-> the DMA overwriting buffer contents at unexpected times. However, to
-> protect against general data leakage and system memory corruption, the
-> system needs to provide a way to restrict the DMA to a predefined memory
-> region.
+> Add the functions, swiotlb_alloc and swiotlb_free to support the
+> memory allocation from restricted DMA pool.
 > 
 > Signed-off-by: Claire Chang <tientzu@chromium.org>
+> ---
 
-You could probably split this patch into two:
+[snip]
 
-- one that introduces the get_io_tlb_mem() getter, updates all callers
-of is_swiotlb_buffer() to gain a 'struct device' argument
-- another one that does add support for a non-default swiotlb pool and
-adds dev->dma_io_tlb_mem
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 30ccbc08e229..126e9b3354d6 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -137,6 +137,11 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+>  	void *ret;
+>  	int err;
+>  
+> +#ifdef CONFIG_SWIOTLB
+> +	if (unlikely(dev->dma_io_tlb_mem))
+> +		return swiotlb_alloc(dev, size, dma_handle, attrs);
+> +#endif
 
-Other than that, LGTM!
+While this is potentially a hot path, I am not sure of the unkikely is
+warranted, maybe best left as a plain conditional.
 -- 
 Florian
 _______________________________________________
