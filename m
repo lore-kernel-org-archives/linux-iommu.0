@@ -2,97 +2,163 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 809C0C433E6
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 21:21:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E5FC433E0
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:39:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C3BCA23125
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 21:21:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3BCA23125
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A3152208B8
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:39:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3152208B8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5C02786C3A;
-	Tue, 12 Jan 2021 21:21:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2A8BB20418;
+	Tue, 12 Jan 2021 23:39:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XxTYzV8vZb35; Tue, 12 Jan 2021 21:21:13 +0000 (UTC)
+	with ESMTP id p91vPd6mk90p; Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6C03F85EA7;
-	Tue, 12 Jan 2021 21:21:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 356C220436;
+	Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 561B3C088B;
-	Tue, 12 Jan 2021 21:21:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D19EC088B;
+	Tue, 12 Jan 2021 23:39:34 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66F20C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:21:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A3E0EC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 409EF20354
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:21:12 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8F01920453
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nfWm+G2nPh3y for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 21:21:11 +0000 (UTC)
+ with ESMTP id Sj2xHRmOgM-1 for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 23:39:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by silver.osuosl.org (Postfix) with ESMTPS id 8C10D20352
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1610486469;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=XLFSIDj1yb2peaSE/tJnoIhEfZLTdfvc3qPuS09xnb4=;
- b=aOA6mbXx8q22kdfZubzGFTER47drgElw8/KWqedpi/UgCb76Rdcn8EISnapG+8e8pEFdxH
- GduGKhN9O+cLEvTkbXmbb/K1OOzM36NwH+AsJ2Yabns+MWeAcQvcaTkAhZ0HKWjUcstCYa
- pOqZsjNgLScEXtWQIMstjjYL2VxOPaY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-129-Zwx1QS4kPn2XRswLQlixLA-1; Tue, 12 Jan 2021 16:21:05 -0500
-X-MC-Unique: Zwx1QS4kPn2XRswLQlixLA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E9A3B107ACF7;
- Tue, 12 Jan 2021 21:21:01 +0000 (UTC)
-Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
- [10.3.112.255])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3D0D29CA0;
- Tue, 12 Jan 2021 21:20:59 +0000 (UTC)
-Date: Tue, 12 Jan 2021 14:20:59 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH 1/5] vfio/iommu_type1: Fixes vfio_dma_populate_bitmap to
- avoid dirty lose
-Message-ID: <20210112142059.074c1b0f@omen.home.shazbot.org>
-In-Reply-To: <20210107092901.19712-2-zhukeqian1@huawei.com>
-References: <20210107092901.19712-1-zhukeqian1@huawei.com>
- <20210107092901.19712-2-zhukeqian1@huawei.com>
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com
+ [209.85.210.179])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9805120418
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:39:31 +0000 (UTC)
+Received: by mail-pf1-f179.google.com with SMTP id b3so73884pft.3
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:39:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=Z1JTaErEPrP1NDii1O59Lox44MzvMpWGpFox9KE1gVY=;
+ b=UKePpehyURF8t+N2rQ5ZHAhDwXpyKRgmiyV5YUyxDySmCwajsK6hrTUsMtjo+YsyNw
+ N5kxarVDgFdxzmC2AQZM1P4GzsUArih2cguOAiQ0uZi57ZcEeEdGXk0PGC5+6R0rdJTN
+ uayI09AMBs7G3DsdYfNiCIG09zpVbRgXFE2ew7+NBckBvqHNkZmDbMixyI+j4Y/V4WsG
+ iCIt+EGp1TxyHM2FUsJ5ZsNd4OBN+ss4jXhcW7f8vd/chbDgmVolI+2PoxCgabTEtyoK
+ /Iy+otUvMiDfP5HrvoTupYn9OBARRP5yAgas5cHeO56WsXTDDuHtTSiyHCu8Ex3k7ERz
+ xA9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=Z1JTaErEPrP1NDii1O59Lox44MzvMpWGpFox9KE1gVY=;
+ b=dwGpX0yxAJhri8xfbTfyfPKydyyuI4WBWUJY6PIAfFVtxLjo3sZwrs/Qr5/OKxtH92
+ XtOBU9gXIAttpHdyqrHr+TDvaEV+9WFRBvrpEqPRAAO0OmkKX2FbNTGi1wuPbCpcmdrO
+ fWLBRLFzNIpKHPkoj6U8e3JjhNsskrAkSy5WK15MRoZqaG8xYGjJrERgh6yat3rKQ+MQ
+ NNMdcIbsZirrqcihSFlRSJvhsZPj/AffG0Ih3sh8Z7Q/D8XVziEphu5bjx9sAr3Wi+Q4
+ qNgj7vSATfsP85ceFHHLFnja+SjeIPLUkqB/SSQr/+MvpFZySLUrW23imrYGE+ekvdks
+ cHow==
+X-Gm-Message-State: AOAM531oMBimQ4FOIE9x/7FK8fgbUkEulKfmzdwM/hDoLEMvvmvus68Y
+ oz613VI5SL9uFMBQkqDoz7Y=
+X-Google-Smtp-Source: ABdhPJyArjqVLqeIkvjKKBsKMdQRC3Og1Bx7l3Wh1YJGTJpOBPi6m2rYNCjntb6GGu54j6vcfyrGWA==
+X-Received: by 2002:a63:585a:: with SMTP id i26mr1465672pgm.330.1610494771102; 
+ Tue, 12 Jan 2021 15:39:31 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+ by smtp.googlemail.com with ESMTPSA id v125sm88579pgv.6.2021.01.12.15.39.26
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 12 Jan 2021 15:39:30 -0800 (PST)
+Subject: Re: [RFC PATCH v3 3/6] swiotlb: Use restricted DMA pool if available
+To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
+ mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+ joro@8bytes.org, will@kernel.org, frowand.list@gmail.com,
+ konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+ sstabellini@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com
+References: <20210106034124.30560-1-tientzu@chromium.org>
+ <20210106034124.30560-4-tientzu@chromium.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <7b9b598c-5ccd-f897-a962-14c0ed7af6de@gmail.com>
+Date: Tue, 12 Jan 2021 15:39:23 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, Marc Zyngier <maz@kernel.org>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, wanghaibin.wang@huawei.com,
- Julien Thierry <julien.thierry.kdev@gmail.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alexios Zavras <alexios.zavras@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210106034124.30560-4-tientzu@chromium.org>
+Content-Language: en-US
+Cc: drinkcat@chromium.org, devicetree@vger.kernel.org,
+ heikki.krogerus@linux.intel.com, saravanak@google.com, peterz@infradead.org,
+ xypron.glpk@gmx.de, rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+ andriy.shevchenko@linux.intel.com, bgolaszewski@baylibre.com,
+ iommu@lists.linux-foundation.org, grant.likely@arm.com, rdunlap@infradead.org,
+ gregkh@linuxfoundation.org, xen-devel@lists.xenproject.org,
+ dan.j.williams@intel.com, treding@nvidia.com, linuxppc-dev@lists.ozlabs.org,
+ mingo@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,144 +176,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 7 Jan 2021 17:28:57 +0800
-Keqian Zhu <zhukeqian1@huawei.com> wrote:
-
-> Defer checking whether vfio_dma is of fully-dirty in update_user_bitmap
-> is easy to lose dirty log. For example, after promoting pinned_scope of
-> vfio_iommu, vfio_dma is not considered as fully-dirty, then we may lose
-> dirty log that occurs before vfio_iommu is promoted.
->
-> The key point is that pinned-dirty is not a real dirty tracking way, it
-> can't continuously track dirty pages, but just restrict dirty scope. It
-> is essentially the same as fully-dirty. Fully-dirty is of full-scope and
-> pinned-dirty is of pinned-scope.
+On 1/5/21 7:41 PM, Claire Chang wrote:
+> Regardless of swiotlb setting, the restricted DMA pool is preferred if
+> available.
 > 
-> So we must mark pinned-dirty or fully-dirty after we start dirty tracking
-> or clear dirty bitmap, to ensure that dirty log is marked right away.
-
-I was initially convinced by these first three patches, but upon
-further review, I think the premise is wrong.  AIUI, the concern across
-these patches is that our dirty bitmap is only populated with pages
-dirtied by pinning and we only take into account the pinned page dirty
-scope at the time the bitmap is retrieved by the user.  You suppose
-this presents a gap where if a vendor driver has not yet identified
-with a page pinning scope that the entire bitmap should be considered
-dirty regardless of whether that driver later pins pages prior to the
-user retrieving the dirty bitmap.
-
-I don't think this is how we intended the cooperation between the iommu
-driver and vendor driver to work.  By pinning pages a vendor driver is
-not declaring that only their future dirty page scope is limited to
-pinned pages, instead they're declaring themselves as a participant in
-dirty page tracking and take responsibility for pinning any necessary
-pages.  For example we might extend VFIO_IOMMU_DIRTY_PAGES_FLAG_START
-to trigger a blocking notification to groups to not only begin dirty
-tracking, but also to synchronously register their current device DMA
-footprint.  This patch would require a vendor driver to possibly perform
-a gratuitous page pinning in order to set the scope prior to dirty
-logging being enabled, or else the initial bitmap will be fully dirty.
-
-Therefore, I don't see that this series is necessary or correct.  Kirti,
-does this match your thinking?
-
-Thinking about these semantics, it seems there might still be an issue
-if a group with non-pinned-page dirty scope is detached with dirty
-logging enabled.  It seems this should in fact fully populate the dirty
-bitmaps at the time it's removed since we don't know the extent of its
-previous DMA, nor will the group be present to trigger the full bitmap
-when the user retrieves the dirty bitmap.  Creating fully populated
-bitmaps at the time tracking is enabled negates our ability to take
-advantage of later enlightenment though.  Thanks,
-
-Alex
-
-> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
-> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 33 ++++++++++++++++++++++-----------
->  1 file changed, 22 insertions(+), 11 deletions(-)
+> The restricted DMA pools provide a basic level of protection against
+> the DMA overwriting buffer contents at unexpected times. However, to
+> protect against general data leakage and system memory corruption, the
+> system needs to provide a way to restrict the DMA to a predefined memory
+> region.
 > 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index bceda5e8baaa..b0a26e8e0adf 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -224,7 +224,7 @@ static void vfio_dma_bitmap_free(struct vfio_dma *dma)
->  	dma->bitmap = NULL;
->  }
->  
-> -static void vfio_dma_populate_bitmap(struct vfio_dma *dma, size_t pgsize)
-> +static void vfio_dma_populate_bitmap_pinned(struct vfio_dma *dma, size_t pgsize)
->  {
->  	struct rb_node *p;
->  	unsigned long pgshift = __ffs(pgsize);
-> @@ -236,6 +236,25 @@ static void vfio_dma_populate_bitmap(struct vfio_dma *dma, size_t pgsize)
->  	}
->  }
->  
-> +static void vfio_dma_populate_bitmap_full(struct vfio_dma *dma, size_t pgsize)
-> +{
-> +	unsigned long pgshift = __ffs(pgsize);
-> +	unsigned long nbits = dma->size >> pgshift;
-> +
-> +	bitmap_set(dma->bitmap, 0, nbits);
-> +}
-> +
-> +static void vfio_dma_populate_bitmap(struct vfio_iommu *iommu,
-> +				     struct vfio_dma *dma)
-> +{
-> +	size_t pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
-> +
-> +	if (iommu->pinned_page_dirty_scope)
-> +		vfio_dma_populate_bitmap_pinned(dma, pgsize);
-> +	else if (dma->iommu_mapped)
-> +		vfio_dma_populate_bitmap_full(dma, pgsize);
-> +}
-> +
->  static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu)
->  {
->  	struct rb_node *n;
-> @@ -257,7 +276,7 @@ static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu)
->  			}
->  			return ret;
->  		}
-> -		vfio_dma_populate_bitmap(dma, pgsize);
-> +		vfio_dma_populate_bitmap(iommu, dma);
->  	}
->  	return 0;
->  }
-> @@ -987,13 +1006,6 @@ static int update_user_bitmap(u64 __user *bitmap, struct vfio_iommu *iommu,
->  	unsigned long shift = bit_offset % BITS_PER_LONG;
->  	unsigned long leftover;
->  
-> -	/*
-> -	 * mark all pages dirty if any IOMMU capable device is not able
-> -	 * to report dirty pages and all pages are pinned and mapped.
-> -	 */
-> -	if (!iommu->pinned_page_dirty_scope && dma->iommu_mapped)
-> -		bitmap_set(dma->bitmap, 0, nbits);
-> -
->  	if (shift) {
->  		bitmap_shift_left(dma->bitmap, dma->bitmap, shift,
->  				  nbits + shift);
-> @@ -1019,7 +1031,6 @@ static int vfio_iova_dirty_bitmap(u64 __user *bitmap, struct vfio_iommu *iommu,
->  	struct vfio_dma *dma;
->  	struct rb_node *n;
->  	unsigned long pgshift = __ffs(iommu->pgsize_bitmap);
-> -	size_t pgsize = (size_t)1 << pgshift;
->  	int ret;
->  
->  	/*
-> @@ -1055,7 +1066,7 @@ static int vfio_iova_dirty_bitmap(u64 __user *bitmap, struct vfio_iommu *iommu,
->  		 * pages which are marked dirty by vfio_dma_rw()
->  		 */
->  		bitmap_clear(dma->bitmap, 0, dma->size >> pgshift);
-> -		vfio_dma_populate_bitmap(dma, pgsize);
-> +		vfio_dma_populate_bitmap(iommu, dma);
->  	}
->  	return 0;
->  }
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
 
+You could probably split this patch into two:
+
+- one that introduces the get_io_tlb_mem() getter, updates all callers
+of is_swiotlb_buffer() to gain a 'struct device' argument
+- another one that does add support for a non-default swiotlb pool and
+adds dev->dma_io_tlb_mem
+
+Other than that, LGTM!
+-- 
+Florian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
