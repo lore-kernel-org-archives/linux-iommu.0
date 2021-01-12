@@ -2,84 +2,76 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C35DC433E6
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 12:05:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA61C433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 12:56:43 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 63EA022D2C
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 12:05:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63EA022D2C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id E976223447
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 12:56:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E976223447
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E688984480;
-	Tue, 12 Jan 2021 12:04:59 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6FACC204E6;
+	Tue, 12 Jan 2021 12:56:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a1mo_XWpYuew; Tue, 12 Jan 2021 12:04:56 +0000 (UTC)
+	with ESMTP id sooFt+F8lxVT; Tue, 12 Jan 2021 12:56:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6A9B3860BE;
-	Tue, 12 Jan 2021 12:04:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 451A7204AE;
+	Tue, 12 Jan 2021 12:56:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 22CE0C0893;
-	Tue, 12 Jan 2021 12:04:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E319C0893;
+	Tue, 12 Jan 2021 12:56:40 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 406DDC013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:04:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1CF8C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:56:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2782D860FC
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:04:54 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9DBBC85AE4
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:56:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XSn6c5Vr7ALQ for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 12:04:52 +0000 (UTC)
+ with ESMTP id OPntZz4L7ZRA for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 12:56:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0B87A860BE
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:04:52 +0000 (UTC)
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DFTkD0LGDzl46q;
- Tue, 12 Jan 2021 20:03:32 +0800 (CST)
-Received: from [10.174.184.42] (10.174.184.42) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 12 Jan 2021 20:04:39 +0800
-Subject: Re: [PATCH 4/5] vfio/iommu_type1: Carefully use unmap_unpin_all
- during dirty tracking
-To: Alex Williamson <alex.williamson@redhat.com>
-References: <20210107092901.19712-1-zhukeqian1@huawei.com>
- <20210107092901.19712-5-zhukeqian1@huawei.com>
- <20210111144913.3092b1b1@omen.home.shazbot.org>
-From: Keqian Zhu <zhukeqian1@huawei.com>
-Message-ID: <198f0afd-343a-9fbc-9556-95670ca76a2c@huawei.com>
-Date: Tue, 12 Jan 2021 20:04:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 14B8C85A37
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:56:38 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C719C2333D;
+ Tue, 12 Jan 2021 12:56:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1610456197;
+ bh=zLYawgbkxTGvzeINYqmnu2PERnl3cvpEaR0b/BUkCDA=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=l66f19BeB76GRBoCMvC7bMI3PlTsCgW0V7KMc1JVg/uU1KR+jnlDacG5dcEUUPRDS
+ ElC9MePLgd2a916CB0urItgjAFunmDFuzXu15aSn0u3rPDZ2gyNAhuJZqIfxEpJDDR
+ JaJF7/IrkR0g3xpjXUtf8T7Qc0m9yqQO7eHkSqiTgd0d+sRz5J2rClwHaRRzdy6NJY
+ JwPoDpgR70ScTNhzsK3p/eZLqx4Wu5I+mngjDPstAQ7Ca291qeuFai+JgltORzsz06
+ ItT3ev9kJVQeV4zdOG+NrxZ9gKpbLmYLMaZXmRfwWIl+i95vQMjO8fwuJCqiVaOIz8
+ bYsXjs3VUxicg==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 47/51] iommu/vt-d: Fix lockdep splat in sva
+ bind()/unbind()
+Date: Tue, 12 Jan 2021 07:55:29 -0500
+Message-Id: <20210112125534.70280-47-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210112125534.70280-1-sashal@kernel.org>
+References: <20210112125534.70280-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210111144913.3092b1b1@omen.home.shazbot.org>
-X-Originating-IP: [10.174.184.42]
-X-CFilter-Loop: Reflected
-Cc: Mark
- Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com, kvm@vger.kernel.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, Marc
- Zyngier <maz@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- wanghaibin.wang@huawei.com, Julien Thierry <julien.thierry.kdev@gmail.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alexios Zavras <alexios.zavras@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Robin
- Murphy <robin.murphy@arm.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,85 +89,118 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
+[ Upstream commit 420d42f6f9db27d88bc4f83e3e668fcdacbf7e29 ]
 
-On 2021/1/12 5:49, Alex Williamson wrote:
-> On Thu, 7 Jan 2021 17:29:00 +0800
-> Keqian Zhu <zhukeqian1@huawei.com> wrote:
-> 
->> If we detach group during dirty page tracking, we shouldn't remove
->> vfio_dma, because dirty log will lose.
->>
->> But we don't prevent unmap_unpin_all in vfio_iommu_release, because
->> under normal procedure, dirty tracking has been stopped.
-> 
-> This looks like it's creating a larger problem than it's fixing, it's
-> not our job to maintain the dirty bitmap regardless of what the user
-> does.  If the user detaches the last group in a container causing the
-> mappings within that container to be deconstructed before the user has
-> collected dirty pages, that sounds like a user error.  A container with
-> no groups is de-privileged and therefore loses all state.  Thanks,
-> 
-> Alex
+Lock(&iommu->lock) without disabling irq causes lockdep warnings.
 
-Hi Alex,
+========================================================
+WARNING: possible irq lock inversion dependency detected
+5.11.0-rc1+ #828 Not tainted
+--------------------------------------------------------
+kworker/0:1H/120 just changed the state of lock:
+ffffffffad9ea1b8 (device_domain_lock){..-.}-{2:2}, at:
+iommu_flush_dev_iotlb.part.0+0x32/0x120
+but this lock took another, SOFTIRQ-unsafe lock in the past:
+ (&iommu->lock){+.+.}-{2:2}
 
-This looks good to me ;-). That's a reasonable constraint for user behavior.
+and interrupts could create inverse lock ordering between them.
 
-What about replacing this patch with an addition to the uapi document of
-VFIO_GROUP_UNSET_CONTAINER? User should pay attention to this when call this
-ioctl during dirty tracking.
+other info that might help us debug this:
+ Possible interrupt unsafe locking scenario:
 
-And any comments on other patches? thanks.
+       CPU0                    CPU1
+       ----                    ----
+  lock(&iommu->lock);
+                               local_irq_disable();
+                               lock(device_domain_lock);
+                               lock(&iommu->lock);
+  <Interrupt>
+    lock(device_domain_lock);
 
-Thanks.
-Keqian
+ *** DEADLOCK ***
 
-> 
->> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
->> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
->> ---
->>  drivers/vfio/vfio_iommu_type1.c | 14 ++++++++++++--
->>  1 file changed, 12 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 26b7eb2a5cfc..9776a059904d 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -2373,7 +2373,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->>  			if (list_empty(&iommu->external_domain->group_list)) {
->>  				vfio_sanity_check_pfn_list(iommu);
->>  
->> -				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
->> +				/*
->> +				 * During dirty page tracking, we can't remove
->> +				 * vfio_dma because dirty log will lose.
->> +				 */
->> +				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) &&
->> +				    !iommu->dirty_page_tracking)
->>  					vfio_iommu_unmap_unpin_all(iommu);
->>  
->>  				kfree(iommu->external_domain);
->> @@ -2406,10 +2411,15 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->>  		 * iommu and external domain doesn't exist, then all the
->>  		 * mappings go away too. If it's the last domain with iommu and
->>  		 * external domain exist, update accounting
->> +		 *
->> +		 * Note: During dirty page tracking, we can't remove vfio_dma
->> +		 * because dirty log will lose. Just update accounting is a good
->> +		 * choice.
->>  		 */
->>  		if (list_empty(&domain->group_list)) {
->>  			if (list_is_singular(&iommu->domain_list)) {
->> -				if (!iommu->external_domain)
->> +				if (!iommu->external_domain &&
->> +				    !iommu->dirty_page_tracking)
->>  					vfio_iommu_unmap_unpin_all(iommu);
->>  				else
->>  					vfio_iommu_unmap_unpin_reaccount(iommu);
-> 
-> .
-> 
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20201231005323.2178523-5-baolu.lu@linux.intel.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/intel/svm.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 3242ebd0bca36..267001e8076cd 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -281,6 +281,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 	struct dmar_domain *dmar_domain;
+ 	struct device_domain_info *info;
+ 	struct intel_svm *svm = NULL;
++	unsigned long iflags;
+ 	int ret = 0;
+ 
+ 	if (WARN_ON(!iommu) || !data)
+@@ -381,12 +382,12 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 	 * each bind of a new device even with an existing PASID, we need to
+ 	 * call the nested mode setup function here.
+ 	 */
+-	spin_lock(&iommu->lock);
++	spin_lock_irqsave(&iommu->lock, iflags);
+ 	ret = intel_pasid_setup_nested(iommu, dev,
+ 				       (pgd_t *)(uintptr_t)data->gpgd,
+ 				       data->hpasid, &data->vendor.vtd, dmar_domain,
+ 				       data->addr_width);
+-	spin_unlock(&iommu->lock);
++	spin_unlock_irqrestore(&iommu->lock, iflags);
+ 	if (ret) {
+ 		dev_err_ratelimited(dev, "Failed to set up PASID %llu in nested mode, Err %d\n",
+ 				    data->hpasid, ret);
+@@ -486,6 +487,7 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 	struct device_domain_info *info;
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_svm *svm = NULL;
++	unsigned long iflags;
+ 	int pasid_max;
+ 	int ret;
+ 
+@@ -605,14 +607,14 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 			}
+ 		}
+ 
+-		spin_lock(&iommu->lock);
++		spin_lock_irqsave(&iommu->lock, iflags);
+ 		ret = intel_pasid_setup_first_level(iommu, dev,
+ 				mm ? mm->pgd : init_mm.pgd,
+ 				svm->pasid, FLPT_DEFAULT_DID,
+ 				(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
+ 				(cpu_feature_enabled(X86_FEATURE_LA57) ?
+ 				 PASID_FLAG_FL5LP : 0));
+-		spin_unlock(&iommu->lock);
++		spin_unlock_irqrestore(&iommu->lock, iflags);
+ 		if (ret) {
+ 			if (mm)
+ 				mmu_notifier_unregister(&svm->notifier, mm);
+@@ -632,14 +634,14 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 		 * Binding a new device with existing PASID, need to setup
+ 		 * the PASID entry.
+ 		 */
+-		spin_lock(&iommu->lock);
++		spin_lock_irqsave(&iommu->lock, iflags);
+ 		ret = intel_pasid_setup_first_level(iommu, dev,
+ 						mm ? mm->pgd : init_mm.pgd,
+ 						svm->pasid, FLPT_DEFAULT_DID,
+ 						(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
+ 						(cpu_feature_enabled(X86_FEATURE_LA57) ?
+ 						PASID_FLAG_FL5LP : 0));
+-		spin_unlock(&iommu->lock);
++		spin_unlock_irqrestore(&iommu->lock, iflags);
+ 		if (ret) {
+ 			kfree(sdev);
+ 			goto out;
+-- 
+2.27.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
