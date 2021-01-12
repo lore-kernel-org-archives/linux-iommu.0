@@ -2,101 +2,94 @@ Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3337EC433E0
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:54:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F830C433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 20:29:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B0AE7206C3
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 19:53:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B0AE7206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id AD81823120
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 20:29:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD81823120
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5346520460;
-	Tue, 12 Jan 2021 19:53:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 25120859D9;
+	Tue, 12 Jan 2021 20:29:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id omIAJNy0g+B1; Tue, 12 Jan 2021 19:53:56 +0000 (UTC)
+	with ESMTP id OSPINexZrqy4; Tue, 12 Jan 2021 20:29:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 264C720453;
-	Tue, 12 Jan 2021 19:53:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8180F85792;
+	Tue, 12 Jan 2021 20:29:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 133C1C013A;
-	Tue, 12 Jan 2021 19:53:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98E80C013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:53:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D863C0893;
+	Tue, 12 Jan 2021 20:29:51 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1FA8FC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 20:29:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8756686D78
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:53:54 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1B01285BB0
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 20:29:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mFp0-eL8crZd for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 19:53:51 +0000 (UTC)
+ with ESMTP id E7u5c+iaojuD for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 20:29:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7491F8702B
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 19:53:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1610481230;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=jGddw3AEKpcsMt4782p5IEc+z+Jt2DqrmaucsUPFqxQ=;
- b=bB1gzM9eI+QsSN16XHCj+JZIt12rpjffm8pbFXCetKoORwuCrwSOOY1EiqIWdVnOwnoVEf
- 4YIGoDT2bNwYu4wQFP8q7ruTRdk5O6SDOuW7wfpiyLd/jj5jbu4wjUgZgjDu7jJMyElLpx
- DhtzfBGN9k6WJ1WSEtkAof7wXrIu1r4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-319-GgrlOiiGOUaQkw9W9zNYKA-1; Tue, 12 Jan 2021 14:53:45 -0500
-X-MC-Unique: GgrlOiiGOUaQkw9W9zNYKA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D877101AFCD;
- Tue, 12 Jan 2021 19:53:40 +0000 (UTC)
-Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
- [10.3.112.255])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 66C2C100AE4F;
- Tue, 12 Jan 2021 19:53:32 +0000 (UTC)
-Date: Tue, 12 Jan 2021 12:53:31 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH 4/5] vfio/iommu_type1: Carefully use unmap_unpin_all
- during dirty tracking
-Message-ID: <20210112125331.789f47a5@omen.home.shazbot.org>
-In-Reply-To: <198f0afd-343a-9fbc-9556-95670ca76a2c@huawei.com>
-References: <20210107092901.19712-1-zhukeqian1@huawei.com>
- <20210107092901.19712-5-zhukeqian1@huawei.com>
- <20210111144913.3092b1b1@omen.home.shazbot.org>
- <198f0afd-343a-9fbc-9556-95670ca76a2c@huawei.com>
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com
+ [209.85.219.52])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2965385B7C
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 20:29:49 +0000 (UTC)
+Received: by mail-qv1-f52.google.com with SMTP id j18so1541730qvu.3
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 12:29:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=jpVWwEPUmolljz0bygjZEnHC+kQY90YrQfm8bas35/A=;
+ b=ZqQdSWXFn78oCcz2KV8xPQb/CHeriM/t6XdeHAXl1kQ4+L8e/qR1NGczyGd3R3Bwyi
+ 9EHz54uNMI3JmuBvRKrRakJ3b/872Qg5FcN3akkPTEbUhn0UM0R6hEz5mt4sUXmxfnIb
+ +2UeLZiJy6CTbsdGdlcV1rtBzFHjf09ZCKM9mOcoHeJyWX74H9n8Tysgs2xCIRApPCF4
+ nfVWVyzKeAYocOGxP+wtA7+ucMHZ1CZ8JhvUxQnI/VAvNjDMAdMKtS9SIMXXzP+rByL9
+ 3DGwsTlgE91BMPPlS/ZK1rbWXwXSH4T2KTT4oJ4vPc8X0gnB14fgOF1UIWY97mMsPv1n
+ jwag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=jpVWwEPUmolljz0bygjZEnHC+kQY90YrQfm8bas35/A=;
+ b=NAyWVVPnJ8TiAr7unlfndIdYRfgNXJDXR+hfHLi1FDnJqldpncvVB7a2NO7hK5r5mi
+ QtMpjlb7sWKooyB17eRH63WqwBV/gNAbyCeMpYDweu/Z1e3TPUaPL3B7YSemmIh6gZ5L
+ 0/C8GGIkKxBh2p+Uqat4NMw4u5AIzTwl9ZdGaQ523FqMKD/5nLHtHT7f5hoIrnbcQYPt
+ /EdJ0I8vKz0XvTiaASQR7tJ5Yfy68//QUNbwhMJi1lFZlm+SRWauc/YPYB/4jAwyQXco
+ DzA9bcnXYcXN6T0z/zPtj7urMpKCILl6ZyM0FB49/uqN6C/bqqhzj6duFLSNAVmWdhsf
+ uM/A==
+X-Gm-Message-State: AOAM532hZkwIlSifA6jJeeLjeZstnU6XpuqZS9l91m0zZQdB7iE5Aw4D
+ VzMXPXlxEMI93LzjQjpvECJts/bkTY5F5ZOySX0=
+X-Google-Smtp-Source: ABdhPJzzNhvbzPuZ+g8DPiRoyU2S3Jx0eslstzY3LMxX8uPmaKtgx3akxR8UHh8ZXD5kye0yZ/rgJu7U9xupBM3WwpU=
+X-Received: by 2002:a0c:cc12:: with SMTP id r18mr845366qvk.51.1610483388234;
+ Tue, 12 Jan 2021 12:29:48 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: Mark
- Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com, kvm@vger.kernel.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, Marc
- Zyngier <maz@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- wanghaibin.wang@huawei.com, Julien Thierry <julien.thierry.kdev@gmail.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alexios Zavras <alexios.zavras@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Robin
- Murphy <robin.murphy@arm.com>
+References: <CGME20210107092826epcas5p100f2c57a63715baa2b3fa7219ab58c7b@epcas5p1.samsung.com>
+ <20210107093340.15279-1-ajaykumar.rs@samsung.com>
+ <20210107130319.GA2986@willie-the-truck>
+ <5e047da1-6619-c716-927c-ae07a90f1597@arm.com>
+In-Reply-To: <5e047da1-6619-c716-927c-ae07a90f1597@arm.com>
+From: Ajay Kumar <ajaykumar.rs1989@gmail.com>
+Date: Wed, 13 Jan 2021 01:59:37 +0530
+Message-ID: <CADe9J7Er0wnP5ZZbWM1CkUx7ry0znKr05Lvx7PEMdHuwKr_RZQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Handle duplicated Stream IDs from
+ other masters
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: mark.rutland@arm.com, linux-kernel@vger.kernel.org,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, robh+dt@kernel.org,
+ Will Deacon <will@kernel.org>, Ajay Kumar <ajaykumar.rs@samsung.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,111 +107,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 12 Jan 2021 20:04:38 +0800
-Keqian Zhu <zhukeqian1@huawei.com> wrote:
+On Tue, Jan 12, 2021 at 12:57 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2021-01-07 13:03, Will Deacon wrote:
+> > On Thu, Jan 07, 2021 at 03:03:40PM +0530, Ajay Kumar wrote:
+> >> When PCI function drivers(ex:pci-endpoint-test) are probed for already
+> >> initialized PCIe-RC(Root Complex), and PCIe-RC is already bound to SMMU,
+> >> then we encounter a situation where the function driver tries to attach
+> >> itself to the smmu with the same stream-id as PCIe-RC and re-initialize
+> >> an already initialized STE. This causes ste_live BUG_ON() in the driver.
+>
+> Note that this is actually expected behaviour, since Stream ID aliasing
+> has remained officially not supported until a sufficiently compelling
+> reason to do so appears. I always thought the most likely scenario would
+> be a legacy PCI bridge with multiple devices behind it, but even that
+> seems increasingly improbable for a modern SMMUv3-based system to ever see.
+Thanks to Will and Robin for reviewing this. I am pretty new to PCI,
+sorry about that.
+I assumed that the support for stream-id alias is already handled as
+part of this patch:
+https://www.spinics.net/lists/arm-kernel/msg626087.html
+which prevents STE re-initialization. But, what I do not understand is
+why the path
+taken by the arm-smmu-v3 driver misses the aforementioned check for my usecase.
 
-> On 2021/1/12 5:49, Alex Williamson wrote:
-> > On Thu, 7 Jan 2021 17:29:00 +0800
-> > Keqian Zhu <zhukeqian1@huawei.com> wrote:
-> >   
-> >> If we detach group during dirty page tracking, we shouldn't remove
-> >> vfio_dma, because dirty log will lose.
+> > I don't understand why the endpoint is using the same stream ID as the root
+> > complex in this case. Why is that? Is the grouping logic not working
+> > properly?
+>
+> It's not so much that it isn't working properly, it's more that it needs
+> to be implemented at all ;)
+The pci_endpoint_test picks up the same of_ DMA config node as the PCI RC
+because they sit on the same PCI bus [via pci_dma_configure( )]
+While in the arm-smmu-v3 driver, I can see that the pci_device_group( ) hands
+over the same iommu group as the Root Complex to the newly added master
+device (pci_endpoint_test in our case) because they share the same stream ID.
+Shouldn't they?
+
+> >> There is an already existing check in the driver to manage duplicated ids
+> >> if duplicated ids are added in same master device, but there can be
+> >> scenarios like above where we need to extend the check for other masters
+> >> using the same stream-id.
 > >>
-> >> But we don't prevent unmap_unpin_all in vfio_iommu_release, because
-> >> under normal procedure, dirty tracking has been stopped.  
-> > 
-> > This looks like it's creating a larger problem than it's fixing, it's
-> > not our job to maintain the dirty bitmap regardless of what the user
-> > does.  If the user detaches the last group in a container causing the
-> > mappings within that container to be deconstructed before the user has
-> > collected dirty pages, that sounds like a user error.  A container with
-> > no groups is de-privileged and therefore loses all state.  Thanks,
-> > 
-> > Alex  
-> 
-> Hi Alex,
-> 
-> This looks good to me ;-). That's a reasonable constraint for user behavior.
-> 
-> What about replacing this patch with an addition to the uapi document of
-> VFIO_GROUP_UNSET_CONTAINER? User should pay attention to this when call this
-> ioctl during dirty tracking.
-
-Here's the current uapi comment:
-
-/**
- * VFIO_GROUP_UNSET_CONTAINER - _IO(VFIO_TYPE, VFIO_BASE + 5)
- *
- * Remove the group from the attached container.  This is the
- * opposite of the SET_CONTAINER call and returns the group to
- * an initial state.  All device file descriptors must be released
- * prior to calling this interface.  When removing the last group
- * from a container, the IOMMU will be disabled and all state lost,
- * effectively also returning the VFIO file descriptor to an initial
- * state.
- * Return: 0 on success, -errno on failure.
- * Availability: When attached to container
- */
-
-So we already indicate that "all state" of the container is lost when
-removing the last group, I don't see that it's necessarily to
-explicitly include dirty bitmap state beyond that statement.  Without
-mappings there can be no dirty bitmap to track.
-
- > And any comments on other patches? thanks.
-
-I had a difficult time mapping the commit log to the actual code
-change, I'll likely have some wording suggestions.  Is patch 5/5 still
-necessary if this patch is dropped?  Thanks,
-
-Alex
-
-> >> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
-> >> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+> >> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
 > >> ---
-> >>  drivers/vfio/vfio_iommu_type1.c | 14 ++++++++++++--
-> >>  1 file changed, 12 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >> index 26b7eb2a5cfc..9776a059904d 100644
-> >> --- a/drivers/vfio/vfio_iommu_type1.c
-> >> +++ b/drivers/vfio/vfio_iommu_type1.c
-> >> @@ -2373,7 +2373,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
-> >>  			if (list_empty(&iommu->external_domain->group_list)) {
-> >>  				vfio_sanity_check_pfn_list(iommu);
-> >>  
-> >> -				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
-> >> +				/*
-> >> +				 * During dirty page tracking, we can't remove
-> >> +				 * vfio_dma because dirty log will lose.
-> >> +				 */
-> >> +				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) &&
-> >> +				    !iommu->dirty_page_tracking)
-> >>  					vfio_iommu_unmap_unpin_all(iommu);
-> >>  
-> >>  				kfree(iommu->external_domain);
-> >> @@ -2406,10 +2411,15 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
-> >>  		 * iommu and external domain doesn't exist, then all the
-> >>  		 * mappings go away too. If it's the last domain with iommu and
-> >>  		 * external domain exist, update accounting
-> >> +		 *
-> >> +		 * Note: During dirty page tracking, we can't remove vfio_dma
-> >> +		 * because dirty log will lose. Just update accounting is a good
-> >> +		 * choice.
-> >>  		 */
-> >>  		if (list_empty(&domain->group_list)) {
-> >>  			if (list_is_singular(&iommu->domain_list)) {
-> >> -				if (!iommu->external_domain)
-> >> +				if (!iommu->external_domain &&
-> >> +				    !iommu->dirty_page_tracking)
-> >>  					vfio_iommu_unmap_unpin_all(iommu);
-> >>  				else
-> >>  					vfio_iommu_unmap_unpin_reaccount(iommu);  
-> > 
-> > .
-> >   
-> 
+> >>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 33 +++++++++++++++++++++
+> >>   1 file changed, 33 insertions(+)
+> >
+> > It doesn't feel like the driver is the right place to fix this, as the same
+> > issue could surely occur for other IOMMUs too, right? In which case, I think
+> > we should avoid getting into the situation where different groups have
+> > overlapping stream IDs.
+>
+> Yes, this patch does not represent the correct thing to do either way.
+> The main reason that Stream ID aliasing hasn't been supported so far is
+> that the required Stream ID to group lookup is rather awkward, and
+> adding all of that complexity just for the sake of a rather unlikely
+> possibility seemed dubious. However, PRI support has always had a more
+> pressing need to implement almost the same thing (Stream ID to device),
+> so once that lands we can finally get round to adding the rest of proper
+> group support relatively easily.
+I hope the support will be added soon. Also, can you point me to few drivers
+which already handle this type of stream-ID aliasing?
 
+Thanks,
+Ajay Kumar
+> ______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
