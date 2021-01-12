@@ -1,98 +1,84 @@
-Return-Path: <SRS0=1kRO=GO=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449BAC433E0
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F7CC433DB
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 04:39:37 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C6D4822CB8
-	for <iommu@archiver.kernel.org>; Mon, 11 Jan 2021 21:49:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6D4822CB8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9094C22287
+	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 04:39:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9094C22287
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5F16187057;
-	Mon, 11 Jan 2021 21:49:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3E10C8702B;
+	Tue, 12 Jan 2021 04:39:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R74Gkw4dJU21; Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
+	with ESMTP id M8CfzYbuptIB; Tue, 12 Jan 2021 04:39:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BD4CD86F8C;
-	Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 74E0787021;
+	Tue, 12 Jan 2021 04:39:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A509EC0893;
-	Mon, 11 Jan 2021 21:49:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 927CEC013A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 57BEBC088B;
+	Tue, 12 Jan 2021 04:39:36 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0AFA0C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 04:39:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7285686FB6
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:26 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E648985B73
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 04:39:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JYgqRD0iAOtt for <iommu@lists.linux-foundation.org>;
- Mon, 11 Jan 2021 21:49:25 +0000 (UTC)
+ with ESMTP id BhH9IpvrnXaW for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Jan 2021 04:39:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [63.128.21.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2D0C786F8C
- for <iommu@lists.linux-foundation.org>; Mon, 11 Jan 2021 21:49:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1610401763;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=YcHYs6OZqBWCMgb0rpCE3M6MXEuKUj2tsDDbqZh/79Q=;
- b=Hz2Y9oRlLLtMr3VK3hFnKgSjz/XHyxWZA316H6F4lON/5wdpYqWK+8ONUkDjxlnW0XTpjN
- wHflJdjBnNUr9NIoDmyp72csv5bhcRuMBP+xRfBPB5mc2pdrXSEugpmhNfTu9hiJu6jYg1
- qt2lzO7fsEFjgsevSv35ObPgMaYYJ6g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-70-ekx4pMUpPXWmh16-SihWQQ-1; Mon, 11 Jan 2021 16:49:19 -0500
-X-MC-Unique: ekx4pMUpPXWmh16-SihWQQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B8F1107ACF7;
- Mon, 11 Jan 2021 21:49:16 +0000 (UTC)
-Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
- [10.3.112.255])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 828CE60BE2;
- Mon, 11 Jan 2021 21:49:14 +0000 (UTC)
-Date: Mon, 11 Jan 2021 14:49:13 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH 4/5] vfio/iommu_type1: Carefully use unmap_unpin_all
- during dirty tracking
-Message-ID: <20210111144913.3092b1b1@omen.home.shazbot.org>
-In-Reply-To: <20210107092901.19712-5-zhukeqian1@huawei.com>
-References: <20210107092901.19712-1-zhukeqian1@huawei.com>
- <20210107092901.19712-5-zhukeqian1@huawei.com>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 233E685B12
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 04:39:34 +0000 (UTC)
+IronPort-SDR: 6zMoYxK7tXEBtA8svZca4tQPqgOJUeoXcPfen1kEQW3QbwbRaf+7w3TrIQYG9a55Z02e0+QaTC
+ mqs5oqtKcmyA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9861"; a="175402166"
+X-IronPort-AV: E=Sophos;i="5.79,340,1602572400"; d="scan'208";a="175402166"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 Jan 2021 20:39:32 -0800
+IronPort-SDR: rbtMIpU1AlGux/ENy6x92Hb2JJ7I19FCOibsAEwW3txKgPQT94r1a/Nk8Rt2IbZtTfttbufyMg
+ 6wmw9cE1hnAA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,340,1602572400"; d="scan'208";a="464389805"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
+ by fmsmga001.fm.intel.com with ESMTP; 11 Jan 2021 20:39:27 -0800
+Subject: Re: [PATCH v9 03/10] iommu: Separate IOMMU_DEV_FEAT_IOPF from
+ IOMMU_DEV_FEAT_SVA
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org,
+ will@kernel.org
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-4-jean-philippe@linaro.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
+Date: Tue, 12 Jan 2021 12:31:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, Marc Zyngier <maz@kernel.org>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, wanghaibin.wang@huawei.com,
- Julien Thierry <julien.thierry.kdev@gmail.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alexios Zavras <alexios.zavras@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210108145217.2254447-4-jean-philippe@linaro.org>
+Content-Language: en-US
+Cc: vivek.gautam@arm.com, guohanjun@huawei.com, linux-acpi@vger.kernel.org,
+ zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org, "Tian,
+ Kevin" <kevin.tian@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+ robin.murphy@arm.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com,
+ David Woodhouse <dwmw2@infradead.org>, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,71 +91,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 7 Jan 2021 17:29:00 +0800
-Keqian Zhu <zhukeqian1@huawei.com> wrote:
+Hi Jean,
 
-> If we detach group during dirty page tracking, we shouldn't remove
-> vfio_dma, because dirty log will lose.
+On 1/8/21 10:52 PM, Jean-Philippe Brucker wrote:
+> Some devices manage I/O Page Faults (IOPF) themselves instead of relying
+> on PCIe PRI or Arm SMMU stall. Allow their drivers to enable SVA without
+> mandating IOMMU-managed IOPF. The other device drivers now need to first
+> enable IOMMU_DEV_FEAT_IOPF before enabling IOMMU_DEV_FEAT_SVA.
 > 
-> But we don't prevent unmap_unpin_all in vfio_iommu_release, because
-> under normal procedure, dirty tracking has been stopped.
-
-This looks like it's creating a larger problem than it's fixing, it's
-not our job to maintain the dirty bitmap regardless of what the user
-does.  If the user detaches the last group in a container causing the
-mappings within that container to be deconstructed before the user has
-collected dirty pages, that sounds like a user error.  A container with
-no groups is de-privileged and therefore loses all state.  Thanks,
-
-Alex
-
-> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
-> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/vfio/vfio_iommu_type1.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Cc: Zhou Wang <wangzhou1@hisilicon.com>
+> ---
+>   include/linux/iommu.h | 20 +++++++++++++++++---
+>   1 file changed, 17 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 26b7eb2a5cfc..9776a059904d 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -2373,7 +2373,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  			if (list_empty(&iommu->external_domain->group_list)) {
->  				vfio_sanity_check_pfn_list(iommu);
->  
-> -				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
-> +				/*
-> +				 * During dirty page tracking, we can't remove
-> +				 * vfio_dma because dirty log will lose.
-> +				 */
-> +				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) &&
-> +				    !iommu->dirty_page_tracking)
->  					vfio_iommu_unmap_unpin_all(iommu);
->  
->  				kfree(iommu->external_domain);
-> @@ -2406,10 +2411,15 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  		 * iommu and external domain doesn't exist, then all the
->  		 * mappings go away too. If it's the last domain with iommu and
->  		 * external domain exist, update accounting
-> +		 *
-> +		 * Note: During dirty page tracking, we can't remove vfio_dma
-> +		 * because dirty log will lose. Just update accounting is a good
-> +		 * choice.
->  		 */
->  		if (list_empty(&domain->group_list)) {
->  			if (list_is_singular(&iommu->domain_list)) {
-> -				if (!iommu->external_domain)
-> +				if (!iommu->external_domain &&
-> +				    !iommu->dirty_page_tracking)
->  					vfio_iommu_unmap_unpin_all(iommu);
->  				else
->  					vfio_iommu_unmap_unpin_reaccount(iommu);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 583c734b2e87..701b2eeb0dc5 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -156,10 +156,24 @@ struct iommu_resv_region {
+>   	enum iommu_resv_type	type;
+>   };
+>   
+> -/* Per device IOMMU features */
+> +/**
+> + * enum iommu_dev_features - Per device IOMMU features
+> + * @IOMMU_DEV_FEAT_AUX: Auxiliary domain feature
+> + * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
+> + * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall. Generally using
+> + *			 %IOMMU_DEV_FEAT_SVA requires %IOMMU_DEV_FEAT_IOPF, but
+> + *			 some devices manage I/O Page Faults themselves instead
+> + *			 of relying on the IOMMU. When supported, this feature
+> + *			 must be enabled before and disabled after
+> + *			 %IOMMU_DEV_FEAT_SVA.
 
+Is this only for SVA? We may see more scenarios of using IOPF. For
+example, when passing through devices to user level, the user's pages
+could be managed dynamically instead of being allocated and pinned
+statically.
+
+If @IOMMU_DEV_FEAT_IOPF is defined as generic iopf support, the current
+vendor IOMMU driver support may not enough.
+
+Best regards,
+baolu
+
+> + *
+> + * Device drivers query whether a feature is supported using
+> + * iommu_dev_has_feature(), and enable it using iommu_dev_enable_feature().
+> + */
+>   enum iommu_dev_features {
+> -	IOMMU_DEV_FEAT_AUX,	/* Aux-domain feature */
+> -	IOMMU_DEV_FEAT_SVA,	/* Shared Virtual Addresses */
+> +	IOMMU_DEV_FEAT_AUX,
+> +	IOMMU_DEV_FEAT_SVA,
+> +	IOMMU_DEV_FEAT_IOPF,
+>   };
+>   
+>   #define IOMMU_PASID_INVALID	(-1U)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
