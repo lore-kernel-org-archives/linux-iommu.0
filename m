@@ -2,84 +2,77 @@ Return-Path: <SRS0=lzux=GQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50368C433DB
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:47:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AAAC433DB
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:59:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6644233FB
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:47:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6644233FB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5E228233FB
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:59:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E228233FB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 259222D3FC;
-	Wed, 13 Jan 2021 13:47:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C9033864D0;
+	Wed, 13 Jan 2021 13:59:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qhdBEImLSWvq; Wed, 13 Jan 2021 13:47:46 +0000 (UTC)
+	with ESMTP id P7hnyyGzmdxj; Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1626127233;
-	Wed, 13 Jan 2021 13:47:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1A6B78452E;
+	Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB0F5C0893;
-	Wed, 13 Jan 2021 13:47:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0678DC0893;
+	Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4167C013A
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:47:44 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4EAB4C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A90FE27428
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:47:44 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 42FFA2041F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RLn9MZjDaNvk for <iommu@lists.linux-foundation.org>;
- Wed, 13 Jan 2021 13:47:40 +0000 (UTC)
+ with ESMTP id je-QAAFe8RvD for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Jan 2021 13:59:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id C9BE127233
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:47:40 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E9695233FB
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:47:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1610545660;
- bh=c9ZEmZC+OGzOHSTlleqwkNhpgxSo3+qwJ9ptpSoPBMY=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=FYu658AOWNtizhfGOXbNeL8NnWsMtHC+dTrt2yedfVOtoG8JKtBG1y0MjODTu7GW+
- 740oAJD+fJqb5Ts7VVV3U0RQNlu6RbHic5mtnopKPl5jioiqWOOkaKbt2dcLn/u+s7
- rtGUDgKHYO2vy3z9WftyjNDrcEPDtYydLA3YzkWaUcPIt82pnUA9FwbgpXRQXjsmcB
- W0vRdNUQjbeEwzz3seUsYoyKP0i2R+Fd0JWpH/RrqeAmXPff4JzKQiknxZ1BCcrRAj
- IIhLhSyZ2S1JQDGgRP4Zv3xbeB/GUxEAOljYrPV9vib4zsFj0Ixwzj+Ay81CUJHG6E
- IqT8rXjjuXBfA==
-Received: by mail-ed1-f47.google.com with SMTP id i24so1955284edj.8
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:47:39 -0800 (PST)
-X-Gm-Message-State: AOAM531UJLNx7kr3q4qUalNsg5Mzg1uTYipPjmo+TwjRUOei9DfAtqzI
- l4vzkeWZJMx7ungBBE/Nakrl1HczStQZiYWhug==
-X-Google-Smtp-Source: ABdhPJwFnnxsacTgDF7sATccpJCIWFohXy1lChGnPrWia0Dd45sGfr2h+/uzWLycVLhW0t1rfVN+jlHpRT5er6uxUkA=
-X-Received: by 2002:a50:e78b:: with SMTP id b11mr1817862edn.165.1610545658364; 
- Wed, 13 Jan 2021 05:47:38 -0800 (PST)
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by silver.osuosl.org (Postfix) with ESMTPS id 51FA9204F3
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:41 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id 17911AB92;
+ Wed, 13 Jan 2021 13:59:39 +0000 (UTC)
+Message-ID: <7ed51025f051f65f3dfe10a88caeb648821994b1.camel@suse.de>
+Subject: Re: [RFC PATCH v3 2/6] swiotlb: Add restricted DMA pool
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Florian Fainelli <f.fainelli@gmail.com>, Claire Chang
+ <tientzu@chromium.org>,  robh+dt@kernel.org, mpe@ellerman.id.au,
+ benh@kernel.crashing.org, paulus@samba.org,  joro@8bytes.org,
+ will@kernel.org, frowand.list@gmail.com, konrad.wilk@oracle.com, 
+ boris.ostrovsky@oracle.com, jgross@suse.com, sstabellini@kernel.org,
+ hch@lst.de,  m.szyprowski@samsung.com, robin.murphy@arm.com
+Date: Wed, 13 Jan 2021 14:59:34 +0100
+In-Reply-To: <95ae9c1e-c1f1-5736-fe86-12ced1f648f9@gmail.com>
+References: <20210106034124.30560-1-tientzu@chromium.org>
+ <20210106034124.30560-3-tientzu@chromium.org>
+ <95ae9c1e-c1f1-5736-fe86-12ced1f648f9@gmail.com>
+User-Agent: Evolution 3.38.2 
 MIME-Version: 1.0
-References: <20201223111633.1711477-1-zhang.lyra@gmail.com>
- <20210108022545.GA1744725@robh.at.kernel.org>
- <CAAfSe-svn4ACvhk3McO7APLLSKdC=9ei7bvmD9ZhnSosnLQ1AA@mail.gmail.com>
-In-Reply-To: <CAAfSe-svn4ACvhk3McO7APLLSKdC=9ei7bvmD9ZhnSosnLQ1AA@mail.gmail.com>
-From: Rob Herring <robh@kernel.org>
-Date: Wed, 13 Jan 2021 07:47:26 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKqi_tngaR0nHpjbQz2Q8QnwJ+Ea=DghT6xqR9U8o-5CQ@mail.gmail.com>
-Message-ID: <CAL_JsqKqi_tngaR0nHpjbQz2Q8QnwJ+Ea=DghT6xqR9U8o-5CQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: iommu: add bindings for sprd iommu
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: DTML <devicetree@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Sheng Xu <sheng.xu@unisoc.com>, Linux IOMMU <iommu@lists.linux-foundation.org>,
- Kevin Tang <kevin.tang@unisoc.com>, Baolin Wang <baolin.wang7@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>
+Cc: devicetree@vger.kernel.org, heikki.krogerus@linux.intel.com,
+ grant.likely@arm.com, saravanak@google.com, peterz@infradead.org,
+ xypron.glpk@gmx.de, rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+ treding@nvidia.com, bgolaszewski@baylibre.com,
+ iommu@lists.linux-foundation.org, drinkcat@chromium.org, rdunlap@infradead.org,
+ gregkh@linuxfoundation.org, xen-devel@lists.xenproject.org,
+ dan.j.williams@intel.com, andriy.shevchenko@linux.intel.com,
+ linuxppc-dev@lists.ozlabs.org, mingo@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,77 +85,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3298790406768279362=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jan 8, 2021 at 5:34 AM Chunyan Zhang <zhang.lyra@gmail.com> wrote:
->
-> On Fri, 8 Jan 2021 at 10:25, Rob Herring <robh@kernel.org> wrote:
-> >
-> > On Wed, Dec 23, 2020 at 07:16:32PM +0800, Chunyan Zhang wrote:
-> > > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > >
-> > > This patch only adds bindings to support display iommu, support for others
-> > > would be added once finished tests with those devices, such as Image
-> > > codec(jpeg) processor, a few signal processors, including VSP(video),
-> > > GSP(graphic), ISP(image), and camera CPP, etc.
-> > >
-> > > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > ---
-> > >  .../devicetree/bindings/iommu/sprd,iommu.yaml | 44 +++++++++++++++++++
-> > >  1 file changed, 44 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
-> > > new file mode 100644
-> > > index 000000000000..4d9a578a7cc9
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
-> > > @@ -0,0 +1,44 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +# Copyright 2020 Unisoc Inc.
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/iommu/sprd,iommu.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: Unisoc IOMMU and Multi-media MMU
-> > > +
-> > > +maintainers:
-> > > +  - Chunyan Zhang <zhang.lyra@gmail.com>
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    enum:
-> > > +      - sprd,iommu-disp
-> >
-> > Needs to be Soc specific.
->
-> All SoCs so far use the same iommu IP, there's a little different
-> among different iommu users.
 
-That's what everyone says. Be warned that you cannot add properties
-for any differences that come up whether features or errata.
+--===============3298790406768279362==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-t4If4GPTxFUMkhdNPchG"
 
-> > Is this block specific to display subsys or
-> > that just happens to be where the instance is?
->
-> This iommu driver can serve many subsystem devices, such as Video,
-> Camera, Image, etc., but they have their own iommu module which looks
-> like a subdevice embedded in the master devices.
-> I will add more compatible strings for those devices when needed.
-> For now, only this one was listed here because I just tested this
-> iommu driver with DPU only.
 
-The iommu binding takes care of what each one is connected to. Is each
-instance different in terms of features or programming model? If not,
-then you shouldn't have different compatible strings for each
-instance.
+--=-t4If4GPTxFUMkhdNPchG
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+Hi All,
+
+On Tue, 2021-01-12 at 16:03 -0800, Florian Fainelli wrote:
+> On 1/5/21 7:41 PM, Claire Chang wrote:
+> > Add the initialization function to create restricted DMA pools from
+> > matching reserved-memory nodes in the device tree.
+> >=20
+> > Signed-off-by: Claire Chang <tientzu@chromium.org>
+> > ---
+> > =C2=A0include/linux/device.h  |   4 ++
+> > =C2=A0include/linux/swiotlb.h |   7 +-
+> > =C2=A0kernel/dma/Kconfig      |   1 +
+> > =C2=A0kernel/dma/swiotlb.c    | 144 ++++++++++++++++++++++++++++++++++-=
+-----
+> > =C2=A04 files changed, 131 insertions(+), 25 deletions(-)
+> >=20
+> > diff --git a/include/linux/device.h b/include/linux/device.h
+> > index 89bb8b84173e..ca6f71ec8871 100644
+> > --- a/include/linux/device.h
+> > +++ b/include/linux/device.h
+> > @@ -413,6 +413,7 @@ struct dev_links_info {
+> > =C2=A0=C2=A0* @dma_pools:	Dma pools (if dma'ble device).
+> > =C2=A0=C2=A0* @dma_mem:	Internal for coherent mem override.
+> > =C2=A0=C2=A0* @cma_area:	Contiguous memory area for dma allocations
+> > + * @dma_io_tlb_mem: Internal for swiotlb io_tlb_mem override.
+> > =C2=A0=C2=A0* @archdata:	For arch-specific additions.
+> > =C2=A0=C2=A0* @of_node:	Associated device tree node.
+> > =C2=A0=C2=A0* @fwnode:	Associated device node supplied by platform firm=
+ware.
+> > @@ -515,6 +516,9 @@ struct device {
+> > =C2=A0#ifdef CONFIG_DMA_CMA
+> > =C2=A0	struct cma *cma_area;		/* contiguous memory area for dma
+> > =C2=A0					   allocations */
+> > +#endif
+> > +#ifdef CONFIG_SWIOTLB
+> > +	struct io_tlb_mem	*dma_io_tlb_mem;
+> > =C2=A0#endif
+> > =C2=A0	/* arch specific additions */
+> > =C2=A0	struct dev_archdata	archdata;
+> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> > index dd8eb57cbb8f..a1bbd7788885 100644
+> > --- a/include/linux/swiotlb.h
+> > +++ b/include/linux/swiotlb.h
+> > @@ -76,12 +76,13 @@ extern enum swiotlb_force swiotlb_force;
+> > =C2=A0=C2=A0*
+> > =C2=A0=C2=A0* @start:	The start address of the swiotlb memory pool. Use=
+d to do a quick
+> > =C2=A0=C2=A0*		range check to see if the memory was in fact allocated b=
+y this
+> > - *		API.
+> > + *		API. For restricted DMA pool, this is device tree adjustable.
+>=20
+> Maybe write it as this is "firmware adjustable" such that when/if ACPI
+> needs something like this, the description does not need updating.
+>=20
+> [snip]
+>=20
+> > +static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+> > +				    struct device *dev)
+> > +{
+> > +	struct io_tlb_mem *mem =3D rmem->priv;
+> > +	int ret;
+> > +
+> > +	if (dev->dma_io_tlb_mem)
+> > +		return -EBUSY;
+> > +
+> > +	if (!mem) {
+> > +		mem =3D kzalloc(sizeof(*mem), GFP_KERNEL);
+> > +		if (!mem)
+> > +			return -ENOMEM;
+> > +
+> > +		if (!memremap(rmem->base, rmem->size, MEMREMAP_WB)) {
+>=20
+> MEMREMAP_WB sounds appropriate as a default.
+
+As per the binding 'no-map' has to be disabled here. So AFAIU, this memory =
+will
+be part of the linear mapping. Is this really needed then?
+
+> Documentation/devicetree/bindings/reserved-memory/ramoops.txt does
+> define an "unbuffered" property which in premise could be applied to the
+> generic reserved memory binding as well and that we may have to be
+> honoring here, if we were to make it more generic. Oh well, this does
+> not need to be addressed right now I guess.
+
+
+
+
+--=-t4If4GPTxFUMkhdNPchG
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl/+/MYACgkQlfZmHno8
+x/57/wf8DfucOc1/3ySk20PkRc6qv7RWXbGw5RAUSZfXGpnHv1mAOnBMd6ProWeU
+mJiYuCGcljwaI92Dc4Yca/JpWSeZmXWl/HZ+T0GIF9SegR36L8j5Fwop/zptM3kF
+Je0VZZ/VIXKkgr7rp0yqFNRFB0vGuXdQz022npLJ4YKgyN1uvEaVgVCEeKuB/gSc
+7BYPkilOLaUXaBxRcA6l7mcQZc4vqCMW3Lzl/9IM+mKhrhFllZI3pvBFnWed+k2J
+JVdA5hjLI3QQrsXYH8+AfKlhLjzzMCGn5E5Gw1IPluIoeObgEwwLfYuMHbOvFplQ
+3LHRL6KrY2rpsuzPeVMDM0TFPae/Hw==
+=L05t
+-----END PGP SIGNATURE-----
+
+--=-t4If4GPTxFUMkhdNPchG--
+
+
+--===============3298790406768279362==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============3298790406768279362==--
+
