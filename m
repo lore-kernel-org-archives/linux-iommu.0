@@ -1,95 +1,95 @@
-Return-Path: <SRS0=VgK/=GP=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=lzux=GQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 838EFC433DB
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:52:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB459C433DB
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 00:03:56 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EDF123131
-	for <iommu@archiver.kernel.org>; Tue, 12 Jan 2021 23:52:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EDF123131
+	by mail.kernel.org (Postfix) with ESMTPS id 79D942310F
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 00:03:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79D942310F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C039C84E8C;
-	Tue, 12 Jan 2021 23:52:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2EDBB853C5;
+	Wed, 13 Jan 2021 00:03:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GhIgLni8VQs8; Tue, 12 Jan 2021 23:52:26 +0000 (UTC)
+	with ESMTP id 6yQpTv7m6S8X; Wed, 13 Jan 2021 00:03:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 49238847D1;
-	Tue, 12 Jan 2021 23:52:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E92758539F;
+	Wed, 13 Jan 2021 00:03:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26048C088B;
-	Tue, 12 Jan 2021 23:52:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0EDAC013A
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:52:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE900C088B;
+	Wed, 13 Jan 2021 00:03:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8B17C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 00:03:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 87D4184DFD
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:52:24 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8DFF187097
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 00:03:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1vwpQXqmJiNH for <iommu@lists.linux-foundation.org>;
- Tue, 12 Jan 2021 23:52:23 +0000 (UTC)
+ with ESMTP id DFzgyYWT5JeP for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Jan 2021 00:03:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com
- [209.85.216.49])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E9E91847D1
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 23:52:23 +0000 (UTC)
-Received: by mail-pj1-f49.google.com with SMTP id b5so2492pjk.2
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 15:52:23 -0800 (PST)
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com
+ [209.85.216.53])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7376A86FB0
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 00:03:50 +0000 (UTC)
+Received: by mail-pj1-f53.google.com with SMTP id p12so8676pju.5
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 16:03:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=MGKtVppVEFe28L6FHuDZ+KXC/KQUieJpXieI89QBq84=;
- b=IJQOFIMT3nopzu5tpGieKI5azx9Y0NH8Vhc2K59m4HhkC/m3oEAcrRYKlNYQsJeEkK
- zP7eMmny6mAVPcoNorjivTXPpDujTFpzqCpQ9id/XL5Ceg9EwJGYx6ESFXkRY/ONim8w
- Un7cc0LO4YpbvY/dAE7zeXmdQcdFUDj9KUSRIifjRk0lFFREb/mD+2H/zBfkU4cfy5k2
- sDPmSUtFCg9gGGVsWrwuH3YDuaE+4fYg9dn6Ow9lsTujOw+kIHhQX9WjYOmoaACKDs5K
- m/VTzIIU8JjmYiTY6EUtIFD18hj+JVVpk+Rd1rayW3K4ik+vA0P1BtLE6njaiudNCh3R
- 5ipw==
+ bh=204axfOsodDE4SR5Rhz3nE2QwCb2/l/oST9wJEOlEFU=;
+ b=GVJsp8HxghwwZDLorI5npgTYVZme1OERIt3nW9QQuecITP+ftYJuOYKG8AStJR27+N
+ 977Jjey3jBQW3DDPrgp1xMApw+T781iDHeT+rfJktEyz7szuAlIxozYrS/TjNCylDPTF
+ ORYXeym0mdUyo/9ySZTiARE/t0ZEbryj+JROpnd8Ojt3l1fRvxCISjc1qSfRlMZYA90t
+ iLh+eQKxueaIHmLu8NnOmnb1sSZJBl0+4h7TZWRzTeFePWQGnlNJjA2469hXA4jgYCc2
+ pKp6x2zgwaDHaUGnvD2N0IZoy4ogSMjgM6MbqpIciRwwfcXNmWU7H5kX4Z0jDZsugmHf
+ lAxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=MGKtVppVEFe28L6FHuDZ+KXC/KQUieJpXieI89QBq84=;
- b=rPXtl93b+odJXC9bbYSOYjE76ixxXSX0jeAa8X2X7AyRVUlBmPhDaejSxMoXa+7u4M
- 0Q9SWnAhk/dIG27plH+H2+mlE7d1gJJBRLHuN4K0Y3vQ5SRuYWvuOuTX9QvfU+826Sv/
- JljDVHpvVlcUvJ8nTl95aHRWDnUI+n50TJJ6/cTSkcVn187xe8u4Tgl83yPY5rGk90XO
- ZAIX0VD7Yha1SI78quVnxnJTPQx5De6qzmSZOnm6zfsX7mauXzJZWjh9IpXN7bHxjSPr
- wJSzMOLUnBJWAl1nMLXApTcwokq/qKfe/cRRC7+WnLOxOrnYHIqzgasg+CWtvpUCz5mr
- yXxg==
-X-Gm-Message-State: AOAM530TU6nbCQpiwnNVMP4gqT0XU8enqejQ4odMArr2wHzk9tQBm8XQ
- /cSc20IcCMiSppctMTb4kkw=
-X-Google-Smtp-Source: ABdhPJy/60v+IQ3/cilUlX0Bj9E3m068HNwymQXPaKD3vpsxumTJ8rKuRYQYOicISQFL+EQw1gn6ww==
-X-Received: by 2002:a17:902:c1cc:b029:da:dd7c:2ac7 with SMTP id
- c12-20020a170902c1ccb02900dadd7c2ac7mr1401040plc.25.1610495543441; 
- Tue, 12 Jan 2021 15:52:23 -0800 (PST)
+ bh=204axfOsodDE4SR5Rhz3nE2QwCb2/l/oST9wJEOlEFU=;
+ b=dXH4TryUd63eFckd+OWz2wwkY+/CqepP+hN+k5o/+F6kpDvs7002vgkv/088nHZhfz
+ WhusQzoMkriyaHqWZnAOeR20KdsHBOy3jVYYfU4VJNa4mWRh2lYxYc4iI4jSu8lA+gu6
+ T4KWBaytx+mjGR+q9gCY7TA8pQdXuW5wiI602/CZncO1MjYL4t8T9lygzx9zGMDIarAN
+ eaN54vzwUT6bhVsPvWcoTM1NhEXeHF4wmH3uAjc8qhULuScbosYFFPCCiV2issc6R2Yc
+ prw8euvabxZqip0XbZtaJno3KcSqDo3hDn/El9t4d6mgjSq4pzb1WACYEH/rPnZBnfsc
+ lH/g==
+X-Gm-Message-State: AOAM532JUpvPHXmRAoHUmne365+vi3wlth9J5XtRwGYmneQHIgPpM6bJ
+ sWv64p52DTmobEHiS2uKnh8=
+X-Google-Smtp-Source: ABdhPJyKW2yUb6Ef8aahwHWdedosi9OcKlVuhxzK8K/SzaSmQmhd9JsswUPANO1f9dSnpLUacKaCEw==
+X-Received: by 2002:a17:902:ff06:b029:db:d4f7:9c7d with SMTP id
+ f6-20020a170902ff06b02900dbd4f79c7dmr1866788plj.60.1610496229764; 
+ Tue, 12 Jan 2021 16:03:49 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
- by smtp.googlemail.com with ESMTPSA id a136sm234808pfd.149.2021.01.12.15.52.19
+ by smtp.googlemail.com with ESMTPSA id h8sm240614pjc.2.2021.01.12.16.03.46
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Jan 2021 15:52:22 -0800 (PST)
+ Tue, 12 Jan 2021 16:03:48 -0800 (PST)
 Subject: Re: [RFC PATCH v3 2/6] swiotlb: Add restricted DMA pool
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
+ mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+ joro@8bytes.org, will@kernel.org, frowand.list@gmail.com,
+ konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+ sstabellini@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com
 References: <20210106034124.30560-1-tientzu@chromium.org>
  <20210106034124.30560-3-tientzu@chromium.org>
- <20210106185241.GA109735@localhost.localdomain>
- <CALiNf2-HDf6tFcvVgCttr-ta=88ZMH=OvB5XoryTPc6MNvwV+Q@mail.gmail.com>
- <20210107175740.GA16519@char.us.oracle.com>
- <aa5af7d1-779e-f0f6-e6ba-8040e603523f@gmail.com>
- <20210107211937.GA19460@char.us.oracle.com>
 From: Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -145,29 +145,21 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <bb25fac5-94ee-ff61-9afb-0024b5047f94@gmail.com>
-Date: Tue, 12 Jan 2021 15:52:16 -0800
+Message-ID: <95ae9c1e-c1f1-5736-fe86-12ced1f648f9@gmail.com>
+Date: Tue, 12 Jan 2021 16:03:42 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210107211937.GA19460@char.us.oracle.com>
+In-Reply-To: <20210106034124.30560-3-tientzu@chromium.org>
 Content-Language: en-US
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- xypron.glpk@gmx.de, rafael.j.wysocki@intel.com, Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>, will@kernel.org,
- dan.j.williams@intel.com, linuxppc-dev@lists.ozlabs.org,
- Rob Herring <robh+dt@kernel.org>, Claire Chang <tientzu@chromium.org>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- rdunlap@infradead.org, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- mpe@ellerman.id.au, Robin Murphy <robin.murphy@arm.com>
+Cc: drinkcat@chromium.org, devicetree@vger.kernel.org,
+ heikki.krogerus@linux.intel.com, saravanak@google.com, peterz@infradead.org,
+ xypron.glpk@gmx.de, rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+ andriy.shevchenko@linux.intel.com, bgolaszewski@baylibre.com,
+ iommu@lists.linux-foundation.org, grant.likely@arm.com, rdunlap@infradead.org,
+ gregkh@linuxfoundation.org, xen-devel@lists.xenproject.org,
+ dan.j.williams@intel.com, treding@nvidia.com, linuxppc-dev@lists.ozlabs.org,
+ mingo@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -185,47 +177,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/7/21 1:19 PM, Konrad Rzeszutek Wilk wrote:
-> On Thu, Jan 07, 2021 at 10:09:14AM -0800, Florian Fainelli wrote:
->> On 1/7/21 9:57 AM, Konrad Rzeszutek Wilk wrote:
->>> On Fri, Jan 08, 2021 at 01:39:18AM +0800, Claire Chang wrote:
->>>> Hi Greg and Konrad,
->>>>
->>>> This change is intended to be non-arch specific. Any arch that lacks DMA access
->>>> control and has devices not behind an IOMMU can make use of it. Could you share
->>>> why you think this should be arch specific?
->>>
->>> The idea behind non-arch specific code is it to be generic. The devicetree
->>> is specific to PowerPC, Sparc, and ARM, and not to x86 - hence it should
->>> be in arch specific code.
->>
->> In premise the same code could be used with an ACPI enabled system with
->> an appropriate service to identify the restricted DMA regions and unlock
->> them.
+On 1/5/21 7:41 PM, Claire Chang wrote:
+> Add the initialization function to create restricted DMA pools from
+> matching reserved-memory nodes in the device tree.
 > 
-> Which this patchset is not.
-
-ACPI is not included, but the comment about Device Tree being specific
-to PowerPC, SPARC and ARM is x86 is not quite correct. There is an
-architecture specific part to obtaining where the Device Tree lives in
-memory, but the implementation itself is architecture agnostic (with
-some early SPARC/OpenFirmware shenanigans), and x86 does, or rather did
-support Device Tree to a very small extent with the CE4100 platform.
-
-Would you prefer that an swiotlb_of.c file be created instead or
-something along those lines to better encapsulate where the OF specific
-code lives?
-
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> ---
+>  include/linux/device.h  |   4 ++
+>  include/linux/swiotlb.h |   7 +-
+>  kernel/dma/Kconfig      |   1 +
+>  kernel/dma/swiotlb.c    | 144 ++++++++++++++++++++++++++++++++++------
+>  4 files changed, 131 insertions(+), 25 deletions(-)
 > 
->>
->> More than 1 architecture requiring this function (ARM and ARM64 are the
->> two I can think of needing this immediately) sort of calls for making
->> the code architecture agnostic since past 2, you need something that scales.
-> 
-> I believe the use-case is for ARM64 at this moment.
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 89bb8b84173e..ca6f71ec8871 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -413,6 +413,7 @@ struct dev_links_info {
+>   * @dma_pools:	Dma pools (if dma'ble device).
+>   * @dma_mem:	Internal for coherent mem override.
+>   * @cma_area:	Contiguous memory area for dma allocations
+> + * @dma_io_tlb_mem: Internal for swiotlb io_tlb_mem override.
+>   * @archdata:	For arch-specific additions.
+>   * @of_node:	Associated device tree node.
+>   * @fwnode:	Associated device node supplied by platform firmware.
+> @@ -515,6 +516,9 @@ struct device {
+>  #ifdef CONFIG_DMA_CMA
+>  	struct cma *cma_area;		/* contiguous memory area for dma
+>  					   allocations */
+> +#endif
+> +#ifdef CONFIG_SWIOTLB
+> +	struct io_tlb_mem	*dma_io_tlb_mem;
+>  #endif
+>  	/* arch specific additions */
+>  	struct dev_archdata	archdata;
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index dd8eb57cbb8f..a1bbd7788885 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -76,12 +76,13 @@ extern enum swiotlb_force swiotlb_force;
+>   *
+>   * @start:	The start address of the swiotlb memory pool. Used to do a quick
+>   *		range check to see if the memory was in fact allocated by this
+> - *		API.
+> + *		API. For restricted DMA pool, this is device tree adjustable.
 
-For the platforms that Claire uses, certainly for the ones we use, ARM
-and ARM64 are in scope.
+Maybe write it as this is "firmware adjustable" such that when/if ACPI
+needs something like this, the description does not need updating.
+
+[snip]
+
+> +static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+> +				    struct device *dev)
+> +{
+> +	struct io_tlb_mem *mem = rmem->priv;
+> +	int ret;
+> +
+> +	if (dev->dma_io_tlb_mem)
+> +		return -EBUSY;
+> +
+> +	if (!mem) {
+> +		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
+> +		if (!mem)
+> +			return -ENOMEM;
+> +
+> +		if (!memremap(rmem->base, rmem->size, MEMREMAP_WB)) {
+
+MEMREMAP_WB sounds appropriate as a default.
+Documentation/devicetree/bindings/reserved-memory/ramoops.txt does
+define an "unbuffered" property which in premise could be applied to the
+generic reserved memory binding as well and that we may have to be
+honoring here, if we were to make it more generic. Oh well, this does
+not need to be addressed right now I guess.
 -- 
 Florian
 _______________________________________________
