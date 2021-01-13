@@ -2,77 +2,108 @@ Return-Path: <SRS0=lzux=GQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AAAC433DB
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45634C433DB
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 14:11:17 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E228233FB
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 13:59:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E228233FB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 75B7A23382
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 14:11:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75B7A23382
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C9033864D0;
-	Wed, 13 Jan 2021 13:59:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F3495864DA;
+	Wed, 13 Jan 2021 14:11:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P7hnyyGzmdxj; Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
+	with ESMTP id OpkFA0ybkln3; Wed, 13 Jan 2021 14:11:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1A6B78452E;
-	Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7510E862A9;
+	Wed, 13 Jan 2021 14:11:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0678DC0893;
-	Wed, 13 Jan 2021 13:59:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4EAB4C013A
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 532D1C088B;
+	Wed, 13 Jan 2021 14:11:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AFB21C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 14:11:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 42FFA2041F
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9DF488698C
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 14:11:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id je-QAAFe8RvD for <iommu@lists.linux-foundation.org>;
- Wed, 13 Jan 2021 13:59:41 +0000 (UTC)
+ with ESMTP id EEA26ireZV7g for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Jan 2021 14:11:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by silver.osuosl.org (Postfix) with ESMTPS id 51FA9204F3
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 13:59:41 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id 17911AB92;
- Wed, 13 Jan 2021 13:59:39 +0000 (UTC)
-Message-ID: <7ed51025f051f65f3dfe10a88caeb648821994b1.camel@suse.de>
-Subject: Re: [RFC PATCH v3 2/6] swiotlb: Add restricted DMA pool
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Florian Fainelli <f.fainelli@gmail.com>, Claire Chang
- <tientzu@chromium.org>,  robh+dt@kernel.org, mpe@ellerman.id.au,
- benh@kernel.crashing.org, paulus@samba.org,  joro@8bytes.org,
- will@kernel.org, frowand.list@gmail.com, konrad.wilk@oracle.com, 
- boris.ostrovsky@oracle.com, jgross@suse.com, sstabellini@kernel.org,
- hch@lst.de,  m.szyprowski@samsung.com, robin.murphy@arm.com
-Date: Wed, 13 Jan 2021 14:59:34 +0100
-In-Reply-To: <95ae9c1e-c1f1-5736-fe86-12ced1f648f9@gmail.com>
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-3-tientzu@chromium.org>
- <95ae9c1e-c1f1-5736-fe86-12ced1f648f9@gmail.com>
-User-Agent: Evolution 3.38.2 
-MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, heikki.krogerus@linux.intel.com,
- grant.likely@arm.com, saravanak@google.com, peterz@infradead.org,
- xypron.glpk@gmx.de, rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
- treding@nvidia.com, bgolaszewski@baylibre.com,
- iommu@lists.linux-foundation.org, drinkcat@chromium.org, rdunlap@infradead.org,
- gregkh@linuxfoundation.org, xen-devel@lists.xenproject.org,
- dan.j.williams@intel.com, andriy.shevchenko@linux.intel.com,
- linuxppc-dev@lists.ozlabs.org, mingo@kernel.org
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4F5CA8693D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 14:11:08 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10DE3sds027905;
+ Wed, 13 Jan 2021 14:09:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=A1ViBcuAE7rNLlE5khF4PRKBNmn+alH7qCPrRj+YvsQ=;
+ b=s18ryd99wsKb/B53Ll6ngYUPsilFuM53WmpCRy8KBMWBq2JJAJxZZtihpPilHen8jSZe
+ 9Z9Q7UjvuXos6EU/Mg3cPIqi07byPITYBcJy1GY++3DjMuz32nbz0uF2VZaoeLM+e2/q
+ nN2u/EUPWJBQcf1EPGf1XDkyEb/meqxLJGoleATcyMQpcd6poOWzfL5QSONu222wV1xQ
+ 2TUi46RGhgAwdBUmEnPNUENppBRivNnmqNS2GLG7inrdR7DQ8jhvNuQ36yAnYGM4Epbx
+ YkjKXS1ToyFfaILIohE7ye7wUS5xlww9be3b5SVoBlReOQw9FjgR6kh6IoiEMYaPHI0x dA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by aserp2120.oracle.com with ESMTP id 360kcyujxe-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 13 Jan 2021 14:09:52 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10DE5fj9107959;
+ Wed, 13 Jan 2021 14:07:51 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by aserp3020.oracle.com with ESMTP id 360ke8e53r-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 13 Jan 2021 14:07:51 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 10DE7mtB002393;
+ Wed, 13 Jan 2021 14:07:48 GMT
+Received: from anon-dhcp-153.1015granger.net (/68.61.232.219)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Wed, 13 Jan 2021 06:07:47 -0800
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: performance regression noted in v5.11-rc after c062db039f40
+From: Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <dfd84bd8-37b3-0f7c-6f38-68f68e8f5b0f@linux.intel.com>
+Date: Wed, 13 Jan 2021 09:07:44 -0500
+Message-Id: <440CA3AE-BD76-449D-9C66-4A063C8726B2@oracle.com>
+References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
+ <20210112143819.GA9689@willie-the-truck>
+ <dfd84bd8-37b3-0f7c-6f38-68f68e8f5b0f@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9862
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ suspectscore=0 spamscore=0
+ mlxlogscore=948 malwarescore=0 bulkscore=0 mlxscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101130087
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9862
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ phishscore=0
+ impostorscore=0 bulkscore=0 adultscore=0 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1011 mlxlogscore=958 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101130087
+Cc: linux-rdma <linux-rdma@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ robin.murphy@arm.com, murphyt7@tcd.ie, iommu@lists.linux-foundation.org,
+ logang@deltatee.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,137 +116,192 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3298790406768279362=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============3298790406768279362==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-t4If4GPTxFUMkhdNPchG"
+
+> On Jan 12, 2021, at 9:25 PM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> 
+> Hi,
+> 
+> On 1/12/21 10:38 PM, Will Deacon wrote:
+>> [Expanding cc list to include DMA-IOMMU and intel IOMMU folks]
+>> On Fri, Jan 08, 2021 at 04:18:36PM -0500, Chuck Lever wrote:
+>>> Hi-
+>>> 
+>>> [ Please cc: me on replies, I'm not currently subscribed to
+>>> iommu@lists ].
+>>> 
+>>> I'm running NFS performance tests on InfiniBand using CX-3 Pro cards
+>>> at 56Gb/s. The test is iozone on an NFSv3/RDMA mount:
+>>> 
+>>> /home/cel/bin/iozone -M -+u -i0 -i1 -s1g -r256k -t12 -I
+>>> 
+>>> For those not familiar with the way storage protocols use RDMA, The
+>>> initiator/client sets up memory regions and the target/server uses
+>>> RDMA Read and Write to move data out of and into those regions. The
+>>> initiator/client uses only RDMA memory registration and invalidation
+>>> operations, and the target/server uses RDMA Read and Write.
+>>> 
+>>> My NFS client is a two-socket 12-core x86_64 system with its I/O MMU
+>>> enabled using the kernel command line options "intel_iommu=on
+>>> iommu=strict".
+>>> 
+>>> Recently I've noticed a significant (25-30%) loss in NFS throughput.
+>>> I was able to bisect on my client to the following commits.
+>>> 
+>>> Here's 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
+>>> map_sg"). This is about normal for this test.
+>>> 
+>>> 	Children see throughput for 12 initial writers 	= 4732581.09 kB/sec
+>>>  	Parent sees throughput for 12 initial writers 	= 4646810.21 kB/sec
+>>>  	Min throughput per process 			=  387764.34 kB/sec
+>>>  	Max throughput per process 			=  399655.47 kB/sec
+>>>  	Avg throughput per process 			=  394381.76 kB/sec
+>>>  	Min xfer 					= 1017344.00 kB
+>>>  	CPU Utilization: Wall time    2.671    CPU time    1.974    CPU utilization  73.89 %
+>>>  	Children see throughput for 12 rewriters 	= 4837741.94 kB/sec
+>>>  	Parent sees throughput for 12 rewriters 	= 4833509.35 kB/sec
+>>>  	Min throughput per process 			=  398983.72 kB/sec
+>>>  	Max throughput per process 			=  406199.66 kB/sec
+>>>  	Avg throughput per process 			=  403145.16 kB/sec
+>>>  	Min xfer 					= 1030656.00 kB
+>>>  	CPU utilization: Wall time    2.584    CPU time    1.959    CPU utilization  75.82 %
+>>>  	Children see throughput for 12 readers 		= 5921370.94 kB/sec
+>>>  	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
+>>>  	Min throughput per process 			=  491812.38 kB/sec
+>>>  	Max throughput per process 			=  494777.28 kB/sec
+>>>  	Avg throughput per process 			=  493447.58 kB/sec
+>>>  	Min xfer 					= 1042688.00 kB
+>>>  	CPU utilization: Wall time    2.122    CPU time    1.968    CPU utilization  92.75 %
+>>>  	Children see throughput for 12 re-readers 	= 5947985.69 kB/sec
+>>>  	Parent sees throughput for 12 re-readers 	= 5941348.51 kB/sec
+>>>  	Min throughput per process 			=  492805.81 kB/sec
+>>>  	Max throughput per process 			=  497280.19 kB/sec
+>>>  	Avg throughput per process 			=  495665.47 kB/sec
+>>>  	Min xfer 					= 1039360.00 kB
+>>>  	CPU utilization: Wall time    2.111    CPU time    1.968    CPU utilization  93.22 %
+>>> 
+>>> Here's c062db039f40 ("iommu/vt-d: Update domain geometry in
+>>> iommu_ops.at(de)tach_dev"). It's losing some steam here.
+>>> 
+>>> 	Children see throughput for 12 initial writers 	= 4342419.12 kB/sec
+>>>  	Parent sees throughput for 12 initial writers 	= 4310612.79 kB/sec
+>>>  	Min throughput per process 			=  359299.06 kB/sec
+>>>  	Max throughput per process 			=  363866.16 kB/sec
+>>>  	Avg throughput per process 			=  361868.26 kB/sec
+>>>  	Min xfer 					= 1035520.00 kB
+>>>  	CPU Utilization: Wall time    2.902    CPU time    1.951    CPU utilization  67.22 %
+>>>  	Children see throughput for 12 rewriters 	= 4408576.66 kB/sec
+>>>  	Parent sees throughput for 12 rewriters 	= 4404280.87 kB/sec
+>>>  	Min throughput per process 			=  364553.88 kB/sec
+>>>  	Max throughput per process 			=  370029.28 kB/sec
+>>>  	Avg throughput per process 			=  367381.39 kB/sec
+>>>  	Min xfer 					= 1033216.00 kB
+>>>  	CPU utilization: Wall time    2.836    CPU time    1.956    CPU utilization  68.97 %
+>>>  	Children see throughput for 12 readers 		= 5406879.47 kB/sec
+>>>  	Parent sees throughput for 12 readers 		= 5401862.78 kB/sec
+>>>  	Min throughput per process 			=  449583.03 kB/sec
+>>>  	Max throughput per process 			=  451761.69 kB/sec
+>>>  	Avg throughput per process 			=  450573.29 kB/sec
+>>>  	Min xfer 					= 1044224.00 kB
+>>>  	CPU utilization: Wall time    2.323    CPU time    1.977    CPU utilization  85.12 %
+>>>  	Children see throughput for 12 re-readers 	= 5410601.12 kB/sec
+>>>  	Parent sees throughput for 12 re-readers 	= 5403504.40 kB/sec
+>>>  	Min throughput per process 			=  449918.12 kB/sec
+>>>  	Max throughput per process 			=  452489.28 kB/sec
+>>>  	Avg throughput per process 			=  450883.43 kB/sec
+>>>  	Min xfer 					= 1043456.00 kB
+>>>  	CPU utilization: Wall time    2.321    CPU time    1.978    CPU utilization  85.21 %
+>>> 
+>>> And here's c588072bba6b ("iommu/vt-d: Convert intel iommu driver to
+>>> the iommu ops"). Significant throughput loss.
+>>> 
+>>> 	Children see throughput for 12 initial writers 	= 3812036.91 kB/sec
+>>>  	Parent sees throughput for 12 initial writers 	= 3753683.40 kB/sec
+>>>  	Min throughput per process 			=  313672.25 kB/sec
+>>>  	Max throughput per process 			=  321719.44 kB/sec
+>>>  	Avg throughput per process 			=  317669.74 kB/sec
+>>>  	Min xfer 					= 1022464.00 kB
+>>>  	CPU Utilization: Wall time    3.309    CPU time    1.986    CPU utilization  60.02 %
+>>>  	Children see throughput for 12 rewriters 	= 3786831.94 kB/sec
+>>>  	Parent sees throughput for 12 rewriters 	= 3783205.58 kB/sec
+>>>  	Min throughput per process 			=  313654.44 kB/sec
+>>>  	Max throughput per process 			=  317844.50 kB/sec
+>>>  	Avg throughput per process 			=  315569.33 kB/sec
+>>>  	Min xfer 					= 1035520.00 kB
+>>>  	CPU utilization: Wall time    3.302    CPU time    1.945    CPU utilization  58.90 %
+>>>  	Children see throughput for 12 readers 		= 4265828.28 kB/sec
+>>>  	Parent sees throughput for 12 readers 		= 4261844.88 kB/sec
+>>>  	Min throughput per process 			=  352305.00 kB/sec
+>>>  	Max throughput per process 			=  357726.22 kB/sec
+>>>  	Avg throughput per process 			=  355485.69 kB/sec
+>>>  	Min xfer 					= 1032960.00 kB
+>>>  	CPU utilization: Wall time    2.934    CPU time    1.942    CPU utilization  66.20 %
+>>>  	Children see throughput for 12 re-readers 	= 4220651.19 kB/sec
+>>>  	Parent sees throughput for 12 re-readers 	= 4216096.04 kB/sec
+>>>  	Min throughput per process 			=  348677.16 kB/sec
+>>>  	Max throughput per process 			=  353467.44 kB/sec
+>>>  	Avg throughput per process 			=  351720.93 kB/sec
+>>>  	Min xfer 					= 1035264.00 kB
+>>>  	CPU utilization: Wall time    2.969    CPU time    1.952    CPU utilization  65.74 %
+>>> 
+>>> The regression appears to be 100% reproducible.
+> 
+> The commit 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
+> map_sg") is a temporary workaround. We have reverted it recently (5.11-
+> rc3). Can you please try the a kernel version after -rc3?
+
+I don't see a change in write results with v5.11-rc3, but read throughput
+appears to improve a little.
 
 
---=-t4If4GPTxFUMkhdNPchG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	Children see throughput for 12 initial writers 	= 3854295.72 kB/sec
+	Parent sees throughput for 12 initial writers 	= 3744064.85 kB/sec
+	Min throughput per process 			=  313499.41 kB/sec 
+	Max throughput per process 			=  328151.44 kB/sec
+	Avg throughput per process 			=  321191.31 kB/sec
+	Min xfer 					= 1001728.00 kB
+	CPU Utilization: Wall time    3.289    CPU time    2.075    CPU utilization  63.10 %
 
-Hi All,
 
-On Tue, 2021-01-12 at 16:03 -0800, Florian Fainelli wrote:
-> On 1/5/21 7:41 PM, Claire Chang wrote:
-> > Add the initialization function to create restricted DMA pools from
-> > matching reserved-memory nodes in the device tree.
-> >=20
-> > Signed-off-by: Claire Chang <tientzu@chromium.org>
-> > ---
-> > =C2=A0include/linux/device.h  |   4 ++
-> > =C2=A0include/linux/swiotlb.h |   7 +-
-> > =C2=A0kernel/dma/Kconfig      |   1 +
-> > =C2=A0kernel/dma/swiotlb.c    | 144 ++++++++++++++++++++++++++++++++++-=
------
-> > =C2=A04 files changed, 131 insertions(+), 25 deletions(-)
-> >=20
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index 89bb8b84173e..ca6f71ec8871 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -413,6 +413,7 @@ struct dev_links_info {
-> > =C2=A0=C2=A0* @dma_pools:	Dma pools (if dma'ble device).
-> > =C2=A0=C2=A0* @dma_mem:	Internal for coherent mem override.
-> > =C2=A0=C2=A0* @cma_area:	Contiguous memory area for dma allocations
-> > + * @dma_io_tlb_mem: Internal for swiotlb io_tlb_mem override.
-> > =C2=A0=C2=A0* @archdata:	For arch-specific additions.
-> > =C2=A0=C2=A0* @of_node:	Associated device tree node.
-> > =C2=A0=C2=A0* @fwnode:	Associated device node supplied by platform firm=
-ware.
-> > @@ -515,6 +516,9 @@ struct device {
-> > =C2=A0#ifdef CONFIG_DMA_CMA
-> > =C2=A0	struct cma *cma_area;		/* contiguous memory area for dma
-> > =C2=A0					   allocations */
-> > +#endif
-> > +#ifdef CONFIG_SWIOTLB
-> > +	struct io_tlb_mem	*dma_io_tlb_mem;
-> > =C2=A0#endif
-> > =C2=A0	/* arch specific additions */
-> > =C2=A0	struct dev_archdata	archdata;
-> > diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> > index dd8eb57cbb8f..a1bbd7788885 100644
-> > --- a/include/linux/swiotlb.h
-> > +++ b/include/linux/swiotlb.h
-> > @@ -76,12 +76,13 @@ extern enum swiotlb_force swiotlb_force;
-> > =C2=A0=C2=A0*
-> > =C2=A0=C2=A0* @start:	The start address of the swiotlb memory pool. Use=
-d to do a quick
-> > =C2=A0=C2=A0*		range check to see if the memory was in fact allocated b=
-y this
-> > - *		API.
-> > + *		API. For restricted DMA pool, this is device tree adjustable.
->=20
-> Maybe write it as this is "firmware adjustable" such that when/if ACPI
-> needs something like this, the description does not need updating.
->=20
-> [snip]
->=20
-> > +static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
-> > +				    struct device *dev)
-> > +{
-> > +	struct io_tlb_mem *mem =3D rmem->priv;
-> > +	int ret;
-> > +
-> > +	if (dev->dma_io_tlb_mem)
-> > +		return -EBUSY;
-> > +
-> > +	if (!mem) {
-> > +		mem =3D kzalloc(sizeof(*mem), GFP_KERNEL);
-> > +		if (!mem)
-> > +			return -ENOMEM;
-> > +
-> > +		if (!memremap(rmem->base, rmem->size, MEMREMAP_WB)) {
->=20
-> MEMREMAP_WB sounds appropriate as a default.
+	Children see throughput for 12 rewriters 	= 3692675.22 kB/sec
+	Parent sees throughput for 12 rewriters 	= 3688975.23 kB/sec
+	Min throughput per process 			=  304863.84 kB/sec 
+	Max throughput per process 			=  311000.16 kB/sec
+	Avg throughput per process 			=  307722.93 kB/sec
+	Min xfer 					= 1028096.00 kB
+	CPU utilization: Wall time    3.375    CPU time    2.051    CPU utilization  60.76 %
 
-As per the binding 'no-map' has to be disabled here. So AFAIU, this memory =
-will
-be part of the linear mapping. Is this really needed then?
 
-> Documentation/devicetree/bindings/reserved-memory/ramoops.txt does
-> define an "unbuffered" property which in premise could be applied to the
-> generic reserved memory binding as well and that we may have to be
-> honoring here, if we were to make it more generic. Oh well, this does
-> not need to be addressed right now I guess.
+	Children see throughput for 12 readers 		= 4521975.69 kB/sec
+	Parent sees throughput for 12 readers 		= 4516965.08 kB/sec
+	Min throughput per process 			=  372762.16 kB/sec 
+	Max throughput per process 			=  382233.84 kB/sec
+	Avg throughput per process 			=  376831.31 kB/sec
+	Min xfer 					= 1022720.00 kB
+	CPU utilization: Wall time    2.747    CPU time    1.961    CPU utilization  71.39 %
+
+
+	Children see throughput for 12 re-readers 	= 4684127.06 kB/sec
+	Parent sees throughput for 12 re-readers 	= 4678990.23 kB/sec
+	Min throughput per process 			=  385586.34 kB/sec 
+	Max throughput per process 			=  395542.47 kB/sec
+	Avg throughput per process 			=  390343.92 kB/sec
+	Min xfer 					= 1022208.00 kB
+	CPU utilization: Wall time    2.653    CPU time    1.941    CPU utilization  73.16 %
 
 
 
-
---=-t4If4GPTxFUMkhdNPchG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl/+/MYACgkQlfZmHno8
-x/57/wf8DfucOc1/3ySk20PkRc6qv7RWXbGw5RAUSZfXGpnHv1mAOnBMd6ProWeU
-mJiYuCGcljwaI92Dc4Yca/JpWSeZmXWl/HZ+T0GIF9SegR36L8j5Fwop/zptM3kF
-Je0VZZ/VIXKkgr7rp0yqFNRFB0vGuXdQz022npLJ4YKgyN1uvEaVgVCEeKuB/gSc
-7BYPkilOLaUXaBxRcA6l7mcQZc4vqCMW3Lzl/9IM+mKhrhFllZI3pvBFnWed+k2J
-JVdA5hjLI3QQrsXYH8+AfKlhLjzzMCGn5E5Gw1IPluIoeObgEwwLfYuMHbOvFplQ
-3LHRL6KrY2rpsuzPeVMDM0TFPae/Hw==
-=L05t
------END PGP SIGNATURE-----
-
---=-t4If4GPTxFUMkhdNPchG--
+--
+Chuck Lever
 
 
---===============3298790406768279362==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3298790406768279362==--
-
