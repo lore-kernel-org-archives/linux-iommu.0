@@ -2,118 +2,77 @@ Return-Path: <SRS0=lzux=GQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE5FC433E0
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 02:30:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170BDC433DB
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 02:33:19 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AE5082310F
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 02:30:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE5082310F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 782AC2310F
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 02:33:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 782AC2310F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 04FB620443;
-	Wed, 13 Jan 2021 02:30:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F3D1985810;
+	Wed, 13 Jan 2021 02:33:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EwjuNbKY2sxE; Wed, 13 Jan 2021 02:30:19 +0000 (UTC)
+	with ESMTP id vYR5pzvBoW2d; Wed, 13 Jan 2021 02:33:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 40DDD20436;
-	Wed, 13 Jan 2021 02:30:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C1CC885725;
+	Wed, 13 Jan 2021 02:33:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 235F3C0893;
-	Wed, 13 Jan 2021 02:30:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA338C013A
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:30:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A265EC0893;
+	Wed, 13 Jan 2021 02:33:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D52A0C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:33:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 867AB20443
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:30:17 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C720F861AA
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:33:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8sYxx+UiIXvE for <iommu@lists.linux-foundation.org>;
- Wed, 13 Jan 2021 02:30:15 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com
- [209.85.208.47])
- by silver.osuosl.org (Postfix) with ESMTPS id 3071A20436
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:30:15 +0000 (UTC)
-Received: by mail-ed1-f47.google.com with SMTP id dk8so272972edb.1
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 18:30:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Pt5UETlRzxEfmCNnvTax6McqJSupC0kHJNd5M5Tk3YM=;
- b=TsRjhDJkIvx/eu/8Dfs4u/eA7XHGiCILe+X3MR73vyisdMsXXh5PtmdLED/GVKRM+1
- LWflHDw8pdNICFvV071XU8B6r5bQq/1VBUv+Ec3de3hTbcADu8hsQUglrP6RJcjXqNAA
- ojQ8dIj4rncwInw25v4xZFWxyiQ12aaKWhq88=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=Pt5UETlRzxEfmCNnvTax6McqJSupC0kHJNd5M5Tk3YM=;
- b=jJipUGHnusODkxAavY270qFOKEIO/MMz5lLnp6IFTmqvcrXW6kW6hVVQorxDrplph0
- Z6GmX42oIzRFe6Bjj2qOoADbYX2clRGwzjGBq1+VJ+L0VmP/mLUB4im+TwypHAJp+fnY
- WR3dVMs1baPz7APydkhiMrUN62n0aoEI4lxBlMOVU1zhrX2/fupzBryf177FydOh5pwQ
- 3/OQSS6t8ZWWHzVL0/Og2xWspy3CqovCWrk7l6uQu0mOU4y02HZv31nKvIVSIjDINzJT
- Sz/S4laTyi4wO2palUEG7z0dgmJHrKAKpUE1dYi1ijmP+V/OFAtM7B28wIiYJ1D2u2cs
- O3TQ==
-X-Gm-Message-State: AOAM533j7I5RbHAWXsNB8crYacUVDuW0GX5pbs1RqIQEW9Ku3eOL9nIl
- /HyrEIMPKDEwlFniNQWNSu+Jag5mSsA9SA==
-X-Google-Smtp-Source: ABdhPJxCwdwEf0dH6oT5XqW7152+Qv6uwsF8b4PvtIOCGFvr6pLz2uYFd4BAluDBl80G5UZORR4yjA==
-X-Received: by 2002:a05:6402:1c8b:: with SMTP id
- cy11mr4332edb.256.1610505013132; 
- Tue, 12 Jan 2021 18:30:13 -0800 (PST)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com.
- [209.85.221.45])
- by smtp.gmail.com with ESMTPSA id hr31sm122201ejc.125.2021.01.12.18.30.11
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Jan 2021 18:30:11 -0800 (PST)
-Received: by mail-wr1-f45.google.com with SMTP id r3so488764wrt.2
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 18:30:11 -0800 (PST)
-X-Received: by 2002:adf:9b91:: with SMTP id d17mr94123wrc.32.1610505010644;
- Tue, 12 Jan 2021 18:30:10 -0800 (PST)
+ with ESMTP id 8I1l_mrWsQYE for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Jan 2021 02:33:14 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D8CF585FB6
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 02:33:13 +0000 (UTC)
+IronPort-SDR: OXs8KCPMG2KO746w5ffJR0uq+/CWC4kpRoeAHTVwU2hlB9VFnqXhiAw10YKHGUITi2RsdduXyF
+ 5Ta2C12gR8Rg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9862"; a="157320600"
+X-IronPort-AV: E=Sophos;i="5.79,343,1602572400"; d="scan'208";a="157320600"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 Jan 2021 18:33:12 -0800
+IronPort-SDR: s7v1FpbpicY6sME/vNknGfTQibWs3l6WIqZx2K0/Oa/aCxLRN/wxWaqUkou7o+If7RAA2c/8GB
+ rTBwM25tcZ6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,343,1602572400"; d="scan'208";a="464743721"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
+ by fmsmga001.fm.intel.com with ESMTP; 12 Jan 2021 18:33:10 -0800
+Subject: Re: performance regression noted in v5.11-rc after c062db039f40
+To: Will Deacon <will@kernel.org>, Chuck Lever <chuck.lever@oracle.com>
+References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
+ <20210112143819.GA9689@willie-the-truck>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <dfd84bd8-37b3-0f7c-6f38-68f68e8f5b0f@linux.intel.com>
+Date: Wed, 13 Jan 2021 10:25:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <d7043239-12cf-3636-4726-2e3b90917dc6@gmail.com>
- <CALiNf28sU1VtGB7LeTXExkMwQiCeg8N5arqyEjw0CPZP72R4dg@mail.gmail.com>
- <78871151-947d-b085-db03-0d0bd0b55632@gmail.com>
- <CALiNf29_PmLJTVLksSHp3NFAaL52idqehSMOtatJ=jaM2Muq1g@mail.gmail.com>
- <23a09b9a-70fc-a7a8-f3ea-b0bfa60507f0@gmail.com>
-In-Reply-To: <23a09b9a-70fc-a7a8-f3ea-b0bfa60507f0@gmail.com>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 13 Jan 2021 11:29:58 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5DX=AdaYSYQbxgnrYYojkM5q7EE_Qs-BYPOiNjcQWbN1A@mail.gmail.com>
-Message-ID: <CAAFQd5DX=AdaYSYQbxgnrYYojkM5q7EE_Qs-BYPOiNjcQWbN1A@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/6] Restricted DMA
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- xypron.glpk@gmx.de, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- Rob Herring <robh+dt@kernel.org>, Claire Chang <tientzu@chromium.org>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, mpe@ellerman.id.au,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210112143819.GA9689@willie-the-truck>
+Content-Language: en-US
+Cc: linux-rdma <linux-rdma@vger.kernel.org>, robin.murphy@arm.com,
+ murphyt7@tcd.ie, iommu@lists.linux-foundation.org, logang@deltatee.com,
+ hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,151 +85,144 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Florian,
+Hi,
 
-On Wed, Jan 13, 2021 at 3:01 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 1/11/21 11:48 PM, Claire Chang wrote:
-> > On Fri, Jan 8, 2021 at 1:59 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> On 1/7/21 9:42 AM, Claire Chang wrote:
-> >>
-> >>>> Can you explain how ATF gets involved and to what extent it does help,
-> >>>> besides enforcing a secure region from the ARM CPU's perpsective? Does
-> >>>> the PCIe root complex not have an IOMMU but can somehow be denied access
-> >>>> to a region that is marked NS=0 in the ARM CPU's MMU? If so, that is
-> >>>> still some sort of basic protection that the HW enforces, right?
-> >>>
-> >>> We need the ATF support for memory MPU (memory protection unit).
-> >>> Restricted DMA (with reserved-memory in dts) makes sure the predefined memory
-> >>> region is for PCIe DMA only, but we still need MPU to locks down PCIe access to
-> >>> that specific regions.
-> >>
-> >> OK so you do have a protection unit of some sort to enforce which region
-> >> in DRAM the PCIE bridge is allowed to access, that makes sense,
-> >> otherwise the restricted DMA region would only be a hint but nothing you
-> >> can really enforce. This is almost entirely analogous to our systems then.
-> >
-> > Here is the example of setting the MPU:
-> > https://github.com/ARM-software/arm-trusted-firmware/blob/master/plat/mediatek/mt8183/drivers/emi_mpu/emi_mpu.c#L132
-> >
-> >>
-> >> There may be some value in standardizing on an ARM SMCCC call then since
-> >> you already support two different SoC vendors.
-> >>
-> >>>
-> >>>>
-> >>>> On Broadcom STB SoCs we have had something similar for a while however
-> >>>> and while we don't have an IOMMU for the PCIe bridge, we do have a a
-> >>>> basic protection mechanism whereby we can configure a region in DRAM to
-> >>>> be PCIe read/write and CPU read/write which then gets used as the PCIe
-> >>>> inbound region for the PCIe EP. By default the PCIe bridge is not
-> >>>> allowed access to DRAM so we must call into a security agent to allow
-> >>>> the PCIe bridge to access the designated DRAM region.
-> >>>>
-> >>>> We have done this using a private CMA area region assigned via Device
-> >>>> Tree, assigned with a and requiring the PCIe EP driver to use
-> >>>> dma_alloc_from_contiguous() in order to allocate from this device
-> >>>> private CMA area. The only drawback with that approach is that it
-> >>>> requires knowing how much memory you need up front for buffers and DMA
-> >>>> descriptors that the PCIe EP will need to process. The problem is that
-> >>>> it requires driver modifications and that does not scale over the number
-> >>>> of PCIe EP drivers, some we absolutely do not control, but there is no
-> >>>> need to bounce buffer. Your approach scales better across PCIe EP
-> >>>> drivers however it does require bounce buffering which could be a
-> >>>> performance hit.
-> >>>
-> >>> Only the streaming DMA (map/unmap) needs bounce buffering.
-> >>
-> >> True, and typically only on transmit since you don't really control
-> >> where the sk_buff are allocated from, right? On RX since you need to
-> >> hand buffer addresses to the WLAN chip prior to DMA, you can allocate
-> >> them from a pool that already falls within the restricted DMA region, right?
-> >>
-> >
-> > Right, but applying bounce buffering to RX will make it more secure.
-> > The device won't be able to modify the content after unmap. Just like what
-> > iommu_unmap does.
->
-> Sure, however the goals of using bounce buffering equally applies to RX
-> and TX in that this is the only layer sitting between a stack (block,
-> networking, USB, etc.) and the underlying device driver that scales well
-> in order to massage a dma_addr_t to be within a particular physical range.
->
-> There is however room for improvement if the drivers are willing to
-> change their buffer allocation strategy. When you receive Wi-Fi frames
-> you need to allocate buffers for the Wi-Fi device to DMA into, and that
-> happens ahead of the DMA transfers by the Wi-Fi device. At buffer
-> allocation time you could very well allocate these frames from the
-> restricted DMA region without having to bounce buffer them since the
-> host CPU is in control over where and when to DMA into.
->
+On 1/12/21 10:38 PM, Will Deacon wrote:
+> [Expanding cc list to include DMA-IOMMU and intel IOMMU folks]
+> 
+> On Fri, Jan 08, 2021 at 04:18:36PM -0500, Chuck Lever wrote:
+>> Hi-
+>>
+>> [ Please cc: me on replies, I'm not currently subscribed to
+>> iommu@lists ].
+>>
+>> I'm running NFS performance tests on InfiniBand using CX-3 Pro cards
+>> at 56Gb/s. The test is iozone on an NFSv3/RDMA mount:
+>>
+>> /home/cel/bin/iozone -M -+u -i0 -i1 -s1g -r256k -t12 -I
+>>
+>> For those not familiar with the way storage protocols use RDMA, The
+>> initiator/client sets up memory regions and the target/server uses
+>> RDMA Read and Write to move data out of and into those regions. The
+>> initiator/client uses only RDMA memory registration and invalidation
+>> operations, and the target/server uses RDMA Read and Write.
+>>
+>> My NFS client is a two-socket 12-core x86_64 system with its I/O MMU
+>> enabled using the kernel command line options "intel_iommu=on
+>> iommu=strict".
+>>
+>> Recently I've noticed a significant (25-30%) loss in NFS throughput.
+>> I was able to bisect on my client to the following commits.
+>>
+>> Here's 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
+>> map_sg"). This is about normal for this test.
+>>
+>> 	Children see throughput for 12 initial writers 	= 4732581.09 kB/sec
+>>   	Parent sees throughput for 12 initial writers 	= 4646810.21 kB/sec
+>>   	Min throughput per process 			=  387764.34 kB/sec
+>>   	Max throughput per process 			=  399655.47 kB/sec
+>>   	Avg throughput per process 			=  394381.76 kB/sec
+>>   	Min xfer 					= 1017344.00 kB
+>>   	CPU Utilization: Wall time    2.671    CPU time    1.974    CPU utilization  73.89 %
+>>   	Children see throughput for 12 rewriters 	= 4837741.94 kB/sec
+>>   	Parent sees throughput for 12 rewriters 	= 4833509.35 kB/sec
+>>   	Min throughput per process 			=  398983.72 kB/sec
+>>   	Max throughput per process 			=  406199.66 kB/sec
+>>   	Avg throughput per process 			=  403145.16 kB/sec
+>>   	Min xfer 					= 1030656.00 kB
+>>   	CPU utilization: Wall time    2.584    CPU time    1.959    CPU utilization  75.82 %
+>>   	Children see throughput for 12 readers 		= 5921370.94 kB/sec
+>>   	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
+>>   	Min throughput per process 			=  491812.38 kB/sec
+>>   	Max throughput per process 			=  494777.28 kB/sec
+>>   	Avg throughput per process 			=  493447.58 kB/sec
+>>   	Min xfer 					= 1042688.00 kB
+>>   	CPU utilization: Wall time    2.122    CPU time    1.968    CPU utilization  92.75 %
+>>   	Children see throughput for 12 re-readers 	= 5947985.69 kB/sec
+>>   	Parent sees throughput for 12 re-readers 	= 5941348.51 kB/sec
+>>   	Min throughput per process 			=  492805.81 kB/sec
+>>   	Max throughput per process 			=  497280.19 kB/sec
+>>   	Avg throughput per process 			=  495665.47 kB/sec
+>>   	Min xfer 					= 1039360.00 kB
+>>   	CPU utilization: Wall time    2.111    CPU time    1.968    CPU utilization  93.22 %
+>>
+>> Here's c062db039f40 ("iommu/vt-d: Update domain geometry in
+>> iommu_ops.at(de)tach_dev"). It's losing some steam here.
+>>
+>> 	Children see throughput for 12 initial writers 	= 4342419.12 kB/sec
+>>   	Parent sees throughput for 12 initial writers 	= 4310612.79 kB/sec
+>>   	Min throughput per process 			=  359299.06 kB/sec
+>>   	Max throughput per process 			=  363866.16 kB/sec
+>>   	Avg throughput per process 			=  361868.26 kB/sec
+>>   	Min xfer 					= 1035520.00 kB
+>>   	CPU Utilization: Wall time    2.902    CPU time    1.951    CPU utilization  67.22 %
+>>   	Children see throughput for 12 rewriters 	= 4408576.66 kB/sec
+>>   	Parent sees throughput for 12 rewriters 	= 4404280.87 kB/sec
+>>   	Min throughput per process 			=  364553.88 kB/sec
+>>   	Max throughput per process 			=  370029.28 kB/sec
+>>   	Avg throughput per process 			=  367381.39 kB/sec
+>>   	Min xfer 					= 1033216.00 kB
+>>   	CPU utilization: Wall time    2.836    CPU time    1.956    CPU utilization  68.97 %
+>>   	Children see throughput for 12 readers 		= 5406879.47 kB/sec
+>>   	Parent sees throughput for 12 readers 		= 5401862.78 kB/sec
+>>   	Min throughput per process 			=  449583.03 kB/sec
+>>   	Max throughput per process 			=  451761.69 kB/sec
+>>   	Avg throughput per process 			=  450573.29 kB/sec
+>>   	Min xfer 					= 1044224.00 kB
+>>   	CPU utilization: Wall time    2.323    CPU time    1.977    CPU utilization  85.12 %
+>>   	Children see throughput for 12 re-readers 	= 5410601.12 kB/sec
+>>   	Parent sees throughput for 12 re-readers 	= 5403504.40 kB/sec
+>>   	Min throughput per process 			=  449918.12 kB/sec
+>>   	Max throughput per process 			=  452489.28 kB/sec
+>>   	Avg throughput per process 			=  450883.43 kB/sec
+>>   	Min xfer 					= 1043456.00 kB
+>>   	CPU utilization: Wall time    2.321    CPU time    1.978    CPU utilization  85.21 %
+>>
+>> And here's c588072bba6b ("iommu/vt-d: Convert intel iommu driver to
+>> the iommu ops"). Significant throughput loss.
+>>
+>> 	Children see throughput for 12 initial writers 	= 3812036.91 kB/sec
+>>   	Parent sees throughput for 12 initial writers 	= 3753683.40 kB/sec
+>>   	Min throughput per process 			=  313672.25 kB/sec
+>>   	Max throughput per process 			=  321719.44 kB/sec
+>>   	Avg throughput per process 			=  317669.74 kB/sec
+>>   	Min xfer 					= 1022464.00 kB
+>>   	CPU Utilization: Wall time    3.309    CPU time    1.986    CPU utilization  60.02 %
+>>   	Children see throughput for 12 rewriters 	= 3786831.94 kB/sec
+>>   	Parent sees throughput for 12 rewriters 	= 3783205.58 kB/sec
+>>   	Min throughput per process 			=  313654.44 kB/sec
+>>   	Max throughput per process 			=  317844.50 kB/sec
+>>   	Avg throughput per process 			=  315569.33 kB/sec
+>>   	Min xfer 					= 1035520.00 kB
+>>   	CPU utilization: Wall time    3.302    CPU time    1.945    CPU utilization  58.90 %
+>>   	Children see throughput for 12 readers 		= 4265828.28 kB/sec
+>>   	Parent sees throughput for 12 readers 		= 4261844.88 kB/sec
+>>   	Min throughput per process 			=  352305.00 kB/sec
+>>   	Max throughput per process 			=  357726.22 kB/sec
+>>   	Avg throughput per process 			=  355485.69 kB/sec
+>>   	Min xfer 					= 1032960.00 kB
+>>   	CPU utilization: Wall time    2.934    CPU time    1.942    CPU utilization  66.20 %
+>>   	Children see throughput for 12 re-readers 	= 4220651.19 kB/sec
+>>   	Parent sees throughput for 12 re-readers 	= 4216096.04 kB/sec
+>>   	Min throughput per process 			=  348677.16 kB/sec
+>>   	Max throughput per process 			=  353467.44 kB/sec
+>>   	Avg throughput per process 			=  351720.93 kB/sec
+>>   	Min xfer 					= 1035264.00 kB
+>>   	CPU utilization: Wall time    2.969    CPU time    1.952    CPU utilization  65.74 %
+>>
+>> The regression appears to be 100% reproducible.
 
-That is, however, still a trade-off between saving that one copy and
-protection from the DMA tampering with the packet contents when the
-kernel is reading them. Notice how the copy effectively makes a
-snapshot of the contents, guaranteeing that the kernel has a
-consistent view of the packet, which is not true if the DMA could
-modify the buffer contents in the middle of CPU accesses.
+The commit 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
+map_sg") is a temporary workaround. We have reverted it recently (5.11-
+rc3). Can you please try the a kernel version after -rc3?
 
 Best regards,
-Tomasz
-
-> The issue is that each network driver may implement its own buffer
-> allocation strategy, some may simply call netdev_alloc_skb() which gives
-> zero control over where the buffer comes from unless you play tricks
-> with NUMA node allocations and somehow declare that your restricted DMA
-> region is a different NUMA node. If the driver allocates pages and then
-> attaches a SKB to that page using build_skb(), then you have much more
-> control over where that page comes from, and this is where using a
-> device private CMA are helps, because you can just do
-> dma_alloc_from_contiguous() and that will ensure that the pages are
-> coming from your specific CMA area.
->
-> Few questions on the implementation:
->
-> - is there any warning or error being printed if the restricted DMA
-> region is outside of a device's DMA addressable range?
->
-> - are there are any helpful statistics that could be shown to indicate
-> that the restricted DMA region was sized too small, e.g.: that
-> allocation of a DMA buffer failed because we ran out of space in the
-> swiotlb pool?
->
-> >
-> >>> I also added alloc/free support in this series
-> >>> (https://lore.kernel.org/patchwork/patch/1360995/), so dma_direct_alloc() will
-> >>> try to allocate memory from the predefined memory region.
-> >>>
-> >>> As for the performance hit, it should be similar to the default swiotlb.
-> >>> Here are my experiment results. Both SoCs lack IOMMU for PCIe.
-> >>>
-> >>> PCIe wifi vht80 throughput -
-> >>>
-> >>>   MTK SoC                  tcp_tx     tcp_rx    udp_tx   udp_rx
-> >>>   w/o Restricted DMA  244.1     134.66   312.56   350.79
-> >>>   w/ Restricted DMA    246.95   136.59   363.21   351.99
-> >>>
-> >>>   Rockchip SoC           tcp_tx     tcp_rx    udp_tx   udp_rx
-> >>>   w/o Restricted DMA  237.87   133.86   288.28   361.88
-> >>>   w/ Restricted DMA    256.01   130.95   292.28   353.19
-> >>
-> >> How come you get better throughput with restricted DMA? Is it because
-> >> doing DMA to/from a contiguous region allows for better grouping of
-> >> transactions from the DRAM controller's perspective somehow?
-> >
-> > I'm not sure, but actually, enabling the default swiotlb for wifi also helps the
-> > throughput a little bit for me.
->
-> OK, it would be interesting if you could get to the bottom of why
-> performance does increase with swiotlb.
-> --
-> Florian
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
