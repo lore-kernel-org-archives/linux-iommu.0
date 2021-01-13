@@ -7,91 +7,91 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8D8C433E0
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 05:23:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FDF0C433E0
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 05:30:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 54FE922B37
-	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 05:23:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 54FE922B37
+	by mail.kernel.org (Postfix) with ESMTPS id D3EF823133
+	for <iommu@archiver.kernel.org>; Wed, 13 Jan 2021 05:30:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3EF823133
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DD65487126;
-	Wed, 13 Jan 2021 05:23:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 56E1F858FC;
+	Wed, 13 Jan 2021 05:30:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id M62o9HFKAXdJ; Wed, 13 Jan 2021 05:23:12 +0000 (UTC)
+	with ESMTP id Urr9tnkFqFoG; Wed, 13 Jan 2021 05:30:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A4AE786D92;
-	Wed, 13 Jan 2021 05:23:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B5C0F858C6;
+	Wed, 13 Jan 2021 05:30:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 892DCC0893;
-	Wed, 13 Jan 2021 05:23:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7F60C013A
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:23:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8A36C0893;
+	Wed, 13 Jan 2021 05:30:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 50BB8C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:30:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id ABC4687126
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:23:11 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2D84D203F8
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:30:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IBHlfeBnG1Vq for <iommu@lists.linux-foundation.org>;
- Wed, 13 Jan 2021 05:23:10 +0000 (UTC)
+ with ESMTP id UokS66aECyG4 for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Jan 2021 05:30:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com
- [209.85.218.52])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D66DF86D92
- for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:23:09 +0000 (UTC)
-Received: by mail-ej1-f52.google.com with SMTP id e18so1235518ejt.12
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:23:09 -0800 (PST)
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com
+ [209.85.218.50])
+ by silver.osuosl.org (Postfix) with ESMTPS id 77FF8203EE
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Jan 2021 05:30:41 +0000 (UTC)
+Received: by mail-ej1-f50.google.com with SMTP id ga15so1317240ejb.4
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:30:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=2NaZcbwSAFQ15OW65EbbMjqTmOC5Pf2iFjcyvx6UbnA=;
- b=SkyiyzJ28uSjHS90XLoXBBlIMxeQbmNuAEQ8qW3qG/lEq4KSFJGvKCe2uo6om+eCht
- oHNmuAbEj1wylSDgYYohrZowWD1TI2mPSkvtOcj1vM82/8Tsr+ruktT1iu//pIsXdvzB
- +NLLMVs4Ps2w7DhXFnSO9Nbs5cVRzog+Vam+g=
+ :cc; bh=3eSHLU0tsnB/8YZodS1JHYyVuvZP1q+Jh72EF+LlqTo=;
+ b=kH9y5HDmn14mKPIgiSh0+j61km8jiNYl7Jz2izQAcbV/5id9R9NlXd1WoPfZ4Cqp12
+ DC2YZgYFU3CAG0ZYQdxFQiMKzJqP8Q+nkXFfCI9yrpeJDZ6lzD4Ld6GCkOfgQtLnoGLA
+ KxDo2CyZ1EsNF43VAwEawZpbStfqt1FOzQm8I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=2NaZcbwSAFQ15OW65EbbMjqTmOC5Pf2iFjcyvx6UbnA=;
- b=NQC0Pezj/4y4XPti9aT/vysZt8BQntIi7Dn15CNXGEI0bM+nESDvGGo2IKy9VbgXp4
- kteXuIFk/MCYLHweiqEOnvX9l2KsHkmfOc93Tow25fgOrQbAS5CDUfXqalSthDt94FWc
- oJfyb4Gq4c7al9GHNl2JAaRurgSWnEXg6RW4ZKaXLoJg92+PGwfecSKIC1z6QxtLi36I
- yWetu+Zw9gTUO02fLMno1eEdNyo60/kd1xgwPd89+BSqHHHXelnPEZyYgOWv1W+Kct7l
- XgpzEbiKOhBPAhcCAlwFKURHuFMvsBuxXjrsZJCLWQWDfj86q9tyvfZu5Sy0GBT5kQUt
- hsRg==
-X-Gm-Message-State: AOAM533bdt9apwLdNhYkcarDLNBzSH3As/zzvcA4bbQPcG8aDOGsr9J+
- LeG+Em/a8piVvBpUxj3dt6QMn/QUISi/StKD
-X-Google-Smtp-Source: ABdhPJyHZmHjo/biOTN5VxSubs33qhWm6J5NJrRy2WcTHSCsS6x1fGk6rDr5knyeRlroP4N4buYjcQ==
-X-Received: by 2002:a17:907:700c:: with SMTP id
- wr12mr315265ejb.398.1610515387903; 
- Tue, 12 Jan 2021 21:23:07 -0800 (PST)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com.
- [209.85.128.48])
- by smtp.gmail.com with ESMTPSA id x17sm312271edd.76.2021.01.12.21.23.03
+ bh=3eSHLU0tsnB/8YZodS1JHYyVuvZP1q+Jh72EF+LlqTo=;
+ b=ILTET91GaHcyVfZs/HrRBREVBiZckKEU/xqrO6POSc1BGz+wLi/H3yZjHpMyyCrDUt
+ WgokhAHamJspDTAj+Qtg5xF9UZGgM9SHkKXDyqW5oMeQNxqMZmkMxqI3c7TwvdCIr23d
+ 90+5u9oUIh0MSPgJzghcd4lPSaED5L3QCnIZ7yccF7IOPtN+p6vp6GpQ0cXGxe+4n5Xd
+ xdoxIUim1tj4xGa6MkIEwlSFPjxQRTY50AAEDHuQoAJHNYvSstbvxxyFgrTQ6o1yMCJY
+ Pvko//0SVMDW48ygn4xZIqoPmaMq5DaOIoetIKxOf/yZ+HirNrDQ6u2nwf+CLS8CTQRF
+ JbTg==
+X-Gm-Message-State: AOAM533+XE9FP8xwhR9sVV8N/atCc1P9yYpSbJ1yBiSxf++I7TOXsf3y
+ hl81brPSHAJ0vnva0jER/4H4SHZYbPUTH71V
+X-Google-Smtp-Source: ABdhPJxNHnchpBqKxV0UduKwK2bdM+/1wz7iNsmOOcGyR3KJKQT1BS7Y75JWWAimAOvR/IcQS9nbxQ==
+X-Received: by 2002:a17:906:b0c2:: with SMTP id
+ bk2mr327592ejb.223.1610515839566; 
+ Tue, 12 Jan 2021 21:30:39 -0800 (PST)
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com.
+ [209.85.128.49])
+ by smtp.gmail.com with ESMTPSA id r18sm326504edx.41.2021.01.12.21.30.37
  for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Jan 2021 21:23:04 -0800 (PST)
-Received: by mail-wm1-f48.google.com with SMTP id y187so424750wmd.3
- for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:23:03 -0800 (PST)
-X-Received: by 2002:a1c:c308:: with SMTP id t8mr409738wmf.22.1610515383125;
- Tue, 12 Jan 2021 21:23:03 -0800 (PST)
+ Tue, 12 Jan 2021 21:30:38 -0800 (PST)
+Received: by mail-wm1-f49.google.com with SMTP id i63so400404wma.4
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Jan 2021 21:30:37 -0800 (PST)
+X-Received: by 2002:a7b:c773:: with SMTP id x19mr382042wmk.127.1610515837254; 
+ Tue, 12 Jan 2021 21:30:37 -0800 (PST)
 MIME-Version: 1.0
 References: <20201209080102.26626-1-yong.wu@mediatek.com>
- <20201209080102.26626-5-yong.wu@mediatek.com>
- <X+L8qpO+T7+U2s5r@chromium.org> <1608809212.26323.258.camel@mhfsdcap03>
-In-Reply-To: <1608809212.26323.258.camel@mhfsdcap03>
+ <20201209080102.26626-7-yong.wu@mediatek.com>
+ <X+L9XpkoII7tw/tX@chromium.org> <1608809713.26323.262.camel@mhfsdcap03>
+In-Reply-To: <1608809713.26323.262.camel@mhfsdcap03>
 From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 13 Jan 2021 14:22:50 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5CnnHwCUioH52VRWZW=f7V7Q=xBSfbhMM+qJVtaqSf8Pw@mail.gmail.com>
-Message-ID: <CAAFQd5CnnHwCUioH52VRWZW=f7V7Q=xBSfbhMM+qJVtaqSf8Pw@mail.gmail.com>
-Subject: Re: [PATCH v5 04/27] dt-bindings: memory: mediatek: Add domain
- definition
+Date: Wed, 13 Jan 2021 14:30:24 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5CCJv=0q=V45Z7mtq7FSq1c5TcH6vyqfp3MWxaA=ZexJQ@mail.gmail.com>
+Message-ID: <CAAFQd5CCJv=0q=V45Z7mtq7FSq1c5TcH6vyqfp3MWxaA=ZexJQ@mail.gmail.com>
+Subject: Re: [PATCH v5 06/27] dt-bindings: mediatek: Add binding for mt8192
+ IOMMU
 To: Yong Wu <yong.wu@mediatek.com>
 Cc: youlin.pei@mediatek.com, linux-devicetree <devicetree@vger.kernel.org>,
  Nicolas Boichat <drinkcat@chromium.org>,
@@ -123,89 +123,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 24, 2020 at 8:27 PM Yong Wu <yong.wu@mediatek.com> wrote:
+On Thu, Dec 24, 2020 at 8:35 PM Yong Wu <yong.wu@mediatek.com> wrote:
 >
-> On Wed, 2020-12-23 at 17:15 +0900, Tomasz Figa wrote:
-> > Hi Yong,
+> On Wed, 2020-12-23 at 17:18 +0900, Tomasz Figa wrote:
+> > On Wed, Dec 09, 2020 at 04:00:41PM +0800, Yong Wu wrote:
+> > > This patch adds decriptions for mt8192 IOMMU and SMI.
+> > >
+> > > mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
+> > > table format. The M4U-SMI HW diagram is as below:
+> > >
+> > >                           EMI
+> > >                            |
+> > >                           M4U
+> > >                            |
+> > >                       ------------
+> > >                        SMI Common
+> > >                       ------------
+> > >                            |
+> > >   +-------+------+------+----------------------+-------+
+> > >   |       |      |      |       ......         |       |
+> > >   |       |      |      |                      |       |
+> > > larb0   larb1  larb2  larb4     ......      larb19   larb20
+> > > disp0   disp1   mdp    vdec                   IPE      IPE
+> > >
+> > > All the connections are HW fixed, SW can NOT adjust it.
+> > >
+> > > mt8192 M4U support 0~16GB iova range. we preassign different engines
+> > > into different iova ranges:
+> > >
+> > > domain-id  module     iova-range                  larbs
+> > >    0       disp        0 ~ 4G                      larb0/1
+> > >    1       vcodec      4G ~ 8G                     larb4/5/7
+> > >    2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
 > >
-> > On Wed, Dec 09, 2020 at 04:00:39PM +0800, Yong Wu wrote:
-> > > In the latest SoC, there are several HW IP require a sepecial iova
-> > > range, mainly CCU and VPU has this requirement. Take CCU as a example,
-> > > CCU require its iova locate in the range(0x4000_0000 ~ 0x43ff_ffff).
-> >
-> > Is this really a domain? Does the address range come from the design of
-> > the IOMMU?
+> > Why do we preassign these addresses in DT? Shouldn't it be a user's or
+> > integrator's decision to split the 16 GB address range into sub-ranges
+> > and define which larbs those sub-ranges are shared with?
 >
-> It is not a really a domain. The address range comes from CCU HW
-> requirement. That HW can only access this iova range. thus I create a
-> special iommu domain for it.
+> The problem is that we can't split the 16GB range with the larb as unit.
+> The example is the below ccu0(larb13 port9/10) is a independent
+> range(domain), the others ports in larb13 is in another domain.
 >
+> disp/vcodec/cam/mdp don't have special iova requirement, they could
+> access any range. vcodec also can locate 8G~12G. it don't care about
+> where its iova locate. here I preassign like this following with our
+> internal project setting.
 
-I guess it's the IOMMU/DT maintainers who have the last word here, but
-shouldn't DT just specify the hardware characteristics and then the
-kernel configure the hardware appropriately, possibly based on some
-other configuration interface (e.g. command line parameters or sysfs)?
+Let me try to understand this a bit more. Given the split you're
+proposing, is there actually any isolation enforced between particular
+domains? For example, if I program vcodec to with a DMA address from
+the 0-4G range, would the IOMMU actually generate a fault, even if
+disp had some memory mapped at that address?
 
-How I'd do this is rather than enforcing those arbitrary decisions
-onto the DT bindings, I'd add properties to the master devices (e.g.
-CCU) that specify which IOVA range they can operate on. Then, the
-exact split of the complete address space would be done at runtime,
-based on kernel configuration, command line parameters and possibly
-sysfs attributes if things could be reconfigured dynamically.
+>
+> Why set this in DT?, this is only for simplifying the code. Assume we
+> put it in the platform data. We have up to 32 larbs, each larb has up to
+> 32 ports, each port may be in different iommu domains. we should have a
+> big array for this..however we only use a macro to get the domain in the
+> DT method.
+>
+> When replying this mail, I happen to see there is a "dev->dev_range_map"
+> which has "dma-range" information, I think I could use this value to get
+> which domain the device belong to. then no need put domid in DT. I will
+> test this.
+
+My feeling is that the only part that needs to be enforced statically
+is the reserved IOVA range for CCUs. The other ranges should be
+determined dynamically, although I think I need to understand better
+how the hardware and your proposed design work to tell what would be
+likely the best choice here.
 
 Best regards,
 Tomasz
 
+>
+> Thanks.
 > >
 > > Best regards,
 > > Tomasz
 > >
+> > >    3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
+> > >    4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
 > > >
-> > > In this patch we add a domain definition for the special port. In the
-> > > example of CCU, If we preassign CCU port in domain1, then iommu driver
-> > > will prepare a independent iommu domain of the special iova range for it,
-> > > then the iova got from dma_alloc_attrs(ccu-dev) will locate in its special
-> > > range.
-> > >
-> > > This is a preparing patch for multi-domain support.
+> > > The iova range for CCU0/1(camera control unit) is HW requirement.
 > > >
 > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > > Acked-by: Rob Herring <robh@kernel.org>
+> > > Reviewed-by: Rob Herring <robh@kernel.org>
 > > > ---
-> > >  include/dt-bindings/memory/mtk-smi-larb-port.h | 9 ++++++++-
-> > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > >  .../bindings/iommu/mediatek,iommu.yaml        |  18 +-
+> > >  include/dt-bindings/memory/mt8192-larb-port.h | 240 ++++++++++++++++++
+> > >  2 files changed, 257 insertions(+), 1 deletion(-)
+> > >  create mode 100644 include/dt-bindings/memory/mt8192-larb-port.h
 > > >
-> > > diff --git a/include/dt-bindings/memory/mtk-smi-larb-port.h b/include/dt-bindings/memory/mtk-smi-larb-port.h
-> > > index 7d64103209af..2d4c973c174f 100644
-> > > --- a/include/dt-bindings/memory/mtk-smi-larb-port.h
-> > > +++ b/include/dt-bindings/memory/mtk-smi-larb-port.h
-> > > @@ -7,9 +7,16 @@
-> > >  #define __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_
-> > >
-> > >  #define MTK_LARB_NR_MAX                    32
-> > > +#define MTK_M4U_DOM_NR_MAX         8
-> > > +
-> > > +#define MTK_M4U_DOM_ID(domid, larb, port)  \
-> > > +   (((domid) & 0x7) << 16 | (((larb) & 0x1f) << 5) | ((port) & 0x1f))
-> > > +
-> > > +/* The default dom id is 0. */
-> > > +#define MTK_M4U_ID(larb, port)             MTK_M4U_DOM_ID(0, larb, port)
-> > >
-> > > -#define MTK_M4U_ID(larb, port)             (((larb) << 5) | (port))
-> > >  #define MTK_M4U_TO_LARB(id)                (((id) >> 5) & 0x1f)
-> > >  #define MTK_M4U_TO_PORT(id)                ((id) & 0x1f)
-> > > +#define MTK_M4U_TO_DOM(id)         (((id) >> 16) & 0x7)
-> > >
-> > >  #endif
-> > > --
-> > > 2.18.0
-> > >
-> > > _______________________________________________
-> > > iommu mailing list
-> > > iommu@lists.linux-foundation.org
-> > > https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+> [snip]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
