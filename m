@@ -2,95 +2,86 @@ Return-Path: <SRS0=IUlV=GR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7891C433E0
-	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 19:27:39 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADADC433DB
+	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 20:40:41 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 61D6B23B46
-	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 19:27:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61D6B23B46
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 397BD23A81
+	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 20:40:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 397BD23A81
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=iits.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DB1628677D;
-	Thu, 14 Jan 2021 19:27:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B637D86AB0;
+	Thu, 14 Jan 2021 20:40:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BO6-xQn5NJKX; Thu, 14 Jan 2021 19:27:38 +0000 (UTC)
+	with ESMTP id cZVaaS7y6Hf8; Thu, 14 Jan 2021 20:40:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EFED184ECF;
-	Thu, 14 Jan 2021 19:27:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BFBD9869B9;
+	Thu, 14 Jan 2021 20:40:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D05DAC088B;
-	Thu, 14 Jan 2021 19:27:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3525FC013A
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 19:27:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A5DDDC0893;
+	Thu, 14 Jan 2021 20:40:38 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2428C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 14:42:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 29B0A86961
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 19:27:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B0854869F6
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 14:42:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2tqaIY8BfscN for <iommu@lists.linux-foundation.org>;
- Thu, 14 Jan 2021 19:27:35 +0000 (UTC)
+ with ESMTP id QFL7YCaQHvHk for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Jan 2021 14:42:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com
- [209.85.210.53])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 165CA85754
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 19:27:35 +0000 (UTC)
-Received: by mail-ot1-f53.google.com with SMTP id c18so468515oto.3
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 11:27:35 -0800 (PST)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com
+ [209.85.208.169])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4052B85BEE
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 14:42:18 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id m13so6662365ljo.11
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 06:42:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=iits-ru.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:from:date:message-id:subject:to:cc;
+ bh=4vl1gc2NnBl2JVEazYnJEkAN5n/EUwS/bpAvzr8jo0s=;
+ b=h9PeG+6r5Gy8/3NT3kRUaLS7WR9snHyUZbi9K/JbbqnbduZXymus48w4TWHY8u+hVw
+ DoYpaMRzOmqlttv8mZs0PAO4qkjEfFctfLAw/ZDaGesXgTdxApd4hS2fzUlEo9Kks5I4
+ DTL7kW/qbz5IAxA0lsnsTDXKzBIrKCt4yUwGbIpEdPkQpztxx050dVs8HY231AF86pl9
+ /h4QuE1Nj4P1byZ7nV+Hj6xmNWU8IonkirNojvmnPvcfDlpu4siCohfj7kLCJsTq3VtN
+ 3aJcWXz+lASLCf7gsnmN+K++wlh5YvtOCi2mqhE2rTZG8xsZ2QUceXeO/4ZZTHhogRme
+ wcnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=VEeqdZkDifn0VyJEJKrWR4ztWRK6vfNBUVg/0z1SB/E=;
- b=hG0VRiqeyWsT0z0+qg5bHt4IQqE+LkPuQUvmh0G8CDnDe2SISAEgQ9nI5vrU12chq/
- DZGKDVYM9x1as0ypWzTdBKYn+dQ1jadprMOOWDuPxMTVzXuHcl3wciyphKG0pGFgJ+xN
- jMRr54eW2taJCFmHYdYCpmjPCahlwIR7y0UjDLlbW/BGdpfGeCiQ01uSdPyBu9iFS02e
- fXI9iLDA98pneMPkwUCYr/AYMReOuSqbYvU0O3vE+nHcLHXyo/Z2jU22sKVfEhg/hX1S
- KVY63YEgeSp/vkru86MOapsM8nP6xD/y2agrSvU1W6T9pY9ze0vK/wLiLbqGmQmmlVPI
- 6Lsw==
-X-Gm-Message-State: AOAM5313G6fr/htK9tBn/DzFxVQuseta+jj/Gh6OYEBIqVG1uii8dkTB
- dQ53Aq1BVmLChsemI5jdAQ==
-X-Google-Smtp-Source: ABdhPJyYwiGGmezeN+wyEHvNPOPyKigxB7dYEfZtRaxnNgEofQKzxycwX+PBMxfL7z5b0J6I8OHScA==
-X-Received: by 2002:a05:6830:19da:: with SMTP id
- p26mr5479965otp.80.1610652454370; 
- Thu, 14 Jan 2021 11:27:34 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
- [24.155.109.49])
- by smtp.gmail.com with ESMTPSA id z189sm1222803oia.28.2021.01.14.11.27.32
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 14 Jan 2021 11:27:33 -0800 (PST)
-Received: (nullmailer pid 3425359 invoked by uid 1000);
- Thu, 14 Jan 2021 19:27:32 -0000
-Date: Thu, 14 Jan 2021 13:27:32 -0600
-From: Rob Herring <robh@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v6 06/33] of/device: Move dma_range_map before
- of_iommu_configure
-Message-ID: <20210114192732.GA3401278@robh.at.kernel.org>
-References: <20210111111914.22211-1-yong.wu@mediatek.com>
- <20210111111914.22211-7-yong.wu@mediatek.com>
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+ bh=4vl1gc2NnBl2JVEazYnJEkAN5n/EUwS/bpAvzr8jo0s=;
+ b=oxDF/W9j8oC26RNjE2nMFZ8jEKtKIjTLxoQSf3YJc5yi/GDw4jXtPH9E2E4nbTZ7+u
+ JMR2Y++PjtpGwK/mlyIwJXx1OpMuK12qT4TwU+/LbSQIx7YhX2wE/yDXSPn27dBD1pH1
+ JsweZks6ehLbgEQjiLryYoBJC0mslAF5Db5Rn5MBYcbzBSdj7whG1BuV3CjEs6QDz59P
+ IK9QP+TkviFKd2UgOPIQtPt+nzxoWxUMqCBgDCi6+o+DvhPP103H/kz4JByrlRAyhJiZ
+ /TeIIGKj19Ids1DQMtiEHXkp6oWCu5llq7icS7AxuskM9q7oVo+mS8X6j9m3dcJGPmR7
+ kCvA==
+X-Gm-Message-State: AOAM531tNql2IyI9mSkFvHXjbrvCsOcKemEEXaAiKcL1Q6jTX6Sb8RXw
+ IzmTg8JCzKlHCKr9AptzbO9tdEjXq0nQXxk/SwfzGY4ndc/vNPC3
+X-Google-Smtp-Source: ABdhPJyVO650UzBIwQ718ustgl0Nw9boLV4EiBp6pALhZH8niLKlss8Z1DJuwHAxskMq6mjqskIxe4n+KVVz+URsewg=
+X-Received: by 2002:a2e:9b13:: with SMTP id u19mr3162119lji.48.1610635336233; 
+ Thu, 14 Jan 2021 06:42:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210111111914.22211-7-yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- chao.hao@mediatek.com, Will Deacon <will@kernel.org>,
- Frank Rowand <frowand.list@gmail.com>, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+From: "Anton Gubar'kov" <anton.gubarkov@iits.ru>
+Date: Thu, 14 Jan 2021 17:42:05 +0300
+Message-ID: <CAP=18J5QjRpqix2eZgNgcUROPJXk_E0woE5J7DVT51eDGSfFAQ@mail.gmail.com>
+Subject: Intel gvt-g with nvidia prime render offload causes several issues
+ (regression)
+To: iommu@lists.linux-foundation.org
+X-Mailman-Approved-At: Thu, 14 Jan 2021 20:40:37 +0000
+Cc: David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,60 +94,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6466354221502973082=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jan 11, 2021 at 07:18:47PM +0800, Yong Wu wrote:
-> "dev->dma_range_map" contains the devices' dma_ranges information,
-> This patch moves dma_range_map before of_iommu_configure. The iommu
-> driver may need to know the dma_address requirements of its iommu
-> consumer devices.
-> 
-> CC: Rob Herring <robh+dt@kernel.org>
-> CC: Frank Rowand <frowand.list@gmail.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/of/device.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index aedfaaafd3e7..1d84636149df 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -170,9 +170,11 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
->  	dev_dbg(dev, "device is%sdma coherent\n",
->  		coherent ? " " : " not ");
->  
-> +	dev->dma_range_map = map;
->  	iommu = of_iommu_configure(dev, np, id);
->  	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
->  		kfree(map);
-> +		dev->dma_range_map = NULL;
+--===============6466354221502973082==
+Content-Type: multipart/alternative; boundary="000000000000143c2b05b8dd438e"
 
-Not really going to matter, but you should probably clear dma_range_map 
-before what it points to is freed.
+--000000000000143c2b05b8dd438e
+Content-Type: text/plain; charset="UTF-8"
 
-With that,
+Dears,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+there is thread https://github.com/intel/gvt-linux/issues/162 discussing
+issues when gvt-g is used in Windows guest while the host has prime render
+offload enabled.
 
->  		return -EPROBE_DEFER;
->  	}
->  
-> @@ -181,7 +183,6 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
->  
->  	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
->  
-> -	dev->dma_range_map = map;
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(of_dma_configure_id);
-> -- 
-> 2.18.0
-> 
+I have this issue as well and I did a kernel bisect between v5.7 (works
+kind of OK, at least there are no qemu/guest crashes) and v5.8 and the
+bisect landed on the commit 327d5b2fee91c404a3956c324193892cf2cc9528.
+
+Thanks for your help.
+Anton Gubarkov.
+
+--000000000000143c2b05b8dd438e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Dears,</div><div><br></div><div>there is thread <a hr=
+ef=3D"https://github.com/intel/gvt-linux/issues/162">https://github.com/int=
+el/gvt-linux/issues/162</a> discussing issues when gvt-g is used in Windows=
+ guest while the host has prime render offload enabled. <br></div><div><br>=
+</div><div>I have this issue as well and I did a kernel bisect between v5.7=
+ (works kind of OK, at least there are no qemu/guest crashes) and v5.8 and =
+the bisect landed on the commit 327d5b2fee91c404a3956c324193892cf2cc9528. <=
+br></div><div><br></div><div>Thanks for your help.</div><div>Anton Gubarkov=
+.<br> </div><div><br></div></div>
+
+--000000000000143c2b05b8dd438e--
+
+--===============6466354221502973082==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6466354221502973082==--
