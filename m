@@ -2,114 +2,106 @@ Return-Path: <SRS0=IUlV=GR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61880C433E0
-	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 16:41:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2202CC433DB
+	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 16:58:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ED5C923B1C
-	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 16:41:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED5C923B1C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9C09023B1C
+	for <iommu@archiver.kernel.org>; Thu, 14 Jan 2021 16:58:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C09023B1C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C588A86BC0;
-	Thu, 14 Jan 2021 16:41:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 254BC2E11C;
+	Thu, 14 Jan 2021 16:58:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GMoLgbMAfWr7; Thu, 14 Jan 2021 16:58:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id BDD722043B;
+	Thu, 14 Jan 2021 16:58:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A65EBC0893;
+	Thu, 14 Jan 2021 16:58:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33492C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:58:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1A0E486BD9
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:58:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Z+yvxHHThKD1; Thu, 14 Jan 2021 16:41:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 51B7086AE8;
-	Thu, 14 Jan 2021 16:41:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 36BFCC0893;
-	Thu, 14 Jan 2021 16:41:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F225C013A
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:41:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 04462873CE
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:41:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BWtGmK9PwLXf for <iommu@lists.linux-foundation.org>;
- Thu, 14 Jan 2021 16:41:03 +0000 (UTC)
+ with ESMTP id zSLwbikKHyCZ for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Jan 2021 16:58:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com
- [209.85.218.53])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AFD638730B
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:41:02 +0000 (UTC)
-Received: by mail-ej1-f53.google.com with SMTP id n26so9110923eju.6
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 08:41:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=PpcdUm/gcB3TMCtroKeX+86rJVww+0E1mxO6peOGnow=;
- b=FGHOZ9P0lE3tooUNruq7iIqeJ+RHltmSjWchoV2pjQXQDi8y359Fcjnd5WKAEXoTpK
- Y9OB1zMWocLiVTmE+InQdaXpQNjPDgUECLlWCOnGieGoM0J4RE/Wy7qXBK0sRi1DhEOs
- XVKh7vqG8/VFncTq/LU/PCwHf8zvYQDZF+x8FQplUHzBvgaonBa+BMGlMxcECbHfK8E3
- afZ/Nm8ZjPNH9Dti91WxyG1PxU1lPESE/XK7L1I+8CvnPM5MGPof6NUxHPf1rFmGa32u
- Ruke0VtajnvzD6VnyxNJgDPYRlLZHGk9L0cXHe6V3I1wPePxdBBMixEIBrLujoLqYjlM
- LIYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=PpcdUm/gcB3TMCtroKeX+86rJVww+0E1mxO6peOGnow=;
- b=aI1c0jTsbc1Pgam1CL+x8VXXYRPVpIOkkwl/N/89nU9eLzwl51jLlNbBJJlap+zUqz
- +yWH6Cwvmq+KrGHebobhTz7amOicQ5hXlP2QO2C4EQwQshYKBOE+JqqzpoPVrLkFsbpq
- ezie6BF/qJPJYruWeRtcYS8HWtXFZghuKASLOmj6B/4jZiav9v0vJquTiB1AD4rbqFd3
- 1ErQ4IoPJJQRyuDHb30aH8cQ6FTad3ZgPTR8sLplKVpDT3+OTKW4+YCy01mawfHvVcTI
- xx5InfInxbGlvcX5PITjXZpWfJsVqJ55lmw+IfEIPMY00y3c0qlxPPiuH6srWO2fw3Vz
- oZBQ==
-X-Gm-Message-State: AOAM533W3SwonN9ZKUdArleZHQWsaIi1Q9WLFjI1bx+b1mmmT4rYf32e
- DNLkYz/To5zM9C2OrzKAx0Rgxg==
-X-Google-Smtp-Source: ABdhPJwiiUWF0wbqzhersCabuU1z96vEkPFvGfcvm3oB0CBDThtD+9g0uc7hvEvcDAoRh0d/m3WtnQ==
-X-Received: by 2002:a17:906:b08f:: with SMTP id
- x15mr6030193ejy.36.1610642461135; 
- Thu, 14 Jan 2021 08:41:01 -0800 (PST)
-Received: from larix.localdomain (adsl-84-226-106-126.adslplus.ch.
- [84.226.106.126])
- by smtp.gmail.com with ESMTPSA id cw7sm2123574ejc.13.2021.01.14.08.40.59
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 14 Jan 2021 08:41:00 -0800 (PST)
-Date: Thu, 14 Jan 2021 17:41:44 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v9 03/10] iommu: Separate IOMMU_DEV_FEAT_IOPF from
- IOMMU_DEV_FEAT_SVA
-Message-ID: <YAB0SHyUZbxprkL3@larix.localdomain>
-References: <20210108145217.2254447-1-jean-philippe@linaro.org>
- <20210108145217.2254447-4-jean-philippe@linaro.org>
- <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
- <X/1o72DTmzdCMhDz@myrica>
- <c88e5d74-098d-7f1d-a7bb-a89e40fb8fa4@linux.intel.com>
- <MWHPR11MB18868F53E5A9E0CF9975042B8CA90@MWHPR11MB1886.namprd11.prod.outlook.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 06EAC86BC7
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 16:58:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1610643522;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=JUsobyLQttNjQOv/bXY7/VpogIuR8SlRFnvnIc1/ovQ=;
+ b=b8ZkIMZhbMh4ocPVa7zTnEpkQUUY/t5yqITdSXt6B8Ykf/Kl2gWMlHyzQWCQbl6A0lKrnr
+ y9v7RSyU6/XHYgKX4A3qPYSMGJeUuMY+bltOWghOxWNQuQKeSxdZ0+dG/cyF8XVCwSQjnA
+ Y+gXPgYz2/pTWogTea3JR8DyPEAFjtw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-kDmtCxkbOTycjfoyiKu1nw-1; Thu, 14 Jan 2021 11:58:38 -0500
+X-MC-Unique: kDmtCxkbOTycjfoyiKu1nw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D3FA69CC03;
+ Thu, 14 Jan 2021 16:58:35 +0000 (UTC)
+Received: from [10.36.114.165] (ovpn-114-165.ams2.redhat.com [10.36.114.165])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 4845D5D9E2;
+ Thu, 14 Jan 2021 16:58:29 +0000 (UTC)
+Subject: Re: [PATCH v13 07/15] iommu/smmuv3: Allow stage 1 invalidation with
+ unmanaged ASIDs
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20201118112151.25412-8-eric.auger@redhat.com>
+ <1606829590-25924-1-git-send-email-wangxingang5@huawei.com>
+ <2e69adf5-8207-64f7-fa8e-9f2bd3a3c4e3@redhat.com>
+ <e10ad90dc5144c0d9df98a9a078091af@huawei.com>
+ <20201204095338.GA1912466@myrica>
+ <2de03a797517452cbfeab022e12612b7@huawei.com>
+ <0bf50dd6-ef3c-7aba-cbc1-1c2e17088470@redhat.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <d68b6269-ee99-9ed7-de30-867e4519d104@redhat.com>
+Date: Thu, 14 Jan 2021 17:58:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <MWHPR11MB18868F53E5A9E0CF9975042B8CA90@MWHPR11MB1886.namprd11.prod.outlook.com>
-X-TUID: nq/+KJqkCM9u
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "guohanjun@huawei.com" <guohanjun@huawei.com>,
- "will@kernel.org" <will@kernel.org>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "lenb@kernel.org" <lenb@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, "robh+dt@kernel.org" <robh+dt@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- David Woodhouse <dwmw2@infradead.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+In-Reply-To: <0bf50dd6-ef3c-7aba-cbc1-1c2e17088470@redhat.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Cc: Xieyingtai <xieyingtai@huawei.com>, wangxingang <wangxingang5@huawei.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "maz@kernel.org" <maz@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
+ "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ qubingbing <qubingbing@hisilicon.com>,
+ "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
  "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
+ "will@kernel.org" <will@kernel.org>,
+ "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+ "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,102 +119,84 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jan 13, 2021 at 08:10:28AM +0000, Tian, Kevin wrote:
-> > >> Is this only for SVA? We may see more scenarios of using IOPF. For
-> > >> example, when passing through devices to user level, the user's pages
-> > >> could be managed dynamically instead of being allocated and pinned
-> > >> statically.
-> > >
-> > > Hm, isn't that precisely what SVA does?  I don't understand the
-> > > difference. That said FEAT_IOPF doesn't have to be only for SVA. It could
-> > > later be used as a prerequisite some another feature. For special cases
-> > > device drivers can always use the iommu_register_device_fault_handler()
-> > > API and handle faults themselves.
-> > 
-> >  From the perspective of IOMMU, there is a little difference between
-> > these two. For SVA, the page table is from CPU side, so IOMMU only needs
-> > to call handle_mm_fault(); For above pass-through case, the page table
-> > is from IOMMU side, so the device driver (probably VFIO) needs to
-> > register a fault handler and call iommu_map/unmap() to serve the page
-> > faults.
-> > 
-> > If we think about the nested mode (or dual-stage translation), it's more
-> > complicated since the kernel (probably VFIO) handles the second level
-> > page faults, while the first level page faults need to be delivered to
-> > user-level guest. Obviously, this hasn't been fully implemented in any
-> > IOMMU driver.
-> > 
+Hi Shameer, Jean-Philippe,
+
+On 12/4/20 11:23 AM, Auger Eric wrote:
+> Hi Shameer, Jean-Philippe,
 > 
-> Thinking more the confusion might come from the fact that we mixed
-> hardware capability with software capability. IOMMU_FEAT describes
-> the hardware capability. When FEAT_IOPF is set, it purely means whatever
-> page faults that are enabled by the software are routed through the IOMMU.
-> Nothing more. Then the software (IOMMU drivers) may choose to support
-> only limited faulting scenarios and then evolve to support more complex 
-> usages gradually. For example, the intel-iommu driver only supports 1st-level
-> fault (thus SVA) for now, while FEAT_IOPF as a separate feature may give the
-> impression that 2nd-level faults are also allowed. From this angle once we 
-> start to separate page fault from SVA, we may also need a way to report 
-> the software capability (e.g. a set of faulting categories) and also extend
-> iommu_register_device_fault_handler to allow specifying which 
-> category is enabled respectively. The example categories could be:
+> On 12/4/20 11:20 AM, Shameerali Kolothum Thodi wrote:
+>> Hi Jean,
+>>
+>>> -----Original Message-----
+>>> From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
+>>> Sent: 04 December 2020 09:54
+>>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+>>> Cc: Auger Eric <eric.auger@redhat.com>; wangxingang
+>>> <wangxingang5@huawei.com>; Xieyingtai <xieyingtai@huawei.com>;
+>>> kvm@vger.kernel.org; maz@kernel.org; joro@8bytes.org; will@kernel.org;
+>>> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
+>>> vivek.gautam@arm.com; alex.williamson@redhat.com;
+>>> zhangfei.gao@linaro.org; robin.murphy@arm.com;
+>>> kvmarm@lists.cs.columbia.edu; eric.auger.pro@gmail.com; Zengtao (B)
+>>> <prime.zeng@hisilicon.com>; qubingbing <qubingbing@hisilicon.com>
+>>> Subject: Re: [PATCH v13 07/15] iommu/smmuv3: Allow stage 1 invalidation with
+>>> unmanaged ASIDs
+>>>
+>>> Hi Shameer,
+>>>
+>>> On Thu, Dec 03, 2020 at 06:42:57PM +0000, Shameerali Kolothum Thodi wrote:
+>>>> Hi Jean/zhangfei,
+>>>> Is it possible to have a branch with minimum required SVA/UACCE related
+>>> patches
+>>>> that are already public and can be a "stable" candidate for future respin of
+>>> Eric's series?
+>>>> Please share your thoughts.
+>>>
+>>> By "stable" you mean a fixed branch with the latest SVA/UACCE patches
+>>> based on mainline? 
+>>
+>> Yes. 
+>>
+>>  The uacce-devel branches from
+>>> https://github.com/Linaro/linux-kernel-uadk do provide this at the moment
+>>> (they track the latest sva/zip-devel branch
+>>> https://jpbrucker.net/git/linux/ which is roughly based on mainline.)
+As I plan to respin shortly, please could you confirm the best branch to
+rebase on still is that one (uacce-devel from the linux-kernel-uadk git
+repo). Is it up to date? Commits seem to be quite old there.
+
+Thanks
+
+Eric
+>>
+>> Thanks. 
+>>
+>> Hi Eric,
+>>
+>> Could you please take a look at the above branches and see whether it make sense
+>> to rebase on top of either of those?
+>>
+>> From vSVA point of view, it will be less rebase hassle if we can do that.
 > 
-> - IOPF_BIND, for page tables which are bound/linked to the IOMMU. 
-> Apply to bare metal SVA and guest SVA case;
+> Sure. I will rebase on top of this ;-)
+> 
+> Thanks
+> 
+> Eric
+>>
+>> Thanks,
+>> Shameer
+>>
+>>> Thanks,
+>>> Jean
+>>
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
 
-These don't seem to fit in the same software capability, since the action
-to perform on incoming page faults is very different. In the first case
-the fault handling is entirely contained within the IOMMU driver; in the
-second case the IOMMU driver only tracks page requests, and offloads
-handling to VFIO.
-
-> - IOPF_MAP, for page tables which are managed through explicit IOMMU
-> map interfaces. Apply to removing VFIO pinning restriction;
-
-From the IOMMU perspective this is the same as guest SVA, no? VFIO
-registering a fault handler and doing the bulk of the work itself.
-
-> Both categories can be enabled together in nested translation, with 
-> additional information provided to differentiate them in fault information.
-> Using paging/staging level doesn't make much sense as it's IOMMU driver's 
-> internal knowledge, e.g. VT-d driver plans to use 1st level for GPA if no 
-> nesting and then turn to 2nd level when nesting is enabled.
-
-I guess detailing what's needed for nested IOPF can help the discussion,
-although I haven't seen any concrete plan about implementing it, and it
-still seems a couple of years away. There are two important steps with
-nested IOPF:
-
-(1) Figuring out whether a fault comes from L1 or L2. A SMMU stall event
-    comes with this information, but a PRI page request doesn't. The IOMMU
-    driver has to first translate the IOVA to a GPA, injecting the fault
-    into the guest if this translation fails by using the usual
-    iommu_report_device_fault().
-
-(2) Translating the faulting GPA to a HVA that can be fed to
-    handle_mm_fault(). That requires help from KVM, so another interface -
-    either KVM registering GPA->HVA translation tables or IOMMU driver
-    querying each translation. Either way it should be reusable by device
-    drivers that implement IOPF themselves.
-
-(1) could be enabled with iommu_dev_enable_feature(). (2) requires a more
-complex interface. (2) alone might also be desirable - demand-paging for
-level 2 only, no SVA for level 1.
-
-Anyway, back to this patch. What I'm trying to convey is "can the IOMMU
-receive incoming I/O page faults for this device and, when SVA is enabled,
-feed them to the mm subsystem?  Enable that or return an error." I'm stuck
-on the name. IOPF alone is too vague. Not IOPF_L1 as Kevin noted, since L1
-is also used in virtualization. IOPF_BIND and IOPF_SVA could also mean (2)
-above. IOMMU_DEV_FEAT_IOPF_FLAT?
-
-That leaves space for the nested extensions. (1) above could be
-IOMMU_FEAT_IOPF_NESTED, and (2) requires some new interfacing with KVM (or
-just an external fault handler) and could be used with either IOPF_FLAT or
-IOPF_NESTED. We can figure out the details later. What do you think?
-
-Thanks,
-Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
