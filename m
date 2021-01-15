@@ -7,57 +7,57 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5891C433DB
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3413CC433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 60A0B2371F
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60A0B2371F
+	by mail.kernel.org (Postfix) with ESMTPS id 8235F206D4
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8235F206D4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2E01686A39;
-	Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3E777873E0;
+	Fri, 15 Jan 2021 12:14:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gQfZ48KEIGp4; Fri, 15 Jan 2021 12:14:23 +0000 (UTC)
+	with ESMTP id usA7dLgozrqC; Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 864A486958;
-	Fri, 15 Jan 2021 12:14:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A8FAA8738C;
+	Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 722FCC08A1;
-	Fri, 15 Jan 2021 12:14:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C90CC013A;
- Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2D1AC08A1;
+	Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82405C013A;
+ Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 367F984995;
- Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7E9548738D;
+ Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 96jDo1PjVxqf; Fri, 15 Jan 2021 12:14:21 +0000 (UTC)
+ with ESMTP id NYUFGg-Jpsvp; Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 386A084F27;
- Fri, 15 Jan 2021 12:14:20 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id CC6EA8738C;
+ Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97496139F;
- Fri, 15 Jan 2021 04:14:17 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87C8B13A1;
+ Fri, 15 Jan 2021 04:14:22 -0800 (PST)
 Received: from usa.arm.com (a074945.blr.arm.com [10.162.16.71])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1C3083F70D;
- Fri, 15 Jan 2021 04:14:12 -0800 (PST)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 111C63F70D;
+ Fri, 15 Jan 2021 04:14:17 -0800 (PST)
 From: Vivek Gautam <vivek.gautam@arm.com>
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
-Subject: [PATCH RFC v1 05/15] iommu/arm-smmu-v3: Set sync op from consumer
- driver of cd-lib
-Date: Fri, 15 Jan 2021 17:43:32 +0530
-Message-Id: <20210115121342.15093-6-vivek.gautam@arm.com>
+Subject: [PATCH RFC v1 06/15] iommu/virtio: Add headers for table format
+ probing
+Date: Fri, 15 Jan 2021 17:43:33 +0530
+Message-Id: <20210115121342.15093-7-vivek.gautam@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210115121342.15093-1-vivek.gautam@arm.com>
 References: <20210115121342.15093-1-vivek.gautam@arm.com>
@@ -82,12 +82,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Te change allows different consumers of arm-smmu-v3-cd-lib to set
-their respective sync op for pasid entries.
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
+Add required UAPI defines for probing table format for underlying
+iommu hardware. The device may provide information about hardware
+tables and additional capabilities for each device.
+This allows guest to correctly fabricate stage-1 page tables.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+[Vivek: Use a single "struct virtio_iommu_probe_table_format" rather
+        than separate structures for page table and pasid table format.
+	Also update commit message.]
 Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Will Deacon <will.deacon@arm.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
 Cc: Robin Murphy <robin.murphy@arm.com>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Cc: Eric Auger <eric.auger@redhat.com>
@@ -98,40 +107,78 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c | 1 -
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 7 +++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ include/uapi/linux/virtio_iommu.h | 44 ++++++++++++++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
-index ec37476c8d09..acaa09acecdd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
-@@ -265,7 +265,6 @@ struct iommu_vendor_psdtable_ops arm_cd_table_ops = {
- 	.free	 = arm_smmu_free_cd_tables,
- 	.prepare = arm_smmu_prepare_cd,
- 	.write	 = arm_smmu_write_ctx_desc,
--	.sync	 = arm_smmu_sync_cd,
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+index 237e36a280cb..43821e33e7af 100644
+--- a/include/uapi/linux/virtio_iommu.h
++++ b/include/uapi/linux/virtio_iommu.h
+@@ -2,7 +2,7 @@
+ /*
+  * Virtio-iommu definition v0.12
+  *
+- * Copyright (C) 2019 Arm Ltd.
++ * Copyright (C) 2019-2021 Arm Ltd.
+  */
+ #ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
+ #define _UAPI_LINUX_VIRTIO_IOMMU_H
+@@ -111,6 +111,12 @@ struct virtio_iommu_req_unmap {
+ 
+ #define VIRTIO_IOMMU_PROBE_T_NONE		0
+ #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
++#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
++#define VIRTIO_IOMMU_PROBE_T_INPUT_RANGE	3
++#define VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE	4
++#define VIRTIO_IOMMU_PROBE_T_PASID_SIZE		5
++#define VIRTIO_IOMMU_PROBE_T_PAGE_TABLE_FMT	6
++#define VIRTIO_IOMMU_PROBE_T_PASID_TABLE_FMT	7
+ 
+ #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+ 
+@@ -130,6 +136,42 @@ struct virtio_iommu_probe_resv_mem {
+ 	__le64					end;
  };
  
- struct iommu_pasid_table *arm_smmu_register_cd_table(struct device *dev,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 2f86c6ac42b6..0c644be22b4b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1869,6 +1869,13 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 	if (ret)
- 		goto out_free_cd_tables;
- 
-+	/*
-+	 * Strange to setup an op here?
-+	 * cd-lib is the actual user of sync op, and therefore the platform
-+	 * drivers should assign this sync/maintenance ops as per need.
-+	 */
-+	tbl->ops->sync = arm_smmu_sync_cd;
++struct virtio_iommu_probe_page_size_mask {
++	struct virtio_iommu_probe_property	head;
++	__u8					reserved[4];
++	__le64					mask;
++};
 +
- 	/*
- 	 * Note that this will end up calling arm_smmu_sync_cd() before
- 	 * the master has been added to the devices list for this domain.
++struct virtio_iommu_probe_input_range {
++	struct virtio_iommu_probe_property	head;
++	__u8					reserved[4];
++	__le64					start;
++	__le64					end;
++};
++
++struct virtio_iommu_probe_output_size {
++	struct virtio_iommu_probe_property	head;
++	__u8					bits;
++	__u8					reserved[3];
++};
++
++struct virtio_iommu_probe_pasid_size {
++	struct virtio_iommu_probe_property	head;
++	__u8					bits;
++	__u8					reserved[3];
++};
++
++/* Arm LPAE page table format */
++#define VIRTIO_IOMMU_FOMRAT_PGTF_ARM_LPAE	1
++/* Arm smmu-v3 type PASID table format */
++#define VIRTIO_IOMMU_FORMAT_PSTF_ARM_SMMU_V3	2
++
++struct virtio_iommu_probe_table_format {
++	struct virtio_iommu_probe_property	head;
++	__le16					format;
++	__u8					reserved[2];
++};
++
+ struct virtio_iommu_req_probe {
+ 	struct virtio_iommu_req_head		head;
+ 	__le32					endpoint;
 -- 
 2.17.1
 
