@@ -2,80 +2,65 @@ Return-Path: <SRS0=aa3U=GS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6B9C433DB
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 11:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBC1C433DB
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:13:57 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D444723730
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 11:34:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D444723730
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5DFE923128
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:13:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DFE923128
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 56CEF868B4;
-	Fri, 15 Jan 2021 11:34:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0BBC886AA5;
+	Fri, 15 Jan 2021 12:13:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WhNC2EyBTABj; Fri, 15 Jan 2021 11:34:12 +0000 (UTC)
+	with ESMTP id ctNGo_HMTE3Y; Fri, 15 Jan 2021 12:13:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 86209868A8;
-	Fri, 15 Jan 2021 11:34:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B90D86958;
+	Fri, 15 Jan 2021 12:13:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5314BC0893;
-	Fri, 15 Jan 2021 11:34:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20FE4C088B
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 11:34:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32291C08A1;
+	Fri, 15 Jan 2021 12:13:56 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B910C013A;
+ Fri, 15 Jan 2021 12:13:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 116638744B
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 11:34:11 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4A86986A37;
+ Fri, 15 Jan 2021 12:13:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RLwW5Do5ijOT for <iommu@lists.linux-foundation.org>;
- Fri, 15 Jan 2021 11:34:09 +0000 (UTC)
+ with ESMTP id c0PtzWgDqQtb; Fri, 15 Jan 2021 12:13:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3236787442
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 11:34:09 +0000 (UTC)
-Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DHJpn61gPz67c1b;
- Fri, 15 Jan 2021 19:28:49 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Fri, 15 Jan 2021 12:34:04 +0100
-Received: from [10.47.4.21] (10.47.4.21) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Fri, 15 Jan
- 2021 11:34:02 +0000
-Subject: Re: [RESEND PATCH v3 0/4] iommu/iova: Solve longterm IOVA issue
-To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-References: <1605608734-84416-1-git-send-email-john.garry@huawei.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <8830b44d-3893-6096-0cf1-37a1e8bc6c6b@huawei.com>
-Date: Fri, 15 Jan 2021 11:32:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
-MIME-Version: 1.0
-In-Reply-To: <1605608734-84416-1-git-send-email-john.garry@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.4.21]
-X-ClientProxiedBy: lhreml708-chm.china.huawei.com (10.201.108.57) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- xiyou.wangcong@gmail.com, Kashyap Desai <kashyap.desai@broadcom.com>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0C01586958;
+ Fri, 15 Jan 2021 12:13:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A55A11B3;
+ Fri, 15 Jan 2021 04:13:52 -0800 (PST)
+Received: from usa.arm.com (a074945.blr.arm.com [10.162.16.71])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C64663F70D;
+ Fri, 15 Jan 2021 04:13:47 -0800 (PST)
+From: Vivek Gautam <vivek.gautam@arm.com>
+To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
+Subject: [PATCH RFC v1 00/15] iommu/virtio: Nested stage support with Arm
+Date: Fri, 15 Jan 2021 17:43:27 +0530
+Message-Id: <20210115121342.15093-1-vivek.gautam@arm.com>
+X-Mailer: git-send-email 2.17.1
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, mst@redhat.com,
+ will.deacon@arm.com, alex.williamson@redhat.com, vivek.gautam@arm.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,63 +73,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-+ linux-scsi (see 
-https://lore.kernel.org/linux-iommu/1607538189-237944-4-git-send-email-john.garry@huawei.com/)
+This patch-series aims at enabling Nested stage translation in guests
+using virtio-iommu as the paravirtualized iommu. The backend is supported
+with Arm SMMU-v3 that provides nested stage-1 and stage-2 translation.
 
-On 17/11/2020 10:25, John Garry wrote:
-> This series contains a patch to solve the longterm IOVA issue which
-> leizhen originally tried to address at [0].
-> 
-> A sieved kernel log is at the following, showing periodic dumps of IOVA
-> sizes, per CPU and per depot bin, per IOVA size granule:
-> https://raw.githubusercontent.com/hisilicon/kernel-dev/topic-iommu-5.10-iova-debug-v3/aging_test
-> 
-> Notice, for example, the following logs:
-> [13175.355584] print_iova1 cpu_total=40135 depot_total=3866 total=44001
-> [83483.457858] print_iova1 cpu_total=62532 depot_total=24476 total=87008
-> 
-> Where total IOVA rcache size has grown from 44K->87K over a long time.
-> 
+This series derives its purpose from various efforts happening to add
+support for Shared Virtual Addressing (SVA) in host and guest. On Arm,
+most of the support for SVA has already landed. The support for nested
+stage translation and fault reporting to guest has been proposed [1].
+The related changes required in VFIO [2] framework have also been put
+forward.
 
-JFYI, I am able to reproduce this aging issue on another storage card, 
-an LSI SAS 3008, so now it's harder to say it's an issue specific to a 
-(buggy) single driver.
+This series proposes changes in virtio-iommu to program PASID tables
+and related stage-1 page tables. A simple iommu-pasid-table library
+is added for this purpose that interacts with vendor drivers to
+allocate and populate PASID tables.
+In Arm SMMUv3 we propose to pull the Context Descriptor (CD) management
+code out of the arm-smmu-v3 driver and add that as a glue vendor layer
+to support allocating CD tables, and populating them with right values.
+These CD tables are essentially the PASID tables and contain stage-1
+page table configurations too.
+A request to setup these CD tables come from virtio-iommu driver using
+the iommu-pasid-table library when running on Arm. The virtio-iommu
+then pass these PASID tables to the host using the right virtio backend
+and support in VMM.
 
-A log of the IOVA size dumps is here:
-https://raw.githubusercontent.com/hisilicon/kernel-dev/064c4dc8869b3f2ad07edffceafde0b129f276b0/lsi3008_dmesg
+For testing we have added necessary support in kvmtool. The changes in
+kvmtool are based on virtio-iommu development branch by Jean-Philippe
+Brucker [3].
 
-Notice again how the total IOVA size goes up over time, like:
-[ 68.176914] print_iova1 cpu_total=23663 depot_total=256 total=23919
-[ 2337.008194] print_iova1 cpu_total=67361 depot_total=9088 total=76449
-[17141.860078] print_iova1 cpu_total=73397 depot_total=10368 total=83765
-[27087.850830] print_iova1 cpu_total=73386 depot_total=10624 total=84010
-[10434.042877] print_iova1 cpu_total=90652 depot_total=12928 total=103580
+The tested kernel branch contains following in the order bottom to top
+on the git hash -
+a) v5.11-rc3
+b) arm-smmu-v3 [1] and vfio [2] changes from Eric to add nested page
+   table support for Arm.
+c) Smmu test engine patches from Jean-Philippe's branch [4]
+d) This series
+e) Domain nesting info patches [5][6][7].
+f) Changes to add arm-smmu-v3 specific nesting info (to be sent to
+   the list).
 
-I had to change some settings for that storage card to reproduce, though 
-[0]. Could explain why no other reports.
+This kernel is tested on Neoverse reference software stack with
+Fixed virtual platform. Public version of the software stack and
+FVP is available here[8][9].
 
-So please consider this issue again...
+A big thanks to Jean-Philippe for his contributions towards this work
+and for his valuable guidance.
 
-Thanks,
-john
+[1] https://lore.kernel.org/linux-iommu/20201118112151.25412-1-eric.auger@redhat.com/T/
+[2] https://lore.kernel.org/kvmarm/20201116110030.32335-12-eric.auger@redhat.com/T/
+[3] https://jpbrucker.net/git/kvmtool/log/?h=virtio-iommu/devel
+[4] https://jpbrucker.net/git/linux/log/?h=sva/smmute
+[5] https://lore.kernel.org/kvm/1599734733-6431-2-git-send-email-yi.l.liu@intel.com/
+[6] https://lore.kernel.org/kvm/1599734733-6431-3-git-send-email-yi.l.liu@intel.com/
+[7] https://lore.kernel.org/kvm/1599734733-6431-4-git-send-email-yi.l.liu@intel.com/
+[8] https://developer.arm.com/tools-and-software/open-source-software/arm-platforms-software/arm-ecosystem-fvps
+[9] https://git.linaro.org/landing-teams/working/arm/arm-reference-platforms.git/about/docs/rdn1edge/user-guide.rst
 
-[0] 
-https://lore.kernel.org/linux-scsi/dd8e6fdc-397d-b6ad-3371-0b65d1932ad1@huawei.com/T/#m953d21446a5756981412c92d0924ca65c8d2f3a5
+Jean-Philippe Brucker (6):
+  iommu/virtio: Add headers for table format probing
+  iommu/virtio: Add table format probing
+  iommu/virtio: Add headers for binding pasid table in iommu
+  iommu/virtio: Add support for INVALIDATE request
+  iommu/virtio: Attach Arm PASID tables when available
+  iommu/virtio: Add support for Arm LPAE page table format
 
-> Along with this patch, I included the following:
-> - A smaller helper to clear all IOVAs for a domain
-> - Change polarity of the IOVA magazine helpers
-> - Small optimisation from Cong Wang included, which was never applied [1].
->    There was some debate of the other patches in that series, but this one
->    is quite straightforward.
-> 
-> Differnces to v2:
-> - Update commit message for patch 3/4
+Vivek Gautam (9):
+  iommu/arm-smmu-v3: Create a Context Descriptor library
+  iommu: Add a simple PASID table library
+  iommu/arm-smmu-v3: Update drivers to work with iommu-pasid-table
+  iommu/arm-smmu-v3: Update CD base address info for user-space
+  iommu/arm-smmu-v3: Set sync op from consumer driver of cd-lib
+  iommu: Add asid_bits to arm smmu-v3 stage1 table info
+  iommu/virtio: Update table format probing header
+  iommu/virtio: Prepare to add attach pasid table infrastructure
+  iommu/virtio: Update fault type and reason info for viommu fault
+
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +-
+ .../arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c      | 283 +++++++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  16 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 268 +------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   4 +-
+ drivers/iommu/iommu-pasid-table.h             | 140 ++++
+ drivers/iommu/virtio-iommu.c                  | 692 +++++++++++++++++-
+ include/uapi/linux/iommu.h                    |   2 +-
+ include/uapi/linux/virtio_iommu.h             | 158 +++-
+ 9 files changed, 1303 insertions(+), 262 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
+ create mode 100644 drivers/iommu/iommu-pasid-table.h
+
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
