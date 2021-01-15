@@ -2,79 +2,83 @@ Return-Path: <SRS0=aa3U=GS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B100C433E9
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 09:27:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA52C433DB
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 09:41:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E818D23434
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 09:27:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E818D23434
+	by mail.kernel.org (Postfix) with ESMTPS id 8AE132339D
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 09:41:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AE132339D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C93B986C37;
-	Fri, 15 Jan 2021 09:27:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q6pqPivDgf6a; Fri, 15 Jan 2021 09:27:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BD46B86C08;
-	Fri, 15 Jan 2021 09:27:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9D17C0FA8;
-	Fri, 15 Jan 2021 09:27:20 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E612FC013A
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:27:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D595586B00
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:27:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1A32D86B0E;
+	Fri, 15 Jan 2021 09:41:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R72JV2ZYHJw3; Fri, 15 Jan 2021 09:41:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9ED3586968;
+	Fri, 15 Jan 2021 09:41:34 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85397C088B;
+	Fri, 15 Jan 2021 09:41:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F159C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:41:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id F12D886F79
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:41:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z7PE4VjBNGrJ for <iommu@lists.linux-foundation.org>;
- Fri, 15 Jan 2021 09:27:18 +0000 (UTC)
+ with ESMTP id g4dDy3s6ONHp for <iommu@lists.linux-foundation.org>;
+ Fri, 15 Jan 2021 09:41:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3EB1C86AFD
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:27:18 +0000 (UTC)
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DHG503Vc1zl5Kp;
- Fri, 15 Jan 2021 17:25:56 +0800 (CST)
-Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 15 Jan 2021 17:27:07 +0800
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 84B748666D
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:41:30 +0000 (UTC)
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DHGPK70jLzMKDl;
+ Fri, 15 Jan 2021 17:40:05 +0800 (CST)
+Received: from [10.174.184.42] (10.174.184.42) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.498.0; Fri, 15 Jan 2021 17:41:19 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
-To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <iommu@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
- <kvmarm@lists.cs.columbia.edu>, Alex Williamson <alex.williamson@redhat.com>, 
- Kirti Wankhede <kwankhede@nvidia.com>, Cornelia Huck <cohuck@redhat.com>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Catalin Marinas
- <catalin.marinas@arm.com>
-Subject: [PATCH v2 2/2] vfio/iommu_type1: Sanity check pfn_list when remove
- vfio_dma
-Date: Fri, 15 Jan 2021 17:26:43 +0800
-Message-ID: <20210115092643.728-3-zhukeqian1@huawei.com>
-X-Mailer: git-send-email 2.8.4.windows.1
-In-Reply-To: <20210115092643.728-1-zhukeqian1@huawei.com>
-References: <20210115092643.728-1-zhukeqian1@huawei.com>
+Subject: Re: [PATCH 1/5] vfio/iommu_type1: Fixes vfio_dma_populate_bitmap to
+ avoid dirty lose
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20210107092901.19712-1-zhukeqian1@huawei.com>
+ <20210107092901.19712-2-zhukeqian1@huawei.com>
+ <20210112142059.074c1b0f@omen.home.shazbot.org>
+ <8bf8a12c-f3ae-dc52-c963-f9eb447f973b@huawei.com>
+ <20210114101434.6092e43a@omen.home.shazbot.org>
+Message-ID: <1f623316-7d4a-62da-e076-f238f3100237@huawei.com>
+Date: Fri, 15 Jan 2021 17:41:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
+In-Reply-To: <20210114101434.6092e43a@omen.home.shazbot.org>
 X-Originating-IP: [10.174.184.42]
 X-CFilter-Loop: Reflected
 Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Alexios Zavras <alexios.zavras@intel.com>,
- James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com,
- Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Julien Thierry <julien.thierry.kdev@gmail.com>
+ kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+ Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
+ kvmarm@lists.cs.columbia.edu, Marc Zyngier <maz@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, wanghaibin.wang@huawei.com,
+ Julien Thierry <julien.thierry.kdev@gmail.com>, Suzuki K
+ Poulose <suzuki.poulose@arm.com>, Alexios Zavras <alexios.zavras@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,78 +96,229 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-vfio_sanity_check_pfn_list() is used to check whether pfn_list of
-vfio_dma is empty when remove the external domain, so it makes a
-wrong assumption that only external domain will add pfn to dma pfn_list.
 
-Now we apply this check when remove a specific vfio_dma and extract
-the notifier check just for external domain.
 
-Fixes: a54eb55045ae ("vfio iommu type1: Add support for mediated devices")
-Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
----
- drivers/vfio/vfio_iommu_type1.c | 24 +++++-------------------
- 1 file changed, 5 insertions(+), 19 deletions(-)
+On 2021/1/15 1:14, Alex Williamson wrote:
+> On Thu, 14 Jan 2021 21:05:23 +0800
+> Keqian Zhu <zhukeqian1@huawei.com> wrote:
+> 
+>> Hi Alex,
+>>
+>> On 2021/1/13 5:20, Alex Williamson wrote:
+>>> On Thu, 7 Jan 2021 17:28:57 +0800
+>>> Keqian Zhu <zhukeqian1@huawei.com> wrote:
+>>>   
+>>>> Defer checking whether vfio_dma is of fully-dirty in update_user_bitmap
+>>>> is easy to lose dirty log. For example, after promoting pinned_scope of
+>>>> vfio_iommu, vfio_dma is not considered as fully-dirty, then we may lose
+>>>> dirty log that occurs before vfio_iommu is promoted.
+>>>>
+>>>> The key point is that pinned-dirty is not a real dirty tracking way, it
+>>>> can't continuously track dirty pages, but just restrict dirty scope. It
+>>>> is essentially the same as fully-dirty. Fully-dirty is of full-scope and
+>>>> pinned-dirty is of pinned-scope.
+>>>>
+>>>> So we must mark pinned-dirty or fully-dirty after we start dirty tracking
+>>>> or clear dirty bitmap, to ensure that dirty log is marked right away.  
+>>>
+>>> I was initially convinced by these first three patches, but upon
+>>> further review, I think the premise is wrong.  AIUI, the concern across
+>>> these patches is that our dirty bitmap is only populated with pages
+>>> dirtied by pinning and we only take into account the pinned page dirty
+>>> scope at the time the bitmap is retrieved by the user.  You suppose
+>>> this presents a gap where if a vendor driver has not yet identified
+>>> with a page pinning scope that the entire bitmap should be considered
+>>> dirty regardless of whether that driver later pins pages prior to the
+>>> user retrieving the dirty bitmap.  
+>> Yes, this is my concern. And there are some other scenarios.
+>>
+>> 1. If a non-pinned iommu-backed domain is detached between starting
+>> dirty log and retrieving dirty bitmap, then the dirty log is missed
+>> (As you said in the last paragraph).
+>>
+>> 2. If all vendor drivers pinned (means iommu pinned_scope is true),
+>> and an vendor driver do pin/unpin pair between starting dirty log and
+>> retrieving dirty bitmap, then the dirty log of these unpinned pages
+>> are missed.
+> 
+> Can you identity where this happen?  I believe this assertion is
+> incorrect.  When dirty logging is enabled vfio_dma_populate_bitmap()
+> marks all existing pinned pages as dirty.  In the scenario you
+> describe, the iommu pinned page dirty scope is irrelevant.  We only
+> track pinned or external DMA access pages for exactly this reason.
+> Unpinning a page never clears the dirty bitmap, only the user
+> retrieving the bitmap or disabling dirty logging clears the bitmap.  A
+> page that has been unpinned is transiently dirty, it is not repopulated
+> in the bitmap after the user has retrieved the bitmap because the
+> device no longer has access to it to consider it perpetually dirty.
+Right, thanks for making the logic more clear to me ;-). Then just one issue to fix.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 4e82b9a3440f..a9bc15e84a4e 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -958,6 +958,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 
- static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
- {
-+	WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list);
- 	vfio_unmap_unpin(iommu, dma, true);
- 	vfio_unlink_dma(iommu, dma);
- 	put_task_struct(dma->task);
-@@ -2251,23 +2252,6 @@ static void vfio_iommu_unmap_unpin_reaccount(struct vfio_iommu *iommu)
- 	}
- }
- 
--static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
--{
--	struct rb_node *n;
--
--	n = rb_first(&iommu->dma_list);
--	for (; n; n = rb_next(n)) {
--		struct vfio_dma *dma;
--
--		dma = rb_entry(n, struct vfio_dma, node);
--
--		if (WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list)))
--			break;
--	}
--	/* mdev vendor driver must unregister notifier */
--	WARN_ON(iommu->notifier.head);
--}
--
- /*
-  * Called when a domain is removed in detach. It is possible that
-  * the removed domain decided the iova aperture window. Modify the
-@@ -2367,7 +2351,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			kfree(group);
- 
- 			if (list_empty(&iommu->external_domain->group_list)) {
--				vfio_sanity_check_pfn_list(iommu);
-+				/* mdev vendor driver must unregister notifier */
-+				WARN_ON(iommu->notifier.head);
- 
- 				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
- 					vfio_iommu_unmap_unpin_all(iommu);
-@@ -2491,7 +2476,8 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 
- 	if (iommu->external_domain) {
- 		vfio_release_domain(iommu->external_domain, true);
--		vfio_sanity_check_pfn_list(iommu);
-+		/* mdev vendor driver must unregister notifier */
-+		WARN_ON(iommu->notifier.head);
- 		kfree(iommu->external_domain);
- 	}
- 
--- 
-2.19.1
+> 
+>>> I don't think this is how we intended the cooperation between the
+>>> iommu driver and vendor driver to work.  By pinning pages a vendor
+>>> driver is not declaring that only their future dirty page scope is
+>>> limited to pinned pages, instead they're declaring themselves as a
+>>> participant in dirty page tracking and take responsibility for
+>>> pinning any necessary pages.  For example we might extend
+>>> VFIO_IOMMU_DIRTY_PAGES_FLAG_START to trigger a blocking
+>>> notification to groups to not only begin dirty tracking, but also
+>>> to synchronously register their current device DMA footprint.  This
+>>> patch would require a vendor driver to possibly perform a
+>>> gratuitous page pinning in order to set the scope prior to dirty
+>>> logging being enabled, or else the initial bitmap will be fully
+>>> dirty.  
+>> I get what you mean ;-). You said that there is time gap between we
+>> attach a device and this device declares itself is dirty traceable.
+>>
+>> However, this makes it difficult to management dirty log tracking (I
+>> list two bugs). If the vfio devices can declare themselves dirty
+>> traceable when attach to container, then the logic of dirty tracking
+>> is much more clear ;-) .
+> 
+> There's only one bug above afaict, which should be easily fixed.  I
+> think if you actually dig into the problem of a device declaring
+> themselves as dirty tracking capable, when the IOMMU backend works on
+> group, not devices, and it's groups that are attached to containers,
+> you might see that the logic is not so clear.  I also don't see this as
+> a significant issue, you're focusing on a niche scenario where a device
+> is hot-added to a VM, which is immediately migrated before the device
+> identifies itself by pinning pages.  In that scenario the iommu dirty
+> scope would be overly broad and we'd indicate all pages are dirty.
+> This errors on the side of reporting too much is dirty, which still
+> provides a correct result to the user.  The more common scenario would
+> be migration of a "long" running, stable VM, where drivers are active
+> and devices have already pinned pages if they intend to.
+>
+OK ;-)
 
+Now I am thinking about how we handle the situation that if other dirty tracking
+way is added, such as smmu httu? If we can track dirty pages precisely, then populate
+all pinned scope is not suitable, or the vendor drive knows that iommu can track dirty
+pages, so it doesn't use the pin interface to give vfio_iommu the pinned dirty hint?
+
+>>> Therefore, I don't see that this series is necessary or correct.
+>>> Kirti, does this match your thinking?
+>>>
+>>> Thinking about these semantics, it seems there might still be an
+>>> issue if a group with non-pinned-page dirty scope is detached with
+>>> dirty logging enabled.  It seems this should in fact fully populate
+>>> the dirty bitmaps at the time it's removed since we don't know the
+>>> extent of its previous DMA, nor will the group be present to
+>>> trigger the full bitmap when the user retrieves the dirty bitmap.
+>>> Creating fully populated bitmaps at the time tracking is enabled
+>>> negates our ability to take advantage of later enlightenment
+>>> though.  Thanks, 
+>> Since that you want to allow the time gap between we attach device
+>> and the device declare itself dirty traceable, I am going to fix
+>> these two bugs in patch v2. Do you agree?
+> 
+> I would consider a patch that fully populates the dirty bitmap if a
+> non-pinned page scope group is removed from the container while dirty
+> logging is enabled.  Thanks,
+I have send it, thanks.
+
+Keqian
+
+> 
+> Alex
+> 
+>>>> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for
+>>>> dirty pages tracking") Signed-off-by: Keqian Zhu
+>>>> <zhukeqian1@huawei.com> ---
+>>>>  drivers/vfio/vfio_iommu_type1.c | 33
+>>>> ++++++++++++++++++++++----------- 1 file changed, 22
+>>>> insertions(+), 11 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vfio/vfio_iommu_type1.c
+>>>> b/drivers/vfio/vfio_iommu_type1.c index bceda5e8baaa..b0a26e8e0adf
+>>>> 100644 --- a/drivers/vfio/vfio_iommu_type1.c
+>>>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>>>> @@ -224,7 +224,7 @@ static void vfio_dma_bitmap_free(struct
+>>>> vfio_dma *dma) dma->bitmap = NULL;
+>>>>  }
+>>>>  
+>>>> -static void vfio_dma_populate_bitmap(struct vfio_dma *dma, size_t
+>>>> pgsize) +static void vfio_dma_populate_bitmap_pinned(struct
+>>>> vfio_dma *dma, size_t pgsize) {
+>>>>  	struct rb_node *p;
+>>>>  	unsigned long pgshift = __ffs(pgsize);
+>>>> @@ -236,6 +236,25 @@ static void vfio_dma_populate_bitmap(struct
+>>>> vfio_dma *dma, size_t pgsize) }
+>>>>  }
+>>>>  
+>>>> +static void vfio_dma_populate_bitmap_full(struct vfio_dma *dma,
+>>>> size_t pgsize) +{
+>>>> +	unsigned long pgshift = __ffs(pgsize);
+>>>> +	unsigned long nbits = dma->size >> pgshift;
+>>>> +
+>>>> +	bitmap_set(dma->bitmap, 0, nbits);
+>>>> +}
+>>>> +
+>>>> +static void vfio_dma_populate_bitmap(struct vfio_iommu *iommu,
+>>>> +				     struct vfio_dma *dma)
+>>>> +{
+>>>> +	size_t pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
+>>>> +
+>>>> +	if (iommu->pinned_page_dirty_scope)
+>>>> +		vfio_dma_populate_bitmap_pinned(dma, pgsize);
+>>>> +	else if (dma->iommu_mapped)
+>>>> +		vfio_dma_populate_bitmap_full(dma, pgsize);
+>>>> +}
+>>>> +
+>>>>  static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu)
+>>>>  {
+>>>>  	struct rb_node *n;
+>>>> @@ -257,7 +276,7 @@ static int vfio_dma_bitmap_alloc_all(struct
+>>>> vfio_iommu *iommu) }
+>>>>  			return ret;
+>>>>  		}
+>>>> -		vfio_dma_populate_bitmap(dma, pgsize);
+>>>> +		vfio_dma_populate_bitmap(iommu, dma);
+>>>>  	}
+>>>>  	return 0;
+>>>>  }
+>>>> @@ -987,13 +1006,6 @@ static int update_user_bitmap(u64 __user
+>>>> *bitmap, struct vfio_iommu *iommu, unsigned long shift =
+>>>> bit_offset % BITS_PER_LONG; unsigned long leftover;
+>>>>  
+>>>> -	/*
+>>>> -	 * mark all pages dirty if any IOMMU capable device is
+>>>> not able
+>>>> -	 * to report dirty pages and all pages are pinned and
+>>>> mapped.
+>>>> -	 */
+>>>> -	if (!iommu->pinned_page_dirty_scope && dma->iommu_mapped)
+>>>> -		bitmap_set(dma->bitmap, 0, nbits);
+>>>> -
+>>>>  	if (shift) {
+>>>>  		bitmap_shift_left(dma->bitmap, dma->bitmap, shift,
+>>>>  				  nbits + shift);
+>>>> @@ -1019,7 +1031,6 @@ static int vfio_iova_dirty_bitmap(u64 __user
+>>>> *bitmap, struct vfio_iommu *iommu, struct vfio_dma *dma;
+>>>>  	struct rb_node *n;
+>>>>  	unsigned long pgshift = __ffs(iommu->pgsize_bitmap);
+>>>> -	size_t pgsize = (size_t)1 << pgshift;
+>>>>  	int ret;
+>>>>  
+>>>>  	/*
+>>>> @@ -1055,7 +1066,7 @@ static int vfio_iova_dirty_bitmap(u64 __user
+>>>> *bitmap, struct vfio_iommu *iommu,
+>>>>  		 * pages which are marked dirty by vfio_dma_rw()
+>>>>  		 */
+>>>>  		bitmap_clear(dma->bitmap, 0, dma->size >>
+>>>> pgshift);
+>>>> -		vfio_dma_populate_bitmap(dma, pgsize);
+>>>> +		vfio_dma_populate_bitmap(iommu, dma);
+>>>>  	}
+>>>>  	return 0;
+>>>>  }  
+>>>
+>>> .
+>>>   
+>>
+> 
+> .
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
