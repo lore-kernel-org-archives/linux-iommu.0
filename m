@@ -2,114 +2,96 @@ Return-Path: <SRS0=aa3U=GS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDCDC433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 03:46:39 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75681C433DB
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 04:47:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4159A23AC0
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 03:46:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4159A23AC0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0F5E823107
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 04:47:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F5E823107
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D94E186F21;
-	Fri, 15 Jan 2021 03:46:38 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 83C5B86ADB;
+	Fri, 15 Jan 2021 04:47:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5GDHENtVxQEK; Fri, 15 Jan 2021 03:46:37 +0000 (UTC)
+	with ESMTP id Mx37iy1BGhwZ; Fri, 15 Jan 2021 04:47:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A3E3387313;
-	Fri, 15 Jan 2021 03:46:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A56CD86AC8;
+	Fri, 15 Jan 2021 04:47:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7EE0BC088B;
-	Fri, 15 Jan 2021 03:46:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED236C013A
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 03:46:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84C86C0893;
+	Fri, 15 Jan 2021 04:47:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5DEDC013A
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 04:46:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DDA4E87130
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 03:46:35 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 9B916203A9
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 04:46:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4Y0dAT7eXiX6 for <iommu@lists.linux-foundation.org>;
- Fri, 15 Jan 2021 03:46:35 +0000 (UTC)
+ with ESMTP id K5krPeRxDD9n for <iommu@lists.linux-foundation.org>;
+ Fri, 15 Jan 2021 04:46:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com
- [209.85.166.49])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 07BBA86F21
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 03:46:35 +0000 (UTC)
-Received: by mail-io1-f49.google.com with SMTP id n4so15627904iow.12
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 19:46:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Zn/E5DSPd3qJg+DTv9IwC7Z6z2pECZsgPkasFqGe2mo=;
- b=SlbAB2R28TVOPw4dT3y4+YKxnBvZIXRjddrKEDVYjmW3vvG3MDP0dEXICbitCBjDsh
- shg/YaDMPSBJC8TmtKZMEExrMsM7sLlrF7dj4kE9P1DHob7nRhpZZQNoE756taUh2vVw
- OwHAOHom27x10XansCH8DvCa2BNXVtylJjjRk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=Zn/E5DSPd3qJg+DTv9IwC7Z6z2pECZsgPkasFqGe2mo=;
- b=l3ZxETLJK5g7LFrEIzIOz3y58HJpwj0hnnL/j/YeSoSGKQbNJ1Arw56qQzVztOybZ1
- 7bS+BsTG+q/LgGyb4x79WiY7nXu5Ozi0plkEM/PaMu+DAWCTYSpOjmRghjvCSPaQb3q3
- RUwUPXZVKqN7e92UOqYvtvclpT9z5V6gEsZLGht/E3p/5rMueZ//AkmLK4FYYzNHZ+Hs
- u08gwm9KGQOJOIb97khJZMQCTQMZ3sHp9raTxlPnI/usb1IRouAP+gQjYno+Guj/4dHI
- fys2Png+XIIreJSuR7vA/Q8KmcEOBvvaOGXVgRGXgMgvlGDrKc22NEV/FVXSvn69I1lK
- rBiA==
-X-Gm-Message-State: AOAM532exOe1vGLryENYxthdV+FlmbCKYGdZgrYZqGs3lfIPW4oJjVO9
- vvy+tFNboOG0OH3RQhENLD0Qd4poz6lCWg==
-X-Google-Smtp-Source: ABdhPJwT3D+lD65BCwh7cCrxrozfhq16dpQ4i0T+/3AhE7hBgkS9YcfZzW23YoQl0OUA+BY03TKo0g==
-X-Received: by 2002:a05:6e02:1a47:: with SMTP id
- u7mr9212207ilv.260.1610682393913; 
- Thu, 14 Jan 2021 19:46:33 -0800 (PST)
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com.
- [209.85.166.47])
- by smtp.gmail.com with ESMTPSA id o17sm4490606ill.71.2021.01.14.19.46.31
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 14 Jan 2021 19:46:32 -0800 (PST)
-Received: by mail-io1-f47.google.com with SMTP id e22so15688590iom.5
- for <iommu@lists.linux-foundation.org>; Thu, 14 Jan 2021 19:46:31 -0800 (PST)
-X-Received: by 2002:a5d:9588:: with SMTP id a8mr2906589ioo.34.1610682391276;
- Thu, 14 Jan 2021 19:46:31 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5B15A203A8
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 04:46:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1610686017;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=5qlVp+V62hJFOmojeKBtO6bnSDZxjgJebYHvIlsbcQM=;
+ b=WH9GI7mWt6WZ5oRoFYgPE0II2yhxE8tcjUkgtXUAkMD7l8f5fG3YUzYMvxi0ejAjLfE8/b
+ 6X+D4Kujxbo3ZADSJ7LjOVH1vln4lr0UAZBkWt1iQGygqZYq7bE9jBB5AGUbmqwXdgXH/x
+ WXCdrksZDVZrHIWkek7vm0lkNQIUvRw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-438-WfDJ3MOTPVeX0K0c1Yjy4Q-1; Thu, 14 Jan 2021 23:46:55 -0500
+X-MC-Unique: WfDJ3MOTPVeX0K0c1Yjy4Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A6E30802B45;
+ Fri, 15 Jan 2021 04:46:51 +0000 (UTC)
+Received: from [10.72.13.19] (ovpn-13-19.pek2.redhat.com [10.72.13.19])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id A958771D52;
+ Fri, 15 Jan 2021 04:46:29 +0000 (UTC)
+Subject: Re: [RFC PATCH v3 1/2] iommu: Add capability IOMMU_CAP_VIOMMU
+To: Lu Baolu <baolu.lu@linux.intel.com>, tglx@linutronix.de,
+ ashok.raj@intel.com, kevin.tian@intel.com, dave.jiang@intel.com,
+ megha.dey@intel.com, dwmw2@infradead.org
+References: <20210114013003.297050-1-baolu.lu@linux.intel.com>
+ <20210114013003.297050-2-baolu.lu@linux.intel.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <f2a50326-58de-919a-5992-130224c5725a@redhat.com>
+Date: Fri, 15 Jan 2021 12:46:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210106034124.30560-1-tientzu@chromium.org>
- <20210106034124.30560-7-tientzu@chromium.org>
- <95e6dd76-5e18-e445-c351-19fba18f36de@gmail.com>
- <CALiNf29+8Yi93RacsZHr=qYBhQRwqujW6KZVVD=9xPMhpLH5pA@mail.gmail.com>
- <5f276678-3ab2-ddc8-640c-6dbbe173463c@gmail.com>
-In-Reply-To: <5f276678-3ab2-ddc8-640c-6dbbe173463c@gmail.com>
-From: Claire Chang <tientzu@chromium.org>
-Date: Fri, 15 Jan 2021 11:46:20 +0800
-X-Gmail-Original-Message-ID: <CALiNf28nW0CKsBRw-HQmz=jBJ3vK6cjoQZPu8Zx=Yn=RWPdVWQ@mail.gmail.com>
-Message-ID: <CALiNf28nW0CKsBRw-HQmz=jBJ3vK6cjoQZPu8Zx=Yn=RWPdVWQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 6/6] of: Add plumbing for restricted DMA pool
-To: Florian Fainelli <f.fainelli@gmail.com>
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, rafael.j.wysocki@intel.com, Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>, will@kernel.org,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, dan.j.williams@intel.com,
- linuxppc-dev@lists.ozlabs.org, Rob Herring <robh+dt@kernel.org>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- rdunlap@infradead.org, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- xypron.glpk@gmx.de, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210114013003.297050-2-baolu.lu@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Cc: kvm@vger.kernel.org, rafael@kernel.org, linux-pci@vger.kernel.org,
+ sanjay.k.kumar@intel.com, linux-kernel@vger.kernel.org, bhelgaas@google.com,
+ kwankhede@nvidia.com, will@kernel.org, leon@kernel.org, netanelg@mellanox.com,
+ maz@kernel.org, vkoul@kernel.org, jgg@mellanox.com, yan.y.zhao@linux.intel.com,
+ shahafs@mellanox.com, parav@mellanox.com, alex.williamson@redhat.com,
+ samuel.ortiz@intel.com, dan.j.williams@intel.com, tony.luck@intel.com,
+ mona.hossain@intel.com, iommu@lists.linux-foundation.org,
+ jacob.jun.pan@intel.com, dmaengine@vger.kernel.org, pbonzini@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -122,95 +104,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jan 15, 2021 at 2:52 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 1/14/21 1:08 AM, Claire Chang wrote:
-> > On Wed, Jan 13, 2021 at 7:48 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> On 1/5/21 7:41 PM, Claire Chang wrote:
-> >>> If a device is not behind an IOMMU, we look up the device node and set
-> >>> up the restricted DMA when the restricted-dma-pool is presented.
-> >>>
-> >>> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> >>> ---
-> >>
-> >> [snip]
-> >>
-> >>> +int of_dma_set_restricted_buffer(struct device *dev)
-> >>> +{
-> >>> +     struct device_node *node;
-> >>> +     int count, i;
-> >>> +
-> >>> +     if (!dev->of_node)
-> >>> +             return 0;
-> >>> +
-> >>> +     count = of_property_count_elems_of_size(dev->of_node, "memory-region",
-> >>> +                                             sizeof(phandle));
-> >>
-> >> You could have an early check for count < 0, along with an error
-> >> message, if that is deemed useful.
-> >>
-> >>> +     for (i = 0; i < count; i++) {
-> >>> +             node = of_parse_phandle(dev->of_node, "memory-region", i);
-> >>> +             if (of_device_is_compatible(node, "restricted-dma-pool"))
-> >>
-> >> And you may want to add here an of_device_is_available(node). A platform
-> >> that provides the Device Tree firmware and try to support multiple
-> >> different SoCs may try to determine if an IOMMU is present, and if it
-> >> is, it could be marking the restriced-dma-pool region with a 'status =
-> >> "disabled"' property, or any variant of that scheme.
-> >
-> > This function is called only when there is no IOMMU present (check in
-> > drivers/of/device.c). I can still add of_device_is_available(node)
-> > here if you think it's helpful.
->
-> I believe it is, since boot loader can have a shared Device Tree blob
-> skeleton and do various adaptations based on the chip (that's what we
-> do) and adding a status property is much simpler than insertion new
-> nodes are run time.
->
-> >
-> >>
-> >>> +                     return of_reserved_mem_device_init_by_idx(
-> >>> +                             dev, dev->of_node, i);
-> >>
-> >> This does not seem to be supporting more than one memory region, did not
-> >> you want something like instead:
-> >>
-> >>                 ret = of_reserved_mem_device_init_by_idx(...);
-> >>                 if (ret)
-> >>                         return ret;
-> >>
-> >
-> > Yes. This implement only supports one restriced-dma-pool memory region
-> > with the assumption that there is only one memory region with the
-> > compatible string, restricted-dma-pool, in the dts. IIUC, it's similar
-> > to shared-dma-pool.
->
-> Then if here is such a known limitation it should be both documented and
-> enforced here, you shouldn ot be iterating over all of the phandles that
-> you find, stop at the first one and issue a warning if count > 1?
-
-What I have in mind is there might be multiple memory regions, but
-only one is for restriced-dma-pool.
-Say, if you want a separated region for coherent DMA and only do
-streaming DMA in this restriced-dma-pool region, you can add another
-reserved-memory node with shared-dma-pool in dts and the current
-implementation will try to allocate the memory via
-dma_alloc_from_dev_coherent() first (see dma_alloc_attrs() in
-/kernel/dma/mapping.c).
-Or if you have vendor specific memory region, you can still set up
-restriced-dma-pool by adding another reserved-memory node in dts.
-Dose this make sense to you? I'll document this for sure.
-
-> --
-> Florian
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Ck9uIDIwMjEvMS8xNCDkuIrljYg5OjMwLCBMdSBCYW9sdSB3cm90ZToKPiBTb21lIHZlbmRvciBJ
+T01NVSBkcml2ZXJzIGFyZSBhYmxlIHRvIGRlY2xhcmUgdGhhdCBpdCBpcyBydW5uaW5nIGluIGEg
+Vk0KPiBjb250ZXh0LiBUaGlzIGlzIHZlcnkgdmFsdWFibGUgZm9yIHRoZSBmZWF0dXJlcyB0aGF0
+IG9ubHkgd2FudCB0byBiZQo+IHN1cHBvcnRlZCBvbiBiYXJlIG1ldGFsLiBBZGQgYSBjYXBhYmls
+aXR5IGJpdCBzbyB0aGF0IGl0IGNvdWxkIGJlIHVzZWQuCj4KPiBTaWduZWQtb2ZmLWJ5OiBMdSBC
+YW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPgo+IC0tLQo+ICAgZHJpdmVycy9pb21tdS9p
+bnRlbC9pb21tdS5jICB8IDIwICsrKysrKysrKysrKysrKysrKysrCj4gICBkcml2ZXJzL2lvbW11
+L3ZpcnRpby1pb21tdS5jIHwgIDkgKysrKysrKysrCj4gICBpbmNsdWRlL2xpbnV4L2lvbW11Lmgg
+ICAgICAgIHwgIDEgKwo+ICAgMyBmaWxlcyBjaGFuZ2VkLCAzMCBpbnNlcnRpb25zKCspCj4KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9p
+bnRlbC9pb21tdS5jCj4gaW5kZXggY2IyMDVhMDRmZTRjLi44ZWIwMjJkMGU4YWEgMTAwNjQ0Cj4g
+LS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9p
+bnRlbC9pb21tdS5jCj4gQEAgLTU3MzgsMTIgKzU3MzgsMzIgQEAgc3RhdGljIGlubGluZSBib29s
+IG5lc3RlZF9tb2RlX3N1cHBvcnQodm9pZCkKPiAgIAlyZXR1cm4gcmV0Owo+ICAgfQo+ICAgCj4g
+K3N0YXRpYyBpbmxpbmUgYm9vbCBjYWNoaW5nX21vZGVfZW5hYmxlZCh2b2lkKQo+ICt7Cj4gKwlz
+dHJ1Y3QgZG1hcl9kcmhkX3VuaXQgKmRyaGQ7Cj4gKwlzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11
+Owo+ICsJYm9vbCByZXQgPSBmYWxzZTsKPiArCj4gKwlyY3VfcmVhZF9sb2NrKCk7Cj4gKwlmb3Jf
+ZWFjaF9hY3RpdmVfaW9tbXUoaW9tbXUsIGRyaGQpIHsKPiArCQlpZiAoY2FwX2NhY2hpbmdfbW9k
+ZShpb21tdS0+Y2FwKSkgewo+ICsJCQlyZXQgPSB0cnVlOwo+ICsJCQlicmVhazsKPiArCQl9Cj4g
+Kwl9Cj4gKwlyY3VfcmVhZF91bmxvY2soKTsKPiArCj4gKwlyZXR1cm4gcmV0Owo+ICt9Cj4gKwo+
+ICAgc3RhdGljIGJvb2wgaW50ZWxfaW9tbXVfY2FwYWJsZShlbnVtIGlvbW11X2NhcCBjYXApCj4g
+ICB7Cj4gICAJaWYgKGNhcCA9PSBJT01NVV9DQVBfQ0FDSEVfQ09IRVJFTkNZKQo+ICAgCQlyZXR1
+cm4gZG9tYWluX3VwZGF0ZV9pb21tdV9zbm9vcGluZyhOVUxMKSA9PSAxOwo+ICAgCWlmIChjYXAg
+PT0gSU9NTVVfQ0FQX0lOVFJfUkVNQVApCj4gICAJCXJldHVybiBpcnFfcmVtYXBwaW5nX2VuYWJs
+ZWQgPT0gMTsKPiArCWlmIChjYXAgPT0gSU9NTVVfQ0FQX1ZJT01NVSkKPiArCQlyZXR1cm4gY2Fj
+aGluZ19tb2RlX2VuYWJsZWQoKTsKCgpUaGlzIHBhcnQgSSBkb24ndCB1bmRlcnN0YW5kLiBEb2Vz
+IGl0IG1lYW4gSW50ZWwgSU9NTVUgY2FuJ3QgYmUgdXNlZCBpbiAKVk0gd2l0aG91dCBjYWNoaW5n
+IG1vZGU/CgpUaGFua3MKCgo+ICAgCj4gICAJcmV0dXJuIGZhbHNlOwo+ICAgfQo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jIGIvZHJpdmVycy9pb21tdS92aXJ0aW8t
+aW9tbXUuYwo+IGluZGV4IDJiZmRkNTczNDg0NC4uNzE5NzkzZTEwM2RiIDEwMDY0NAo+IC0tLSBh
+L2RyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMKPiArKysgYi9kcml2ZXJzL2lvbW11L3ZpcnRp
+by1pb21tdS5jCj4gQEAgLTkzMSw3ICs5MzEsMTYgQEAgc3RhdGljIGludCB2aW9tbXVfb2ZfeGxh
+dGUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzICphcmdzKQo+ICAg
+CXJldHVybiBpb21tdV9md3NwZWNfYWRkX2lkcyhkZXYsIGFyZ3MtPmFyZ3MsIDEpOwo+ICAgfQo+
+ICAgCj4gK3N0YXRpYyBib29sIHZpb21tdV9jYXBhYmxlKGVudW0gaW9tbXVfY2FwIGNhcCkKPiAr
+ewo+ICsJaWYgKGNhcCA9PSBJT01NVV9DQVBfVklPTU1VKQo+ICsJCXJldHVybiB0cnVlOwo+ICsK
+PiArCXJldHVybiBmYWxzZTsKPiArfQo+ICsKPiAgIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfb3BzIHZp
+b21tdV9vcHMgPSB7Cj4gKwkuY2FwYWJsZQkJPSB2aW9tbXVfY2FwYWJsZSwKPiAgIAkuZG9tYWlu
+X2FsbG9jCQk9IHZpb21tdV9kb21haW5fYWxsb2MsCj4gICAJLmRvbWFpbl9mcmVlCQk9IHZpb21t
+dV9kb21haW5fZnJlZSwKPiAgIAkuYXR0YWNoX2RldgkJPSB2aW9tbXVfYXR0YWNoX2RldiwKPiBk
+aWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5o
+Cj4gaW5kZXggYjk1YTZmOGRiNmZmLi4xZDI0YmU2NjdhMDMgMTAwNjQ0Cj4gLS0tIGEvaW5jbHVk
+ZS9saW51eC9pb21tdS5oCj4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCj4gQEAgLTk0LDYg
+Kzk0LDcgQEAgZW51bSBpb21tdV9jYXAgewo+ICAgCQkJCQkgICB0cmFuc2FjdGlvbnMgKi8KPiAg
+IAlJT01NVV9DQVBfSU5UUl9SRU1BUCwJCS8qIElPTU1VIHN1cHBvcnRzIGludGVycnVwdCBpc29s
+YXRpb24gKi8KPiAgIAlJT01NVV9DQVBfTk9FWEVDLAkJLyogSU9NTVVfTk9FWEVDIGZsYWcgKi8K
+PiArCUlPTU1VX0NBUF9WSU9NTVUsCQkvKiBJT01NVSBjYW4gZGVjbGFyIHJ1bm5pbmcgaW4gYSBW
+TSAqLwo+ICAgfTsKPiAgIAo+ICAgLyoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
