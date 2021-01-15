@@ -2,70 +2,94 @@ Return-Path: <SRS0=aa3U=GS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26012C433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 17:17:41 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9706AC433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 17:27:54 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A343238EF
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 17:17:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A343238EF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 18D3F20691
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 17:27:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 18D3F20691
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 0DBA020475;
-	Fri, 15 Jan 2021 17:17:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 94AD886B3B;
+	Fri, 15 Jan 2021 17:27:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dnp8QzlJ-vaU; Fri, 15 Jan 2021 17:17:38 +0000 (UTC)
+	with ESMTP id iFVLx9YMxcTS; Fri, 15 Jan 2021 17:27:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9B9DE20399;
-	Fri, 15 Jan 2021 17:17:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0470186AFD;
+	Fri, 15 Jan 2021 17:27:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B018C088B;
-	Fri, 15 Jan 2021 17:17:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E7237C013A
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:17:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DDD8BC088B;
+	Fri, 15 Jan 2021 17:27:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F99FC013A
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:27:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D969186BC7
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:17:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1B47D86B04
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:27:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JqG4UYXTIn9V for <iommu@lists.linux-foundation.org>;
- Fri, 15 Jan 2021 17:17:35 +0000 (UTC)
+ with ESMTP id FLxVYAoZFOYh for <iommu@lists.linux-foundation.org>;
+ Fri, 15 Jan 2021 17:27:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 875C486B6E
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:17:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E1D1D6E;
- Fri, 15 Jan 2021 09:17:34 -0800 (PST)
-Received: from [10.57.56.43] (unknown [10.57.56.43])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BE0E3F719;
- Fri, 15 Jan 2021 09:17:33 -0800 (PST)
-Subject: Re: Consult on ARM SMMU debugfs
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-References: <cd9296f1-a3ea-d8d6-0e14-2cd6f19a17da@hisilicon.com>
- <9a23610f-e0b4-92e6-6da6-3182d481db92@arm.com>
- <20210115151403.GZ1551@shell.armlinux.org.uk>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <04eec942-39b9-6bdd-5399-ab23e42c232f@arm.com>
-Date: Fri, 15 Jan 2021 17:17:32 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com
+ [209.85.221.50])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3E4AE86AFD
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 17:27:51 +0000 (UTC)
+Received: by mail-wr1-f50.google.com with SMTP id m4so10049907wrx.9
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 09:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=XNAkXsuzFF5uut41Z4Aj5p+/hR3E7tQupuXO85WbsYI=;
+ b=Gzc9V3KMdOG0TLt/WQd+qg2yIxaor24Z/ET2XQ+PjxqPsc68YpjDXOtMw6MJ6L3mxC
+ Uyqtc0qzTanMeUhynfnJlEDScXW6y9Wwl6sBzJFlE+heusxBbwmxwuM9wqQ5JDG2F4wq
+ WQ1+1CvTHA5btS9lISrbM7df7BQbGYKYMYpKi84jYSvNvUiTd3ZqhkMMdSPwmJuJTUAK
+ lxLjWrIsmXaFUGdWxUU+6Vbpm+xe1+BEMsFTSB8GebmQk156sbLT49Fyoae0a9ZEQA63
+ Db30WsCColfTMi07dDeIkRE49u6gTgc2zrc5Wsu3yE2c/6Ol9X1poy/8xX9aeU0i2gXb
+ iGCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=XNAkXsuzFF5uut41Z4Aj5p+/hR3E7tQupuXO85WbsYI=;
+ b=HQ5BpYfi7fvfG5UV7ruZxqSb+qgeZt+SGjVC6VXbe0k2M8LvqybHp4yBV0YKPusb+j
+ d2ejxe/p1JIWaUprh/10mEntwxr6+pgYqIw+NRMVfZMCc82PERnzSEXreeBWky9eb/V+
+ fnhl/GDlsWTLJAje1Lazo+1mN+XKw5Q5Bkk+eDOnmk57ge6rS5uoAdRjYpnIZQhWEhoB
+ pl725hnB8hm0W7orqR9M7qGeI3wmiyR8UeXq4IgECfGnjx1THaFscucq5diu3/S8ANPe
+ L/faMH4ytgx18pWc9zFG6t0DZVo4q+vjm7FMG7GbVltfntiucBXHdlftbBfJW8vYJt+I
+ ZgKg==
+X-Gm-Message-State: AOAM532JN556yUL+fbgMwSHnNridMKRwx5eS/+wtI+dltNPtSGTCtbM2
+ Hre0+MELHh1PCrGhm+U7te7S0g==
+X-Google-Smtp-Source: ABdhPJzEtFsQ+XAOEoNdK8tNswM+5vBs932md5l/dTGp3QPXgJciQJcUotO0dV0614UGWgr+4n6aQw==
+X-Received: by 2002:a5d:4f10:: with SMTP id c16mr14060273wru.398.1610731669622; 
+ Fri, 15 Jan 2021 09:27:49 -0800 (PST)
+Received: from larix.localdomain ([2001:1715:4e26:a7e0:ed35:e18a:5e36:8c84])
+ by smtp.gmail.com with ESMTPSA id c11sm13888786wmd.36.2021.01.15.09.27.48
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 15 Jan 2021 09:27:48 -0800 (PST)
+Date: Fri, 15 Jan 2021 18:28:33 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v4 1/3] iommu/iova: Add free_all_cpu_cached_iovas()
+Message-ID: <YAHQwT/chwlO4fYv@larix.localdomain>
+References: <1607538189-237944-1-git-send-email-john.garry@huawei.com>
+ <1607538189-237944-2-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210115151403.GZ1551@shell.armlinux.org.uk>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1607538189-237944-2-git-send-email-john.garry@huawei.com>
+Cc: will@kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,70 +102,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMS0xNSAxNToxNCwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdyb3Rl
-Ogo+IE9uIE1vbiwgSmFuIDExLCAyMDIxIGF0IDA4OjAxOjQ4UE0gKzAwMDAsIFJvYmluIE11cnBo
-eSB3cm90ZToKPj4gT24gMjAyMS0wMS0wNyAwMjo0NSwgY2hlbnhpYW5nIChNKSB3cm90ZToKPj4+
-IEhpIFdpbGwsw6/Cv8K9IFJvYmluIG9yIG90aGVyIGd1eXMsCj4+Pgo+Pj4gV2hlbiBkZWJ1Z2dp
-bmcgU01NVS9TVkEgaXNzdWUgb24gaHVhd2VpIEFSTTY0IGJvYXJkLCB3ZSBmaW5kIHRoYXQgaXQK
-Pj4+IGxhY2tzIG9mIGVub3VnaCBkZWJ1Z2ZzIGZvciBBUk0gU01NVSBkcml2ZXIgKHN1Y2ggYXMK
-Pj4+Cj4+PiB0aGUgdmFsdWUgb2YgU1RFL0NEIHdoaWNoIHdlIG5lZWQgdG8gY2hlY2sgc29tZXRp
-bWVzKS4gQ3VycmVudGx5IGl0Cj4+PiBjcmVhdGVzIHRvcC1sZXZlbCBpb21tdSBkaXJlY3Rvcnkg
-aW4gZGVidWdmcywgYnV0IHRoZXJlIGlzIG5vIGRlYnVnZnMKPj4+Cj4+PiBmb3IgQVJNIFNNTVUg
-ZHJpdmVyIHNwZWNpYWxseS4gRG8geW91IGtub3cgd2hldGhlciBBUk0gaGF2ZSB0aGUgcGxhbiB0
-bwo+Pj4gZG8gdGhhdCByZWNlbnRseT8KPj4KPj4gRldJVyBJIGRvbid0IHRoaW5rIEkndmUgZXZl
-ciBmZWx0IHRoZSBuZWVkIHRvIG5lZWQgdG8gaW5zcGVjdCB0aGUgU3RyZWFtCj4+IFRhYmxlIG9u
-IGEgbGl2ZSBzeXN0ZW0uIFNvIGZhciB0aGUgbmF0dXJlIG9mIHRoZSBTVEUgY29kZSBoYXMgYmVl
-biBzaW1wbGUKPj4gZW5vdWdoIHRoYXQgaXQncyB2ZXJ5IGhhcmQgZm9yIGFueSBnaXZlbiBTVEUg
-dG8gYmUgKndyb25nKiAtIGVpdGhlciBpdCdzIHNldAo+PiB1cCBhcyBleHBlY3RlZCBhbmQgdGh1
-cyB3b3JrcyBmaW5lLCBvciBpdCdzIG5vdCBpbml0aWFsaXNlZCBhdCBhbGwgYW5kIHlvdQo+PiBn
-ZXQgQ19CQURfU1RFLCB3aGVyZSA5OSUgb2YgdGhlIHRpbWUgeW91IHRoZW4ganVzdCBjcm9zcy1y
-ZWZlcmVuY2UgdGhlCj4+IFN0cmVhbSBJRCBhZ2FpbnN0IHRoZSBmaXJtd2FyZSBhbmQgZmluZCB0
-aGF0IHRoZSBEVC9JT1JUIGlzIHdyb25nLgo+Pgo+PiBTaW1pbGFybHkgSSBkb24ndCB0aGluayBJ
-J3ZlIGV2ZW4gZXZlbiAqc2VlbiogYW4gaXNzdWUgdGhhdCBjb3VsZCBiZQo+PiBhdHRyaWJ1dGVk
-IHRvIGEgY29udGV4dCBkZXNjcmlwdG9yLCBhbHRob3VnaCBJIGFwcHJlY2lhdGUgdGhhdCBhcyB3
-ZSBzdGFydAo+PiBsYW5kaW5nIG1vcmUgUEFTSUQgYW5kIFNWQSBzdXBwb3J0IHRoZSBzY29wZSBm
-b3IgdGhhdCBzdGFydHMgdG8gd2lkZW4KPj4gY29uc2lkZXJhYmx5Lgo+Pgo+PiBGZWVsIGZyZWUg
-dG8gcHJvcG9zZSBhIHBhdGNoIGlmIHlvdSBiZWxpZXZlIGl0IHdvdWxkIGJlIGdlbnVpbmVseSB1
-c2VmdWwgYW5kCj4+IHdvbid0IGp1c3QgYml0LXJvdCBpbnRvIGEgbWFpbnRlbmFuY2UgYnVyZGVu
-LCBidXQgaXQncyBub3Qgc29tZXRoaW5nIHRoYXQncwo+PiBvbiBvdXIgcm9hZG1hcCBoZXJlLgo+
-IAo+IEkgZG8gdGhpbmsgdGhhdCB0aGUgSU9NTVUgc3R1ZmYgbmVlZHMgYmV0dGVyIGRlYnVnZ2lu
-Zy4gSSd2ZSBoaXQgdGhlCj4gV0FSTl9PTigpIGluIF9fYXJtX2xwYWVfbWFwKCksIGFuZCBpdCdz
-IGJlZW4gcHJldHR5IG11Y2ggdW5kZWJ1Z2dhYmxlLAo+IHNvIEkndmUgcmVzb3J0ZWQgdG8gcHV0
-dGluZyB0aGUgSU9NTVUgaW50byBieXBhc3MgbW9kZSBwZXJtYW5lbnRseSB0bwo+IHdvcmsgYXJv
-dW5kIHRoZSBpc3N1ZS4KPiAKPiBUaGUgcmVhc29uIHRoYXQgaXQncyB1bmRlYnVnZ2FibGUgaXMg
-aWYgb25lIHB1dHMgcHJpbnRrKCkgb3IgdHJhY2UKPiBzdGF0ZW1lbnRzIGluIHRoZSBjb2RlLCBi
-b290cyB0aGUgcGxhdGZvcm0sIHlvdSBnZXQgZmxvb2RlZCB3aXRoIHRob3NlCj4gZGVidWdnaW5n
-IG1lc3NhZ2VzLCBiZWNhdXNlIGV2ZXJ5IGFjY2VzcyB0byB0aGUgcm9vdGZzIGdlbmVyYXRlcyBh
-bmQKPiB0ZWFycyBkb3duIGEgbWFwcGluZy4KPiAKPiBJdCB3b3VsZCBiZSBuaWNlIHRvIGJlIGFi
-bGUgdG8gaW5zcGVjdCB0aGUgSU9NTVUgcGFnZSB0YWJsZXMgYW5kIHN0YXRlCj4gb2YgdGhlIElP
-TU1VLCByYXRoZXIgdGhhbiBoYXZpbmcgdG8gcmVzb3J0IHRvIGVmZmVjdGl2ZWx5IGRpc2FibGlu
-Zwo+IHRoZSBJT01NVS4KCkNlcnRhaW5seSBvbmNlIHdlIGdldCB0byBzdHVmZiBsaWtlIHVucGlu
-bmVkIFZGSU8sIGhhdmluZyB0aGUgYWJpbGl0eSB0byAKaW5zcGVjdCBwYWdldGFibGVzIGZvciBh
-cmJpdHJhcnkgSU9NTVUgQVBJIHVzYWdlIHdpbGwgaW5kZWVkIGJlIHVzZWZ1bC4gCiBGcm9tIHRo
-ZSBETUEgbWFwcGluZyBwZXJzcGVjdGl2ZSwgdGhvdWdoLCB1bmxlc3MgeW91J3JlIHdvcmtpbmcg
-b24gdGhlIAppby1wZ3RhYmxlIGNvZGUgaXRzZWxmIGl0J3Mgbm90IHJlYWxseSBnb2luZyB0byB0
-ZWxsIHlvdSBtdWNoIHRoYXQgCmR1bXBpbmcgdGhlIG1hcHBpbmdzIGZyb20gZG1hLWRlYnVnIGNh
-bid0IGFscmVhZHkuCgpGV0lXIHdoZW5ldmVyIEkgZW5jb3VudGVyIHRoYXQgcGFydGljdWxhciB3
-YXJuaW5nIGluIGlvbW11LWRtYSBjb250ZXh0LCAKSSBkb24ndCBjYXJlIHdoZXJlIHRoZSBleGlz
-dGluZyBtYXBwaW5nIGlzIHBvaW50aW5nLCBzaW5jZSBpdCdzIG1lcmVseSBhIApzeW1wdG9tIG9m
-IHRoZSBkYW1hZ2UgYWxyZWFkeSBoYXZpbmcgYmVlbiBkb25lLiBBdCB0aGF0IHBvaW50IEknZCAK
-dXN1YWxseSBnbyBvZmYgYW5kIGF1ZGl0IGFsbCB0aGUgRE1BIEFQSSBjYWxscyBpbiB0aGUgb2Zm
-ZW5kaW5nIGRyaXZlciwgCnNpbmNlIGl0J3MgdHlwaWNhbGx5IGNhdXNlZCBieSBjb3JydXB0aW9u
-IGluIHRoZSBJT1ZBIGFsbG9jYXRvciBmcm9tIApwYXNzaW5nIHRoZSB3cm9uZyBzaXplIGluIGEg
-ZG1hX3VubWFwXyooKSBjYWxsLCBhbmQgdGhvc2UgY2FuIG9mdGVuIGJlIApzcG90dGVkIGJ5IGlu
-c3BlY3Rpb24uIEZvciBhY3RpdmUgZGVidWdnaW5nLCB3aGF0IHlvdSByZWFsbHkgd2FudCB0byAK
-a25vdyBpcyB0aGUgKmhpc3RvcnkqIG9mIG9wZXJhdGlvbnMgYXJvdW5kIHRoYXQgSU9WQSwgc2lu
-Y2UgeW91J3JlIApwcmltYXJpbHkgaW50ZXJlc3RlZCBpbiB0aGUgcmVxdWVzdCB0aGF0IGxhc3Qg
-bWFwcGVkIGl0LCB0aGVuIHRoZSAKY29ycmVzcG9uZGluZyB1bm1hcCByZXF1ZXN0IGZvciBub21p
-bmFsbHkgdGhlIHNhbWUgYnVmZmVyICh3aGljaCBhbGxvd2VkIAp0aGUgSU9WQSByZWdpb24gdG8g
-YmUgZnJlZWQgZm9yIHJldXNlKSB0aGF0IGZvciBzb21lIHJlYXNvbiBkaWRuJ3QgY292ZXIgCm9u
-ZSBvciBtb3JlIHBhZ2VzIHRoYXQgaXQgc2hvdWxkIGhhdmUuIFRoZSBJT01NVSBBUEkgdHJhY2Vw
-b2ludHMgY2FuIGJlIAphIGhhbmR5IHRvb2wgdGhlcmUuCgpSb2Jpbi4KX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Dec 10, 2020 at 02:23:07AM +0800, John Garry wrote:
+> Add a helper function to free the CPU rcache for all online CPUs.
+> 
+> There also exists a function of the same name in
+> drivers/iommu/intel/iommu.c, but the parameters are different, and there
+> should be no conflict.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
+> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
+
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+(unless we find a better solution for patch 3)
+
+> ---
+>  drivers/iommu/iova.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index f9c35852018d..cf1aacda2fe4 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -238,6 +238,14 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>  	return -ENOMEM;
+>  }
+>  
+> +static void free_all_cpu_cached_iovas(struct iova_domain *iovad)
+> +{
+> +	unsigned int cpu;
+> +
+> +	for_each_online_cpu(cpu)
+> +		free_cpu_cached_iovas(cpu, iovad);
+> +}
+> +
+>  static struct kmem_cache *iova_cache;
+>  static unsigned int iova_cache_users;
+>  static DEFINE_MUTEX(iova_cache_mutex);
+> @@ -435,15 +443,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>  retry:
+>  	new_iova = alloc_iova(iovad, size, limit_pfn, true);
+>  	if (!new_iova) {
+> -		unsigned int cpu;
+> -
+>  		if (!flush_rcache)
+>  			return 0;
+>  
+>  		/* Try replenishing IOVAs by flushing rcache. */
+>  		flush_rcache = false;
+> -		for_each_online_cpu(cpu)
+> -			free_cpu_cached_iovas(cpu, iovad);
+> +		free_all_cpu_cached_iovas(iovad);
+>  		free_global_cached_iovas(iovad);
+>  		goto retry;
+>  	}
+> -- 
+> 2.26.2
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
