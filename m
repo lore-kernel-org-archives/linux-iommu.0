@@ -7,57 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3413CC433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:28 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F712C433DB
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:31 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8235F206D4
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8235F206D4
+	by mail.kernel.org (Postfix) with ESMTPS id 3C2A5206D4
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 12:14:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C2A5206D4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3E777873E0;
-	Fri, 15 Jan 2021 12:14:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E45DB84F27;
+	Fri, 15 Jan 2021 12:14:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id usA7dLgozrqC; Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
+	with ESMTP id wyRFQ5qneX6a; Fri, 15 Jan 2021 12:14:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A8FAA8738C;
-	Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1CE7B84C20;
+	Fri, 15 Jan 2021 12:14:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A2D1AC08A1;
-	Fri, 15 Jan 2021 12:14:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82405C013A;
- Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 009D8C08A1;
+	Fri, 15 Jan 2021 12:14:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E98E2C013A;
+ Fri, 15 Jan 2021 12:14:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7E9548738D;
- Fri, 15 Jan 2021 12:14:24 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E5D7486A37;
+ Fri, 15 Jan 2021 12:14:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NYUFGg-Jpsvp; Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
+ with ESMTP id dFLLOyiDXHjl; Fri, 15 Jan 2021 12:14:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id CC6EA8738C;
- Fri, 15 Jan 2021 12:14:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DA3F086958;
+ Fri, 15 Jan 2021 12:14:27 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87C8B13A1;
- Fri, 15 Jan 2021 04:14:22 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D53313D5;
+ Fri, 15 Jan 2021 04:14:27 -0800 (PST)
 Received: from usa.arm.com (a074945.blr.arm.com [10.162.16.71])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 111C63F70D;
- Fri, 15 Jan 2021 04:14:17 -0800 (PST)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 069603F70D;
+ Fri, 15 Jan 2021 04:14:22 -0800 (PST)
 From: Vivek Gautam <vivek.gautam@arm.com>
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
-Subject: [PATCH RFC v1 06/15] iommu/virtio: Add headers for table format
- probing
-Date: Fri, 15 Jan 2021 17:43:33 +0530
-Message-Id: <20210115121342.15093-7-vivek.gautam@arm.com>
+Subject: [PATCH RFC v1 07/15] iommu/virtio: Add table format probing
+Date: Fri, 15 Jan 2021 17:43:34 +0530
+Message-Id: <20210115121342.15093-8-vivek.gautam@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210115121342.15093-1-vivek.gautam@arm.com>
 References: <20210115121342.15093-1-vivek.gautam@arm.com>
@@ -84,15 +83,12 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
-Add required UAPI defines for probing table format for underlying
-iommu hardware. The device may provide information about hardware
-tables and additional capabilities for each device.
-This allows guest to correctly fabricate stage-1 page tables.
+The device may provide information about hardware tables and additional
+capabilities for each device. Parse the new probe fields.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-[Vivek: Use a single "struct virtio_iommu_probe_table_format" rather
-        than separate structures for page table and pasid table format.
-	Also update commit message.]
+[Vivek: Refactor to use "struct virtio_iommu_probe_table_format" rather
+        than separate structures for page table and pasid table format.]
 Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Will Deacon <will.deacon@arm.com>
@@ -107,78 +103,154 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 ---
- include/uapi/linux/virtio_iommu.h | 44 ++++++++++++++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ drivers/iommu/virtio-iommu.c | 102 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 101 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-index 237e36a280cb..43821e33e7af 100644
---- a/include/uapi/linux/virtio_iommu.h
-+++ b/include/uapi/linux/virtio_iommu.h
-@@ -2,7 +2,7 @@
- /*
-  * Virtio-iommu definition v0.12
-  *
-- * Copyright (C) 2019 Arm Ltd.
-+ * Copyright (C) 2019-2021 Arm Ltd.
-  */
- #ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
- #define _UAPI_LINUX_VIRTIO_IOMMU_H
-@@ -111,6 +111,12 @@ struct virtio_iommu_req_unmap {
- 
- #define VIRTIO_IOMMU_PROBE_T_NONE		0
- #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
-+#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
-+#define VIRTIO_IOMMU_PROBE_T_INPUT_RANGE	3
-+#define VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE	4
-+#define VIRTIO_IOMMU_PROBE_T_PASID_SIZE		5
-+#define VIRTIO_IOMMU_PROBE_T_PAGE_TABLE_FMT	6
-+#define VIRTIO_IOMMU_PROBE_T_PASID_TABLE_FMT	7
- 
- #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
- 
-@@ -130,6 +136,42 @@ struct virtio_iommu_probe_resv_mem {
- 	__le64					end;
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 2bfdd5734844..12d73321dbf4 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -78,6 +78,17 @@ struct viommu_endpoint {
+ 	struct viommu_dev		*viommu;
+ 	struct viommu_domain		*vdomain;
+ 	struct list_head		resv_regions;
++
++	/* properties of the physical IOMMU */
++	u64				pgsize_mask;
++	u64				input_start;
++	u64				input_end;
++	u8				output_bits;
++	u8				pasid_bits;
++	/* Preferred PASID table format */
++	void				*pstf;
++	/* Preferred page table format */
++	void				*pgtf;
  };
  
-+struct virtio_iommu_probe_page_size_mask {
-+	struct virtio_iommu_probe_property	head;
-+	__u8					reserved[4];
-+	__le64					mask;
-+};
+ struct viommu_request {
+@@ -457,6 +468,72 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 	return 0;
+ }
+ 
++static int viommu_add_pgsize_mask(struct viommu_endpoint *vdev,
++				  struct virtio_iommu_probe_page_size_mask *prop,
++				  size_t len)
++{
++	if (len < sizeof(*prop))
++		return -EINVAL;
++	vdev->pgsize_mask = le64_to_cpu(prop->mask);
++	return 0;
++}
 +
-+struct virtio_iommu_probe_input_range {
-+	struct virtio_iommu_probe_property	head;
-+	__u8					reserved[4];
-+	__le64					start;
-+	__le64					end;
-+};
++static int viommu_add_input_range(struct viommu_endpoint *vdev,
++				  struct virtio_iommu_probe_input_range *prop,
++				  size_t len)
++{
++	if (len < sizeof(*prop))
++		return -EINVAL;
++	vdev->input_start	= le64_to_cpu(prop->start);
++	vdev->input_end		= le64_to_cpu(prop->end);
++	return 0;
++}
 +
-+struct virtio_iommu_probe_output_size {
-+	struct virtio_iommu_probe_property	head;
-+	__u8					bits;
-+	__u8					reserved[3];
-+};
++static int viommu_add_output_size(struct viommu_endpoint *vdev,
++				  struct virtio_iommu_probe_output_size *prop,
++				  size_t len)
++{
++	if (len < sizeof(*prop))
++		return -EINVAL;
++	vdev->output_bits = prop->bits;
++	return 0;
++}
 +
-+struct virtio_iommu_probe_pasid_size {
-+	struct virtio_iommu_probe_property	head;
-+	__u8					bits;
-+	__u8					reserved[3];
-+};
++static int viommu_add_pasid_size(struct viommu_endpoint *vdev,
++				 struct virtio_iommu_probe_pasid_size *prop,
++				 size_t len)
++{
++	if (len < sizeof(*prop))
++		return -EINVAL;
++	vdev->pasid_bits = prop->bits;
++	return 0;
++}
 +
-+/* Arm LPAE page table format */
-+#define VIRTIO_IOMMU_FOMRAT_PGTF_ARM_LPAE	1
-+/* Arm smmu-v3 type PASID table format */
-+#define VIRTIO_IOMMU_FORMAT_PSTF_ARM_SMMU_V3	2
++static int viommu_add_pgtf(struct viommu_endpoint *vdev, void *pgtf, size_t len)
++{
++	/* Select the first page table format available */
++	if (len < sizeof(struct virtio_iommu_probe_table_format) || vdev->pgtf)
++		return -EINVAL;
 +
-+struct virtio_iommu_probe_table_format {
-+	struct virtio_iommu_probe_property	head;
-+	__le16					format;
-+	__u8					reserved[2];
-+};
++	vdev->pgtf = kmemdup(pgtf, len, GFP_KERNEL);
++	if (!vdev->pgtf)
++		return -ENOMEM;
 +
- struct virtio_iommu_req_probe {
- 	struct virtio_iommu_req_head		head;
- 	__le32					endpoint;
++	return 0;
++}
++
++static int viommu_add_pstf(struct viommu_endpoint *vdev, void *pstf, size_t len)
++{
++	if (len < sizeof(struct virtio_iommu_probe_table_format) || vdev->pstf)
++		return -EINVAL;
++
++	vdev->pstf = kmemdup(pstf, len, GFP_KERNEL);
++	if (!vdev->pstf)
++		return -ENOMEM;
++
++	return 0;
++}
++
+ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ {
+ 	int ret;
+@@ -493,11 +570,30 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 
+ 	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
+ 	       cur < viommu->probe_size) {
++		void *value = prop;
+ 		len = le16_to_cpu(prop->length) + sizeof(*prop);
+ 
+ 		switch (type) {
+ 		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+-			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
++			ret = viommu_add_resv_mem(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
++			ret = viommu_add_pgsize_mask(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_INPUT_RANGE:
++			ret = viommu_add_input_range(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE:
++			ret = viommu_add_output_size(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_PASID_SIZE:
++			ret = viommu_add_pasid_size(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_PAGE_TABLE_FMT:
++			ret = viommu_add_pgtf(vdev, value, len);
++			break;
++		case VIRTIO_IOMMU_PROBE_T_PASID_TABLE_FMT:
++			ret = viommu_add_pstf(vdev, value, len);
+ 			break;
+ 		default:
+ 			dev_err(dev, "unknown viommu prop 0x%x\n", type);
+@@ -899,6 +995,8 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
+ 
+ err_free_dev:
+ 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
++	kfree(vdev->pstf);
++	kfree(vdev->pgtf);
+ 	kfree(vdev);
+ 
+ 	return ERR_PTR(ret);
+@@ -915,6 +1013,8 @@ static void viommu_release_device(struct device *dev)
+ 	vdev = dev_iommu_priv_get(dev);
+ 
+ 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
++	kfree(vdev->pstf);
++	kfree(vdev->pgtf);
+ 	kfree(vdev);
+ }
+ 
 -- 
 2.17.1
 
