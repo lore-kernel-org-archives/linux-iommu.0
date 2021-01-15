@@ -2,71 +2,96 @@ Return-Path: <SRS0=aa3U=GS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CD5C433E6
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 19:21:39 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3F2C433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 22:42:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 75BC7235F8
-	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 19:21:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75BC7235F8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 63C84239D4
+	for <iommu@archiver.kernel.org>; Fri, 15 Jan 2021 22:42:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63C84239D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AE09B20533;
-	Fri, 15 Jan 2021 19:21:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1A1DD8737B;
+	Fri, 15 Jan 2021 22:42:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GWM60IF44k-o; Fri, 15 Jan 2021 19:21:37 +0000 (UTC)
+	with ESMTP id k-Ls1HhZke-P; Fri, 15 Jan 2021 22:42:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0272E203ED;
-	Fri, 15 Jan 2021 19:21:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 029768739D;
+	Fri, 15 Jan 2021 22:42:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DED57C088B;
-	Fri, 15 Jan 2021 19:21:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 432ECC013A
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 19:21:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E0D07C0893;
+	Fri, 15 Jan 2021 22:42:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EEC2EC013A
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 22:42:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 31E0486D60
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 19:21:35 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D579E86AE2
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 22:42:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4hlzM+BCIXBs for <iommu@lists.linux-foundation.org>;
- Fri, 15 Jan 2021 19:21:33 +0000 (UTC)
+ with ESMTP id fw2gv1vxkRqM for <iommu@lists.linux-foundation.org>;
+ Fri, 15 Jan 2021 22:42:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9CE2586D56
- for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 19:21:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2ED7ED1;
- Fri, 15 Jan 2021 11:21:32 -0800 (PST)
-Received: from [10.57.56.43] (unknown [10.57.56.43])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 652683F719;
- Fri, 15 Jan 2021 11:21:31 -0800 (PST)
-Subject: Re: [PATCH v4 3/3] iommu/iova: Flush CPU rcache for when a depot fills
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- John Garry <john.garry@huawei.com>
-References: <1607538189-237944-1-git-send-email-john.garry@huawei.com>
- <1607538189-237944-4-git-send-email-john.garry@huawei.com>
- <YAHRwZXoRZFJkgE8@larix.localdomain>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <7a4f3d74-2f0d-1ffa-95cf-cfeaa81d8c7e@arm.com>
-Date: Fri, 15 Jan 2021 19:21:29 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 078B586A94
+ for <iommu@lists.linux-foundation.org>; Fri, 15 Jan 2021 22:42:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1610750568;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=EB7kXdoaDpBllJxSevGo6kiwu0Drr9UL6vk+q3d3RfU=;
+ b=I5zQDP/qK5Oq63XwwvJhNStit1bshSxramWPJXWZidpO9Hi8y8OulaAViOXoeOC6TSDcan
+ p2rXf4W1Chzj5/dJd8sHY5fwb17//cfhrxnZv5yKPx6hyFykGamDiAZTwzJ622tic2VDal
+ LSIqkQNmMMrNX30UcYPQ8WL8xKp79h0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-ZUP2g_LEO8uQpZeiFfHExg-1; Fri, 15 Jan 2021 17:42:46 -0500
+X-MC-Unique: ZUP2g_LEO8uQpZeiFfHExg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DEA5F806666;
+ Fri, 15 Jan 2021 22:42:42 +0000 (UTC)
+Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
+ [10.3.112.255])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 02A635D9C6;
+ Fri, 15 Jan 2021 22:42:40 +0000 (UTC)
+Date: Fri, 15 Jan 2021 15:42:40 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH 1/6] vfio/iommu_type1: Make an explicit "promote" semantic
+Message-ID: <20210115154240.0d3ee455@omen.home.shazbot.org>
+In-Reply-To: <20210107044401.19828-2-zhukeqian1@huawei.com>
+References: <20210107044401.19828-1-zhukeqian1@huawei.com>
+ <20210107044401.19828-2-zhukeqian1@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <YAHRwZXoRZFJkgE8@larix.localdomain>
-Content-Language: en-GB
-Cc: will@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxarm@huawei.com
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Cc: Mark Rutland <mark.rutland@arm.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Andrew Morton <akpm@linux-foundation.org>, kvm@vger.kernel.org,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Marc Zyngier <maz@kernel.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Alexios Zavras <alexios.zavras@intel.com>, iommu@lists.linux-foundation.org,
+ James Morse <james.morse@arm.com>,
+ Julien Thierry <julien.thierry.kdev@gmail.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, wanghaibin.wang@huawei.com,
+ Thomas Gleixner <tglx@linutronix.de>, jiangkunkun@huawei.com,
+ Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+ linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,207 +104,152 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-15 17:32, Jean-Philippe Brucker wrote:
-> On Thu, Dec 10, 2020 at 02:23:09AM +0800, John Garry wrote:
->> Leizhen reported some time ago that IOVA performance may degrade over time
->> [0], but unfortunately his solution to fix this problem was not given
->> attention.
->>
->> To summarize, the issue is that as time goes by, the CPU rcache and depot
->> rcache continue to grow. As such, IOVA RB tree access time also continues
->> to grow.
->>
->> At a certain point, a depot may become full, and also some CPU rcaches may
->> also be full when inserting another IOVA is attempted. For this scenario,
->> currently the "loaded" CPU rcache is freed and a new one is created. This
->> freeing means that many IOVAs in the RB tree need to be freed, which
->> makes IO throughput performance fall off a cliff in some storage scenarios:
->>
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6314MB/0KB/0KB /s] [1616K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [5669MB/0KB/0KB /s] [1451K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6673MB/0KB/0KB /s] [1708K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6031MB/0KB/0KB /s] [1544K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6761MB/0KB/0KB /s] [1731K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6705MB/0KB/0KB /s] [1717K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6685MB/0KB/0KB /s] [1711K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6178MB/0KB/0KB /s] [1582K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [6731MB/0KB/0KB /s] [1723K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2387MB/0KB/0KB /s] [611K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2689MB/0KB/0KB /s] [688K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [2278MB/0KB/0KB /s] [583K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1288MB/0KB/0KB /s] [330K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1632MB/0KB/0KB /s] [418K/0/0 iops]
->> Jobs: 12 (f=12): [RRRRRRRRRRRR] [0.0% done] [1765MB/0KB/0KB /s] [452K/0/0 iops]
->>
->> And continue in this fashion, without recovering. Note that in this
->> example it was required to wait 16 hours for this to occur. Also note that
->> IO throughput also becomes gradually becomes more unstable leading up to
->> this point.
->>
->> This problem is only seen for non-strict mode. For strict mode, the rcaches
->> stay quite compact.
+On Thu, 7 Jan 2021 12:43:56 +0800
+Keqian Zhu <zhukeqian1@huawei.com> wrote:
+
+> When we want to promote the pinned_page_dirty_scope of vfio_iommu,
+> we call the "update" function to visit all vfio_group, but when we
+> want to downgrade this, we can set the flag as false directly.
+
+I agree that the transition can only go in one direction, but it's
+still conditional on the scope of all groups involved.  We are
+"updating" the iommu state based on the change of a group.  Renaming
+this to "promote" seems like a matter of personal preference.
+
+> So we'd better make an explicit "promote" semantic to the "update"
+> function. BTW, if vfio_iommu already has been promoted, then return
+> early.
+
+Currently it's the caller that avoids using this function when the
+iommu scope is already correct.  In fact the changes induces a
+redundant test in the pin_pages code path, we're changing a group from
+non-pinned-page-scope to pinned-page-scope, therefore the iommu scope
+cannot initially be scope limited.  In the attach_group call path,
+we're moving that test from the caller, so at best we've introduced an
+additional function call.
+
+The function as it exists today is also more versatile whereas the
+"promote" version here forces it to a single task with no appreciable
+difference in complexity or code.  This seems like a frivolous change.
+Thanks,
+
+Alex
+
+> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++----------------
+>  1 file changed, 14 insertions(+), 16 deletions(-)
 > 
-> It would be good to understand why the rcache doesn't stabilize. Could be
-> a bug, or just need some tuning
-> 
-> In strict mode, if a driver does Alloc-Free-Alloc and the first alloc
-> misses the rcache, the second allocation hits it. The same sequence in
-> non-strict mode misses the cache twice, because the IOVA is added to the
-> flush queue on Free.
-> 
-> So rather than AFAFAF.. we get AAA..FFF.., only once the fq_timer triggers
-> or the FQ is full. Interestingly the FQ size is 2x IOVA_MAG_SIZE, so we
-> could allocate 2 magazines worth of fresh IOVAs before alloc starts
-> hitting the cache. If a job allocates more than that, some magazines are
-> going to the depot, and with multi-CPU jobs those will get used on other
-> CPUs during the next alloc bursts, causing the progressive increase in
-> rcache consumption. I wonder if setting IOVA_MAG_SIZE > IOVA_FQ_SIZE helps
-> reuse of IOVAs?
-> 
-> Then again I haven't worked out the details, might be entirely wrong. I'll
-> have another look next week.
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 0b4dedaa9128..334a8240e1da 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -148,7 +148,7 @@ static int put_pfn(unsigned long pfn, int prot);
+>  static struct vfio_group *vfio_iommu_find_iommu_group(struct vfio_iommu *iommu,
+>  					       struct iommu_group *iommu_group);
+>  
+> -static void update_pinned_page_dirty_scope(struct vfio_iommu *iommu);
+> +static void promote_pinned_page_dirty_scope(struct vfio_iommu *iommu);
+>  /*
+>   * This code handles mapping and unmapping of user data buffers
+>   * into DMA'ble space using the IOMMU
+> @@ -714,7 +714,7 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
+>  	group = vfio_iommu_find_iommu_group(iommu, iommu_group);
+>  	if (!group->pinned_page_dirty_scope) {
+>  		group->pinned_page_dirty_scope = true;
+> -		update_pinned_page_dirty_scope(iommu);
+> +		promote_pinned_page_dirty_scope(iommu);
+>  	}
+>  
+>  	goto pin_done;
+> @@ -1622,27 +1622,26 @@ static struct vfio_group *vfio_iommu_find_iommu_group(struct vfio_iommu *iommu,
+>  	return group;
+>  }
+>  
+> -static void update_pinned_page_dirty_scope(struct vfio_iommu *iommu)
+> +static void promote_pinned_page_dirty_scope(struct vfio_iommu *iommu)
+>  {
+>  	struct vfio_domain *domain;
+>  	struct vfio_group *group;
+>  
+> +	if (iommu->pinned_page_dirty_scope)
+> +		return;
+> +
+>  	list_for_each_entry(domain, &iommu->domain_list, next) {
+>  		list_for_each_entry(group, &domain->group_list, next) {
+> -			if (!group->pinned_page_dirty_scope) {
+> -				iommu->pinned_page_dirty_scope = false;
+> +			if (!group->pinned_page_dirty_scope)
+>  				return;
+> -			}
+>  		}
+>  	}
+>  
+>  	if (iommu->external_domain) {
+>  		domain = iommu->external_domain;
+>  		list_for_each_entry(group, &domain->group_list, next) {
+> -			if (!group->pinned_page_dirty_scope) {
+> -				iommu->pinned_page_dirty_scope = false;
+> +			if (!group->pinned_page_dirty_scope)
+>  				return;
+> -			}
+>  		}
+>  	}
+>  
+> @@ -2057,8 +2056,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  			 * addition of a dirty tracking group.
+>  			 */
+>  			group->pinned_page_dirty_scope = true;
+> -			if (!iommu->pinned_page_dirty_scope)
+> -				update_pinned_page_dirty_scope(iommu);
+> +			promote_pinned_page_dirty_scope(iommu);
+>  			mutex_unlock(&iommu->lock);
+>  
+>  			return 0;
+> @@ -2341,7 +2339,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  	struct vfio_iommu *iommu = iommu_data;
+>  	struct vfio_domain *domain;
+>  	struct vfio_group *group;
+> -	bool update_dirty_scope = false;
+> +	bool promote_dirty_scope = false;
+>  	LIST_HEAD(iova_copy);
+>  
+>  	mutex_lock(&iommu->lock);
+> @@ -2349,7 +2347,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  	if (iommu->external_domain) {
+>  		group = find_iommu_group(iommu->external_domain, iommu_group);
+>  		if (group) {
+> -			update_dirty_scope = !group->pinned_page_dirty_scope;
+> +			promote_dirty_scope = !group->pinned_page_dirty_scope;
+>  			list_del(&group->next);
+>  			kfree(group);
+>  
+> @@ -2379,7 +2377,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  			continue;
+>  
+>  		vfio_iommu_detach_group(domain, group);
+> -		update_dirty_scope = !group->pinned_page_dirty_scope;
+> +		promote_dirty_scope = !group->pinned_page_dirty_scope;
+>  		list_del(&group->next);
+>  		kfree(group);
+>  		/*
+> @@ -2415,8 +2413,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  	 * Removal of a group without dirty tracking may allow the iommu scope
+>  	 * to be promoted.
+>  	 */
+> -	if (update_dirty_scope)
+> -		update_pinned_page_dirty_scope(iommu);
+> +	if (promote_dirty_scope)
+> +		promote_pinned_page_dirty_scope(iommu);
+>  	mutex_unlock(&iommu->lock);
+>  }
+>  
 
-I did start digging into the data (thanks for that!) before Christmas, 
-but between being generally frazzled and trying to remember how to write 
-Perl to massage the numbers out of the log dump I never got round to 
-responding, sorry.
-
-The partial thoughts that I can recall right now are firstly that the 
-total numbers of IOVAs are actually pretty meaningless, it really needs 
-to be broken down by size (that's where my Perl-hacking stalled...); 
-secondly that the pattern is far more than just a steady increase - the 
-CPU rcache count looks to be heading asymptotically towards ~65K IOVAs 
-all the time, representing (IIRC) two sizes being in heavy rotation, 
-while the depot is happily ticking along in a steady state as expected, 
-until it suddenly explodes out of nowhere; thirdly, I'd really like to 
-see instrumentation of the flush queues at the same time, since I think 
-they're the real culprit.
-
-My theory so far is that everyone is calling queue_iova() frequently 
-enough to keep the timer at bay and their own queues drained. Then at 
-the ~16H mark, *something* happens that pauses unmaps long enough for 
-the timer to fire, and at that point all hell breaks loose. The depot is 
-suddenly flooded with IOVAs of *all* sizes, indicative of all the queues 
-being flushed at once (note that the two most common sizes have been 
-hovering perilously close to "full" the whole time), but then, 
-crucially, *that keeps happening*. My guess is that the load of 
-fq_flush_timeout() slows things down enough that the the timer then 
-keeps getting the chance to expire and repeat the situation.
-
-The main conclusion I draw from this is the same one that was my initial 
-gut feeling; that MAX_GLOBAL_MAGS = 32 is utter bollocks. The CPU rcache 
-capacity scales with the number of CPUs; the flush queue capacity scales 
-with the number of CPUs; it is nonsensical that the depot size does not 
-correspondingly scale with the number of CPUs (I note that the testing 
-on the original patchset cites a 16-CPU system, where that depot 
-capacity is conveniently equal to the total rcache capacity).
-
-Now yes, purging the rcaches when the depot is full does indeed help 
-mitigate this scenario - I assume it provides enough of a buffer where 
-the regular free_iova_fast() calls don't hit queue_iova() for a while 
-(and gives fq_ring_free() some reprieve on the CPU handling the 
-timeout), giving enough leeway for the flood to finish before anyone 
-starts hitting queues/locks/etc. and stalling again, and thus break the 
-self-perpetuating timeout cycle. But that's still only a damage 
-limitation exercise! It's planning for failure to just lie down and 
-assume that the depot is going to be full if fq_flush_timeout() ever 
-fires because it's something like an order of magnitude smaller than the 
-flush queue capacity (even for a uniform distribution of IOVA sizes) on 
-super-large systems.
-
-I'm honestly tempted to move my position further towards a hard NAK on 
-this approach, because all the evidence so far points to it being a 
-bodge around a clear and easily-fixed scalability oversight. At the very 
-least I'd now want to hear a reasoned justification for why you want to 
-keep the depot at an arbitrary fixed size while the whole rest of the 
-system scales (I'm assuming that since my previous suggestion to try 
-changes in that area seems to have been ignored).
-
-Cheers,
-Robin.
-
-> 
-> Thanks,
-> Jean
-> 
->> As a solution to this issue, judge that the IOVA caches have grown too big
->> when cached magazines need to be free, and just flush all the CPUs rcaches
->> instead.
->>
->> The depot rcaches, however, are not flushed, as they can be used to
->> immediately replenish active CPUs.
->>
->> In future, some IOVA compaction could be implemented to solve the
->> instability issue, which I figure could be quite complex to implement.
->>
->> [0] https://lore.kernel.org/linux-iommu/20190815121104.29140-3-thunder.leizhen@huawei.com/
->>
->> Analyzed-by: Zhen Lei <thunder.leizhen@huawei.com>
->> Reported-by: Xiang Chen <chenxiang66@hisilicon.com>
->> Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
->> Signed-off-by: John Garry <john.garry@huawei.com>
->> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>   drivers/iommu/iova.c | 16 ++++++----------
->>   1 file changed, 6 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index 732ee687e0e2..39b7488de8bb 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -841,7 +841,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->>   				 struct iova_rcache *rcache,
->>   				 unsigned long iova_pfn)
->>   {
->> -	struct iova_magazine *mag_to_free = NULL;
->>   	struct iova_cpu_rcache *cpu_rcache;
->>   	bool can_insert = false;
->>   	unsigned long flags;
->> @@ -863,13 +862,12 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->>   				if (cpu_rcache->loaded)
->>   					rcache->depot[rcache->depot_size++] =
->>   							cpu_rcache->loaded;
->> -			} else {
->> -				mag_to_free = cpu_rcache->loaded;
->> +				can_insert = true;
->> +				cpu_rcache->loaded = new_mag;
->>   			}
->>   			spin_unlock(&rcache->lock);
->> -
->> -			cpu_rcache->loaded = new_mag;
->> -			can_insert = true;
->> +			if (!can_insert)
->> +				iova_magazine_free(new_mag);
->>   		}
->>   	}
->>   
->> @@ -878,10 +876,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->>   
->>   	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
->>   
->> -	if (mag_to_free) {
->> -		iova_magazine_free_pfns(mag_to_free, iovad);
->> -		iova_magazine_free(mag_to_free);
->> -	}
->> +	if (!can_insert)
->> +		free_all_cpu_cached_iovas(iovad);
->>   
->>   	return can_insert;
->>   }
->> -- 
->> 2.26.2
->>
->> _______________________________________________
->> iommu mailing list
->> iommu@lists.linux-foundation.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
