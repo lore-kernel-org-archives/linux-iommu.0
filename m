@@ -2,79 +2,95 @@ Return-Path: <SRS0=rNTl=GV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A27C433E0
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 09:25:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E190C433DB
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 10:08:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6BD44223E8
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 09:25:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6BD44223E8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5466122228
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 10:08:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5466122228
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B302B20349;
-	Mon, 18 Jan 2021 09:25:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DBF22857C1;
+	Mon, 18 Jan 2021 10:08:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JJSYfamPlMxp; Mon, 18 Jan 2021 09:25:40 +0000 (UTC)
+	with ESMTP id mwtItnEWCwpX; Mon, 18 Jan 2021 10:08:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 76B352002B;
-	Mon, 18 Jan 2021 09:25:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5D2B685546;
+	Mon, 18 Jan 2021 10:08:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EEB2C08A1;
-	Mon, 18 Jan 2021 09:25:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C81DC08A1;
+	Mon, 18 Jan 2021 10:08:44 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACDB9C013A
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 09:25:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8521C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 10:08:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9B1238574A
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 09:25:38 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id AD506857C5
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 10:08:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r9s5K1d3BYi2 for <iommu@lists.linux-foundation.org>;
- Mon, 18 Jan 2021 09:25:37 +0000 (UTC)
+ with ESMTP id qkZkOtH4ArWb for <iommu@lists.linux-foundation.org>;
+ Mon, 18 Jan 2021 10:08:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B555085722
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 09:25:36 +0000 (UTC)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DK5pw2p2mz67bl2;
- Mon, 18 Jan 2021 17:20:08 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Mon, 18 Jan 2021 10:25:31 +0100
-Received: from [10.47.11.164] (10.47.11.164) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 18 Jan
- 2021 09:25:30 +0000
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com
+ [209.85.218.54])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 2729485546
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 10:08:38 +0000 (UTC)
+Received: by mail-ej1-f54.google.com with SMTP id a10so6225670ejg.10
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 02:08:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=qECQt3l5OEEcYku7TfMYOUTWED64ArCIIVRgQSduy+E=;
+ b=uWev3XS0PCKEpZ1iTWw0EVv6pDwiRAfP+5/Ac6+DuxygGfGjiIzWLxneVSCQYfj6NF
+ i+NknxUxkB7zCUZhGmzlkU8Yjfa0alZ990pFQ3Un1d8Cq654kwiprnwTaI6G/mvUQubK
+ uCRNPMMAJYhKmUdRAvBR6xKSNkmPLuU9+h5IQTlvb+zMoA6b+Q+o2imcUqYrjoJI/UIw
+ EVqVMX1OME+WsCxppmcz00+8F7yrtV+4uggI+uVZOUjJNFf4m0fBqQSLfiEDqDO44M87
+ DxLNZB8DmxIXqpF7sRsVrpJHuPVAk/7v6zqfq50uydLxJNMx4Sh801qS63Za2Zwp9XYZ
+ Gdkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=qECQt3l5OEEcYku7TfMYOUTWED64ArCIIVRgQSduy+E=;
+ b=kZUEIjdJvryRRcBU4h5XgoxAU1om78tfcsn1aRf4W+j4VJhFHzPJVg9edAZC/nNarR
+ TGOPb9YBmeqSwTh+BluvTu+CRTs50H52u7Rlgwe2ciSaPNjln4P6uCpx9OvfzbV1uBhm
+ 25rAN3jy3H5xqCeQQ016lfqB0Gwd9I7ev8cBNCHzewd8rv1SKhg1EksopUP/wdy3daNO
+ b0gokN2OXYA8WCndLhETdymejwEZ0O9uVkgtCsr10b30mn+xsCzfhwsIzbjCjc3uWIfT
+ 4G3VdWYq2i6q0UlMP3X78gVPpK1O3pJLojcO3HR/0Wez36cPfS+Kl9UBPEiXcZKfTO+e
+ 52jA==
+X-Gm-Message-State: AOAM530+7H9hsp2ERT5gg8RLjY65FGJl3DsdStBT2QoYHNY3rNpzc9rb
+ TF2PY9lzc9Fr9ClY/ygSLbBQNQ==
+X-Google-Smtp-Source: ABdhPJyrwgYBnhQeuMb/RbRNmMxBdCmN47Y+UKBhEZP1a8ITTItX36PvKPTFgMWzCbD4CXwCVeBZjA==
+X-Received: by 2002:a17:906:2694:: with SMTP id
+ t20mr12118442ejc.48.1610964516484; 
+ Mon, 18 Jan 2021 02:08:36 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id r23sm9190014ejd.56.2021.01.18.02.08.35
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 18 Jan 2021 02:08:35 -0800 (PST)
+Date: Mon, 18 Jan 2021 11:08:12 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: John Garry <john.garry@huawei.com>
 Subject: Re: [PATCH v4 2/3] iommu/iova: Avoid double-negatives in magazine
  helpers
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Message-ID: <YAVeDOiKBEKZ2Tdq@myrica>
 References: <1607538189-237944-1-git-send-email-john.garry@huawei.com>
  <1607538189-237944-3-git-send-email-john.garry@huawei.com>
  <YAHRKCkcHAEUdRNT@larix.localdomain>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <69c30e85-4a72-a0e1-1e56-4ffbd0df5aba@huawei.com>
-Date: Mon, 18 Jan 2021 09:24:17 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+ <69c30e85-4a72-a0e1-1e56-4ffbd0df5aba@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <YAHRKCkcHAEUdRNT@larix.localdomain>
-Content-Language: en-US
-X-Originating-IP: [10.47.11.164]
-X-ClientProxiedBy: lhreml717-chm.china.huawei.com (10.201.108.68) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Disposition: inline
+In-Reply-To: <69c30e85-4a72-a0e1-1e56-4ffbd0df5aba@huawei.com>
 Cc: will@kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
  iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -89,173 +105,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 15/01/2021 17:30, Jean-Philippe Brucker wrote:
-> On Thu, Dec 10, 2020 at 02:23:08AM +0800, John Garry wrote:
->> A similar crash to the following could be observed if initial CPU rcache
->> magazine allocations fail in init_iova_rcaches():
+On Mon, Jan 18, 2021 at 09:24:17AM +0000, John Garry wrote:
+> On 15/01/2021 17:30, Jean-Philippe Brucker wrote:
+> > On Thu, Dec 10, 2020 at 02:23:08AM +0800, John Garry wrote:
+> > > A similar crash to the following could be observed if initial CPU rcache
+> > > magazine allocations fail in init_iova_rcaches():
+> > 
 > 
+> thanks for having a look
+> 
+> > Any idea why that's happening?  This fix seems ok but if we're expecting
+> > allocation failures for the loaded magazine then we could easily get it
+> > for cpu_rcaches too, and get a similar abort at runtime.
+> 
+> It's not specifically that we expect them (allocation failures for the
+> loaded magazine), rather we should make safe against it.
+> 
+> So could you be more specific in your concern for the cpu_rcache failure?
+> cpu_rcache magazine assignment comes from this logic.
 
-thanks for having a look
+If this fails:
 
-> Any idea why that's happening?  This fix seems ok but if we're expecting
-> allocation failures for the loaded magazine then we could easily get it
-> for cpu_rcaches too, and get a similar abort at runtime.
+drivers/iommu/iova.c:847: rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache), cache_line_size());
 
-It's not specifically that we expect them (allocation failures for the 
-loaded magazine), rather we should make safe against it.
-
-So could you be more specific in your concern for the cpu_rcache 
-failure? cpu_rcache magazine assignment comes from this logic.
-
-Anyway, logic like "if not full" or "if not empty" is poor as the 
-outcome for NULL is ambiguous (maybe there's a better word) and the code 
-is not safe against it, and so I replace with "if space" or "if have an 
-IOVA", respectively.
+then we'll get an Oops in __iova_rcache_get(). So if we're making the
+module safer against magazine allocation failure, shouldn't we also
+protect against cpu_rcaches allocation failure?
 
 Thanks,
-John
+Jean
 
+> 
+> Anyway, logic like "if not full" or "if not empty" is poor as the outcome
+> for NULL is ambiguous (maybe there's a better word) and the code is not safe
+> against it, and so I replace with "if space" or "if have an IOVA",
+> respectively.
 > 
 > Thanks,
-> Jean
+> John
 > 
->> Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
->> Mem abort info:
->>
->>    free_iova_fast+0xfc/0x280
->>    iommu_dma_free_iova+0x64/0x70
->>    __iommu_dma_unmap+0x9c/0xf8
->>    iommu_dma_unmap_sg+0xa8/0xc8
->>    dma_unmap_sg_attrs+0x28/0x50
->>    cq_thread_v3_hw+0x2dc/0x528
->>    irq_thread_fn+0x2c/0xa0
->>    irq_thread+0x130/0x1e0
->>    kthread+0x154/0x158
->>    ret_from_fork+0x10/0x34
->>
->> The issue is that expression !iova_magazine_full(NULL) evaluates true; this
->> falls over in __iova_rcache_insert() when we attempt to cache a mag and
->> cpu_rcache->loaded == NULL:
->>
->> if (!iova_magazine_full(cpu_rcache->loaded)) {
->> 	can_insert = true;
->> ...
->>
->> if (can_insert)
->> 	iova_magazine_push(cpu_rcache->loaded, iova_pfn);
->>
->> As above, can_insert is evaluated true, which it shouldn't be, and we try
->> to insert pfns in a NULL mag, which is not safe.
->>
->> To avoid this, stop using double-negatives, like !iova_magazine_full() and
->> !iova_magazine_empty(), and use positive tests, like
->> iova_magazine_has_space() and iova_magazine_has_pfns(), respectively; these
->> can safely deal with cpu_rcache->{loaded, prev} = NULL.
->>
->> Signed-off-by: John Garry <john.garry@huawei.com>
->> Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
->> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
-> 
->> ---
->>   drivers/iommu/iova.c | 29 +++++++++++++++++------------
->>   1 file changed, 17 insertions(+), 12 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index cf1aacda2fe4..732ee687e0e2 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -767,14 +767,18 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
->>   	mag->size = 0;
->>   }
->>   
->> -static bool iova_magazine_full(struct iova_magazine *mag)
->> +static bool iova_magazine_has_space(struct iova_magazine *mag)
->>   {
->> -	return (mag && mag->size == IOVA_MAG_SIZE);
->> +	if (!mag)
->> +		return false;
->> +	return mag->size < IOVA_MAG_SIZE;
->>   }
->>   
->> -static bool iova_magazine_empty(struct iova_magazine *mag)
->> +static bool iova_magazine_has_pfns(struct iova_magazine *mag)
->>   {
->> -	return (!mag || mag->size == 0);
->> +	if (!mag)
->> +		return false;
->> +	return mag->size;
->>   }
->>   
->>   static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->> @@ -783,7 +787,7 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->>   	int i;
->>   	unsigned long pfn;
->>   
->> -	BUG_ON(iova_magazine_empty(mag));
->> +	BUG_ON(!iova_magazine_has_pfns(mag));
->>   
->>   	/* Only fall back to the rbtree if we have no suitable pfns at all */
->>   	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
->> @@ -799,7 +803,7 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->>   
->>   static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
->>   {
->> -	BUG_ON(iova_magazine_full(mag));
->> +	BUG_ON(!iova_magazine_has_space(mag));
->>   
->>   	mag->pfns[mag->size++] = pfn;
->>   }
->> @@ -845,9 +849,9 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->>   	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
->>   	spin_lock_irqsave(&cpu_rcache->lock, flags);
->>   
->> -	if (!iova_magazine_full(cpu_rcache->loaded)) {
->> +	if (iova_magazine_has_space(cpu_rcache->loaded)) {
->>   		can_insert = true;
->> -	} else if (!iova_magazine_full(cpu_rcache->prev)) {
->> +	} else if (iova_magazine_has_space(cpu_rcache->prev)) {
->>   		swap(cpu_rcache->prev, cpu_rcache->loaded);
->>   		can_insert = true;
->>   	} else {
->> @@ -856,8 +860,9 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->>   		if (new_mag) {
->>   			spin_lock(&rcache->lock);
->>   			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
->> -				rcache->depot[rcache->depot_size++] =
->> -						cpu_rcache->loaded;
->> +				if (cpu_rcache->loaded)
->> +					rcache->depot[rcache->depot_size++] =
->> +							cpu_rcache->loaded;
->>   			} else {
->>   				mag_to_free = cpu_rcache->loaded;
->>   			}
->> @@ -908,9 +913,9 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
->>   	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
->>   	spin_lock_irqsave(&cpu_rcache->lock, flags);
->>   
->> -	if (!iova_magazine_empty(cpu_rcache->loaded)) {
->> +	if (iova_magazine_has_pfns(cpu_rcache->loaded)) {
->>   		has_pfn = true;
->> -	} else if (!iova_magazine_empty(cpu_rcache->prev)) {
->> +	} else if (iova_magazine_has_pfns(cpu_rcache->prev)) {
->>   		swap(cpu_rcache->prev, cpu_rcache->loaded);
->>   		has_pfn = true;
->>   	} else {
->> -- 
->> 2.26.2
->>
->> _______________________________________________
->> iommu mailing list
->> iommu@lists.linux-foundation.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> .
-> 
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
