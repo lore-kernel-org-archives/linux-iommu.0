@@ -2,84 +2,82 @@ Return-Path: <SRS0=rNTl=GV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF7C433E0
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:25:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A63AC433DB
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:39:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F20E82225C
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:25:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F20E82225C
+	by mail.kernel.org (Postfix) with ESMTPS id 81808222BB
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:39:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81808222BB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 96D83857C5;
-	Mon, 18 Jan 2021 12:25:29 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 52DBF2010E;
+	Mon, 18 Jan 2021 12:39:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8CKfTQLyux_2; Mon, 18 Jan 2021 12:25:29 +0000 (UTC)
+	with ESMTP id sv7zWZ6WNfQw; Mon, 18 Jan 2021 12:39:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0B09885792;
-	Mon, 18 Jan 2021 12:25:29 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 354282010B;
+	Mon, 18 Jan 2021 12:39:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF322C088B;
-	Mon, 18 Jan 2021 12:25:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19478C088B;
+	Mon, 18 Jan 2021 12:39:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D862BC013A
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:25:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F3B5C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:39:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C69E5857A4
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:25:26 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C980185868
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:39:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eCFc6RKU8Tcg for <iommu@lists.linux-foundation.org>;
- Mon, 18 Jan 2021 12:25:25 +0000 (UTC)
+ with ESMTP id IlVwdPNwf-Gu for <iommu@lists.linux-foundation.org>;
+ Mon, 18 Jan 2021 12:39:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E554D85792
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:25:24 +0000 (UTC)
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DK9v05GwMzMLhC;
- Mon, 18 Jan 2021 20:23:56 +0800 (CST)
-Received: from [10.174.184.42] (10.174.184.42) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 18 Jan 2021 20:25:10 +0800
-Subject: Re: [PATCH v2 1/2] vfio/iommu_type1: Populate full dirty when detach
- non-pinned group
-To: Alex Williamson <alex.williamson@redhat.com>
-References: <20210115092643.728-1-zhukeqian1@huawei.com>
- <20210115092643.728-2-zhukeqian1@huawei.com>
- <20210115110144.61e3c843@omen.home.shazbot.org>
-From: Keqian Zhu <zhukeqian1@huawei.com>
-Message-ID: <f8de434c-1993-cfe8-c451-2235be1ceb85@huawei.com>
-Date: Mon, 18 Jan 2021 20:25:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BEB4085816
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:39:41 +0000 (UTC)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DKB9X0kwJz67dKJ;
+ Mon, 18 Jan 2021 20:36:32 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Mon, 18 Jan 2021 13:39:38 +0100
+Received: from [10.47.8.82] (10.47.8.82) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 18 Jan
+ 2021 12:39:37 +0000
+Subject: Re: [PATCH v4 3/3] iommu/iova: Flush CPU rcache for when a depot fills
+To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>
+References: <1607538189-237944-1-git-send-email-john.garry@huawei.com>
+ <1607538189-237944-4-git-send-email-john.garry@huawei.com>
+ <YAHRwZXoRZFJkgE8@larix.localdomain>
+ <7a4f3d74-2f0d-1ffa-95cf-cfeaa81d8c7e@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <7b2b4f7c-d240-4922-4204-60cee61c8a60@huawei.com>
+Date: Mon, 18 Jan 2021 12:38:23 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <20210115110144.61e3c843@omen.home.shazbot.org>
-X-Originating-IP: [10.174.184.42]
+In-Reply-To: <7a4f3d74-2f0d-1ffa-95cf-cfeaa81d8c7e@arm.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.8.82]
+X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
 X-CFilter-Loop: Reflected
-Cc: Mark
- Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com, kvm@vger.kernel.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, Marc
- Zyngier <maz@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- wanghaibin.wang@huawei.com, Julien Thierry <julien.thierry.kdev@gmail.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alexios Zavras <alexios.zavras@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>, Robin
- Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,98 +90,134 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 2021/1/16 2:01, Alex Williamson wrote:
-> On Fri, 15 Jan 2021 17:26:42 +0800
-> Keqian Zhu <zhukeqian1@huawei.com> wrote:
-> 
->> If a group with non-pinned-page dirty scope is detached with dirty
->> logging enabled, we should fully populate the dirty bitmaps at the
->> time it's removed since we don't know the extent of its previous DMA,
->> nor will the group be present to trigger the full bitmap when the user
->> retrieves the dirty bitmap.
->>
->> Fixes: d6a4c185660c ("vfio iommu: Implementation of ioctl for dirty pages tracking")
->> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
->> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
->> ---
->>  drivers/vfio/vfio_iommu_type1.c | 18 +++++++++++++++++-
->>  1 file changed, 17 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 0b4dedaa9128..4e82b9a3440f 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -236,6 +236,19 @@ static void vfio_dma_populate_bitmap(struct vfio_dma *dma, size_t pgsize)
->>  	}
->>  }
->>  
->> +static void vfio_iommu_populate_bitmap_full(struct vfio_iommu *iommu)
->> +{
->> +	struct rb_node *n;
->> +	unsigned long pgshift = __ffs(iommu->pgsize_bitmap);
->> +
->> +	for (n = rb_first(&iommu->dma_list); n; n = rb_next(n)) {
->> +		struct vfio_dma *dma = rb_entry(n, struct vfio_dma, node);
->> +
->> +		if (dma->iommu_mapped)
->> +			bitmap_set(dma->bitmap, 0, dma->size >> pgshift);
->> +	}
->> +}
->> +
->>  static int vfio_dma_bitmap_alloc_all(struct vfio_iommu *iommu, size_t pgsize)
->>  {
->>  	struct rb_node *n;
->> @@ -2415,8 +2428,11 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->>  	 * Removal of a group without dirty tracking may allow the iommu scope
->>  	 * to be promoted.
->>  	 */
->> -	if (update_dirty_scope)
->> +	if (update_dirty_scope) {
->>  		update_pinned_page_dirty_scope(iommu);
->> +		if (iommu->dirty_page_tracking)
->> +			vfio_iommu_populate_bitmap_full(iommu);
->> +	}
->>  	mutex_unlock(&iommu->lock);
->>  }
->>  
-> 
-> This doesn't do the right thing.  This marks the bitmap dirty if:
-> 
->  * The detached group dirty scope was not limited to pinned pages
-> 
->  AND
-> 
->  * Dirty tracking is enabled
-> 
->  AND
-> 
->  * The vfio_dma is *currently* (ie. after the detach) iommu_mapped
-> 
-> We need to mark the bitmap dirty based on whether the vfio_dma *was*
-> iommu_mapped by the group that is now detached.  Thanks,
-> 
-> Alex
-> 
-Hi Alex,
-
-Yes, I missed this point again :-(. The update_dirty_scope means we detached
-an iommu backed group, and that means the vfio_dma *was* iommu_mapped by this
-group, so we can populate full bitmap unconditionally, right?
-
-Thanks,
-Keqian
-
-
-> .
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTUvMDEvMjAyMSAxOToyMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pgo+PiBJdCB3b3VsZCBi
+ZSBnb29kIHRvIHVuZGVyc3RhbmQgd2h5IHRoZSByY2FjaGUgZG9lc24ndCBzdGFiaWxpemUuIENv
+dWxkIGJlCj4+IGEgYnVnLCBvciBqdXN0IG5lZWQgc29tZSB0dW5pbmcKPj4KPj4gSW4gc3RyaWN0
+IG1vZGUsIGlmIGEgZHJpdmVyIGRvZXMgQWxsb2MtRnJlZS1BbGxvYyBhbmQgdGhlIGZpcnN0IGFs
+bG9jCj4+IG1pc3NlcyB0aGUgcmNhY2hlLCB0aGUgc2Vjb25kIGFsbG9jYXRpb24gaGl0cyBpdC4g
+VGhlIHNhbWUgc2VxdWVuY2UgaW4KPj4gbm9uLXN0cmljdCBtb2RlIG1pc3NlcyB0aGUgY2FjaGUg
+dHdpY2UsIGJlY2F1c2UgdGhlIElPVkEgaXMgYWRkZWQgdG8gdGhlCj4+IGZsdXNoIHF1ZXVlIG9u
+IEZyZWUuCj4+Cj4+IFNvIHJhdGhlciB0aGFuIEFGQUZBRi4uIHdlIGdldCBBQUEuLkZGRi4uLCBv
+bmx5IG9uY2UgdGhlIGZxX3RpbWVyIAo+PiB0cmlnZ2Vycwo+PiBvciB0aGUgRlEgaXMgZnVsbC4K
+ClNvdW5kcyByaWdodAoKPj4gSW50ZXJlc3RpbmdseSB0aGUgRlEgc2l6ZSBpcyAyeCBJT1ZBX01B
+R19TSVpFLCBzbyB3ZQo+PiBjb3VsZCBhbGxvY2F0ZSAyIG1hZ2F6aW5lcyB3b3J0aCBvZiBmcmVz
+aCBJT1ZBcyBiZWZvcmUgYWxsb2Mgc3RhcnRzCj4+IGhpdHRpbmcgdGhlIGNhY2hlLiBJZiBhIGpv
+YiBhbGxvY2F0ZXMgbW9yZSB0aGFuIHRoYXQsIHNvbWUgbWFnYXppbmVzIGFyZQo+PiBnb2luZyB0
+byB0aGUgZGVwb3QsIGFuZCB3aXRoIG11bHRpLUNQVSBqb2JzIHRob3NlIHdpbGwgZ2V0IHVzZWQg
+b24gb3RoZXIKPj4gQ1BVcyBkdXJpbmcgdGhlIG5leHQgYWxsb2MgYnVyc3RzLCBjYXVzaW5nIHRo
+ZSBwcm9ncmVzc2l2ZSBpbmNyZWFzZSBpbgo+PiByY2FjaGUgY29uc3VtcHRpb24uIEkgd29uZGVy
+IGlmIHNldHRpbmcgSU9WQV9NQUdfU0laRSA+IElPVkFfRlFfU0laRSAKPj4gaGVscHMKPj4gcmV1
+c2Ugb2YgSU9WQXM/CgpMb29raW5nIGJhY2sgdGhyb3VnaCB0aGUgbG9yZSBoaXN0b3J5LCBJIGRv
+bid0IGtub3cgd2hlcmUgdGhlIApJT1ZBX0ZRX1NJWkUgPSAyNTYgY2FtZSBmcm9tLiBJIGd1ZXNz
+IGl0J3Mgc2l6ZSBvZiAyeCBJT1ZBX01BR19TSVpFICgxeCAKZm9yIGxvYWRlZCBhbmQgMXggZm9y
+IHByZXYpIGZvciB0aGUgcmVhc29uIHlvdSBtZW50aW9uLgoKPj4KPj4gVGhlbiBhZ2FpbiBJIGhh
+dmVuJ3Qgd29ya2VkIG91dCB0aGUgZGV0YWlscywgbWlnaHQgYmUgZW50aXJlbHkgd3JvbmcuIAo+
+PiBJJ2xsCj4+IGhhdmUgYW5vdGhlciBsb29rIG5leHQgd2Vlay4KPiAKCmNoZWVycwoKPiBJIGRp
+ZCBzdGFydCBkaWdnaW5nIGludG8gdGhlIGRhdGEgKHRoYW5rcyBmb3IgdGhhdCEpIGJlZm9yZSBD
+aHJpc3RtYXMsIAo+IGJ1dCBiZXR3ZWVuIGJlaW5nIGdlbmVyYWxseSBmcmF6emxlZCBhbmQgdHJ5
+aW5nIHRvIHJlbWVtYmVyIGhvdyB0byB3cml0ZSAKPiBQZXJsIHRvIG1hc3NhZ2UgdGhlIG51bWJl
+cnMgb3V0IG9mIHRoZSBsb2cgZHVtcCBJIG5ldmVyIGdvdCByb3VuZCB0byAKPiByZXNwb25kaW5n
+LCBzb3JyeS4KCkFzIHlvdSBtYXkgaGF2ZSBzZWVuOgpodHRwczovL3Jhdy5naXRodWJ1c2VyY29u
+dGVudC5jb20vaGlzaWxpY29uL2tlcm5lbC1kZXYvMDY0YzRkYzg4NjliM2YyYWQwN2VkZmZjZWFm
+ZGUwYjEyOWYyNzZiMC9sc2kzMDA4X2RtZXNnCgpJIGhhZCB0byBjaGFuZ2Ugc29tZSBibG9jayBj
+b25maWdzIHZpYSBzeXNmcyB0byBldmVyIGdldCBJT1ZBIGxvY2F0aW9ucyAKZm9yIHNpemUgPiAw
+LiBBbmQgZXZlbiB0aGVuLCBJIHN0aWxsIGdvdCBub25lIGJpZ2dlciB0aGFuIApJT1ZBX1JBTkdF
+X0NBQ0hFX01BWF9TSVpFLgoKTm90ZTogRm9yIGEgbG9nIGxpa2U6ClsxMzE3NS4zNjE5MTVdIHBy
+aW50X2lvdmEyIGlvdmFfYWxsb2NzKD01MDAwMDAwIC4uLiB0b29fYmlnPTQ3MDM2Cgo0NzAzNiBp
+cyBudW1iZXIgb2YgSU9WQSBzaXplID4gSU9WQV9SQU5HRV9DQUNIRV9NQVhfU0laRSwgaW4gY2Fz
+ZSBpdCB3YXMgCm5vdCBjbGVhci4KCkFuZCBJIG5ldmVyIGhpdCB0aGUgY3JpdGljYWwgcG9pbnQg
+b2YgYSBkZXBvdCBiaW4gZmlsbGluZywgYnV0IGl0IG1heSAKanVzdCB0YWtlIGV2ZW4gbG9uZ2Vy
+LgoKSG93ZXZlciB3aXRoIElPVkEgc2l6ZSA9IDAgYWx3YXlzIG9jY3VycmluZywgdGhlbiBJIG5v
+dGljZWQgdGhhdCB0aGUgCmRlcG90IHNpemUgPSAwIGJpbiBmaWxscyB1cCByZWxhdGl2ZWx5IHF1
+aWNrbHkuIEFzIHN1Y2gsIEkgYW0gbm93IApzbGlnaHRseSBza2VwdGljYWwgb2YgdGhlIGFwcHJv
+YWNoIEkgaGF2ZSB0YWtlbiBoZXJlLCBpLmUgcHVyZ2UgdGhlIAp3aG9sZSByY2FjaGUuCgo+IAo+
+IFRoZSBwYXJ0aWFsIHRob3VnaHRzIHRoYXQgSSBjYW4gcmVjYWxsIHJpZ2h0IG5vdyBhcmUgZmly
+c3RseSB0aGF0IHRoZSAKPiB0b3RhbCBudW1iZXJzIG9mIElPVkFzIGFyZSBhY3R1YWxseSBwcmV0
+dHkgbWVhbmluZ2xlc3MsIGl0IHJlYWxseSBuZWVkcyAKPiB0byBiZSBicm9rZW4gZG93biBieSBz
+aXplICh0aGF0J3Mgd2hlcmUgbXkgUGVybC1oYWNraW5nIHN0YWxsZWQuLi4pOyAKPiBzZWNvbmRs
+eSB0aGF0IHRoZSBwYXR0ZXJuIGlzIGZhciBtb3JlIHRoYW4ganVzdCBhIHN0ZWFkeSBpbmNyZWFz
+ZSAtIHRoZSAKPiBDUFUgcmNhY2hlIGNvdW50IGxvb2tzIHRvIGJlIGhlYWRpbmcgYXN5bXB0b3Rp
+Y2FsbHkgdG93YXJkcyB+NjVLIElPVkFzIAo+IGFsbCB0aGUgdGltZSwgcmVwcmVzZW50aW5nIChJ
+SVJDKSB0d28gc2l6ZXMgYmVpbmcgaW4gaGVhdnkgcm90YXRpb24sIAo+IHdoaWxlIHRoZSBkZXBv
+dCBpcyBoYXBwaWx5IHRpY2tpbmcgYWxvbmcgaW4gYSBzdGVhZHkgc3RhdGUgYXMgZXhwZWN0ZWQs
+IAo+IHVudGlsIGl0IHN1ZGRlbmx5IGV4cGxvZGVzIG91dCBvZiBub3doZXJlOyB0aGlyZGx5LCBJ
+J2QgcmVhbGx5IGxpa2UgdG8gCj4gc2VlIGluc3RydW1lbnRhdGlvbiBvZiB0aGUgZmx1c2ggcXVl
+dWVzIGF0IHRoZSBzYW1lIHRpbWUsIHNpbmNlIEkgdGhpbmsgCj4gdGhleSdyZSB0aGUgcmVhbCBj
+dWxwcml0Lgo+IAo+IE15IHRoZW9yeSBzbyBmYXIgaXMgdGhhdCBldmVyeW9uZSBpcyBjYWxsaW5n
+IHF1ZXVlX2lvdmEoKSBmcmVxdWVudGx5IAo+IGVub3VnaCB0byBrZWVwIHRoZSB0aW1lciBhdCBi
+YXkgYW5kIHRoZWlyIG93biBxdWV1ZXMgZHJhaW5lZC4gVGhlbiBhdCAKPiB0aGUgfjE2SCBtYXJr
+LCAqc29tZXRoaW5nKiBoYXBwZW5zIHRoYXQgcGF1c2VzIHVubWFwcyBsb25nIGVub3VnaCBmb3Ig
+Cj4gdGhlIHRpbWVyIHRvIGZpcmUsIGFuZCBhdCB0aGF0IHBvaW50IGFsbCBoZWxsIGJyZWFrcyBs
+b29zZS4KClNvIGRvIHlvdSB0aGluayB0aGF0IHRoZSBmcmVlaW5nIHRoZSBJT1ZBIG1hZ2F6aW5l
+cyB3aGVuIHRoZSBkZXBvdCBmaWxscyAKaXMgdGhlIGNhdXNlIG9mIHRoaXM/IFRoYXQgd2FzIG91
+ciBhbmFseXNpcy4KCj4gVGhlIGRlcG90IGlzIAo+IHN1ZGRlbmx5IGZsb29kZWQgd2l0aCBJT1ZB
+cyBvZiAqYWxsKiBzaXplcywgaW5kaWNhdGl2ZSBvZiBhbGwgdGhlIHF1ZXVlcyAKPiBiZWluZyBm
+bHVzaGVkIGF0IG9uY2UgKG5vdGUgdGhhdCB0aGUgdHdvIG1vc3QgY29tbW9uIHNpemVzIGhhdmUg
+YmVlbiAKPiBob3ZlcmluZyBwZXJpbG91c2x5IGNsb3NlIHRvICJmdWxsIiB0aGUgd2hvbGUgdGlt
+ZSksIGJ1dCB0aGVuLCAKPiBjcnVjaWFsbHksICp0aGF0IGtlZXBzIGhhcHBlbmluZyouIE15IGd1
+ZXNzIGlzIHRoYXQgdGhlIGxvYWQgb2YgCj4gZnFfZmx1c2hfdGltZW91dCgpIHNsb3dzIHRoaW5n
+cyBkb3duIGVub3VnaCB0aGF0IHRoZSB0aGUgdGltZXIgdGhlbiAKPiBrZWVwcyBnZXR0aW5nIHRo
+ZSBjaGFuY2UgdG8gZXhwaXJlIGFuZCByZXBlYXQgdGhlIHNpdHVhdGlvbi4KCk5vdCBzdXJlIG9u
+IHRoYXQgb25lLgoKPiAKPiBUaGUgbWFpbiBjb25jbHVzaW9uIEkgZHJhdyBmcm9tIHRoaXMgaXMg
+dGhlIHNhbWUgb25lIHRoYXQgd2FzIG15IGluaXRpYWwgCj4gZ3V0IGZlZWxpbmc7IHRoYXQgTUFY
+X0dMT0JBTF9NQUdTID0gMzIgaXMgdXR0ZXIgYm9sbG9ja3MuCgpZZWFoLCBJIHRlbmQgdG8gYWdy
+ZWUgd2l0aCB0aGF0LiBPciwgbW9yZSBzcGVjaWZpY2FsbHksIGhvdyB0aGluZ3Mgd29yayAKdG9k
+YXkgaXMgYnJva2VuLCBhbmQgTUFYX0dMT0JBTF9NQUdTID0gMzIgaXMgdmVyeSBtdWNoIGludm9s
+dmVkIHdpdGggdGhhdC4KCj4gVGhlIENQVSByY2FjaGUgCj4gY2FwYWNpdHkgc2NhbGVzIHdpdGgg
+dGhlIG51bWJlciBvZiBDUFVzOyB0aGUgZmx1c2ggcXVldWUgY2FwYWNpdHkgc2NhbGVzIAo+IHdp
+dGggdGhlIG51bWJlciBvZiBDUFVzOyBpdCBpcyBub25zZW5zaWNhbCB0aGF0IHRoZSBkZXBvdCBz
+aXplIGRvZXMgbm90IAo+IGNvcnJlc3BvbmRpbmdseSBzY2FsZSB3aXRoIHRoZSBudW1iZXIgb2Yg
+Q1BVcyAoSSBub3RlIHRoYXQgdGhlIHRlc3RpbmcgCj4gb24gdGhlIG9yaWdpbmFsIHBhdGNoc2V0
+IGNpdGVzIGEgMTYtQ1BVIHN5c3RlbSwgd2hlcmUgdGhhdCBkZXBvdCAKPiBjYXBhY2l0eSBpcyBj
+b252ZW5pZW50bHkgZXF1YWwgdG8gdGhlIHRvdGFsIHJjYWNoZSBjYXBhY2l0eSkuCj4gCj4gTm93
+IHllcywgcHVyZ2luZyB0aGUgcmNhY2hlcyB3aGVuIHRoZSBkZXBvdCBpcyBmdWxsIGRvZXMgaW5k
+ZWVkIGhlbHAgCj4gbWl0aWdhdGUgdGhpcyBzY2VuYXJpbyAtIEkgYXNzdW1lIGl0IHByb3ZpZGVz
+IGVub3VnaCBvZiBhIGJ1ZmZlciB3aGVyZSAKPiB0aGUgcmVndWxhciBmcmVlX2lvdmFfZmFzdCgp
+IGNhbGxzIGRvbid0IGhpdCBxdWV1ZV9pb3ZhKCkgZm9yIGEgd2hpbGUgCj4gKGFuZCBnaXZlcyBm
+cV9yaW5nX2ZyZWUoKSBzb21lIHJlcHJpZXZlIG9uIHRoZSBDUFUgaGFuZGxpbmcgdGhlIAo+IHRp
+bWVvdXQpLCBnaXZpbmcgZW5vdWdoIGxlZXdheSBmb3IgdGhlIGZsb29kIHRvIGZpbmlzaCBiZWZv
+cmUgYW55b25lIAo+IHN0YXJ0cyBoaXR0aW5nIHF1ZXVlcy9sb2Nrcy9ldGMuIGFuZCBzdGFsbGlu
+ZyBhZ2FpbiwgYW5kIHRodXMgYnJlYWsgdGhlIAo+IHNlbGYtcGVycGV0dWF0aW5nIHRpbWVvdXQg
+Y3ljbGUuIEJ1dCB0aGF0J3Mgc3RpbGwgb25seSBhIGRhbWFnZSAKPiBsaW1pdGF0aW9uIGV4ZXJj
+aXNlISBJdCdzIHBsYW5uaW5nIGZvciBmYWlsdXJlIHRvIGp1c3QgbGllIGRvd24gYW5kIAo+IGFz
+c3VtZSB0aGF0IHRoZSBkZXBvdCBpcyBnb2luZyB0byBiZSBmdWxsIGlmIGZxX2ZsdXNoX3RpbWVv
+dXQoKSBldmVyIAo+IGZpcmVzIGJlY2F1c2UgaXQncyBzb21ldGhpbmcgbGlrZSBhbiBvcmRlciBv
+ZiBtYWduaXR1ZGUgc21hbGxlciB0aGFuIHRoZSAKPiBmbHVzaCBxdWV1ZSBjYXBhY2l0eSAoZXZl
+biBmb3IgYSB1bmlmb3JtIGRpc3RyaWJ1dGlvbiBvZiBJT1ZBIHNpemVzKSBvbiAKPiBzdXBlci1s
+YXJnZSBzeXN0ZW1zLgo+IAo+IEknbSBob25lc3RseSB0ZW1wdGVkIHRvIG1vdmUgbXkgcG9zaXRp
+b24gZnVydGhlciB0b3dhcmRzIGEgaGFyZCBOQUsgb24gCj4gdGhpcyBhcHByb2FjaCwgYmVjYXVz
+ZSBhbGwgdGhlIGV2aWRlbmNlIHNvIGZhciBwb2ludHMgdG8gaXQgYmVpbmcgYSAKPiBib2RnZSBh
+cm91bmQgYSBjbGVhciBhbmQgZWFzaWx5LWZpeGVkIHNjYWxhYmlsaXR5IG92ZXJzaWdodC4gQXQg
+dGhlIHZlcnkgCj4gbGVhc3QgSSdkIG5vdyB3YW50IHRvIGhlYXIgYSByZWFzb25lZCBqdXN0aWZp
+Y2F0aW9uIGZvciB3aHkgeW91IHdhbnQgdG8gCj4ga2VlcCB0aGUgZGVwb3QgYXQgYW4gYXJiaXRy
+YXJ5IGZpeGVkIHNpemUgd2hpbGUgdGhlIHdob2xlIHJlc3Qgb2YgdGhlIAo+IHN5c3RlbSBzY2Fs
+ZXMgCgoKPihJJ20gYXNzdW1pbmcgdGhhdCBzaW5jZSBteSBwcmV2aW91cyBzdWdnZXN0aW9uIHRv
+IHRyeSAKPiBjaGFuZ2VzIGluIHRoYXQgYXJlYSBzZWVtcyB0byBoYXZlIGJlZW4gaWdub3JlZCku
+Cj4gCgpTbyBJIHNhaWQgdGhhdCBpdCBzaG91bGQgZml4IHRoZSBwcm9ibGVtIG9mIHRoZSB0aHJv
+dWdocHV0IGdvaW5nIHRocm91Z2ggCnRoZSBmbG9vciBhdCB0aGlzIDE2aCBtYXJrLgoKQnV0IHdl
+IHNlZSAyeCB0aWdodGx5IGNvdXBsZWQgcHJvYmxlbXM6CmEuIGxlYWRpbmcgdXAgdG8gdGhlIH4x
+NkggY3JpdGljYWwgcG9pbnQsIHRocm91Z2hwdXQgaXMgc2xvd2x5IGRlZ3JhZGluZyAKYW5kIGJl
+Y29tZXMgcXVpdGUgdW5zdGFibGUgKG5vdCBzaG93biBpbiB0aGUgbG9nKQpGb3IgdGhlIExTSTMw
+MDggY2FyZCwgd2UgZG9uJ3Qgc2VlIHRoYXQuIEJ1dCB0aGVuIG5vIElPVkEgc2l6ZSA+IApJT1ZB
+X1JBTkdFX0NBQ0hFX01BWF9TSVpFIG9jY3VyIHRoZXJlLgoKYi4gYXQgdGhlIGNyaXRpY2FsIHBv
+aW50LCB0aHJvdWdocHV0IGdvZXMgdGhyb3VnaCB0aGUgZmxvb3IKClNvIGIuIHNob3VsZCBiZSBm
+aXhlZCB3aXRoIHRoZSBzdWdnZXN0aW9uIHRvIGhhdmUgdW5saW1pdGVkL2hpZ2hlciBkZXBvdCAK
+bWF4IGJpbiBzaXplLCBidXQgSSByZWNrb24gdGhhdCB3ZSB3b3VsZCBzdGlsbCBzZWUgYS4gQW5k
+IEkgcHV0IHRoYXQgCmRvd24gdG8gdGhlIGZhY3QgdGhhdCB3ZSBoYXZlIElPVkEgc2l6ZXMgPiBJ
+T1ZBX1JBTkdFX0NBQ0hFX01BWF9TSVpFIGF0IAphIGNlcnRhaW4gcmF0ZSBhbHdheXMuIEFzIHRo
+ZSByYiB0cmVlIGdyb3dzIG92ZXIgdGltZSwgdGhleSBiZWNvbWUgCnNsb3dlciBhbmQgc2xvd2Vy
+IHRvIGFsbG9jK2ZyZWUgLSB0aGF0J3Mgb3VyIHRoZW9yeS4gQWxsb3dpbmcgdGhlIGRlcG90IAp0
+byBncm93IGZ1cnRoZXIgaXNu4oCZdCBnb2luZyB0byBoZWxwIHRoYXQuCgpNYXliZSBMZWl6aGVu
+J3MgaWRlYSB0byB0cmltIHRoZSByY2FjaGUgcGVyaW9kaWNhbGx5IGlzIG92ZXJhbGwgYmV0dGVy
+LCAKYnV0IEkgYW0gY29uY2VybmVkIG9uIGltcGxlbWVudGF0aW9uLgoKSWYgbm90LCB0aGVuIGlm
+IHdlIGFsbG93IGRlcG90IGJpbiBzaXplIHRvIHNjYWxlL2dyb3csIEkgd291bGQgbGlrZSB0byAK
+c2VlIG1vcmUgZWZmaWNpZW50IGhhbmRsaW5nIGZvciBJT1ZBIHNpemUgPiBJT1ZBX1JBTkdFX0NB
+Q0hFX01BWF9TSVpFLgoKVGhhbmtzLApKb2huCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
