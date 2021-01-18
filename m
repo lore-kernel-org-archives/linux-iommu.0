@@ -2,74 +2,84 @@ Return-Path: <SRS0=rNTl=GV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB3EC433DB
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:59:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32FE0C433E0
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 13:16:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA16322571
-	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 12:59:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA16322571
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A1A0A22BEA
+	for <iommu@archiver.kernel.org>; Mon, 18 Jan 2021 13:16:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1A0A22BEA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6BD1186354;
-	Mon, 18 Jan 2021 12:59:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kw37bEAiBcNS; Mon, 18 Jan 2021 12:59:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AD555863D0;
-	Mon, 18 Jan 2021 12:59:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8C4A2C088B;
-	Mon, 18 Jan 2021 12:59:34 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2DD02C013A
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:59:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 12F118701F
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:59:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4BD4D85F5D;
+	Mon, 18 Jan 2021 13:16:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zWz8YKgAHHoL; Mon, 18 Jan 2021 13:16:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 620EA845E7;
+	Mon, 18 Jan 2021 13:16:32 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CD33C08A1;
+	Mon, 18 Jan 2021 13:16:32 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DACB8C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 13:16:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CD43782027
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 13:16:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RTPI2ewz79Xs for <iommu@lists.linux-foundation.org>;
- Mon, 18 Jan 2021 12:59:32 +0000 (UTC)
+ with ESMTP id Aa3sCTU9PAms for <iommu@lists.linux-foundation.org>;
+ Mon, 18 Jan 2021 13:16:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 24F3C8700D
- for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 12:59:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52AC731B;
- Mon, 18 Jan 2021 04:59:31 -0800 (PST)
-Received: from [10.57.39.58] (unknown [10.57.39.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E36F3F719;
- Mon, 18 Jan 2021 04:59:30 -0800 (PST)
-Subject: Re: [PATCH v4 2/3] iommu/iova: Avoid double-negatives in magazine
- helpers
-To: John Garry <john.garry@huawei.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <1607538189-237944-1-git-send-email-john.garry@huawei.com>
- <1607538189-237944-3-git-send-email-john.garry@huawei.com>
- <YAHRKCkcHAEUdRNT@larix.localdomain>
- <69c30e85-4a72-a0e1-1e56-4ffbd0df5aba@huawei.com> <YAVeDOiKBEKZ2Tdq@myrica>
- <cdc77ccd-823d-464b-fe3c-2a9da17bcb61@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <69614e38-fcc0-4220-e1cd-15de91dd61ef@arm.com>
-Date: Mon, 18 Jan 2021 12:59:26 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 078B080ED5
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Jan 2021 13:16:24 +0000 (UTC)
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DKC1r5CHCzMLqq;
+ Mon, 18 Jan 2021 21:14:56 +0800 (CST)
+Received: from [10.174.184.42] (10.174.184.42) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.498.0; Mon, 18 Jan 2021 21:16:09 +0800
+Subject: Re: [PATCH v2 2/2] vfio/iommu_type1: Sanity check pfn_list when
+ remove vfio_dma
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20210115092643.728-1-zhukeqian1@huawei.com>
+ <20210115092643.728-3-zhukeqian1@huawei.com>
+ <20210115121447.54c96857@omen.home.shazbot.org>
+From: Keqian Zhu <zhukeqian1@huawei.com>
+Message-ID: <32f8b347-587a-1a9a-bee8-569f09a03a15@huawei.com>
+Date: Mon, 18 Jan 2021 21:16:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-In-Reply-To: <cdc77ccd-823d-464b-fe3c-2a9da17bcb61@huawei.com>
-Content-Language: en-GB
-Cc: will@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxarm@huawei.com
+In-Reply-To: <20210115121447.54c96857@omen.home.shazbot.org>
+X-Originating-IP: [10.174.184.42]
+X-CFilter-Loop: Reflected
+Cc: Mark
+ Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com, kvm@vger.kernel.org,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
+ kvmarm@lists.cs.columbia.edu, Marc
+ Zyngier <maz@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ wanghaibin.wang@huawei.com, Julien Thierry <julien.thierry.kdev@gmail.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Alexios Zavras <alexios.zavras@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Robin
+ Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,44 +92,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMS0xOCAxMDo1NSwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAxOC8wMS8yMDIxIDEw
-OjA4LCBKZWFuLVBoaWxpcHBlIEJydWNrZXIgd3JvdGU6Cj4+Pj4gQW55IGlkZWEgd2h5IHRoYXQn
-cyBoYXBwZW5pbmc/wqAgVGhpcyBmaXggc2VlbXMgb2sgYnV0IGlmIHdlJ3JlIAo+Pj4+IGV4cGVj
-dGluZwo+Pj4+IGFsbG9jYXRpb24gZmFpbHVyZXMgZm9yIHRoZSBsb2FkZWQgbWFnYXppbmUgdGhl
-biB3ZSBjb3VsZCBlYXNpbHkgZ2V0IGl0Cj4+Pj4gZm9yIGNwdV9yY2FjaGVzIHRvbywgYW5kIGdl
-dCBhIHNpbWlsYXIgYWJvcnQgYXQgcnVudGltZS4KPj4+IEl0J3Mgbm90IHNwZWNpZmljYWxseSB0
-aGF0IHdlIGV4cGVjdCB0aGVtIChhbGxvY2F0aW9uIGZhaWx1cmVzIGZvciB0aGUKPj4+IGxvYWRl
-ZCBtYWdhemluZSksIHJhdGhlciB3ZSBzaG91bGQgbWFrZSBzYWZlIGFnYWluc3QgaXQuCj4+Pgo+
-Pj4gU28gY291bGQgeW91IGJlIG1vcmUgc3BlY2lmaWMgaW4geW91ciBjb25jZXJuIGZvciB0aGUg
-Y3B1X3JjYWNoZSAKPj4+IGZhaWx1cmU/Cj4+PiBjcHVfcmNhY2hlIG1hZ2F6aW5lIGFzc2lnbm1l
-bnQgY29tZXMgZnJvbSB0aGlzIGxvZ2ljLgo+PiBJZiB0aGlzIGZhaWxzOgo+Pgo+PiBkcml2ZXJz
-L2lvbW11L2lvdmEuYzo4NDc6IHJjYWNoZS0+Y3B1X3JjYWNoZXMgPSAKPj4gX19hbGxvY19wZXJj
-cHUoc2l6ZW9mKCpjcHVfcmNhY2hlKSwgY2FjaGVfbGluZV9zaXplKCkpOwo+Pgo+PiB0aGVuIHdl
-J2xsIGdldCBhbiBPb3BzIGluIF9faW92YV9yY2FjaGVfZ2V0KCkuIFNvIGlmIHdlJ3JlIG1ha2lu
-ZyB0aGUKPj4gbW9kdWxlIHNhZmVyIGFnYWluc3QgbWFnYXppbmUgYWxsb2NhdGlvbiBmYWlsdXJl
-LCBzaG91bGRuJ3Qgd2UgYWxzbwo+PiBwcm90ZWN0IGFnYWluc3QgY3B1X3JjYWNoZXMgYWxsb2Nh
-dGlvbiBmYWlsdXJlPwo+IAo+IEFoLCBnb3RjaGEuIFNvIHdlIGhhdmUgdGhlIFdBUk4gdGhlcmUs
-IGJ1dCB0aGF0J3Mgbm90IG11Y2ggdXNlIGFzIHRoaXMgCj4gd291bGQgc3RpbGwgY3Jhc2gsIGFz
-IHlvdSBzYXkuCj4gCj4gU28gbWF5YmUgd2UgY2FuIGVtYmVkIHRoZSBjcHUgcmNhY2hlcyBpbiBp
-b3ZhX2RvbWFpbiBzdHJ1Y3QsIHRvIGF2b2lkIAo+IHRoZSBzZXBhcmF0ZSAoZmFpbGFibGUpIGNw
-dSByY2FjaGUgYWxsb2NhdGlvbi4KCklzIHRoYXQgZXZlbiBwb3NzaWJsZT8gVGhlIHNpemUgb2Yg
-cGVyY3B1IGRhdGEgaXNuJ3Qga25vd24gYXQgY29tcGlsZSAKdGltZSwgc28gYXQgYmVzdCBpdCB3
-b3VsZCBhZGQgdWdseSBydW50aW1lIGNvbXBsZXhpdHkgdG8gYW55IGFsbG9jYXRpb24gCm9mIGEg
-c3RydWN0IGlvdmFfZG9tYWluIGJ5IGl0c2VsZiwgYnV0IHdvcnNlIHRoYW4gdGhhdCBpdCBtZWFu
-cyB0aGF0IAplbWJlZGRpbmcgaW92YV9kb21haW4gaW4gYW55IG90aGVyIHN0cnVjdHVyZSBiZWNv
-bWVzIGNvbXBsZXRlbHkgYnJva2VuLCBubz8KClJvYmluLgoKPiBBbHRlcm5hdGl2ZWx5LCB3ZSBj
-b3VsZCBhZGQgTlVMTCBjaGVja3MgX19pb3ZhX3JjYWNoZV9nZXQoKSBldCBhbCBmb3IgCj4gdGhp
-cyBhbGxvY2F0aW9uIGZhaWx1cmUgYnV0IHRoYXQncyBub3QgcHJlZmVyYWJsZSBhcyBpdCdzIGZh
-c3RwYXRoLgo+IAo+IEZpbmFsbHkgc28gd2UgY291bGQgcGFzcyBiYWNrIGFuIGVycm9yIGNvZGUg
-ZnJvbSBpbml0X2lvdmFfcmNhY2hlKCkgdG8gCj4gaXRzIG9ubHkgY2FsbGVyLCBpbml0X2lvdmFf
-ZG9tYWluKCk7IGJ1dCB0aGF0IGhhcyBtdWx0aXBsZSBjYWxsZXJzIGFuZCAKPiB3b3VsZCBuZWVk
-IHRvIGJlIGZpeGVkIHVwLgo+IAo+IE5vdCBzdXJlIHdoaWNoIGlzIGJlc3Qgb3Igb24gb3RoZXIg
-b3B0aW9ucy4KPiAKPiBUaGFua3MsCj4gSm9obgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+
+
+On 2021/1/16 3:14, Alex Williamson wrote:
+> On Fri, 15 Jan 2021 17:26:43 +0800
+> Keqian Zhu <zhukeqian1@huawei.com> wrote:
+> 
+>> vfio_sanity_check_pfn_list() is used to check whether pfn_list of
+>> vfio_dma is empty when remove the external domain, so it makes a
+>> wrong assumption that only external domain will add pfn to dma pfn_list.
+>>
+>> Now we apply this check when remove a specific vfio_dma and extract
+>> the notifier check just for external domain.
+> 
+> The page pinning interface is gated by having a notifier registered for
+> unmaps, therefore non-external domains would also need to register a
+> notifier.  There's currently no other way to add entries to the
+> pfn_list.  So if we allow pinning for such domains, then it's wrong to
+> WARN_ON() when the notifier list is not-empty when removing an external
+> domain.  Long term we should probably extend page {un}pinning for the
+> caller to pass their notifier to be validated against the notifier list
+> rather than just allowing page pinning if *any* notifier is registered.
+> Thanks,
+I was misled by the code comments. So when the commit a54eb55045ae is added, the only
+user of pin interface is mdev vendor driver, but now we also allow iommu backed group
+to use this interface to constraint dirty scope. Is vfio_iommu_unmap_unpin_all() a
+proper place to put this WARN()?
+
+Thanks,
+Keqian
+
+> 
+> Alex
+>  
+>> Fixes: a54eb55045ae ("vfio iommu type1: Add support for mediated devices")
+>> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+>> ---
+>>  drivers/vfio/vfio_iommu_type1.c | 24 +++++-------------------
+>>  1 file changed, 5 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index 4e82b9a3440f..a9bc15e84a4e 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -958,6 +958,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>>  
+>>  static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
+>>  {
+>> +	WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list);
+>>  	vfio_unmap_unpin(iommu, dma, true);
+>>  	vfio_unlink_dma(iommu, dma);
+>>  	put_task_struct(dma->task);
+>> @@ -2251,23 +2252,6 @@ static void vfio_iommu_unmap_unpin_reaccount(struct vfio_iommu *iommu)
+>>  	}
+>>  }
+>>  
+>> -static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
+>> -{
+>> -	struct rb_node *n;
+>> -
+>> -	n = rb_first(&iommu->dma_list);
+>> -	for (; n; n = rb_next(n)) {
+>> -		struct vfio_dma *dma;
+>> -
+>> -		dma = rb_entry(n, struct vfio_dma, node);
+>> -
+>> -		if (WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list)))
+>> -			break;
+>> -	}
+>> -	/* mdev vendor driver must unregister notifier */
+>> -	WARN_ON(iommu->notifier.head);
+>> -}
+>> -
+>>  /*
+>>   * Called when a domain is removed in detach. It is possible that
+>>   * the removed domain decided the iova aperture window. Modify the
+>> @@ -2367,7 +2351,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>>  			kfree(group);
+>>  
+>>  			if (list_empty(&iommu->external_domain->group_list)) {
+>> -				vfio_sanity_check_pfn_list(iommu);
+>> +				/* mdev vendor driver must unregister notifier */
+>> +				WARN_ON(iommu->notifier.head);
+>>  
+>>  				if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+>>  					vfio_iommu_unmap_unpin_all(iommu);
+>> @@ -2491,7 +2476,8 @@ static void vfio_iommu_type1_release(void *iommu_data)
+>>  
+>>  	if (iommu->external_domain) {
+>>  		vfio_release_domain(iommu->external_domain, true);
+>> -		vfio_sanity_check_pfn_list(iommu);
+>> +		/* mdev vendor driver must unregister notifier */
+>> +		WARN_ON(iommu->notifier.head);
+>>  		kfree(iommu->external_domain);
+>>  	}
+>>  
+> 
+> .
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
