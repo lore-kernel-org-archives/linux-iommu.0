@@ -2,99 +2,114 @@ Return-Path: <SRS0=ZMVL=GW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-20.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B91E5C433DB
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:03:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65EAC433E0
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:17:13 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2D9C622241
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:03:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D9C622241
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 78DA023110
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:17:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78DA023110
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8D016868E7;
-	Tue, 19 Jan 2021 10:03:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E94C4864D7;
+	Tue, 19 Jan 2021 10:17:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fWs+XvoKQ51h; Tue, 19 Jan 2021 10:03:42 +0000 (UTC)
+	with ESMTP id 6ProhZhw4BkB; Tue, 19 Jan 2021 10:17:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B429786864;
-	Tue, 19 Jan 2021 10:03:42 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0AD09861AB;
+	Tue, 19 Jan 2021 10:17:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83E16C088B;
-	Tue, 19 Jan 2021 10:03:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EBCDC013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:03:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1B05C08A1;
+	Tue, 19 Jan 2021 10:17:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 59E43C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:17:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 00883868E7
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:03:41 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 44E1F20108
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:17:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GK-roLRQ+b12 for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 10:03:36 +0000 (UTC)
+ with ESMTP id xXf5mJmGTYoO for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Jan 2021 10:17:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 36FFF86864
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:03:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1611050614;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=I/9Q+F90NAKj/f83iclQUQZ5P8dwgMK4bLugHzNFnF0=;
- b=Iz10g9z7rUR+q01jTfl1MBwH50r/GwBgj+962rE+d9Dpd1BFm8+4sgIXCafsnyh8Gr43VR
- wSvQ2N2kUeGAgiMQA2V7/039GhhmMokFwRSsrN27XRHFXHq9WN/9xxX/6tMCHCDXLD+6hs
- tuVTGF/AqcuxqwV00Ey6/aXD7rP2fjA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-JRJTFJ6mPZmwqk35DQVIIA-1; Tue, 19 Jan 2021 05:03:30 -0500
-X-MC-Unique: JRJTFJ6mPZmwqk35DQVIIA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D424A612A3;
- Tue, 19 Jan 2021 10:03:28 +0000 (UTC)
-Received: from [10.36.112.67] (ovpn-112-67.ams2.redhat.com [10.36.112.67])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 7DE626062F;
- Tue, 19 Jan 2021 10:03:21 +0000 (UTC)
-Subject: Re: [PATCH v7 02/16] iommu/smmu: Report empty domain nesting info
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Vivek Gautam <vivek.gautam@arm.com>
-References: <1599734733-6431-1-git-send-email-yi.l.liu@intel.com>
- <1599734733-6431-3-git-send-email-yi.l.liu@intel.com>
- <CAFp+6iFob_fy1cTgcEv0FOXBo70AEf3Z1UvXgPep62XXnLG9Gw@mail.gmail.com>
- <DM5PR11MB14356D5688CA7DC346AA32DBC3AA0@DM5PR11MB1435.namprd11.prod.outlook.com>
- <CAFp+6iEnh6Tce26F0RHYCrQfiHrkf-W3_tXpx+ysGiQz6AWpEw@mail.gmail.com>
- <DM5PR11MB1435D9ED79B2BE9C8F235428C3A90@DM5PR11MB1435.namprd11.prod.outlook.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <6bcd5229-9cd3-a78c-ccb2-be92f2add373@redhat.com>
-Date: Tue, 19 Jan 2021 11:03:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com
+ [209.85.128.51])
+ by silver.osuosl.org (Postfix) with ESMTPS id 293F32002E
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:17:07 +0000 (UTC)
+Received: by mail-wm1-f51.google.com with SMTP id c127so731638wmf.5
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 02:17:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=UOCaNFGn8qpkTDzGnatAjkLM9ck0E2AazlgdK9gboJ4=;
+ b=QD87Pn3W+Re5ufLbkWhCkzqvZ/+9A1VMq6Cpc2o9IIWv5cfzqzWOkTL/Of7gjH6EYk
+ sxqbyCsM6OB5YZ2GXYGVcTpvFCAw11aiEGVETWqYHejTw+6yGH9f4A5TygoZoUk630FK
+ WI1fDC7P8JWsRMBZTQZrTJ3jtmVxbu3jGVUD/wKwWfV4Yg+i0qClff+9ucTwjubdxCCt
+ 4CbcPfEnYDDMSjamXU2ldnJvncO76AwzxoFmiO87WMAGv5m6ZN+uTtM1OUgPnSz9/b4z
+ W7iBp8uYw/0GU9TshvvnorexHM7uwECFb0GIz83iYFMSd/CsvbZyFUco+xZ/5PsH6GVe
+ 0wxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=UOCaNFGn8qpkTDzGnatAjkLM9ck0E2AazlgdK9gboJ4=;
+ b=ZngI7ttBpapmVum8kR29o/oqfo6QZvbRM5gXnMbhdXCxCvWD52MoCuMXJ3DUt0Y01j
+ e+hByRVKSY0gHM3j3aR+o5bYA5+aNkjvQhMDek0hqCvaogeFIjNjLBtLw3US81gYyJ8C
+ ONsbBQVh34VUIEqOCofEFnuUKyobsKqcvG4LyhDDtENzhwbhtyiyGBUxnXTQZ63kAn+Z
+ QVjt4oSfPPk8C6OvNIM4VKFAm28jdM3isSpKk9wPks9pdlAFO/OsRo7WBpUDVzPN+1nG
+ b/9biLgmspM+0CJ8FFzrZpj3D8ofBx+00N2m9l8Gk7tp+gfE8BZMzZ7FNU2UrqSzVCUm
+ /uww==
+X-Gm-Message-State: AOAM530MU24JfP5l7vBYLKMNOeWPyP2G5CVUMBUI8SYNBFgmIjei/ObL
+ 0ic+7KfD+t34YqIsyPUJaXCv4g==
+X-Google-Smtp-Source: ABdhPJwi964FZpWtpaHGKGUwgdiVe5a4w9/d4IuQfbqMX1SZ+lU2/MFLQP7L80VpVdKZbL3TFcGFYw==
+X-Received: by 2002:a7b:c456:: with SMTP id l22mr3054466wmi.73.1611051425483; 
+ Tue, 19 Jan 2021 02:17:05 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id w18sm34729229wrn.2.2021.01.19.02.17.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 19 Jan 2021 02:17:04 -0800 (PST)
+Date: Tue, 19 Jan 2021 11:16:46 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v9 03/10] iommu: Separate IOMMU_DEV_FEAT_IOPF from
+ IOMMU_DEV_FEAT_SVA
+Message-ID: <YAaxjmJW+ZMvrhac@myrica>
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-4-jean-philippe@linaro.org>
+ <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
+ <X/1o72DTmzdCMhDz@myrica>
+ <c88e5d74-098d-7f1d-a7bb-a89e40fb8fa4@linux.intel.com>
+ <MWHPR11MB18868F53E5A9E0CF9975042B8CA90@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YAB0SHyUZbxprkL3@larix.localdomain>
+ <636814a9-7dea-06f6-03ec-6a98dd30b7e3@linux.intel.com>
+ <MWHPR11MB188653AF6EFA0E55DE17815F8CA40@MWHPR11MB1886.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB1435D9ED79B2BE9C8F235428C3A90@DM5PR11MB1435.namprd11.prod.outlook.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>, iommu@lists.linux-foundation.org,
- "Tian, Jun J" <jun.j.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <MWHPR11MB188653AF6EFA0E55DE17815F8CA40@MWHPR11MB1886.namprd11.prod.outlook.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
+ "guohanjun@huawei.com" <guohanjun@huawei.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ "lenb@kernel.org" <lenb@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ David Woodhouse <dwmw2@infradead.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,179 +127,127 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi, Vivek,
+On Mon, Jan 18, 2021 at 06:54:28AM +0000, Tian, Kevin wrote:
+> > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > Sent: Saturday, January 16, 2021 11:54 AM
+> > 
+> > Hi Jean,
+> > 
+> > On 2021/1/15 0:41, Jean-Philippe Brucker wrote:
+> > > I guess detailing what's needed for nested IOPF can help the discussion,
+> > > although I haven't seen any concrete plan about implementing it, and it
+> > > still seems a couple of years away. There are two important steps with
+> > > nested IOPF:
+> > >
+> > > (1) Figuring out whether a fault comes from L1 or L2. A SMMU stall event
+> > >      comes with this information, but a PRI page request doesn't. The
+> > IOMMU
+> > >      driver has to first translate the IOVA to a GPA, injecting the fault
+> > >      into the guest if this translation fails by using the usual
+> > >      iommu_report_device_fault().
+> 
+> The IOMMU driver can walk the page tables to find out the level information.
+> If the walk terminates at the 1st level, inject to the guest. Otherwise fix the 
+> mm fault at 2nd level. It's not efficient compared to hardware-provided info,
+> but it's doable and actual overhead needs to be measured (optimization exists
+> e.g. having fault client to hint no 2nd level fault expected when registering fault
+> handler in pinned case).
+> 
+> > >
+> > > (2) Translating the faulting GPA to a HVA that can be fed to
+> > >      handle_mm_fault(). That requires help from KVM, so another interface -
+> > >      either KVM registering GPA->HVA translation tables or IOMMU driver
+> > >      querying each translation. Either way it should be reusable by device
+> > >      drivers that implement IOPF themselves.
+> 
+> Or just leave to the fault client (say VFIO here) to figure it out. VFIO has the
+> information about GPA->HPA and can then call handle_mm_fault to fix the
+> received fault. The IOMMU driver just exports an interface for the device drivers 
+> which implement IOPF themselves to report a fault which is then handled by
+> the IOMMU core by reusing the same faulting path.
+> 
+> > >
+> > > (1) could be enabled with iommu_dev_enable_feature(). (2) requires a
+> > more
+> > > complex interface. (2) alone might also be desirable - demand-paging for
+> > > level 2 only, no SVA for level 1.
+> 
+> Yes, this is what we want to point out. A general FEAT_IOPF implies more than
+> what this patch intended to address.
+> 
+> > >
+> > > Anyway, back to this patch. What I'm trying to convey is "can the IOMMU
+> > > receive incoming I/O page faults for this device and, when SVA is enabled,
+> > > feed them to the mm subsystem?  Enable that or return an error." I'm stuck
+> > > on the name. IOPF alone is too vague. Not IOPF_L1 as Kevin noted, since L1
+> > > is also used in virtualization. IOPF_BIND and IOPF_SVA could also mean (2)
+> > > above. IOMMU_DEV_FEAT_IOPF_FLAT?
+> > >
+> > > That leaves space for the nested extensions. (1) above could be
+> > > IOMMU_FEAT_IOPF_NESTED, and (2) requires some new interfacing with
+> > KVM (or
+> > > just an external fault handler) and could be used with either IOPF_FLAT or
+> > > IOPF_NESTED. We can figure out the details later. What do you think?
+> > 
+> > I agree that we can define IOPF_ for current usage and leave space for
+> > future extensions.
+> > 
+> > IOPF_FLAT represents IOPF on first-level translation, currently first
+> > level translation could be used in below cases.
+> > 
+> > 1) FL w/ internal Page Table: Kernel IOVA;
+> > 2) FL w/ external Page Table: VFIO passthrough;
+> > 3) FL w/ shared CPU page table: SVA
+> > 
+> > We don't need to support IOPF for case 1). Let's put it aside.
+> > 
+> > IOPF handling of 2) and 3) are different. Do we need to define different
+> > names to distinguish these two cases?
+> > 
+> 
+> Defining feature names according to various use cases does not sound a
+> clean way. In an ideal way we should have just a general FEAT_IOPF since
+> the hardware (at least VT-d) does support fault in either 1st-level, 2nd-
+> level or nested configurations. We are entering this trouble just because
+> there is difficulty for the software evolving to enable full hardware cap
+> in one batch. My last proposal was sort of keeping FEAT_IOPF as a general
+> capability for whether delivering fault through the IOMMU or the ad-hoc
+> device, and then having a separate interface for whether IOPF reporting
+> is available under a specific configuration. The former is about the path
+> between the IOMMU and the device, while the latter is about the interface
+> between the IOMMU driver and its faulting client.
+> 
+> The reporting capability can be checked when the fault client is registering 
+> its fault handler, and at this time the IOMMU driver knows how the related 
+> mapping is configured (1st, 2nd, or nested) and whether fault reporting is 
+> supported in such configuration. We may introduce IOPF_REPORT_FLAT and 
+> IOPF_REPORT_NESTED respectively. while IOPF_REPORT_FLAT detection is 
+> straightforward (2 and 3 can be differentiated internally based on configured 
+> level), IOPF_REPORT_NESTED needs additional info to indicate which level is 
+> concerned since the vendor driver may not support fault reporting in both 
+> levels or the fault client may be interested in only one level (e.g. with 2nd
+> level pinned).
 
-On 1/13/21 6:56 AM, Liu, Yi L wrote:
-> Hi Vivek,
-> 
->> From: Vivek Gautam <vivek.gautam@arm.com>
->> Sent: Tuesday, January 12, 2021 7:06 PM
->>
->> Hi Yi,
->>
->>
->> On Tue, Jan 12, 2021 at 2:51 PM Liu, Yi L <yi.l.liu@intel.com> wrote:
->>>
->>> Hi Vivek,
->>>
->>>> From: Vivek Gautam <vivek.gautam@arm.com>
->>>> Sent: Tuesday, January 12, 2021 2:50 PM
->>>>
->>>> Hi Yi,
->>>>
->>>>
->>>> On Thu, Sep 10, 2020 at 4:13 PM Liu Yi L <yi.l.liu@intel.com> wrote:
->>>>>
->>>>> This patch is added as instead of returning a boolean for
->>>> DOMAIN_ATTR_NESTING,
->>>>> iommu_domain_get_attr() should return an iommu_nesting_info
->> handle.
->>>> For
->>>>> now, return an empty nesting info struct for now as true nesting is not
->>>>> yet supported by the SMMUs.
->>>>>
->>>>> Cc: Will Deacon <will@kernel.org>
->>>>> Cc: Robin Murphy <robin.murphy@arm.com>
->>>>> Cc: Eric Auger <eric.auger@redhat.com>
->>>>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>>>> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>>>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->>>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>> Reviewed-by: Eric Auger <eric.auger@redhat.com>
->>>>> ---
->>>>> v5 -> v6:
->>>>> *) add review-by from Eric Auger.
->>>>>
->>>>> v4 -> v5:
->>>>> *) address comments from Eric Auger.
->>>>> ---
->>>>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29
->>>> +++++++++++++++++++++++++++--
->>>>>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 29
->>>> +++++++++++++++++++++++++++--
->>>>>  2 files changed, 54 insertions(+), 4 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> index 7196207..016e2e5 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> @@ -3019,6 +3019,32 @@ static struct iommu_group
->>>> *arm_smmu_device_group(struct device *dev)
->>>>>         return group;
->>>>>  }
->>>>>
->>>>> +static int arm_smmu_domain_nesting_info(struct
->> arm_smmu_domain
->>>> *smmu_domain,
->>>>> +                                       void *data)
->>>>> +{
->>>>> +       struct iommu_nesting_info *info = (struct iommu_nesting_info
->>>> *)data;
->>>>> +       unsigned int size;
->>>>> +
->>>>> +       if (!info || smmu_domain->stage !=
->> ARM_SMMU_DOMAIN_NESTED)
->>>>> +               return -ENODEV;
->>>>> +
->>>>> +       size = sizeof(struct iommu_nesting_info);
->>>>> +
->>>>> +       /*
->>>>> +        * if provided buffer size is smaller than expected, should
->>>>> +        * return 0 and also the expected buffer size to caller.
->>>>> +        */
->>>>> +       if (info->argsz < size) {
->>>>> +               info->argsz = size;
->>>>> +               return 0;
->>>>> +       }
->>>>> +
->>>>> +       /* report an empty iommu_nesting_info for now */
->>>>> +       memset(info, 0x0, size);
->>>>> +       info->argsz = size;
->>>>> +       return 0;
->>>>> +}
->>>>> +
->>>>>  static int arm_smmu_domain_get_attr(struct iommu_domain
->> *domain,
->>>>>                                     enum iommu_attr attr, void *data)
->>>>>  {
->>>>> @@ -3028,8 +3054,7 @@ static int
->> arm_smmu_domain_get_attr(struct
->>>> iommu_domain *domain,
->>>>>         case IOMMU_DOMAIN_UNMANAGED:
->>>>>                 switch (attr) {
->>>>>                 case DOMAIN_ATTR_NESTING:
->>>>> -                       *(int *)data = (smmu_domain->stage ==
->>>> ARM_SMMU_DOMAIN_NESTED);
->>>>> -                       return 0;
->>>>> +                       return
->> arm_smmu_domain_nesting_info(smmu_domain,
->>>> data);
->>>>
->>>> Thanks for the patch.
->>>> This would unnecessarily overflow 'data' for any caller that's expecting
->> only
->>>> an int data. Dump from one such issue that I was seeing when testing
->>>> this change along with local kvmtool changes is pasted below [1].
->>>>
->>>> I could get around with the issue by adding another (iommu_attr) -
->>>> DOMAIN_ATTR_NESTING_INFO that returns (iommu_nesting_info).
->>>
->>> nice to hear from you. At first, we planned to have a separate iommu_attr
->>> for getting nesting_info. However, we considered there is no existing user
->>> which gets DOMAIN_ATTR_NESTING, so we decided to reuse it for iommu
->> nesting
->>> info. Could you share me the code base you are using? If the error you
->>> encountered is due to this change, so there should be a place which gets
->>> DOMAIN_ATTR_NESTING.
->>
->> I am currently working on top of Eric's tree for nested stage support [1].
->> My best guess was that the vfio_pci_dma_fault_init() method [2] that is
->> requesting DOMAIN_ATTR_NESTING causes stack overflow, and corruption.
->> That's when I added a new attribute.
-> 
-> I see. I think there needs a change in the code there. Should also expect
-> a nesting_info returned instead of an int anymore. @Eric, how about your
-> opinion?
-> 
-> 	domain = iommu_get_domain_for_dev(&vdev->pdev->dev);
-> 	ret = iommu_domain_get_attr(domain, DOMAIN_ATTR_NESTING, &info);
-> 	if (ret || !(info.features & IOMMU_NESTING_FEAT_PAGE_RESP)) {
-> 		/*
-> 		 * No need go futher as no page request service support.
-> 		 */
-> 		return 0;
-> 	}
-Sure I think it is "just" a matter of synchro between the 2 series. Yi,
-do you have plans to respin part of
-[PATCH v7 00/16] vfio: expose virtual Shared Virtual Addressing to VMs
-or would you allow me to embed this patch in my series.
+I agree with this plan (provided I understood it correctly this time):
+have IOMMU_DEV_FEAT_IOPF describing the IOPF interface between device and
+IOMMU. Enabling it on its own doesn't do anything visible to the driver,
+it just probes for capabilities and enables PRI if necessary. For host
+SVA, since there is no additional communication between IOMMU and device
+driver, enabling IOMMU_DEV_FEAT_SVA in addition to IOPF is sufficient.
+Then when implementing nested we'll extend iommu_register_fault_handler()
+with flags and parameters. That will also enable advanced dispatching (1).
 
-Thanks
+Will it be necessary to enable FEAT_IOPF when doing VFIO passthrough
+(injecting to the guest or handling it with external page tables)?
+I think that would be better. Currently a device driver registering a
+fault handler doesn't know if it will get recoverable page faults or only
+unrecoverable ones.
 
-Eric
-> 
-> https://github.com/luxis1999/linux-vsva/blob/vsva-linux-5.9-rc6-v8%2BPRQ/drivers/vfio/pci/vfio_pci.c
-> 
-> Regards,
-> Yi Liu
-> 
->> I will soon publish my patches to the list for review. Let me know
->> your thoughts.
->>
->> [1] https://github.com/eauger/linux/tree/5.10-rc4-2stage-v13
->> [2] https://github.com/eauger/linux/blob/5.10-rc4-2stage-
->> v13/drivers/vfio/pci/vfio_pci.c#L494
->>
->> Thanks
->> Vivek
->>
->>>
->>> Regards,
->>> Yi Liu
->>
->> [snip]
+So I don't think this patch needs any change. Baolu, are you ok with
+keeping this and patch 4?
 
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
