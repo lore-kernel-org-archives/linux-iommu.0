@@ -2,80 +2,82 @@ Return-Path: <SRS0=ZMVL=GW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_RED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC87C433E0
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:52:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C62C433E0
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 11:12:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CB272311C
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 10:52:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CB272311C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id AAF982168B
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 11:12:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAF982168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6F11B20400;
-	Tue, 19 Jan 2021 10:52:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6CF5A84995;
+	Tue, 19 Jan 2021 11:12:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x4SV1UD8xB6O; Tue, 19 Jan 2021 10:52:25 +0000 (UTC)
+	with ESMTP id dXAd6_n5_XBB; Tue, 19 Jan 2021 11:12:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 4C0C7203CC;
-	Tue, 19 Jan 2021 10:52:25 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 305708495A;
+	Tue, 19 Jan 2021 11:12:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CCB0C08A1;
-	Tue, 19 Jan 2021 10:52:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BFAC1C013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:52:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F1A8C088B;
+	Tue, 19 Jan 2021 11:12:34 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C947EC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 11:12:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7EF48203D9
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:52:22 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id BDA55864A0
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 11:12:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Fb1ueZ84zWLK for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 10:52:19 +0000 (UTC)
+ with ESMTP id yPJoUsDTzxkS for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Jan 2021 11:12:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by silver.osuosl.org (Postfix) with ESMTP id 60DC1203CC
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 10:52:19 +0000 (UTC)
-X-UUID: 1c0459e7f3e74769ab96e65bd18a00f9-20210119
-X-UUID: 1c0459e7f3e74769ab96e65bd18a00f9-20210119
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
- ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 168070190; Tue, 19 Jan 2021 18:52:15 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 19 Jan 2021 18:52:13 +0800
-Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 19 Jan 2021 18:52:13 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
- Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2] of/device: Update dma_range_map only when dev has valid
- dma-ranges
-Date: Tue, 19 Jan 2021 18:52:03 +0800
-Message-ID: <20210119105203.15530-1-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 77A5C86763
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 11:12:29 +0000 (UTC)
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DKm9H2SNgz67d33;
+ Tue, 19 Jan 2021 19:08:19 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 19 Jan 2021 12:12:25 +0100
+Received: from localhost (10.47.77.36) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Tue, 19 Jan
+ 2021 11:12:24 +0000
+Date: Tue, 19 Jan 2021 11:11:44 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v9 01/10] iommu: Remove obsolete comment
+Message-ID: <20210119111144.00002130@Huawei.com>
+In-Reply-To: <20210108145217.2254447-2-jean-philippe@linaro.org>
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-2-jean-philippe@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>,
- srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Frank Rowand <frowand.list@gmail.com>,
- linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.47.77.36]
+X-ClientProxiedBy: lhreml735-chm.china.huawei.com (10.201.108.86) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ robin.murphy@arm.com, guohanjun@huawei.com, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-accelerators@lists.ozlabs.org, sudeep.holla@arm.com,
+ vivek.gautam@arm.com, zhangfei.gao@linaro.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,67 +95,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The commit e0d072782c73 ("dma-mapping: introduce DMA range map,
-supplanting dma_pfn_offset") always update dma_range_map even though it was
-already set, like in the sunxi_mbus driver. the issue is reported at [1].
-This patch avoid this(Updating it only when dev has valid dma-ranges).
+On Fri, 8 Jan 2021 15:52:09 +0100
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-Meanwhile, dma_range_map contains the devices' dma_ranges information,
-This patch moves dma_range_map before of_iommu_configure. The iommu
-driver may need to know the dma_address requirements of its iommu
-consumer devices.
+> Commit 986d5ecc5699 ("iommu: Move fwspec->iommu_priv to struct
+> dev_iommu") removed iommu_priv from fwspec. Update the struct doc.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org
 
-[1] https://lore.kernel.org/linux-arm-kernel/5c7946f3-b56e-da00-a750-be097c7ceb32@arm.com/
+Hi Jean-Philippe,
 
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Frank Rowand <frowand.list@gmail.com>
-Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset"),
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- drivers/of/device.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Flags parameter doesn't have any docs in this structure and should
+do given kernel-doc should be complete.  It probably spits out a warning
+for this if you build with W=1
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index aedfaaafd3e7..1122daa8e273 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -162,9 +162,11 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 	mask = DMA_BIT_MASK(ilog2(end) + 1);
- 	dev->coherent_dma_mask &= mask;
- 	*dev->dma_mask &= mask;
--	/* ...but only set bus limit if we found valid dma-ranges earlier */
--	if (!ret)
-+	/* ...but only set bus limit and range map if we found valid dma-ranges earlier */
-+	if (!ret) {
- 		dev->bus_dma_limit = end;
-+		dev->dma_range_map = map;
-+	}
- 
- 	coherent = of_dma_is_coherent(np);
- 	dev_dbg(dev, "device is%sdma coherent\n",
-@@ -172,6 +174,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 
- 	iommu = of_iommu_configure(dev, np, id);
- 	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
-+		/* Don't touch range map if it wasn't set from a valid dma-ranges */
-+		if (!ret)
-+			dev->dma_range_map = NULL;
- 		kfree(map);
- 		return -EPROBE_DEFER;
- 	}
-@@ -181,7 +186,6 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 
- 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
- 
--	dev->dma_range_map = map;
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure_id);
--- 
-2.18.0
+Not sure if it makes sense to fix that in this same patch, or as a different
+one as the responsible patch is a different one.
+Looks like that came in:
+Commit 5702ee24182f ("ACPI/IORT: Check ATS capability in root complex nodes")
+
+Also, good to get this patch merged asap so we cut down on the noise in the
+interesting part of this series!
+
+FWIW
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+Jonathan
+
+
+> ---
+>  include/linux/iommu.h | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index b3f0e2018c62..26bcde5e7746 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -570,7 +570,6 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
+>   * struct iommu_fwspec - per-device IOMMU instance data
+>   * @ops: ops for this device's IOMMU
+>   * @iommu_fwnode: firmware handle for this device's IOMMU
+> - * @iommu_priv: IOMMU driver private data for this device
+>   * @num_pasid_bits: number of PASID bits supported by this device
+>   * @num_ids: number of associated device IDs
+>   * @ids: IDs which this device may present to the IOMMU
 
 _______________________________________________
 iommu mailing list
