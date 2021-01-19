@@ -4,75 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2472AC433E0
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 13:46:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1183C433DB
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 13:52:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A3702250E
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 13:46:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A3702250E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4F0D82242A
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 13:52:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F0D82242A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 14FF786844;
-	Tue, 19 Jan 2021 13:46:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 13CD486631;
+	Tue, 19 Jan 2021 13:52:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MueLgY9JEWVI; Tue, 19 Jan 2021 13:46:36 +0000 (UTC)
+	with ESMTP id aNG4mauNNbr0; Tue, 19 Jan 2021 13:52:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 83F9E86817;
-	Tue, 19 Jan 2021 13:46:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 800CB865CD;
+	Tue, 19 Jan 2021 13:52:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 73E62C088B;
-	Tue, 19 Jan 2021 13:46:36 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CE23CC013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:46:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 649B1C088B;
+	Tue, 19 Jan 2021 13:52:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60C08C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:52:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C9CD485092
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:46:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4295B86632
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:52:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ckxlp6N0C3Ko for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 13:46:33 +0000 (UTC)
+ with ESMTP id XuCmQQePyQMO for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Jan 2021 13:52:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7FB6A80AE1
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:46:33 +0000 (UTC)
-IronPort-SDR: LvSmSZpNDTkijEC7Q98UX9PxDuRQiKVaj5aoMaaJ9zvKjk7j4HfjBPEjFMxQT5LyltawzVYpyX
- r3j0VWAgaL8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9868"; a="179074548"
-X-IronPort-AV: E=Sophos;i="5.79,358,1602572400"; d="scan'208";a="179074548"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Jan 2021 05:46:32 -0800
-IronPort-SDR: 9Drec6KDlJklq/AcoxMUfb1QCvAcoxdfbXtmTJNG22mG/Mp0KEG2VcE7luN4EQBo8XIwC9N242
- Rg5zSm+ThUOg==
-X-IronPort-AV: E=Sophos;i="5.79,358,1602572400"; d="scan'208";a="383938590"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.249.174.34])
- ([10.249.174.34])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Jan 2021 05:46:30 -0800
-Subject: Re: [PATCH 0/2 v2] iommu: fix the failure of deferred attach for
- iommu attach device
-To: Lianbo Jiang <lijiang@redhat.com>, linux-kernel@vger.kernel.org
-References: <20210119111616.12761-1-lijiang@redhat.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <e896bbd5-fdf3-ca04-b2f2-f1c7910f1ee0@linux.intel.com>
-Date: Tue, 19 Jan 2021 21:46:28 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7A275865CD
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 13:52:42 +0000 (UTC)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.226])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DKqhc4w8Yz67ZHY;
+ Tue, 19 Jan 2021 21:47:12 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 19 Jan 2021 14:52:39 +0100
+Received: from localhost (10.47.77.36) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Tue, 19 Jan
+ 2021 13:52:38 +0000
+Date: Tue, 19 Jan 2021 13:51:58 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v9 07/10] iommu/arm-smmu-v3: Maintain a SID->device
+ structure
+Message-ID: <20210119135158.00001995@Huawei.com>
+In-Reply-To: <20210108145217.2254447-8-jean-philippe@linaro.org>
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-8-jean-philippe@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <20210119111616.12761-1-lijiang@redhat.com>
-Content-Language: en-US
-Cc: thomas.lendacky@amd.com, iommu@lists.linux-foundation.org, will@kernel.org,
- robin.murphy@arm.com
+X-Originating-IP: [10.47.77.36]
+X-ClientProxiedBy: lhreml735-chm.china.huawei.com (10.201.108.86) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ robin.murphy@arm.com, guohanjun@huawei.com, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-accelerators@lists.ozlabs.org, sudeep.holla@arm.com,
+ vivek.gautam@arm.com, zhangfei.gao@linaro.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,46 +91,111 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/1/19 19:16, Lianbo Jiang wrote:
-> This patchset is to fix the failure of deferred attach for iommu attach
-> device, it includes the following two patches:
+On Fri, 8 Jan 2021 15:52:15 +0100
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+
+> When handling faults from the event or PRI queue, we need to find the
+> struct device associated with a SID. Add a rb_tree to keep track of
+> SIDs.
 > 
-> [1] [PATCH 1/2] dma-iommu: use static-key to minimize the impact in the fast-path
->      This is a prepared patch for the second one, move out the is_kdump_kernel()
->      check from iommu_dma_deferred_attach() to iommu_dma_init(), and use the
->      static-key in the fast-path to minimize the impact in the normal case.
-> 
-> [2] [PATCH 2/2] iommu: use the __iommu_attach_device() directly for deferred attach
->      Move the handling currently in iommu_dma_deferred_attach() into the
->      iommu core code so that it can call the __iommu_attach_device()
->      directly instead of the iommu_attach_device(). The external interface
->      iommu_attach_device() is not suitable for handling this situation.
-> 
-> Changes since v1:
-> [1] use the __iommu_attach_device() directly for deferred attach
-> [2] use static-key to minimize the impact in the fast-path
-> 
-> Lianbo Jiang (2):
->    dma-iommu: use static-key to minimize the impact in the fast-path
->    iommu: use the __iommu_attach_device() directly for deferred attach
-> 
->   drivers/iommu/dma-iommu.c | 29 +++++++++++------------------
->   drivers/iommu/iommu.c     | 12 ++++++++++++
->   include/linux/iommu.h     |  2 ++
->   3 files changed, 25 insertions(+), 18 deletions(-)
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+One totally trivial point if you happen to be spinning again.
+
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+with or without that.
+
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  13 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 161 ++++++++++++++++----
+>  2 files changed, 144 insertions(+), 30 deletions(-)
 > 
 
-Good fix and improvement. For the patches in this series:
+...
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>  
+> +static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+> +				  struct arm_smmu_master *master)
+> +{
+> +	int i;
+> +	int ret = 0;
+> +	struct arm_smmu_stream *new_stream, *cur_stream;
+> +	struct rb_node **new_node, *parent_node = NULL;
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
+> +
+> +	master->streams = kcalloc(fwspec->num_ids,
+> +				  sizeof(struct arm_smmu_stream), GFP_KERNEL);
+				  sizeof(*master->streams)
 
-Best regards,
-baolu
+nitpick :) Saves reviewer going to check that master->streams is of the type they expect.
+
+
+> +	if (!master->streams)
+> +		return -ENOMEM;
+> +	master->num_streams = fwspec->num_ids;
+> +
+> +	mutex_lock(&smmu->streams_mutex);
+> +	for (i = 0; i < fwspec->num_ids && !ret; i++) {
+> +		u32 sid = fwspec->ids[i];
+> +
+> +		new_stream = &master->streams[i];
+> +		new_stream->id = sid;
+> +		new_stream->master = master;
+> +
+> +		/*
+> +		 * Check the SIDs are in range of the SMMU and our stream table
+> +		 */
+> +		if (!arm_smmu_sid_in_range(smmu, sid)) {
+> +			ret = -ERANGE;
+> +			break;
+> +		}
+> +
+> +		/* Ensure l2 strtab is initialised */
+> +		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> +			ret = arm_smmu_init_l2_strtab(smmu, sid);
+> +			if (ret)
+> +				break;
+> +		}
+> +
+> +		/* Insert into SID tree */
+> +		new_node = &(smmu->streams.rb_node);
+> +		while (*new_node) {
+> +			cur_stream = rb_entry(*new_node, struct arm_smmu_stream,
+> +					      node);
+> +			parent_node = *new_node;
+> +			if (cur_stream->id > new_stream->id) {
+> +				new_node = &((*new_node)->rb_left);
+> +			} else if (cur_stream->id < new_stream->id) {
+> +				new_node = &((*new_node)->rb_right);
+> +			} else {
+> +				dev_warn(master->dev,
+> +					 "stream %u already in tree\n",
+> +					 cur_stream->id);
+> +				ret = -EINVAL;
+> +				break;
+> +			}
+> +		}
+> +
+> +		if (!ret) {
+> +			rb_link_node(&new_stream->node, parent_node, new_node);
+> +			rb_insert_color(&new_stream->node, &smmu->streams);
+> +		}
+> +	}
+> +
+> +	if (ret) {
+> +		for (; i > 0; i--)
+> +			rb_erase(&master->streams[i].node, &smmu->streams);
+> +		kfree(master->streams);
+> +	}
+> +	mutex_unlock(&smmu->streams_mutex);
+> +
+> +	return ret;
+> +}
+...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
