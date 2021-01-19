@@ -2,75 +2,71 @@ Return-Path: <SRS0=ZMVL=GW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5199C433DB
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 15:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB949C433DB
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 15:52:47 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 417282311C
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 15:29:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 417282311C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 80C1620780
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 15:52:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 80C1620780
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5B0E9204F1;
-	Tue, 19 Jan 2021 15:29:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3C37C20780;
+	Tue, 19 Jan 2021 15:52:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rgh9-yGf8Nml; Tue, 19 Jan 2021 15:29:52 +0000 (UTC)
+	with ESMTP id sDFaAATDGBfl; Tue, 19 Jan 2021 15:52:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7D382204E4;
-	Tue, 19 Jan 2021 15:29:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 04D8B2078B;
+	Tue, 19 Jan 2021 15:52:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61D4CC088B;
-	Tue, 19 Jan 2021 15:29:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A67D2C013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:29:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5307C088B;
+	Tue, 19 Jan 2021 15:52:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62470C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:52:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8D59F84C16
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:29:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4F3A62078D
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:52:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BSVVfneDhPPT for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 15:29:50 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D121084B80
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:29:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=qN5w7+5mI1ro4bld5PO3eX1ssRp5DBRYLgSIAZw6YTg=; b=sVTpXquCMX/7Pn2sWrNH+72X43
- US6K5TEuXzMbenqwGZ4BKzkVBh4nDwBVL0tlw/C4Ikwwf3Fwk2gDWxyUXBrQ9rSbcv4mvGe2bEubg
- Tz07XFsDCcOwcPNURjBr4G92j4oQiUXZX5aDP9F1Yk3L62L3BNG8FPgDl+wnrtIJXae6U3EEB/hnZ
- 1NTqIRnzHqyT79yQCoVCxHHwEbIoGa4T1Y4vBn8vP+GNHJpc18Ibyo6/JifkbVX9hSShMK2TRWLAC
- CJaJY9wO9nlWs/bUOO/2CsM8CxXaUbpD9mV86f590jWVRyThVrbDaqc/TnR9YbBNjbMVeazFgUnwX
- iPc1Z8fw==;
-Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat
- Linux)) id 1l1swt-00EUnW-Kc; Tue, 19 Jan 2021 15:29:42 +0000
-Date: Tue, 19 Jan 2021 15:29:39 +0000
-From: Christoph Hellwig <hch@infradead.org>
-To: Lianbo Jiang <lijiang@redhat.com>
-Subject: Re: [PATCH 2/2 v2] iommu: use the __iommu_attach_device() directly
- for deferred attach
-Message-ID: <20210119152939.GB3453587@infradead.org>
+ with ESMTP id 5vOgLxDOGgsy for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Jan 2021 15:52:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 3E2BB2078B
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 15:52:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79CDDD6E;
+ Tue, 19 Jan 2021 07:52:43 -0800 (PST)
+Received: from [10.57.39.58] (unknown [10.57.39.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7CA143F66E;
+ Tue, 19 Jan 2021 07:52:42 -0800 (PST)
+Subject: Re: [PATCH 1/2 v2] dma-iommu: use static-key to minimize the impact
+ in the fast-path
+To: Christoph Hellwig <hch@infradead.org>, Lianbo Jiang <lijiang@redhat.com>
 References: <20210119111616.12761-1-lijiang@redhat.com>
- <20210119111616.12761-3-lijiang@redhat.com>
+ <20210119111616.12761-2-lijiang@redhat.com>
+ <20210119152641.GA3453587@infradead.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c961822e-e768-9d20-87cf-85db95b6aab6@arm.com>
+Date: Tue, 19 Jan 2021 15:52:41 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210119111616.12761-3-lijiang@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20210119152641.GA3453587@infradead.org>
+Content-Language: en-GB
 Cc: thomas.lendacky@amd.com, iommu@lists.linux-foundation.org, will@kernel.org,
- linux-kernel@vger.kernel.org, robin.murphy@arm.com
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,32 +79,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> +int iommu_do_deferred_attach(struct device *dev,
-> +			     struct iommu_domain *domain)
+On 2021-01-19 15:26, Christoph Hellwig wrote:
+> On Tue, Jan 19, 2021 at 07:16:15PM +0800, Lianbo Jiang wrote:
+>> +static DEFINE_STATIC_KEY_FALSE(__deferred_attach);
+> 
+> Why the strange underscores?  Wouldn't iommu_deferred_attach_enabled
+> be a better name?
+> 
+>> -	if (unlikely(iommu_dma_deferred_attach(dev, domain)))
+>> +	if (static_branch_unlikely(&__deferred_attach) &&
+>> +	    iommu_dma_deferred_attach(dev, domain))
+> 
+> Also insted of duplicating this logic in three places, maybe rename
+> iommu_dma_deferred_attach to __iommu_dma_deferred_attach and create
+> a small inline wrapper for it?
 
-I'd remove the "do_" from the name, it doesn't really add any value.
+Once patch #2 is in place, I really don't see any point. The "helper" 
+would add a minimum of 5 lines to save at most 3, and would have to be 
+annotated as always_inline - which a whole other camp of people would 
+probably object to - in order for the static branch to be properly useful.
 
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +
-> +	if (unlikely(ops->is_attach_deferred &&
-> +		     ops->is_attach_deferred(domain, dev)))
-> +		return __iommu_attach_device(domain, dev);
-> +
-> +	return 0;
+It's not as if this is a complex or hard-to-read expression, so IMO 
+having 3 lines repeated 3 times is objectively better than having 2 
+lines necessarily repeated 3 times plus having to scroll up and find 
+several more lines to follow what it's doing.
 
-Now that everyting is under the static key we don't really need to
-bother with the unlikely micro optimization, do we?
-
-> +extern int iommu_do_deferred_attach(struct device *dev,
-> +				    struct iommu_domain *domain);
-
-No need for the extern.
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
