@@ -2,74 +2,142 @@ Return-Path: <SRS0=ZMVL=GW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5581C433DB
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 18:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A574C433E0
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:49 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6BDC422E00
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 18:46:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6BDC422E00
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id DAF8223109
+	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAF8223109
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8157686D51;
-	Tue, 19 Jan 2021 17:28:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7D45086EA3;
+	Tue, 19 Jan 2021 19:30:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MRk8PL-iBrn1; Tue, 19 Jan 2021 17:28:31 +0000 (UTC)
+	with ESMTP id q+pciJwcsKaI; Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7D7DF86113;
-	Tue, 19 Jan 2021 17:28:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5F9A086D63;
+	Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60B80C088B;
-	Tue, 19 Jan 2021 17:28:31 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6F24C013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 17:28:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 34AD7C088B;
+	Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 798EFC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8CEBB20437
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 17:28:29 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 644E386D63
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QLsy31xDJBg1 for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 17:28:26 +0000 (UTC)
+ with ESMTP id CpUQanfqZs0j for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id CAC1020428
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 17:28:25 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2396E1396;
- Tue, 19 Jan 2021 09:28:25 -0800 (PST)
-Received: from [10.57.39.58] (unknown [10.57.39.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF57D3F66E;
- Tue, 19 Jan 2021 09:28:22 -0800 (PST)
-Subject: Re: [PATCH v9 10/10] iommu/arm-smmu-v3: Add stall support for
- platform devices
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org,
- will@kernel.org
-References: <20210108145217.2254447-1-jean-philippe@linaro.org>
- <20210108145217.2254447-11-jean-philippe@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d36d0edd-6762-41e0-2082-d9c08c125524@arm.com>
-Date: Tue, 19 Jan 2021 17:28:21 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2082.outbound.protection.outlook.com [40.107.220.82])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 6D70A86D42
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M5YdILU3fVnTUJLxrW1RaBKTGPR+dIGrLqVxJ/8VnHp9BdWdO8NLQqKaxUV1OVaMxCZQvly6eC2Blkq72sUnAdXzxWL9aITrtUG0OAIL38WrGsgp5O+9q1RO1gUo2pkAJzTWErmtAOFG3576vqC2xv3FoH1Q+WKjs8icFXxr120tQ5NVreFijM7ea1QbjsPDnoBQ8hR3I7UTM8oGHy5Vu1V1Tw5cEWMJ+89c3uhQiuRo7Jz6d2jrsR6MUNt7CI19tg1Be9r24lkiPeX3Rj5COWT0Ag4BX2PwCc0k+RfuEQCZBZCP9bD4UcxpovSFgKgNrQpkpU+O2cGXYMzhKeL08A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aHdpuoZtVPjGNmO1LuG9X80SJ6nzMJSl4GKZFpLxq4w=;
+ b=j6OC3ueovTxUwne12YN00oyy/tKBZfAz1vVzocWPAsOERMKxzld15EHq0CpIN+ccw36oYkHPeSF7He2bvQN57qhl+U37/XJQCAJV63yJovfuyBrqDBWSQqNPpTvJP4JbrU/Zea7ABch5fCT5LMK4kkwyq949kwhg4mhD64xcwAccMnxaSTrX8flQayWOW/PCO2cSxyIn5AnrLMEAXBhY0qDSnIvXNpusB1bQbBmt+NGUVyRD9Nfl1WSaTBIPbBGGvZ93VAWHrbizx80jiHFgsSpvyz5irB+64ihlr34l5gnYIwnfIehJy7oV+4FQaj7cYhtZCYvkWdC1t9Epk8aEBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aHdpuoZtVPjGNmO1LuG9X80SJ6nzMJSl4GKZFpLxq4w=;
+ b=AdlkJuKTbju27ki3XTgSZAD9cfyJ3skM1KQfkQaK8bXeajRnD+pbyJ7qN8lvw6EvPyhZGEE4Cxw1sDic+7T/2Z7Cpg0mC0TZrPvQW+7edzCKYv9k6b59s6EcaDPL6eymjz8w+AvEx1O/GMu+PJLOvRz68mHsBR2dtXNr6QZ90Jg=
+Authentication-Results: lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
+ header.from=amd.com;
+Received: from DM5PR12MB1355.namprd12.prod.outlook.com (2603:10b6:3:6e::7) by
+ DM6PR12MB4075.namprd12.prod.outlook.com (2603:10b6:5:21d::8) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3763.11; Tue, 19 Jan 2021 19:30:43 +0000
+Received: from DM5PR12MB1355.namprd12.prod.outlook.com
+ ([fe80::d95e:b9d:1d6a:e845]) by DM5PR12MB1355.namprd12.prod.outlook.com
+ ([fe80::d95e:b9d:1d6a:e845%12]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
+ 19:30:43 +0000
+Subject: Re: dma_mmap_coherent() breakage with mem_encrypt on AMD Ryzen
+To: Takashi Iwai <tiwai@suse.de>, iommu@lists.linux-foundation.org
+References: <s5ho8hmgi3k.wl-tiwai@suse.de>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Message-ID: <f86f5fd3-c9d7-aa28-da78-f634b324f003@amd.com>
+Date: Tue, 19 Jan 2021 13:30:41 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <s5ho8hmgi3k.wl-tiwai@suse.de>
+Content-Language: en-US
+X-Originating-IP: [67.79.209.213]
+X-ClientProxiedBy: SA9PR13CA0231.namprd13.prod.outlook.com
+ (2603:10b6:806:25::26) To DM5PR12MB1355.namprd12.prod.outlook.com
+ (2603:10b6:3:6e::7)
 MIME-Version: 1.0
-In-Reply-To: <20210108145217.2254447-11-jean-philippe@linaro.org>
-Content-Language: en-GB
-Cc: devicetree@vger.kernel.org, vivek.gautam@arm.com, sudeep.holla@arm.com,
- rjw@rjwysocki.net, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org, guohanjun@huawei.com,
- zhangfei.gao@linaro.org, linux-accelerators@lists.ozlabs.org, lenb@kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from office-linux.texastahm.com (67.79.209.213) by
+ SA9PR13CA0231.namprd13.prod.outlook.com (2603:10b6:806:25::26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3784.4 via Frontend Transport; Tue, 19 Jan 2021 19:30:43 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a459b9d1-b53e-417c-7b53-08d8bcb0b67a
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4075:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4075F2C8C7650BDA915729E2ECA30@DM6PR12MB4075.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1+ai1I9Q7jba9IKsazxuaJaxm/msqy+55mBT3PdR5PIwQcKMiAOcsFrEqhNC+EouQSzzo8F1VuDEKg5mZtGAk7+wLjPrX1ttz3iYdl+EocKlJv72S4VppuYYnE7WH1x9xAj4DYE8lPHbJSydQAyViHeIZQ378t7rH0mpv9YpZWcymPoeu+GS2OjiVd4tDVoSkAEZ7rwgoEzxMsR/Ncpe00dgHw1i79lLRV8Avnp4+B0YfOaIFFZn6qEbanlJNgbNaSuRivMAWyc6B6K+m4RCfipQhGbT0GIdQ2Cxdr913cubsSGs0IBt5/FKkTwRdH/JuAQpKCxcv8d6uA8pRLv6OtWUi4RU5aQg/zH4HcmhgwKC6MCpdkCD40m5WAbl45//xIzCvHOsj20/SfDwrcPLV8FUI80wl39YjdsrGJPOuNgrk0JQMo9TpYGGRieSICwrJYspqi3B1aT7dJvf1WDJu8N/cO4J3nU0+GDO4t7nkAafqDfnPsM5Ejdy5Frj0JIGUGRQRFjfKyVezHpkxpzp4fPUyx/gthIlbt23Z7Zgt6DqxQQhBlgHghuPdZHUSt5z
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR12MB1355.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(39850400004)(366004)(396003)(346002)(376002)(966005)(8676002)(31696002)(956004)(36756003)(6512007)(53546011)(2616005)(316002)(52116002)(86362001)(26005)(66556008)(8936002)(66476007)(6506007)(6486002)(16526019)(186003)(478600001)(45080400002)(31686004)(2906002)(66946007)(83380400001)(5660300002)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QnZOem85N3pkSVFUcjJyeGhuQXlHM3k1VTcvNi82eWx0bTFPWHZGMjBpUU9W?=
+ =?utf-8?B?Q21RNWF4enNpaUM0RHlwMmc5L0tlMmlpWGljbXVlYkhSbGhqWnZtUUhXcnU2?=
+ =?utf-8?B?WS80VisxMGgza0x4M2NOSVFTZmdrRUNFTUpjWGE0bWFkMDJuU0lnR1JERHlw?=
+ =?utf-8?B?NFBSWHJxa08vM3hXN0dkcTl5cVh5OHkrSEVVdm5XQ29qYVJoRGU4UzFrL1Fk?=
+ =?utf-8?B?WjFDczRKR0hFcVlLK1RUa0pHSnMxcmVvZzljU3RPV0E4WlVPeW1nVkx6ZTdy?=
+ =?utf-8?B?QXpCQXZpdlU0MVBuRzAyZFZGOWZXVUgwbGRYQzJHQkNsMGdaSXNFcWVJVlVl?=
+ =?utf-8?B?R3VYV25mNTd0aXRWTHJ3elZadXpGYlpGYlh5U285dmpxZEYxR2docGt2V2N3?=
+ =?utf-8?B?VE5qVUNRREVtMlRIZ2lvTGVjYkJCaWttTmx6OEJnRUNUQ011NVQxV2tyc2px?=
+ =?utf-8?B?QkxQK21NTzUvL3BhcGErOTJnbGpiNklBaTErcW9TdzZOR2VpTTEyVHpYQW45?=
+ =?utf-8?B?WlhyR1VnanBvZ0dYNFhwMFJHeVFZeTBncTJVVFFBT1krYlFTY1VTaE42Ym4v?=
+ =?utf-8?B?S204bU9KbjFINUx2Vk5WTGpKOVJZdUkzYW9Pd00waGg5d09WbklvNGlzNWZ2?=
+ =?utf-8?B?TUs0NFdqKzFtL0pvVm8yc3FIRWlhUStVQUJ6TDc5NDUraUVkdjRkYStteWVZ?=
+ =?utf-8?B?NjRRaXRSYkVIc2xUdEVOKy9VemMyMmltRmhpeVhOZVlFNzVnSDl5Um92ampX?=
+ =?utf-8?B?ekdDcmFITEFGNmxvVDYwdEgyMitZSkd2TzhzSnpHSlZEMHIxZG9vSkhNcGMw?=
+ =?utf-8?B?QTVscnFodHJpSHMzeXE5ZVRzRWlwU1BOQnI2QWZEMU83MWwySE1aRW9zWkwr?=
+ =?utf-8?B?Vllld2NYdk00UUtCSjkyZDd3NHIvR1FSQ3VkekE3MkxSUU9HdXJGWHoxa2Vt?=
+ =?utf-8?B?SVM3cWFrNTN2K2dMV1l1MzJkZDBOdlpaVkZEVUsyb2Z5N3VCcjVnSDd1QmtO?=
+ =?utf-8?B?UjlKdHZCd2JzS3FlNkFJaDBwTEdYUnpnVXZqdkhaeVRSRG1rSFhHVDVYa1dv?=
+ =?utf-8?B?SHpaN1hobm1TNXEzTXg3aWtEL1h6VksxRTFlNkdJeCt4K0RvQndraHc1Z2o3?=
+ =?utf-8?B?ZHFDTGpsTHQzdmVPcGt1Um4zOUpMK2loZ2ZaeHp6cHJONGhFWDRVVG94b29n?=
+ =?utf-8?B?c3hUMFlaNlcyLytFR1JTY2pubnh6OHpzRVpWYmFuMWpFYlFvckxXUVczYllQ?=
+ =?utf-8?B?QVZ1QW5zWXhZQlJkWUVyN25pWVlFSmJBMk5vS2w2SGpXaDN0bnhnS0hkRGdM?=
+ =?utf-8?Q?NXY21fffC+Ht472QgV5NZtrbT41gxkTxAz?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a459b9d1-b53e-417c-7b53-08d8bcb0b67a
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1355.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2021 19:30:43.6700 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V9HbkzwA9nDkAS+9hRrvggx9ZUD428AMFOW/ZnPk1pcc5cSLVpmHE28/ZIwhcHoPuOQxs3m0MDeo2fsQuGFQaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4075
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,661 +155,46 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-08 14:52, Jean-Philippe Brucker wrote:
-> The SMMU provides a Stall model for handling page faults in platform
-> devices. It is similar to PCIe PRI, but doesn't require devices to have
-> their own translation cache. Instead, faulting transactions are parked
-> and the OS is given a chance to fix the page tables and retry the
-> transaction.
+On 1/18/21 1:28 PM, Takashi Iwai wrote:
+> Hi,
 > 
-> Enable stall for devices that support it (opt-in by firmware). When an
-> event corresponds to a translation error, call the IOMMU fault handler.
-> If the fault is recoverable, it will call us back to terminate or
-> continue the stall.
+> we've got a bug report recently about the garbage playback sound from
+> a PCI sound device with mem_encrypt on AMD Ryzen:
+>     https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D211117&amp;data=04%7C01%7Cthomas.lendacky%40amd.com%7C8f5024e991b747d3aada08d8bbe73df5%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637465949142766079%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=4i6%2BUkt%2BebHJPlAvkDxgJkIcKq0eF9E4ssZC9vNBLHY%3D&amp;reserved=0
 > 
-> To use stall device drivers need to enable IOMMU_DEV_FEAT_IOPF, which
-> initializes the fault queue for the device.
+> The debug session showed that this happens only with the mmap using
+> dma_mmap_coherent() and mem_encrypt.  The mmap with the legacy page
+> fault (as done in ALSA PCM core) seems still working even with the
+> mem_encrypt.
+
+This sounds like a mismatch between the encryption bit in the kernel and 
+the encryption bit in userspace. It looks like that should be taken care 
+of by the dma_pgprot() call in dma_mmap_attrs() or in iommu_dma_mmap(). 
+But maybe the force_dma_unencrypted() in arch/x86/mm/mem_encrypt.c needs 
+to understand if the IOMMU is doing the mapping. Since, even if the device 
+doesn't support 48-bit or higher DMA, it will still done encrypted because 
+of the IOMMU. Is the IOMMU enabled? What happens if you do iommu=pt on the 
+kernel command line?
+
+I'll also add this comment to the bug.
+
+Thanks,
+Tom
+
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
-> v9: Add IOMMU_DEV_FEAT_IOPF
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  61 ++++++
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  70 ++++++-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 192 ++++++++++++++++--
->   3 files changed, 306 insertions(+), 17 deletions(-)
+> Since the problem could be observed on two different PCI drivers, it
+> looks like a generic problem of DMA-mmap implementation with AMD
+> memory encryption.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 8ef6a1c48635..cb129870ef55 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -354,6 +354,13 @@
->   #define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
->   #define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
->   
-> +#define CMDQ_RESUME_0_SID		GENMASK_ULL(63, 32)
-> +#define CMDQ_RESUME_0_RESP_TERM		0UL
-> +#define CMDQ_RESUME_0_RESP_RETRY	1UL
-> +#define CMDQ_RESUME_0_RESP_ABORT	2UL
-> +#define CMDQ_RESUME_0_RESP		GENMASK_ULL(13, 12)
-
-Nit: I think the SID field belongs here.
-
-> +#define CMDQ_RESUME_1_STAG		GENMASK_ULL(15, 0)
-> +
->   #define CMDQ_SYNC_0_CS			GENMASK_ULL(13, 12)
->   #define CMDQ_SYNC_0_CS_NONE		0
->   #define CMDQ_SYNC_0_CS_IRQ		1
-> @@ -370,6 +377,25 @@
->   
->   #define EVTQ_0_ID			GENMASK_ULL(7, 0)
->   
-> +#define EVT_ID_TRANSLATION_FAULT	0x10
-> +#define EVT_ID_ADDR_SIZE_FAULT		0x11
-> +#define EVT_ID_ACCESS_FAULT		0x12
-> +#define EVT_ID_PERMISSION_FAULT		0x13
-> +
-> +#define EVTQ_0_SSV			(1UL << 11)
-> +#define EVTQ_0_SSID			GENMASK_ULL(31, 12)
-> +#define EVTQ_0_SID			GENMASK_ULL(63, 32)
-> +#define EVTQ_1_STAG			GENMASK_ULL(15, 0)
-> +#define EVTQ_1_STALL			(1UL << 31)
-> +#define EVTQ_1_PRIV			(1UL << 33)
-> +#define EVTQ_1_EXEC			(1UL << 34)
-> +#define EVTQ_1_READ			(1UL << 35)
-
-Nit: personally I'd find it a little clearer if these were named PnU, 
-InD, and RnW to match the architecture, but quite possibly that's just 
-me and those are gibberish to everyone else...
-
-> +#define EVTQ_1_S2			(1UL << 39)
-> +#define EVTQ_1_CLASS			GENMASK_ULL(41, 40)
-> +#define EVTQ_1_TT_READ			(1UL << 44)
-> +#define EVTQ_2_ADDR			GENMASK_ULL(63, 0)
-> +#define EVTQ_3_IPA			GENMASK_ULL(51, 12)
-> +
->   /* PRI queue */
->   #define PRIQ_ENT_SZ_SHIFT		4
->   #define PRIQ_ENT_DWORDS			((1 << PRIQ_ENT_SZ_SHIFT) >> 3)
-> @@ -462,6 +488,13 @@ struct arm_smmu_cmdq_ent {
->   			enum pri_resp		resp;
->   		} pri;
->   
-> +		#define CMDQ_OP_RESUME		0x44
-> +		struct {
-> +			u32			sid;
-> +			u16			stag;
-> +			u8			resp;
-> +		} resume;
-> +
->   		#define CMDQ_OP_CMD_SYNC	0x46
->   		struct {
->   			u64			msiaddr;
-> @@ -520,6 +553,7 @@ struct arm_smmu_cmdq_batch {
->   
->   struct arm_smmu_evtq {
->   	struct arm_smmu_queue		q;
-> +	struct iopf_queue		*iopf;
->   	u32				max_stalls;
->   };
->   
-> @@ -656,7 +690,9 @@ struct arm_smmu_master {
->   	struct arm_smmu_stream		*streams;
->   	unsigned int			num_streams;
->   	bool				ats_enabled;
-> +	bool				stall_enabled;
->   	bool				sva_enabled;
-> +	bool				iopf_enabled;
->   	struct list_head		bonds;
->   	unsigned int			ssid_bits;
->   };
-> @@ -675,6 +711,7 @@ struct arm_smmu_domain {
->   
->   	struct io_pgtable_ops		*pgtbl_ops;
->   	bool				non_strict;
-> +	bool				stall_enabled;
->   	atomic_t			nr_ats_masters;
->   
->   	enum arm_smmu_domain_stage	stage;
-> @@ -713,6 +750,10 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
->   bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
->   int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
->   int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
-> +bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
-> +bool arm_smmu_master_iopf_enabled(struct arm_smmu_master *master);
-> +int arm_smmu_master_enable_iopf(struct arm_smmu_master *master);
-> +int arm_smmu_master_disable_iopf(struct arm_smmu_master *master);
->   struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
->   				    void *drvdata);
->   void arm_smmu_sva_unbind(struct iommu_sva *handle);
-> @@ -744,6 +785,26 @@ static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
->   	return -ENODEV;
->   }
->   
-> +static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline bool arm_smmu_master_iopf_enabled(struct arm_smmu_master *master)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline int arm_smmu_master_enable_iopf(struct arm_smmu_master *master)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int arm_smmu_master_disable_iopf(struct arm_smmu_master *master)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->   static inline struct iommu_sva *
->   arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
->   {
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index e13b092e6004..17acfee4f484 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -431,9 +431,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
->   	return true;
->   }
->   
-> -static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
-> +bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
->   {
-> -	return false;
-> +	return master->stall_enabled;
->   }
->   
->   bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
-> @@ -441,8 +441,18 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
->   	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
->   		return false;
->   
-> -	/* SSID and IOPF support are mandatory for the moment */
-> -	return master->ssid_bits && arm_smmu_iopf_supported(master);
-> +	/* SSID support is mandatory for the moment */
-> +	return master->ssid_bits;
-> +}
-> +
-> +bool arm_smmu_master_iopf_enabled(struct arm_smmu_master *master)
-> +{
-> +	bool enabled;
-> +
-> +	mutex_lock(&sva_lock);
-> +	enabled = master->iopf_enabled;
-> +	mutex_unlock(&sva_lock);
-
-Forgive me for being dim, but what's the locking synchronising against 
-here? If we're expecting that master->iopf_enabled can change at any 
-time, isn't whatever we've read potentially already invalid as soon as 
-we've dropped the lock?
-
-> +	return enabled;
->   }
->   
->   bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
-> @@ -455,15 +465,67 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
->   	return enabled;
->   }
->   
-> +int arm_smmu_master_enable_iopf(struct arm_smmu_master *master)
-> +{
-> +	int ret;
-> +	struct device *dev = master->dev;
-> +
-> +	mutex_lock(&sva_lock);
-> +	if (master->stall_enabled) {
-> +		ret = iopf_queue_add_device(master->smmu->evtq.iopf, dev);
-> +		if (ret)
-> +			goto err_unlock;
-> +	}
-> +
-> +	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
-> +	if (ret)
-> +		goto err_remove_device;
-> +	master->iopf_enabled = true;
-> +	mutex_unlock(&sva_lock);
-> +	return 0;
-> +
-> +err_remove_device:
-> +	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-> +err_unlock:
-> +	mutex_unlock(&sva_lock);
-> +	return ret;
-> +}
-> +
->   int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
->   {
->   	mutex_lock(&sva_lock);
-> +	/*
-> +	 * Drivers for devices supporting PRI or stall should enable IOPF first.
-> +	 * Others have device-specific fault handlers and don't need IOPF, so
-> +	 * this sanity check is a bit basic.
-> +	 */
-> +	if (arm_smmu_master_iopf_supported(master) && !master->iopf_enabled) {
-> +		mutex_unlock(&sva_lock);
-> +		return -EINVAL;
-> +	}
->   	master->sva_enabled = true;
->   	mutex_unlock(&sva_lock);
->   
->   	return 0;
->   }
->   
-> +int arm_smmu_master_disable_iopf(struct arm_smmu_master *master)
-> +{
-> +	struct device *dev = master->dev;
-> +
-> +	mutex_lock(&sva_lock);
-> +	if (master->sva_enabled) {
-> +		mutex_unlock(&sva_lock);
-> +		return -EBUSY;
-> +	}
-> +
-> +	iommu_unregister_device_fault_handler(dev);
-> +	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-> +	master->iopf_enabled = false;
-> +	mutex_unlock(&sva_lock);
-> +	return 0;
-> +}
-> +
->   int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
->   {
->   	mutex_lock(&sva_lock);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 2dbae2e6965d..1fea11d65cd3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -32,6 +32,7 @@
->   #include <linux/amba/bus.h>
->   
->   #include "arm-smmu-v3.h"
-> +#include "../../iommu-sva-lib.h"
->   
->   static bool disable_bypass = true;
->   module_param(disable_bypass, bool, 0444);
-> @@ -319,6 +320,11 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->   		}
->   		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
->   		break;
-> +	case CMDQ_OP_RESUME:
-> +		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_SID, ent->resume.sid);
-> +		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_RESP, ent->resume.resp);
-> +		cmd[1] |= FIELD_PREP(CMDQ_RESUME_1_STAG, ent->resume.stag);
-> +		break;
->   	case CMDQ_OP_CMD_SYNC:
->   		if (ent->sync.msiaddr) {
->   			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
-> @@ -882,6 +888,44 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
->   	return arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
->   }
->   
-> +static int arm_smmu_page_response(struct device *dev,
-> +				  struct iommu_fault_event *unused,
-> +				  struct iommu_page_response *resp)
-> +{
-> +	struct arm_smmu_cmdq_ent cmd = {0};
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +	int sid = master->streams[0].id;
-
-If that's going to be the case, should we explicitly prevent 
-multi-stream devices from opting in to faults at all?
-
-> +	if (master->stall_enabled) {
-> +		cmd.opcode		= CMDQ_OP_RESUME;
-> +		cmd.resume.sid		= sid;
-> +		cmd.resume.stag		= resp->grpid;
-> +		switch (resp->code) {
-> +		case IOMMU_PAGE_RESP_INVALID:
-> +		case IOMMU_PAGE_RESP_FAILURE:
-> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
-> +			break;
-> +		case IOMMU_PAGE_RESP_SUCCESS:
-> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	} else {
-> +		return -ENODEV;
-> +	}
-> +
-> +	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
-> +	/*
-> +	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
-> +	 * RESUME consumption guarantees that the stalled transaction will be
-> +	 * terminated... at some point in the future. PRI_RESP is fire and
-> +	 * forget.
-> +	 */
-> +
-> +	return 0;
-> +}
-> +
->   /* Context descriptor manipulation functions */
->   void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
->   {
-> @@ -991,7 +1035,6 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->   	u64 val;
->   	bool cd_live;
->   	__le64 *cdptr;
-> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   
->   	if (WARN_ON(ssid >= (1 << smmu_domain->s1_cfg.s1cdmax)))
->   		return -E2BIG;
-> @@ -1036,8 +1079,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->   			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
->   			CTXDESC_CD_0_V;
->   
-> -		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
-> -		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> +		if (smmu_domain->stall_enabled)
->   			val |= CTXDESC_CD_0_S;
->   	}
->   
-> @@ -1278,7 +1320,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
->   			 FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_NSEL1));
->   
->   		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
-> -		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
-> +		    !master->stall_enabled)
->   			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
->   
->   		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> @@ -1355,7 +1397,6 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->   	return 0;
->   }
->   
-> -__maybe_unused
->   static struct arm_smmu_master *
->   arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
->   {
-> @@ -1382,9 +1423,96 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
->   }
->   
->   /* IRQ and event handlers */
-> +static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
-> +{
-> +	int ret;
-> +	u32 perm = 0;
-> +	struct arm_smmu_master *master;
-> +	bool ssid_valid = evt[0] & EVTQ_0_SSV;
-> +	u8 type = FIELD_GET(EVTQ_0_ID, evt[0]);
-> +	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
-> +	struct iommu_fault_event fault_evt = { };
-> +	struct iommu_fault *flt = &fault_evt.fault;
-> +
-> +	/* Stage-2 is always pinned at the moment */
-> +	if (evt[1] & EVTQ_1_S2)
-> +		return -EFAULT;
-> +
-> +	master = arm_smmu_find_master(smmu, sid);
-> +	if (!master)
-> +		return -EINVAL;
-> +
-> +	if (evt[1] & EVTQ_1_READ)
-> +		perm |= IOMMU_FAULT_PERM_READ;
-> +	else
-> +		perm |= IOMMU_FAULT_PERM_WRITE;
-> +
-> +	if (evt[1] & EVTQ_1_EXEC)
-> +		perm |= IOMMU_FAULT_PERM_EXEC;
-> +
-> +	if (evt[1] & EVTQ_1_PRIV)
-> +		perm |= IOMMU_FAULT_PERM_PRIV;
-> +
-> +	if (evt[1] & EVTQ_1_STALL) {
-> +		flt->type = IOMMU_FAULT_PAGE_REQ;
-> +		flt->prm = (struct iommu_fault_page_request) {
-> +			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-> +			.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
-> +			.perm = perm,
-> +			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-> +		};
-> +
-> +		if (ssid_valid) {
-> +			flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> +			flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
-> +		}
-
-So if we get a bad ATS request with R=1, or a TLB/CFG conflict or any 
-other imp-def event which happens to have bit 95 set, we might try to 
-report it as something pageable? I would have thought we should look at 
-the event code before *anything* else.
-
-> +	} else {
-> +		flt->type = IOMMU_FAULT_DMA_UNRECOV;
-> +		flt->event = (struct iommu_fault_unrecoverable) {
-> +			.flags = IOMMU_FAULT_UNRECOV_ADDR_VALID |
-> +				 IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID,
-> +			.perm = perm,
-> +			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-> +			.fetch_addr = FIELD_GET(EVTQ_3_IPA, evt[3]),
-> +		};
-> +
-> +		if (ssid_valid) {
-> +			flt->event.flags |= IOMMU_FAULT_UNRECOV_PASID_VALID;
-> +			flt->event.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
-> +		}
-> +
-> +		switch (type) {
-> +		case EVT_ID_TRANSLATION_FAULT:
-> +		case EVT_ID_ADDR_SIZE_FAULT:
-> +		case EVT_ID_ACCESS_FAULT:
-> +			flt->event.reason = IOMMU_FAULT_REASON_PTE_FETCH;
-> +			break;
-> +		case EVT_ID_PERMISSION_FAULT:
-> +			flt->event.reason = IOMMU_FAULT_REASON_PERMISSION;
-> +			break;
-> +		default:
-> +			/* TODO: report other unrecoverable faults. */
-> +			return -EFAULT;
-> +		}
-> +	}
-> +
-> +	ret = iommu_report_device_fault(master->dev, &fault_evt);
-> +	if (ret && flt->type == IOMMU_FAULT_PAGE_REQ) {
-> +		/* Nobody cared, abort the access */
-> +		struct iommu_page_response resp = {
-> +			.pasid		= flt->prm.pasid,
-> +			.grpid		= flt->prm.grpid,
-> +			.code		= IOMMU_PAGE_RESP_FAILURE,
-> +		};
-> +		arm_smmu_page_response(master->dev, NULL, &resp);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->   static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->   {
-> -	int i;
-> +	int i, ret;
->   	struct arm_smmu_device *smmu = dev;
->   	struct arm_smmu_queue *q = &smmu->evtq.q;
->   	struct arm_smmu_ll_queue *llq = &q->llq;
-> @@ -1394,11 +1522,14 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->   		while (!queue_remove_raw(q, evt)) {
->   			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
->   
-> -			dev_info(smmu->dev, "event 0x%02x received:\n", id);
-> -			for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> -				dev_info(smmu->dev, "\t0x%016llx\n",
-> -					 (unsigned long long)evt[i]);
-> -
-> +			ret = arm_smmu_handle_evt(smmu, evt);
-> +			if (ret) {
-
-Maybe make this an "if (!ret) continue;" to save the indentation from 
-getting even more out of hand?
-
-> +				dev_info(smmu->dev, "event 0x%02x received:\n",
-> +					 id);
-> +				for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> +					dev_info(smmu->dev, "\t0x%016llx\n",
-> +						 (unsigned long long)evt[i]);
-> +			}
->   		}
->   
->   		/*
-> @@ -1903,6 +2034,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->   
->   	cfg->s1cdmax = master->ssid_bits;
->   
-> +	smmu_domain->stall_enabled = master->stall_enabled;
-> +
->   	ret = arm_smmu_alloc_cd_tables(smmu_domain);
->   	if (ret)
->   		goto out_free_asid;
-> @@ -2250,6 +2383,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->   			smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
->   		ret = -EINVAL;
->   		goto out_unlock;
-> +	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-> +		   smmu_domain->stall_enabled != master->stall_enabled) {
-
-I appreciate that it's probably a fair bit more complex, but it would be 
-nice to at least plan for resolving this decision later (i.e. at a point 
-where a caller shows an interest in actually using stalls) in future. 
-Obviously the first devices advertising stall capabilities will be the 
-ones that do want to use it for their primary functionality, that are 
-driving the work here. However once this all matures, firmwares may 
-start annotating any stallable devices as such for completeness, rather 
-than assuming any specific usage. At that point it would be a pain if, 
-say, assigning two devices to the same VFIO domain for old-fashioned 
-pinned DMA, was suddenly prevented for irrelevant reasons just because 
-of a DT/IORT update.
-
-> +		dev_err(dev, "cannot attach to stall-%s domain\n",
-> +			smmu_domain->stall_enabled ? "enabled" : "disabled");
-> +		ret = -EINVAL;
-> +		goto out_unlock;
->   	}
->   
->   	master->domain = smmu_domain;
-> @@ -2484,6 +2623,11 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
->   		master->ssid_bits = min_t(u8, master->ssid_bits,
->   					  CTXDESC_LINEAR_CDMAX);
->   
-> +	if ((smmu->features & ARM_SMMU_FEAT_STALLS &&
-> +	     device_property_read_bool(dev, "dma-can-stall")) ||
-> +	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> +		master->stall_enabled = true;
-> +
->   	return &smmu->iommu;
->   
->   err_free_master:
-> @@ -2502,6 +2646,7 @@ static void arm_smmu_release_device(struct device *dev)
->   
->   	master = dev_iommu_priv_get(dev);
->   	WARN_ON(arm_smmu_master_sva_enabled(master));
-> +	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
->   	arm_smmu_detach_dev(master);
->   	arm_smmu_disable_pasid(master);
->   	arm_smmu_remove_master(master);
-> @@ -2629,6 +2774,8 @@ static bool arm_smmu_dev_has_feature(struct device *dev,
->   		return false;
->   
->   	switch (feat) {
-> +	case IOMMU_DEV_FEAT_IOPF:
-> +		return arm_smmu_master_iopf_supported(master);
->   	case IOMMU_DEV_FEAT_SVA:
->   		return arm_smmu_master_sva_supported(master);
->   	default:
-> @@ -2645,6 +2792,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
->   		return false;
->   
->   	switch (feat) {
-> +	case IOMMU_DEV_FEAT_IOPF:
-> +		return arm_smmu_master_iopf_enabled(master);
->   	case IOMMU_DEV_FEAT_SVA:
->   		return arm_smmu_master_sva_enabled(master);
->   	default:
-> @@ -2655,6 +2804,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
->   static int arm_smmu_dev_enable_feature(struct device *dev,
->   				       enum iommu_dev_features feat)
->   {
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +
->   	if (!arm_smmu_dev_has_feature(dev, feat))
->   		return -ENODEV;
->   
-> @@ -2662,8 +2813,10 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
->   		return -EBUSY;
->   
->   	switch (feat) {
-> +	case IOMMU_DEV_FEAT_IOPF:
-> +		return arm_smmu_master_enable_iopf(master);
->   	case IOMMU_DEV_FEAT_SVA:
-> -		return arm_smmu_master_enable_sva(dev_iommu_priv_get(dev));
-> +		return arm_smmu_master_enable_sva(master);
->   	default:
->   		return -EINVAL;
->   	}
-> @@ -2672,12 +2825,16 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
->   static int arm_smmu_dev_disable_feature(struct device *dev,
->   					enum iommu_dev_features feat)
->   {
-> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +
->   	if (!arm_smmu_dev_feature_enabled(dev, feat))
->   		return -EINVAL;
->   
->   	switch (feat) {
-> +	case IOMMU_DEV_FEAT_IOPF:
-> +		return arm_smmu_master_disable_iopf(master);
->   	case IOMMU_DEV_FEAT_SVA:
-> -		return arm_smmu_master_disable_sva(dev_iommu_priv_get(dev));
-> +		return arm_smmu_master_disable_sva(master);
->   	default:
->   		return -EINVAL;
->   	}
-> @@ -2708,6 +2865,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.sva_bind		= arm_smmu_sva_bind,
->   	.sva_unbind		= arm_smmu_sva_unbind,
->   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
-> +	.page_response		= arm_smmu_page_response,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->   };
->   
-> @@ -2785,6 +2943,7 @@ static int arm_smmu_cmdq_init(struct arm_smmu_device *smmu)
->   static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->   {
->   	int ret;
-> +	bool sva = arm_smmu_sva_supported(smmu);
->   
->   	/* cmdq */
->   	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-> @@ -2804,6 +2963,12 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->   	if (ret)
->   		return ret;
->   
-> +	if (sva && smmu->features & ARM_SMMU_FEAT_STALLS) {
-
-Surely you could just test for ARM_SMMU_FEAT_SVA by now rather than go 
-through the whole of arm_smmu_sva_supported() again?
-
-Robin.
-
-> +		smmu->evtq.iopf = iopf_queue_alloc(dev_name(smmu->dev));
-> +		if (!smmu->evtq.iopf)
-> +			return -ENOMEM;
-> +	}
-> +
->   	/* priq */
->   	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
->   		return 0;
-> @@ -3718,6 +3883,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->   	iommu_device_unregister(&smmu->iommu);
->   	iommu_device_sysfs_remove(&smmu->iommu);
->   	arm_smmu_device_disable(smmu);
-> +	iopf_queue_free(smmu->evtq.iopf);
->   
->   	return 0;
->   }
+> According to the reporter, it's seen on both 5.4.x and 5.10.x
+> kernels, hence it doesn't like a recent regression.
+> 
+> Can anyone take a look?
+> 
+> 
+> Thanks!
+> 
+> Takashi
 > 
 _______________________________________________
 iommu mailing list
