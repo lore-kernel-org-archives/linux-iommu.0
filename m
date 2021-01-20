@@ -7,70 +7,72 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C77C433E6
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 02:43:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC2BC433DB
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 03:37:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C1B14230FE
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 02:43:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1B14230FE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E428D22509
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 03:37:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E428D22509
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6127386FAA;
-	Wed, 20 Jan 2021 02:43:11 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9E3F320519;
+	Wed, 20 Jan 2021 03:37:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gGS1utYTtSex; Wed, 20 Jan 2021 03:37:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id D7B2E204F6;
+	Wed, 20 Jan 2021 03:37:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1986C088B;
+	Wed, 20 Jan 2021 03:37:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 594E2C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 03:37:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 55A9886C6D
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 03:37:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wxKiHRZMENBp; Wed, 20 Jan 2021 02:43:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 09E5585707;
-	Wed, 20 Jan 2021 02:43:10 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DBA91C08A1;
-	Wed, 20 Jan 2021 02:43:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0DED6C013A
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:43:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id EF7BA86667
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:43:07 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r4fOlMWGzwJw for <iommu@lists.linux-foundation.org>;
- Wed, 20 Jan 2021 02:43:05 +0000 (UTC)
+ with ESMTP id d6yaks114jJb for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Jan 2021 03:37:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1664E86663
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:43:05 +0000 (UTC)
-IronPort-SDR: Bn70k+oHQ3h4SaTU4FodOSMls93SIqG3Tg8UYRqex4OODY/5oHSWJA1VpsyVWDAU1s7Ys6+6mK
- DrHUn9vpqtdg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="197755533"
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; d="scan'208";a="197755533"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Jan 2021 18:43:04 -0800
-IronPort-SDR: otQOvE1U6aLHbj3txwtafrKtkugSBeqpfucbbCjKA2KZpxN8hdZ+wiWhA5RlB9CPTOROu8L7fz
- AW9Gw/ZjmtqQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; d="scan'208";a="466926265"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
- by fmsmga001.fm.intel.com with ESMTP; 19 Jan 2021 18:43:02 -0800
-Subject: Re: [PATCH] iommu/vt-d: debugfs: Check irq_remapping_cap before PI
- info dump
-To: Tina Zhang <tina.zhang@intel.com>
-References: <20210119182526.2927-1-tina.zhang@intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <d084772f-6364-34d9-1c89-e1c3d6a35301@linux.intel.com>
-Date: Wed, 20 Jan 2021 10:34:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 24B2186A98
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 03:37:20 +0000 (UTC)
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DLB574d9Pz7XgW;
+ Wed, 20 Jan 2021 11:36:11 +0800 (CST)
+Received: from [127.0.0.1] (10.174.176.220) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.498.0;
+ Wed, 20 Jan 2021 11:37:07 +0800
+Subject: Re: [PATCH 1/2] perf/smmuv3: Don't reserve the register space that
+ overlaps with the SMMUv3
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Mark
+ Rutland" <mark.rutland@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu
+ <iommu@lists.linux-foundation.org>, linux-kernel
+ <linux-kernel@vger.kernel.org>
+References: <20210119015951.1042-1-thunder.leizhen@huawei.com>
+ <20210119015951.1042-2-thunder.leizhen@huawei.com>
+ <30665cd6-b438-1d1d-7445-9e45e240f79a@arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <a2d7d94c-8e4e-d91d-8587-7a5b3594b4ca@huawei.com>
+Date: Wed, 20 Jan 2021 11:37:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210119182526.2927-1-tina.zhang@intel.com>
+In-Reply-To: <30665cd6-b438-1d1d-7445-9e45e240f79a@arm.com>
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, Yi Sun <yi.sun@intel.com>
+X-Originating-IP: [10.174.176.220]
+X-CFilter-Loop: Reflected
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Neil Leeder <nleeder@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,56 +85,94 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/20/21 2:25 AM, Tina Zhang wrote:
-> irq_remapping_cap() was introduced to detect whether irq remapping
-> supports new features, such as VT-d Posted-Interrupts", according to
-> commit 959c870f7305 ("iommu, x86: Provide irq_remapping_cap() interface").
-> 
-> The VT-d Posted-Interrupts support can be disabled by the command
-> line parameter "intremap=nopost".
-> 
-> So, it's better to use irq_remapping_cap() to check if the VT-d
-> Posted-Interrupts is enabled before any Posted Interrupt Descriptor
-> info dump.
-> 
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Sohil Mehta <sohil.mehta@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Reported-by: Yi Sun <yi.sun@intel.com>
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-> ---
->   drivers/iommu/intel/debugfs.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-> index efea7f02abd9..87a4a76866f4 100644
-> --- a/drivers/iommu/intel/debugfs.c
-> +++ b/drivers/iommu/intel/debugfs.c
-> @@ -516,7 +516,8 @@ static int ir_translation_struct_show(struct seq_file *m, void *unused)
->   	seq_puts(m, "****\n\n");
->   
->   	for_each_active_iommu(iommu, drhd) {
-> -		if (!cap_pi_support(iommu->cap))
-> +		if (!irq_remapping_cap(IRQ_POSTING_CAP) ||
-> +		    !cap_pi_support(iommu->cap))
-
-With irq_remapping_cap(IRQ_POSTING_CAP), do you still need
-cap_pi_support(iommu->cap)?
-
->   			continue;
->   
->   		seq_printf(m, "Posted Interrupt supported on IOMMU: %s\n",
-> 
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDIxLzEvMTkgMjA6MzIsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyMDIxLTAxLTE5
+IDAxOjU5LCBaaGVuIExlaSB3cm90ZToKPj4gU29tZSBTTU1VdjMgaW1wbGVtZW50YXRpb24gZW1i
+ZWQgdGhlIFBlcmYgTW9uaXRvciBHcm91cCBSZWdpc3RlcnMgKFBNQ0cpCj4+IGluc2lkZSB0aGUg
+Zmlyc3QgNjRrQiByZWdpb24gb2YgdGhlIFNNTVUuIFNpbmNlIFNNTVUgYW5kIFBNQ0cgYXJlIG1h
+bmFnZWQKPj4gYnkgdHdvIHNlcGFyYXRlIGRyaXZlcnMsIGFuZCB0aGlzIGRyaXZlciBkZXBlbmRz
+IG9uIEFSTV9TTU1VX1YzLCBzbyB0aGUKPj4gU01NVSBkcml2ZXIgcmVzZXJ2ZXMgdGhlIGNvcnJl
+c3BvbmRpbmcgcmVzb3VyY2UgZmlyc3QsIHRoaXMgZHJpdmVyIHNob3VsZAo+PiBub3QgcmVzZXJ2
+ZSB0aGUgY29ycmVzcG9uZGluZyByZXNvdXJjZSBhZ2Fpbi4gT3RoZXJ3aXNlLCBhIHJlc291cmNl
+Cj4+IHJlc2VydmF0aW9uIGNvbmZsaWN0IGlzIHJlcG9ydGVkIGR1cmluZyBib290Lgo+Pgo+PiBT
+aWduZWQtb2ZmLWJ5OiBaaGVuIExlaSA8dGh1bmRlci5sZWl6aGVuQGh1YXdlaS5jb20+Cj4+IC0t
+LQo+PiDCoCBkcml2ZXJzL3BlcmYvYXJtX3NtbXV2M19wbXUuYyB8IDQyICsrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKystLQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNDAgaW5z
+ZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGVy
+Zi9hcm1fc21tdXYzX3BtdS5jIGIvZHJpdmVycy9wZXJmL2FybV9zbW11djNfcG11LmMKPj4gaW5k
+ZXggNzQ0NzRiYjMyMmMzZjI2Li5kY2NlMDg1NDMxYzZjZTggMTAwNjQ0Cj4+IC0tLSBhL2RyaXZl
+cnMvcGVyZi9hcm1fc21tdXYzX3BtdS5jCj4+ICsrKyBiL2RyaXZlcnMvcGVyZi9hcm1fc21tdXYz
+X3BtdS5jCj4+IEBAIC03NjEsNiArNzYxLDQ0IEBAIHN0YXRpYyB2b2lkIHNtbXVfcG11X2dldF9h
+Y3BpX29wdGlvbnMoc3RydWN0IHNtbXVfcG11ICpzbW11X3BtdSkKPj4gwqDCoMKgwqDCoCBkZXZf
+bm90aWNlKHNtbXVfcG11LT5kZXYsICJvcHRpb24gbWFzayAweCV4XG4iLCBzbW11X3BtdS0+b3B0
+aW9ucyk7Cj4+IMKgIH0KPj4gwqAgK3N0YXRpYyB2b2lkIF9faW9tZW0gKgo+PiArc21tdV9wbXVf
+Z2V0X2FuZF9pb3JlbWFwX3Jlc291cmNlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYsCj4+
+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGludCBpbmRleCwK
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IHJlc291cmNlICoq
+b3V0X3JlcykKPj4gK3sKPj4gK8KgwqDCoCBpbnQgcmV0Owo+PiArwqDCoMKgIHZvaWQgX19pb21l
+bSAqYmFzZTsKPj4gK8KgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgKnJlczsKPj4gKwo+PiArwqDCoMKg
+IHJlcyA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShwZGV2LCBJT1JFU09VUkNFX01FTSwgaW5kZXgp
+Owo+PiArwqDCoMKgIGlmICghcmVzKSB7Cj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKCZwZGV2
+LT5kZXYsICJpbnZhbGlkIHJlc291cmNlXG4iKTsKPj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiBJ
+T01FTV9FUlJfUFRSKC1FSU5WQUwpOwo+PiArwqDCoMKgIH0KPj4gK8KgwqDCoCBpZiAob3V0X3Jl
+cykKPj4gK8KgwqDCoMKgwqDCoMKgICpvdXRfcmVzID0gcmVzOwo+PiArCj4+ICvCoMKgwqAgcmV0
+ID0gcmVnaW9uX2ludGVyc2VjdHMocmVzLT5zdGFydCwgcmVzb3VyY2Vfc2l6ZShyZXMpLAo+PiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIElPUkVTT1VSQ0VfTUVNLCBJT1JFU19ERVND
+X05PTkUpOwo+PiArwqDCoMKgIGlmIChyZXQgPT0gUkVHSU9OX0lOVEVSU0VDVFMpIHsKPj4gK8Kg
+wqDCoMKgwqDCoMKgIC8qCj4+ICvCoMKgwqDCoMKgwqDCoMKgICogVGhlIHJlc291cmNlIGhhcyBh
+bHJlYWR5IGJlZW4gcmVzZXJ2ZWQgYnkgdGhlIFNNTVV2MyBkcml2ZXIuCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgICogRG9uJ3QgcmVzZXJ2ZSBpdCBhZ2FpbiwganVzdCBkbyBkZXZtX2lvcmVtYXAoKS4K
+Pj4gK8KgwqDCoMKgwqDCoMKgwqAgKi8KPj4gK8KgwqDCoMKgwqDCoMKgIGJhc2UgPSBkZXZtX2lv
+cmVtYXAoJnBkZXYtPmRldiwgcmVzLT5zdGFydCwgcmVzb3VyY2Vfc2l6ZShyZXMpKTsKPj4gK8Kg
+wqDCoCB9IGVsc2Ugewo+PiArwqDCoMKgwqDCoMKgwqAgLyoKPj4gK8KgwqDCoMKgwqDCoMKgwqAg
+KiBUaGUgcmVzb3VyY2UgbWF5IGhhdmUgbm90IGJlZW4gcmVzZXJ2ZWQgYnkgYW55IGRyaXZlciwg
+b3IKPj4gK8KgwqDCoMKgwqDCoMKgwqAgKiBoYXMgYmVlbiByZXNlcnZlZCBidXQgbm90IHR5cGUg
+SU9SRVNPVVJDRV9NRU0uIEluIHRoZSBsYXR0ZXIKPj4gK8KgwqDCoMKgwqDCoMKgwqAgKiBjYXNl
+LCBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoKSByZXBvcnRzIGEgY29uZmxpY3QgYW5kIHJldHVybnMK
+Pj4gK8KgwqDCoMKgwqDCoMKgwqAgKiBJT01FTV9FUlJfUFRSKC1FQlVTWSkuCj4+ICvCoMKgwqDC
+oMKgwqDCoMKgICovCj4+ICvCoMKgwqDCoMKgwqDCoCBiYXNlID0gZGV2bV9pb3JlbWFwX3Jlc291
+cmNlKCZwZGV2LT5kZXYsIHJlcyk7Cj4+ICvCoMKgwqAgfQo+IAo+IFdoYXQgaWYgdGhlIFBNQ0cg
+ZHJpdmVyIHNpbXBseSBoYXBwZW5zIHRvIHByb2JlIGZpcnN0PwoKVGhlcmUgYXJlIDQgY2FzZXM6
+CjEpIEFSTV9TTU1VX1YzPW0sIEFSTV9TTU1VX1YzX1BNVT15CiAgIEl0J3Mgbm90IGFsbG93ZWQu
+IEJlY2FzZTogQVJNX1NNTVVfVjNfUE1VIGRlcGVuZHMgb24gQVJNX1NNTVVfVjMKICAgY29uZmln
+IEFSTV9TTU1VX1YzX1BNVQogICAgICAgICB0cmlzdGF0ZSAiQVJNIFNNTVV2MyBQZXJmb3JtYW5j
+ZSBNb25pdG9ycyBFeHRlbnNpb24iCiAgICAgICAgIGRlcGVuZHMgb24gQVJNNjQgJiYgQUNQSSAm
+JiBBUk1fU01NVV9WMwoKMikgQVJNX1NNTVVfVjM9eSwgQVJNX1NNTVVfVjNfUE1VPW0KICAgTm8g
+cHJvYmxlbSwgU01NVXYzIHdpbGwgYmUgaW5pdGlhbGl6ZWQgZmlyc3QuCgozKSBBUk1fU01NVV9W
+Mz15LCBBUk1fU01NVV9WM19QTVU9eQogICB2aSBkcml2ZXJzL01ha2VmaWxlCiAgIDYwIG9iai15
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgKz0gaW9tbXUvCiAgIDE3MiBvYmotJChDT05GSUdf
+UEVSRl9FVkVOVFMpICAgICAgICs9IHBlcmYvCgogICBUaGlzIGxpbmsgc2VxdWVuY2UgZW5zdXJl
+IHRoYXQgU01NVXYzIGRyaXZlciB3aWxsIGJlIGluaXRpYWxpemVkIGZpcnN0LgogICBUaGV5IGFy
+ZSBjdXJyZW50bHkgYXQgdGhlIHNhbWUgaW5pdGlhbGl6YXRpb24gbGV2ZWwuCgo0KSBBUk1fU01N
+VV9WMz1tLCBBUk1fU01NVV9WM19QTVU9bQogICBTb3JyeSwgSSB0aG91Z2h0IG1vZHVsZSBkZXBl
+bmRlbmNpZXMgd2VyZSBnZW5lcmF0ZWQgYmFzZWQgb24gImRlcGVuZHMgb24iLgogICBCdXQgSSB0
+cmllZCBpdCB0b2Rhee+8jG1vZHVsZSBkZXBlbmRlbmNpZXMgYXJlIGdlbmVyYXRlZCBvbmx5IHdo
+ZW4gc3ltYm9sCiAgIGRlcGVuZGVuY2llcyBleGlzdC4gSSBzaG91bGQgdXNlIE1PRFVMRV9TT0ZU
+REVQKCkgdG8gZXhwbGljaXRseSBtYXJrIHRoZQogICBkZXBlbmRlbmN5LiBJIHdpbGwgc2VuZCBW
+MiBsYXRlci4KCgo+IAo+IFJvYmluLgo+IAo+PiArCj4+ICvCoMKgwqAgcmV0dXJuIGJhc2U7Cj4+
+ICt9Cj4+ICsKPj4gwqAgc3RhdGljIGludCBzbW11X3BtdV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1f
+ZGV2aWNlICpwZGV2KQo+PiDCoCB7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IHNtbXVfcG11ICpzbW11
+X3BtdTsKPj4gQEAgLTc5Myw3ICs4MzEsNyBAQCBzdGF0aWMgaW50IHNtbXVfcG11X3Byb2JlKHN0
+cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCAuY2FwYWJp
+bGl0aWVzwqDCoMKgID0gUEVSRl9QTVVfQ0FQX05PX0VYQ0xVREUsCj4+IMKgwqDCoMKgwqAgfTsK
+Pj4gwqAgLcKgwqDCoCBzbW11X3BtdS0+cmVnX2Jhc2UgPSBkZXZtX3BsYXRmb3JtX2dldF9hbmRf
+aW9yZW1hcF9yZXNvdXJjZShwZGV2LCAwLCAmcmVzXzApOwo+PiArwqDCoMKgIHNtbXVfcG11LT5y
+ZWdfYmFzZSA9IHNtbXVfcG11X2dldF9hbmRfaW9yZW1hcF9yZXNvdXJjZShwZGV2LCAwLCAmcmVz
+XzApOwo+PiDCoMKgwqDCoMKgIGlmIChJU19FUlIoc21tdV9wbXUtPnJlZ19iYXNlKSkKPj4gwqDC
+oMKgwqDCoMKgwqDCoMKgIHJldHVybiBQVFJfRVJSKHNtbXVfcG11LT5yZWdfYmFzZSk7Cj4+IMKg
+IEBAIC04MDEsNyArODM5LDcgQEAgc3RhdGljIGludCBzbW11X3BtdV9wcm9iZShzdHJ1Y3QgcGxh
+dGZvcm1fZGV2aWNlICpwZGV2KQo+PiDCoCDCoMKgwqDCoMKgIC8qIERldGVybWluZSBpZiBwYWdl
+IDEgaXMgcHJlc2VudCAqLwo+PiDCoMKgwqDCoMKgIGlmIChjZmdyICYgU01NVV9QTUNHX0NGR1Jf
+UkVMT0NfQ1RSUykgewo+PiAtwqDCoMKgwqDCoMKgwqAgc21tdV9wbXUtPnJlbG9jX2Jhc2UgPSBk
+ZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UocGRldiwgMSk7Cj4+ICvCoMKgwqDCoMKgwqDC
+oCBzbW11X3BtdS0+cmVsb2NfYmFzZSA9IHNtbXVfcG11X2dldF9hbmRfaW9yZW1hcF9yZXNvdXJj
+ZShwZGV2LCAxLCBOVUxMKTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChJU19FUlIoc21tdV9w
+bXUtPnJlbG9jX2Jhc2UpKQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gUFRS
+X0VSUihzbW11X3BtdS0+cmVsb2NfYmFzZSk7Cj4+IMKgwqDCoMKgwqAgfSBlbHNlIHsKPj4KPiAK
+PiAuCj4gCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
+b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
