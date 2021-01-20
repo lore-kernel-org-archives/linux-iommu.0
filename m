@@ -1,143 +1,95 @@
-Return-Path: <SRS0=ZMVL=GW=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=mF+O=GX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A574C433E0
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A00FC433DB
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 00:49:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DAF8223109
-	for <iommu@archiver.kernel.org>; Tue, 19 Jan 2021 19:30:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAF8223109
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EC2923108
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 00:49:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EC2923108
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7D45086EA3;
-	Tue, 19 Jan 2021 19:30:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 18A942048C;
+	Wed, 20 Jan 2021 00:49:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q+pciJwcsKaI; Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
+	with ESMTP id JQ0eNpmznEqT; Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5F9A086D63;
-	Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5ED0F20443;
+	Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 34AD7C088B;
-	Tue, 19 Jan 2021 19:30:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 798EFC013A
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 46378C08A1;
+	Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB357C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 644E386D63
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 7726320470
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CpUQanfqZs0j for <iommu@lists.linux-foundation.org>;
- Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on2082.outbound.protection.outlook.com [40.107.220.82])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6D70A86D42
- for <iommu@lists.linux-foundation.org>; Tue, 19 Jan 2021 19:30:45 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M5YdILU3fVnTUJLxrW1RaBKTGPR+dIGrLqVxJ/8VnHp9BdWdO8NLQqKaxUV1OVaMxCZQvly6eC2Blkq72sUnAdXzxWL9aITrtUG0OAIL38WrGsgp5O+9q1RO1gUo2pkAJzTWErmtAOFG3576vqC2xv3FoH1Q+WKjs8icFXxr120tQ5NVreFijM7ea1QbjsPDnoBQ8hR3I7UTM8oGHy5Vu1V1Tw5cEWMJ+89c3uhQiuRo7Jz6d2jrsR6MUNt7CI19tg1Be9r24lkiPeX3Rj5COWT0Ag4BX2PwCc0k+RfuEQCZBZCP9bD4UcxpovSFgKgNrQpkpU+O2cGXYMzhKeL08A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aHdpuoZtVPjGNmO1LuG9X80SJ6nzMJSl4GKZFpLxq4w=;
- b=j6OC3ueovTxUwne12YN00oyy/tKBZfAz1vVzocWPAsOERMKxzld15EHq0CpIN+ccw36oYkHPeSF7He2bvQN57qhl+U37/XJQCAJV63yJovfuyBrqDBWSQqNPpTvJP4JbrU/Zea7ABch5fCT5LMK4kkwyq949kwhg4mhD64xcwAccMnxaSTrX8flQayWOW/PCO2cSxyIn5AnrLMEAXBhY0qDSnIvXNpusB1bQbBmt+NGUVyRD9Nfl1WSaTBIPbBGGvZ93VAWHrbizx80jiHFgsSpvyz5irB+64ihlr34l5gnYIwnfIehJy7oV+4FQaj7cYhtZCYvkWdC1t9Epk8aEBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aHdpuoZtVPjGNmO1LuG9X80SJ6nzMJSl4GKZFpLxq4w=;
- b=AdlkJuKTbju27ki3XTgSZAD9cfyJ3skM1KQfkQaK8bXeajRnD+pbyJ7qN8lvw6EvPyhZGEE4Cxw1sDic+7T/2Z7Cpg0mC0TZrPvQW+7edzCKYv9k6b59s6EcaDPL6eymjz8w+AvEx1O/GMu+PJLOvRz68mHsBR2dtXNr6QZ90Jg=
-Authentication-Results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=amd.com;
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com (2603:10b6:3:6e::7) by
- DM6PR12MB4075.namprd12.prod.outlook.com (2603:10b6:5:21d::8) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3763.11; Tue, 19 Jan 2021 19:30:43 +0000
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::d95e:b9d:1d6a:e845]) by DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::d95e:b9d:1d6a:e845%12]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
- 19:30:43 +0000
-Subject: Re: dma_mmap_coherent() breakage with mem_encrypt on AMD Ryzen
-To: Takashi Iwai <tiwai@suse.de>, iommu@lists.linux-foundation.org
-References: <s5ho8hmgi3k.wl-tiwai@suse.de>
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Message-ID: <f86f5fd3-c9d7-aa28-da78-f634b324f003@amd.com>
-Date: Tue, 19 Jan 2021 13:30:41 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <s5ho8hmgi3k.wl-tiwai@suse.de>
-Content-Language: en-US
-X-Originating-IP: [67.79.209.213]
-X-ClientProxiedBy: SA9PR13CA0231.namprd13.prod.outlook.com
- (2603:10b6:806:25::26) To DM5PR12MB1355.namprd12.prod.outlook.com
- (2603:10b6:3:6e::7)
+ with ESMTP id GBFzZV48Lydw for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Jan 2021 00:49:17 +0000 (UTC)
+X-Greylist: delayed 00:15:02 by SQLgrey-1.7.6
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
+ [136.143.188.51])
+ by silver.osuosl.org (Postfix) with ESMTPS id 29DFB20443
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:17 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; t=1611102836; cv=none; 
+ d=zohomail.com; s=zohoarc; 
+ b=bvfuEVpT4XhGIRZ7H3qUEKRtb4ThDEDdXfu0fGNznNoBq6hR3zJmUh1tILm8GWsl8Ncxbw2QP3QKCJ4GG3oQY1SWipvLA6G4ubbe6sep+36uX0KcX2vOvsF3CbK+ouvcFBMTujldMqYtnx8UNPsBWJ817z2Qnxaem7kN1GLaLIU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
+ s=zohoarc; t=1611102836;
+ h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
+ bh=Gy6cxAGpQV06imIwuB7h3MwRSZjSFn29L4jucGrojIM=; 
+ b=XQhTC1LH6c79yVxqK8zC2C5CgP2MuAgUhz6d0ZmZ+dBHrUTvn8RfVbISO2NGH+Oe9IP0kiK4OUmFf2nrsyPWpbJyM4+ZNncEB18ELEw6q2VPLXEGEwx5YPHb2OiK/TuG5+k6upE0999/PUUMxVFwNoCTO0xJb7Jwd+WgRK/n0TU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+ dkim=pass  header.i=apertussolutions.com;
+ spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+ dmarc=pass header.from=<dpsmith@apertussolutions.com>
+ header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1611102836; 
+ s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+ h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+ bh=Gy6cxAGpQV06imIwuB7h3MwRSZjSFn29L4jucGrojIM=;
+ b=M18bUZgt44glWZutDwWxXMoUKnlHR3szHDABEv1f06QiOrszMJbrC5eSxYaGjY71
+ N8wIIuJa243I9uWPqrYABy00MzADpYLPbVCBvfKdP9qfllPFibUM97Y3F9/ROsszVSX
+ getsmT810S+BbVsH7VgnSy8+vUtsHKg1nbnvB2AE=
+Received: from [10.10.1.24] (c-73-129-147-140.hsd1.md.comcast.net
+ [73.129.147.140]) by mx.zohomail.com
+ with SMTPS id 1611102834623926.0489869436618;
+ Tue, 19 Jan 2021 16:33:54 -0800 (PST)
+Subject: Re: [PATCH 05/13] x86: Add early TPM1.2/TPM2.0 interface support for
+ Secure Launch
+To: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+ Ross Philipson <ross.philipson@oracle.com>
+References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
+ <1600959521-24158-6-git-send-email-ross.philipson@oracle.com>
+ <20200925054313.GB165011@linux.intel.com>
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Message-ID: <933d9f3e-a509-bff4-54fe-20af44dc3ed0@apertussolutions.com>
+Date: Tue, 19 Jan 2021 19:33:52 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from office-linux.texastahm.com (67.79.209.213) by
- SA9PR13CA0231.namprd13.prod.outlook.com (2603:10b6:806:25::26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3784.4 via Frontend Transport; Tue, 19 Jan 2021 19:30:43 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a459b9d1-b53e-417c-7b53-08d8bcb0b67a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4075:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4075F2C8C7650BDA915729E2ECA30@DM6PR12MB4075.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1+ai1I9Q7jba9IKsazxuaJaxm/msqy+55mBT3PdR5PIwQcKMiAOcsFrEqhNC+EouQSzzo8F1VuDEKg5mZtGAk7+wLjPrX1ttz3iYdl+EocKlJv72S4VppuYYnE7WH1x9xAj4DYE8lPHbJSydQAyViHeIZQ378t7rH0mpv9YpZWcymPoeu+GS2OjiVd4tDVoSkAEZ7rwgoEzxMsR/Ncpe00dgHw1i79lLRV8Avnp4+B0YfOaIFFZn6qEbanlJNgbNaSuRivMAWyc6B6K+m4RCfipQhGbT0GIdQ2Cxdr913cubsSGs0IBt5/FKkTwRdH/JuAQpKCxcv8d6uA8pRLv6OtWUi4RU5aQg/zH4HcmhgwKC6MCpdkCD40m5WAbl45//xIzCvHOsj20/SfDwrcPLV8FUI80wl39YjdsrGJPOuNgrk0JQMo9TpYGGRieSICwrJYspqi3B1aT7dJvf1WDJu8N/cO4J3nU0+GDO4t7nkAafqDfnPsM5Ejdy5Frj0JIGUGRQRFjfKyVezHpkxpzp4fPUyx/gthIlbt23Z7Zgt6DqxQQhBlgHghuPdZHUSt5z
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1355.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(136003)(39850400004)(366004)(396003)(346002)(376002)(966005)(8676002)(31696002)(956004)(36756003)(6512007)(53546011)(2616005)(316002)(52116002)(86362001)(26005)(66556008)(8936002)(66476007)(6506007)(6486002)(16526019)(186003)(478600001)(45080400002)(31686004)(2906002)(66946007)(83380400001)(5660300002)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QnZOem85N3pkSVFUcjJyeGhuQXlHM3k1VTcvNi82eWx0bTFPWHZGMjBpUU9W?=
- =?utf-8?B?Q21RNWF4enNpaUM0RHlwMmc5L0tlMmlpWGljbXVlYkhSbGhqWnZtUUhXcnU2?=
- =?utf-8?B?WS80VisxMGgza0x4M2NOSVFTZmdrRUNFTUpjWGE0bWFkMDJuU0lnR1JERHlw?=
- =?utf-8?B?NFBSWHJxa08vM3hXN0dkcTl5cVh5OHkrSEVVdm5XQ29qYVJoRGU4UzFrL1Fk?=
- =?utf-8?B?WjFDczRKR0hFcVlLK1RUa0pHSnMxcmVvZzljU3RPV0E4WlVPeW1nVkx6ZTdy?=
- =?utf-8?B?QXpCQXZpdlU0MVBuRzAyZFZGOWZXVUgwbGRYQzJHQkNsMGdaSXNFcWVJVlVl?=
- =?utf-8?B?R3VYV25mNTd0aXRWTHJ3elZadXpGYlpGYlh5U285dmpxZEYxR2docGt2V2N3?=
- =?utf-8?B?VE5qVUNRREVtMlRIZ2lvTGVjYkJCaWttTmx6OEJnRUNUQ011NVQxV2tyc2px?=
- =?utf-8?B?QkxQK21NTzUvL3BhcGErOTJnbGpiNklBaTErcW9TdzZOR2VpTTEyVHpYQW45?=
- =?utf-8?B?WlhyR1VnanBvZ0dYNFhwMFJHeVFZeTBncTJVVFFBT1krYlFTY1VTaE42Ym4v?=
- =?utf-8?B?S204bU9KbjFINUx2Vk5WTGpKOVJZdUkzYW9Pd00waGg5d09WbklvNGlzNWZ2?=
- =?utf-8?B?TUs0NFdqKzFtL0pvVm8yc3FIRWlhUStVQUJ6TDc5NDUraUVkdjRkYStteWVZ?=
- =?utf-8?B?NjRRaXRSYkVIc2xUdEVOKy9VemMyMmltRmhpeVhOZVlFNzVnSDl5Um92ampX?=
- =?utf-8?B?ekdDcmFITEFGNmxvVDYwdEgyMitZSkd2TzhzSnpHSlZEMHIxZG9vSkhNcGMw?=
- =?utf-8?B?QTVscnFodHJpSHMzeXE5ZVRzRWlwU1BOQnI2QWZEMU83MWwySE1aRW9zWkwr?=
- =?utf-8?B?Vllld2NYdk00UUtCSjkyZDd3NHIvR1FSQ3VkekE3MkxSUU9HdXJGWHoxa2Vt?=
- =?utf-8?B?SVM3cWFrNTN2K2dMV1l1MzJkZDBOdlpaVkZEVUsyb2Z5N3VCcjVnSDd1QmtO?=
- =?utf-8?B?UjlKdHZCd2JzS3FlNkFJaDBwTEdYUnpnVXZqdkhaeVRSRG1rSFhHVDVYa1dv?=
- =?utf-8?B?SHpaN1hobm1TNXEzTXg3aWtEL1h6VksxRTFlNkdJeCt4K0RvQndraHc1Z2o3?=
- =?utf-8?B?ZHFDTGpsTHQzdmVPcGt1Um4zOUpMK2loZ2ZaeHp6cHJONGhFWDRVVG94b29n?=
- =?utf-8?B?c3hUMFlaNlcyLytFR1JTY2pubnh6OHpzRVpWYmFuMWpFYlFvckxXUVczYllQ?=
- =?utf-8?B?QVZ1QW5zWXhZQlJkWUVyN25pWVlFSmJBMk5vS2w2SGpXaDN0bnhnS0hkRGdM?=
- =?utf-8?Q?NXY21fffC+Ht472QgV5NZtrbT41gxkTxAz?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a459b9d1-b53e-417c-7b53-08d8bcb0b67a
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1355.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2021 19:30:43.6700 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V9HbkzwA9nDkAS+9hRrvggx9ZUD428AMFOW/ZnPk1pcc5cSLVpmHE28/ZIwhcHoPuOQxs3m0MDeo2fsQuGFQaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4075
+In-Reply-To: <20200925054313.GB165011@linux.intel.com>
+Content-Language: en-US
+X-ZohoMailClient: External
+Cc: linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+ luto@amacapital.net, iommu@lists.linux-foundation.org, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, linux-integrity@vger.kernel.org,
+ trenchboot-devel@googlegroups.com, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -150,52 +102,77 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/18/21 1:28 PM, Takashi Iwai wrote:
-> Hi,
+On 9/25/20 1:43 AM, Jarkko Sakkinen wrote:
+> On Thu, Sep 24, 2020 at 10:58:33AM -0400, Ross Philipson wrote:
+>> From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+>>
+>> This commit introduces an abstraction for TPM1.2 and TPM2.0 devices
+>> above the TPM hardware interface.
+>>
+>> Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
+>> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 > 
-> we've got a bug report recently about the garbage playback sound from
-> a PCI sound device with mem_encrypt on AMD Ryzen:
->     https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugzilla.kernel.org%2Fshow_bug.cgi%3Fid%3D211117&amp;data=04%7C01%7Cthomas.lendacky%40amd.com%7C8f5024e991b747d3aada08d8bbe73df5%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637465949142766079%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=4i6%2BUkt%2BebHJPlAvkDxgJkIcKq0eF9E4ssZC9vNBLHY%3D&amp;reserved=0
+> This is way, way too PoC. I wonder why there is no RFC tag.
 > 
-> The debug session showed that this happens only with the mmap using
-> dma_mmap_coherent() and mem_encrypt.  The mmap with the legacy page
-> fault (as done in ALSA PCM core) seems still working even with the
-> mem_encrypt.
+> Please also read section 2 of
+> 
+> https://www.kernel.org/doc/html/v5.8/process/submitting-patches.html
+> 
+> You should leverage existing TPM code in a way or another. Refine it so
+> that it scales for your purpose and then compile it into your thing
+> (just include the necesary C-files with relative paths).
+> 
+> How it is now is never going to fly.
+> 
+> /Jarkko
+> 
 
-This sounds like a mismatch between the encryption bit in the kernel and 
-the encryption bit in userspace. It looks like that should be taken care 
-of by the dma_pgprot() call in dma_mmap_attrs() or in iommu_dma_mmap(). 
-But maybe the force_dma_unencrypted() in arch/x86/mm/mem_encrypt.c needs 
-to understand if the IOMMU is doing the mapping. Since, even if the device 
-doesn't support 48-bit or higher DMA, it will still done encrypted because 
-of the IOMMU. Is the IOMMU enabled? What happens if you do iommu=pt on the 
-kernel command line?
+After attempts to engage in finding alternative approaches, it appears
+that the only welcomed approach for sending measurements from the
+compressed kernel would be a major rewrite of the mainline TPM driver to:
 
-I'll also add this comment to the bug.
+1. Abstract out the mainline kernel infrastructure that is used by the
+driver
 
-Thanks,
-Tom
+2. Find ways to introduce a minimal amount of the equivalent
+infrastructure into the compressed kernel, to make the driver code
+reusable within the compressed kernel.
 
-> 
-> Since the problem could be observed on two different PCI drivers, it
-> looks like a generic problem of DMA-mmap implementation with AMD
-> memory encryption.
-> 
-> According to the reporter, it's seen on both 5.4.x and 5.10.x
-> kernels, hence it doesn't like a recent regression.
-> 
-> Can anyone take a look?
-> 
-> 
-> Thanks!
-> 
-> Takashi
-> 
+This approach would exceed the scope of changes we want to introduce to
+non-SecureLaunch code to enable direct DRTM launch for the Linux kernel.
+
+After careful consideration and discussions with colleagues from the
+trusted computing community, an alternative has been crafted. We aim to
+submit a version 2 with the following approach:
+
+1. SecureLaunch will take measurements in the compressed kernel as we do
+in version 1, but instead of immediately sending them to the TPM, they
+will be stored in the DRTM TPM event log.
+
+2. When the SecureLaunch module in the mainline kernel comes on line, it
+can send measurements to the TPM using the mainline TPM driver.
+
+While it would be ideal to record measurements at the time they are
+taken, the mainline kernel is measured alongside the compressed kernel
+as a single measurement. This means the same measured entity stays in
+control, prior to execution by any other entity within the system.
+
+At a later date, if the TPM maintainers refactor the TPM driver for
+reuse within the compressed kernel, then the sending of measurements can
+be revisited.
+
+For individuals and distributions that may prefer to record DRTM
+measurements earlier, the TrenchBoot project will do its best to
+maintain an external patch to provide that capability to a mainline LTS
+kernel.
+
+V/r,
+Daniel P. Smith
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
