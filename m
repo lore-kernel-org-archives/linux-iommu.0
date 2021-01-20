@@ -2,94 +2,99 @@ Return-Path: <SRS0=mF+O=GX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A00FC433DB
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 00:49:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4977EC433E0
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 02:06:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5EC2923108
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 00:49:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EC2923108
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9FDC422509
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 02:06:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FDC422509
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 18A942048C;
-	Wed, 20 Jan 2021 00:49:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3BBA585A4B;
+	Wed, 20 Jan 2021 02:06:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JQ0eNpmznEqT; Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
+	with ESMTP id VvgQK9BuS42D; Wed, 20 Jan 2021 02:06:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5ED0F20443;
-	Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2B9FB85815;
+	Wed, 20 Jan 2021 02:06:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46378C08A1;
-	Wed, 20 Jan 2021 00:49:21 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AB357C013A
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 078DFC088B;
+	Wed, 20 Jan 2021 02:06:04 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 681FCC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:06:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7726320470
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4DDA186FAA
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:06:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GBFzZV48Lydw for <iommu@lists.linux-foundation.org>;
- Wed, 20 Jan 2021 00:49:17 +0000 (UTC)
-X-Greylist: delayed 00:15:02 by SQLgrey-1.7.6
-Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
- [136.143.188.51])
- by silver.osuosl.org (Postfix) with ESMTPS id 29DFB20443
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 00:49:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; t=1611102836; cv=none; 
- d=zohomail.com; s=zohoarc; 
- b=bvfuEVpT4XhGIRZ7H3qUEKRtb4ThDEDdXfu0fGNznNoBq6hR3zJmUh1tILm8GWsl8Ncxbw2QP3QKCJ4GG3oQY1SWipvLA6G4ubbe6sep+36uX0KcX2vOvsF3CbK+ouvcFBMTujldMqYtnx8UNPsBWJ817z2Qnxaem7kN1GLaLIU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
- s=zohoarc; t=1611102836;
- h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
- bh=Gy6cxAGpQV06imIwuB7h3MwRSZjSFn29L4jucGrojIM=; 
- b=XQhTC1LH6c79yVxqK8zC2C5CgP2MuAgUhz6d0ZmZ+dBHrUTvn8RfVbISO2NGH+Oe9IP0kiK4OUmFf2nrsyPWpbJyM4+ZNncEB18ELEw6q2VPLXEGEwx5YPHb2OiK/TuG5+k6upE0999/PUUMxVFwNoCTO0xJb7Jwd+WgRK/n0TU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
- dkim=pass  header.i=apertussolutions.com;
- spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
- dmarc=pass header.from=<dpsmith@apertussolutions.com>
- header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1611102836; 
- s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
- h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
- bh=Gy6cxAGpQV06imIwuB7h3MwRSZjSFn29L4jucGrojIM=;
- b=M18bUZgt44glWZutDwWxXMoUKnlHR3szHDABEv1f06QiOrszMJbrC5eSxYaGjY71
- N8wIIuJa243I9uWPqrYABy00MzADpYLPbVCBvfKdP9qfllPFibUM97Y3F9/ROsszVSX
- getsmT810S+BbVsH7VgnSy8+vUtsHKg1nbnvB2AE=
-Received: from [10.10.1.24] (c-73-129-147-140.hsd1.md.comcast.net
- [73.129.147.140]) by mx.zohomail.com
- with SMTPS id 1611102834623926.0489869436618;
- Tue, 19 Jan 2021 16:33:54 -0800 (PST)
-Subject: Re: [PATCH 05/13] x86: Add early TPM1.2/TPM2.0 interface support for
- Secure Launch
-To: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
- Ross Philipson <ross.philipson@oracle.com>
-References: <1600959521-24158-1-git-send-email-ross.philipson@oracle.com>
- <1600959521-24158-6-git-send-email-ross.philipson@oracle.com>
- <20200925054313.GB165011@linux.intel.com>
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Message-ID: <933d9f3e-a509-bff4-54fe-20af44dc3ed0@apertussolutions.com>
-Date: Tue, 19 Jan 2021 19:33:52 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ with ESMTP id 2Iva-pCmSc5n for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Jan 2021 02:06:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 642B586258
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 02:06:01 +0000 (UTC)
+IronPort-SDR: DibvoDDsmxiulp/UInQ+o8Di4tMFTIUA6Seafq1W7ZqiqJJcy6366HQJf/hitIBlpVlYe6iYLS
+ yBCllx6kmGBA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="175526276"
+X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; d="scan'208";a="175526276"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 Jan 2021 18:06:00 -0800
+IronPort-SDR: W6eM+jIfTZwk0PBH1IIFJWnO3U5jYa/3pifRN/NWz3Ibe/PpfkfPsHjwZ4SUqihavlEC755cX7
+ eI+tl5wEn0GQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; d="scan'208";a="466917375"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
+ by fmsmga001.fm.intel.com with ESMTP; 19 Jan 2021 18:05:54 -0800
+Subject: Re: [PATCH v9 03/10] iommu: Separate IOMMU_DEV_FEAT_IOPF from
+ IOMMU_DEV_FEAT_SVA
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "Tian, Kevin" <kevin.tian@intel.com>
+References: <20210108145217.2254447-1-jean-philippe@linaro.org>
+ <20210108145217.2254447-4-jean-philippe@linaro.org>
+ <4de8ef03-a2ed-316e-d3e3-6b8474e20113@linux.intel.com>
+ <X/1o72DTmzdCMhDz@myrica>
+ <c88e5d74-098d-7f1d-a7bb-a89e40fb8fa4@linux.intel.com>
+ <MWHPR11MB18868F53E5A9E0CF9975042B8CA90@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YAB0SHyUZbxprkL3@larix.localdomain>
+ <636814a9-7dea-06f6-03ec-6a98dd30b7e3@linux.intel.com>
+ <MWHPR11MB188653AF6EFA0E55DE17815F8CA40@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YAaxjmJW+ZMvrhac@myrica>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <5e563a0b-e853-bb72-2cec-13c94ab4d554@linux.intel.com>
+Date: Wed, 20 Jan 2021 09:57:42 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200925054313.GB165011@linux.intel.com>
+In-Reply-To: <YAaxjmJW+ZMvrhac@myrica>
 Content-Language: en-US
-X-ZohoMailClient: External
-Cc: linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
- luto@amacapital.net, iommu@lists.linux-foundation.org, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, linux-integrity@vger.kernel.org,
- trenchboot-devel@googlegroups.com, tglx@linutronix.de
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
+ "guohanjun@huawei.com" <guohanjun@huawei.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ "lenb@kernel.org" <lenb@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ David Woodhouse <dwmw2@infradead.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,77 +107,144 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/25/20 1:43 AM, Jarkko Sakkinen wrote:
-> On Thu, Sep 24, 2020 at 10:58:33AM -0400, Ross Philipson wrote:
->> From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Hi Jean,
+
+On 1/19/21 6:16 PM, Jean-Philippe Brucker wrote:
+> On Mon, Jan 18, 2021 at 06:54:28AM +0000, Tian, Kevin wrote:
+>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Sent: Saturday, January 16, 2021 11:54 AM
+>>>
+>>> Hi Jean,
+>>>
+>>> On 2021/1/15 0:41, Jean-Philippe Brucker wrote:
+>>>> I guess detailing what's needed for nested IOPF can help the discussion,
+>>>> although I haven't seen any concrete plan about implementing it, and it
+>>>> still seems a couple of years away. There are two important steps with
+>>>> nested IOPF:
+>>>>
+>>>> (1) Figuring out whether a fault comes from L1 or L2. A SMMU stall event
+>>>>       comes with this information, but a PRI page request doesn't. The
+>>> IOMMU
+>>>>       driver has to first translate the IOVA to a GPA, injecting the fault
+>>>>       into the guest if this translation fails by using the usual
+>>>>       iommu_report_device_fault().
 >>
->> This commit introduces an abstraction for TPM1.2 and TPM2.0 devices
->> above the TPM hardware interface.
+>> The IOMMU driver can walk the page tables to find out the level information.
+>> If the walk terminates at the 1st level, inject to the guest. Otherwise fix the
+>> mm fault at 2nd level. It's not efficient compared to hardware-provided info,
+>> but it's doable and actual overhead needs to be measured (optimization exists
+>> e.g. having fault client to hint no 2nd level fault expected when registering fault
+>> handler in pinned case).
 >>
->> Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
->> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+>>>>
+>>>> (2) Translating the faulting GPA to a HVA that can be fed to
+>>>>       handle_mm_fault(). That requires help from KVM, so another interface -
+>>>>       either KVM registering GPA->HVA translation tables or IOMMU driver
+>>>>       querying each translation. Either way it should be reusable by device
+>>>>       drivers that implement IOPF themselves.
+>>
+>> Or just leave to the fault client (say VFIO here) to figure it out. VFIO has the
+>> information about GPA->HPA and can then call handle_mm_fault to fix the
+>> received fault. The IOMMU driver just exports an interface for the device drivers
+>> which implement IOPF themselves to report a fault which is then handled by
+>> the IOMMU core by reusing the same faulting path.
+>>
+>>>>
+>>>> (1) could be enabled with iommu_dev_enable_feature(). (2) requires a
+>>> more
+>>>> complex interface. (2) alone might also be desirable - demand-paging for
+>>>> level 2 only, no SVA for level 1.
+>>
+>> Yes, this is what we want to point out. A general FEAT_IOPF implies more than
+>> what this patch intended to address.
+>>
+>>>>
+>>>> Anyway, back to this patch. What I'm trying to convey is "can the IOMMU
+>>>> receive incoming I/O page faults for this device and, when SVA is enabled,
+>>>> feed them to the mm subsystem?  Enable that or return an error." I'm stuck
+>>>> on the name. IOPF alone is too vague. Not IOPF_L1 as Kevin noted, since L1
+>>>> is also used in virtualization. IOPF_BIND and IOPF_SVA could also mean (2)
+>>>> above. IOMMU_DEV_FEAT_IOPF_FLAT?
+>>>>
+>>>> That leaves space for the nested extensions. (1) above could be
+>>>> IOMMU_FEAT_IOPF_NESTED, and (2) requires some new interfacing with
+>>> KVM (or
+>>>> just an external fault handler) and could be used with either IOPF_FLAT or
+>>>> IOPF_NESTED. We can figure out the details later. What do you think?
+>>>
+>>> I agree that we can define IOPF_ for current usage and leave space for
+>>> future extensions.
+>>>
+>>> IOPF_FLAT represents IOPF on first-level translation, currently first
+>>> level translation could be used in below cases.
+>>>
+>>> 1) FL w/ internal Page Table: Kernel IOVA;
+>>> 2) FL w/ external Page Table: VFIO passthrough;
+>>> 3) FL w/ shared CPU page table: SVA
+>>>
+>>> We don't need to support IOPF for case 1). Let's put it aside.
+>>>
+>>> IOPF handling of 2) and 3) are different. Do we need to define different
+>>> names to distinguish these two cases?
+>>>
+>>
+>> Defining feature names according to various use cases does not sound a
+>> clean way. In an ideal way we should have just a general FEAT_IOPF since
+>> the hardware (at least VT-d) does support fault in either 1st-level, 2nd-
+>> level or nested configurations. We are entering this trouble just because
+>> there is difficulty for the software evolving to enable full hardware cap
+>> in one batch. My last proposal was sort of keeping FEAT_IOPF as a general
+>> capability for whether delivering fault through the IOMMU or the ad-hoc
+>> device, and then having a separate interface for whether IOPF reporting
+>> is available under a specific configuration. The former is about the path
+>> between the IOMMU and the device, while the latter is about the interface
+>> between the IOMMU driver and its faulting client.
+>>
+>> The reporting capability can be checked when the fault client is registering
+>> its fault handler, and at this time the IOMMU driver knows how the related
+>> mapping is configured (1st, 2nd, or nested) and whether fault reporting is
+>> supported in such configuration. We may introduce IOPF_REPORT_FLAT and
+>> IOPF_REPORT_NESTED respectively. while IOPF_REPORT_FLAT detection is
+>> straightforward (2 and 3 can be differentiated internally based on configured
+>> level), IOPF_REPORT_NESTED needs additional info to indicate which level is
+>> concerned since the vendor driver may not support fault reporting in both
+>> levels or the fault client may be interested in only one level (e.g. with 2nd
+>> level pinned).
 > 
-> This is way, way too PoC. I wonder why there is no RFC tag.
+> I agree with this plan (provided I understood it correctly this time):
+> have IOMMU_DEV_FEAT_IOPF describing the IOPF interface between device and
+> IOMMU. Enabling it on its own doesn't do anything visible to the driver,
+> it just probes for capabilities and enables PRI if necessary. For host
+> SVA, since there is no additional communication between IOMMU and device
+> driver, enabling IOMMU_DEV_FEAT_SVA in addition to IOPF is sufficient.
+> Then when implementing nested we'll extend iommu_register_fault_handler()
+> with flags and parameters. That will also enable advanced dispatching (1).
 > 
-> Please also read section 2 of
+> Will it be necessary to enable FEAT_IOPF when doing VFIO passthrough
+> (injecting to the guest or handling it with external page tables)?
+> I think that would be better. Currently a device driver registering a
+> fault handler doesn't know if it will get recoverable page faults or only
+> unrecoverable ones.
 > 
-> https://www.kernel.org/doc/html/v5.8/process/submitting-patches.html
+> So I don't think this patch needs any change. Baolu, are you ok with
+> keeping this and patch 4?
+
+It sounds good to me. Keep FEAT_IOPF as the IOMMU capability of
+generating I/O page fault and differentiate different I/O page faults by
+extending the fault handler register interface.
+
 > 
-> You should leverage existing TPM code in a way or another. Refine it so
-> that it scales for your purpose and then compile it into your thing
-> (just include the necesary C-files with relative paths).
-> 
-> How it is now is never going to fly.
-> 
-> /Jarkko
+> Thanks,
+> Jean
 > 
 
-After attempts to engage in finding alternative approaches, it appears
-that the only welcomed approach for sending measurements from the
-compressed kernel would be a major rewrite of the mainline TPM driver to:
-
-1. Abstract out the mainline kernel infrastructure that is used by the
-driver
-
-2. Find ways to introduce a minimal amount of the equivalent
-infrastructure into the compressed kernel, to make the driver code
-reusable within the compressed kernel.
-
-This approach would exceed the scope of changes we want to introduce to
-non-SecureLaunch code to enable direct DRTM launch for the Linux kernel.
-
-After careful consideration and discussions with colleagues from the
-trusted computing community, an alternative has been crafted. We aim to
-submit a version 2 with the following approach:
-
-1. SecureLaunch will take measurements in the compressed kernel as we do
-in version 1, but instead of immediately sending them to the TPM, they
-will be stored in the DRTM TPM event log.
-
-2. When the SecureLaunch module in the mainline kernel comes on line, it
-can send measurements to the TPM using the mainline TPM driver.
-
-While it would be ideal to record measurements at the time they are
-taken, the mainline kernel is measured alongside the compressed kernel
-as a single measurement. This means the same measured entity stays in
-control, prior to execution by any other entity within the system.
-
-At a later date, if the TPM maintainers refactor the TPM driver for
-reuse within the compressed kernel, then the sending of measurements can
-be revisited.
-
-For individuals and distributions that may prefer to record DRTM
-measurements earlier, the TrenchBoot project will do its best to
-maintain an external patch to provide that capability to a mainline LTS
-kernel.
-
-V/r,
-Daniel P. Smith
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
