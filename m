@@ -2,77 +2,137 @@ Return-Path: <SRS0=mF+O=GX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EA9C433E0
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 13:27:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7A2C433DB
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 13:44:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 22C6423380
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 13:27:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22C6423380
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A96CD2339E
+	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 13:44:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A96CD2339E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 96B6A204FE;
-	Wed, 20 Jan 2021 13:27:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 56AE885F6C;
+	Wed, 20 Jan 2021 13:44:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QpjyPHUqntYj; Wed, 20 Jan 2021 13:27:55 +0000 (UTC)
+	with ESMTP id N8h-YNNbEnkd; Wed, 20 Jan 2021 13:44:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id EC56E20410;
-	Wed, 20 Jan 2021 13:27:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4AF4A85A76;
+	Wed, 20 Jan 2021 13:44:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D399FC088B;
-	Wed, 20 Jan 2021 13:27:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C1E43C013A
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:27:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BCF4C088B;
+	Wed, 20 Jan 2021 13:44:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E50F6C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:44:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AF73B870F2
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:27:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D282086961
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:44:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0lt69Ke4t21a for <iommu@lists.linux-foundation.org>;
- Wed, 20 Jan 2021 13:27:52 +0000 (UTC)
+ with ESMTP id 6CpQSzJTJ7mI for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Jan 2021 13:44:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7291C870C4
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:27:52 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 905A5D6E;
- Wed, 20 Jan 2021 05:27:51 -0800 (PST)
-Received: from [10.57.39.58] (unknown [10.57.39.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D76613F66E;
- Wed, 20 Jan 2021 05:27:49 -0800 (PST)
-Subject: Re: [PATCH 1/2] perf/smmuv3: Don't reserve the register space that
- overlaps with the SMMUv3
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
- Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- iommu <iommu@lists.linux-foundation.org>,
- linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210119015951.1042-1-thunder.leizhen@huawei.com>
- <20210119015951.1042-2-thunder.leizhen@huawei.com>
- <30665cd6-b438-1d1d-7445-9e45e240f79a@arm.com>
- <a2d7d94c-8e4e-d91d-8587-7a5b3594b4ca@huawei.com>
- <9ad3c863-ec80-e177-4d11-24d1f706b4af@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f6fde527-8c87-1128-52ca-77d096194eb6@arm.com>
-Date: Wed, 20 Jan 2021 13:27:48 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A1418863FD
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:44:47 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LnxH0+0UOuVurswsqp1YYTOwdzfolOxmFBuiCZ2LMvYcHL9xiUUcB7I8DO+F3ns1GW2i4x1yzusRffkgG7YdaZIki3KXbS8RAz0zwiBRDoDc/pskgP1GU/yjJdkd0VySbKip71+Xq+TZSCL56CNvzDl1lHeJktH+6JbeGhHb4zLGqBdBmzG6lHAEU8W7BqkAv+c+qRclBTbCDC2CJJMJRahToRjsMCAHd7Yn9W08KxuLwbwpwT6HMF5+mQaIbwlbQM5WOmVNnhJH2lMpBZZitEE63VU/boWmbnSGTEBk++98GApGl5Vd7QGUqWdvDAKpYHrNLFxUzCtZ3T0XSkMVNg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bBRBVKYbsNo6QWu4wv+B/xWSlPpK1uF6sY1Oj9nJIE0=;
+ b=DSSi4mO6Pc2eV+c4Yvi/bPivc1baFveWjrdjzLmth9DONZAihrIxvSejyCNYNQdwAPWWAa78qnBGeaAzlGgDPLKRzLSSfQbE8Lvu3wHK8JBFfCuYK4ukEh+/4KmtCSYAVZlxJf84TjWUFmAP+bmK2A9TDwxDrNACrv30DTQteVfujV7RlERq9nIZgN5UdjRdknnuQ36GXnDYDeHPzcvB7UssTq0/lHI9lALRnOZhGLJevkHU8KGxlSUIG1IWnTkRyVwbFovpMQ4q4TA2zVjCpODorarq6zwgvTzBDZ6TbPccMc/fG/p42sHUtTV1fBjoU6F/A0CvmiFDxB8ne7HVkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bBRBVKYbsNo6QWu4wv+B/xWSlPpK1uF6sY1Oj9nJIE0=;
+ b=yhANKZo9tK28CnO9CzEouhBPVQiAmXDXjhigKah4j21Un7J6CQ9246tKhRrA3MhJixup0GjBSrmHNpGWYERyX9wZGUDNCyrVwGZfBeQzbc5Djiqz0xLbz2wb0N8ClFgm0UDeaQ4SZYxAFEUxqMVwHefsPU3Sm+mpeAzFIpu0Kn0=
+Authentication-Results: lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
+ header.from=amd.com;
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
+ by BYAPR12MB3128.namprd12.prod.outlook.com (2603:10b6:a03:dd::29)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12; Wed, 20 Jan
+ 2021 13:44:42 +0000
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::a95a:7202:81db:1972]) by BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::a95a:7202:81db:1972%7]) with mapi id 15.20.3784.013; Wed, 20 Jan 2021
+ 13:44:42 +0000
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v2] iommu/amd: Use IVHD EFR for early initialization of IOMMU
+ features
+Date: Wed, 20 Jan 2021 07:50:02 -0600
+Message-Id: <20210120135002.2682-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [165.204.78.2]
+X-ClientProxiedBy: CH2PR18CA0019.namprd18.prod.outlook.com
+ (2603:10b6:610:4f::29) To BYAPR12MB4597.namprd12.prod.outlook.com
+ (2603:10b6:a03:10b::14)
 MIME-Version: 1.0
-In-Reply-To: <9ad3c863-ec80-e177-4d11-24d1f706b4af@huawei.com>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from ethanolx5673host.amd.com (165.204.78.2) by
+ CH2PR18CA0019.namprd18.prod.outlook.com (2603:10b6:610:4f::29) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3763.10 via Frontend Transport; Wed, 20 Jan 2021 13:44:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f17b8c57-b60e-4949-2c9d-08d8bd498a23
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3128:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR12MB31285E85CCDBD78EFF3A5312F3A29@BYAPR12MB3128.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:854;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yYpWqFXcF9KtO0uvdtxcFM/A8uBKxpkofeHu8ZMeSPOZwljZh49IJqVgPxFmL/pjQwT+vavIZcVP8/KxGIPVip2dMRaiIhjSCiQiXO7V8zXsy24BtOltesXE6JVtm/rZfwGjgtAXqiMWI0onPInco2Z6/a7iJ1wy8C5ljARsAQuE23Ob30PWyLEIUMkTQyln7OEfjebSHw3lAf26jxVug8GJkRnSxHsBoCe/SD2zo5xjwVJJ9rweV8D95k/WJPd11Cpjzt3HuWbIzWl+X78Bopmr8YDjol50WYWf1Ba7u9OV4qEDEIAIuJF4qq6XWkWuLKkKQTSvygi+pXVdCHd5NKtbtAlVDCBMycPCEvP7NRqmLpBUT8IkhmEz5wT/QpdP1B2VIT9YD91DgpLB9QW+BA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(39860400002)(376002)(366004)(346002)(136003)(956004)(2616005)(8936002)(36756003)(16526019)(7696005)(4326008)(316002)(8676002)(5660300002)(26005)(6666004)(44832011)(52116002)(6916009)(66946007)(66556008)(66476007)(186003)(83380400001)(478600001)(1076003)(86362001)(6486002)(2906002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?uEWD1DNvoGrWJ0qY51LlRC3gd+nwYKFiuqrF/oKe40MhAXtmUdcnWjuK0QYG?=
+ =?us-ascii?Q?cgc5apE/y9NgNSZVvvu2N0tYFwsWB8DE6JLbIWozfVaAcieEXUB4O4BC/9xY?=
+ =?us-ascii?Q?6/KhE5ZIqtAozFBbbr+uwvdPlVjwIarvGK7KkI6WPR+VYtmBHHrUhVDV5RsY?=
+ =?us-ascii?Q?eaD4J5jFQl4cqDQ3S1pv+w8dZ4u524i6uAnttmZ02hSxuA0RM8PJ5ZW1NEPw?=
+ =?us-ascii?Q?MpCUaA/OT9Qz5yRr30c9UdgPyjyOen6fk1HRcq4ooLg4SoWVxD9XxJRBzM9y?=
+ =?us-ascii?Q?EhZer4F8BV6TqGe5xcA4MSDy5R3MeBKIRvwLFuK8wBRusavDWDdjVJKyM1dL?=
+ =?us-ascii?Q?NFxlFas0viVS3eeuQqO73+pT3u1+JboaVDEl3tAHCbEMAtcZsm9JsAm+rvNY?=
+ =?us-ascii?Q?8Z7fmZcM4quze2ILZnCuwudR+Y1cDo+p6+b70Gxo3K48tBTxCIbmkDYpV960?=
+ =?us-ascii?Q?bmWdBmW0PVFsOeC/6/328qsL+QRBC/gMseE0nak4Qawo6ehtzwKQUf9dc9kV?=
+ =?us-ascii?Q?zOKJHRb1RHS92DPiebz5M7uv8uzoDh6hWJiaMu7dPEfTi5YxUTQiL7xQN9G9?=
+ =?us-ascii?Q?m4o6yDs81V/nSaf/7bitCIzG7kZf/DhZ0WoIhjpb9rB43ieF9/+Q2vIqdRGl?=
+ =?us-ascii?Q?2YXhj8J1cSGeEvyUbwpBORI5flRAYND6pgOhX0XW2XzVuKQt6AS4nVpqTFKG?=
+ =?us-ascii?Q?E/v38fnw2LOIiNjs5LHy8DJF7TT3FQb5esrDwbWyQm+GS/l+zYXrmWAaLHN3?=
+ =?us-ascii?Q?0IxiYpqbAib8B/jvN9gyoWqSXZw/HzoZCZ9UjzT1NsCH2/SLQaoLKCpwXm3I?=
+ =?us-ascii?Q?0OHBghGIb+sfplqzncuKXz+cNA95j19cdOVgu6A088S9AoGI0WUICxiqh6ON?=
+ =?us-ascii?Q?e41bFKjLBdvoBxL94IMzBagkXY2ZkKCbJsjY7dx2Tc1U4mrqC3Zfo+fxEetE?=
+ =?us-ascii?Q?205oLykB/m4SLV8XEp7ZGH2/+q1ZD75tsA2T/Op7olPlOooVCRP5XgDOyHBM?=
+ =?us-ascii?Q?JNEA?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f17b8c57-b60e-4949-2c9d-08d8bd498a23
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2021 13:44:42.4246 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IJkRcic6SxwHddz6h2TIKEP+9sOTzvr38sHHZRc1hb3r2rtm919i9f1epC+gZ7ElEf6ndHcccAWDVRDkiabryA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3128
+Cc: brijesh.singh@amd.com, rrichter@amd.com, Jon.Grimm@amd.com,
+ will.deacon@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,118 +145,183 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMS0yMCAwOToyNiwgTGVpemhlbiAoVGh1bmRlclRvd24pIHdyb3RlOgo+IAo+IAo+
-IE9uIDIwMjEvMS8yMCAxMTozNywgTGVpemhlbiAoVGh1bmRlclRvd24pIHdyb3RlOgo+Pgo+Pgo+
-PiBPbiAyMDIxLzEvMTkgMjA6MzIsIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDIwMjEtMDEt
-MTkgMDE6NTksIFpoZW4gTGVpIHdyb3RlOgo+Pj4+IFNvbWUgU01NVXYzIGltcGxlbWVudGF0aW9u
-IGVtYmVkIHRoZSBQZXJmIE1vbml0b3IgR3JvdXAgUmVnaXN0ZXJzIChQTUNHKQo+Pj4+IGluc2lk
-ZSB0aGUgZmlyc3QgNjRrQiByZWdpb24gb2YgdGhlIFNNTVUuIFNpbmNlIFNNTVUgYW5kIFBNQ0cg
-YXJlIG1hbmFnZWQKPj4+PiBieSB0d28gc2VwYXJhdGUgZHJpdmVycywgYW5kIHRoaXMgZHJpdmVy
-IGRlcGVuZHMgb24gQVJNX1NNTVVfVjMsIHNvIHRoZQo+Pj4+IFNNTVUgZHJpdmVyIHJlc2VydmVz
-IHRoZSBjb3JyZXNwb25kaW5nIHJlc291cmNlIGZpcnN0LCB0aGlzIGRyaXZlciBzaG91bGQKPj4+
-PiBub3QgcmVzZXJ2ZSB0aGUgY29ycmVzcG9uZGluZyByZXNvdXJjZSBhZ2Fpbi4gT3RoZXJ3aXNl
-LCBhIHJlc291cmNlCj4+Pj4gcmVzZXJ2YXRpb24gY29uZmxpY3QgaXMgcmVwb3J0ZWQgZHVyaW5n
-IGJvb3QuCj4+Pj4KPj4+PiBTaWduZWQtb2ZmLWJ5OiBaaGVuIExlaSA8dGh1bmRlci5sZWl6aGVu
-QGh1YXdlaS5jb20+Cj4+Pj4gLS0tCj4+Pj4gIMKgIGRyaXZlcnMvcGVyZi9hcm1fc21tdXYzX3Bt
-dS5jIHwgNDIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4+Pj4g
-IMKgIDEgZmlsZSBjaGFuZ2VkLCA0MCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Pj4+
-Cj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGVyZi9hcm1fc21tdXYzX3BtdS5jIGIvZHJpdmVy
-cy9wZXJmL2FybV9zbW11djNfcG11LmMKPj4+PiBpbmRleCA3NDQ3NGJiMzIyYzNmMjYuLmRjY2Uw
-ODU0MzFjNmNlOCAxMDA2NDQKPj4+PiAtLS0gYS9kcml2ZXJzL3BlcmYvYXJtX3NtbXV2M19wbXUu
-Ywo+Pj4+ICsrKyBiL2RyaXZlcnMvcGVyZi9hcm1fc21tdXYzX3BtdS5jCj4+Pj4gQEAgLTc2MSw2
-ICs3NjEsNDQgQEAgc3RhdGljIHZvaWQgc21tdV9wbXVfZ2V0X2FjcGlfb3B0aW9ucyhzdHJ1Y3Qg
-c21tdV9wbXUgKnNtbXVfcG11KQo+Pj4+ICDCoMKgwqDCoMKgIGRldl9ub3RpY2Uoc21tdV9wbXUt
-PmRldiwgIm9wdGlvbiBtYXNrIDB4JXhcbiIsIHNtbXVfcG11LT5vcHRpb25zKTsKPj4+PiAgwqAg
-fQo+Pj4+ICDCoCArc3RhdGljIHZvaWQgX19pb21lbSAqCj4+Pj4gK3NtbXVfcG11X2dldF9hbmRf
-aW9yZW1hcF9yZXNvdXJjZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LAo+Pj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGludCBpbmRleCwKPj4+PiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgKipvdXRf
-cmVzKQo+Pj4+ICt7Cj4+Pj4gK8KgwqDCoCBpbnQgcmV0Owo+Pj4+ICvCoMKgwqAgdm9pZCBfX2lv
-bWVtICpiYXNlOwo+Pj4+ICvCoMKgwqAgc3RydWN0IHJlc291cmNlICpyZXM7Cj4+Pj4gKwo+Pj4+
-ICvCoMKgwqAgcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVN
-LCBpbmRleCk7Cj4+Pj4gK8KgwqDCoCBpZiAoIXJlcykgewo+Pj4+ICvCoMKgwqDCoMKgwqDCoCBk
-ZXZfZXJyKCZwZGV2LT5kZXYsICJpbnZhbGlkIHJlc291cmNlXG4iKTsKPj4+PiArwqDCoMKgwqDC
-oMKgwqAgcmV0dXJuIElPTUVNX0VSUl9QVFIoLUVJTlZBTCk7Cj4+Pj4gK8KgwqDCoCB9Cj4+Pj4g
-K8KgwqDCoCBpZiAob3V0X3JlcykKPj4+PiArwqDCoMKgwqDCoMKgwqAgKm91dF9yZXMgPSByZXM7
-Cj4+Pj4gKwo+Pj4+ICvCoMKgwqAgcmV0ID0gcmVnaW9uX2ludGVyc2VjdHMocmVzLT5zdGFydCwg
-cmVzb3VyY2Vfc2l6ZShyZXMpLAo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-SU9SRVNPVVJDRV9NRU0sIElPUkVTX0RFU0NfTk9ORSk7Cj4+Pj4gK8KgwqDCoCBpZiAocmV0ID09
-IFJFR0lPTl9JTlRFUlNFQ1RTKSB7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgIC8qCj4+Pj4gK8KgwqDC
-oMKgwqDCoMKgwqAgKiBUaGUgcmVzb3VyY2UgaGFzIGFscmVhZHkgYmVlbiByZXNlcnZlZCBieSB0
-aGUgU01NVXYzIGRyaXZlci4KPj4+PiArwqDCoMKgwqDCoMKgwqDCoCAqIERvbid0IHJlc2VydmUg
-aXQgYWdhaW4sIGp1c3QgZG8gZGV2bV9pb3JlbWFwKCkuCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqAg
-Ki8KPj4+PiArwqDCoMKgwqDCoMKgwqAgYmFzZSA9IGRldm1faW9yZW1hcCgmcGRldi0+ZGV2LCBy
-ZXMtPnN0YXJ0LCByZXNvdXJjZV9zaXplKHJlcykpOwo+Pj4+ICvCoMKgwqAgfSBlbHNlIHsKPj4+
-PiArwqDCoMKgwqDCoMKgwqAgLyoKPj4+PiArwqDCoMKgwqDCoMKgwqDCoCAqIFRoZSByZXNvdXJj
-ZSBtYXkgaGF2ZSBub3QgYmVlbiByZXNlcnZlZCBieSBhbnkgZHJpdmVyLCBvcgo+Pj4+ICvCoMKg
-wqDCoMKgwqDCoMKgICogaGFzIGJlZW4gcmVzZXJ2ZWQgYnV0IG5vdCB0eXBlIElPUkVTT1VSQ0Vf
-TUVNLiBJbiB0aGUgbGF0dGVyCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqAgKiBjYXNlLCBkZXZtX2lv
-cmVtYXBfcmVzb3VyY2UoKSByZXBvcnRzIGEgY29uZmxpY3QgYW5kIHJldHVybnMKPj4+PiArwqDC
-oMKgwqDCoMKgwqDCoCAqIElPTUVNX0VSUl9QVFIoLUVCVVNZKS4KPj4+PiArwqDCoMKgwqDCoMKg
-wqDCoCAqLwo+Pj4+ICvCoMKgwqDCoMKgwqDCoCBiYXNlID0gZGV2bV9pb3JlbWFwX3Jlc291cmNl
-KCZwZGV2LT5kZXYsIHJlcyk7Cj4+Pj4gK8KgwqDCoCB9Cj4+Pgo+Pj4gV2hhdCBpZiB0aGUgUE1D
-RyBkcml2ZXIgc2ltcGx5IGhhcHBlbnMgdG8gcHJvYmUgZmlyc3Q/Cj4+Cj4+IFRoZXJlIGFyZSA0
-IGNhc2VzOgo+PiAxKSBBUk1fU01NVV9WMz1tLCBBUk1fU01NVV9WM19QTVU9eQo+PiAgICAgSXQn
-cyBub3QgYWxsb3dlZC4gQmVjYXNlOiBBUk1fU01NVV9WM19QTVUgZGVwZW5kcyBvbiBBUk1fU01N
-VV9WMwo+PiAgICAgY29uZmlnIEFSTV9TTU1VX1YzX1BNVQo+PiAgICAgICAgICAgdHJpc3RhdGUg
-IkFSTSBTTU1VdjMgUGVyZm9ybWFuY2UgTW9uaXRvcnMgRXh0ZW5zaW9uIgo+PiAgICAgICAgICAg
-ZGVwZW5kcyBvbiBBUk02NCAmJiBBQ1BJICYmIEFSTV9TTU1VX1YzCj4+Cj4+IDIpIEFSTV9TTU1V
-X1YzPXksIEFSTV9TTU1VX1YzX1BNVT1tCj4+ICAgICBObyBwcm9ibGVtLCBTTU1VdjMgd2lsbCBi
-ZSBpbml0aWFsaXplZCBmaXJzdC4KPj4KPj4gMykgQVJNX1NNTVVfVjM9eSwgQVJNX1NNTVVfVjNf
-UE1VPXkKPj4gICAgIHZpIGRyaXZlcnMvTWFrZWZpbGUKPj4gICAgIDYwIG9iai15ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgKz0gaW9tbXUvCj4+ICAgICAxNzIgb2JqLSQoQ09ORklHX1BFUkZf
-RVZFTlRTKSAgICAgICArPSBwZXJmLwo+Pgo+PiAgICAgVGhpcyBsaW5rIHNlcXVlbmNlIGVuc3Vy
-ZSB0aGF0IFNNTVV2MyBkcml2ZXIgd2lsbCBiZSBpbml0aWFsaXplZCBmaXJzdC4KPj4gICAgIFRo
-ZXkgYXJlIGN1cnJlbnRseSBhdCB0aGUgc2FtZSBpbml0aWFsaXphdGlvbiBsZXZlbC4KPj4KPj4g
-NCkgQVJNX1NNTVVfVjM9bSwgQVJNX1NNTVVfVjNfUE1VPW0KPj4gICAgIFNvcnJ5LCBJIHRob3Vn
-aHQgbW9kdWxlIGRlcGVuZGVuY2llcyB3ZXJlIGdlbmVyYXRlZCBiYXNlZCBvbiAiZGVwZW5kcyBv
-biIuCj4+ICAgICBCdXQgSSB0cmllZCBpdCB0b2Rhee+8jG1vZHVsZSBkZXBlbmRlbmNpZXMgYXJl
-IGdlbmVyYXRlZCBvbmx5IHdoZW4gc3ltYm9sCj4+ICAgICBkZXBlbmRlbmNpZXMgZXhpc3QuIEkg
-c2hvdWxkIHVzZSBNT0RVTEVfU09GVERFUCgpIHRvIGV4cGxpY2l0bHkgbWFyayB0aGUKPj4gICAg
-IGRlcGVuZGVuY3kuIEkgd2lsbCBzZW5kIFYyIGxhdGVyLgo+Pgo+IAo+IEhpIFJvYmluOgo+ICAg
-IEkgdGhpbmsgSSBtaXN1bmRlcnN0b29kIHlvdXIgcXVlc3Rpb24uIFRoZSBwcm9iZSgpIGluc3Rl
-YWQgb2YgbW9kdWxlX2luaXQoKQo+IGRldGVybWluZXMgdGhlIHRpbWUgZm9yIHJlc2VydmluZyBy
-ZWdpc3RlciBzcGFjZSByZXNvdXJjZXMuICBTbyB3ZSdkIGJldHRlcgo+IHJlc2VydmUgbXVsdGlw
-bGUgc21hbGwgYmxvY2tzIG9mIHJlc291cmNlcyBpbiBTTU1VdjMgYnV0IHBlcmZvcm0gaW9yZW1h
-cCgpIGZvcgo+IHRoZSBlbnRpcmUgcmVzb3VyY2UsIGlmIHRoZSBwcm9iZSgpIG9mIHRoZSBQTUNH
-IG9jY3VycyBmaXJzdC4KPiAgICBJJ2xsIHJlZmluZSB0aGVzZSBwYXRjaGVzIHRvIG1ha2UgYm90
-aCBpbml0aWFsaXphdGlvbiBzZXF1ZW5jZXMgd29yayB3ZWxsLgo+IEknbSB0cnlpbmcgdG8gc2Vu
-ZCBWMiB0aGlzIHdlZWsuCgpUaGVyZSdzIHN0aWxsIHRoZSBwb3NzaWJpbGl0eSB0aGF0IGEgUE1D
-RyBpcyBpbXBsZW1lbnRlZCBpbiBhIHJvb3QgCmNvbXBsZXggb3Igc29tZSBvdGhlciBkZXZpY2Ug
-dGhhdCBpc24ndCBhbiBTTU1VLCBzbyBhcyBJJ3ZlIHNhaWQgYmVmb3JlLCAKbm9uZSBvZiB0aGlz
-IHRyaWNrZXJ5IHJlYWxseSBzY2FsZXMuCgpBcyBmYXIgYXMgSSB1bmRlcnN0YW5kIGl0LCB0aGUg
-bWFpbiBwb2ludCBvZiByZXNlcnZpbmcgcmVzb3VyY2VzIGlzIHRvIApjYXRjaCBidWdzIHdoZXJl
-IHRoaW5ncyBkZWZpbml0ZWx5IHNob3VsZCBub3QgYmUgb3ZlcmxhcHBpbmcuIFBNQ0dzIGFyZSAK
-YnkgZGVmaW5pdGlvbiBwYXJ0IG9mIHNvbWUgb3RoZXIgZGV2aWNlLCBzbyBpbiBnZW5lcmFsIHRo
-ZXkgKmNhbiogYmUgCmV4cGVjdGVkIHRvIG92ZXJsYXAgd2l0aCB3aGF0ZXZlciBkZXZpY2UgdGhh
-dCBpcy4gSSBzdGlsbCB0aGluayBpdCdzIAptb3N0IGxvZ2ljYWwgdG8gc2ltcGx5ICpub3QqIHRy
-eSB0byByZXNlcnZlIFBNQ0cgcmVzb3VyY2VzIGF0IGFsbC4KClJvYmluLgoKPj4+PiArCj4+Pj4g
-K8KgwqDCoCByZXR1cm4gYmFzZTsKPj4+PiArfQo+Pj4+ICsKPj4+PiAgwqAgc3RhdGljIGludCBz
-bW11X3BtdV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+Pj4+ICDCoCB7Cj4+
-Pj4gIMKgwqDCoMKgwqAgc3RydWN0IHNtbXVfcG11ICpzbW11X3BtdTsKPj4+PiBAQCAtNzkzLDcg
-KzgzMSw3IEBAIHN0YXRpYyBpbnQgc21tdV9wbXVfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikKPj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIC5jYXBhYmlsaXRpZXPCoMKgwqAgPSBQ
-RVJGX1BNVV9DQVBfTk9fRVhDTFVERSwKPj4+PiAgwqDCoMKgwqDCoCB9Owo+Pj4+ICDCoCAtwqDC
-oMKgIHNtbXVfcG11LT5yZWdfYmFzZSA9IGRldm1fcGxhdGZvcm1fZ2V0X2FuZF9pb3JlbWFwX3Jl
-c291cmNlKHBkZXYsIDAsICZyZXNfMCk7Cj4+Pj4gK8KgwqDCoCBzbW11X3BtdS0+cmVnX2Jhc2Ug
-PSBzbW11X3BtdV9nZXRfYW5kX2lvcmVtYXBfcmVzb3VyY2UocGRldiwgMCwgJnJlc18wKTsKPj4+
-PiAgwqDCoMKgwqDCoCBpZiAoSVNfRVJSKHNtbXVfcG11LT5yZWdfYmFzZSkpCj4+Pj4gIMKgwqDC
-oMKgwqDCoMKgwqDCoCByZXR1cm4gUFRSX0VSUihzbW11X3BtdS0+cmVnX2Jhc2UpOwo+Pj4+ICDC
-oCBAQCAtODAxLDcgKzgzOSw3IEBAIHN0YXRpYyBpbnQgc21tdV9wbXVfcHJvYmUoc3RydWN0IHBs
-YXRmb3JtX2RldmljZSAqcGRldikKPj4+PiAgwqAgwqDCoMKgwqDCoCAvKiBEZXRlcm1pbmUgaWYg
-cGFnZSAxIGlzIHByZXNlbnQgKi8KPj4+PiAgwqDCoMKgwqDCoCBpZiAoY2ZnciAmIFNNTVVfUE1D
-R19DRkdSX1JFTE9DX0NUUlMpIHsKPj4+PiAtwqDCoMKgwqDCoMKgwqAgc21tdV9wbXUtPnJlbG9j
-X2Jhc2UgPSBkZXZtX3BsYXRmb3JtX2lvcmVtYXBfcmVzb3VyY2UocGRldiwgMSk7Cj4+Pj4gK8Kg
-wqDCoMKgwqDCoMKgIHNtbXVfcG11LT5yZWxvY19iYXNlID0gc21tdV9wbXVfZ2V0X2FuZF9pb3Jl
-bWFwX3Jlc291cmNlKHBkZXYsIDEsIE5VTEwpOwo+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgaWYg
-KElTX0VSUihzbW11X3BtdS0+cmVsb2NfYmFzZSkpCj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIHJldHVybiBQVFJfRVJSKHNtbXVfcG11LT5yZWxvY19iYXNlKTsKPj4+PiAgwqDCoMKg
-wqDCoCB9IGVsc2Ugewo+Pj4+Cj4+Pgo+Pj4gLgo+Pj4KPiAKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+IOMMU Extended Feature Register (EFR) is used to communicate
+the supported features for each IOMMU to the IOMMU driver.
+This is normally read from the PCI MMIO register offset 0x30,
+and used by the iommu_feature() helper function.
+
+However, there are certain scenarios where the information is needed
+prior to PCI initialization, and the iommu_feature() function is used
+prematurely w/o warning. This has caused incorrect initialization of IOMMU.
+This is the case for the commit 6d39bdee238f ("iommu/amd: Enforce 4k
+mapping for certain IOMMU data structures")
+
+Since, the EFR is also available in the IVHD header, and is available to
+the driver prior to PCI initialization. Therefore, default to using
+the IVHD EFR instead.
+
+Fixes: 6d39bdee238f ("iommu/amd: Enforce 4k mapping for certain IOMMU data structures")
+Reviewed-by: Robert Richter <rrichter@amd.com>
+Tested-by: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd/amd_iommu.h       |  7 ++--
+ drivers/iommu/amd/amd_iommu_types.h |  4 +++
+ drivers/iommu/amd/init.c            | 56 +++++++++++++++++++++++++++--
+ 3 files changed, 60 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 6b8cbdf71714..b4adab698563 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -84,12 +84,9 @@ static inline bool is_rd890_iommu(struct pci_dev *pdev)
+ 	       (pdev->device == PCI_DEVICE_ID_RD890_IOMMU);
+ }
+ 
+-static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
++static inline bool iommu_feature(struct amd_iommu *iommu, u64 mask)
+ {
+-	if (!(iommu->cap & (1 << IOMMU_CAP_EFR)))
+-		return false;
+-
+-	return !!(iommu->features & f);
++	return !!(iommu->features & mask);
+ }
+ 
+ static inline u64 iommu_virt_to_phys(void *vaddr)
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 553587827771..1a0495dd5fcb 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -387,6 +387,10 @@
+ #define IOMMU_CAP_NPCACHE 26
+ #define IOMMU_CAP_EFR     27
+ 
++/* IOMMU IVINFO */
++#define IOMMU_IVINFO_OFFSET     36
++#define IOMMU_IVINFO_EFRSUP     BIT(0)
++
+ /* IOMMU Feature Reporting Field (for IVHD type 10h */
+ #define IOMMU_FEAT_GASUP_SHIFT	6
+ 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 6a1f7048dacc..83d8ab2aed9f 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -257,6 +257,8 @@ static void init_device_table_dma(void);
+ 
+ static bool amd_iommu_pre_enabled = true;
+ 
++static u32 amd_iommu_ivinfo __initdata;
++
+ bool translation_pre_enabled(struct amd_iommu *iommu)
+ {
+ 	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
+@@ -296,6 +298,18 @@ int amd_iommu_get_num_iommus(void)
+ 	return amd_iommus_present;
+ }
+ 
++/*
++ * For IVHD type 0x11/0x40, EFR is also available via IVHD.
++ * Default to IVHD EFR since it is available sooner
++ * (i.e. before PCI init).
++ */
++static void __init early_iommu_features_init(struct amd_iommu *iommu,
++					     struct ivhd_header *h)
++{
++	if (amd_iommu_ivinfo & IOMMU_IVINFO_EFRSUP)
++		iommu->features = h->efr_reg;
++}
++
+ /* Access to l1 and l2 indexed register spaces */
+ 
+ static u32 iommu_read_l1(struct amd_iommu *iommu, u16 l1, u8 address)
+@@ -1577,6 +1591,9 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 
+ 		if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
+ 			amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
++
++		early_iommu_features_init(iommu, h);
++
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -1770,6 +1787,35 @@ static const struct attribute_group *amd_iommu_groups[] = {
+ 	NULL,
+ };
+ 
++/*
++ * Note: IVHD 0x11 and 0x40 also contains exact copy
++ * of the IOMMU Extended Feature Register [MMIO Offset 0030h].
++ * Default to EFR in IVHD since it is available sooner (i.e. before PCI init).
++ */
++static void __init late_iommu_features_init(struct amd_iommu *iommu)
++{
++	u64 features;
++
++	if (!(iommu->cap & (1 << IOMMU_CAP_EFR)))
++		return;
++
++	/* read extended feature bits */
++	features = readq(iommu->mmio_base + MMIO_EXT_FEATURES);
++
++	if (!iommu->features) {
++		iommu->features = features;
++		return;
++	}
++
++	/*
++	 * Sanity check and warn if EFR values from
++	 * IVHD and MMIO conflict.
++	 */
++	if (features != iommu->features)
++		pr_warn(FW_WARN "EFR mismatch. Use IVHD EFR (%#llx : %#llx\n).",
++			features, iommu->features);
++}
++
+ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ {
+ 	int cap_ptr = iommu->cap_ptr;
+@@ -1789,8 +1835,7 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
+ 		amd_iommu_iotlb_sup = false;
+ 
+-	/* read extended feature bits */
+-	iommu->features = readq(iommu->mmio_base + MMIO_EXT_FEATURES);
++	late_iommu_features_init(iommu);
+ 
+ 	if (iommu_feature(iommu, FEATURE_GT)) {
+ 		int glxval;
+@@ -2607,6 +2652,11 @@ static void __init free_dma_resources(void)
+ 	free_unity_maps();
+ }
+ 
++static void __init ivinfo_init(void *ivrs)
++{
++	amd_iommu_ivinfo = *((u32 *)(ivrs + IOMMU_IVINFO_OFFSET));
++}
++
+ /*
+  * This is the hardware init function for AMD IOMMU in the system.
+  * This function is called either from amd_iommu_init or from the interrupt
+@@ -2661,6 +2711,8 @@ static int __init early_amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
+ 
++	ivinfo_init(ivrs_base);
++
+ 	amd_iommu_target_ivhd_type = get_highest_supported_ivhd_type(ivrs_base);
+ 	DUMP_printk("Using IVHD type %#x\n", amd_iommu_target_ivhd_type);
+ 
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
