@@ -7,84 +7,85 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C86C433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33ECCC433E9
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:39 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EDE6E23A00
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDE6E23A00
+	by mail.kernel.org (Postfix) with ESMTPS id AAD8923A1D
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAD8923A1D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 45CA286241;
-	Thu, 21 Jan 2021 12:39:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2EDD086216;
+	Thu, 21 Jan 2021 12:39:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id L2ZZZ3GBfrm4; Thu, 21 Jan 2021 12:39:36 +0000 (UTC)
+	with ESMTP id DfDMZzvMdxcE; Thu, 21 Jan 2021 12:39:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BEE8584536;
-	Thu, 21 Jan 2021 12:39:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3E3C386234;
+	Thu, 21 Jan 2021 12:39:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 96C4CC08A1;
-	Thu, 21 Jan 2021 12:39:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CFEAEC013A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 276CBC0FA8;
+	Thu, 21 Jan 2021 12:39:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3159AC013A
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B52E186030
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1F83087060
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rg51jsEcpeQP for <iommu@lists.linux-foundation.org>;
- Thu, 21 Jan 2021 12:39:34 +0000 (UTC)
+ with ESMTP id aJ6wtTFLjif7 for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Jan 2021 12:39:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com
- [209.85.221.52])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D5E2885F6D
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:33 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id l12so1602833wry.2
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 04:39:33 -0800 (PST)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com
+ [209.85.221.48])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2D57F86FDC
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:35 +0000 (UTC)
+Received: by mail-wr1-f48.google.com with SMTP id q7so1568382wre.13
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 04:39:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=0PBUJkI6WkOQ4c7ebH11XhAeKbkF/R51HzjghE20E74=;
- b=S6KAw6BFvy1u9gJvmutqIln16f2tlRmzrrTj88Jt8KD7XWgeUEfM6naKbWUTAAPUwB
- rZS7buyT/hDN9LnURR0KzikousqtLELsRIgdbWXldN/HbgqPED5ggw9DQI5xYMZBl4jO
- qOmCKvazJNe47iOE/IQhrlbYSbOJK6aqGhTDnurw+RTVmKI8OpKIy66mv0OjGTNemNq8
- D6H49liQT+jbQQWyu6qOoYUGwUjydvCbtSND5j/FWlQs4KpluWbrLop3s7y5psHv/qXI
- 6JBpXe8GgGkHTb79wjro/Uc6XEb3UDtIFpKB4GgIjVT807gmpNW8hVcqSy/J775Tgktb
- Ek0w==
+ bh=Xa3mkhAFAfGDN5Nx5YV7r1/0JdiXBkjmJvNODotr9yQ=;
+ b=xuoZdT6vqwdrneBsF/iCnyTISoVL6EQQ4dRUz5RXrweGgFfY2e3+LFYOkBLW6OxXaf
+ 3FsvhXsO+XEGNf6Qkg/vccPkZfxeFW0xXnmHhW3RGErdQ1RR0bYC1xP+IfR6SzwKhe5i
+ j1guZ9z3q7kXMMumYGSf01olU15rNGwMjBS3QZucupVeBzpVCIvlVZ5AdSDxRVXsRuTH
+ ALdcmHngExbY020NmAnmjP0CAhOnMta30/ZIrI66UY1toMlS12woqmKcE3Oe0Itdi5l9
+ RTlDfhrpLWgV/PRR57/VAnB76a2mQEYlNXTbtdF2GvfzxAQzx1WZQ05l1ufOyMPs9U3p
+ xE0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=0PBUJkI6WkOQ4c7ebH11XhAeKbkF/R51HzjghE20E74=;
- b=N6NJE7FpLc1SCdsreuj9P6Ub881MmT3r9BV+MzKtuY688ZmJuGnyhfD3r5BohuILvF
- 6ODdBSLIjaXqle+puMyFa8euGM0TUHkhQVBJtg+/nnhrVWD05QDH2zSUaJyAZZuCWmt+
- seIwhCa9bmNSUYTyGYgoq3/THhoI3qTPmIvIXVCsizL89tkU8IPKs/1mG7mZE2PfMATL
- fTFEz8O9f4t+/MTEg7pCxPij2el20opASmhyxU+7b7r91RyxGMA6kE7t784fnq3egueo
- 1gpqWxiOAj1gTAgs92sZaaN1sOUEDS7FZCRLZ1td+3+lZ8+jX0Bv9IuT2mneD5tCV177
- rpOw==
-X-Gm-Message-State: AOAM531rfgIgtKAh8/2Bvotkig1AVWsHrGI1hzzg7gwuFBQNLs36FKqo
- bH7JAHk3n/ci4wEUnLIwLVfWcA==
-X-Google-Smtp-Source: ABdhPJyfGOcKra/ylSEchuLporqovRSRrQIgsiDTRwFORMSbkkpu92YM/S/k4DpD7qDCmqHN7DeYZw==
-X-Received: by 2002:adf:ee4d:: with SMTP id w13mr14080338wro.216.1611232772398; 
- Thu, 21 Jan 2021 04:39:32 -0800 (PST)
+ bh=Xa3mkhAFAfGDN5Nx5YV7r1/0JdiXBkjmJvNODotr9yQ=;
+ b=P4mMhOse0b5onZZTsvLXBr59ztRTY+10v9SM/HTbLpaYfhc+6rKFtYDGPrNOV9nK+g
+ iGFTCKdr+Q/glFWlCLNBWYs1aJrtZvUoLkdnqJD2CH/IW1hphIO0KqjOR7JSbyhOzBdX
+ uCoc1WdxJq07Y/4UgO0irY+DG6RBqqT1NKaPUFK0ULToRTuUU5CZBHQjNjmvEJxNCRMe
+ Xl3TVBcJ+CWlGW92QyP9sMpnrgciXw6ejcqs5hqLhonlG+YsjYMYcEWOH3o7kuKJTcxn
+ JxgvTvxkgn8R/HCCjLm1g2Zbin5nBCQPbReXFga7xpMBYT6VvGdVa/tEWvP8ed5olnYc
+ /c4w==
+X-Gm-Message-State: AOAM532cFuL1kRM+TQ2vyTQzlg1w9xzNY1ZYbqR6JxWfbHHzJMIfHrHq
+ edMAlSXpmALTiCfRqjXdhb8uxw==
+X-Google-Smtp-Source: ABdhPJxIVzp3e5I6veT1ajGc0bpHZbJyW457OdA6YWVtClLbwRId43hhoVOvyBUfJnr66KJvzFVCAA==
+X-Received: by 2002:a5d:61ca:: with SMTP id q10mr14245966wrv.124.1611232773572; 
+ Thu, 21 Jan 2021 04:39:33 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id p18sm7979248wmc.31.2021.01.21.04.39.31
+ by smtp.gmail.com with ESMTPSA id p18sm7979248wmc.31.2021.01.21.04.39.32
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 21 Jan 2021 04:39:31 -0800 (PST)
+ Thu, 21 Jan 2021 04:39:33 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v10 01/10] iommu: Fix comment for struct iommu_fwspec
-Date: Thu, 21 Jan 2021 13:36:15 +0100
-Message-Id: <20210121123623.2060416-2-jean-philippe@linaro.org>
+Subject: [PATCH v10 02/10] iommu/arm-smmu-v3: Use device properties for
+ pasid-num-bits
+Date: Thu, 21 Jan 2021 13:36:16 +0100
+Message-Id: <20210121123623.2060416-3-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210121123623.2060416-1-jean-philippe@linaro.org>
 References: <20210121123623.2060416-1-jean-philippe@linaro.org>
@@ -112,30 +113,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Commit 986d5ecc5699 ("iommu: Move fwspec->iommu_priv to struct
-dev_iommu") removed iommu_priv from fwspec and commit 5702ee24182f
-("ACPI/IORT: Check ATS capability in root complex nodes") added @flags.
-Update the struct doc.
+The pasid-num-bits property shouldn't need a dedicated fwspec field,
+it's a job for device properties. Add properties for IORT, and access
+the number of PASID bits using device_property_read_u32().
 
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
 Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/linux/iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/iommu.h                       |  2 --
+ drivers/acpi/arm64/iort.c                   | 13 +++++++------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ++-
+ drivers/iommu/of_iommu.c                    |  5 -----
+ 4 files changed, 9 insertions(+), 14 deletions(-)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b3f0e2018c62..bdf3f34a4457 100644
+index bdf3f34a4457..b7ea11fc1a93 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -570,7 +570,7 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
-  * struct iommu_fwspec - per-device IOMMU instance data
+@@ -571,7 +571,6 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
   * @ops: ops for this device's IOMMU
   * @iommu_fwnode: firmware handle for this device's IOMMU
-- * @iommu_priv: IOMMU driver private data for this device
-+ * @flags: IOMMU_FWSPEC_* flags
-  * @num_pasid_bits: number of PASID bits supported by this device
+  * @flags: IOMMU_FWSPEC_* flags
+- * @num_pasid_bits: number of PASID bits supported by this device
   * @num_ids: number of associated device IDs
   * @ids: IDs which this device may present to the IOMMU
+  */
+@@ -579,7 +578,6 @@ struct iommu_fwspec {
+ 	const struct iommu_ops	*ops;
+ 	struct fwnode_handle	*iommu_fwnode;
+ 	u32			flags;
+-	u32			num_pasid_bits;
+ 	unsigned int		num_ids;
+ 	u32			ids[];
+ };
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index d4eac6d7e9fb..c9a8bbb74b09 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -968,15 +968,16 @@ static int iort_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ static void iort_named_component_init(struct device *dev,
+ 				      struct acpi_iort_node *node)
+ {
++	struct property_entry props[2] = {};
+ 	struct acpi_iort_named_component *nc;
+-	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-
+-	if (!fwspec)
+-		return;
+ 
+ 	nc = (struct acpi_iort_named_component *)node->node_data;
+-	fwspec->num_pasid_bits = FIELD_GET(ACPI_IORT_NC_PASID_BITS,
+-					   nc->node_flags);
++	props[0] = PROPERTY_ENTRY_U32("pasid-num-bits",
++				      FIELD_GET(ACPI_IORT_NC_PASID_BITS,
++						nc->node_flags));
++
++	if (device_add_properties(dev, props))
++		dev_warn(dev, "Could not add device properties\n");
+ }
+ 
+ static int iort_nc_iommu_map(struct device *dev, struct acpi_iort_node *node)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 8ca7415d785d..6a53b4edf054 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2366,7 +2366,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+ 		}
+ 	}
+ 
+-	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
++	device_property_read_u32(dev, "pasid-num-bits", &master->ssid_bits);
++	master->ssid_bits = min(smmu->ssid_bits, master->ssid_bits);
+ 
+ 	/*
+ 	 * Note that PASID must be enabled before, and disabled after ATS:
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e505b9130a1c..a9d2df001149 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -210,11 +210,6 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					     of_pci_iommu_init, &info);
+ 	} else {
+ 		err = of_iommu_configure_device(master_np, dev, id);
+-
+-		fwspec = dev_iommu_fwspec_get(dev);
+-		if (!err && fwspec)
+-			of_property_read_u32(master_np, "pasid-num-bits",
+-					     &fwspec->num_pasid_bits);
+ 	}
+ 
+ 	/*
 -- 
 2.30.0
 
