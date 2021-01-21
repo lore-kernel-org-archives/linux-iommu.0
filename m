@@ -2,96 +2,72 @@ Return-Path: <SRS0=oIyp=GY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA277C433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:40:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E88CC433E0
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:53:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B3892388B
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:40:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B3892388B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9E49623787
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:53:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E49623787
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D9E1186073;
-	Thu, 21 Jan 2021 01:40:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5AEFF8714E;
+	Thu, 21 Jan 2021 01:53:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1V-hheEri2aY; Thu, 21 Jan 2021 01:40:03 +0000 (UTC)
+	with ESMTP id iJn+M-Y6dIbp; Thu, 21 Jan 2021 01:53:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7926886008;
-	Thu, 21 Jan 2021 01:40:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 278D08714C;
+	Thu, 21 Jan 2021 01:53:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6813FC088B;
-	Thu, 21 Jan 2021 01:40:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5947FC013A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:40:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 093B7C013A;
+	Thu, 21 Jan 2021 01:53:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 600E6C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:53:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4818786008
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:40:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3E0022050F
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:53:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RqJtaJ6Osklh for <iommu@lists.linux-foundation.org>;
- Thu, 21 Jan 2021 01:40:00 +0000 (UTC)
+ with ESMTP id kWs-GDRhE6+N for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Jan 2021 01:53:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com
- [209.85.210.49])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id EAC6A85FDE
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:39:59 +0000 (UTC)
-Received: by mail-ot1-f49.google.com with SMTP id k8so160013otr.8
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 17:39:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=OzybDX/Xt3GwRPQyEqB7XUFKbLslFfqKE8yCIx/zRK0=;
- b=Ic4hbBuNyAhH77UympHAdRhVtmjkRRK7AuwrbOo083hrfT222pag7ZdAcjU+coGOBG
- SegTBROdZyDXrIHKHPpD7OKNSP+S2Bp8aEu3r2C5bIpaSoi3+BbvZqAgaTsA/nHcFFxD
- hGqfU772nEHnlswa5nwbY1oEB7toAR0dr3ZS9LQDqFVqehrYakJD18wdgS7RmbiBmo6n
- 3VmR8dzHxAkcx5IqcyKmmutDJnRDm8A3fV4luzraAFmRJGNrE4B5OhpfhEbsw/7atDVd
- O5evtHnFyC8CjcgSrcdi7mEtyHgvThZxqzHvTpSx1VAAjl/9QRQ1Xcgd+gg0T/JjUX8F
- A+yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=OzybDX/Xt3GwRPQyEqB7XUFKbLslFfqKE8yCIx/zRK0=;
- b=LrsWaGbBND6b2Jz/LcOEyCRHH+ngieD2fAXF3mRNrfwljXoykezSXJW4DkCt8zfg7d
- rs+lyicQOwQfEOSUIf15B/Hm29HAjsN5TD/sJG9rNz0k122VizMbOgkYBP8r7psS1Q6u
- 7mMzxxGMzhYK73VA6UpZT6kRTbeZk5YKkS80VeDEhuacL9YQWSAR3bzM5+vp1l20hB+s
- /fhrAfx7XUyihcp97yxCZkAEJbVTBkAhXmki578t2mLTIyVCwbJGAUp7CzPPJDqgts2h
- h7vfGNYkMqEvadPZdN7uWDTUowpsXDjjGy0jSw19bM2UydKwcwzSrLQJId32NmTD/x0C
- z/sg==
-X-Gm-Message-State: AOAM531/6x8K3L0YF8kRf8EOqaaDevtUJO+NTC/JPGuqkwxMEw8zTEHq
- RrRWl7hX9IphI1/BEm5Gsm7B0wD0jEnHbw==
-X-Google-Smtp-Source: ABdhPJzSuzuFRbQfleUmMZxwP8jChSlAgkL5r/QPnevAdK69YCOfcV2uckVZyBhzjOw5Qnz8X5Yqfw==
-X-Received: by 2002:a9d:84d:: with SMTP id 71mr8916828oty.338.1611193199082;
- Wed, 20 Jan 2021 17:39:59 -0800 (PST)
-Received: from localhost.localdomain
- (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
- by smtp.gmail.com with ESMTPSA id s2sm729597oov.35.2021.01.20.17.39.58
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 20 Jan 2021 17:39:58 -0800 (PST)
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/2] iommu/arm-smmu-qcom: Add Qualcomm SC8180X impl
-Date: Wed, 20 Jan 2021 17:40:05 -0800
-Message-Id: <20210121014005.1612382-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210121014005.1612382-1-bjorn.andersson@linaro.org>
-References: <20210121014005.1612382-1-bjorn.andersson@linaro.org>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 58E552050D
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:53:33 +0000 (UTC)
+IronPort-SDR: bpJifM6Ib9N2agtx2IVjQZ/ZuytAIu3VcZgWlPQ2fu7HQNcK999HrVS4WxynEDPxv/d52kckK6
+ 0f3J8AsLBW/w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="197938362"
+X-IronPort-AV: E=Sophos;i="5.79,362,1602572400"; d="scan'208";a="197938362"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Jan 2021 17:53:32 -0800
+IronPort-SDR: MppMeJ08UYxsSLMBQbzoQhkhOCVLYCY6ifw48dPJBnnOGHCJBGjmtUPdIkUMTRGLGw81T2ibOZ
+ sg11M0rsOxag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,362,1602572400"; d="scan'208";a="391762240"
+Received: from allen-box.sh.intel.com ([10.239.159.28])
+ by orsmga007.jf.intel.com with ESMTP; 20 Jan 2021 17:53:30 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH 0/3] iommu/vt-d: Some misc tweaks in SVA
+Date: Thu, 21 Jan 2021 09:45:02 +0800
+Message-Id: <20210121014505.1659166-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,36 +85,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The primary SMMU found in Qualcomm SC8180X platform needs to use the
-Qualcomm implementation, so add a specific compatible for this.
+This includes some misc tweaks in the VT-d SVA implementation. I will
+plan them for v5.12 if no objections.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 ++
- 1 file changed, 2 insertions(+)
+Best regards,
+baolu
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index bcda17012aee..82c7edc6e025 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -166,6 +166,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,mdss" },
- 	{ .compatible = "qcom,sc7180-mdss" },
- 	{ .compatible = "qcom,sc7180-mss-pil" },
-+	{ .compatible = "qcom,sc8180x-mdss" },
- 	{ .compatible = "qcom,sdm845-mdss" },
- 	{ .compatible = "qcom,sdm845-mss-pil" },
- 	{ }
-@@ -327,6 +328,7 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
- static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,msm8998-smmu-v2" },
- 	{ .compatible = "qcom,sc7180-smmu-500" },
-+	{ .compatible = "qcom,sc8180x-smmu-500" },
- 	{ .compatible = "qcom,sdm630-smmu-v2" },
- 	{ .compatible = "qcom,sdm845-smmu-500" },
- 	{ .compatible = "qcom,sm8150-smmu-500" },
+Lu Baolu (3):
+  iommu/vt-d: Add rate limited information when PRQ overflows
+  iommu/vt-d: Allow devices to have more than 32 outstanding PRQ
+  iommu/vt-d: Use INVALID response code instead of FAILURE
+
+ drivers/iommu/intel/iommu.c |  3 ++-
+ drivers/iommu/intel/svm.c   | 19 +++++++++----------
+ include/linux/intel-svm.h   |  5 +++++
+ 3 files changed, 16 insertions(+), 11 deletions(-)
+
 -- 
-2.29.2
+2.25.1
 
 _______________________________________________
 iommu mailing list
