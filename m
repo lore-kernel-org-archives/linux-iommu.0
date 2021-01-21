@@ -1,82 +1,71 @@
-Return-Path: <SRS0=mF+O=GX=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=oIyp=GY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940BEC433E0
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 21:31:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9EEC433E0
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:10:12 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33F83235DD
-	for <iommu@archiver.kernel.org>; Wed, 20 Jan 2021 21:31:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33F83235DD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id AC7082388B
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 01:10:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC7082388B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4DA8A203BD;
-	Wed, 20 Jan 2021 21:31:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1B52E8700D;
+	Thu, 21 Jan 2021 01:10:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q-LCo4VNQlgi; Wed, 20 Jan 2021 21:31:34 +0000 (UTC)
+	with ESMTP id 5evuUDD-eLkF; Thu, 21 Jan 2021 01:10:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id AEFFA20352;
-	Wed, 20 Jan 2021 21:31:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 370A986F8F;
+	Thu, 21 Jan 2021 01:10:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3492C088B;
-	Wed, 20 Jan 2021 21:31:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28F2EC08A1;
+	Thu, 21 Jan 2021 01:10:09 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3CB44C013A
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 21:31:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A3A53C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:10:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 17F1185BA3
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 21:31:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9254086667
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:10:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lKNJwIkRnweS for <iommu@lists.linux-foundation.org>;
- Wed, 20 Jan 2021 21:31:33 +0000 (UTC)
+ with ESMTP id TgSxyw0oIc2l for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Jan 2021 01:10:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 19861842EA
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 21:31:32 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 23BA02376E
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 21:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1611178292;
- bh=9CXXn3DwKkTTYhGUSuO/SI53HoPSF8zgyeHYS4YvRdY=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=ZmvEQDVtsexRf8n+ZOC1JbuBQnuBhbV+r3jD4kU3Q1tMAid8yX+yqYfJEbOdcXgMA
- rj/QXs5sTJEgKtheY4gImRh4zCXvn8N2ChQdofm3pHRivCgOB+sxuai3yKlikVUe8k
- 0BmRxe14MAaAn1jeMSxzxdQbEaIjPFqRcdtyHRGAO007v7GUojsrvuJx0vbYiLCW4y
- CE8T7v8FgFjOOFzn6XDR1a3R7a15VGz6LfvNskEJWJ+wrvKK3PCEo/X4rrgHOkc5EU
- 75qDn57wy4vXYALFVoUbkz6Mt+vLxPPKyyUcaTDi5ZRLHNNoPHr3mcqRXma66ALKFJ
- ALtCNmZmqRqOg==
-Received: by mail-ed1-f53.google.com with SMTP id f1so13710edr.12
- for <iommu@lists.linux-foundation.org>; Wed, 20 Jan 2021 13:31:32 -0800 (PST)
-X-Gm-Message-State: AOAM530TYmRDkJEaqf4jwce0yfZiRTmiZStecO+BXi3Fs5OU2YouGWzo
- HEAgTVhVk53sHb3Vxet53HgsB6Ubh36z90ZitQ==
-X-Google-Smtp-Source: ABdhPJxxe7bmkr1qiyEvYmjNhUT8+sw1iAGIkRYDudgLedU+OdBCuc6+RqAv/YoEJ2MAoQJ7R76moo3AN8Iijs+CzYU=
-X-Received: by 2002:a05:6402:1751:: with SMTP id
- v17mr8944895edx.289.1611178290171; 
- Wed, 20 Jan 2021 13:31:30 -0800 (PST)
-MIME-Version: 1.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0D01D854C0
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 01:10:05 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D2B7B14FF;
+ Wed, 20 Jan 2021 17:10:04 -0800 (PST)
+Received: from [10.57.39.58] (unknown [10.57.39.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8A93E3F68F;
+ Wed, 20 Jan 2021 17:09:58 -0800 (PST)
+Subject: Re: [RFC PATCH v3 5/6] dt-bindings: of: Add restricted DMA pool
+To: Rob Herring <robh@kernel.org>
 References: <20210106034124.30560-1-tientzu@chromium.org>
  <20210106034124.30560-6-tientzu@chromium.org>
  <20210120165348.GA220770@robh.at.kernel.org>
  <313f8052-a591-75de-c4c2-ee9ea8f02e7f@arm.com>
-In-Reply-To: <313f8052-a591-75de-c4c2-ee9ea8f02e7f@arm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Wed, 20 Jan 2021 15:31:17 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKjTqcCbCLksRbCh7=f-A3Y09A3jNqtUApaA+p=RKd_Eg@mail.gmail.com>
-Message-ID: <CAL_JsqKjTqcCbCLksRbCh7=f-A3Y09A3jNqtUApaA+p=RKd_Eg@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 5/6] dt-bindings: of: Add restricted DMA pool
-To: Robin Murphy <robin.murphy@arm.com>
+ <CAL_JsqKjTqcCbCLksRbCh7=f-A3Y09A3jNqtUApaA+p=RKd_Eg@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c0d631de-8840-4f6e-aebf-41bb8449f78c@arm.com>
+Date: Thu, 21 Jan 2021 01:09:56 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <CAL_JsqKjTqcCbCLksRbCh7=f-A3Y09A3jNqtUApaA+p=RKd_Eg@mail.gmail.com>
+Content-Language: en-GB
 Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>,
  Peter Zijlstra <peterz@infradead.org>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -113,106 +102,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jan 20, 2021 at 11:30 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2021-01-20 16:53, Rob Herring wrote:
-> > On Wed, Jan 06, 2021 at 11:41:23AM +0800, Claire Chang wrote:
-> >> Introduce the new compatible string, restricted-dma-pool, for restricted
-> >> DMA. One can specify the address and length of the restricted DMA memory
-> >> region by restricted-dma-pool in the device tree.
-> >
-> > If this goes into DT, I think we should be able to use dma-ranges for
-> > this purpose instead. Normally, 'dma-ranges' is for physical bus
-> > restrictions, but there's no reason it can't be used for policy or to
-> > express restrictions the firmware has enabled.
->
-> There would still need to be some way to tell SWIOTLB to pick up the
-> corresponding chunk of memory and to prevent the kernel from using it
-> for anything else, though.
+On 2021-01-20 21:31, Rob Herring wrote:
+> On Wed, Jan 20, 2021 at 11:30 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2021-01-20 16:53, Rob Herring wrote:
+>>> On Wed, Jan 06, 2021 at 11:41:23AM +0800, Claire Chang wrote:
+>>>> Introduce the new compatible string, restricted-dma-pool, for restricted
+>>>> DMA. One can specify the address and length of the restricted DMA memory
+>>>> region by restricted-dma-pool in the device tree.
+>>>
+>>> If this goes into DT, I think we should be able to use dma-ranges for
+>>> this purpose instead. Normally, 'dma-ranges' is for physical bus
+>>> restrictions, but there's no reason it can't be used for policy or to
+>>> express restrictions the firmware has enabled.
+>>
+>> There would still need to be some way to tell SWIOTLB to pick up the
+>> corresponding chunk of memory and to prevent the kernel from using it
+>> for anything else, though.
+> 
+> Don't we already have that problem if dma-ranges had a very small
+> range? We just get lucky because the restriction is generally much
+> more RAM than needed.
 
-Don't we already have that problem if dma-ranges had a very small
-range? We just get lucky because the restriction is generally much
-more RAM than needed.
+Not really - if a device has a naturally tiny addressing capability that 
+doesn't even cover ZONE_DMA32 where the regular SWIOTLB buffer will be 
+allocated then it's unlikely to work well, but that's just crap system 
+design. Yes, memory pressure in ZONE_DMA{32} is particularly problematic 
+for such limited devices, but it's irrelevant to the issue at hand here.
 
-In any case, wouldn't finding all the dma-ranges do this? We're
-already walking the tree to find the max DMA address now.
+What we have here is a device that's not allowed to see *kernel* memory 
+at all. It's been artificially constrained to a particular region by a 
+TZASC or similar, and the only data which should ever be placed in that 
+region is data intended for that device to see. That way if it tries to 
+go rogue it physically can't start slurping data intended for other 
+devices or not mapped for DMA at all. The bouncing is an important part 
+of this - I forget the title off-hand but there was an interesting paper 
+a few years ago which demonstrated that even with an IOMMU, streaming 
+DMA of in-place buffers could reveal enough adjacent data from the same 
+page to mount an attack on the system. Memory pressure should be 
+immaterial since the size of each bounce pool carveout will presumably 
+be tuned for the needs of the given device.
 
-> >> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> >> ---
-> >>   .../reserved-memory/reserved-memory.txt       | 24 +++++++++++++++++++
-> >>   1 file changed, 24 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> >> index e8d3096d922c..44975e2a1fd2 100644
-> >> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> >> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> >> @@ -51,6 +51,20 @@ compatible (optional) - standard definition
-> >>             used as a shared pool of DMA buffers for a set of devices. It can
-> >>             be used by an operating system to instantiate the necessary pool
-> >>             management subsystem if necessary.
-> >> +        - restricted-dma-pool: This indicates a region of memory meant to be
-> >> +          used as a pool of restricted DMA buffers for a set of devices. The
-> >> +          memory region would be the only region accessible to those devices.
-> >> +          When using this, the no-map and reusable properties must not be set,
-> >> +          so the operating system can create a virtual mapping that will be used
-> >> +          for synchronization. The main purpose for restricted DMA is to
-> >> +          mitigate the lack of DMA access control on systems without an IOMMU,
-> >> +          which could result in the DMA accessing the system memory at
-> >> +          unexpected times and/or unexpected addresses, possibly leading to data
-> >> +          leakage or corruption. The feature on its own provides a basic level
-> >> +          of protection against the DMA overwriting buffer contents at
-> >> +          unexpected times. However, to protect against general data leakage and
-> >> +          system memory corruption, the system needs to provide way to restrict
-> >> +          the DMA to a predefined memory region.
-> >>           - vendor specific string in the form <vendor>,[<device>-]<usage>
-> >>   no-map (optional) - empty property
-> >>       - Indicates the operating system must not create a virtual mapping
-> >> @@ -120,6 +134,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-> >>                      compatible = "acme,multimedia-memory";
-> >>                      reg = <0x77000000 0x4000000>;
-> >>              };
-> >> +
-> >> +            restricted_dma_mem_reserved: restricted_dma_mem_reserved {
-> >> +                    compatible = "restricted-dma-pool";
-> >> +                    reg = <0x50000000 0x400000>;
-> >> +            };
-> >>      };
-> >>
-> >>      /* ... */
-> >> @@ -138,4 +157,9 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-> >>              memory-region = <&multimedia_reserved>;
-> >>              /* ... */
-> >>      };
-> >> +
-> >> +    pcie_device: pcie_device@0,0 {
-> >> +            memory-region = <&restricted_dma_mem_reserved>;
-> >
-> > PCI hosts often have inbound window configurations that limit the
-> > address range and translate PCI to bus addresses. Those windows happen
-> > to be configured by dma-ranges. In any case, wouldn't you want to put
-> > the configuration in the PCI host node? Is there a usecase of
-> > restricting one PCIe device and not another?
->
-> The general design seems to accommodate devices having their own pools
-> such that they can't even snoop on each others' transient DMA data. If
-> the interconnect had a way of wiring up, say, PCI RIDs to AMBA NSAIDs,
-> then in principle you could certainly apply that to PCI endpoints too
-> (presumably you'd also disallow them from peer-to-peer transactions at
-> the PCI level too).
+> In any case, wouldn't finding all the dma-ranges do this? We're
+> already walking the tree to find the max DMA address now.
 
-At least for PCI, I think we can handle this. We have the BDF in the
-3rd address cell in dma-ranges. The Openfirmware spec says those are 0
-in the case of ranges. It doesn't talk about dma-ranges though. But I
-think we could extend it to allow for BDF. Though typically with PCIe
-every device is behind its own bridge and each bridge node can have a
-dma-ranges.
+If all you can see are two "dma-ranges" properties, how do you propose 
+to tell that one means "this is the extent of what I can address, please 
+set my masks and dma-range-map accordingly and try to allocate things 
+where I can reach them" while the other means "take this output range 
+away from the page allocator and hook it up as my dedicated bounce pool, 
+because it is Serious Security Time"? Especially since getting that 
+choice wrong either way would be a Bad Thing.
 
-Rob
+Robin.
+
+>>>> Signed-off-by: Claire Chang <tientzu@chromium.org>
+>>>> ---
+>>>>    .../reserved-memory/reserved-memory.txt       | 24 +++++++++++++++++++
+>>>>    1 file changed, 24 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+>>>> index e8d3096d922c..44975e2a1fd2 100644
+>>>> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+>>>> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+>>>> @@ -51,6 +51,20 @@ compatible (optional) - standard definition
+>>>>              used as a shared pool of DMA buffers for a set of devices. It can
+>>>>              be used by an operating system to instantiate the necessary pool
+>>>>              management subsystem if necessary.
+>>>> +        - restricted-dma-pool: This indicates a region of memory meant to be
+>>>> +          used as a pool of restricted DMA buffers for a set of devices. The
+>>>> +          memory region would be the only region accessible to those devices.
+>>>> +          When using this, the no-map and reusable properties must not be set,
+>>>> +          so the operating system can create a virtual mapping that will be used
+>>>> +          for synchronization. The main purpose for restricted DMA is to
+>>>> +          mitigate the lack of DMA access control on systems without an IOMMU,
+>>>> +          which could result in the DMA accessing the system memory at
+>>>> +          unexpected times and/or unexpected addresses, possibly leading to data
+>>>> +          leakage or corruption. The feature on its own provides a basic level
+>>>> +          of protection against the DMA overwriting buffer contents at
+>>>> +          unexpected times. However, to protect against general data leakage and
+>>>> +          system memory corruption, the system needs to provide way to restrict
+>>>> +          the DMA to a predefined memory region.
+>>>>            - vendor specific string in the form <vendor>,[<device>-]<usage>
+>>>>    no-map (optional) - empty property
+>>>>        - Indicates the operating system must not create a virtual mapping
+>>>> @@ -120,6 +134,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+>>>>                       compatible = "acme,multimedia-memory";
+>>>>                       reg = <0x77000000 0x4000000>;
+>>>>               };
+>>>> +
+>>>> +            restricted_dma_mem_reserved: restricted_dma_mem_reserved {
+>>>> +                    compatible = "restricted-dma-pool";
+>>>> +                    reg = <0x50000000 0x400000>;
+>>>> +            };
+>>>>       };
+>>>>
+>>>>       /* ... */
+>>>> @@ -138,4 +157,9 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
+>>>>               memory-region = <&multimedia_reserved>;
+>>>>               /* ... */
+>>>>       };
+>>>> +
+>>>> +    pcie_device: pcie_device@0,0 {
+>>>> +            memory-region = <&restricted_dma_mem_reserved>;
+>>>
+>>> PCI hosts often have inbound window configurations that limit the
+>>> address range and translate PCI to bus addresses. Those windows happen
+>>> to be configured by dma-ranges. In any case, wouldn't you want to put
+>>> the configuration in the PCI host node? Is there a usecase of
+>>> restricting one PCIe device and not another?
+>>
+>> The general design seems to accommodate devices having their own pools
+>> such that they can't even snoop on each others' transient DMA data. If
+>> the interconnect had a way of wiring up, say, PCI RIDs to AMBA NSAIDs,
+>> then in principle you could certainly apply that to PCI endpoints too
+>> (presumably you'd also disallow them from peer-to-peer transactions at
+>> the PCI level too).
+> 
+> At least for PCI, I think we can handle this. We have the BDF in the
+> 3rd address cell in dma-ranges. The Openfirmware spec says those are 0
+> in the case of ranges. It doesn't talk about dma-ranges though. But I
+> think we could extend it to allow for BDF. Though typically with PCIe
+> every device is behind its own bridge and each bridge node can have a
+> dma-ranges.
+> 
+> Rob
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
