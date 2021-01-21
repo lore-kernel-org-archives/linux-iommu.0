@@ -2,101 +2,76 @@ Return-Path: <SRS0=oIyp=GY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7BDC433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1FFC433E0
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:51:02 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 018B3239FD
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:39:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 018B3239FD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7926123A1C
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 12:51:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7926123A1C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 577DE87092;
-	Thu, 21 Jan 2021 12:39:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 06A3B203C9;
+	Thu, 21 Jan 2021 12:51:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G+NL+arjNYyh; Thu, 21 Jan 2021 12:39:49 +0000 (UTC)
+	with ESMTP id iaReuNU4CTCC; Thu, 21 Jan 2021 12:50:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 041CF87060;
-	Thu, 21 Jan 2021 12:39:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 686CB20530;
+	Thu, 21 Jan 2021 12:50:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5491C08A1;
-	Thu, 21 Jan 2021 12:39:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 29700C013A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 495BEC08A1;
+	Thu, 21 Jan 2021 12:50:58 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B0F8C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:50:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 24954871D2
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:47 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 924B186A28
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:50:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qWzJ8MMvhr3w for <iommu@lists.linux-foundation.org>;
- Thu, 21 Jan 2021 12:39:45 +0000 (UTC)
+ with ESMTP id cDbvSFWCo-7q for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Jan 2021 12:50:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com
- [209.85.128.45])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 63D7F87060
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:39:45 +0000 (UTC)
-Received: by mail-wm1-f45.google.com with SMTP id s24so4899179wmj.0
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 04:39:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=Xcm7t3MjE3g9ytPxdlR8nWtCBjWtrV0RR0fGhZiukec=;
- b=wF68dgqlE6MS3ip33rzQZK4cdG2SRFUlk1i1muConG9NM7WKh+/5FJdthikhDDojOq
- ne7ydOfIfZ7PojeUNBf2jekmyZLzcEs31+oez0UnNzOdyuYuvSQ/t8B0MaZBKVagtkth
- dX0IcT7L5vVUyM5dYfbIQtl4GTucrWA56JS4CquHvb2ii3D39pN67lRGELRLozl+RH8E
- AHX88Jjn1K4Xz5xVo5j1ztw3l2A9v/htB1u9BzCcMJfTaRCdPJqiJk3qnVyoSng9Lda/
- rZjLq8snr03QZwIGjULMtCNxaTGYSsmW9qld40MeNOC2U2mKvvOE40NlbPMnBhz1x2t6
- gmFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=Xcm7t3MjE3g9ytPxdlR8nWtCBjWtrV0RR0fGhZiukec=;
- b=RBbK+S6hc0gXI0t4BJ795dg4bv3RonU4vr4T9zN3COK0WHCOywAzt+AMwfF7PPMUnw
- UxFkDGyFA+yog5bmh8eJt+ajGNBdfrF6rXEVPr9401o6nNLMMDWJPNMni9NrDDBZtJUh
- 3KtJo7Ac416gDi6KTC5BOVLw8nKHAJ0d3Buhi6n/SbE7FtrIQQinUCxXrqhKUyn0weYx
- KZEM6vEnF+wY6tfqNuOAscSIBljJO2HjzH+Km08Rdzc2QMNm5s1fSYEY8JheJnYmV6Pv
- deQKDbh11u+5Y4n8LQ8e4UsZA6lCaxWdqd90g3gLr0kXDXv1kJi4EozTv9fiqPoVriOR
- bHWA==
-X-Gm-Message-State: AOAM533BVYNoiWo5VxOSPz7u2vq9HcmJjZWI+QBEa8cPEHgtWVPtKvAK
- sXNfbXRaZvN/4QqvBdakOPOB3Q==
-X-Google-Smtp-Source: ABdhPJxaNDe2yk0a2bIf/voONQXho5+P/9GtTM9mp+jAsJD83djzvp0mNzcI84deClTI6LpMzQEygA==
-X-Received: by 2002:a05:600c:4e91:: with SMTP id
- f17mr8777151wmq.142.1611232783847; 
- Thu, 21 Jan 2021 04:39:43 -0800 (PST)
-Received: from localhost.localdomain
- ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id p18sm7979248wmc.31.2021.01.21.04.39.42
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 21 Jan 2021 04:39:43 -0800 (PST)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: joro@8bytes.org,
-	will@kernel.org
-Subject: [PATCH v10 10/10] iommu/arm-smmu-v3: Add stall support for platform
- devices
-Date: Thu, 21 Jan 2021 13:36:24 +0100
-Message-Id: <20210121123623.2060416-11-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210121123623.2060416-1-jean-philippe@linaro.org>
-References: <20210121123623.2060416-1-jean-philippe@linaro.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 615C286A1E
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 12:50:55 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B8F4011D4;
+ Thu, 21 Jan 2021 04:50:54 -0800 (PST)
+Received: from [10.57.39.58] (unknown [10.57.39.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 39C563F68F;
+ Thu, 21 Jan 2021 04:50:53 -0800 (PST)
+Subject: Re: [PATCH 2/2] Revert "iommu/arm-smmu-v3: Don't reserve
+ implementation defined register space"
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
+ Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ iommu <iommu@lists.linux-foundation.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210119015951.1042-1-thunder.leizhen@huawei.com>
+ <20210119015951.1042-3-thunder.leizhen@huawei.com>
+ <888312dc-85b7-4d5e-f264-bbdd9e3638f6@arm.com>
+ <ca469958-179d-02c5-b147-0a0ff951d503@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <72c979bd-501f-df9b-7bca-02b8c11d3860@arm.com>
+Date: Thu, 21 Jan 2021 12:50:51 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Cc: vivek.gautam@arm.com, guohanjun@huawei.com,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, linux-acpi@vger.kernel.org,
- zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org,
- kevin.tian@intel.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
- rjw@rjwysocki.net, iommu@lists.linux-foundation.org, sudeep.holla@arm.com,
- robin.murphy@arm.com, linux-accelerators@lists.ozlabs.org
+In-Reply-To: <ca469958-179d-02c5-b147-0a0ff951d503@huawei.com>
+Content-Language: en-GB
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,589 +84,106 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The SMMU provides a Stall model for handling page faults in platform
-devices. It is similar to PCIe PRI, but doesn't require devices to have
-their own translation cache. Instead, faulting transactions are parked
-and the OS is given a chance to fix the page tables and retry the
-transaction.
-
-Enable stall for devices that support it (opt-in by firmware). When an
-event corresponds to a translation error, call the IOMMU fault handler.
-If the fault is recoverable, it will call us back to terminate or
-continue the stall.
-
-To use stall device drivers need to enable IOMMU_DEV_FEAT_IOPF, which
-initializes the fault queue for the device.
-
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  43 ++++
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  59 +++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 185 +++++++++++++++++-
- 3 files changed, 273 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 8ef6a1c48635..693f3dfd2884 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -354,6 +354,13 @@
- #define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
- #define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
- 
-+#define CMDQ_RESUME_0_RESP_TERM		0UL
-+#define CMDQ_RESUME_0_RESP_RETRY	1UL
-+#define CMDQ_RESUME_0_RESP_ABORT	2UL
-+#define CMDQ_RESUME_0_RESP		GENMASK_ULL(13, 12)
-+#define CMDQ_RESUME_0_SID		GENMASK_ULL(63, 32)
-+#define CMDQ_RESUME_1_STAG		GENMASK_ULL(15, 0)
-+
- #define CMDQ_SYNC_0_CS			GENMASK_ULL(13, 12)
- #define CMDQ_SYNC_0_CS_NONE		0
- #define CMDQ_SYNC_0_CS_IRQ		1
-@@ -370,6 +377,25 @@
- 
- #define EVTQ_0_ID			GENMASK_ULL(7, 0)
- 
-+#define EVT_ID_TRANSLATION_FAULT	0x10
-+#define EVT_ID_ADDR_SIZE_FAULT		0x11
-+#define EVT_ID_ACCESS_FAULT		0x12
-+#define EVT_ID_PERMISSION_FAULT		0x13
-+
-+#define EVTQ_0_SSV			(1UL << 11)
-+#define EVTQ_0_SSID			GENMASK_ULL(31, 12)
-+#define EVTQ_0_SID			GENMASK_ULL(63, 32)
-+#define EVTQ_1_STAG			GENMASK_ULL(15, 0)
-+#define EVTQ_1_STALL			(1UL << 31)
-+#define EVTQ_1_PnU			(1UL << 33)
-+#define EVTQ_1_InD			(1UL << 34)
-+#define EVTQ_1_RnW			(1UL << 35)
-+#define EVTQ_1_S2			(1UL << 39)
-+#define EVTQ_1_CLASS			GENMASK_ULL(41, 40)
-+#define EVTQ_1_TT_READ			(1UL << 44)
-+#define EVTQ_2_ADDR			GENMASK_ULL(63, 0)
-+#define EVTQ_3_IPA			GENMASK_ULL(51, 12)
-+
- /* PRI queue */
- #define PRIQ_ENT_SZ_SHIFT		4
- #define PRIQ_ENT_DWORDS			((1 << PRIQ_ENT_SZ_SHIFT) >> 3)
-@@ -462,6 +488,13 @@ struct arm_smmu_cmdq_ent {
- 			enum pri_resp		resp;
- 		} pri;
- 
-+		#define CMDQ_OP_RESUME		0x44
-+		struct {
-+			u32			sid;
-+			u16			stag;
-+			u8			resp;
-+		} resume;
-+
- 		#define CMDQ_OP_CMD_SYNC	0x46
- 		struct {
- 			u64			msiaddr;
-@@ -520,6 +553,7 @@ struct arm_smmu_cmdq_batch {
- 
- struct arm_smmu_evtq {
- 	struct arm_smmu_queue		q;
-+	struct iopf_queue		*iopf;
- 	u32				max_stalls;
- };
- 
-@@ -656,7 +690,9 @@ struct arm_smmu_master {
- 	struct arm_smmu_stream		*streams;
- 	unsigned int			num_streams;
- 	bool				ats_enabled;
-+	bool				stall_enabled;
- 	bool				sva_enabled;
-+	bool				iopf_enabled;
- 	struct list_head		bonds;
- 	unsigned int			ssid_bits;
- };
-@@ -675,6 +711,7 @@ struct arm_smmu_domain {
- 
- 	struct io_pgtable_ops		*pgtbl_ops;
- 	bool				non_strict;
-+	bool				stall_enabled;
- 	atomic_t			nr_ats_masters;
- 
- 	enum arm_smmu_domain_stage	stage;
-@@ -713,6 +750,7 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
- bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
- int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
-+bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
- struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
- 				    void *drvdata);
- void arm_smmu_sva_unbind(struct iommu_sva *handle);
-@@ -744,6 +782,11 @@ static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
- 	return -ENODEV;
- }
- 
-+static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
-+{
-+	return false;
-+}
-+
- static inline struct iommu_sva *
- arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
- {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index e13b092e6004..a6514308608b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -431,9 +431,13 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
- 	return true;
- }
- 
--static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
-+bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
- {
--	return false;
-+	/* We're not keeping track of SIDs in fault events */
-+	if (master->num_streams != 1)
-+		return false;
-+
-+	return master->stall_enabled;
- }
- 
- bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
-@@ -441,8 +445,8 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
- 	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
- 		return false;
- 
--	/* SSID and IOPF support are mandatory for the moment */
--	return master->ssid_bits && arm_smmu_iopf_supported(master);
-+	/* SSID support is mandatory for the moment */
-+	return master->ssid_bits;
- }
- 
- bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
-@@ -455,13 +459,55 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
- 	return enabled;
- }
- 
-+static int arm_smmu_master_sva_enable_iopf(struct arm_smmu_master *master)
-+{
-+	int ret;
-+	struct device *dev = master->dev;
-+
-+	/*
-+	 * Drivers for devices supporting PRI or stall should enable IOPF first.
-+	 * Others have device-specific fault handlers and don't need IOPF.
-+	 */
-+	if (!arm_smmu_master_iopf_supported(master))
-+		return 0;
-+
-+	if (!master->iopf_enabled)
-+		return -EINVAL;
-+
-+	ret = iopf_queue_add_device(master->smmu->evtq.iopf, dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
-+	if (ret) {
-+		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static void arm_smmu_master_sva_disable_iopf(struct arm_smmu_master *master)
-+{
-+	struct device *dev = master->dev;
-+
-+	if (!master->iopf_enabled)
-+		return;
-+
-+	iommu_unregister_device_fault_handler(dev);
-+	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-+}
-+
- int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
- {
-+	int ret;
-+
- 	mutex_lock(&sva_lock);
--	master->sva_enabled = true;
-+	ret = arm_smmu_master_sva_enable_iopf(master);
-+	if (!ret)
-+		master->sva_enabled = true;
- 	mutex_unlock(&sva_lock);
- 
--	return 0;
-+	return ret;
- }
- 
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
-@@ -472,6 +518,7 @@ int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
- 		mutex_unlock(&sva_lock);
- 		return -EBUSY;
- 	}
-+	arm_smmu_master_sva_disable_iopf(master);
- 	master->sva_enabled = false;
- 	mutex_unlock(&sva_lock);
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index db5d6aa76c3a..af6982aca42e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -32,6 +32,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
-+#include "../../iommu-sva-lib.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-@@ -319,6 +320,11 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		}
- 		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
- 		break;
-+	case CMDQ_OP_RESUME:
-+		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_SID, ent->resume.sid);
-+		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_RESP, ent->resume.resp);
-+		cmd[1] |= FIELD_PREP(CMDQ_RESUME_1_STAG, ent->resume.stag);
-+		break;
- 	case CMDQ_OP_CMD_SYNC:
- 		if (ent->sync.msiaddr) {
- 			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
-@@ -882,6 +888,44 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
- 	return arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
- }
- 
-+static int arm_smmu_page_response(struct device *dev,
-+				  struct iommu_fault_event *unused,
-+				  struct iommu_page_response *resp)
-+{
-+	struct arm_smmu_cmdq_ent cmd = {0};
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	int sid = master->streams[0].id;
-+
-+	if (master->stall_enabled) {
-+		cmd.opcode		= CMDQ_OP_RESUME;
-+		cmd.resume.sid		= sid;
-+		cmd.resume.stag		= resp->grpid;
-+		switch (resp->code) {
-+		case IOMMU_PAGE_RESP_INVALID:
-+		case IOMMU_PAGE_RESP_FAILURE:
-+			cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
-+			break;
-+		case IOMMU_PAGE_RESP_SUCCESS:
-+			cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+	} else {
-+		return -ENODEV;
-+	}
-+
-+	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
-+	/*
-+	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
-+	 * RESUME consumption guarantees that the stalled transaction will be
-+	 * terminated... at some point in the future. PRI_RESP is fire and
-+	 * forget.
-+	 */
-+
-+	return 0;
-+}
-+
- /* Context descriptor manipulation functions */
- void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
- {
-@@ -991,7 +1035,6 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 	u64 val;
- 	bool cd_live;
- 	__le64 *cdptr;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
- 	if (WARN_ON(ssid >= (1 << smmu_domain->s1_cfg.s1cdmax)))
- 		return -E2BIG;
-@@ -1036,8 +1079,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
- 			CTXDESC_CD_0_V;
- 
--		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
--		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-+		if (smmu_domain->stall_enabled)
- 			val |= CTXDESC_CD_0_S;
- 	}
- 
-@@ -1278,7 +1320,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 			 FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_NSEL1));
- 
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
--		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
-+		    !master->stall_enabled)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-@@ -1355,7 +1397,6 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
- 	return 0;
- }
- 
--__maybe_unused
- static struct arm_smmu_master *
- arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- {
-@@ -1382,9 +1423,96 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- }
- 
- /* IRQ and event handlers */
-+static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
-+{
-+	int ret;
-+	u32 reason;
-+	u32 perm = 0;
-+	struct arm_smmu_master *master;
-+	bool ssid_valid = evt[0] & EVTQ_0_SSV;
-+	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
-+	struct iommu_fault_event fault_evt = { };
-+	struct iommu_fault *flt = &fault_evt.fault;
-+
-+	/* Stage-2 is always pinned at the moment */
-+	if (evt[1] & EVTQ_1_S2)
-+		return -EFAULT;
-+
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (!master)
-+		return -EINVAL;
-+
-+	if (evt[1] & EVTQ_1_RnW)
-+		perm |= IOMMU_FAULT_PERM_READ;
-+	else
-+		perm |= IOMMU_FAULT_PERM_WRITE;
-+
-+	if (evt[1] & EVTQ_1_InD)
-+		perm |= IOMMU_FAULT_PERM_EXEC;
-+
-+	if (evt[1] & EVTQ_1_PnU)
-+		perm |= IOMMU_FAULT_PERM_PRIV;
-+
-+	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
-+	case EVT_ID_TRANSLATION_FAULT:
-+	case EVT_ID_ADDR_SIZE_FAULT:
-+	case EVT_ID_ACCESS_FAULT:
-+		reason = IOMMU_FAULT_REASON_PTE_FETCH;
-+		break;
-+	case EVT_ID_PERMISSION_FAULT:
-+		reason = IOMMU_FAULT_REASON_PERMISSION;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (evt[1] & EVTQ_1_STALL) {
-+		flt->type = IOMMU_FAULT_PAGE_REQ;
-+		flt->prm = (struct iommu_fault_page_request) {
-+			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-+			.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
-+			.perm = perm,
-+			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-+		};
-+
-+		if (ssid_valid) {
-+			flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-+			flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
-+		}
-+	} else {
-+		flt->type = IOMMU_FAULT_DMA_UNRECOV;
-+		flt->event = (struct iommu_fault_unrecoverable) {
-+			.reason = reason,
-+			.flags = IOMMU_FAULT_UNRECOV_ADDR_VALID |
-+				 IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID,
-+			.perm = perm,
-+			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-+			.fetch_addr = FIELD_GET(EVTQ_3_IPA, evt[3]),
-+		};
-+
-+		if (ssid_valid) {
-+			flt->event.flags |= IOMMU_FAULT_UNRECOV_PASID_VALID;
-+			flt->event.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
-+		}
-+	}
-+
-+	ret = iommu_report_device_fault(master->dev, &fault_evt);
-+	if (ret && flt->type == IOMMU_FAULT_PAGE_REQ) {
-+		/* Nobody cared, abort the access */
-+		struct iommu_page_response resp = {
-+			.pasid		= flt->prm.pasid,
-+			.grpid		= flt->prm.grpid,
-+			.code		= IOMMU_PAGE_RESP_FAILURE,
-+		};
-+		arm_smmu_page_response(master->dev, &fault_evt, &resp);
-+	}
-+
-+	return ret;
-+}
-+
- static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- {
--	int i;
-+	int i, ret;
- 	struct arm_smmu_device *smmu = dev;
- 	struct arm_smmu_queue *q = &smmu->evtq.q;
- 	struct arm_smmu_ll_queue *llq = &q->llq;
-@@ -1394,6 +1522,10 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 		while (!queue_remove_raw(q, evt)) {
- 			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
- 
-+			ret = arm_smmu_handle_evt(smmu, evt);
-+			if (!ret)
-+				continue;
-+
- 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
- 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
-@@ -1903,6 +2035,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 
- 	cfg->s1cdmax = master->ssid_bits;
- 
-+	smmu_domain->stall_enabled = master->stall_enabled;
-+
- 	ret = arm_smmu_alloc_cd_tables(smmu_domain);
- 	if (ret)
- 		goto out_free_asid;
-@@ -2250,6 +2384,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 			smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
- 		ret = -EINVAL;
- 		goto out_unlock;
-+	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-+		   smmu_domain->stall_enabled != master->stall_enabled) {
-+		dev_err(dev, "cannot attach to stall-%s domain\n",
-+			smmu_domain->stall_enabled ? "enabled" : "disabled");
-+		ret = -EINVAL;
-+		goto out_unlock;
- 	}
- 
- 	master->domain = smmu_domain;
-@@ -2484,6 +2624,11 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 		master->ssid_bits = min_t(u8, master->ssid_bits,
- 					  CTXDESC_LINEAR_CDMAX);
- 
-+	if ((smmu->features & ARM_SMMU_FEAT_STALLS &&
-+	     device_property_read_bool(dev, "dma-can-stall")) ||
-+	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-+		master->stall_enabled = true;
-+
- 	return &smmu->iommu;
- 
- err_free_master:
-@@ -2502,6 +2647,7 @@ static void arm_smmu_release_device(struct device *dev)
- 
- 	master = dev_iommu_priv_get(dev);
- 	WARN_ON(arm_smmu_master_sva_enabled(master));
-+	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
- 	arm_smmu_detach_dev(master);
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
-@@ -2629,6 +2775,8 @@ static bool arm_smmu_dev_has_feature(struct device *dev,
- 		return false;
- 
- 	switch (feat) {
-+	case IOMMU_DEV_FEAT_IOPF:
-+		return arm_smmu_master_iopf_supported(master);
- 	case IOMMU_DEV_FEAT_SVA:
- 		return arm_smmu_master_sva_supported(master);
- 	default:
-@@ -2645,6 +2793,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
- 		return false;
- 
- 	switch (feat) {
-+	case IOMMU_DEV_FEAT_IOPF:
-+		return master->iopf_enabled;
- 	case IOMMU_DEV_FEAT_SVA:
- 		return arm_smmu_master_sva_enabled(master);
- 	default:
-@@ -2655,6 +2805,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
- static int arm_smmu_dev_enable_feature(struct device *dev,
- 				       enum iommu_dev_features feat)
- {
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+
- 	if (!arm_smmu_dev_has_feature(dev, feat))
- 		return -ENODEV;
- 
-@@ -2662,8 +2814,11 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
- 		return -EBUSY;
- 
- 	switch (feat) {
-+	case IOMMU_DEV_FEAT_IOPF:
-+		master->iopf_enabled = true;
-+		return 0;
- 	case IOMMU_DEV_FEAT_SVA:
--		return arm_smmu_master_enable_sva(dev_iommu_priv_get(dev));
-+		return arm_smmu_master_enable_sva(master);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -2672,12 +2827,17 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
- static int arm_smmu_dev_disable_feature(struct device *dev,
- 					enum iommu_dev_features feat)
- {
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+
- 	if (!arm_smmu_dev_feature_enabled(dev, feat))
- 		return -EINVAL;
- 
- 	switch (feat) {
-+	case IOMMU_DEV_FEAT_IOPF:
-+		master->iopf_enabled = false;
-+		return 0;
- 	case IOMMU_DEV_FEAT_SVA:
--		return arm_smmu_master_disable_sva(dev_iommu_priv_get(dev));
-+		return arm_smmu_master_disable_sva(master);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -2708,6 +2868,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.sva_bind		= arm_smmu_sva_bind,
- 	.sva_unbind		= arm_smmu_sva_unbind,
- 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
-+	.page_response		= arm_smmu_page_response,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
- 
-@@ -2785,6 +2946,7 @@ static int arm_smmu_cmdq_init(struct arm_smmu_device *smmu)
- static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
- {
- 	int ret;
-+	bool sva = smmu->features & ARM_SMMU_FEAT_STALLS;
- 
- 	/* cmdq */
- 	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-@@ -2804,6 +2966,12 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
- 	if (ret)
- 		return ret;
- 
-+	if (sva && smmu->features & ARM_SMMU_FEAT_STALLS) {
-+		smmu->evtq.iopf = iopf_queue_alloc(dev_name(smmu->dev));
-+		if (!smmu->evtq.iopf)
-+			return -ENOMEM;
-+	}
-+
- 	/* priq */
- 	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
- 		return 0;
-@@ -3718,6 +3886,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	iommu_device_unregister(&smmu->iommu);
- 	iommu_device_sysfs_remove(&smmu->iommu);
- 	arm_smmu_device_disable(smmu);
-+	iopf_queue_free(smmu->evtq.iopf);
- 
- 	return 0;
- }
--- 
-2.30.0
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS0wMS0yMSAwMjowNCwgTGVpemhlbiAoVGh1bmRlclRvd24pIHdyb3RlOgo+IAo+IAo+
+IE9uIDIwMjEvMS8yMCAyMzowMiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAyMDIxLTAxLTE5
+IDAxOjU5LCBaaGVuIExlaSB3cm90ZToKPj4+IFRoaXMgcmV2ZXJ0cyBjb21taXQgNTJmM2ZhYjAw
+NjdkNmZhOWU5OWMxYjdmNjMyNjVkZDQ4Y2E3NjA0Ni4KPj4+Cj4+PiBUaGlzIHByb2JsZW0gaGFz
+IGJlZW4gZml4ZWQgYnkgYW5vdGhlciBwYXRjaC4gVGhlIG9yaWdpbmFsIG1ldGhvZCBoYWQgc2lk
+ZQo+Pj4gZWZmZWN0cywgaXQgd2FzIG5vdCBtYXBwZWQgdG8gdGhlIHVzZXItc3BlY2lmaWVkIHJl
+c291cmNlIHNpemUuIFRoZSBjb2RlCj4+PiB3aWxsIGJlY29tZSBtb3JlIGNvbXBsZXggd2hlbiBF
+Q01EUSBpcyBzdXBwb3J0ZWQgbGF0ZXIuCj4+Cj4+IEZXSVcgSSBkb24ndCB0aGluayB0aGF0J3Mg
+YSBzaWduaWZpY2FudCBpc3N1ZSBlaXRoZXIgd2F5IC0gdGhlcmUgY291bGQgYmUgYW55IG51bWJl
+ciBvZiBpbXAtZGVmIHBhZ2VzIGJldHdlZW4gU01NVSBwYWdlIDAgYW5kIHRoZSBFQ01EUSBjb250
+cm9sIHBhZ2VzLCBzbyBpdCB3aWxsIHN0aWxsIGJlIGxvZ2ljYWwgdG8gbWFwIHRoZW0gYXMgYW5v
+dGhlciBzZXBhcmF0ZSB0aGluZyBhbnl3YXkuCj4gCj4gWWVzLCBzbyBub3cgSSdtIHRoaW5raW5n
+IG9mIHByZXNlcnZpbmcgdGhlIFNNTVV2MyByZXNvdXJjZXMgYW5kIGVsaW1pbmF0aW5nIHRoZSBp
+bXAtZGVmIGFyZWEuIFRoZW4gdXNlIGFub3RoZXIgZGV2bV9pb3JlbWFwKCkgdG8gY292ZXIgdGhl
+IGVudGlyZSByZXNvdXJjZe+8jGFzc2lnbiBpdCB0byBzbW11LT5iYXNlLgo+IE90aGVyd2lzZSwg
+YSBiYXNlIHBvaW50ZXIgbmVlZHMgdG8gYmUgZGVmaW5lZCBmb3IgZWFjaCBzZXBhcmF0ZWQgcmVn
+aXN0ZXIgc3BhY2XvvIxvciBjYWxsIGEgZnVuY3Rpb24gdG8gY29udmVydCBlYWNoIHRpbWUuCgpC
+dXQgd2UnbGwgYWxtb3N0IGNlcnRhaW5seSB3YW50IHRvIG1haW50YWluIGEgcG9pbnRlciB0byBz
+dGFydCBvZiB0aGUgCkVDTURRIGNvbnRyb2wgcGFnZSBibG9jayBhbnl3YXksIHNpbmNlIHRoYXQn
+cyBub3QgZml4ZWQgcmVsYXRpdmUgdG8gCnNtbXUtPmJhc2UuIFRoZXJlZm9yZSB3aGF0J3MgdGhl
+IGhhcm0gaW4gaGFuZGxpbmcgdGhhdCB2aWEgYSBkZWRpY2F0ZWQgCm1hcHBpbmcsIG9uY2Ugd2Un
+dmUgZGV0ZXJtaW5lZCB0aGF0IHdlICpkbyogaW50ZW5kIHRvIHVzZSBFQ01EUXM/IApPdGhlcndp
+c2Ugd2UgZW5kIHVwIHdpdGggaW4gdGhlIGNvbXBsaWNhdGVkIGRhbmNlIG9mIHRyeWluZyB0byBt
+YXAgCiJldmVyeXRoaW5nIiB1cC1mcm9udCBpbiBvcmRlciB0byBiZSBhYmxlIHRvIHJlYWQgdGhl
+IElEIHJlZ2lzdGVycyB0byAKZGV0ZXJtaW5lIHdoYXQgdGhlIGFjdHVhbCBleHRlbnQgb2YgImV2
+ZXJ5dGhpbmciIGlzIHN1cHBvc2VkIHRvIGJlLgoKKGFsc28gdGhpcyByZW1pbmRzIG1lIHRoYXQg
+SSB3YXMgZ29pbmcgdG8gcmVtb3ZlIGFybV9zbW11X3BhZ2UxX2ZpeHVwKCkgCmVudGlyZWx5IC0g
+SSdkIHRvdGFsbHkgZm9yZ290dGVuIGFib3V0IHRoYXQuLi4pCgpSb2Jpbi4KCj4+PiBTaWduZWQt
+b2ZmLWJ5OiBaaGVuIExlaSA8dGh1bmRlci5sZWl6aGVuQGh1YXdlaS5jb20+Cj4+PiAtLS0KPj4+
+ICDCoCBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jIHwgMzIgKysr
+Ky0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPj4+ICDCoCBkcml2ZXJzL2lvbW11L2FybS9hcm0t
+c21tdS12My9hcm0tc21tdS12My5oIHzCoCAzIC0tLQo+Pj4gIMKgIDIgZmlsZXMgY2hhbmdlZCwg
+NCBpbnNlcnRpb25zKCspLCAzMSBkZWxldGlvbnMoLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUv
+YXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMKPj4+IGluZGV4IDhjYTc0MTVkNzg1ZDliZi4u
+NDc3ZjQ3Mzg0MmU1MjcyIDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNt
+bXUtdjMvYXJtLXNtbXUtdjMuYwo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUt
+djMvYXJtLXNtbXUtdjMuYwo+Pj4gQEAgLTkxLDggKzkxLDkgQEAgc3RydWN0IGFybV9zbW11X29w
+dGlvbl9wcm9wIHsKPj4+ICDCoCBzdGF0aWMgaW5saW5lIHZvaWQgX19pb21lbSAqYXJtX3NtbXVf
+cGFnZTFfZml4dXAodW5zaWduZWQgbG9uZyBvZmZzZXQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNl
+ICpzbW11KQo+Pj4gIMKgIHsKPj4+IC3CoMKgwqAgaWYgKG9mZnNldCA+IFNaXzY0SykKPj4+IC3C
+oMKgwqDCoMKgwqDCoCByZXR1cm4gc21tdS0+cGFnZTEgKyBvZmZzZXQgLSBTWl82NEs7Cj4+PiAr
+wqDCoMKgIGlmICgob2Zmc2V0ID4gU1pfNjRLKSAmJgo+Pj4gK8KgwqDCoMKgwqDCoMKgIChzbW11
+LT5vcHRpb25zICYgQVJNX1NNTVVfT1BUX1BBR0UwX1JFR1NfT05MWSkpCj4+PiArwqDCoMKgwqDC
+oMKgwqAgb2Zmc2V0IC09IFNaXzY0SzsKPj4+ICDCoCDCoMKgwqDCoMKgIHJldHVybiBzbW11LT5i
+YXNlICsgb2Zmc2V0Owo+Pj4gIMKgIH0KPj4+IEBAIC0zNDg2LDE4ICszNDg3LDYgQEAgc3RhdGlj
+IGludCBhcm1fc21tdV9zZXRfYnVzX29wcyhzdHJ1Y3QgaW9tbXVfb3BzICpvcHMpCj4+PiAgwqDC
+oMKgwqDCoCByZXR1cm4gZXJyOwo+Pj4gIMKgIH0KPj4+ICDCoCAtc3RhdGljIHZvaWQgX19pb21l
+bSAqYXJtX3NtbXVfaW9yZW1hcChzdHJ1Y3QgZGV2aWNlICpkZXYsIHJlc291cmNlX3NpemVfdCBz
+dGFydCwKPj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVz
+b3VyY2Vfc2l6ZV90IHNpemUpCj4+PiAtewo+Pj4gLcKgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgcmVz
+ID0gewo+Pj4gLcKgwqDCoMKgwqDCoMKgIC5mbGFncyA9IElPUkVTT1VSQ0VfTUVNLAo+Pj4gLcKg
+wqDCoMKgwqDCoMKgIC5zdGFydCA9IHN0YXJ0LAo+Pj4gLcKgwqDCoMKgwqDCoMKgIC5lbmQgPSBz
+dGFydCArIHNpemUgLSAxLAo+Pj4gLcKgwqDCoCB9Owo+Pj4gLQo+Pj4gLcKgwqDCoCByZXR1cm4g
+ZGV2bV9pb3JlbWFwX3Jlc291cmNlKGRldiwgJnJlcyk7Cj4+PiAtfQo+Pj4gLQo+Pj4gIMKgIHN0
+YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
+ZXYpCj4+PiAgwqAgewo+Pj4gIMKgwqDCoMKgwqAgaW50IGlycSwgcmV0Owo+Pj4gQEAgLTM1MzMs
+MjMgKzM1MjIsMTAgQEAgc3RhdGljIGludCBhcm1fc21tdV9kZXZpY2VfcHJvYmUoc3RydWN0IHBs
+YXRmb3JtX2RldmljZSAqcGRldikKPj4+ICDCoMKgwqDCoMKgIH0KPj4+ICDCoMKgwqDCoMKgIGlv
+YWRkciA9IHJlcy0+c3RhcnQ7Cj4+PiAgwqAgLcKgwqDCoCAvKgo+Pj4gLcKgwqDCoMKgICogRG9u
+J3QgbWFwIHRoZSBJTVBMRU1FTlRBVElPTiBERUZJTkVEIHJlZ2lvbnMsIHNpbmNlIHRoZXkgbWF5
+IGNvbnRhaW4KPj4+IC3CoMKgwqDCoCAqIHRoZSBQTUNHIHJlZ2lzdGVycyB3aGljaCBhcmUgcmVz
+ZXJ2ZWQgYnkgdGhlIFBNVSBkcml2ZXIuCj4+PiAtwqDCoMKgwqAgKi8KPj4+IC3CoMKgwqAgc21t
+dS0+YmFzZSA9IGFybV9zbW11X2lvcmVtYXAoZGV2LCBpb2FkZHIsIEFSTV9TTU1VX1JFR19TWik7
+Cj4+PiArwqDCoMKgIHNtbXUtPmJhc2UgPSBkZXZtX2lvcmVtYXBfcmVzb3VyY2UoZGV2LCByZXMp
+Owo+Pj4gIMKgwqDCoMKgwqAgaWYgKElTX0VSUihzbW11LT5iYXNlKSkKPj4+ICDCoMKgwqDCoMKg
+wqDCoMKgwqAgcmV0dXJuIFBUUl9FUlIoc21tdS0+YmFzZSk7Cj4+PiAgwqAgLcKgwqDCoCBpZiAo
+YXJtX3NtbXVfcmVzb3VyY2Vfc2l6ZShzbW11KSA+IFNaXzY0Sykgewo+Pj4gLcKgwqDCoMKgwqDC
+oMKgIHNtbXUtPnBhZ2UxID0gYXJtX3NtbXVfaW9yZW1hcChkZXYsIGlvYWRkciArIFNaXzY0SywK
+Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IEFSTV9TTU1VX1JFR19TWik7Cj4+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKElTX0VSUihzbW11LT5w
+YWdlMSkpCj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gUFRSX0VSUihzbW11LT5w
+YWdlMSk7Cj4+PiAtwqDCoMKgIH0gZWxzZSB7Cj4+PiAtwqDCoMKgwqDCoMKgwqAgc21tdS0+cGFn
+ZTEgPSBzbW11LT5iYXNlOwo+Pj4gLcKgwqDCoCB9Cj4+PiAtCj4+PiAgwqDCoMKgwqDCoCAvKiBJ
+bnRlcnJ1cHQgbGluZXMgKi8KPj4+ICDCoCDCoMKgwqDCoMKgIGlycSA9IHBsYXRmb3JtX2dldF9p
+cnFfYnluYW1lX29wdGlvbmFsKHBkZXYsICJjb21iaW5lZCIpOwo+Pj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmggYi9kcml2ZXJzL2lvbW11
+L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oCj4+PiBpbmRleCA5NmMyZTk1NjVlMDAyODIu
+LjBjMzA5MGM2MDg0MGMyMiAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1z
+bW11LXYzL2FybS1zbW11LXYzLmgKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11
+LXYzL2FybS1zbW11LXYzLmgKPj4+IEBAIC0xNTIsOCArMTUyLDYgQEAKPj4+ICDCoCAjZGVmaW5l
+IEFSTV9TTU1VX1BSSVFfSVJRX0NGRzHCoMKgwqDCoMKgwqDCoCAweGQ4Cj4+PiAgwqAgI2RlZmlu
+ZSBBUk1fU01NVV9QUklRX0lSUV9DRkcywqDCoMKgwqDCoMKgwqAgMHhkYwo+Pj4gIMKgIC0jZGVm
+aW5lIEFSTV9TTU1VX1JFR19TWsKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMHhlMDAKPj4+IC0KPj4+
+ICDCoCAvKiBDb21tb24gTVNJIGNvbmZpZyBmaWVsZHMgKi8KPj4+ICDCoCAjZGVmaW5lIE1TSV9D
+RkcwX0FERFJfTUFTS8KgwqDCoMKgwqDCoMKgIEdFTk1BU0tfVUxMKDUxLCAyKQo+Pj4gIMKgICNk
+ZWZpbmUgTVNJX0NGRzJfU0jCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEdFTk1BU0soNSwgNCkKPj4+
+IEBAIC01ODQsNyArNTgyLDYgQEAgc3RydWN0IGFybV9zbW11X3N0cnRhYl9jZmcgewo+Pj4gIMKg
+IHN0cnVjdCBhcm1fc21tdV9kZXZpY2Ugewo+Pj4gIMKgwqDCoMKgwqAgc3RydWN0IGRldmljZcKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgKmRldjsKPj4+ICDCoMKgwqDCoMKgIHZvaWQgX19pb21lbcKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgKmJhc2U7Cj4+PiAtwqDCoMKgIHZvaWQgX19pb21lbcKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgKnBhZ2UxOwo+Pj4gIMKgIMKgICNkZWZpbmUgQVJNX1NNTVVfRkVB
+VF8yX0xWTF9TVFJUQULCoMKgwqAgKDEgPDwgMCkKPj4+ICDCoCAjZGVmaW5lIEFSTV9TTU1VX0ZF
+QVRfMl9MVkxfQ0RUQULCoMKgwqAgKDEgPDwgMSkKPj4+Cj4+Cj4+IC4KPj4KPiAKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0
+CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3Vu
+ZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
