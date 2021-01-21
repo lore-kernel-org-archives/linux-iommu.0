@@ -7,68 +7,67 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729AFC433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 06:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D46C433DB
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 06:25:41 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 793E8238D6
-	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 06:25:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 793E8238D6
+	by mail.kernel.org (Postfix) with ESMTPS id A4335238D6
+	for <iommu@archiver.kernel.org>; Thu, 21 Jan 2021 06:25:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4335238D6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F03E086155;
-	Thu, 21 Jan 2021 06:25:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3058686155;
+	Thu, 21 Jan 2021 06:25:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tlzOk0IujwnK; Thu, 21 Jan 2021 06:25:36 +0000 (UTC)
+	with ESMTP id W5C0XCcKa2_I; Thu, 21 Jan 2021 06:25:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7DD2585FD5;
-	Thu, 21 Jan 2021 06:25:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B623D8613E;
+	Thu, 21 Jan 2021 06:25:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 601AEC08A1;
-	Thu, 21 Jan 2021 06:25:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9D0C08A1;
+	Thu, 21 Jan 2021 06:25:39 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04389C013A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0AC59C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E5EEB8613E
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:34 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EDAF8861C8
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DcbMlnLlOMRm for <iommu@lists.linux-foundation.org>;
- Thu, 21 Jan 2021 06:25:34 +0000 (UTC)
+ with ESMTP id h17p57Ck52jT for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Jan 2021 06:25:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4ADC885FD5
- for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:34 +0000 (UTC)
-X-UUID: f4ffa75eb587450db4691b690f47d303-20210121
-X-UUID: f4ffa75eb587450db4691b690f47d303-20210121
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 47BEC86130
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Jan 2021 06:25:37 +0000 (UTC)
+X-UUID: a347601d477e49238e2e91dcebbe502d-20210121
+X-UUID: a347601d477e49238e2e91dcebbe502d-20210121
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
  ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 492986384; Thu, 21 Jan 2021 14:25:29 +0800
+ with ESMTP id 279293618; Thu, 21 Jan 2021 14:25:34 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 21 Jan 2021 14:25:22 +0800
+ mtkmbs08n1.mediatek.inc (172.21.101.55) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 21 Jan 2021 14:25:30 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 Jan 2021 14:25:21 +0800
+ Transport; Thu, 21 Jan 2021 14:25:29 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Krzysztof Kozlowski <krzk@kernel.org>, Matthias Brugger
  <matthias.bgg@gmail.com>
-Subject: [PATCH 2/3] memory: mtk-smi: Add module_exit and module_license
-Date: Thu, 21 Jan 2021 14:24:28 +0800
-Message-ID: <20210121062429.26504-3-yong.wu@mediatek.com>
+Subject: [PATCH 3/3] memory: mtk-smi: Switch MTK_SMI to tristate
+Date: Thu, 21 Jan 2021 14:24:29 +0800
+Message-ID: <20210121062429.26504-4-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210121062429.26504-1-yong.wu@mediatek.com>
 References: <20210121062429.26504-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 24476291C01264CB107719D7F0A11F842FC2D47325FB94F0AD32DB898B4DCD9F2000:8
 X-MTK: N
 Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
  Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
@@ -93,34 +92,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The config MTK_SMI always depends on MTK_IOMMU which is built-in
-currently. Thus we don't have module_exit before. This patch adds
-module_exit and module_license. It is a preparing patch for supporting
-MTK_SMI could been built as a module.
+This patch switches MTK_SMI to tristate. Support it could be 'm'.
+
+Meanwhile, Fix a build issue while MTK_SMI is built as module.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/memory/mtk-smi.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+This patch has a little conflict with the mt8192 iommu patch which
+delete the MTK_LARB_NR_MAX in smi.h(It's still reviewing).
+This patch rebase on the clean v5.11-rc1.
+---
+ drivers/memory/Kconfig     | 2 +-
+ include/soc/mediatek/smi.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index e2aebd2bfa8e..aa2a25abf04f 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -597,3 +597,13 @@ static int __init mtk_smi_init(void)
- 	return platform_register_drivers(smidrivers, ARRAY_SIZE(smidrivers));
- }
- module_init(mtk_smi_init);
-+
-+static void __exit mtk_smi_exit(void)
-+{
-+	platform_unregister_drivers(smidrivers, ARRAY_SIZE(smidrivers));
-+}
-+module_exit(mtk_smi_exit);
-+
-+MODULE_DESCRIPTION("MediaTek SMI driver");
-+MODULE_ALIAS("platform:MediaTek-SMI");
-+MODULE_LICENSE("GPL v2");
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index 3ea6913df176..d5f0f4680880 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -173,7 +173,7 @@ config JZ4780_NEMC
+ 	  memory devices such as NAND and SRAM.
+ 
+ config MTK_SMI
+-	bool "Mediatek SoC Memory Controller driver" if COMPILE_TEST
++	tristate "Mediatek SoC Memory Controller driver" if COMPILE_TEST
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ 	help
+ 	  This driver is for the Memory Controller module in MediaTek SoCs,
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+index 5a34b87d89e3..29e2fb8f33d6 100644
+--- a/include/soc/mediatek/smi.h
++++ b/include/soc/mediatek/smi.h
+@@ -9,7 +9,7 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ 
+-#ifdef CONFIG_MTK_SMI
++#if IS_ENABLED(CONFIG_MTK_SMI)
+ 
+ #define MTK_LARB_NR_MAX		16
+ 
 -- 
 2.18.0
 
