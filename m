@@ -2,78 +2,81 @@ Return-Path: <SRS0=J3Yr=GZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1442DC433DB
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 02:50:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB2EC433E0
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 03:08:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7803A23884
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 02:50:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7803A23884
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id B8D5123884
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 03:08:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8D5123884
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 17E6386D1F;
-	Fri, 22 Jan 2021 02:50:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6621D872BF;
+	Fri, 22 Jan 2021 03:08:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ahUtlcCmNg6r; Fri, 22 Jan 2021 02:50:33 +0000 (UTC)
+	with ESMTP id Sk6gP0Eei3gB; Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E57DA86BB0;
-	Fri, 22 Jan 2021 02:50:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4A73B81C82;
+	Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7905C08A1;
-	Fri, 22 Jan 2021 02:50:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0B890C013A
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 02:50:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 31B20C08A1;
+	Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93B29C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E39E986CF3
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 02:50:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8201985C92
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UFZowgxTP-Fv for <iommu@lists.linux-foundation.org>;
- Fri, 22 Jan 2021 02:50:30 +0000 (UTC)
+ with ESMTP id pz3B1IrPPbUZ for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Jan 2021 03:08:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C08FE86BB0
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 02:50:29 +0000 (UTC)
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DMNyK6wpBzj9h7;
- Fri, 22 Jan 2021 10:49:29 +0800 (CST)
-Received: from [127.0.0.1] (10.174.176.220) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.498.0;
- Fri, 22 Jan 2021 10:50:18 +0800
-Subject: Re: [PATCH 2/2] Revert "iommu/arm-smmu-v3: Don't reserve
- implementation defined register space"
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Mark
- Rutland" <mark.rutland@arm.com>, Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu
- <iommu@lists.linux-foundation.org>, linux-kernel
- <linux-kernel@vger.kernel.org>
-References: <20210119015951.1042-1-thunder.leizhen@huawei.com>
- <20210119015951.1042-3-thunder.leizhen@huawei.com>
- <888312dc-85b7-4d5e-f264-bbdd9e3638f6@arm.com>
- <ca469958-179d-02c5-b147-0a0ff951d503@huawei.com>
- <72c979bd-501f-df9b-7bca-02b8c11d3860@arm.com>
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <cfa002c0-593a-b4e8-7015-224726d73504@huawei.com>
-Date: Fri, 22 Jan 2021 10:50:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 24FDA81C82
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:30 +0000 (UTC)
+IronPort-SDR: Dh7npfYfuE+QOuvZCZ/KOUuXZKe5RRzNkOeImEBDkX3cVnkZontZPhXAbJBRwgqb4Sij5enWgD
+ 5VAMk+RMo4hw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9871"; a="264203139"
+X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="264203139"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jan 2021 19:08:29 -0800
+IronPort-SDR: 6CIrpZM9pDecYu2RuY0Xsy9icPJznw6ouOjEA9n1L+XeLhnAEYmCnlyJs7VtOJSbRruB17I5xj
+ 6Z0BchqHlzqg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="467701308"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
+ by fmsmga001.fm.intel.com with ESMTP; 21 Jan 2021 19:08:26 -0800
+Subject: Re: performance regression noted in v5.11-rc after c062db039f40
+To: Chuck Lever <chuck.lever@oracle.com>, Robin Murphy <robin.murphy@arm.com>
+References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
+ <20210112143819.GA9689@willie-the-truck>
+ <607648D8-BF0C-40D6-9B43-2359F45EE74C@oracle.com>
+ <e83eed0d-82cd-c9be-cef1-5fe771de975f@arm.com>
+ <3568C74A-A587-4464-8840-24F7A93ABA06@oracle.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <990a7c1e-e8c0-a6a8-f057-03b104cebca3@linux.intel.com>
+Date: Fri, 22 Jan 2021 11:00:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <72c979bd-501f-df9b-7bca-02b8c11d3860@arm.com>
+In-Reply-To: <3568C74A-A587-4464-8840-24F7A93ABA06@oracle.com>
 Content-Language: en-US
-X-Originating-IP: [10.174.176.220]
-X-CFilter-Loop: Reflected
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: isaacm@codeaurora.org, linux-rdma <linux-rdma@vger.kernel.org>,
+ Will Deacon <will@kernel.org>, "murphyt7@tcd.ie" <murphyt7@tcd.ie>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "logang@deltatee.com" <logang@deltatee.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,116 +89,243 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIxLzEvMjEgMjA6NTAsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyMDIxLTAxLTIx
-IDAyOjA0LCBMZWl6aGVuIChUaHVuZGVyVG93bikgd3JvdGU6Cj4+Cj4+Cj4+IE9uIDIwMjEvMS8y
-MCAyMzowMiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMS0wMS0xOSAwMTo1OSwgWmhl
-biBMZWkgd3JvdGU6Cj4+Pj4gVGhpcyByZXZlcnRzIGNvbW1pdCA1MmYzZmFiMDA2N2Q2ZmE5ZTk5
-YzFiN2Y2MzI2NWRkNDhjYTc2MDQ2Lgo+Pj4+Cj4+Pj4gVGhpcyBwcm9ibGVtIGhhcyBiZWVuIGZp
-eGVkIGJ5IGFub3RoZXIgcGF0Y2guIFRoZSBvcmlnaW5hbCBtZXRob2QgaGFkIHNpZGUKPj4+PiBl
-ZmZlY3RzLCBpdCB3YXMgbm90IG1hcHBlZCB0byB0aGUgdXNlci1zcGVjaWZpZWQgcmVzb3VyY2Ug
-c2l6ZS4gVGhlIGNvZGUKPj4+PiB3aWxsIGJlY29tZSBtb3JlIGNvbXBsZXggd2hlbiBFQ01EUSBp
-cyBzdXBwb3J0ZWQgbGF0ZXIuCj4+Pgo+Pj4gRldJVyBJIGRvbid0IHRoaW5rIHRoYXQncyBhIHNp
-Z25pZmljYW50IGlzc3VlIGVpdGhlciB3YXkgLSB0aGVyZSBjb3VsZCBiZSBhbnkgbnVtYmVyIG9m
-IGltcC1kZWYgcGFnZXMgYmV0d2VlbiBTTU1VIHBhZ2UgMCBhbmQgdGhlIEVDTURRIGNvbnRyb2wg
-cGFnZXMsIHNvIGl0IHdpbGwgc3RpbGwgYmUgbG9naWNhbCB0byBtYXAgdGhlbSBhcyBhbm90aGVy
-IHNlcGFyYXRlIHRoaW5nIGFueXdheS4KPj4KPj4gWWVzLCBzbyBub3cgSSdtIHRoaW5raW5nIG9m
-IHByZXNlcnZpbmcgdGhlIFNNTVV2MyByZXNvdXJjZXMgYW5kIGVsaW1pbmF0aW5nIHRoZSBpbXAt
-ZGVmIGFyZWEuIFRoZW4gdXNlIGFub3RoZXIgZGV2bV9pb3JlbWFwKCkgdG8gY292ZXIgdGhlIGVu
-dGlyZSByZXNvdXJjZe+8jGFzc2lnbiBpdCB0byBzbW11LT5iYXNlLgo+PiBPdGhlcndpc2UsIGEg
-YmFzZSBwb2ludGVyIG5lZWRzIHRvIGJlIGRlZmluZWQgZm9yIGVhY2ggc2VwYXJhdGVkIHJlZ2lz
-dGVyIHNwYWNl77yMb3IgY2FsbCBhIGZ1bmN0aW9uIHRvIGNvbnZlcnQgZWFjaCB0aW1lLgo+IAo+
-IEJ1dCB3ZSdsbCBhbG1vc3QgY2VydGFpbmx5IHdhbnQgdG8gbWFpbnRhaW4gYSBwb2ludGVyIHRv
-IHN0YXJ0IG9mIHRoZSBFQ01EUSBjb250cm9sIHBhZ2UgYmxvY2sgYW55d2F5LCBzaW5jZSB0aGF0
-J3Mgbm90IGZpeGVkIHJlbGF0aXZlIHRvIHNtbXUtPmJhc2UuIFRoZXJlZm9yZSB3aGF0J3MgdGhl
-IGhhcm0gaW4gaGFuZGxpbmcgdGhhdCB2aWEgYSBkZWRpY2F0ZWQgbWFwcGluZywgb25jZSB3ZSd2
-ZSBkZXRlcm1pbmVkIHRoYXQgd2UgKmRvKiBpbnRlbmQgdG8gdXNlIEVDTURRcz8gT3RoZXJ3aXNl
-IHdlIGVuZCB1cCB3aXRoIGluIHRoZSBjb21wbGljYXRlZCBkYW5jZSBvZiB0cnlpbmcgdG8gbWFw
-ICJldmVyeXRoaW5nIiB1cC1mcm9udCBpbiBvcmRlciB0byBiZSBhYmxlIHRvIHJlYWQgdGhlIElE
-IHJlZ2lzdGVycyB0byBkZXRlcm1pbmUgd2hhdCB0aGUgYWN0dWFsIGV4dGVudCBvZiAiZXZlcnl0
-aGluZyIgaXMgc3VwcG9zZWQgdG8gYmUuCgpDdXJyZW50bHksIHdlIG9ubHkgbWFwcGVkIHRoZSBm
-aXJzdCAweGUwMCBzaXplLCBzbyB0aGUgU01NVV9DTURRX0NPTlRST0xfUEFHRV9YWFhuIHJlZ2lz
-dGVycyBzcGFjZSBhdCBvZmZzZXQgMHg0MDAwIHNob3VsZCBiZSBtYXBwZWQgYWdhaW4uClRoZSBz
-aXplIG9mIHRoaXMgRUNNRFEgcmVzb3VyY2UgaXMgbm90IGZpeGVkLCBkZXBlbmRpbmcgb24gU01N
-VV9JRFI2LkNNRFFfQ09OVFJPTF9QQUdFX0xPRzJOVU1RLgpQcm9jZXNzaW5nIGl0cyByZXNvdXJj
-ZSByZXNlcnZhdGlvbiB0byBhdm9pZCByZXNvdXJjZSBjb25mbGljdCB3aXRoIFBNQ0cgaXMgYSBi
-aXQgbW9yZSBjb21wbGljYXRlZC4KCj4gCj4gKGFsc28gdGhpcyByZW1pbmRzIG1lIHRoYXQgSSB3
-YXMgZ29pbmcgdG8gcmVtb3ZlIGFybV9zbW11X3BhZ2UxX2ZpeHVwKCkgZW50aXJlbHkgLSBJJ2Qg
-dG90YWxseSBmb3Jnb3R0ZW4gYWJvdXQgdGhhdC4uLikKCkFoLCB0aGF0IHBhdGNoIHlvdSBtYWRl
-IGlzIHNvIGNsZXZlci4KCj4gCj4gUm9iaW4uCj4gCj4+Pj4gU2lnbmVkLW9mZi1ieTogWmhlbiBM
-ZWkgPHRodW5kZXIubGVpemhlbkBodWF3ZWkuY29tPgo+Pj4+IC0tLQo+Pj4+IMKgwqAgZHJpdmVy
-cy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyB8IDMyICsrKystLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tCj4+Pj4gwqDCoCBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9h
-cm0tc21tdS12My5oIHzCoCAzIC0tLQo+Pj4+IMKgwqAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2Vy
-dGlvbnMoKyksIDMxIGRlbGV0aW9ucygtKQo+Pj4+Cj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMgYi9kcml2ZXJzL2lvbW11L2FybS9h
-cm0tc21tdS12My9hcm0tc21tdS12My5jCj4+Pj4gaW5kZXggOGNhNzQxNWQ3ODVkOWJmLi40Nzdm
-NDczODQyZTUyNzIgMTAwNjQ0Cj4+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUt
-djMvYXJtLXNtbXUtdjMuYwo+Pj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYz
-L2FybS1zbW11LXYzLmMKPj4+PiBAQCAtOTEsOCArOTEsOSBAQCBzdHJ1Y3QgYXJtX3NtbXVfb3B0
-aW9uX3Byb3Agewo+Pj4+IMKgwqAgc3RhdGljIGlubGluZSB2b2lkIF9faW9tZW0gKmFybV9zbW11
-X3BhZ2UxX2ZpeHVwKHVuc2lnbmVkIGxvbmcgb2Zmc2V0LAo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZGV2
-aWNlICpzbW11KQo+Pj4+IMKgwqAgewo+Pj4+IC3CoMKgwqAgaWYgKG9mZnNldCA+IFNaXzY0SykK
-Pj4+PiAtwqDCoMKgwqDCoMKgwqAgcmV0dXJuIHNtbXUtPnBhZ2UxICsgb2Zmc2V0IC0gU1pfNjRL
-Owo+Pj4+ICvCoMKgwqAgaWYgKChvZmZzZXQgPiBTWl82NEspICYmCj4+Pj4gK8KgwqDCoMKgwqDC
-oMKgIChzbW11LT5vcHRpb25zICYgQVJNX1NNTVVfT1BUX1BBR0UwX1JFR1NfT05MWSkpCj4+Pj4g
-K8KgwqDCoMKgwqDCoMKgIG9mZnNldCAtPSBTWl82NEs7Cj4+Pj4gwqDCoCDCoMKgwqDCoMKgIHJl
-dHVybiBzbW11LT5iYXNlICsgb2Zmc2V0Owo+Pj4+IMKgwqAgfQo+Pj4+IEBAIC0zNDg2LDE4ICsz
-NDg3LDYgQEAgc3RhdGljIGludCBhcm1fc21tdV9zZXRfYnVzX29wcyhzdHJ1Y3QgaW9tbXVfb3Bz
-ICpvcHMpCj4+Pj4gwqDCoMKgwqDCoMKgIHJldHVybiBlcnI7Cj4+Pj4gwqDCoCB9Cj4+Pj4gwqDC
-oCAtc3RhdGljIHZvaWQgX19pb21lbSAqYXJtX3NtbXVfaW9yZW1hcChzdHJ1Y3QgZGV2aWNlICpk
-ZXYsIHJlc291cmNlX3NpemVfdCBzdGFydCwKPj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIHJlc291cmNlX3NpemVfdCBzaXplKQo+Pj4+IC17Cj4+Pj4gLcKg
-wqDCoCBzdHJ1Y3QgcmVzb3VyY2UgcmVzID0gewo+Pj4+IC3CoMKgwqDCoMKgwqDCoCAuZmxhZ3Mg
-PSBJT1JFU09VUkNFX01FTSwKPj4+PiAtwqDCoMKgwqDCoMKgwqAgLnN0YXJ0ID0gc3RhcnQsCj4+
-Pj4gLcKgwqDCoMKgwqDCoMKgIC5lbmQgPSBzdGFydCArIHNpemUgLSAxLAo+Pj4+IC3CoMKgwqAg
-fTsKPj4+PiAtCj4+Pj4gLcKgwqDCoCByZXR1cm4gZGV2bV9pb3JlbWFwX3Jlc291cmNlKGRldiwg
-JnJlcyk7Cj4+Pj4gLX0KPj4+PiAtCj4+Pj4gwqDCoCBzdGF0aWMgaW50IGFybV9zbW11X2Rldmlj
-ZV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+Pj4+IMKgwqAgewo+Pj4+IMKg
-wqDCoMKgwqDCoCBpbnQgaXJxLCByZXQ7Cj4+Pj4gQEAgLTM1MzMsMjMgKzM1MjIsMTAgQEAgc3Rh
-dGljIGludCBhcm1fc21tdV9kZXZpY2VfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRl
-dikKPj4+PiDCoMKgwqDCoMKgwqAgfQo+Pj4+IMKgwqDCoMKgwqDCoCBpb2FkZHIgPSByZXMtPnN0
-YXJ0Owo+Pj4+IMKgwqAgLcKgwqDCoCAvKgo+Pj4+IC3CoMKgwqDCoCAqIERvbid0IG1hcCB0aGUg
-SU1QTEVNRU5UQVRJT04gREVGSU5FRCByZWdpb25zLCBzaW5jZSB0aGV5IG1heSBjb250YWluCj4+
-Pj4gLcKgwqDCoMKgICogdGhlIFBNQ0cgcmVnaXN0ZXJzIHdoaWNoIGFyZSByZXNlcnZlZCBieSB0
-aGUgUE1VIGRyaXZlci4KPj4+PiAtwqDCoMKgwqAgKi8KPj4+PiAtwqDCoMKgIHNtbXUtPmJhc2Ug
-PSBhcm1fc21tdV9pb3JlbWFwKGRldiwgaW9hZGRyLCBBUk1fU01NVV9SRUdfU1opOwo+Pj4+ICvC
-oMKgwqAgc21tdS0+YmFzZSA9IGRldm1faW9yZW1hcF9yZXNvdXJjZShkZXYsIHJlcyk7Cj4+Pj4g
-wqDCoMKgwqDCoMKgIGlmIChJU19FUlIoc21tdS0+YmFzZSkpCj4+Pj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgcmV0dXJuIFBUUl9FUlIoc21tdS0+YmFzZSk7Cj4+Pj4gwqDCoCAtwqDCoMKgIGlmIChh
-cm1fc21tdV9yZXNvdXJjZV9zaXplKHNtbXUpID4gU1pfNjRLKSB7Cj4+Pj4gLcKgwqDCoMKgwqDC
-oMKgIHNtbXUtPnBhZ2UxID0gYXJtX3NtbXVfaW9yZW1hcChkZXYsIGlvYWRkciArIFNaXzY0SywK
-Pj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBBUk1fU01NVV9SRUdfU1opOwo+Pj4+IC3CoMKgwqDCoMKgwqDCoCBpZiAoSVNfRVJSKHNtbXUt
-PnBhZ2UxKSkKPj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gUFRSX0VSUihzbW11
-LT5wYWdlMSk7Cj4+Pj4gLcKgwqDCoCB9IGVsc2Ugewo+Pj4+IC3CoMKgwqDCoMKgwqDCoCBzbW11
-LT5wYWdlMSA9IHNtbXUtPmJhc2U7Cj4+Pj4gLcKgwqDCoCB9Cj4+Pj4gLQo+Pj4+IMKgwqDCoMKg
-wqDCoCAvKiBJbnRlcnJ1cHQgbGluZXMgKi8KPj4+PiDCoMKgIMKgwqDCoMKgwqAgaXJxID0gcGxh
-dGZvcm1fZ2V0X2lycV9ieW5hbWVfb3B0aW9uYWwocGRldiwgImNvbWJpbmVkIik7Cj4+Pj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmggYi9k
-cml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oCj4+Pj4gaW5kZXggOTZj
-MmU5NTY1ZTAwMjgyLi4wYzMwOTBjNjA4NDBjMjIgMTAwNjQ0Cj4+Pj4gLS0tIGEvZHJpdmVycy9p
-b21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuaAo+Pj4+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgKPj4+PiBAQCAtMTUyLDggKzE1Miw2IEBA
-Cj4+Pj4gwqDCoCAjZGVmaW5lIEFSTV9TTU1VX1BSSVFfSVJRX0NGRzHCoMKgwqDCoMKgwqDCoCAw
-eGQ4Cj4+Pj4gwqDCoCAjZGVmaW5lIEFSTV9TTU1VX1BSSVFfSVJRX0NGRzLCoMKgwqDCoMKgwqDC
-oCAweGRjCj4+Pj4gwqDCoCAtI2RlZmluZSBBUk1fU01NVV9SRUdfU1rCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIDB4ZTAwCj4+Pj4gLQo+Pj4+IMKgwqAgLyogQ29tbW9uIE1TSSBjb25maWcgZmllbGRz
-ICovCj4+Pj4gwqDCoCAjZGVmaW5lIE1TSV9DRkcwX0FERFJfTUFTS8KgwqDCoMKgwqDCoMKgIEdF
-Tk1BU0tfVUxMKDUxLCAyKQo+Pj4+IMKgwqAgI2RlZmluZSBNU0lfQ0ZHMl9TSMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgR0VOTUFTSyg1LCA0KQo+Pj4+IEBAIC01ODQsNyArNTgyLDYgQEAgc3RydWN0
-IGFybV9zbW11X3N0cnRhYl9jZmcgewo+Pj4+IMKgwqAgc3RydWN0IGFybV9zbW11X2RldmljZSB7
-Cj4+Pj4gwqDCoMKgwqDCoMKgIHN0cnVjdCBkZXZpY2XCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICpk
-ZXY7Cj4+Pj4gwqDCoMKgwqDCoMKgIHZvaWQgX19pb21lbcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-KmJhc2U7Cj4+Pj4gLcKgwqDCoCB2b2lkIF9faW9tZW3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgICpw
-YWdlMTsKPj4+PiDCoMKgIMKgICNkZWZpbmUgQVJNX1NNTVVfRkVBVF8yX0xWTF9TVFJUQULCoMKg
-wqAgKDEgPDwgMCkKPj4+PiDCoMKgICNkZWZpbmUgQVJNX1NNTVVfRkVBVF8yX0xWTF9DRFRBQsKg
-wqDCoCAoMSA8PCAxKQo+Pj4+Cj4+Pgo+Pj4gLgo+Pj4KPj4KPiAKPiAuCj4gCgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
++Isaac
+
+On 1/22/21 3:09 AM, Chuck Lever wrote:
+> 
+> 
+>> On Jan 18, 2021, at 1:00 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2021-01-18 16:18, Chuck Lever wrote:
+>>>> On Jan 12, 2021, at 9:38 AM, Will Deacon <will@kernel.org> wrote:
+>>>>
+>>>> [Expanding cc list to include DMA-IOMMU and intel IOMMU folks]
+>>>>
+>>>> On Fri, Jan 08, 2021 at 04:18:36PM -0500, Chuck Lever wrote:
+>>>>> Hi-
+>>>>>
+>>>>> [ Please cc: me on replies, I'm not currently subscribed to
+>>>>> iommu@lists ].
+>>>>>
+>>>>> I'm running NFS performance tests on InfiniBand using CX-3 Pro cards
+>>>>> at 56Gb/s. The test is iozone on an NFSv3/RDMA mount:
+>>>>>
+>>>>> /home/cel/bin/iozone -M -+u -i0 -i1 -s1g -r256k -t12 -I
+>>>>>
+>>>>> For those not familiar with the way storage protocols use RDMA, The
+>>>>> initiator/client sets up memory regions and the target/server uses
+>>>>> RDMA Read and Write to move data out of and into those regions. The
+>>>>> initiator/client uses only RDMA memory registration and invalidation
+>>>>> operations, and the target/server uses RDMA Read and Write.
+>>>>>
+>>>>> My NFS client is a two-socket 12-core x86_64 system with its I/O MMU
+>>>>> enabled using the kernel command line options "intel_iommu=on
+>>>>> iommu=strict".
+>>>>>
+>>>>> Recently I've noticed a significant (25-30%) loss in NFS throughput.
+>>>>> I was able to bisect on my client to the following commits.
+>>>>>
+>>>>> Here's 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
+>>>>> map_sg"). This is about normal for this test.
+>>>>>
+>>>>> 	Children see throughput for 12 initial writers 	= 4732581.09 kB/sec
+>>>>> 	Parent sees throughput for 12 initial writers 	= 4646810.21 kB/sec
+>>>>> 	Min throughput per process 			=  387764.34 kB/sec
+>>>>> 	Max throughput per process 			=  399655.47 kB/sec
+>>>>> 	Avg throughput per process 			=  394381.76 kB/sec
+>>>>> 	Min xfer 					= 1017344.00 kB
+>>>>> 	CPU Utilization: Wall time    2.671    CPU time    1.974    CPU utilization  73.89 %
+>>>>> 	Children see throughput for 12 rewriters 	= 4837741.94 kB/sec
+>>>>> 	Parent sees throughput for 12 rewriters 	= 4833509.35 kB/sec
+>>>>> 	Min throughput per process 			=  398983.72 kB/sec
+>>>>> 	Max throughput per process 			=  406199.66 kB/sec
+>>>>> 	Avg throughput per process 			=  403145.16 kB/sec
+>>>>> 	Min xfer 					= 1030656.00 kB
+>>>>> 	CPU utilization: Wall time    2.584    CPU time    1.959    CPU utilization  75.82 %
+>>>>> 	Children see throughput for 12 readers 		= 5921370.94 kB/sec
+>>>>> 	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
+>>>>> 	Min throughput per process 			=  491812.38 kB/sec
+>>>>> 	Max throughput per process 			=  494777.28 kB/sec
+>>>>> 	Avg throughput per process 			=  493447.58 kB/sec
+>>>>> 	Min xfer 					= 1042688.00 kB
+>>>>> 	CPU utilization: Wall time    2.122    CPU time    1.968    CPU utilization  92.75 %
+>>>>> 	Children see throughput for 12 re-readers 	= 5947985.69 kB/sec
+>>>>> 	Parent sees throughput for 12 re-readers 	= 5941348.51 kB/sec
+>>>>> 	Min throughput per process 			=  492805.81 kB/sec
+>>>>> 	Max throughput per process 			=  497280.19 kB/sec
+>>>>> 	Avg throughput per process 			=  495665.47 kB/sec
+>>>>> 	Min xfer 					= 1039360.00 kB
+>>>>> 	CPU utilization: Wall time    2.111    CPU time    1.968    CPU utilization  93.22 %
+>>>>>
+>>>>> Here's c062db039f40 ("iommu/vt-d: Update domain geometry in
+>>>>> iommu_ops.at(de)tach_dev"). It's losing some steam here.
+>>>>>
+>>>>> 	Children see throughput for 12 initial writers 	= 4342419.12 kB/sec
+>>>>> 	Parent sees throughput for 12 initial writers 	= 4310612.79 kB/sec
+>>>>> 	Min throughput per process 			=  359299.06 kB/sec
+>>>>> 	Max throughput per process 			=  363866.16 kB/sec
+>>>>> 	Avg throughput per process 			=  361868.26 kB/sec
+>>>>> 	Min xfer 					= 1035520.00 kB
+>>>>> 	CPU Utilization: Wall time    2.902    CPU time    1.951    CPU utilization  67.22 %
+>>>>> 	Children see throughput for 12 rewriters 	= 4408576.66 kB/sec
+>>>>> 	Parent sees throughput for 12 rewriters 	= 4404280.87 kB/sec
+>>>>> 	Min throughput per process 			=  364553.88 kB/sec
+>>>>> 	Max throughput per process 			=  370029.28 kB/sec
+>>>>> 	Avg throughput per process 			=  367381.39 kB/sec
+>>>>> 	Min xfer 					= 1033216.00 kB
+>>>>> 	CPU utilization: Wall time    2.836    CPU time    1.956    CPU utilization  68.97 %
+>>>>> 	Children see throughput for 12 readers 		= 5406879.47 kB/sec
+>>>>> 	Parent sees throughput for 12 readers 		= 5401862.78 kB/sec
+>>>>> 	Min throughput per process 			=  449583.03 kB/sec
+>>>>> 	Max throughput per process 			=  451761.69 kB/sec
+>>>>> 	Avg throughput per process 			=  450573.29 kB/sec
+>>>>> 	Min xfer 					= 1044224.00 kB
+>>>>> 	CPU utilization: Wall time    2.323    CPU time    1.977    CPU utilization  85.12 %
+>>>>> 	Children see throughput for 12 re-readers 	= 5410601.12 kB/sec
+>>>>> 	Parent sees throughput for 12 re-readers 	= 5403504.40 kB/sec
+>>>>> 	Min throughput per process 			=  449918.12 kB/sec
+>>>>> 	Max throughput per process 			=  452489.28 kB/sec
+>>>>> 	Avg throughput per process 			=  450883.43 kB/sec
+>>>>> 	Min xfer 					= 1043456.00 kB
+>>>>> 	CPU utilization: Wall time    2.321    CPU time    1.978    CPU utilization  85.21 %
+>>>>>
+>>>>> And here's c588072bba6b ("iommu/vt-d: Convert intel iommu driver to
+>>>>> the iommu ops"). Significant throughput loss.
+>>>>>
+>>>>> 	Children see throughput for 12 initial writers 	= 3812036.91 kB/sec
+>>>>> 	Parent sees throughput for 12 initial writers 	= 3753683.40 kB/sec
+>>>>> 	Min throughput per process 			=  313672.25 kB/sec
+>>>>> 	Max throughput per process 			=  321719.44 kB/sec
+>>>>> 	Avg throughput per process 			=  317669.74 kB/sec
+>>>>> 	Min xfer 					= 1022464.00 kB
+>>>>> 	CPU Utilization: Wall time    3.309    CPU time    1.986    CPU utilization  60.02 %
+>>>>> 	Children see throughput for 12 rewriters 	= 3786831.94 kB/sec
+>>>>> 	Parent sees throughput for 12 rewriters 	= 3783205.58 kB/sec
+>>>>> 	Min throughput per process 			=  313654.44 kB/sec
+>>>>> 	Max throughput per process 			=  317844.50 kB/sec
+>>>>> 	Avg throughput per process 			=  315569.33 kB/sec
+>>>>> 	Min xfer 					= 1035520.00 kB
+>>>>> 	CPU utilization: Wall time    3.302    CPU time    1.945    CPU utilization  58.90 %
+>>>>> 	Children see throughput for 12 readers 		= 4265828.28 kB/sec
+>>>>> 	Parent sees throughput for 12 readers 		= 4261844.88 kB/sec
+>>>>> 	Min throughput per process 			=  352305.00 kB/sec
+>>>>> 	Max throughput per process 			=  357726.22 kB/sec
+>>>>> 	Avg throughput per process 			=  355485.69 kB/sec
+>>>>> 	Min xfer 					= 1032960.00 kB
+>>>>> 	CPU utilization: Wall time    2.934    CPU time    1.942    CPU utilization  66.20 %
+>>>>> 	Children see throughput for 12 re-readers 	= 4220651.19 kB/sec
+>>>>> 	Parent sees throughput for 12 re-readers 	= 4216096.04 kB/sec
+>>>>> 	Min throughput per process 			=  348677.16 kB/sec
+>>>>> 	Max throughput per process 			=  353467.44 kB/sec
+>>>>> 	Avg throughput per process 			=  351720.93 kB/sec
+>>>>> 	Min xfer 					= 1035264.00 kB
+>>>>> 	CPU utilization: Wall time    2.969    CPU time    1.952    CPU utilization  65.74 %
+>>>>>
+>>>>> The regression appears to be 100% reproducible.
+>>> Any thoughts?
+>>> How about some tools to try or debugging advice? I don't know where to start.
+>>
+>> I'm not familiar enough with VT-D internals or Infiniband to have a clue why the middle commit makes any difference (the calculation itself is not on a fast path, so AFAICS the worst it could do is change your maximum DMA address size from 48/57 bits to 47/56, and that seems relatively benign).
+>>
+>> With the last commit, though, at least part of it is likely to be the unfortunate inevitable overhead of the internal indirection through the IOMMU API. There's a coincidental performance-related thread where we've already started pondering some ideas in that area[1] (note that Intel is the last one to the party here; AMD has been using this path for a while, and it's all that arm64 systems have ever known). I'm not sure if there's any difference in the strict invalidation behaviour between the IOMMU API calls and the old intel_dma_ops, but I suppose that might be worth quickly double-checking as well. I guess the main thing would be to do some profiling to see where time is being spent in iommu-dma and intel-iommu vs. just different parts of intel-iommu before, and whether anything in particular stands out beyond the extra call overhead currently incurred by iommu_{map,unmap}.
+> 
+> I did a function_graph trace of the above iozone test on a v5.10 NFS
+> client and again on v5.11-rc. There is a substantial timing difference
+> in dma_map_sg_attrs. Each excerpt below is for DMA-mapping a 120KB set
+> of pages that are part of an NFS/RDMA WRITE operation.
+> 
+> v5.10:
+> 
+> 1072.028308: funcgraph_entry:                   |  dma_map_sg_attrs() {
+> 1072.028308: funcgraph_entry:                   |    intel_map_sg() {
+> 1072.028309: funcgraph_entry:                   |      find_domain() {
+> 1072.028309: funcgraph_entry:        0.280 us   |        get_domain_info();
+> 1072.028310: funcgraph_exit:         0.930 us   |      }
+> 1072.028310: funcgraph_entry:        0.360 us   |      domain_get_iommu();
+> 1072.028311: funcgraph_entry:                   |      intel_alloc_iova() {
+> 1072.028311: funcgraph_entry:                   |        alloc_iova_fast() {
+> 1072.028311: funcgraph_entry:        0.375 us   |          _raw_spin_lock_irqsave();
+> 1072.028312: funcgraph_entry:        0.285 us   |          __lock_text_start();
+> 1072.028313: funcgraph_exit:         1.500 us   |        }
+> 1072.028313: funcgraph_exit:         2.052 us   |      }
+> 1072.028313: funcgraph_entry:                   |      domain_mapping() {
+> 1072.028313: funcgraph_entry:                   |        __domain_mapping() {
+> 1072.028314: funcgraph_entry:        0.350 us   |          pfn_to_dma_pte();
+> 1072.028315: funcgraph_entry:        0.942 us   |          domain_flush_cache();
+> 1072.028316: funcgraph_exit:         2.852 us   |        }
+> 1072.028316: funcgraph_entry:        0.275 us   |        iommu_flush_write_buffer();
+> 1072.028317: funcgraph_exit:         4.213 us   |      }
+> 1072.028318: funcgraph_exit:         9.392 us   |    }
+> 1072.028318: funcgraph_exit:       + 10.073 us  |  }
+> 1072.028323: xprtrdma_mr_map:      mr.id=115 nents=30 122880@0xe476ca03f1180000:0x18011105 (TO_DEVICE)
+> 1072.028323: xprtrdma_chunk_read:  task:63879@5 pos=148 122880@0xe476ca03f1180000:0x18011105 (more)
+> 
+> 
+> v5.11-rc:
+> 
+> 57.602990: funcgraph_entry:                   |  dma_map_sg_attrs() {
+> 57.602990: funcgraph_entry:                   |    iommu_dma_map_sg() {
+> 57.602990: funcgraph_entry:        0.285 us   |      iommu_get_dma_domain();
+> 57.602991: funcgraph_entry:        0.270 us   |      iommu_dma_deferred_attach();
+> 57.602991: funcgraph_entry:                   |      iommu_dma_sync_sg_for_device() {
+> 57.602992: funcgraph_entry:        0.268 us   |        dev_is_untrusted();
+> 57.602992: funcgraph_exit:         0.815 us   |      }
+> 57.602993: funcgraph_entry:        0.267 us   |      dev_is_untrusted();
+> 57.602993: funcgraph_entry:                   |      iommu_dma_alloc_iova() {
+> 57.602994: funcgraph_entry:                   |        alloc_iova_fast() {
+> 57.602994: funcgraph_entry:        0.260 us   |          _raw_spin_lock_irqsave();
+> 57.602995: funcgraph_entry:        0.293 us   |          _raw_spin_lock();
+> 57.602995: funcgraph_entry:        0.273 us   |          _raw_spin_unlock_irqrestore();
+> 57.602996: funcgraph_entry:        1.147 us   |          alloc_iova();
+> 57.602997: funcgraph_exit:         3.370 us   |        }
+> 57.602997: funcgraph_exit:         3.945 us   |      }
+> 57.602998: funcgraph_entry:        0.272 us   |      dma_info_to_prot();
+> 57.602998: funcgraph_entry:                   |      iommu_map_sg_atomic() {
+> 57.602998: funcgraph_entry:                   |        __iommu_map_sg() {
+> 57.602999: funcgraph_entry:        1.733 us   |          __iommu_map();
+> 57.603001: funcgraph_entry:        1.642 us   |          __iommu_map();
+> 57.603003: funcgraph_entry:        1.638 us   |          __iommu_map();
+> 57.603005: funcgraph_entry:        1.645 us   |          __iommu_map();
+> 57.603007: funcgraph_entry:        1.630 us   |          __iommu_map();
+> 57.603009: funcgraph_entry:        1.770 us   |          __iommu_map();
+> 57.603011: funcgraph_entry:        1.730 us   |          __iommu_map();
+> 57.603013: funcgraph_entry:        1.633 us   |          __iommu_map();
+> 57.603015: funcgraph_entry:        1.605 us   |          __iommu_map();
+> 57.603017: funcgraph_entry:        2.847 us   |          __iommu_map();
+> 57.603020: funcgraph_entry:        2.847 us   |          __iommu_map();
+> 57.603024: funcgraph_entry:        2.955 us   |          __iommu_map();
+> 57.603027: funcgraph_entry:        2.928 us   |          __iommu_map();
+> 57.603030: funcgraph_entry:        2.933 us   |          __iommu_map();
+> 57.603034: funcgraph_entry:        2.943 us   |          __iommu_map();
+> 57.603037: funcgraph_entry:        2.928 us   |          __iommu_map();
+> 57.603040: funcgraph_entry:        2.857 us   |          __iommu_map();
+> 57.603044: funcgraph_entry:        2.953 us   |          __iommu_map();
+> 57.603047: funcgraph_entry:        3.023 us   |          __iommu_map();
+> 57.603050: funcgraph_entry:        1.645 us   |          __iommu_map();
+> 57.603052: funcgraph_exit:       + 53.648 us  |        }
+> 57.603052: funcgraph_exit:       + 54.178 us  |      }
+> 57.603053: funcgraph_exit:       + 62.953 us  |    }
+> 57.603053: funcgraph_exit:       + 63.567 us  |  }
+> 57.603059: xprtrdma_mr_map:      task:60@5 mr.id=4 nents=30 122880@0xd79cc0e2f18c0000:0x00010501 (TO_DEVICE)
+> 57.603060: xprtrdma_chunk_read:  task:60@5 pos=148 122880@0xd79cc0e2f18c0000:0x00010501 (more)
+> 
+
+I kind of believe it's due to the indirect calls. This is also reported
+on ARM.
+
+https://lore.kernel.org/linux-iommu/1610376862-927-1-git-send-email-isaacm@codeaurora.org/
+
+Maybe we can try changing indirect calls to static ones to verify this
+problem.
+
+Best regards,
+baolu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
