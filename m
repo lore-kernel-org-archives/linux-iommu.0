@@ -2,81 +2,170 @@ Return-Path: <SRS0=J3Yr=GZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB2EC433E0
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 03:08:34 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281E6C433E0
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 06:38:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8D5123884
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 03:08:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8D5123884
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7B3D923122
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 06:38:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B3D923122
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6621D872BF;
-	Fri, 22 Jan 2021 03:08:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1D74F864AD;
+	Fri, 22 Jan 2021 06:38:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Sk6gP0Eei3gB; Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
+	with ESMTP id Qnk422j7RNa2; Fri, 22 Jan 2021 06:38:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4A73B81C82;
-	Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7AFE984707;
+	Fri, 22 Jan 2021 06:38:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31B20C08A1;
-	Fri, 22 Jan 2021 03:08:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 93B29C013A
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 51A33C088B;
+	Fri, 22 Jan 2021 06:38:51 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D61D6C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 06:38:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8201985C92
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:31 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id C163F22708
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 06:38:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pz3B1IrPPbUZ for <iommu@lists.linux-foundation.org>;
- Fri, 22 Jan 2021 03:08:30 +0000 (UTC)
+ with ESMTP id XwvDOMdi-M+H for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Jan 2021 06:38:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 24FDA81C82
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:08:30 +0000 (UTC)
-IronPort-SDR: Dh7npfYfuE+QOuvZCZ/KOUuXZKe5RRzNkOeImEBDkX3cVnkZontZPhXAbJBRwgqb4Sij5enWgD
- 5VAMk+RMo4hw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9871"; a="264203139"
-X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="264203139"
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0BE23226EA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 06:38:48 +0000 (UTC)
+IronPort-SDR: mZfEckLPQd1sl0KaPcuq7llCzzPbuvM6pTETVRzWgSMIs8Ai745KnOQNjLsoAWZMuprG/dbN/t
+ GXvGSZIVCZdA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9871"; a="198147985"
+X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="198147985"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jan 2021 19:08:29 -0800
-IronPort-SDR: 6CIrpZM9pDecYu2RuY0Xsy9icPJznw6ouOjEA9n1L+XeLhnAEYmCnlyJs7VtOJSbRruB17I5xj
- 6Z0BchqHlzqg==
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jan 2021 22:38:46 -0800
+IronPort-SDR: XCjM7svZT5UjKFliAlRUADgUlXAYMNUgeXZ7pw30B9gDf+IgZbzBcrubD3iq6Crl+cVd8jr4bp
+ 9XRr1Z/zLDGg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="467701308"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.28]) ([10.239.159.28])
- by fmsmga001.fm.intel.com with ESMTP; 21 Jan 2021 19:08:26 -0800
-Subject: Re: performance regression noted in v5.11-rc after c062db039f40
-To: Chuck Lever <chuck.lever@oracle.com>, Robin Murphy <robin.murphy@arm.com>
-References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
- <20210112143819.GA9689@willie-the-truck>
- <607648D8-BF0C-40D6-9B43-2359F45EE74C@oracle.com>
- <e83eed0d-82cd-c9be-cef1-5fe771de975f@arm.com>
- <3568C74A-A587-4464-8840-24F7A93ABA06@oracle.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <990a7c1e-e8c0-a6a8-f057-03b104cebca3@linux.intel.com>
-Date: Fri, 22 Jan 2021 11:00:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <3568C74A-A587-4464-8840-24F7A93ABA06@oracle.com>
+X-IronPort-AV: E=Sophos;i="5.79,365,1602572400"; d="scan'208";a="467739448"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by fmsmga001.fm.intel.com with ESMTP; 21 Jan 2021 22:38:46 -0800
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 21 Jan 2021 22:38:46 -0800
+Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 21 Jan 2021 22:38:45 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 21 Jan 2021 22:38:45 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 21 Jan 2021 22:38:45 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mRBGsFMuYSQIxP1/CVP9/Qyut0Tl5hpyq4wybYCu3Y8M2Bj6VTVqRIjTuKa6i0lJoLgTYZYF4qj0J5BCA4WA2hmxydOwVxijby225h443UPtAueml4x579rDQXZ0bsLuDL9s1rtD5XqMOT3dWpwS33FMtStGKxmpTMB89vdMla/+yzKJ20DwSSOqf7t8c7/q0HQ0K2g8QNL02eLQOwGjKNCIrt9bnEpCXYnXIuCtJXc05WSH62aKCLK0ecMyY9F+fxcUFfmb7F8D0Zsqvmi/S1ltFXKjTiMqGSuZVJ2jbyE7yF6dPIuFICUjl+M+ROdT5YT9qgaIrD+4m9KvFHi+hA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GDgt4n5/+ilY8W16SwF5Tpp96Aodex5UuN4ZGoScCfE=;
+ b=G0yLhxi6jgW4IfuRNJWPBoUG6rDHaPdhlQS6pXfrr69Zs88djYVBVsl1261xqHCJZEjz12HA1H38ylN8UxtXvFxBpi2E2P5VcjMl+mzJB14wJpU825v9GkNQVYbQFyr6yXZpxn7otwzE9k8Aiayl/qLRAAgyP0zkS8P97mfN3FEKJ6cZcJA2PDHMfxAXhAx3Wclw9CUekj/uwrn/EofIK266UuBZpuvd2Dh853XFDg6j76qRcEi/c+aa2Ui/xoAozc0KFbK3chgq6hVtStFqRdz3dmwTlzRFs8+jS/OVzc9LOddrZHM+JVu8azKCa7eA1tLLy0wUbeRmOx0wY3jtCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GDgt4n5/+ilY8W16SwF5Tpp96Aodex5UuN4ZGoScCfE=;
+ b=FXWDsx9bPoJn6S45qZvg8GBjOMY560Wn4ayfTqAi1Okf1q90xGIxENWglPV4U/9hBe0gN2mNJJUldtUrqA6I/20zl7l35blWTMOqZRTQgfOOJzBK20njzDuGEIexK2sFza+aurOpiJ/CgWwNXv+5TqLy1hqf1InlvivvrksAVX0=
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
+ by MWHPR1101MB2077.namprd11.prod.outlook.com (2603:10b6:301:4d::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Fri, 22 Jan
+ 2021 06:38:43 +0000
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::f1b4:bace:1e44:4a46]) by MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::f1b4:bace:1e44:4a46%6]) with mapi id 15.20.3784.015; Fri, 22 Jan 2021
+ 06:38:42 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>
+Subject: RE: [PATCH 1/3] iommu/vt-d: Add rate limited information when PRQ
+ overflows
+Thread-Topic: [PATCH 1/3] iommu/vt-d: Add rate limited information when PRQ
+ overflows
+Thread-Index: AQHW75g+RLZFpZHZgU2TQsFksxSAmqozMHIA
+Date: Fri, 22 Jan 2021 06:38:42 +0000
+Message-ID: <MWHPR11MB18862D2EA5BD432BF22D99A48CA09@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <20210121014505.1659166-1-baolu.lu@linux.intel.com>
+ <20210121014505.1659166-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20210121014505.1659166-2-baolu.lu@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: isaacm@codeaurora.org, linux-rdma <linux-rdma@vger.kernel.org>,
- Will Deacon <will@kernel.org>, "murphyt7@tcd.ie" <murphyt7@tcd.ie>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "logang@deltatee.com" <logang@deltatee.com>, Christoph Hellwig <hch@lst.de>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [101.88.226.48]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ea75dae0-6e3d-49b4-6baf-08d8bea05c76
+x-ms-traffictypediagnostic: MWHPR1101MB2077:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR1101MB207700374AAE8B61C0989E258CA09@MWHPR1101MB2077.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: k5cLuwDPpX9zfyKIns0LHltZ7WzVS6MunumU7aoM/9BpYUispndGHOKWnzMBC2gcxHF9hkwagoz9p+jFU5HE5JYPhTDNIIECPEdEUYGsUzO+Zk4rAU22YnOpAv6pqTc28uSUrZ8xx1ewIeduT2XbTgnIlM/cJwpXLmxYV+6tSytTW5js6Dnu31Bk14I2bC4y8OfO7+WeYZQKnMhAt4j5/xGi3fgFVlgn2uS+T+Q7qb4nDZ3qCsyk99hI/Zy27ZqtqE2oZXgorEaH15fxahV+/hiyk3kvfHVZNb+x4SvJRcCMig8kPZbomtjzh9vUqQxA1G7V9DwlumcC10H9l1jUYpoofQlbTsIhbvOKTrQc9E85GmvWyI18mkdb1RIjm/fvc1YDXhOZWRUJWbZpOTP02Ph/Ark19C3FlsNZSYGggqAIeK4E0d349On/rGn0WqX9
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(39860400002)(366004)(136003)(346002)(396003)(376002)(7696005)(110136005)(316002)(71200400001)(4326008)(5660300002)(55016002)(8936002)(9686003)(54906003)(33656002)(186003)(478600001)(66946007)(76116006)(86362001)(52536014)(26005)(66446008)(6506007)(66556008)(8676002)(83380400001)(64756008)(66476007)(2906002)(20673002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?2xfOuVHqEFHpjvc48nPm20koSqQud7U29V2c7c8b3mNpeEbdMY8nTZRAf1qz?=
+ =?us-ascii?Q?fJLiUkvZEq6McXtMZKf6Nra5Qer2j4/AiOpa7gv8u+5PD/2SZSNvMY84S/a2?=
+ =?us-ascii?Q?mp89eeKgxtIWUwdT48PRauk0ieGpp6u74NiP4xJchO77Z1IfS7sYk+6uQ+ye?=
+ =?us-ascii?Q?DD+ajzn4jFYM2aJFD7ce6auGY8/cFioewolQE1LtROChh8jUG+xjqVw8+kNV?=
+ =?us-ascii?Q?7auorduj+O5Km+Rqu8f70RIKaMaSg1nwyASUNQi9k1I42QDdKC7dy0rEQXtq?=
+ =?us-ascii?Q?AjpiAcEEdrvhI3BwCo+ofSmTnS13xHGtX6SgWPZExeaqXJFGwo9odwWbLOyA?=
+ =?us-ascii?Q?0XZxW9UCzegRB0DoPwRXvQ6hvF1sGXGNUbGB4q6ezYzKUhXAcMPY4GVxc77j?=
+ =?us-ascii?Q?pIYPe7LclcyFT0vT/8S8lUslX1IEbFLY6SMCfcPELH+6/3r/45vBhpjPEY0s?=
+ =?us-ascii?Q?m0VizmTjrDtZNbECDtrosf1UV6ZxmcogvfNLD+h+sXHeYh2wmd/V0FlUjQvM?=
+ =?us-ascii?Q?wCCGcgwRIJ18dmh5+1LiresD0iyE12kQ74uiKGjOxRjPYXqh8rCuj+v2YXs0?=
+ =?us-ascii?Q?iRD1czagaSC/fct+/V0ClJzbkXhOfbyELjUjVUvYBV821jSbR3M4S29JGrH/?=
+ =?us-ascii?Q?HrIJyplYgZocDowjKplYhnyRjr7R936RQB17lYU+e51AnInDqcXqs8BOGtv+?=
+ =?us-ascii?Q?ophXlyOPz80kyOfgD++4waSUwaVrSWmmMRpc4iIzMaLgPp+oaFOj554h+TJD?=
+ =?us-ascii?Q?XPobphhLoQkgHa+f4hRQIDo01K+W1uqdtJ3kxMWlG+JtVCuyMBooV6CpcWD5?=
+ =?us-ascii?Q?kXRqmyU2cs5T0M0PAWUSsdB/IRDLpHlkQXT2IF2PYuqJWaMaR31kWTyxvaIF?=
+ =?us-ascii?Q?2zh6E2eE4kKZN3XRVf3jkGo7kGWXvqTEGFACRmowRfg4C6ET57x9J0+/9w7H?=
+ =?us-ascii?Q?ptp88Cl9g1HzV3WRTFbn10UdWxGlAnn1Ei0D1hI97MU=3D?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea75dae0-6e3d-49b4-6baf-08d8bea05c76
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2021 06:38:42.7644 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lIQEO12fQp4NzBnHr7ulMwsTRYmdgXqkc9UqVOvJv60s58VidhQtCLSWw/exlmrjPh4ZAOQVxwZjKJDbJ2IIUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2077
+X-OriginatorOrg: intel.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,242 +178,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-+Isaac
-
-On 1/22/21 3:09 AM, Chuck Lever wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Thursday, January 21, 2021 9:45 AM
 > 
+> So that the uses could get chances to know what happened.
 > 
->> On Jan 18, 2021, at 1:00 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2021-01-18 16:18, Chuck Lever wrote:
->>>> On Jan 12, 2021, at 9:38 AM, Will Deacon <will@kernel.org> wrote:
->>>>
->>>> [Expanding cc list to include DMA-IOMMU and intel IOMMU folks]
->>>>
->>>> On Fri, Jan 08, 2021 at 04:18:36PM -0500, Chuck Lever wrote:
->>>>> Hi-
->>>>>
->>>>> [ Please cc: me on replies, I'm not currently subscribed to
->>>>> iommu@lists ].
->>>>>
->>>>> I'm running NFS performance tests on InfiniBand using CX-3 Pro cards
->>>>> at 56Gb/s. The test is iozone on an NFSv3/RDMA mount:
->>>>>
->>>>> /home/cel/bin/iozone -M -+u -i0 -i1 -s1g -r256k -t12 -I
->>>>>
->>>>> For those not familiar with the way storage protocols use RDMA, The
->>>>> initiator/client sets up memory regions and the target/server uses
->>>>> RDMA Read and Write to move data out of and into those regions. The
->>>>> initiator/client uses only RDMA memory registration and invalidation
->>>>> operations, and the target/server uses RDMA Read and Write.
->>>>>
->>>>> My NFS client is a two-socket 12-core x86_64 system with its I/O MMU
->>>>> enabled using the kernel command line options "intel_iommu=on
->>>>> iommu=strict".
->>>>>
->>>>> Recently I've noticed a significant (25-30%) loss in NFS throughput.
->>>>> I was able to bisect on my client to the following commits.
->>>>>
->>>>> Here's 65f746e8285f ("iommu: Add quirk for Intel graphic devices in
->>>>> map_sg"). This is about normal for this test.
->>>>>
->>>>> 	Children see throughput for 12 initial writers 	= 4732581.09 kB/sec
->>>>> 	Parent sees throughput for 12 initial writers 	= 4646810.21 kB/sec
->>>>> 	Min throughput per process 			=  387764.34 kB/sec
->>>>> 	Max throughput per process 			=  399655.47 kB/sec
->>>>> 	Avg throughput per process 			=  394381.76 kB/sec
->>>>> 	Min xfer 					= 1017344.00 kB
->>>>> 	CPU Utilization: Wall time    2.671    CPU time    1.974    CPU utilization  73.89 %
->>>>> 	Children see throughput for 12 rewriters 	= 4837741.94 kB/sec
->>>>> 	Parent sees throughput for 12 rewriters 	= 4833509.35 kB/sec
->>>>> 	Min throughput per process 			=  398983.72 kB/sec
->>>>> 	Max throughput per process 			=  406199.66 kB/sec
->>>>> 	Avg throughput per process 			=  403145.16 kB/sec
->>>>> 	Min xfer 					= 1030656.00 kB
->>>>> 	CPU utilization: Wall time    2.584    CPU time    1.959    CPU utilization  75.82 %
->>>>> 	Children see throughput for 12 readers 		= 5921370.94 kB/sec
->>>>> 	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
->>>>> 	Min throughput per process 			=  491812.38 kB/sec
->>>>> 	Max throughput per process 			=  494777.28 kB/sec
->>>>> 	Avg throughput per process 			=  493447.58 kB/sec
->>>>> 	Min xfer 					= 1042688.00 kB
->>>>> 	CPU utilization: Wall time    2.122    CPU time    1.968    CPU utilization  92.75 %
->>>>> 	Children see throughput for 12 re-readers 	= 5947985.69 kB/sec
->>>>> 	Parent sees throughput for 12 re-readers 	= 5941348.51 kB/sec
->>>>> 	Min throughput per process 			=  492805.81 kB/sec
->>>>> 	Max throughput per process 			=  497280.19 kB/sec
->>>>> 	Avg throughput per process 			=  495665.47 kB/sec
->>>>> 	Min xfer 					= 1039360.00 kB
->>>>> 	CPU utilization: Wall time    2.111    CPU time    1.968    CPU utilization  93.22 %
->>>>>
->>>>> Here's c062db039f40 ("iommu/vt-d: Update domain geometry in
->>>>> iommu_ops.at(de)tach_dev"). It's losing some steam here.
->>>>>
->>>>> 	Children see throughput for 12 initial writers 	= 4342419.12 kB/sec
->>>>> 	Parent sees throughput for 12 initial writers 	= 4310612.79 kB/sec
->>>>> 	Min throughput per process 			=  359299.06 kB/sec
->>>>> 	Max throughput per process 			=  363866.16 kB/sec
->>>>> 	Avg throughput per process 			=  361868.26 kB/sec
->>>>> 	Min xfer 					= 1035520.00 kB
->>>>> 	CPU Utilization: Wall time    2.902    CPU time    1.951    CPU utilization  67.22 %
->>>>> 	Children see throughput for 12 rewriters 	= 4408576.66 kB/sec
->>>>> 	Parent sees throughput for 12 rewriters 	= 4404280.87 kB/sec
->>>>> 	Min throughput per process 			=  364553.88 kB/sec
->>>>> 	Max throughput per process 			=  370029.28 kB/sec
->>>>> 	Avg throughput per process 			=  367381.39 kB/sec
->>>>> 	Min xfer 					= 1033216.00 kB
->>>>> 	CPU utilization: Wall time    2.836    CPU time    1.956    CPU utilization  68.97 %
->>>>> 	Children see throughput for 12 readers 		= 5406879.47 kB/sec
->>>>> 	Parent sees throughput for 12 readers 		= 5401862.78 kB/sec
->>>>> 	Min throughput per process 			=  449583.03 kB/sec
->>>>> 	Max throughput per process 			=  451761.69 kB/sec
->>>>> 	Avg throughput per process 			=  450573.29 kB/sec
->>>>> 	Min xfer 					= 1044224.00 kB
->>>>> 	CPU utilization: Wall time    2.323    CPU time    1.977    CPU utilization  85.12 %
->>>>> 	Children see throughput for 12 re-readers 	= 5410601.12 kB/sec
->>>>> 	Parent sees throughput for 12 re-readers 	= 5403504.40 kB/sec
->>>>> 	Min throughput per process 			=  449918.12 kB/sec
->>>>> 	Max throughput per process 			=  452489.28 kB/sec
->>>>> 	Avg throughput per process 			=  450883.43 kB/sec
->>>>> 	Min xfer 					= 1043456.00 kB
->>>>> 	CPU utilization: Wall time    2.321    CPU time    1.978    CPU utilization  85.21 %
->>>>>
->>>>> And here's c588072bba6b ("iommu/vt-d: Convert intel iommu driver to
->>>>> the iommu ops"). Significant throughput loss.
->>>>>
->>>>> 	Children see throughput for 12 initial writers 	= 3812036.91 kB/sec
->>>>> 	Parent sees throughput for 12 initial writers 	= 3753683.40 kB/sec
->>>>> 	Min throughput per process 			=  313672.25 kB/sec
->>>>> 	Max throughput per process 			=  321719.44 kB/sec
->>>>> 	Avg throughput per process 			=  317669.74 kB/sec
->>>>> 	Min xfer 					= 1022464.00 kB
->>>>> 	CPU Utilization: Wall time    3.309    CPU time    1.986    CPU utilization  60.02 %
->>>>> 	Children see throughput for 12 rewriters 	= 3786831.94 kB/sec
->>>>> 	Parent sees throughput for 12 rewriters 	= 3783205.58 kB/sec
->>>>> 	Min throughput per process 			=  313654.44 kB/sec
->>>>> 	Max throughput per process 			=  317844.50 kB/sec
->>>>> 	Avg throughput per process 			=  315569.33 kB/sec
->>>>> 	Min xfer 					= 1035520.00 kB
->>>>> 	CPU utilization: Wall time    3.302    CPU time    1.945    CPU utilization  58.90 %
->>>>> 	Children see throughput for 12 readers 		= 4265828.28 kB/sec
->>>>> 	Parent sees throughput for 12 readers 		= 4261844.88 kB/sec
->>>>> 	Min throughput per process 			=  352305.00 kB/sec
->>>>> 	Max throughput per process 			=  357726.22 kB/sec
->>>>> 	Avg throughput per process 			=  355485.69 kB/sec
->>>>> 	Min xfer 					= 1032960.00 kB
->>>>> 	CPU utilization: Wall time    2.934    CPU time    1.942    CPU utilization  66.20 %
->>>>> 	Children see throughput for 12 re-readers 	= 4220651.19 kB/sec
->>>>> 	Parent sees throughput for 12 re-readers 	= 4216096.04 kB/sec
->>>>> 	Min throughput per process 			=  348677.16 kB/sec
->>>>> 	Max throughput per process 			=  353467.44 kB/sec
->>>>> 	Avg throughput per process 			=  351720.93 kB/sec
->>>>> 	Min xfer 					= 1035264.00 kB
->>>>> 	CPU utilization: Wall time    2.969    CPU time    1.952    CPU utilization  65.74 %
->>>>>
->>>>> The regression appears to be 100% reproducible.
->>> Any thoughts?
->>> How about some tools to try or debugging advice? I don't know where to start.
->>
->> I'm not familiar enough with VT-D internals or Infiniband to have a clue why the middle commit makes any difference (the calculation itself is not on a fast path, so AFAICS the worst it could do is change your maximum DMA address size from 48/57 bits to 47/56, and that seems relatively benign).
->>
->> With the last commit, though, at least part of it is likely to be the unfortunate inevitable overhead of the internal indirection through the IOMMU API. There's a coincidental performance-related thread where we've already started pondering some ideas in that area[1] (note that Intel is the last one to the party here; AMD has been using this path for a while, and it's all that arm64 systems have ever known). I'm not sure if there's any difference in the strict invalidation behaviour between the IOMMU API calls and the old intel_dma_ops, but I suppose that might be worth quickly double-checking as well. I guess the main thing would be to do some profiling to see where time is being spent in iommu-dma and intel-iommu vs. just different parts of intel-iommu before, and whether anything in particular stands out beyond the extra call overhead currently incurred by iommu_{map,unmap}.
+> Suggested-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/svm.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
 > 
-> I did a function_graph trace of the above iozone test on a v5.10 NFS
-> client and again on v5.11-rc. There is a substantial timing difference
-> in dma_map_sg_attrs. Each excerpt below is for DMA-mapping a 120KB set
-> of pages that are part of an NFS/RDMA WRITE operation.
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 033b25886e57..f49fe715477b 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -895,6 +895,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>  	struct intel_iommu *iommu = d;
+>  	struct intel_svm *svm = NULL;
+>  	int head, tail, handled = 0;
+> +	struct page_req_dsc *req;
 > 
-> v5.10:
-> 
-> 1072.028308: funcgraph_entry:                   |  dma_map_sg_attrs() {
-> 1072.028308: funcgraph_entry:                   |    intel_map_sg() {
-> 1072.028309: funcgraph_entry:                   |      find_domain() {
-> 1072.028309: funcgraph_entry:        0.280 us   |        get_domain_info();
-> 1072.028310: funcgraph_exit:         0.930 us   |      }
-> 1072.028310: funcgraph_entry:        0.360 us   |      domain_get_iommu();
-> 1072.028311: funcgraph_entry:                   |      intel_alloc_iova() {
-> 1072.028311: funcgraph_entry:                   |        alloc_iova_fast() {
-> 1072.028311: funcgraph_entry:        0.375 us   |          _raw_spin_lock_irqsave();
-> 1072.028312: funcgraph_entry:        0.285 us   |          __lock_text_start();
-> 1072.028313: funcgraph_exit:         1.500 us   |        }
-> 1072.028313: funcgraph_exit:         2.052 us   |      }
-> 1072.028313: funcgraph_entry:                   |      domain_mapping() {
-> 1072.028313: funcgraph_entry:                   |        __domain_mapping() {
-> 1072.028314: funcgraph_entry:        0.350 us   |          pfn_to_dma_pte();
-> 1072.028315: funcgraph_entry:        0.942 us   |          domain_flush_cache();
-> 1072.028316: funcgraph_exit:         2.852 us   |        }
-> 1072.028316: funcgraph_entry:        0.275 us   |        iommu_flush_write_buffer();
-> 1072.028317: funcgraph_exit:         4.213 us   |      }
-> 1072.028318: funcgraph_exit:         9.392 us   |    }
-> 1072.028318: funcgraph_exit:       + 10.073 us  |  }
-> 1072.028323: xprtrdma_mr_map:      mr.id=115 nents=30 122880@0xe476ca03f1180000:0x18011105 (TO_DEVICE)
-> 1072.028323: xprtrdma_chunk_read:  task:63879@5 pos=148 122880@0xe476ca03f1180000:0x18011105 (more)
-> 
-> 
-> v5.11-rc:
-> 
-> 57.602990: funcgraph_entry:                   |  dma_map_sg_attrs() {
-> 57.602990: funcgraph_entry:                   |    iommu_dma_map_sg() {
-> 57.602990: funcgraph_entry:        0.285 us   |      iommu_get_dma_domain();
-> 57.602991: funcgraph_entry:        0.270 us   |      iommu_dma_deferred_attach();
-> 57.602991: funcgraph_entry:                   |      iommu_dma_sync_sg_for_device() {
-> 57.602992: funcgraph_entry:        0.268 us   |        dev_is_untrusted();
-> 57.602992: funcgraph_exit:         0.815 us   |      }
-> 57.602993: funcgraph_entry:        0.267 us   |      dev_is_untrusted();
-> 57.602993: funcgraph_entry:                   |      iommu_dma_alloc_iova() {
-> 57.602994: funcgraph_entry:                   |        alloc_iova_fast() {
-> 57.602994: funcgraph_entry:        0.260 us   |          _raw_spin_lock_irqsave();
-> 57.602995: funcgraph_entry:        0.293 us   |          _raw_spin_lock();
-> 57.602995: funcgraph_entry:        0.273 us   |          _raw_spin_unlock_irqrestore();
-> 57.602996: funcgraph_entry:        1.147 us   |          alloc_iova();
-> 57.602997: funcgraph_exit:         3.370 us   |        }
-> 57.602997: funcgraph_exit:         3.945 us   |      }
-> 57.602998: funcgraph_entry:        0.272 us   |      dma_info_to_prot();
-> 57.602998: funcgraph_entry:                   |      iommu_map_sg_atomic() {
-> 57.602998: funcgraph_entry:                   |        __iommu_map_sg() {
-> 57.602999: funcgraph_entry:        1.733 us   |          __iommu_map();
-> 57.603001: funcgraph_entry:        1.642 us   |          __iommu_map();
-> 57.603003: funcgraph_entry:        1.638 us   |          __iommu_map();
-> 57.603005: funcgraph_entry:        1.645 us   |          __iommu_map();
-> 57.603007: funcgraph_entry:        1.630 us   |          __iommu_map();
-> 57.603009: funcgraph_entry:        1.770 us   |          __iommu_map();
-> 57.603011: funcgraph_entry:        1.730 us   |          __iommu_map();
-> 57.603013: funcgraph_entry:        1.633 us   |          __iommu_map();
-> 57.603015: funcgraph_entry:        1.605 us   |          __iommu_map();
-> 57.603017: funcgraph_entry:        2.847 us   |          __iommu_map();
-> 57.603020: funcgraph_entry:        2.847 us   |          __iommu_map();
-> 57.603024: funcgraph_entry:        2.955 us   |          __iommu_map();
-> 57.603027: funcgraph_entry:        2.928 us   |          __iommu_map();
-> 57.603030: funcgraph_entry:        2.933 us   |          __iommu_map();
-> 57.603034: funcgraph_entry:        2.943 us   |          __iommu_map();
-> 57.603037: funcgraph_entry:        2.928 us   |          __iommu_map();
-> 57.603040: funcgraph_entry:        2.857 us   |          __iommu_map();
-> 57.603044: funcgraph_entry:        2.953 us   |          __iommu_map();
-> 57.603047: funcgraph_entry:        3.023 us   |          __iommu_map();
-> 57.603050: funcgraph_entry:        1.645 us   |          __iommu_map();
-> 57.603052: funcgraph_exit:       + 53.648 us  |        }
-> 57.603052: funcgraph_exit:       + 54.178 us  |      }
-> 57.603053: funcgraph_exit:       + 62.953 us  |    }
-> 57.603053: funcgraph_exit:       + 63.567 us  |  }
-> 57.603059: xprtrdma_mr_map:      task:60@5 mr.id=4 nents=30 122880@0xd79cc0e2f18c0000:0x00010501 (TO_DEVICE)
-> 57.603060: xprtrdma_chunk_read:  task:60@5 pos=148 122880@0xd79cc0e2f18c0000:0x00010501 (more)
+>  	/* Clear PPR bit before reading head/tail registers, to
+>  	 * ensure that we get a new interrupt if needed. */
+> @@ -904,7 +905,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>  	head = dmar_readq(iommu->reg + DMAR_PQH_REG) &
+> PRQ_RING_MASK;
+>  	while (head != tail) {
+>  		struct vm_area_struct *vma;
+> -		struct page_req_dsc *req;
+>  		struct qi_desc resp;
+>  		int result;
+>  		vm_fault_t ret;
+> @@ -1042,8 +1042,14 @@ static irqreturn_t prq_event_thread(int irq, void
+> *d)
+>  	 * Clear the page request overflow bit and wake up all threads that
+>  	 * are waiting for the completion of this handling.
+>  	 */
+> -	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO)
+> +	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO) {
+> +		head = dmar_readq(iommu->reg + DMAR_PQH_REG) &
+> PRQ_RING_MASK;
+> +		req = &iommu->prq[head / sizeof(*req)];
+> +		pr_warn_ratelimited("IOMMU: %s: Page request overflow:
+> HEAD: %08llx %08llx",
+> +				    iommu->name, ((unsigned long long
+> *)req)[0],
+> +				    ((unsigned long long *)req)[1]);
+>  		writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
+> +	}
 > 
 
-I kind of believe it's due to the indirect calls. This is also reported
-on ARM.
+Not about rate limiting but I think we may have a problem in above
+logic. It is incorrect to always clear PRO when it's set w/o first checking
+whether the overflow condition has been cleared. This code assumes
+that if an overflow condition occurs it must have been cleared by earlier
+loop when hitting this check. However since this code runs in a threaded 
+context, the overflow condition could occur even after you reset the head 
+to the tail (under some extreme condition). To be sane I think we'd better
+read both head/tail again after seeing a pending PRO here and only clear 
+PRO when it becomes a false indicator based on latest head/tail.
 
-https://lore.kernel.org/linux-iommu/1610376862-927-1-git-send-email-isaacm@codeaurora.org/
-
-Maybe we can try changing indirect calls to static ones to verify this
-problem.
-
-Best regards,
-baolu
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
