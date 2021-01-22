@@ -2,92 +2,74 @@ Return-Path: <SRS0=J3Yr=GZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0FFC433E0
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 13:49:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E34A7C433E0
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 13:49:34 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C693239EF
-	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 13:49:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C693239EF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8918123A54
+	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 13:49:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8918123A54
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 07F628738C;
-	Fri, 22 Jan 2021 13:49:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JpjY03mq0xl6; Fri, 22 Jan 2021 13:49:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 38EEA87383;
-	Fri, 22 Jan 2021 13:49:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B0D5C08A1;
-	Fri, 22 Jan 2021 13:49:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 61845C013A
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:48:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5511786AC9
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:48:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 20878867C6;
+	Fri, 22 Jan 2021 13:49:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5JgkVFaHHrTH; Fri, 22 Jan 2021 13:49:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AF3DE864B3;
+	Fri, 22 Jan 2021 13:49:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 783C2C08A1;
+	Fri, 22 Jan 2021 13:49:33 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BBA93C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:49:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id B543E87390
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:49:31 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0zXKtdmx2ysI for <iommu@lists.linux-foundation.org>;
- Fri, 22 Jan 2021 13:48:58 +0000 (UTC)
+ with ESMTP id DjCtr0Q06RK9 for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Jan 2021 13:49:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com
- [209.85.128.42])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2C67885E91
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:48:58 +0000 (UTC)
-Received: by mail-wm1-f42.google.com with SMTP id c128so4389777wme.2
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 05:48:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=Ad1m73rJey7g7/OzCG7tonlhIcacIr2xTxX96uhFg44=;
- b=x2j8xXDbNuJdzg8bGiEMRcyd8Bo68lGFww74aN53kJmrZABHQquOKvZY66xjbjrht3
- V5tFbiq16HHWS+seCjMfX5fM78WxY5PCvk9jHPDRKPvBYfwY6Q2zwgq/74RlOF3Bt3cJ
- wWS17FdzdbOSphZ6181FlmwECIxeJJbqrX6cXeIE/Uww/WqKL5Wz/63ZWW8nku5rdNo0
- Y7jbqOtvarTKV+NJ92cQjbi3y3+g35xFdZcwsj4/WIbvemlq4mDoAAl4mMA0DMHhfo2W
- QiaxGv5P3TyHpD73HmjG1rejsmtUzjY+g65AVvUzXquCJylYcmJJv98MpDsK4L0TIHb9
- Dtog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=Ad1m73rJey7g7/OzCG7tonlhIcacIr2xTxX96uhFg44=;
- b=HsSJaWQZa1DMNJfykUDgJg0RCl8Hlnbk689HaWXf/454TaEg2317VqazX0feV2/Opz
- FhOFBvE9B3IXy0BasRvS1LcvRjjIzRwR4/rrVQ4A4uGCSxSinNq0p+D3Sy1Ohx+GZoPk
- NizfXGfMuQTpNFbEw69oOWFGbj9673sHhGCFZNXiQcwrzeIpOR22FHWaHz/agUN6mIq8
- 84WhCYxLYH2PPTCLl/LetlAmPIPp4Vct/q1N/ovCLHsS8eBtzW4zLSdBWYiBFVRFQICv
- zSp5O9uTkpdy5BgDLR4k35cvYP+y2BbM0MyVfUJqa33NS11nTrytwf+nMi623dEew4PS
- Mtrg==
-X-Gm-Message-State: AOAM5337lDoRiYUXgR9PtjV0vaax64hrHRGT7kk/bxHxR5mPLt937+FJ
- Ed+4HgSsSoyCVwuzU0RuPSLNYA==
-X-Google-Smtp-Source: ABdhPJyn7rhHjQerd2xa5zy4wGkgvFe5+cz7Crv3gRKhJM/jyeoZgsYd7YilM/k+Qw0rBoUOwYQbSw==
-X-Received: by 2002:a1c:2ed2:: with SMTP id u201mr4051575wmu.79.1611323336689; 
- Fri, 22 Jan 2021 05:48:56 -0800 (PST)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id z15sm12198498wrv.67.2021.01.22.05.48.54
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 Jan 2021 05:48:55 -0800 (PST)
-Date: Fri, 22 Jan 2021 14:48:35 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Remove the page 1 fixup
-Message-ID: <YArXswMSf5sCNe2Q@myrica>
-References: <08d9bda570bb5681f11a2f250a31be9ef763b8c5.1611238182.git.robin.murphy@arm.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 217E48738E
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 13:49:31 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 435A4239EF;
+ Fri, 22 Jan 2021 13:49:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1611323370;
+ bh=aonPtlKc+imf2p76OJ+y0raR83KCnlf4NVTK4RxYrF4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=MvvIfrovzPQMpaSucRRasxDXLEh7ES7qe42TxwsiyUVDkZ6hSrngr8FbKlt/MYYGx
+ SN99scnnaGtO3DzcngDk6Kf1mQgBeT5+V2ge0Ddc1E/Lv3nWu65cKi6XNiYjq2ezBA
+ uCueh72QTOHmTmxhVYcX4RewxNox8ffLUoxSyZ+nkxvaFWBamIQTKVz4+DUBjEAvqf
+ DFpBhnrqDYxqcuAJgMknxCN6fXHHZejiGhwn9fdUbuKNdYgDvp+8ArgYr5zDCijabr
+ +cwBexE6v6BSslxSgZ+Aw3LnGCnI+QoVa+EqzA21cDo94KjhuXApPkx8sGbAY6kn8x
+ 3ElbZcz/tZoFw==
+Date: Fri, 22 Jan 2021 13:49:26 +0000
+From: Will Deacon <will@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH 1/3] iommu/arm-smmu-v3: Split arm_smmu_tlb_inv_range()
+Message-ID: <20210122134925.GA24678@willie-the-truck>
+References: <20210122115257.2502526-1-jean-philippe@linaro.org>
+ <20210122115257.2502526-2-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <08d9bda570bb5681f11a2f250a31be9ef763b8c5.1611238182.git.robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux-foundation.org,
+In-Reply-To: <20210122115257.2502526-2-jean-philippe@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: vivek.gautam@arm.com, iommu@lists.linux-foundation.org,
+ zhangfei.gao@linaro.org, robin.murphy@arm.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -106,153 +88,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jan 21, 2021 at 02:09:42PM +0000, Robin Murphy wrote:
-> Since we now keep track of page 1 via a separate pointer that already
-> encapsulates aliasing to page 0 as necessary, we can remove the clunky
-> fixup routine and simply use the relevant bases directly. The current
-> architecture spec (IHI0070D.a) defines SMMU_{EVENTQ,PRIQ}_{PROD,CONS} as
-> offsets relative to page 1, so the cleanup represents a little bit of
-> convergence as well as just lines of code saved.
+On Fri, Jan 22, 2021 at 12:52:56PM +0100, Jean-Philippe Brucker wrote:
+> Extract some of the cmd initialization and the ATC invalidation from
+> arm_smmu_tlb_inv_range(), to allow an MMU notifier to invalidate a VA
+> range by ASID.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 42 ++++++++-------------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  8 ++--
->  2 files changed, 20 insertions(+), 30 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 62 ++++++++++++---------
+>  1 file changed, 35 insertions(+), 27 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 5a3492116bbc..15f4eea25148 100644
+> index 740a3d487591..a27b074d5c0c 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -90,15 +90,6 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
->  	{ 0, NULL},
->  };
->  
-> -static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
-> -						 struct arm_smmu_device *smmu)
-> -{
-> -	if (offset > SZ_64K)
-> -		return smmu->page1 + offset - SZ_64K;
-> -
-> -	return smmu->base + offset;
-> -}
-> -
->  static void parse_driver_options(struct arm_smmu_device *smmu)
->  {
->  	int i = 0;
-> @@ -2613,6 +2604,7 @@ static struct iommu_ops arm_smmu_ops = {
->  /* Probing and initialisation functions */
->  static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  				   struct arm_smmu_queue *q,
-> +				   void __iomem *page,
->  				   unsigned long prod_off,
->  				   unsigned long cons_off,
->  				   size_t dwords, const char *name)
-> @@ -2641,8 +2633,8 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  			 1 << q->llq.max_n_shift, name);
->  	}
->  
-> -	q->prod_reg	= arm_smmu_page1_fixup(prod_off, smmu);
-> -	q->cons_reg	= arm_smmu_page1_fixup(cons_off, smmu);
-> +	q->prod_reg	= page + prod_off;
-> +	q->cons_reg	= page + cons_off;
->  	q->ent_dwords	= dwords;
->  
->  	q->q_base  = Q_BASE_RWA;
-> @@ -2686,9 +2678,9 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->  	int ret;
->  
->  	/* cmdq */
-> -	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-> -				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS,
-> -				      "cmdq");
-> +	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
-> +				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
-> +				      CMDQ_ENT_DWORDS, "cmdq");
->  	if (ret)
->  		return ret;
->  
-> @@ -2697,9 +2689,9 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->  		return ret;
->  
->  	/* evtq */
-> -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
-> -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS,
-> -				      "evtq");
-> +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, smmu->page1,
-> +				      ARM_SMMU_EVTQ_PROD, ARM_SMMU_EVTQ_CONS,
-> +				      EVTQ_ENT_DWORDS, "evtq");
->  	if (ret)
->  		return ret;
->  
-> @@ -2707,9 +2699,9 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
->  		return 0;
->  
-> -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
-> -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS,
-> -				       "priq");
-> +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, smmu->page1,
-> +				       ARM_SMMU_PRIQ_PROD, ARM_SMMU_PRIQ_CONS,
-> +				       PRIQ_ENT_DWORDS, "priq");
+> @@ -1934,40 +1934,27 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>  	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
 >  }
 >  
->  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
-> @@ -3119,10 +3111,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  
->  	/* Event queue */
->  	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> -	writel_relaxed(smmu->evtq.q.llq.prod,
-> -		       arm_smmu_page1_fixup(ARM_SMMU_EVTQ_PROD, smmu));
-> -	writel_relaxed(smmu->evtq.q.llq.cons,
-> -		       arm_smmu_page1_fixup(ARM_SMMU_EVTQ_CONS, smmu));
-> +	writel_relaxed(smmu->evtq.q.llq.prod, smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> +	writel_relaxed(smmu->evtq.q.llq.cons, smmu->page1 + ARM_SMMU_EVTQ_CONS);
->  
->  	enables |= CR0_EVTQEN;
->  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> @@ -3137,9 +3127,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  		writeq_relaxed(smmu->priq.q.q_base,
->  			       smmu->base + ARM_SMMU_PRIQ_BASE);
->  		writel_relaxed(smmu->priq.q.llq.prod,
-> -			       arm_smmu_page1_fixup(ARM_SMMU_PRIQ_PROD, smmu));
-> +			       smmu->page1 + ARM_SMMU_PRIQ_PROD);
->  		writel_relaxed(smmu->priq.q.llq.cons,
-> -			       arm_smmu_page1_fixup(ARM_SMMU_PRIQ_CONS, smmu));
-> +			       smmu->page1 + ARM_SMMU_PRIQ_CONS);
->  
->  		enables |= CR0_PRIQEN;
->  		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index e094cd92df2d..63f1c114c810 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -139,15 +139,15 @@
->  #define ARM_SMMU_CMDQ_CONS		0x9c
->  
->  #define ARM_SMMU_EVTQ_BASE		0xa0
-> -#define ARM_SMMU_EVTQ_PROD		0x100a8
-> -#define ARM_SMMU_EVTQ_CONS		0x100ac
-> +#define ARM_SMMU_EVTQ_PROD		0xa8
-> +#define ARM_SMMU_EVTQ_CONS		0xac
->  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
->  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
->  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
->  
->  #define ARM_SMMU_PRIQ_BASE		0xc0
-> -#define ARM_SMMU_PRIQ_PROD		0x100c8
-> -#define ARM_SMMU_PRIQ_CONS		0x100cc
-> +#define ARM_SMMU_PRIQ_PROD		0xc8
-> +#define ARM_SMMU_PRIQ_CONS		0xcc
->  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
->  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
->  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
-> -- 
-> 2.17.1
-> 
+> -static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+> -				   size_t granule, bool leaf,
+> +static void arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+> +				   unsigned long iova, size_t size,
+> +				   size_t granule,
+>  				   struct arm_smmu_domain *smmu_domain)
+
+nit: please can you prefix this function with a couple of underscores and/or
+change its name? It's now a low-level helper and trusts the caller to pass
+in a TLBI command, so we really don't want people to call it directly!
+
+Anyway, the series looks good to me. In fact, I tried to apply it but I get
+a conflict with the last patch. Please can you rebase onto my
+for-joerg/arm-smmu/updates branch? If you do that (plus the nit above) then
+I can queue these right away.
+
+Cheers,
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
