@@ -7,85 +7,85 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 337FEC433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 609F7C433DB
 	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 11:56:36 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A1CC52376F
+	by mail.kernel.org (Postfix) with ESMTPS id DFCC3239EE
 	for <iommu@archiver.kernel.org>; Fri, 22 Jan 2021 11:56:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1CC52376F
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFCC3239EE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3C74286A75;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 446F086A85;
 	Fri, 22 Jan 2021 11:56:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OUDGwZ7OEIE3; Fri, 22 Jan 2021 11:56:34 +0000 (UTC)
+	with ESMTP id wgp8jFrKRJK4; Fri, 22 Jan 2021 11:56:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 77C8386A78;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3CB0386A5B;
 	Fri, 22 Jan 2021 11:56:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 54D87C1DA8;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2877DC08A1;
 	Fri, 22 Jan 2021 11:56:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 828BDC013A
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18CF9C013A
  for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 11:56:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6E55186A70
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 11:56:33 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JxnRNR_NImFx for <iommu@lists.linux-foundation.org>;
- Fri, 22 Jan 2021 11:56:32 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com
- [209.85.221.52])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3258986A5B
+ by silver.osuosl.org (Postfix) with ESMTP id E77F021514
  for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 11:56:32 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id 6so4829486wri.3
- for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:56:32 -0800 (PST)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KnI3E2q8uiwZ for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Jan 2021 11:56:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com
+ [209.85.221.48])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0377C2DE22
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 11:56:31 +0000 (UTC)
+Received: by mail-wr1-f48.google.com with SMTP id b5so4806114wrr.10
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Jan 2021 03:56:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=oWZRXMZDgDlfj6/sL+CjFjPKysCEMdAVcP30NzlMW3A=;
- b=WhTGf3RimLURoo2pLZsYUSInopH1384+nX4wdx1eFJGM8B74DB6uj9savxXIaCOlWq
- S3l5wvl7QZw8vSwfuEpy6A4UYx2Gtup6Hghg18fDbwLB41loComV5CqYmzR0Jb1RCPA6
- sotnsTmMKdUr9fQm9UlU4MOkerSOPc2z7RqrQ/7kW5Y6ELy60wswupNPKy2J9IsocZJ9
- iuWT1M173gDLKZVde7+3rysBT5t0Yk6PiqpqgrJb/JXWlWVyGFky+PBjvVTiv0W2Dmm7
- fBL7cR5bczmiYNd8TW1uO2Z4CwqThc/vbQOzwp/0i6ZHPK9OrEqHozQvOip2nkWf0YeE
- xFzw==
+ bh=owZkjSFOA0fuCp5k3fuGX+G2Hp6YSx1juCTT9XbA4kE=;
+ b=Yfotiij4PbT44jIwb874ov94q9TaJDIr5uPZmkTQVPdRZWtdCst/v6l+xeo4jnWBMu
+ MlaCnH3+Gxgv079JfZb4MTr/GSo8Yb9GWJYxYabZzRq52FufOyZVmHwxraQ/KzVJ92lb
+ BtuQ/4V+F0ZHuIlCOhmXQGEvbOZyseb/36c95qb0YJ6y1KeUIKROkvjCPixnXwpQqx4k
+ XTx2C6Z8u+pi8+F6APbGGv8P6Q2D+kfR50/YNse42JxmWoVZqPDnR5zq5I8Ei6fFB6Tt
+ ZA5MiHUhwp1eHSEglPQgJIcmJ13JceHsZtcZ1y6nJnnvnG+hHOHBwirNFms2VxXD/BHt
+ IwWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=oWZRXMZDgDlfj6/sL+CjFjPKysCEMdAVcP30NzlMW3A=;
- b=Bbtz8nS0Oism0hgm8KQoEvvUctZJvx1GdbrntCOojpGLqysGBMVNC0yqDljUkhTpQ6
- 9t8wrhrtRBu8Gh8cnZOG02tZwmIV/W3GPpDtUDz5aJYyxYl/1NM7WA9VT0BAAoloB6WY
- n0BOdIoDCuFfYeXH5D0zdfl4jRjNk2U92WNmOdJldPlTRF2VDOGkPkuXkHU45VOegJaQ
- O/IRpqqZxtzBuzpIxzOfmlVRftIdrQBXfqz05SvuqvNQyJE0G4+/LTAV4Hf4B74cp/GP
- /A3M3hGYJmd3wRvIxRn5krytXa+Fy0wlF3ID0l3sSCRiNxJp52RGWFV1F3v74bGKMPf+
- 3fwg==
-X-Gm-Message-State: AOAM531ci9IEViU1lmX+yiVHc8xaZrMYPV6k/2jaaTbYUTMUqzjpmJAa
- LK+2s7QpmFsRrDsMfcdytfAAcA==
-X-Google-Smtp-Source: ABdhPJzDxK+tf+jt3CZVne4oNGyBINi41Jm4IWEr/aLUZcceD2WqoWsTINI0w8feQa9ASZaalR8Pzg==
-X-Received: by 2002:adf:f403:: with SMTP id g3mr4180245wro.212.1611316590574; 
- Fri, 22 Jan 2021 03:56:30 -0800 (PST)
+ bh=owZkjSFOA0fuCp5k3fuGX+G2Hp6YSx1juCTT9XbA4kE=;
+ b=DgMeQgKFwYRwERkjjl8UBgYlmp8g5W912/iyxCDIlnrGuU1NpEbmfVMezN2tKZOwGJ
+ NulTONZSd1QcZgTmzgecE1OQdeaSyGxYPoYmvOWR5B/3isiGcbxecQAmh0dbY3EAPLdU
+ sdv+QA1NddMJpMDZ3hN0VctDEA3y1dV/kXIYEAoOR2gctEOYPbF5FgyRfYMBmeJ7B3x9
+ aaBT1F0m6xOXN9aLM/JHFaxWEDdvFIOqDVM6uGvuWR1rYD6tEESXSkiU8vebOVhHMQDd
+ FMkdJXIW0iY+v9y7y/BvuCab9ANlWQr6tt6BxC+y6VwqCpOmoK1GruAWK++N6BVt6QmO
+ 1Hqw==
+X-Gm-Message-State: AOAM533CxRC1ixuJMhAt/w6n/D28zw/JDJvBlVm5xVnt9rbZz8mYBa/w
+ ox7Yv/uN4DN/zh66OQkHxvCaVg==
+X-Google-Smtp-Source: ABdhPJxmWG1lTuXpvqqZl1ip4r8FU//sAdGE7mIr6uOeJ1+qwBEyt54qF3kDGQgJMOB/K5vmESCGbg==
+X-Received: by 2002:adf:fd10:: with SMTP id e16mr3952999wrr.376.1611316589591; 
+ Fri, 22 Jan 2021 03:56:29 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id s25sm13293901wrs.49.2021.01.22.03.56.29
+ by smtp.gmail.com with ESMTPSA id s25sm13293901wrs.49.2021.01.22.03.56.28
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 Jan 2021 03:56:30 -0800 (PST)
+ Fri, 22 Jan 2021 03:56:29 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: will@kernel.org,
 	robin.murphy@arm.com,
 	joro@8bytes.org
-Subject: [PATCH 3/3] iommu/arm-smmu-v3: Add support for VHE
-Date: Fri, 22 Jan 2021 12:52:58 +0100
-Message-Id: <20210122115257.2502526-4-jean-philippe@linaro.org>
+Subject: [PATCH 2/3] iommu/arm-smmu-v3: Make BTM optional for SVA
+Date: Fri, 22 Jan 2021 12:52:57 +0100
+Message-Id: <20210122115257.2502526-3-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210122115257.2502526-1-jean-philippe@linaro.org>
 References: <20210122115257.2502526-1-jean-philippe@linaro.org>
@@ -110,149 +110,102 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-ARMv8.1 extensions added Virtualization Host Extensions (VHE), which allow
-to run a host kernel at EL2. When using normal DMA, Device and CPU address
-spaces are dissociated, and do not need to implement the same
-capabilities, so VHE hasn't been used in the SMMU until now.
+When BTM isn't supported by the SMMU, send invalidations on the
+command queue.
 
-With shared address spaces however, ASIDs are shared between MMU and SMMU,
-and broadcast TLB invalidations issued by a CPU are taken into account by
-the SMMU. TLB entries on both sides need to have identical exception level
-in order to be cleared with a single invalidation.
-
-When the CPU is using VHE, enable VHE in the SMMU for all STEs. Normal DMA
-mappings will need to use TLBI_EL2 commands instead of TLBI_NH, but
-shouldn't be otherwise affected by this change.
-
-Acked-by: Will Deacon <will@kernel.org>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 32 ++++++++++++++++-----
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  3 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 14 +++++++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 14 ++++++++++++++
+ 3 files changed, 28 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 652d03ad8ae6..c01a65b4ae14 100644
+index a6536c2b32d0..652d03ad8ae6 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -454,6 +454,8 @@ struct arm_smmu_cmdq_ent {
- 		#define CMDQ_OP_TLBI_NH_ASID	0x11
- 		#define CMDQ_OP_TLBI_NH_VA	0x12
- 		#define CMDQ_OP_TLBI_EL2_ALL	0x20
-+		#define CMDQ_OP_TLBI_EL2_ASID	0x21
-+		#define CMDQ_OP_TLBI_EL2_VA	0x22
- 		#define CMDQ_OP_TLBI_S12_VMALL	0x28
- 		#define CMDQ_OP_TLBI_S2_IPA	0x2a
- 		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
-@@ -639,6 +641,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
- #define ARM_SMMU_FEAT_BTM		(1 << 16)
- #define ARM_SMMU_FEAT_SVA		(1 << 17)
-+#define ARM_SMMU_FEAT_E2H		(1 << 18)
- 	u32				features;
+@@ -743,6 +743,9 @@ extern struct arm_smmu_ctx_desc quiet_cd;
+ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+ 			    struct arm_smmu_ctx_desc *cd);
+ void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
++void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
++				 size_t granule, bool leaf,
++				 struct arm_smmu_domain *smmu_domain);
+ bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
+ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+ 			    unsigned long iova, size_t size);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index 642ce2c225b5..ad8cf62a8f83 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -16,6 +16,7 @@ struct arm_smmu_mmu_notifier {
+ 	struct mmu_notifier		mn;
+ 	struct arm_smmu_ctx_desc	*cd;
+ 	bool				cleared;
++	bool				tlb_inv_command;
+ 	refcount_t			refs;
+ 	struct list_head		list;
+ 	struct arm_smmu_domain		*domain;
+@@ -182,9 +183,13 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+ 					 unsigned long start, unsigned long end)
+ {
+ 	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
++	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
++	size_t size = end - start + 1;
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+-	arm_smmu_atc_inv_domain(smmu_mn->domain, mm->pasid, start,
+-				end - start + 1);
++	if (smmu_mn->tlb_inv_command)
++		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
++					    PAGE_SIZE, false, smmu_domain);
++	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+ }
+ 
+ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+@@ -253,6 +258,9 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
+ 	smmu_mn->domain = smmu_domain;
+ 	smmu_mn->mn.ops = &arm_smmu_mmu_notifier_ops;
+ 
++	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
++		smmu_mn->tlb_inv_command = true;
++
+ 	ret = mmu_notifier_register(&smmu_mn->mn, mm);
+ 	if (ret) {
+ 		kfree(smmu_mn);
+@@ -404,7 +412,7 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ 	unsigned long reg, fld;
+ 	unsigned long oas;
+ 	unsigned long asid_bits;
+-	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
++	u32 feat_mask = ARM_SMMU_FEAT_COHERENCY;
+ 
+ 	if (vabits_actual == 52)
+ 		feat_mask |= ARM_SMMU_FEAT_VAX;
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index db545834493b..be762f8c1bc5 100644
+index a27b074d5c0c..db545834493b 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -273,9 +273,11 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
- 		break;
- 	case CMDQ_OP_TLBI_NH_VA:
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
-+		fallthrough;
-+	case CMDQ_OP_TLBI_EL2_VA:
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
--		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
- 		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
- 		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
-@@ -297,6 +299,9 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 	case CMDQ_OP_TLBI_S12_VMALL:
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
- 		break;
-+	case CMDQ_OP_TLBI_EL2_ASID:
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
-+		break;
- 	case CMDQ_OP_ATC_INV:
- 		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
- 		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_GLOBAL, ent->atc.global);
-@@ -945,7 +950,8 @@ static int arm_smmu_page_response(struct device *dev,
- void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
- {
- 	struct arm_smmu_cmdq_ent cmd = {
--		.opcode = CMDQ_OP_TLBI_NH_ASID,
-+		.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
-+			CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
- 		.tlbi.asid = asid,
- 	};
+@@ -2018,6 +2018,20 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+ 	arm_smmu_atc_inv_domain(smmu_domain, 0, iova, size);
+ }
  
-@@ -1326,13 +1332,16 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	}
- 
- 	if (s1_cfg) {
-+		u64 strw = smmu->features & ARM_SMMU_FEAT_E2H ?
-+			STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1;
++void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
++				 size_t granule, bool leaf,
++				 struct arm_smmu_domain *smmu_domain)
++{
++	struct arm_smmu_cmdq_ent cmd = {
++		.opcode	= CMDQ_OP_TLBI_NH_VA,
++		.tlbi = {
++			.asid	= asid,
++			.leaf	= leaf,
++		},
++	};
++	arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
++}
 +
- 		BUG_ON(ste_live);
- 		dst[1] = cpu_to_le64(
- 			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
--			 FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_NSEL1));
-+			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
- 
- 		if (master->prg_resp_needs_ssid)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_PPAR);
-@@ -2003,7 +2012,8 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
- 	};
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
--		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
-+		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
-+				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
- 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
- 	} else {
- 		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
-@@ -2023,7 +2033,8 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
- 				 struct arm_smmu_domain *smmu_domain)
- {
- 	struct arm_smmu_cmdq_ent cmd = {
--		.opcode	= CMDQ_OP_TLBI_NH_VA,
-+		.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
-+			  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
- 		.tlbi = {
- 			.asid	= asid,
- 			.leaf	= leaf,
-@@ -3544,7 +3555,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
- 
- 	/* CR2 (random crap) */
--	reg = CR2_PTM | CR2_RECINVSID | CR2_E2H;
-+	reg = CR2_PTM | CR2_RECINVSID;
-+
-+	if (smmu->features & ARM_SMMU_FEAT_E2H)
-+		reg |= CR2_E2H;
-+
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR2);
- 
- 	/* Stream table */
-@@ -3705,8 +3720,11 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			smmu->options |= ARM_SMMU_OPT_MSIPOLL;
- 	}
- 
--	if (reg & IDR0_HYP)
-+	if (reg & IDR0_HYP) {
- 		smmu->features |= ARM_SMMU_FEAT_HYP;
-+		if (cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN))
-+			smmu->features |= ARM_SMMU_FEAT_E2H;
-+	}
- 
- 	/*
- 	 * The coherency feature as set by FW is used in preference to the ID
+ static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
+ 					 unsigned long iova, size_t granule,
+ 					 void *cookie)
 -- 
 2.30.0
 
