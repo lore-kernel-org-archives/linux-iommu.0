@@ -6,94 +6,94 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FA8C433E0
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 15:46:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1217C433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 16:15:48 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ADAB72224C
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 15:46:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADAB72224C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 35F7322583
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 16:15:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35F7322583
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 61C6D870DD;
-	Mon, 25 Jan 2021 15:46:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tW4ZGyij5Nhs; Mon, 25 Jan 2021 15:46:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CDB9E870C1;
-	Mon, 25 Jan 2021 15:46:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B17A9C0FA7;
-	Mon, 25 Jan 2021 15:46:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84EBBC013A
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 15:46:45 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6406F203EA
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 15:46:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B5A40204FE;
+	Mon, 25 Jan 2021 16:15:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m9o+LNVFCriT; Mon, 25 Jan 2021 16:15:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 4BD1020444;
+	Mon, 25 Jan 2021 16:15:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21D86C1E70;
+	Mon, 25 Jan 2021 16:15:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A7943C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 16:15:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 942B4871E6
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 16:15:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id G59paFAJmn4q for <iommu@lists.linux-foundation.org>;
- Mon, 25 Jan 2021 15:46:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com
- [209.85.221.50])
- by silver.osuosl.org (Postfix) with ESMTPS id 241D82001D
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 15:46:44 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id c12so13153716wrc.7
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 07:46:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ with ESMTP id 2QL6PgWwJBog for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 16:15:44 +0000 (UTC)
+X-Greylist: delayed 00:28:24 by SQLgrey-1.7.6
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com
+ [209.85.160.178])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D3B818716B
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 16:15:43 +0000 (UTC)
+Received: by mail-qt1-f178.google.com with SMTP id e15so10011645qte.9
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 08:15:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=saz5MoILAriaGIGWK/aPOZ/clAw3tEuyZYXwjAIF/h4=;
- b=VS0BjJtjbfWaablRqn0zungdUl/9sUQPgs1HlDBWPi/HhTcQ4V51xv8PhvyQejN99w
- 9+mbU0x0Qz+97ncS/+vVjyrbn/4XWyOiMKPd2aNQfYjA61s+wW2L4hJRM/rEYtkixRAW
- UpGDFehmsrz1n/f0ETRjIa/AWnp1vtB06TppHxksWw2dgieejtP2x4iUDSoKDxPShB1Z
- rUUw/zsO6H8E7MUcG2DwcvzrOZG7MUeim0tqlTSehE0ykcFGNnqWEMk1u0k6Drb3JDGd
- 1b0fLWtIkFTSeGvMJRM9A3NKbaxGWmGfXiOKFDSip0LbsPEw4F6/E70ADOp1++04L6iw
- KrOw==
+ bh=WYtrk+5jMyfHMrIk+GFUJtKNShhaML4SL+BF9mnl4ek=;
+ b=mEv+bdSqBPdjlX/bdjKIR3SI9YdPtbWuLoQeE76ZBBDrifSvgzpKe2Al9843jB5V2y
+ jYAIfZmPEPaeZ5Oqkxoy8QvIVo91+adpqZujygppxIvbax/2vGxGjT3BDnBJ9PYWOzUB
+ rbyhx9bsrcmb2rCRD0697Qhj/mNjh0DJinCAfGOX+TjDxCgWsCHPHxm7IgD04aftGPv0
+ oJKvBKP3SKQlHkfSkivNxC9jF2Z+VXgar36M3oCMSTRxG3OdArdOxVO+jBLutbLw40hm
+ Ywjxl5S6mpTmxxEMrSa2iGbxjeJX6ur9qiCgicoYFfxnWO/esqBDF0MtydZh82NCSBKW
+ jxWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=saz5MoILAriaGIGWK/aPOZ/clAw3tEuyZYXwjAIF/h4=;
- b=tLHb8kup4kWEGO+ucr5hZWKoFjXZK7uhicqSkmsMj9RE0qC3A0zJnpeZd6scWXq7Y5
- gAL5anP/PZNUm8kPwdYDmZsCsS5RC0S35E+hcAd/l+VnxPG3u64aITgJ5IVgjY6O8McV
- bmXDUDWPDWXRzPuvkCAf1SGFPDF9KhfuPJJmfNOP7nJhrr2sWHN8QzSDmDMgaR4PZGHF
- 91zQ54U6LmME5I3+hhsVMWuZLaGhha7jp78iNASJ2EBSwhAlRCcDIyGSOBRx6dmRLF2R
- 0T2p0pgxmcyHnpPMawRV23gtlDlD3k/+yoQWeAeUUggBwoPESrxtfXX3o2m7TNQv/sCa
- osXA==
-X-Gm-Message-State: AOAM533N9wUA6u99n/smnVd6Rt1DLzAI6cNIKq18ef1J7kqqENFFKN0I
- xrrDq9kMjiPBdzYPgciWRqvZHQ==
-X-Google-Smtp-Source: ABdhPJzQ1UgRTJEpMAarcXiQ9ehSoyIIoc9yIqhQjtx7Ga46cwKGEdr4iKFHuMclmoLDLgZQw0k+ZA==
-X-Received: by 2002:adf:dfce:: with SMTP id q14mr1302807wrn.133.1611589602413; 
- Mon, 25 Jan 2021 07:46:42 -0800 (PST)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id r1sm23377838wrl.95.2021.01.25.07.46.41
+ bh=WYtrk+5jMyfHMrIk+GFUJtKNShhaML4SL+BF9mnl4ek=;
+ b=e26H9sUlsCga+24zTtynXqAg3t8Mp8ELLMMYKIxwPKk4erhOmAWan9oAuYMAIcXWEB
+ HH03zFbZ6jmMUxOe0NYU5L+kYj1RSjPMP0SZqGgohkR/a/vfoNE9nz4Kqwv7w3sw4dtj
+ UBqKzB/trGAqtSLQR9DYtgu5+IMKPf+JVnnNT1A23yxp7EPS7BxxJyU+L2i+fCUX+gYg
+ unF6wzfYa25FD51jLFp8ni6E8TArji9e/sqsuFj1kzXriswhUI3RSTfbu6iRo4KvrQ7N
+ qqwnnWbAx1qTeCrQt7sKbAdTdg+ofOkkhqEsPRNqBJtt3cn3DNJhY7gSJsCGJbAKyJkP
+ 6uMQ==
+X-Gm-Message-State: AOAM533iK9EV2GOd/OlPyGBC3zMJamITIBQ8eikNiTV93SdZ+MNc0THE
+ G+4ClssmKrwI2Bmh/WrBN9kN+QLUyl8/92uD
+X-Google-Smtp-Source: ABdhPJxr0w4GGj4XFZfzo1ZpWgm8ksFBdTqQ/q89OryNoBYa59S4vVi7J2T2VaunByVM7HxRC+LHEw==
+X-Received: by 2002:ac8:6987:: with SMTP id o7mr977438qtq.295.1611589638773;
+ Mon, 25 Jan 2021 07:47:18 -0800 (PST)
+Received: from ziepe.ca
+ (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net.
+ [142.162.115.133])
+ by smtp.gmail.com with ESMTPSA id o76sm409454qke.104.2021.01.25.07.47.18
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 25 Jan 2021 07:46:41 -0800 (PST)
-Date: Mon, 25 Jan 2021 16:46:22 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v11 10/10] iommu/arm-smmu-v3: Add stall support for
- platform devices
-Message-ID: <YA7nzllIPBahYKCw@myrica>
-References: <20210125110650.3232195-1-jean-philippe@linaro.org>
- <20210125110650.3232195-11-jean-philippe@linaro.org>
- <20210125135009.00003ca3@Huawei.com>
+ Mon, 25 Jan 2021 07:47:18 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
+ id 1l445F-006YE8-Qg; Mon, 25 Jan 2021 11:47:17 -0400
+Date: Mon, 25 Jan 2021 11:47:17 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Zhou Wang <wangzhou1@hisilicon.com>
+Subject: Re: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
+Message-ID: <20210125154717.GW4605@ziepe.ca>
+References: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210125135009.00003ca3@Huawei.com>
-Cc: vivek.gautam@arm.com, guohanjun@huawei.com, will@kernel.org,
- linux-acpi@vger.kernel.org, zhangfei.gao@linaro.org, lenb@kernel.org,
- devicetree@vger.kernel.org, kevin.tian@intel.com, robh+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org, rjw@rjwysocki.net,
- iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+In-Reply-To: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
+Cc: Sihang Chen <chensihang1@hisilicon.com>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, liguozhu@hisilicon.com,
  linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -112,70 +112,70 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jan 25, 2021 at 01:50:09PM +0000, Jonathan Cameron wrote:
-> > +static int arm_smmu_master_sva_enable_iopf(struct arm_smmu_master *master)
-> > +{
-> > +	int ret;
-> > +	struct device *dev = master->dev;
-> > +
-> > +	/*
-> > +	 * Drivers for devices supporting PRI or stall should enable IOPF first.
-> > +	 * Others have device-specific fault handlers and don't need IOPF.
-> > +	 */
-> > +	if (!arm_smmu_master_iopf_supported(master))
-> 
-> So if we have master->iopf_enabled and this happens. Then I'm not totally sure
-> what prevents the disable below running its cleanup on stuff that was never
-> configured.
+On Mon, Jan 25, 2021 at 04:34:56PM +0800, Zhou Wang wrote:
 
-Since arm_smmu_dev_enable_feature() checks that the feature is supported,
-iopf_enabled can only be true if arm_smmu_master_iopf_supported() is true.
+> +static int uacce_pin_page(struct uacce_pin_container *priv,
+> +			  struct uacce_pin_address *addr)
+> +{
+> +	unsigned int flags = FOLL_FORCE | FOLL_WRITE;
+> +	unsigned long first, last, nr_pages;
+> +	struct page **pages;
+> +	struct pin_pages *p;
+> +	int ret;
+> +
+> +	first = (addr->addr & PAGE_MASK) >> PAGE_SHIFT;
+> +	last = ((addr->addr + addr->size - 1) & PAGE_MASK) >> PAGE_SHIFT;
+> +	nr_pages = last - first + 1;
+> +
+> +	pages = vmalloc(nr_pages * sizeof(struct page *));
+> +	if (!pages)
+> +		return -ENOMEM;
+> +
+> +	p = kzalloc(sizeof(*p), GFP_KERNEL);
+> +	if (!p) {
+> +		ret = -ENOMEM;
+> +		goto free;
+> +	}
+> +
+> +	ret = pin_user_pages_fast(addr->addr & PAGE_MASK, nr_pages,
+> +				  flags | FOLL_LONGTERM, pages);
 
-What's missing is checking that drivers don't disable IOPF while SVA is
-enabled - or else the disable below can leak. Another thing I broke in v10 :/
+This needs to copy the RLIMIT_MEMLOCK and can_do_mlock() stuff from
+other places, like ib_umem_get
 
-Thanks,
-Jean
+> +	ret = xa_err(xa_store(&priv->array, p->first, p, GFP_KERNEL));
 
-> 
-> > +		return 0;
-> > +
-> > +	if (!master->iopf_enabled)
-> > +		return -EINVAL;
-> > +
-> > +	ret = iopf_queue_add_device(master->smmu->evtq.iopf, dev);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
-> > +	if (ret) {
-> > +		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-> > +		return ret;
-> > +	}
-> > +	return 0;
-> > +}
-> > +
-> > +static void arm_smmu_master_sva_disable_iopf(struct arm_smmu_master *master)
-> > +{
-> > +	struct device *dev = master->dev;
-> > +
-> > +	if (!master->iopf_enabled)
-> > +		return;
-> 
-> As above, I think you need a sanity check on
-> 
-> !arm_smmu_master_iopf_supported(master) before clearing the following.
-> 
-> I may well be missing something that stops us getting here though.
-> 
-> Alternative is probably to sanity check iopf_enabled = true is supported
-> before letting a driver set it.
-> 
-> 
-> > +
-> > +	iommu_unregister_device_fault_handler(dev);
-> > +	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-> > +}
+And this is really weird, I don't think it makes sense to make handles
+for DMA based on the starting VA.
+
+> +static int uacce_unpin_page(struct uacce_pin_container *priv,
+> +			    struct uacce_pin_address *addr)
+> +{
+> +	unsigned long first, last, nr_pages;
+> +	struct pin_pages *p;
+> +
+> +	first = (addr->addr & PAGE_MASK) >> PAGE_SHIFT;
+> +	last = ((addr->addr + addr->size - 1) & PAGE_MASK) >> PAGE_SHIFT;
+> +	nr_pages = last - first + 1;
+> +
+> +	/* find pin_pages */
+> +	p = xa_load(&priv->array, first);
+> +	if (!p)
+> +		return -ENODEV;
+> +
+> +	if (p->nr_pages != nr_pages)
+> +		return -EINVAL;
+> +
+> +	/* unpin */
+> +	unpin_user_pages(p->pages, p->nr_pages);
+
+And unpinning without guaranteeing there is no ongoing DMA is really
+weird
+
+Are you abusing this in conjunction with a SVA scheme just to prevent
+page motion? Why wasn't mlock good enough?
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
