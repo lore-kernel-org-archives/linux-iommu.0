@@ -1,87 +1,68 @@
-Return-Path: <SRS0=zB6U=G3=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=REuq=G4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B40C433E0
-	for <iommu@archiver.kernel.org>; Sun, 24 Jan 2021 07:17:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4FEC433DB
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 01:18:51 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE11E22C7E
-	for <iommu@archiver.kernel.org>; Sun, 24 Jan 2021 07:17:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE11E22C7E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A901522571
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 01:18:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A901522571
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7302286A58;
-	Sun, 24 Jan 2021 07:17:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4FA40870AC;
+	Mon, 25 Jan 2021 01:18:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6rtAEHyRZ5jj; Sun, 24 Jan 2021 07:17:13 +0000 (UTC)
+	with ESMTP id Haib8HnhilJZ; Mon, 25 Jan 2021 01:18:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B7C0585B58;
-	Sun, 24 Jan 2021 07:17:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 28D5A87036;
+	Mon, 25 Jan 2021 01:18:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8DFC9C088B;
-	Sun, 24 Jan 2021 07:17:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B5FAC08A1;
+	Mon, 25 Jan 2021 01:18:49 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E2F8DC013A
- for <iommu@lists.linux-foundation.org>; Sun, 24 Jan 2021 07:17:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE9DEC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 01:18:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C706186981
- for <iommu@lists.linux-foundation.org>; Sun, 24 Jan 2021 07:17:12 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A504A86726
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 01:18:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5LXK4Eje31pE for <iommu@lists.linux-foundation.org>;
- Sun, 24 Jan 2021 07:17:11 +0000 (UTC)
+ with ESMTP id 1VF0gzgKKJJy for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 01:18:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 2715185B58
- for <iommu@lists.linux-foundation.org>; Sun, 24 Jan 2021 07:17:10 +0000 (UTC)
-IronPort-SDR: CG2Y85SkVzEOrdymGBO70jyGSERBBmFJTKJFd7O9pS/p/EFfcC4WaLr+KMYvbAzjvTNt97Y1pK
- 4ZjG94leNTHA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9873"; a="166701565"
-X-IronPort-AV: E=Sophos;i="5.79,370,1602572400"; d="scan'208";a="166701565"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jan 2021 23:17:10 -0800
-IronPort-SDR: Cu+Wa8KxtY0DpZTSBmPG0m8XnB+LFEVb/7ZarXdc6luqLnglI+PtrvbdgyIrMjBtPxR+OOOxeM
- gh4CINFgl9uQ==
-X-IronPort-AV: E=Sophos;i="5.79,370,1602572400"; d="scan'208";a="386713678"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.31.40])
- ([10.255.31.40])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jan 2021 23:17:05 -0800
-Subject: Re: performance regression noted in v5.11-rc after c062db039f40
-To: Robin Murphy <robin.murphy@arm.com>, Chuck Lever <chuck.lever@oracle.com>
-References: <D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com>
- <20210112143819.GA9689@willie-the-truck>
- <607648D8-BF0C-40D6-9B43-2359F45EE74C@oracle.com>
- <e83eed0d-82cd-c9be-cef1-5fe771de975f@arm.com>
- <3568C74A-A587-4464-8840-24F7A93ABA06@oracle.com>
- <990a7c1e-e8c0-a6a8-f057-03b104cebca3@linux.intel.com>
- <3A4451BB-41BD-429B-BE0C-12AE7D03A99B@oracle.com>
- <f1d38e5a-3136-172f-c792-0bbf59131514@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <463fdf02-3d8e-37d3-c819-4a3c173a4138@linux.intel.com>
-Date: Sun, 24 Jan 2021 15:17:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A4647866B2
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 01:18:45 +0000 (UTC)
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DPBn521Bkzj60N;
+ Mon, 25 Jan 2021 09:17:45 +0800 (CST)
+Received: from SWX921481.china.huawei.com (10.126.202.218) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.498.0; Mon, 25 Jan 2021 09:18:33 +0800
+From: Barry Song <song.bao.hua@hisilicon.com>
+To: <m.szyprowski@samsung.com>, <hch@lst.de>, <robin.murphy@arm.com>,
+ <iommu@lists.linux-foundation.org>
+Subject: [PATCH RESEND] dma-mapping: benchmark: fix kernel crash when
+ dma_map_single fails
+Date: Mon, 25 Jan 2021 14:13:06 +1300
+Message-ID: <20210125011306.25060-1-song.bao.hua@hisilicon.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
-In-Reply-To: <f1d38e5a-3136-172f-c792-0bbf59131514@arm.com>
-Content-Language: en-US
-Cc: "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
- linux-rdma <linux-rdma@vger.kernel.org>, Will Deacon <will@kernel.org>,
- "murphyt7@tcd.ie" <murphyt7@tcd.ie>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "logang@deltatee.com" <logang@deltatee.com>, Christoph Hellwig <hch@lst.de>
+X-Originating-IP: [10.126.202.218]
+X-CFilter-Loop: Reflected
+Cc: linux-kernel@vger.kernel.org, linuxarm@openeuler.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,48 +75,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/1/23 1:38, Robin Murphy wrote:
->>> I kind of believe it's due to the indirect calls. This is also reported
->>> on ARM.
->>>
->>> https://lore.kernel.org/linux-iommu/1610376862-927-1-git-send-email-isaacm@codeaurora.org/ 
->>>
->>>
->>> Maybe we can try changing indirect calls to static ones to verify this
->>> problem.
->>
->> I liked the idea of map_sg() enough to try my hand at building a PoC for
->> Intel, based on Isaac's patch series. It's just a cut-and-paste of the
->> generic iommu.c code with the indirect calls to ops->map() replaced.
->>
->> The indirect calls do not seem to be the problem. Calling intel_iommu_map
->> directly appears to be as costly as calling it indirectly.
->>
->> However, perhaps there are other ways map_sg() can be beneficial. In
->> v5.10, __domain_mapping and iommu_flush_write_buffer() appear to be
->> invoked just once for each large map operation, for example.
-> 
-> Oh, if the driver needs to do maintenance beyond just installing PTEs, 
-> that should probably be devolved to iotlb_sync_map anyway. There's a 
-> patch series here generalising that to be more useful, which is 
-> hopefully just waiting to be merged now:
-> 
-> https://lore.kernel.org/linux-iommu/20210107122909.16317-1-yong.wu@mediatek.com/ 
-> 
+if dma_map_single() fails, kernel will give the below oops since
+task_struct has been destroyed and we are running into the memory
+corruption due to use-after-free in kthread_stop():
 
-The iotlb_sync_map() could help here as far as I can see. I will post a
-call-for-test patch set later.
+[   48.095310] Unable to handle kernel paging request at virtual address 000000c473548040
+[   48.095736] Mem abort info:
+[   48.095864]   ESR = 0x96000004
+[   48.096025]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   48.096268]   SET = 0, FnV = 0
+[   48.096401]   EA = 0, S1PTW = 0
+[   48.096538] Data abort info:
+[   48.096659]   ISV = 0, ISS = 0x00000004
+[   48.096820]   CM = 0, WnR = 0
+[   48.097079] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000104639000
+[   48.098099] [000000c473548040] pgd=0000000000000000, p4d=0000000000000000
+[   48.098832] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[   48.099232] Modules linked in:
+[   48.099387] CPU: 0 PID: 2 Comm: kthreadd Tainted: G        W
+[   48.099887] Hardware name: linux,dummy-virt (DT)
+[   48.100078] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
+[   48.100516] pc : __kmalloc_node+0x214/0x368
+[   48.100944] lr : __kmalloc_node+0x1f4/0x368
+[   48.101458] sp : ffff800011f0bb80
+[   48.101843] x29: ffff800011f0bb80 x28: ffff0000c0098ec0
+[   48.102330] x27: 0000000000000000 x26: 00000000001d4600
+[   48.102648] x25: ffff0000c0098ec0 x24: ffff800011b6a000
+[   48.102988] x23: 00000000ffffffff x22: ffff0000c0098ec0
+[   48.103333] x21: ffff8000101d7a54 x20: 0000000000000dc0
+[   48.103657] x19: ffff0000c0001e00 x18: 0000000000000000
+[   48.104069] x17: 0000000000000000 x16: 0000000000000000
+[   48.105449] x15: 000001aa0304e7b9 x14: 00000000000003b1
+[   48.106401] x13: ffff8000122d5000 x12: ffff80001228d000
+[   48.107296] x11: ffff0000c0154340 x10: 0000000000000000
+[   48.107862] x9 : ffff80000fffffff x8 : ffff0000c473527f
+[   48.108326] x7 : ffff800011e62f58 x6 : ffff0000c01c8ed8
+[   48.108778] x5 : ffff0000c0098ec0 x4 : 0000000000000000
+[   48.109223] x3 : 00000000001d4600 x2 : 0000000000000040
+[   48.109656] x1 : 0000000000000001 x0 : ff0000c473548000
+[   48.110104] Call trace:
+[   48.110287]  __kmalloc_node+0x214/0x368
+[   48.110493]  __vmalloc_node_range+0xc4/0x298
+[   48.110805]  copy_process+0x2c8/0x15c8
+[   48.111133]  kernel_clone+0x5c/0x3c0
+[   48.111373]  kernel_thread+0x64/0x90
+[   48.111604]  kthreadd+0x158/0x368
+[   48.111810]  ret_from_fork+0x10/0x30
+[   48.112336] Code: 17ffffe9 b9402a62 b94008a1 11000421 (f8626802)
+[   48.112884] ---[ end trace d4890e21e75419d5 ]---
 
-> 
-> Robin.
+Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
+---
+ kernel/dma/map_benchmark.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Best regards,
-baolu
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index b1496e744c68..1b1b8ff875cb 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -147,8 +147,10 @@ static int do_map_benchmark(struct map_benchmark_data *map)
+ 	atomic64_set(&map->sum_sq_unmap, 0);
+ 	atomic64_set(&map->loops, 0);
+ 
+-	for (i = 0; i < threads; i++)
++	for (i = 0; i < threads; i++) {
++		get_task_struct(tsk[i]);
+ 		wake_up_process(tsk[i]);
++	}
+ 
+ 	msleep_interruptible(map->bparam.seconds * 1000);
+ 
+@@ -183,6 +185,8 @@ static int do_map_benchmark(struct map_benchmark_data *map)
+ 	}
+ 
+ out:
++	for (i = 0; i < threads; i++)
++		put_task_struct(tsk[i]);
+ 	put_device(map->dev);
+ 	kfree(tsk);
+ 	return ret;
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
