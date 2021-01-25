@@ -2,216 +2,83 @@ Return-Path: <SRS0=REuq=G4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D512C433E0
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 13:11:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4D5C433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 13:51:04 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 010C922D58
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 13:11:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 010C922D58
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id AEBC62087E
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 13:51:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEBC62087E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9AB7D203E0;
-	Mon, 25 Jan 2021 13:11:43 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 587AF874EB;
+	Mon, 25 Jan 2021 13:51:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JnaEVkvu6Fhl; Mon, 25 Jan 2021 13:11:41 +0000 (UTC)
+	with ESMTP id DaEjcKL7NMWq; Mon, 25 Jan 2021 13:51:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8EBCD203D3;
-	Mon, 25 Jan 2021 13:11:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D362486841;
+	Mon, 25 Jan 2021 13:51:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5873BC0FA7;
-	Mon, 25 Jan 2021 13:11:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F581C013A;
- Mon, 25 Jan 2021 13:11:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C939EC0FA7;
+	Mon, 25 Jan 2021 13:51:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77BE8C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 13:50:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9595A8707F;
- Mon, 25 Jan 2021 13:11:39 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6460B85E8D
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 13:50:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5o7Pg1HPf3zD; Mon, 25 Jan 2021 13:11:37 +0000 (UTC)
-X-Greylist: delayed 00:15:42 by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- (mail-eopbgr80050.outbound.protection.outlook.com [40.107.8.50])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D1BA58705B;
- Mon, 25 Jan 2021 13:11:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o9v2apaEGwtlOIYhm79EDOtgG2xthJK6R8joBg4i168=;
- b=5RSvjCg9n9AOqOXFDhiuIWk19fFH4mbGfF7K9z0yfZO2NbJfCCDhigfEiY7nG6FYseQivb1xB6YLBf96iyi8PgHSDWZhJ0u5S9+7m960qX+m67/ZqP89ThmuM8UZSEzSNml7U4pJOm/X3g9f5bgowmpxqpBMwd8fL14Og788Yys=
-Received: from DB6PR07CA0003.eurprd07.prod.outlook.com (2603:10a6:6:2d::13) by
- DB8PR08MB5515.eurprd08.prod.outlook.com (2603:10a6:10:11f::9) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3784.11; Mon, 25 Jan 2021 12:55:49 +0000
-Received: from DB5EUR03FT038.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:6:2d:cafe::ee) by DB6PR07CA0003.outlook.office365.com
- (2603:10a6:6:2d::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.7 via Frontend
- Transport; Mon, 25 Jan 2021 12:55:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; lists.linux-foundation.org; dkim=pass (signature was
- verified) header.d=armh.onmicrosoft.com;lists.linux-foundation.org;
- dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT038.mail.protection.outlook.com (10.152.21.84) with
- Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3784.11 via Frontend Transport; Mon, 25 Jan 2021 12:55:49 +0000
-Received: ("Tessian outbound 2b57fdd78668:v71");
- Mon, 25 Jan 2021 12:55:49 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: 329c2278e514d8e7
-X-CR-MTA-TID: 64aa7808
-Received: from 944e3224d1a9.3
- by 64aa7808-outbound-1.mta.getcheckrecipient.com id
- C7C639AA-E8C3-402A-AE54-DEEE62A6097E.1; 
- Mon, 25 Jan 2021 12:55:37 +0000
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 944e3224d1a9.3
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
- Mon, 25 Jan 2021 12:55:37 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ijvS6IqAX/NbWOyTeMpSt89ydOxzxVEdDrvm/cE5KtcuEi7rK5Wwdc+tTkFzbYA1FhLYVhxIfh58EoXKsP05gZ7g5RKnaP/x43/fy8iC9VcbPWfJ7OW1HjL+wPbBSVobBm7E/a7qlUpZ02RZ1sHwJ9xc+iMgRQX0UTbw2IIRVC31akU14c7eL6Zw/Tl3OjftEExnyBd8/HJhkpJN7XqDB89qE3BwH0tyF7hV8kTUGR1gL+kyDcZAz8sBDS7HYGICt+bfelb4vYIa3G+EnnAzvQEVUXqHACWdxSwudS0qmePgATtseDCSrEkZ7ybN58vyXIhkzwi82nxJgb+qcfS8/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o9v2apaEGwtlOIYhm79EDOtgG2xthJK6R8joBg4i168=;
- b=Sm1aB3w1N8eDNAkt8TB9W/y+0R2ldxu+4+UHKepXmf2j9kAlE4vDl0+iz25SdcMN/EwKW0OCdogMlLhR72zrw43iHiozRqM9tKN5ReNo+NS6QGeLk60E4akpkAEIky8dIrVnqJ+GMb75qhUHUM5ErINvp13NqFZ2X7k8mLAMHG23TI8nvTKDSJPnyy6bzV3gDHLJqmLumRC319QkFrhP05XPD4aUlNQUfUodwZ4lc0rL3qLyE7dB5lrmtGRZrZn+5Cz3etddW1mr4JAcqErvgUrERWKIeC2BZ5sUOtMbI2ExqQgBgsBGOo/5W9xjwSquqZ7F/T7jpLFYiM0H3rX1QQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o9v2apaEGwtlOIYhm79EDOtgG2xthJK6R8joBg4i168=;
- b=5RSvjCg9n9AOqOXFDhiuIWk19fFH4mbGfF7K9z0yfZO2NbJfCCDhigfEiY7nG6FYseQivb1xB6YLBf96iyi8PgHSDWZhJ0u5S9+7m960qX+m67/ZqP89ThmuM8UZSEzSNml7U4pJOm/X3g9f5bgowmpxqpBMwd8fL14Og788Yys=
-Authentication-Results-Original: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-Received: from AM0PR08MB3268.eurprd08.prod.outlook.com (2603:10a6:208:65::26)
- by AM0PR08MB4018.eurprd08.prod.outlook.com (2603:10a6:208:12b::15)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Mon, 25 Jan
- 2021 12:55:33 +0000
-Received: from AM0PR08MB3268.eurprd08.prod.outlook.com
- ([fe80::5818:5e0e:3bb7:3b70]) by AM0PR08MB3268.eurprd08.prod.outlook.com
- ([fe80::5818:5e0e:3bb7:3b70%5]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 12:55:33 +0000
-Subject: Re: [PATCH RFC v1 00/15] iommu/virtio: Nested stage support with Arm
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Auger Eric <eric.auger@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>
-References: <20210115121342.15093-1-vivek.gautam@arm.com>
- <a8fd0176-3888-44cf-d659-2e2213a59969@redhat.com>
- <ba4c30b9-1f31-f6b2-e69a-7bb71ce74d57@arm.com>
- <5b0c640a9a22411c840367785c9c23ac@huawei.com>
-From: Vivek Kumar Gautam <vivek.gautam@arm.com>
-Message-ID: <057abe6d-5f82-710b-4ec7-5738d6b1483c@arm.com>
-Date: Mon, 25 Jan 2021 18:25:25 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <5b0c640a9a22411c840367785c9c23ac@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [217.140.105.56]
-X-ClientProxiedBy: PN1PR0101CA0027.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c00:c::13) To AM0PR08MB3268.eurprd08.prod.outlook.com
- (2603:10a6:208:65::26)
+ with ESMTP id JHohTquj6LJp for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 13:50:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E9E7185E27
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 13:50:55 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DPWQH5Zvtz67gk8;
+ Mon, 25 Jan 2021 21:47:35 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Mon, 25 Jan 2021 14:50:52 +0100
+Received: from localhost (10.47.28.215) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Mon, 25 Jan
+ 2021 13:50:51 +0000
+Date: Mon, 25 Jan 2021 13:50:09 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v11 10/10] iommu/arm-smmu-v3: Add stall support for
+ platform devices
+Message-ID: <20210125135009.00003ca3@Huawei.com>
+In-Reply-To: <20210125110650.3232195-11-jean-philippe@linaro.org>
+References: <20210125110650.3232195-1-jean-philippe@linaro.org>
+ <20210125110650.3232195-11-jean-philippe@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.162.16.71] (217.140.105.56) by
- PN1PR0101CA0027.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00:c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend
- Transport; Mon, 25 Jan 2021 12:55:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 15f479b6-36c5-432c-3b7e-08d8c1308a08
-X-MS-TrafficTypeDiagnostic: AM0PR08MB4018:|DB8PR08MB5515:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR08MB5515C4E3F3901F5B5888B21389BD0@DB8PR08MB5515.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-NoDisclaimer: true
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: e5TFHhi2BKKxAW44HaueWAzCuo80xnfoFW9wMQI1zCAu6BKHLdYGwUkdvIzsl0rdqJX/yw8vraaYzZhubuaAS3tqQhB87H8RY20wZFjKWtCXgAsGltur0zZEKglC5vtBAjUTyuhInsLMSE9Lfm+FMiXUklXB8SFFgiJEFWuP1u0VrIx7cutnSG7zttXGVu0b+1JRZkjb+IyMRWgcrGJQ/1/OHmkNljvmvNfhC7LyJLT36ISpoP9hf0QDjPwUK+EH8CBQeoOZsZPqcUAyQMTZa2d0CIGQFo/6aNaarbqycrE5yMBCqlfAjeu1+z0KwHhgdnwtcw2kufXid9oYOqhxZKij73sMwviDJWwYjOyC5gA7xpm3ARo53TJv7tUbjdLvoerASlzMPC+xIMdC/wdZqAtHTlBI9PDCrUbNwdTTukDd8CskayAsYjinLi0nXkyqQB7djFIzxCZKkLkhSUY1vhw9NH/EG4sIYThXUxPUI0k1c7MmxFERUNjxiERBnT0IpsXkv8B9v9nhJtS2TLxQLMMfrLF1VX51KdGqdRZSDfIQ8iixOikS0P+0V4jJCxcH
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255; CTRY:; LANG:en;
- SCL:1; SRV:; IPV:NLI; SFV:NSPM; H:AM0PR08MB3268.eurprd08.prod.outlook.com;
- PTR:; CAT:NONE;
- SFS:(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(16526019)(4326008)(36756003)(8676002)(6666004)(53546011)(186003)(2906002)(86362001)(8936002)(26005)(31686004)(31696002)(52116002)(478600001)(110136005)(83380400001)(956004)(16576012)(316002)(6486002)(66476007)(66946007)(66556008)(5660300002)(7416002)(2616005)(54906003)(966005)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?TSsyT045K1JqOFVJb2pXM0tQbXpaUFdBTjYvUmR5TWR5cHo3YjNyVVUzdW5p?=
- =?utf-8?B?ems1bDduNTVDVWthSi9qZW5qVzljRDZhZXdqbS9mTjZPY01jQnRCQUQ2a0dI?=
- =?utf-8?B?QlFhKzg4MlVPQnlVL3hzQmozQ3VMMHJYZ1drNks4YmxqbGE2aVY3L29BZ0lG?=
- =?utf-8?B?cEh0dytmUlQ2VUMweENZUGNRN2ZPeThlSFpzblJlWTZOVENrTHZxOWlHUXhD?=
- =?utf-8?B?MjYrRUV4STIySXZBNHpoS3k5WklYUFFDcHhYRUVrS0lBV2dLcTZZUFdjYkFD?=
- =?utf-8?B?U1VpT1B6RmxidUFvTlFZVEM0VVZwcUxxY2xRREMwK1hqb1NHMklsWEpmWmRR?=
- =?utf-8?B?aUs3dEt6S1ppanFWN2ZyaDFvMFZMdmhsSmVucVFEWlZzV0U1Z2pnNDBEQzJR?=
- =?utf-8?B?bUd5NksxRVVFM1J5d3ZNelVMYVZ1Wi9VK3AxU0FXNUVGSU16SDRzSUxaQ2Z6?=
- =?utf-8?B?UUdLcWdybzg2YlBwdWxROXZJU3d1RW8xMVRzOFNjSnV3RzFqRVVqMHRvSVNx?=
- =?utf-8?B?eW5rdEMza1dhZlk4WnZYcCs3ckszNHpjSDZPWDMyaWhScXVHbzBFaGNEbFM0?=
- =?utf-8?B?b3FzVzBnQlRNc1hCc1l3L2cwWEwxNmZNTlpjUXhuQjhWaDAyYVRERklWZ1U1?=
- =?utf-8?B?U0htaTArdmE4enc4SlQwMzREbk1ScEVLNmlKWmhQa2VCMEsxcUNPemNQWEpR?=
- =?utf-8?B?Uzg0a2pOTm13Z25uc1JDUEJUMUI5di9UOTEzcVdMVHEwOUxsc0tvcEFxbk02?=
- =?utf-8?B?ckdWVlA5RGVVVVpUMU40QkNHSjRRdW5GVk9Vc1g4STdHL1VxaE02WUFhT0Nq?=
- =?utf-8?B?N3pzSXpaMURWRTloUWhWOEJxL29vaWtIYk5USE1Mdkx6Snd5NWxIMXFtaUZv?=
- =?utf-8?B?cm5HYUl0c0x1b0w1dkp6WVZxU3NUOTVERysxdFZYdTlvZkhnYnFFMkwyMzQx?=
- =?utf-8?B?bEhUdTZpUzBpNU5yVkxib08rMG44cmJDaGMrNFY3UFBPYkJwa1JkcHRDMXBl?=
- =?utf-8?B?YmVodXdFelBieVBLK3dlTmVhQ042eHBhOG1FVjFWSkNZOVRMR2RoWWtKb0Vw?=
- =?utf-8?B?NU9xbUFkWnFJQm1zNmNRUHMySkI4WlhJeDB5R2pWUlRMbytjR2lneTJqQkZq?=
- =?utf-8?B?Q094alVMWWt2Mk5jV3RDQVR0QzlNbFlaVzI2aGhKb1lUc0Vjekg0NzdCQmlB?=
- =?utf-8?B?aVl3NElHSit0L3ordDRhdDl5azJQNURHbVl1blZmczlXSW5ab0JEVGZFQUVx?=
- =?utf-8?B?cERJd1JSVm1qa3k4TnZZSDV3T2l6MXUxVTBtRWhrNjRZSklGZHdSUUVoZFpw?=
- =?utf-8?Q?OraVppKurs2kKFfiBlQDhfR/VmgTOYgYL1?=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB4018
-Original-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT038.eop-EUR03.prod.protection.outlook.com
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 33415a94-d36c-4e30-1e8c-08d8c1308095
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KtNOjO6M6VgQXOmVkyK3hDubFAP1adgKJXW1L7LBELrou1wYqOYSn4FO2WIUcngqZuCmST/0EPwWRp3u3ZWs13AT/EqCVvRj8zv53Mz/I2XBIzwzNDxpTfUofWvNr1U+hzdT5auCtq62Jip/ODQyyS3mh3jEhKXAxKibbH3MDxA+PbLJvw7Tyb7jqrQ+mgbXpBp1d+VTILCAYo5ME45oujh9/YcSGN8ouun588FbgeHI+8+qikkVnd36COLSzSP9C3f17pglmN9h8w5MvYTh2Q+NaSnIEJhCwV+zHmusDFIwv5uZOpLDb3RiA3j3CcaZ7HHZHE0HElfrdccwN/nK+kxOKgx1STUKH+OLt7yR6kQYFabv4LVRgKIc6Cz12+DHMjJ+X3oP+kWvw1udDXYTiNlTlTx2O3Kz27c8ibaJMubFaXDAn9Vb3DCcrb7qGffqC/isanlDgzkPoP+9suVRTyR7Uocgge95IvuIZUwCxE8HBNOW7fC0EeDHMxKzlhyMcHdI0sQfXsvVnLfax7zbnGsKbt86D3LKeGVmlFFi53pgZSi6Ws1titR+Eoj5KbzQ
-X-Forefront-Antispam-Report: CIP:63.35.35.123; CTRY:IE; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:64aa7808-outbound-1.mta.getcheckrecipient.com;
- PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com; CAT:NONE;
- SFS:(4636009)(136003)(396003)(346002)(376002)(39860400002)(46966006)(31696002)(336012)(8936002)(86362001)(966005)(53546011)(478600001)(26005)(186003)(16526019)(2906002)(2616005)(6666004)(356005)(82740400003)(82310400003)(36756003)(47076005)(956004)(54906003)(16576012)(70586007)(110136005)(70206006)(5660300002)(83380400001)(81166007)(31686004)(8676002)(316002)(6486002)(4326008)(450100002)(43740500002);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2021 12:55:49.1161 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15f479b6-36c5-432c-3b7e-08d8c1308a08
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d; Ip=[63.35.35.123];
- Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource: DB5EUR03FT038.eop-EUR03.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR08MB5515
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "mst@redhat.com" <mst@redhat.com>, "will.deacon@arm.com" <will.deacon@arm.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+X-Originating-IP: [10.47.28.215]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: vivek.gautam@arm.com, guohanjun@huawei.com, will@kernel.org,
+ linux-acpi@vger.kernel.org, zhangfei.gao@linaro.org, lenb@kernel.org,
+ devicetree@vger.kernel.org, kevin.tian@intel.com, robh+dt@kernel.org,
+ linux-arm-kernel@lists.infradead.org, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -224,133 +91,500 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Shameer,
+On Mon, 25 Jan 2021 12:06:51 +0100
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-
-On 1/22/21 9:19 PM, Shameerali Kolothum Thodi wrote:
-> Hi Vivek,
+> The SMMU provides a Stall model for handling page faults in platform
+> devices. It is similar to PCIe PRI, but doesn't require devices to have
+> their own translation cache. Instead, faulting transactions are parked
+> and the OS is given a chance to fix the page tables and retry the
+> transaction.
 > 
->> -----Original Message-----
->> From: Vivek Kumar Gautam [mailto:vivek.gautam@arm.com]
->> Sent: 21 January 2021 17:34
->> To: Auger Eric <eric.auger@redhat.com>; linux-kernel@vger.kernel.org;
->> linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org;
->> virtualization@lists.linux-foundation.org
->> Cc: joro@8bytes.org; will.deacon@arm.com; mst@redhat.com;
->> robin.murphy@arm.com; jean-philippe@linaro.org;
->> alex.williamson@redhat.com; kevin.tian@intel.com;
->> jacob.jun.pan@linux.intel.com; yi.l.liu@intel.com; lorenzo.pieralisi@arm.com;
->> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
->> Subject: Re: [PATCH RFC v1 00/15] iommu/virtio: Nested stage support with
->> Arm
->>
->> Hi Eric,
->>
->>
->> On 1/19/21 2:33 PM, Auger Eric wrote:
->>> Hi Vivek,
->>>
->>> On 1/15/21 1:13 PM, Vivek Gautam wrote:
->>>> This patch-series aims at enabling Nested stage translation in guests
->>>> using virtio-iommu as the paravirtualized iommu. The backend is
->>>> supported with Arm SMMU-v3 that provides nested stage-1 and stage-2
->> translation.
->>>>
->>>> This series derives its purpose from various efforts happening to add
->>>> support for Shared Virtual Addressing (SVA) in host and guest. On
->>>> Arm, most of the support for SVA has already landed. The support for
->>>> nested stage translation and fault reporting to guest has been proposed [1].
->>>> The related changes required in VFIO [2] framework have also been put
->>>> forward.
->>>>
->>>> This series proposes changes in virtio-iommu to program PASID tables
->>>> and related stage-1 page tables. A simple iommu-pasid-table library
->>>> is added for this purpose that interacts with vendor drivers to
->>>> allocate and populate PASID tables.
->>>> In Arm SMMUv3 we propose to pull the Context Descriptor (CD)
->>>> management code out of the arm-smmu-v3 driver and add that as a glue
->>>> vendor layer to support allocating CD tables, and populating them with right
->> values.
->>>> These CD tables are essentially the PASID tables and contain stage-1
->>>> page table configurations too.
->>>> A request to setup these CD tables come from virtio-iommu driver
->>>> using the iommu-pasid-table library when running on Arm. The
->>>> virtio-iommu then pass these PASID tables to the host using the right
->>>> virtio backend and support in VMM.
->>>>
->>>> For testing we have added necessary support in kvmtool. The changes
->>>> in kvmtool are based on virtio-iommu development branch by
->>>> Jean-Philippe Brucker [3].
->>>>
->>>> The tested kernel branch contains following in the order bottom to
->>>> top on the git hash -
->>>> a) v5.11-rc3
->>>> b) arm-smmu-v3 [1] and vfio [2] changes from Eric to add nested page
->>>>      table support for Arm.
->>>> c) Smmu test engine patches from Jean-Philippe's branch [4]
->>>> d) This series
->>>> e) Domain nesting info patches [5][6][7].
->>>> f) Changes to add arm-smmu-v3 specific nesting info (to be sent to
->>>>      the list).
->>>>
->>>> This kernel is tested on Neoverse reference software stack with Fixed
->>>> virtual platform. Public version of the software stack and FVP is
->>>> available here[8][9].
->>>>
->>>> A big thanks to Jean-Philippe for his contributions towards this work
->>>> and for his valuable guidance.
->>>>
->>>> [1]
->>>> https://lore.kernel.org/linux-iommu/20201118112151.25412-1-eric.auger
->>>> @redhat.com/T/ [2]
->>>>
->> https://lore.kernel.org/kvmarm/20201116110030.32335-12-eric.auger@red
->>>> hat.com/T/ [3]
->>>> https://jpbrucker.net/git/kvmtool/log/?h=virtio-iommu/devel
->>>> [4] https://jpbrucker.net/git/linux/log/?h=sva/smmute
->>>> [5]
->>>> https://lore.kernel.org/kvm/1599734733-6431-2-git-send-email-yi.l.liu
->>>> @intel.com/ [6]
->>>> https://lore.kernel.org/kvm/1599734733-6431-3-git-send-email-yi.l.liu
->>>> @intel.com/ [7]
->>>> https://lore.kernel.org/kvm/1599734733-6431-4-git-send-email-yi.l.liu
->>>> @intel.com/ [8]
->>>> https://developer.arm.com/tools-and-software/open-source-software/arm
->>>> -platforms-software/arm-ecosystem-fvps
->>>> [9]
->>>> https://git.linaro.org/landing-teams/working/arm/arm-reference-platfo
->>>> rms.git/about/docs/rdn1edge/user-guide.rst
->>>
->>> Could you share a public branch where we could find all the kernel pieces.
->>>
->>> Thank you in advance
->>
->> Apologies for the delay. It took a bit of time to sort things out for a public
->> branch.
->> The branch is available in my github now. Please have a look.
->>
->> https://github.com/vivek-arm/linux/tree/5.11-rc3-nested-pgtbl-arm-smmuv3-vi
->> rtio-iommu
->  > Thanks for this. Do you have a corresponding kvmtool branch mentioned 
-above as public?
-
-Thanks for showing interest. I will publish the kvmtool branch asap. 
-Though the current development is based on Jean's branch for 
-virtio-iommu [1], I plan to rebase the changes to master soon.
-
-Thanks & regards
-Vivek
-
-[1] https://jpbrucker.net/git/kvmtool/log/?h=virtio-iommu/devel
+> Enable stall for devices that support it (opt-in by firmware). When an
+> event corresponds to a translation error, call the IOMMU fault handler.
+> If the fault is recoverable, it will call us back to terminate or
+> continue the stall.
 > 
-> Thanks,
-> Shameer
+> To use stall device drivers need to enable IOMMU_DEV_FEAT_IOPF, which
+> initializes the fault queue for the device.
 > 
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+Hi Jean-Phillipe, 
+
+Just one query below.  Either fix that or tell me why you don't need it and
+then I'm happy.  With that resolved
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+
+> git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index bb251cab61f3..ee66d1f4cb81 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -435,9 +435,13 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>  	return true;
+>  }
+>  
+> -static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
+> +bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
+>  {
+> -	return false;
+> +	/* We're not keeping track of SIDs in fault events */
+> +	if (master->num_streams != 1)
+> +		return false;
+> +
+> +	return master->stall_enabled;
+>  }
+>  
+>  bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
+> @@ -445,8 +449,8 @@ bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
+>  	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
+>  		return false;
+>  
+> -	/* SSID and IOPF support are mandatory for the moment */
+> -	return master->ssid_bits && arm_smmu_iopf_supported(master);
+> +	/* SSID support is mandatory for the moment */
+> +	return master->ssid_bits;
+>  }
+>  
+>  bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
+> @@ -459,13 +463,55 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
+>  	return enabled;
+>  }
+>  
+> +static int arm_smmu_master_sva_enable_iopf(struct arm_smmu_master *master)
+> +{
+> +	int ret;
+> +	struct device *dev = master->dev;
+> +
+> +	/*
+> +	 * Drivers for devices supporting PRI or stall should enable IOPF first.
+> +	 * Others have device-specific fault handlers and don't need IOPF.
+> +	 */
+> +	if (!arm_smmu_master_iopf_supported(master))
+
+So if we have master->iopf_enabled and this happens. Then I'm not totally sure
+what prevents the disable below running its cleanup on stuff that was never
+configured.
+
+> +		return 0;
+> +
+> +	if (!master->iopf_enabled)
+> +		return -EINVAL;
+> +
+> +	ret = iopf_queue_add_device(master->smmu->evtq.iopf, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
+> +	if (ret) {
+> +		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
+> +		return ret;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static void arm_smmu_master_sva_disable_iopf(struct arm_smmu_master *master)
+> +{
+> +	struct device *dev = master->dev;
+> +
+> +	if (!master->iopf_enabled)
+> +		return;
+
+As above, I think you need a sanity check on
+
+!arm_smmu_master_iopf_supported(master) before clearing the following.
+
+I may well be missing something that stops us getting here though.
+
+Alternative is probably to sanity check iopf_enabled = true is supported
+before letting a driver set it.
+
+
+> +
+> +	iommu_unregister_device_fault_handler(dev);
+> +	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
+> +}
+> +
+>  int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
+>  {
+> +	int ret;
+> +
+>  	mutex_lock(&sva_lock);
+> -	master->sva_enabled = true;
+> +	ret = arm_smmu_master_sva_enable_iopf(master);
+> +	if (!ret)
+> +		master->sva_enabled = true;
+>  	mutex_unlock(&sva_lock);
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
+> @@ -476,6 +522,7 @@ int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
+>  		mutex_unlock(&sva_lock);
+>  		return -EBUSY;
+>  	}
+> +	arm_smmu_master_sva_disable_iopf(master);
+>  	master->sva_enabled = false;
+>  	mutex_unlock(&sva_lock);
+>  
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 3afec6ed8075..39a59d297c3c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/amba/bus.h>
+>  
+>  #include "arm-smmu-v3.h"
+> +#include "../../iommu-sva-lib.h"
+>  
+>  static bool disable_bypass = true;
+>  module_param(disable_bypass, bool, 0444);
+> @@ -315,6 +316,11 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  		}
+>  		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
+>  		break;
+> +	case CMDQ_OP_RESUME:
+> +		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_SID, ent->resume.sid);
+> +		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_RESP, ent->resume.resp);
+> +		cmd[1] |= FIELD_PREP(CMDQ_RESUME_1_STAG, ent->resume.stag);
+> +		break;
+>  	case CMDQ_OP_CMD_SYNC:
+>  		if (ent->sync.msiaddr) {
+>  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+> @@ -878,6 +884,44 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
+>  	return arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
+>  }
+>  
+> +static int arm_smmu_page_response(struct device *dev,
+> +				  struct iommu_fault_event *unused,
+> +				  struct iommu_page_response *resp)
+> +{
+> +	struct arm_smmu_cmdq_ent cmd = {0};
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +	int sid = master->streams[0].id;
+> +
+> +	if (master->stall_enabled) {
+> +		cmd.opcode		= CMDQ_OP_RESUME;
+> +		cmd.resume.sid		= sid;
+> +		cmd.resume.stag		= resp->grpid;
+> +		switch (resp->code) {
+> +		case IOMMU_PAGE_RESP_INVALID:
+> +		case IOMMU_PAGE_RESP_FAILURE:
+> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
+> +			break;
+> +		case IOMMU_PAGE_RESP_SUCCESS:
+> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	} else {
+> +		return -ENODEV;
+> +	}
+> +
+> +	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
+> +	/*
+> +	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
+> +	 * RESUME consumption guarantees that the stalled transaction will be
+> +	 * terminated... at some point in the future. PRI_RESP is fire and
+> +	 * forget.
+> +	 */
+> +
+> +	return 0;
+> +}
+> +
+>  /* Context descriptor manipulation functions */
+>  void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
+>  {
+> @@ -988,7 +1032,6 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>  	u64 val;
+>  	bool cd_live;
+>  	__le64 *cdptr;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  
+>  	if (WARN_ON(ssid >= (1 << smmu_domain->s1_cfg.s1cdmax)))
+>  		return -E2BIG;
+> @@ -1033,8 +1076,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>  			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
+>  			CTXDESC_CD_0_V;
+>  
+> -		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
+> -		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+> +		if (smmu_domain->stall_enabled)
+>  			val |= CTXDESC_CD_0_S;
+>  	}
+>  
+> @@ -1278,7 +1320,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>  			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
+>  
+>  		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+> -		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+> +		    !master->stall_enabled)
+>  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+>  
+>  		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+> @@ -1355,7 +1397,6 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>  	return 0;
+>  }
+>  
+> -__maybe_unused
+>  static struct arm_smmu_master *
+>  arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+>  {
+> @@ -1382,9 +1423,96 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+>  }
+>  
+>  /* IRQ and event handlers */
+> +static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+> +{
+> +	int ret;
+> +	u32 reason;
+> +	u32 perm = 0;
+> +	struct arm_smmu_master *master;
+> +	bool ssid_valid = evt[0] & EVTQ_0_SSV;
+> +	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
+> +	struct iommu_fault_event fault_evt = { };
+> +	struct iommu_fault *flt = &fault_evt.fault;
+> +
+> +	/* Stage-2 is always pinned at the moment */
+> +	if (evt[1] & EVTQ_1_S2)
+> +		return -EFAULT;
+> +
+> +	master = arm_smmu_find_master(smmu, sid);
+> +	if (!master)
+> +		return -EINVAL;
+> +
+> +	if (evt[1] & EVTQ_1_RnW)
+> +		perm |= IOMMU_FAULT_PERM_READ;
+> +	else
+> +		perm |= IOMMU_FAULT_PERM_WRITE;
+> +
+> +	if (evt[1] & EVTQ_1_InD)
+> +		perm |= IOMMU_FAULT_PERM_EXEC;
+> +
+> +	if (evt[1] & EVTQ_1_PnU)
+> +		perm |= IOMMU_FAULT_PERM_PRIV;
+> +
+> +	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
+> +	case EVT_ID_TRANSLATION_FAULT:
+> +	case EVT_ID_ADDR_SIZE_FAULT:
+> +	case EVT_ID_ACCESS_FAULT:
+> +		reason = IOMMU_FAULT_REASON_PTE_FETCH;
+> +		break;
+> +	case EVT_ID_PERMISSION_FAULT:
+> +		reason = IOMMU_FAULT_REASON_PERMISSION;
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (evt[1] & EVTQ_1_STALL) {
+> +		flt->type = IOMMU_FAULT_PAGE_REQ;
+> +		flt->prm = (struct iommu_fault_page_request) {
+> +			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
+> +			.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
+> +			.perm = perm,
+> +			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
+> +		};
+> +
+> +		if (ssid_valid) {
+> +			flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> +			flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
+> +		}
+> +	} else {
+> +		flt->type = IOMMU_FAULT_DMA_UNRECOV;
+> +		flt->event = (struct iommu_fault_unrecoverable) {
+> +			.reason = reason,
+> +			.flags = IOMMU_FAULT_UNRECOV_ADDR_VALID |
+> +				 IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID,
+> +			.perm = perm,
+> +			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
+> +			.fetch_addr = FIELD_GET(EVTQ_3_IPA, evt[3]),
+> +		};
+> +
+> +		if (ssid_valid) {
+> +			flt->event.flags |= IOMMU_FAULT_UNRECOV_PASID_VALID;
+> +			flt->event.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
+> +		}
+> +	}
+> +
+> +	ret = iommu_report_device_fault(master->dev, &fault_evt);
+> +	if (ret && flt->type == IOMMU_FAULT_PAGE_REQ) {
+> +		/* Nobody cared, abort the access */
+> +		struct iommu_page_response resp = {
+> +			.pasid		= flt->prm.pasid,
+> +			.grpid		= flt->prm.grpid,
+> +			.code		= IOMMU_PAGE_RESP_FAILURE,
+> +		};
+> +		arm_smmu_page_response(master->dev, &fault_evt, &resp);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+>  {
+> -	int i;
+> +	int i, ret;
+>  	struct arm_smmu_device *smmu = dev;
+>  	struct arm_smmu_queue *q = &smmu->evtq.q;
+>  	struct arm_smmu_ll_queue *llq = &q->llq;
+> @@ -1394,6 +1522,10 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+>  		while (!queue_remove_raw(q, evt)) {
+>  			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
+>  
+> +			ret = arm_smmu_handle_evt(smmu, evt);
+> +			if (!ret)
+> +				continue;
+> +
+>  			dev_info(smmu->dev, "event 0x%02x received:\n", id);
+>  			for (i = 0; i < ARRAY_SIZE(evt); ++i)
+>  				dev_info(smmu->dev, "\t0x%016llx\n",
+> @@ -1928,6 +2060,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+>  
+>  	cfg->s1cdmax = master->ssid_bits;
+>  
+> +	smmu_domain->stall_enabled = master->stall_enabled;
+> +
+>  	ret = arm_smmu_alloc_cd_tables(smmu_domain);
+>  	if (ret)
+>  		goto out_free_asid;
+> @@ -2275,6 +2409,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  			smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
+>  		ret = -EINVAL;
+>  		goto out_unlock;
+> +	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+> +		   smmu_domain->stall_enabled != master->stall_enabled) {
+> +		dev_err(dev, "cannot attach to stall-%s domain\n",
+> +			smmu_domain->stall_enabled ? "enabled" : "disabled");
+> +		ret = -EINVAL;
+> +		goto out_unlock;
+>  	}
+>  
+>  	master->domain = smmu_domain;
+> @@ -2510,6 +2650,11 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+>  		master->ssid_bits = min_t(u8, master->ssid_bits,
+>  					  CTXDESC_LINEAR_CDMAX);
+>  
+> +	if ((smmu->features & ARM_SMMU_FEAT_STALLS &&
+> +	     device_property_read_bool(dev, "dma-can-stall")) ||
+> +	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+> +		master->stall_enabled = true;
+> +
+>  	return &smmu->iommu;
+>  
+>  err_free_master:
+> @@ -2527,7 +2672,8 @@ static void arm_smmu_release_device(struct device *dev)
+>  		return;
+>  
+>  	master = dev_iommu_priv_get(dev);
+> -	WARN_ON(arm_smmu_master_sva_enabled(master));
+> +	if (WARN_ON(arm_smmu_master_sva_enabled(master)))
+> +		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
+>  	arm_smmu_detach_dev(master);
+>  	arm_smmu_disable_pasid(master);
+>  	arm_smmu_remove_master(master);
+> @@ -2655,6 +2801,8 @@ static bool arm_smmu_dev_has_feature(struct device *dev,
+>  		return false;
+>  
+>  	switch (feat) {
+> +	case IOMMU_DEV_FEAT_IOPF:
+> +		return arm_smmu_master_iopf_supported(master);
+>  	case IOMMU_DEV_FEAT_SVA:
+>  		return arm_smmu_master_sva_supported(master);
+>  	default:
+> @@ -2671,6 +2819,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
+>  		return false;
+>  
+>  	switch (feat) {
+> +	case IOMMU_DEV_FEAT_IOPF:
+> +		return master->iopf_enabled;
+>  	case IOMMU_DEV_FEAT_SVA:
+>  		return arm_smmu_master_sva_enabled(master);
+>  	default:
+> @@ -2681,6 +2831,8 @@ static bool arm_smmu_dev_feature_enabled(struct device *dev,
+>  static int arm_smmu_dev_enable_feature(struct device *dev,
+>  				       enum iommu_dev_features feat)
+>  {
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +
+>  	if (!arm_smmu_dev_has_feature(dev, feat))
+>  		return -ENODEV;
+>  
+> @@ -2688,8 +2840,11 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
+>  		return -EBUSY;
+>  
+>  	switch (feat) {
+> +	case IOMMU_DEV_FEAT_IOPF:
+> +		master->iopf_enabled = true;
+> +		return 0;
+>  	case IOMMU_DEV_FEAT_SVA:
+> -		return arm_smmu_master_enable_sva(dev_iommu_priv_get(dev));
+> +		return arm_smmu_master_enable_sva(master);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -2698,12 +2853,17 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
+>  static int arm_smmu_dev_disable_feature(struct device *dev,
+>  					enum iommu_dev_features feat)
+>  {
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +
+>  	if (!arm_smmu_dev_feature_enabled(dev, feat))
+>  		return -EINVAL;
+>  
+>  	switch (feat) {
+> +	case IOMMU_DEV_FEAT_IOPF:
+> +		master->iopf_enabled = false;
+> +		return 0;
+>  	case IOMMU_DEV_FEAT_SVA:
+> -		return arm_smmu_master_disable_sva(dev_iommu_priv_get(dev));
+> +		return arm_smmu_master_disable_sva(master);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -2734,6 +2894,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.sva_bind		= arm_smmu_sva_bind,
+>  	.sva_unbind		= arm_smmu_sva_unbind,
+>  	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+> +	.page_response		= arm_smmu_page_response,
+>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>  };
+>  
+> @@ -2831,6 +2992,13 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  	if (ret)
+>  		return ret;
+>  
+> +	if ((smmu->features & ARM_SMMU_FEAT_SVA) &&
+> +	    (smmu->features & ARM_SMMU_FEAT_STALLS)) {
+> +		smmu->evtq.iopf = iopf_queue_alloc(dev_name(smmu->dev));
+> +		if (!smmu->evtq.iopf)
+> +			return -ENOMEM;
+> +	}
+> +
+>  	/* priq */
+>  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+>  		return 0;
+> @@ -3746,6 +3914,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>  	iommu_device_unregister(&smmu->iommu);
+>  	iommu_device_sysfs_remove(&smmu->iommu);
+>  	arm_smmu_device_disable(smmu);
+> +	iopf_queue_free(smmu->evtq.iopf);
+>  
+>  	return 0;
+>  }
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
