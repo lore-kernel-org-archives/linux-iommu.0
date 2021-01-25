@@ -2,73 +2,114 @@ Return-Path: <SRS0=REuq=G4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3B2C433E0
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:47 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CB3C433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 04:19:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D385227BF
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D385227BF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B7D2B207B6
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 04:19:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7D2B207B6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id F02A020477;
-	Mon, 25 Jan 2021 02:47:46 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 48A3A870CF;
+	Mon, 25 Jan 2021 04:19:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ddFlsel9nVo6; Mon, 25 Jan 2021 02:47:46 +0000 (UTC)
+	with ESMTP id kb+-0cc6y6vd; Mon, 25 Jan 2021 04:19:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0056120459;
-	Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 42B3A870B2;
+	Mon, 25 Jan 2021 04:19:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF71AC0FA7;
-	Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 153D7C0FA7;
+	Mon, 25 Jan 2021 04:19:03 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BB56BC013A
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:44 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 46791C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 04:19:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AA8D3859D2
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:44 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2B8D285B2F
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 04:19:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wXnthZcl6JQD for <iommu@lists.linux-foundation.org>;
- Mon, 25 Jan 2021 02:47:41 +0000 (UTC)
+ with ESMTP id LLvpk3IykKwr for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 04:18:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C7CAD858C9
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:41 +0000 (UTC)
-IronPort-SDR: /vJJuyfSnD2B3d0w5Zh4Tll8YqmO98GA10O1hQTbLGtajTgl/f/I+cbITlz0MA/u+cg+Q4+4a9
- Zagd8pdzfFOA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="176142185"
-X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="176142185"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Jan 2021 18:47:41 -0800
-IronPort-SDR: WeXR2VEVsyFBkOjSYPpSk2ah5QJPSUdaMi3VJNH/t+4mau1C4+8leY1pSUi88mAp1HnwxpOERh
- 0mNFrTkQMKaA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="429029476"
-Received: from allen-box.sh.intel.com ([10.239.159.128])
- by orsmga001.jf.intel.com with ESMTP; 24 Jan 2021 18:47:39 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Chuck Lever <chuck.lever@oracle.com>
-Subject: [RFT PATCH 3/3] iommu/vt-d: Add iotlb_sync_map callback
-Date: Mon, 25 Jan 2021 10:38:58 +0800
-Message-Id: <20210125023858.570175-4-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210125023858.570175-1-baolu.lu@linux.intel.com>
-References: <20210125023858.570175-1-baolu.lu@linux.intel.com>
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com
+ [209.85.218.44])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BF72C8589C
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 04:18:58 +0000 (UTC)
+Received: by mail-ej1-f44.google.com with SMTP id kg20so15552630ejc.4
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Jan 2021 20:18:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=7721dlJPZvDFhnAf95LAPXT+oZp1lxviWE77mw7HK+U=;
+ b=SXq9WvCYjx+sURGFGLAN6Wm6XqFMMchLtBACjmn9qBfKXDuuUZ3Fo/ER0ztlotmV/v
+ PY0hEUxGJS/NL8sHDk7inym5NljXC56SLvLIAIG1DZHLVAJ2oyZXPDKEW3SgxTcZH1ak
+ WuH9jtCc6/IjW2/0Z/HdQUbhnKUOu53QnVcvI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=7721dlJPZvDFhnAf95LAPXT+oZp1lxviWE77mw7HK+U=;
+ b=eq960W5+DSZXdqw2UmlUfC5umJK8XEOP/Z3uF7E3/av6GvbEBjsGvDHLemHOD/6397
+ qC3yyvBLXz+/bmKvOOBiw5KoQaK0FE+S0lUa3Yko62CdO81q687Yz3Lp30fbPMWZQqIC
+ qusNaMVnG6ASmUuLl3HTdNaHK4xwQwHhRV/MCQ6wrNTqLF8fFs8Q3+cICx6ILfjMqO12
+ fv5/MQ8Xgt74tAt8DFFCfXnQpoHTqj4UmDVmKWlrCJRFSLD6SmJOm8iCZFD8VZojTCzY
+ O9HnoEPnkGSU/+HMEooutNGwVsF2jqZop5roQT20ImV3zYZXRnPPPoOxUKbtXXeOvBzD
+ L4mQ==
+X-Gm-Message-State: AOAM530j2gf5W4mErautyuCWQlTbG7CeNvwWWBi5V4muldjIetkv+8kr
+ 73w/ginE3ZGpc7jY03f2Rb5bEreon1TwQQ==
+X-Google-Smtp-Source: ABdhPJzWXrgyTdJN8GhShO1XDb0j8LGbGm8lwkC1ZXFLtv3FBssS9rmpyAMutxFhOevJTQvwniGwEA==
+X-Received: by 2002:a17:906:1302:: with SMTP id
+ w2mr137042ejb.413.1611548336744; 
+ Sun, 24 Jan 2021 20:18:56 -0800 (PST)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com.
+ [209.85.221.45])
+ by smtp.gmail.com with ESMTPSA id e7sm7728949ejb.19.2021.01.24.20.18.55
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 24 Jan 2021 20:18:55 -0800 (PST)
+Received: by mail-wr1-f45.google.com with SMTP id q7so10827891wre.13
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Jan 2021 20:18:55 -0800 (PST)
+X-Received: by 2002:adf:8295:: with SMTP id 21mr150008wrc.32.1611548334703;
+ Sun, 24 Jan 2021 20:18:54 -0800 (PST)
 MIME-Version: 1.0
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>
+References: <20201209080102.26626-1-yong.wu@mediatek.com>
+ <20201209080102.26626-7-yong.wu@mediatek.com>
+ <X+L9XpkoII7tw/tX@chromium.org> <1608809713.26323.262.camel@mhfsdcap03>
+ <CAAFQd5CCJv=0q=V45Z7mtq7FSq1c5TcH6vyqfp3MWxaA=ZexJQ@mail.gmail.com>
+ <1610520301.31716.27.camel@mhfsdcap03>
+ <CAAFQd5A26tZo3gpsmqbRSa3x7a1KThzt9Jw74jWsqQGrBsabhw@mail.gmail.com>
+ <1611126445.19055.34.camel@mhfsdcap03>
+In-Reply-To: <1611126445.19055.34.camel@mhfsdcap03>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Mon, 25 Jan 2021 13:18:44 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5C3G=eE+dwOK0Vg=tcSR8LFWWG1YDta3=9nZ1G0Bv7dcA@mail.gmail.com>
+Message-ID: <CAAFQd5C3G=eE+dwOK0Vg=tcSR8LFWWG1YDta3=9nZ1G0Bv7dcA@mail.gmail.com>
+Subject: Re: [PATCH v5 06/27] dt-bindings: mediatek: Add binding for mt8192
+ IOMMU
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, linux-devicetree <devicetree@vger.kernel.org>,
+ Nicolas Boichat <drinkcat@chromium.org>,
+ srv_heupstream <srv_heupstream@mediatek.com>, Will Deacon <will@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Evan Green <evgreen@chromium.org>, chao.hao@mediatek.com,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,163 +127,228 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some Intel VT-d hardware implementations don't support memory coherency
-for page table walk (presented by the Page-Walk-coherency bit in the
-ecap register), so that software must flush the corresponding CPU cache
-lines explicitly after each page table entry update.
+On Wed, Jan 20, 2021 at 4:08 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> On Wed, 2021-01-20 at 13:15 +0900, Tomasz Figa wrote:
+> > On Wed, Jan 13, 2021 at 3:45 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> > >
+> > > On Wed, 2021-01-13 at 14:30 +0900, Tomasz Figa wrote:
+> > > > On Thu, Dec 24, 2020 at 8:35 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> > > > >
+> > > > > On Wed, 2020-12-23 at 17:18 +0900, Tomasz Figa wrote:
+> > > > > > On Wed, Dec 09, 2020 at 04:00:41PM +0800, Yong Wu wrote:
+> > > > > > > This patch adds decriptions for mt8192 IOMMU and SMI.
+> > > > > > >
+> > > > > > > mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
+> > > > > > > table format. The M4U-SMI HW diagram is as below:
+> > > > > > >
+> > > > > > >                           EMI
+> > > > > > >                            |
+> > > > > > >                           M4U
+> > > > > > >                            |
+> > > > > > >                       ------------
+> > > > > > >                        SMI Common
+> > > > > > >                       ------------
+> > > > > > >                            |
+> > > > > > >   +-------+------+------+----------------------+-------+
+> > > > > > >   |       |      |      |       ......         |       |
+> > > > > > >   |       |      |      |                      |       |
+> > > > > > > larb0   larb1  larb2  larb4     ......      larb19   larb20
+> > > > > > > disp0   disp1   mdp    vdec                   IPE      IPE
+> > > > > > >
+> > > > > > > All the connections are HW fixed, SW can NOT adjust it.
+> > > > > > >
+> > > > > > > mt8192 M4U support 0~16GB iova range. we preassign different engines
+> > > > > > > into different iova ranges:
+> > > > > > >
+> > > > > > > domain-id  module     iova-range                  larbs
+> > > > > > >    0       disp        0 ~ 4G                      larb0/1
+> > > > > > >    1       vcodec      4G ~ 8G                     larb4/5/7
+> > > > > > >    2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
+> > > > > >
+> > > > > > Why do we preassign these addresses in DT? Shouldn't it be a user's or
+> > > > > > integrator's decision to split the 16 GB address range into sub-ranges
+> > > > > > and define which larbs those sub-ranges are shared with?
+> > > > >
+> > > > > The problem is that we can't split the 16GB range with the larb as unit.
+> > > > > The example is the below ccu0(larb13 port9/10) is a independent
+> > > > > range(domain), the others ports in larb13 is in another domain.
+> > > > >
+> > > > > disp/vcodec/cam/mdp don't have special iova requirement, they could
+> > > > > access any range. vcodec also can locate 8G~12G. it don't care about
+> > > > > where its iova locate. here I preassign like this following with our
+> > > > > internal project setting.
+> > > >
+> > > > Let me try to understand this a bit more. Given the split you're
+> > > > proposing, is there actually any isolation enforced between particular
+> > > > domains? For example, if I program vcodec to with a DMA address from
+> > > > the 0-4G range, would the IOMMU actually generate a fault, even if
+> > > > disp had some memory mapped at that address?
+> > >
+> > > In this case. we will get fault in current SW setting.
+> > >
+> >
+> > Okay, thanks.
+> >
+> > > >
+> > > > >
+> > > > > Why set this in DT?, this is only for simplifying the code. Assume we
+> > > > > put it in the platform data. We have up to 32 larbs, each larb has up to
+> > > > > 32 ports, each port may be in different iommu domains. we should have a
+> > > > > big array for this..however we only use a macro to get the domain in the
+> > > > > DT method.
+> > > > >
+> > > > > When replying this mail, I happen to see there is a "dev->dev_range_map"
+> > > > > which has "dma-range" information, I think I could use this value to get
+> > > > > which domain the device belong to. then no need put domid in DT. I will
+> > > > > test this.
+> > > >
+> > > > My feeling is that the only part that needs to be enforced statically
+> > > > is the reserved IOVA range for CCUs. The other ranges should be
+> > > > determined dynamically, although I think I need to understand better
+> > > > how the hardware and your proposed design work to tell what would be
+> > > > likely the best choice here.
+> > >
+> > > I have removed the domid patch in v6. and get the domain id in [27/33]
+> > > in v6..
+> > >
+> > > About the other ranges should be dynamical, the commit message [30/33]
+> > > of v6 should be helpful. the problem is that we have a bank_sel setting
+> > > for the iova[32:33]. currently we preassign this value. thus, all the
+> > > ranges are fixed. If you adjust this setting, you can let vcodec access
+> > > 0~4G.
+> >
+> > Okay, so it sounds like we effectively have four 4G address spaces and
+> > we can assign the master devices to them. I guess each of these
+> > address spaces makes for an IOMMU group.
+>
+> Yes. Each a address spaces is an IOMMU group.
+>
+> >
+> > It's fine to pre-assign the devices to those groups for now, but it
+> > definitely shouldn't be hardcoded in DT, because it depends on the use
+> > case of the device. I'll take a look at v6, but it sounds like it
+> > should be fine if it doesn't take the address space assignment from DT
+> > anymore.
+>
+> Thanks very much for your review.
+>
 
-The iommu_map_sg() code iterates through the given scatter-gather list
-and invokes iommu_map() for each element in the scatter-gather list,
-which calls into the vendor IOMMU driver through iommu_ops callback. As
-the result, a single sg mapping may lead to multiple cache line flushes,
-which leads to the degradation of I/O performance after the commit
-<c588072bba6b5> ("iommu/vt-d: Convert intel iommu driver to the iommu
-ops").
+Hmm, I had a look at v6 and it still has the address spaces hardcoded
+in the DTS. Could we move the fixed assignment to the MTK IOMMU driver
+code instead, so that it can be easily adjusted as the kernel code
+evolves without the need to update the DTS?
 
-Fix this by adding iotlb_sync_map callback and centralizing the clflush
-operations after all sg mappings.
+> >
+> > >
+> > > Currently we have no interface to adjust this setting. Suppose we add a
+> > > new interface for this. It would be something like:
+> > >
+> > >    int mtk_smi_larb_config_banksel(struct device *larb, int banksel)
+> > >
+> > >    Then, all the MM drivers should call it before the HW works every
+> > > time, and its implement will be a bit complex since we aren't sure if
+> > > the larb has power at that time. the important thing is that the MM
+> > > devices have already not known which larb it connects with as we plan to
+> > > delete "mediatek,larb" in their dtsi nodes.
+> >
+> > From the practical point of view, it doesn't look like setting this on
+> > a per-larb basis would make much sense. The reason to switch the
+> > bank_sel would be to decide which MM devices can share the same
+> > address space. This is a security aspect, because it effectively
+> > determines which devices are isolated from each other.
+> >
+> > That said, I agree that for now we can just start with a fixed
+> > assignment. We can think of the API if there is a need to adjust the
+> > assignment.
+>
+> Sorry for here. I forgot a thing here. that interface above still will
+> not be helpful. If we don't divide the whole 16GB ranges into 4
+> regions(let all the other ranges be dynamical), It won't work since we
+> can only adjust bank_sel with the larb as unit. This is a problem. there
+> are many ports in a larb. Take a example, the address for vcodec read
+> port is 32bits while the address for vcodec write port is 33bit, then it
+> will fail since we only have one bank_sel setting for one larb.
 
-Fixes: c588072bba6b5 ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
-Reported-by: Chuck Lever <chuck.lever@oracle.com>
-Link: https://lore.kernel.org/linux-iommu/D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/intel/iommu.c | 86 +++++++++++++++++++++++++------------
- 1 file changed, 58 insertions(+), 28 deletions(-)
+That's exactly why I proposed to have the API operate based on the
+struct device, rather than individual DMA ports. Although I guess the
+CCU case is different, because it's the same larb as the camera.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index f665322a0991..f5a236e63ded 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2383,34 +2383,14 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 		 * recalculate 'pte' and switch back to smaller pages for the
- 		 * end of the mapping, if the trailing size is not enough to
- 		 * use another superpage (i.e. nr_pages < lvl_pages).
-+		 *
-+		 * We leave clflush for the leaf pte changes to iotlb_sync_map()
-+		 * callback.
- 		 */
- 		pte++;
- 		if (!nr_pages || first_pte_in_page(pte) ||
--		    (largepage_lvl > 1 && nr_pages < lvl_pages)) {
--			domain_flush_cache(domain, first_pte,
--					   (void *)pte - (void *)first_pte);
-+		    (largepage_lvl > 1 && nr_pages < lvl_pages))
- 			pte = NULL;
--		}
--	}
--
--	return 0;
--}
--
--static int
--domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
--	       unsigned long phys_pfn, unsigned long nr_pages, int prot)
--{
--	int iommu_id, ret;
--	struct intel_iommu *iommu;
--
--	/* Do the real mapping first */
--	ret = __domain_mapping(domain, iov_pfn, phys_pfn, nr_pages, prot);
--	if (ret)
--		return ret;
--
--	for_each_domain_iommu(iommu_id, domain) {
--		iommu = g_iommus[iommu_id];
--		__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
- 	}
- 
- 	return 0;
-@@ -4943,7 +4923,6 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	u64 max_addr;
- 	int prot = 0;
--	int ret;
- 
- 	if (iommu_prot & IOMMU_READ)
- 		prot |= DMA_PTE_READ;
-@@ -4969,9 +4948,8 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 	/* Round up size to next multiple of PAGE_SIZE, if it and
- 	   the low bits of hpa would take us onto the next page */
- 	size = aligned_nrpages(hpa, size);
--	ret = domain_mapping(dmar_domain, iova >> VTD_PAGE_SHIFT,
--			     hpa >> VTD_PAGE_SHIFT, size, prot);
--	return ret;
-+	return __domain_mapping(dmar_domain, iova >> VTD_PAGE_SHIFT,
-+				hpa >> VTD_PAGE_SHIFT, size, prot);
- }
- 
- static size_t intel_iommu_unmap(struct iommu_domain *domain,
-@@ -5478,6 +5456,57 @@ static bool risky_device(struct pci_dev *pdev)
- 	return false;
- }
- 
-+static void clflush_sync_map(struct dmar_domain *domain, unsigned long clf_pfn,
-+			     unsigned long clf_pages)
-+{
-+	struct dma_pte *first_pte = NULL, *pte = NULL;
-+	unsigned long lvl_pages = 0;
-+	int level = 0;
-+
-+	while (clf_pages > 0) {
-+		if (!pte) {
-+			level = 0;
-+			pte = pfn_to_dma_pte(domain, clf_pfn, &level);
-+			if (WARN_ON(!pte))
-+				return;
-+			first_pte = pte;
-+			lvl_pages = lvl_to_nr_pages(level);
-+		}
-+
-+		if (WARN_ON(!lvl_pages || clf_pages < lvl_pages))
-+			return;
-+
-+		clf_pages -= lvl_pages;
-+		clf_pfn += lvl_pages;
-+		pte++;
-+
-+		if (!clf_pages || first_pte_in_page(pte) ||
-+		    (level > 1 && clf_pages < lvl_pages)) {
-+			domain_flush_cache(domain, first_pte,
-+					   (void *)pte - (void *)first_pte);
-+			pte = NULL;
-+		}
-+	}
-+}
-+
-+static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned long pages = aligned_nrpages(iova, size);
-+	unsigned long pfn = iova >> VTD_PAGE_SHIFT;
-+	struct intel_iommu *iommu;
-+	int iommu_id;
-+
-+	if (!dmar_domain->iommu_coherency)
-+		clflush_sync_map(dmar_domain, pfn, pages);
-+
-+	for_each_domain_iommu(iommu_id, dmar_domain) {
-+		iommu = g_iommus[iommu_id];
-+		__mapping_notify_one(iommu, dmar_domain, pfn, pages);
-+	}
-+}
-+
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5490,6 +5519,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.aux_detach_dev		= intel_iommu_aux_detach_device,
- 	.aux_get_pasid		= intel_iommu_aux_get_pasid,
- 	.map			= intel_iommu_map,
-+	.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
- 	.unmap			= intel_iommu_unmap,
- 	.flush_iotlb_all        = intel_flush_iotlb_all,
- 	.iotlb_sync		= intel_iommu_tlb_sync,
--- 
-2.25.1
+Anyway, I agree that we don't have to come up with such an API right now.
 
+> Thus we
+> have to use current design.
+>
+> >
+> > >
+> > >    In current design, the MM device don't need care about it and 4GB
+> > > range is enough for them.
+> > >
+> >
+> > Actually, is the current assignment correct?
+>
+> Oh. In the code (patch [32/33] of v6), I put CCU0/1 in the cam/mdp
+> region which start at 8G since CCU0/1 is a module of camera.
+>
+> >
+> > domain-id  module     iova-range                  larbs
+> >    0       disp        0 ~ 4G                      larb0/1
+> >    1       vcodec      4G ~ 8G                     larb4/5/7
+> >    2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
+> >    3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
+> >    4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
+> >
+> > Wouldn't CCU0 and CCU1 conflict with disp?
+>
+> About the conflict, I use patch [29/33] of v6 for this. I will reserve
+> this special iova region when the full domain(0-4G in this example)
+> initialize.
+>
+> > Should perhaps disp be assigned 12G ~ 16G instead?
+>
+> I think no need put it to 12G-16G, In previous SoC, we have only 4GB
+> ranges for whole MM engines. currently only cam/mdp domain exclude 128M
+> for CCU. it should be something wrong if this is not enough.
+>
+
+Indeed, space is not a problem, but from the security point of view
+it's undesirable. I believe CCU would be running proprietary firmware,
+so it should be isolated as much as possible from other components.
+And, after all, why waste the remaining 4G of address space?
+
+Best regards,
+Tomasz
+
+> >
+> > Best regards,
+> > Tomasz
+> >
+> > > >
+> > > > Best regards,
+> > > > Tomasz
+> > > >
+> > > > >
+> > > > > Thanks.
+> > > > > >
+> > > > > > Best regards,
+> > > > > > Tomasz
+> > > > > >
+> > > > > > >    3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
+> > > > > > >    4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
+> > > > > > >
+> > > > > > > The iova range for CCU0/1(camera control unit) is HW requirement.
+> > > > > > >
+> > > > > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > > > > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > > > > ---
+> > > > > > >  .../bindings/iommu/mediatek,iommu.yaml        |  18 +-
+> > > > > > >  include/dt-bindings/memory/mt8192-larb-port.h | 240 ++++++++++++++++++
+> > > > > > >  2 files changed, 257 insertions(+), 1 deletion(-)
+> > > > > > >  create mode 100644 include/dt-bindings/memory/mt8192-larb-port.h
+> > > > > > >
+> > > > > [snip]
+> > >
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
