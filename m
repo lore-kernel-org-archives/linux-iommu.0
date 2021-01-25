@@ -2,70 +2,88 @@ Return-Path: <SRS0=REuq=G4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8054BC433E6
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 09:29:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0589CC433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 10:11:19 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 06A4A224B1
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 09:29:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 06A4A224B1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 702DE229C4
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 10:11:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 702DE229C4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 93D2385DF7;
-	Mon, 25 Jan 2021 09:29:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EC7FD87480;
+	Mon, 25 Jan 2021 10:11:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uts_OWpm5JX3; Mon, 25 Jan 2021 09:29:02 +0000 (UTC)
+	with ESMTP id IsFtkThqI4sm; Mon, 25 Jan 2021 10:11:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8E57F85D44;
-	Mon, 25 Jan 2021 09:29:02 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DEC3C8746D;
+	Mon, 25 Jan 2021 10:11:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A5E7C0FA7;
-	Mon, 25 Jan 2021 09:29:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF349C013A
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 09:29:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDB9AC0FA7;
+	Mon, 25 Jan 2021 10:11:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C630C013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 10:11:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9CDB887243
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 09:29:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id E4874272F5
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 10:11:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qvTOZVVRwn06 for <iommu@lists.linux-foundation.org>;
- Mon, 25 Jan 2021 09:29:01 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 07C288701B
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 09:29:00 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CEFAC22472;
- Mon, 25 Jan 2021 09:28:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1611566940;
- bh=wF0JYx7C+UwAIZY8ksPAuFgLqtbCeO/VruEju37N6uo=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=UVmpbLLUS17+Ue9duoUlgwPZAao35PSkhItEGsD+FSck0iLnOluYZsuOCgXE0g4wP
- hnC+b2Znk45U2PhKkTOSc/4ceGhIqgsz6tRKk3YKakkpX4LC3bDpYNsNZEW3EsXbZA
- pwRl84JwfoH8fc2R3mBJb8Zj75Gsf4+nt7Qi4xSQ=
-Date: Mon, 25 Jan 2021 10:28:57 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Zhou Wang <wangzhou1@hisilicon.com>
-Subject: Re: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Message-ID: <YA6PWSs8dxsHEpY+@kroah.com>
-References: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
+ with ESMTP id V0asl1-S7cKV for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 10:11:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by silver.osuosl.org (Postfix) with ESMTP id A6703272E0
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 10:11:11 +0000 (UTC)
+X-UUID: d00b039ff7fc4da48cc5d66e8a1fd2c7-20210125
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=y2RDQNIxeBbr5oP9MQDxQ2RnX+SiaVSuN0aKLK4cDXM=; 
+ b=gLX+kveBxzWW8RV3tiF5QN0UxdfmN7/caF+k+1COnfxq0yOYWrMGjOO72MProaUbXwJVfNLwYUs5ry65eGDhtMou/7BexP1I5T+/5kwWC2n2qQBCsebSvCnUZVodLaGaqLL/rGBW9EijtNy3xeDX3972NtSbOpICq0pGIue0/BY=;
+X-UUID: d00b039ff7fc4da48cc5d66e8a1fd2c7-20210125
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1075218079; Mon, 25 Jan 2021 18:11:06 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
+ (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Mon, 25 Jan 2021 18:11:00 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 18:11:00 +0800
+Message-ID: <1611569460.5302.7.camel@mhfsdcap03>
+Subject: Re: [PATCH 3/3] memory: mtk-smi: Switch MTK_SMI to tristate
+From: Yong Wu <yong.wu@mediatek.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Mon, 25 Jan 2021 18:11:00 +0800
+In-Reply-To: <20210125084450.wurwhi2hbbuueapy@kozik-lap>
+References: <20210121062429.26504-1-yong.wu@mediatek.com>
+ <20210121062429.26504-4-yong.wu@mediatek.com>
+ <20210122213558.qnboqc4obdmipxs4@kozik-lap>
+ <1611557384.3184.22.camel@mhfsdcap03>
+ <20210125084450.wurwhi2hbbuueapy@kozik-lap>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
-Cc: Sihang Chen <chensihang1@hisilicon.com>, Arnd Bergmann <arnd@arndb.de>,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Zhangfei Gao <zhangfei.gao@linaro.org>,
- liguozhu@hisilicon.com, linux-accelerators@lists.ozlabs.org
+X-TM-SNTS-SMTP: C65905790A739B480B6FC175A3CD459FDCB438FD07C4250FE662618E0D5C5FF12000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ yi.kuo@mediatek.com, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,71 +101,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jan 25, 2021 at 04:34:56PM +0800, Zhou Wang wrote:
-> +static int uacce_pin_page(struct uacce_pin_container *priv,
-> +			  struct uacce_pin_address *addr)
-> +{
-> +	unsigned int flags = FOLL_FORCE | FOLL_WRITE;
-> +	unsigned long first, last, nr_pages;
-> +	struct page **pages;
-> +	struct pin_pages *p;
-> +	int ret;
-> +
-> +	first = (addr->addr & PAGE_MASK) >> PAGE_SHIFT;
-> +	last = ((addr->addr + addr->size - 1) & PAGE_MASK) >> PAGE_SHIFT;
-> +	nr_pages = last - first + 1;
-> +
-> +	pages = vmalloc(nr_pages * sizeof(struct page *));
-> +	if (!pages)
-> +		return -ENOMEM;
-> +
-> +	p = kzalloc(sizeof(*p), GFP_KERNEL);
-> +	if (!p) {
-> +		ret = -ENOMEM;
-> +		goto free;
-> +	}
-> +
-> +	ret = pin_user_pages_fast(addr->addr & PAGE_MASK, nr_pages,
-> +				  flags | FOLL_LONGTERM, pages);
-> +	if (ret != nr_pages) {
-> +		pr_err("uacce: Failed to pin page\n");
-> +		goto free_p;
-> +	}
-> +	p->first = first;
-> +	p->nr_pages = nr_pages;
-> +	p->pages = pages;
-> +
-> +	ret = xa_err(xa_store(&priv->array, p->first, p, GFP_KERNEL));
-> +	if (ret)
-> +		goto unpin_pages;
-> +
-> +	return 0;
-> +
-> +unpin_pages:
-> +	unpin_user_pages(pages, nr_pages);
-> +free_p:
-> +	kfree(p);
-> +free:
-> +	vfree(pages);
-> +	return ret;
-> +}
+On Mon, 2021-01-25 at 09:44 +0100, Krzysztof Kozlowski wrote:
+> On Mon, Jan 25, 2021 at 02:49:44PM +0800, Yong Wu wrote:
+> > On Fri, 2021-01-22 at 22:35 +0100, Krzysztof Kozlowski wrote:
+> > > On Thu, Jan 21, 2021 at 02:24:29PM +0800, Yong Wu wrote:
+> > > > This patch switches MTK_SMI to tristate. Support it could be 'm'.
+> > > > 
+> > > > Meanwhile, Fix a build issue while MTK_SMI is built as module.
+> > > 
+> > > s/Fix/fix.
+> > > 
+> > > What error is being fixed here? How can I reproduce it? Aren't you just
+> > > adjusting it to being buildable by module?
+> > 
+> > Sorry, I didn't copy the fail log here. This is the build log:
+> > 
+> > In file included from .../drivers/iommu/mtk_iommu.c:34:0:
+> > .../drivers/iommu/mtk_iommu.h:84:28: error: array type has incomplete
+> > element type 'struct mtk_smi_larb_iommu'
+> >   struct mtk_smi_larb_iommu larb_imu[MTK_LARB_NR_MAX];
+> > 
+> > Our iommu driver will use this structure. but it was contained by
+> > "#ifdef CONFIG_MTK_SMI". thus I change it to "#if
+> > IS_ENABLED(CONFIG_MTK_SMI)"
+> > 
+> > If reproducing it, we should change mtk-iommu to module_init[1]. and
+> > switch kconfig MTK_IOMMU to tristate, then change the CONFIG_MTK_IOMMU
+> > to m. we could get the fail log.
+> > 
+> > In this case, Should I squash this change into this patch? I though this
+> > is a preparing patch and the fail is caused by MTK_SMI. thus I squash
+> > that into this patch. or change it as a independent patch and send when
+> > I change MTK_IOMMU to tristate?
+> 
+> If I understand correctly, there is no error before this patch. In such
+> case just don't mention the error to fix, because it is simply part of
+> making things modular.
 
-No error checking on the memory locations or size of memory to be
-'pinned', what could ever go wrong?
+Yes. No error before this patch.
 
-Note, this opens a huge hole in the kernel that needs to be documented
-really really really well somewhere, as it can cause very strange
-results if you do not know exactly what you are doing, which is why I am
-going to require that the mm developers sign off on this type of thing.
+Appreciate for your help. I will remove this in the comment message in
+the next version.
 
-And to give more context, I really don't think this is needed, but if it
-is, it should be a new syscall, not buried in an ioctl for a random
-misc driver, but the author seems to want it tied to this specific
-driver...
+> 
+> Best regards,
+> Krzysztof
+> 
 
-thanks,
-
-greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
