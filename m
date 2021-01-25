@@ -7,69 +7,68 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8396FC433E0
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3B2C433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:47 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43FBF225AC
-	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43FBF225AC
+	by mail.kernel.org (Postfix) with ESMTPS id 3D385227BF
+	for <iommu@archiver.kernel.org>; Mon, 25 Jan 2021 02:47:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D385227BF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 344F5868D4;
-	Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F02A020477;
+	Mon, 25 Jan 2021 02:47:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id J+EY7H1nCDj9; Mon, 25 Jan 2021 02:47:43 +0000 (UTC)
+	with ESMTP id ddFlsel9nVo6; Mon, 25 Jan 2021 02:47:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C4CD98688D;
-	Mon, 25 Jan 2021 02:47:43 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0056120459;
+	Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A62F6C0FA7;
-	Mon, 25 Jan 2021 02:47:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF71AC0FA7;
+	Mon, 25 Jan 2021 02:47:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6334CC0FA7
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BB56BC013A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 50F6B858FB
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:40 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id AA8D3859D2
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XU4cAKSvwVlx for <iommu@lists.linux-foundation.org>;
- Mon, 25 Jan 2021 02:47:39 +0000 (UTC)
+ with ESMTP id wXnthZcl6JQD for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Jan 2021 02:47:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C62E2858C9
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:39 +0000 (UTC)
-IronPort-SDR: NE8NAXpbOyB3OH6lk49oI+k9LNJn49tcqbEyhTUkrquNxGMJBk2JnFtUC9+rfhPDBd9h1DMVKN
- DQGhZ1tXMbxg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="176142180"
-X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="176142180"
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C7CAD858C9
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 02:47:41 +0000 (UTC)
+IronPort-SDR: /vJJuyfSnD2B3d0w5Zh4Tll8YqmO98GA10O1hQTbLGtajTgl/f/I+cbITlz0MA/u+cg+Q4+4a9
+ Zagd8pdzfFOA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="176142185"
+X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="176142185"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Jan 2021 18:47:39 -0800
-IronPort-SDR: HYzTF61fz73uzPMOBl4TW4TxfYvsQvVtjjvooOtBXmx7I/vbRJ9geomIUTy2uqcyPShkNr8pAh
- OPZvcEre2gTg==
+ 24 Jan 2021 18:47:41 -0800
+IronPort-SDR: WeXR2VEVsyFBkOjSYPpSk2ah5QJPSUdaMi3VJNH/t+4mau1C4+8leY1pSUi88mAp1HnwxpOERh
+ 0mNFrTkQMKaA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="429029440"
+X-IronPort-AV: E=Sophos;i="5.79,372,1602572400"; d="scan'208";a="429029476"
 Received: from allen-box.sh.intel.com ([10.239.159.128])
- by orsmga001.jf.intel.com with ESMTP; 24 Jan 2021 18:47:37 -0800
+ by orsmga001.jf.intel.com with ESMTP; 24 Jan 2021 18:47:39 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Chuck Lever <chuck.lever@oracle.com>
-Subject: [RFT PATCH 2/3] iommu: Add iova and size as parameters in
- iotlb_sync_map
-Date: Mon, 25 Jan 2021 10:38:57 +0800
-Message-Id: <20210125023858.570175-3-baolu.lu@linux.intel.com>
+Subject: [RFT PATCH 3/3] iommu/vt-d: Add iotlb_sync_map callback
+Date: Mon, 25 Jan 2021 10:38:58 +0800
+Message-Id: <20210125023858.570175-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210125023858.570175-1-baolu.lu@linux.intel.com>
 References: <20210125023858.570175-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,82 +86,160 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Yong Wu <yong.wu@mediatek.com>
+Some Intel VT-d hardware implementations don't support memory coherency
+for page table walk (presented by the Page-Walk-coherency bit in the
+ecap register), so that software must flush the corresponding CPU cache
+lines explicitly after each page table entry update.
 
-iotlb_sync_map allow IOMMU drivers tlb sync after completing the whole
-mapping. This patch adds iova and size as the parameters in it. then the
-IOMMU driver could flush tlb with the whole range once after iova mapping
-to improve performance.
+The iommu_map_sg() code iterates through the given scatter-gather list
+and invokes iommu_map() for each element in the scatter-gather list,
+which calls into the vendor IOMMU driver through iommu_ops callback. As
+the result, a single sg mapping may lead to multiple cache line flushes,
+which leads to the degradation of I/O performance after the commit
+<c588072bba6b5> ("iommu/vt-d: Convert intel iommu driver to the iommu
+ops").
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Fix this by adding iotlb_sync_map callback and centralizing the clflush
+operations after all sg mappings.
+
+Fixes: c588072bba6b5 ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
+Reported-by: Chuck Lever <chuck.lever@oracle.com>
+Link: https://lore.kernel.org/linux-iommu/D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iommu.c      | 4 ++--
- drivers/iommu/tegra-gart.c | 7 +++++--
- include/linux/iommu.h      | 3 ++-
- 3 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/iommu.c | 86 +++++++++++++++++++++++++------------
+ 1 file changed, 58 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c304a6a30d42..3d099a31ddca 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2443,7 +2443,7 @@ static int _iommu_map(struct iommu_domain *domain, unsigned long iova,
- 
- 	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
- 	if (ret == 0 && ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain);
-+		ops->iotlb_sync_map(domain, iova, size);
- 
- 	return ret;
- }
-@@ -2575,7 +2575,7 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index f665322a0991..f5a236e63ded 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2383,34 +2383,14 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		 * recalculate 'pte' and switch back to smaller pages for the
+ 		 * end of the mapping, if the trailing size is not enough to
+ 		 * use another superpage (i.e. nr_pages < lvl_pages).
++		 *
++		 * We leave clflush for the leaf pte changes to iotlb_sync_map()
++		 * callback.
+ 		 */
+ 		pte++;
+ 		if (!nr_pages || first_pte_in_page(pte) ||
+-		    (largepage_lvl > 1 && nr_pages < lvl_pages)) {
+-			domain_flush_cache(domain, first_pte,
+-					   (void *)pte - (void *)first_pte);
++		    (largepage_lvl > 1 && nr_pages < lvl_pages))
+ 			pte = NULL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int
+-domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+-	       unsigned long phys_pfn, unsigned long nr_pages, int prot)
+-{
+-	int iommu_id, ret;
+-	struct intel_iommu *iommu;
+-
+-	/* Do the real mapping first */
+-	ret = __domain_mapping(domain, iov_pfn, phys_pfn, nr_pages, prot);
+-	if (ret)
+-		return ret;
+-
+-	for_each_domain_iommu(iommu_id, domain) {
+-		iommu = g_iommus[iommu_id];
+-		__mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
  	}
  
- 	if (ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain);
-+		ops->iotlb_sync_map(domain, iova, mapped);
- 	return mapped;
- 
- out_err:
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index fac720273889..05e8e19b8269 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -261,7 +261,8 @@ static int gart_iommu_of_xlate(struct device *dev,
  	return 0;
+@@ -4943,7 +4923,6 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	u64 max_addr;
+ 	int prot = 0;
+-	int ret;
+ 
+ 	if (iommu_prot & IOMMU_READ)
+ 		prot |= DMA_PTE_READ;
+@@ -4969,9 +4948,8 @@ static int intel_iommu_map(struct iommu_domain *domain,
+ 	/* Round up size to next multiple of PAGE_SIZE, if it and
+ 	   the low bits of hpa would take us onto the next page */
+ 	size = aligned_nrpages(hpa, size);
+-	ret = domain_mapping(dmar_domain, iova >> VTD_PAGE_SHIFT,
+-			     hpa >> VTD_PAGE_SHIFT, size, prot);
+-	return ret;
++	return __domain_mapping(dmar_domain, iova >> VTD_PAGE_SHIFT,
++				hpa >> VTD_PAGE_SHIFT, size, prot);
  }
  
--static void gart_iommu_sync_map(struct iommu_domain *domain)
-+static void gart_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+				size_t size)
- {
- 	FLUSH_GART_REGS(gart_handle);
+ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+@@ -5478,6 +5456,57 @@ static bool risky_device(struct pci_dev *pdev)
+ 	return false;
  }
-@@ -269,7 +270,9 @@ static void gart_iommu_sync_map(struct iommu_domain *domain)
- static void gart_iommu_sync(struct iommu_domain *domain,
- 			    struct iommu_iotlb_gather *gather)
- {
--	gart_iommu_sync_map(domain);
-+	size_t length = gather->end - gather->start;
+ 
++static void clflush_sync_map(struct dmar_domain *domain, unsigned long clf_pfn,
++			     unsigned long clf_pages)
++{
++	struct dma_pte *first_pte = NULL, *pte = NULL;
++	unsigned long lvl_pages = 0;
++	int level = 0;
 +
-+	gart_iommu_sync_map(domain, gather->start, length);
- }
- 
- static const struct iommu_ops gart_iommu_ops = {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b3f0e2018c62..9ce0aa9e236b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -246,7 +246,8 @@ struct iommu_ops {
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
--	void (*iotlb_sync_map)(struct iommu_domain *domain);
-+	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
-+			       size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
++	while (clf_pages > 0) {
++		if (!pte) {
++			level = 0;
++			pte = pfn_to_dma_pte(domain, clf_pfn, &level);
++			if (WARN_ON(!pte))
++				return;
++			first_pte = pte;
++			lvl_pages = lvl_to_nr_pages(level);
++		}
++
++		if (WARN_ON(!lvl_pages || clf_pages < lvl_pages))
++			return;
++
++		clf_pages -= lvl_pages;
++		clf_pfn += lvl_pages;
++		pte++;
++
++		if (!clf_pages || first_pte_in_page(pte) ||
++		    (level > 1 && clf_pages < lvl_pages)) {
++			domain_flush_cache(domain, first_pte,
++					   (void *)pte - (void *)first_pte);
++			pte = NULL;
++		}
++	}
++}
++
++static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
++				       unsigned long iova, size_t size)
++{
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	unsigned long pages = aligned_nrpages(iova, size);
++	unsigned long pfn = iova >> VTD_PAGE_SHIFT;
++	struct intel_iommu *iommu;
++	int iommu_id;
++
++	if (!dmar_domain->iommu_coherency)
++		clflush_sync_map(dmar_domain, pfn, pages);
++
++	for_each_domain_iommu(iommu_id, dmar_domain) {
++		iommu = g_iommus[iommu_id];
++		__mapping_notify_one(iommu, dmar_domain, pfn, pages);
++	}
++}
++
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+@@ -5490,6 +5519,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.aux_detach_dev		= intel_iommu_aux_detach_device,
+ 	.aux_get_pasid		= intel_iommu_aux_get_pasid,
+ 	.map			= intel_iommu_map,
++	.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+ 	.unmap			= intel_iommu_unmap,
+ 	.flush_iotlb_all        = intel_flush_iotlb_all,
+ 	.iotlb_sync		= intel_iommu_tlb_sync,
 -- 
 2.25.1
 
