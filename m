@@ -2,70 +2,66 @@ Return-Path: <SRS0=UfkB=G5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70CB9C433E0
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 12:12:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5722C433E6
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 13:07:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F257420691
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 12:12:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F257420691
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4E6EF23110
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 13:07:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E6EF23110
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 993FA8677E;
-	Tue, 26 Jan 2021 12:12:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 07ZYuqHo0uLG; Tue, 26 Jan 2021 12:12:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 700B1865B0;
-	Tue, 26 Jan 2021 12:12:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 663BAC0FA7;
-	Tue, 26 Jan 2021 12:12:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B49D3C013A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 12:12:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9AF6C8702D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 12:12:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DD8F886D5A;
+	Tue, 26 Jan 2021 13:07:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aSzuDIJVrvsx; Tue, 26 Jan 2021 13:07:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8507286C0A;
+	Tue, 26 Jan 2021 13:07:45 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A107C0FA7;
+	Tue, 26 Jan 2021 13:07:45 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A643CC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 13:07:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9452985535
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 13:07:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PN-oU0T+m6Hc for <iommu@lists.linux-foundation.org>;
- Tue, 26 Jan 2021 12:12:30 +0000 (UTC)
+ with ESMTP id mNLVVEfjP8II for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Jan 2021 13:07:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6FB1087029
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 12:12:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F88F101E;
- Tue, 26 Jan 2021 04:12:29 -0800 (PST)
-Received: from [10.57.43.46] (unknown [10.57.43.46])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3EE783F66B;
- Tue, 26 Jan 2021 04:12:28 -0800 (PST)
-Subject: Re: [PATCH v3 2/2] iommu: use the __iommu_attach_device() directly
- for deferred attach
-To: Lianbo Jiang <lijiang@redhat.com>, linux-kernel@vger.kernel.org
-References: <20210126115337.20068-1-lijiang@redhat.com>
- <20210126115337.20068-3-lijiang@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <378fce27-cea4-8a98-0adb-89192fa8e302@arm.com>
-Date: Tue, 26 Jan 2021 12:12:27 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A2A5C85507
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 13:07:42 +0000 (UTC)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DQ6Sb2LQ1zjCX4;
+ Tue, 26 Jan 2021 21:06:39 +0800 (CST)
+Received: from S00345302A-PC.china.huawei.com (10.47.82.74) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 26 Jan 2021 21:07:30 +0800
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+Subject: [PATCH] iommu: Check dev->iommu in iommu_dev_xxx functions
+Date: Tue, 26 Jan 2021 13:06:29 +0000
+Message-ID: <20210126130629.8928-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
 MIME-Version: 1.0
-In-Reply-To: <20210126115337.20068-3-lijiang@redhat.com>
-Content-Language: en-GB
-Cc: hch@infradead.org, thomas.lendacky@amd.com,
- iommu@lists.linux-foundation.org, will@kernel.org
+X-Originating-IP: [10.47.82.74]
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org, will@kernel.org, linuxarm@openeuler.org,
+ prime.zeng@hisilicon.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,155 +74,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-26 11:53, Lianbo Jiang wrote:
-> Currently, because domain attach allows to be deferred from iommu
-> driver to device driver, and when iommu initializes, the devices
-> on the bus will be scanned and the default groups will be allocated.
-> 
-> Due to the above changes, some devices could be added to the same
-> group as below:
-> 
-> [    3.859417] pci 0000:01:00.0: Adding to iommu group 16
-> [    3.864572] pci 0000:01:00.1: Adding to iommu group 16
-> [    3.869738] pci 0000:02:00.0: Adding to iommu group 17
-> [    3.874892] pci 0000:02:00.1: Adding to iommu group 17
-> 
-> But when attaching these devices, it doesn't allow that a group has
-> more than one device, otherwise it will return an error. This conflicts
-> with the deferred attaching. Unfortunately, it has two devices in the
-> same group for my side, for example:
-> 
-> [    9.627014] iommu_group_device_count(): device name[0]:0000:01:00.0
-> [    9.633545] iommu_group_device_count(): device name[1]:0000:01:00.1
-> ...
-> [   10.255609] iommu_group_device_count(): device name[0]:0000:02:00.0
-> [   10.262144] iommu_group_device_count(): device name[1]:0000:02:00.1
-> 
-> Finally, which caused the failure of tg3 driver when tg3 driver calls
-> the dma_alloc_coherent() to allocate coherent memory in the tg3_test_dma().
-> 
-> [    9.660310] tg3 0000:01:00.0: DMA engine test failed, aborting
-> [    9.754085] tg3: probe of 0000:01:00.0 failed with error -12
-> [    9.997512] tg3 0000:01:00.1: DMA engine test failed, aborting
-> [   10.043053] tg3: probe of 0000:01:00.1 failed with error -12
-> [   10.288905] tg3 0000:02:00.0: DMA engine test failed, aborting
-> [   10.334070] tg3: probe of 0000:02:00.0 failed with error -12
-> [   10.578303] tg3 0000:02:00.1: DMA engine test failed, aborting
-> [   10.622629] tg3: probe of 0000:02:00.1 failed with error -12
-> 
-> In addition, the similar situations also occur in other drivers such
-> as the bnxt_en driver. That can be reproduced easily in kdump kernel
-> when SME is active.
-> 
-> Let's move the handling currently in iommu_dma_deferred_attach() into
-> the iommu core code so that it can call the __iommu_attach_device()
-> directly instead of the iommu_attach_device(). The external interface
-> iommu_attach_device() is not suitable for handling this situation.
-
-No objection to the cosmetic change - arguably parsing "attach" as a 
-verb rather than a noun is more normal anyway :)
-
-Thus my previous review still stands:
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
-> ---
->   drivers/iommu/dma-iommu.c | 18 +++---------------
->   drivers/iommu/iommu.c     | 10 ++++++++++
->   include/linux/iommu.h     |  1 +
->   3 files changed, 14 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index c80056f6c9f9..f659395e7959 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -380,18 +380,6 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	return iova_reserve_iommu_regions(dev, domain);
->   }
->   
-> -static int iommu_dma_deferred_attach(struct device *dev,
-> -		struct iommu_domain *domain)
-> -{
-> -	const struct iommu_ops *ops = domain->ops;
-> -
-> -	if (unlikely(ops->is_attach_deferred &&
-> -			ops->is_attach_deferred(domain, dev)))
-> -		return iommu_attach_device(domain, dev);
-> -
-> -	return 0;
-> -}
-> -
->   /**
->    * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
->    *                    page flags.
-> @@ -535,7 +523,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->   	dma_addr_t iova;
->   
->   	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
-> -	    iommu_dma_deferred_attach(dev, domain))
-> +	    iommu_deferred_attach(dev, domain))
->   		return DMA_MAPPING_ERROR;
->   
->   	size = iova_align(iovad, size + iova_off);
-> @@ -694,7 +682,7 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
->   	*dma_handle = DMA_MAPPING_ERROR;
->   
->   	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
-> -	    iommu_dma_deferred_attach(dev, domain))
-> +	    iommu_deferred_attach(dev, domain))
->   		return NULL;
->   
->   	min_size = alloc_sizes & -alloc_sizes;
-> @@ -978,7 +966,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->   	int i;
->   
->   	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
-> -	    iommu_dma_deferred_attach(dev, domain))
-> +	    iommu_deferred_attach(dev, domain))
->   		return 0;
->   
->   	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index ffeebda8d6de..15b5fd6bd554 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1980,6 +1980,16 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(iommu_attach_device);
->   
-> +int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +
-> +	if (ops->is_attach_deferred && ops->is_attach_deferred(domain, dev))
-> +		return __iommu_attach_device(domain, dev);
-> +
-> +	return 0;
-> +}
-> +
->   /*
->    * Check flags and other user provided data for valid combinations. We also
->    * make sure no reserved fields or unused flags are set. This is to ensure
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index b3f0e2018c62..92ee9b56f118 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -376,6 +376,7 @@ int  iommu_device_sysfs_add(struct iommu_device *iommu,
->   void iommu_device_sysfs_remove(struct iommu_device *iommu);
->   int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
->   void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
-> +int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain);
->   
->   static inline void __iommu_device_set_ops(struct iommu_device *iommu,
->   					  const struct iommu_ops *ops)
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+VGhlIGRldmljZSBpb21tdSBwcm9iZS9hdHRhY2ggbWlnaHQgaGF2ZSBmYWlsZWQgbGVhdmluZyBk
+ZXYtPmlvbW11CnRvIE5VTEwgYW5kIGRldmljZSBkcml2ZXJzIG1heSBzdGlsbCBpbnZva2UgdGhl
+c2UgZnVuY3Rpb25zwqByZXN1bHRpbmcKYSBjcmFzaCBpbiBpb21tdSB2ZW5kb3IgZHJpdmVyIGNv
+ZGUuIEhlbmNlIG1ha2XCoHN1cmUgd2UgY2hlY2sgdGhhdC4KClNpZ25lZC1vZmYtYnk6IFNoYW1l
+ZXIgS29sb3RodW0gPHNoYW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4KLS0tCiBk
+cml2ZXJzL2lvbW11L2lvbW11LmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNl
+cnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW9t
+bXUuYyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUuYwppbmRleCBmZmVlYmRhOGQ2ZGUuLmNiNjgxNTNj
+NWNjMCAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9t
+bXUvaW9tbXUuYwpAQCAtMjg2Nyw3ICsyODY3LDcgQEAgYm9vbCBpb21tdV9kZXZfaGFzX2ZlYXR1
+cmUoc3RydWN0IGRldmljZSAqZGV2LCBlbnVtIGlvbW11X2Rldl9mZWF0dXJlcyBmZWF0KQogewog
+CWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IGRldi0+YnVzLT5pb21tdV9vcHM7CiAKLQlp
+ZiAob3BzICYmIG9wcy0+ZGV2X2hhc19mZWF0KQorCWlmIChkZXYtPmlvbW11ICYmIG9wcyAmJiBv
+cHMtPmRldl9oYXNfZmVhdCkKIAkJcmV0dXJuIG9wcy0+ZGV2X2hhc19mZWF0KGRldiwgZmVhdCk7
+CiAKIAlyZXR1cm4gZmFsc2U7CkBAIC0yODc4LDcgKzI4NzgsNyBAQCBpbnQgaW9tbXVfZGV2X2Vu
+YWJsZV9mZWF0dXJlKHN0cnVjdCBkZXZpY2UgKmRldiwgZW51bSBpb21tdV9kZXZfZmVhdHVyZXMg
+ZmVhdCkKIHsKIAljb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICpvcHMgPSBkZXYtPmJ1cy0+aW9tbXVf
+b3BzOwogCi0JaWYgKG9wcyAmJiBvcHMtPmRldl9lbmFibGVfZmVhdCkKKwlpZiAoZGV2LT5pb21t
+dSAmJiBvcHMgJiYgb3BzLT5kZXZfZW5hYmxlX2ZlYXQpCiAJCXJldHVybiBvcHMtPmRldl9lbmFi
+bGVfZmVhdChkZXYsIGZlYXQpOwogCiAJcmV0dXJuIC1FTk9ERVY7CkBAIC0yODk0LDcgKzI4OTQs
+NyBAQCBpbnQgaW9tbXVfZGV2X2Rpc2FibGVfZmVhdHVyZShzdHJ1Y3QgZGV2aWNlICpkZXYsIGVu
+dW0gaW9tbXVfZGV2X2ZlYXR1cmVzIGZlYXQpCiB7CiAJY29uc3Qgc3RydWN0IGlvbW11X29wcyAq
+b3BzID0gZGV2LT5idXMtPmlvbW11X29wczsKIAotCWlmIChvcHMgJiYgb3BzLT5kZXZfZGlzYWJs
+ZV9mZWF0KQorCWlmIChkZXYtPmlvbW11ICYmIG9wcyAmJiBvcHMtPmRldl9kaXNhYmxlX2ZlYXQp
+CiAJCXJldHVybiBvcHMtPmRldl9kaXNhYmxlX2ZlYXQoZGV2LCBmZWF0KTsKIAogCXJldHVybiAt
+RUJVU1k7CkBAIC0yOTA1LDcgKzI5MDUsNyBAQCBib29sIGlvbW11X2Rldl9mZWF0dXJlX2VuYWJs
+ZWQoc3RydWN0IGRldmljZSAqZGV2LCBlbnVtIGlvbW11X2Rldl9mZWF0dXJlcyBmZWF0KQogewog
+CWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IGRldi0+YnVzLT5pb21tdV9vcHM7CiAKLQlp
+ZiAob3BzICYmIG9wcy0+ZGV2X2ZlYXRfZW5hYmxlZCkKKwlpZiAoZGV2LT5pb21tdSAmJiBvcHMg
+JiYgb3BzLT5kZXZfZmVhdF9lbmFibGVkKQogCQlyZXR1cm4gb3BzLT5kZXZfZmVhdF9lbmFibGVk
+KGRldiwgZmVhdCk7CiAKIAlyZXR1cm4gZmFsc2U7Ci0tIAoyLjE3LjEKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
