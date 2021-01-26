@@ -2,99 +2,78 @@ Return-Path: <SRS0=UfkB=G5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	URIBL_RED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E631C433DB
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 04:54:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089BCC4332B
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:01:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD7D822D58
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 04:54:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD7D822D58
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 819F622B3B
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:01:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 819F622B3B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3825C20495;
-	Tue, 26 Jan 2021 04:54:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0D13086F8F;
+	Tue, 26 Jan 2021 06:01:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mA-6jri57QBi; Tue, 26 Jan 2021 06:01:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 17E4786FE8;
+	Tue, 26 Jan 2021 06:01:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DEC13C0FA7;
+	Tue, 26 Jan 2021 06:01:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0AB3CC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:01:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id D98592036D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:01:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KRceXx5kR9oB; Tue, 26 Jan 2021 04:54:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9CB29203A3;
-	Tue, 26 Jan 2021 04:54:21 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80319C08A1;
-	Tue, 26 Jan 2021 04:54:21 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84D5FC013A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 04:54:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6AEA38502C
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 04:54:20 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mHAuq-0g44Ft for <iommu@lists.linux-foundation.org>;
- Tue, 26 Jan 2021 04:54:19 +0000 (UTC)
+ with ESMTP id btyJteyqVxXt for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Jan 2021 06:01:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com
- [209.85.216.44])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 50D0684FB0
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 04:54:19 +0000 (UTC)
-Received: by mail-pj1-f44.google.com with SMTP id gx1so1522461pjb.1
- for <iommu@lists.linux-foundation.org>; Mon, 25 Jan 2021 20:54:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=a69BMfJQ9E4oHULh93aNwSAV8hiyHTyNrIA1sCczbko=;
- b=mNfngmN/q7ViCvgKIo8bo3NBWuQB90CjvHeINbBALSaZ9eQfiKiHDbOkzIlmSFVJsr
- S1Swe0LlSEQdH19e70KOsf8TqXZl6qUlsmhl8B8BadbI4RpVDG+3PMVsTsXZljl9fTez
- nDIu2af4HTSc7/qULyahGyHx7G1jqNlinR55/bJusztTdX4F96cnWe64sDxGUjr8mP2x
- 0G0mp360Y5bYDAsNb62nazgCY6L9MoSuAUCEJk/uXxsqC3EJv70Yq6f0FbtwQ6O/rE06
- aJmTWlzwFplZhScxww31Fji6SUnUGDFL3PUz1KF5NEBsKS+eF7yMd1x0TjLd/fyG1J1s
- eQTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=a69BMfJQ9E4oHULh93aNwSAV8hiyHTyNrIA1sCczbko=;
- b=WAL1cnKI+3asV/trinlAPLiq+pm4l+g8Rg8bOtMgNbyqqSkmojkgdUAFTbAZiAsAY4
- J1mXprZYGgupjCu4qrHstglT4H/Reai1IwjDh7lWV3edUkPpQ+chwj49pLAYXKVw3eRx
- 1O6eqfOTGCJb/iTB7Ou6Nd5cuKZ+p8lffmx0fCFlieFp5ha+HOI+cTxM8H0Cm8yoaJZc
- oacngSDFASnu33aJcRsYHqe/ZyCSP9bVFb6uZ94XhVP7jZlenGEvb7AIqZaE7LYRWslE
- cQXgA9AwL94yJOGikALfCjPwb+/zqDJVALMF8KzlYJOmPDA8tlmPrDZz58IH3FImikuT
- Nkfg==
-X-Gm-Message-State: AOAM5333nGYY77TGr7HyhxV0OJE5c/HeTBHPD4Q/waZOa6dChZk1QFMy
- WGQnQ1SqHG5hkvIP60oxTyo=
-X-Google-Smtp-Source: ABdhPJwSa2nXR/aKoIRxXCZWsKkoMqrHw7m/qOUyKn2wDN2zSos1dL5DiF7wqcAQ5jV1WhPBUCJ4ow==
-X-Received: by 2002:a17:902:7c10:b029:e0:7a2:38c7 with SMTP id
- x16-20020a1709027c10b02900e007a238c7mr4251545pll.79.1611636858988; 
- Mon, 25 Jan 2021 20:54:18 -0800 (PST)
-Received: from bobo.ozlabs.ibm.com
- (192.156.221.203.dial.dynamic.acc50-nort-cbr.comindico.com.au.
- [203.221.156.192])
- by smtp.gmail.com with ESMTPSA id w184sm18803382pgb.71.2021.01.25.20.54.15
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 25 Jan 2021 20:54:18 -0800 (PST)
-From: Nicholas Piggin <npiggin@gmail.com>
-To: linux-mm@kvack.org,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 2/5] kernel/dma: remove unnecessary unmap_kernel_range
-Date: Tue, 26 Jan 2021 14:54:01 +1000
-Message-Id: <20210126045404.2492588-3-npiggin@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20210126045404.2492588-1-npiggin@gmail.com>
-References: <20210126045404.2492588-1-npiggin@gmail.com>
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by silver.osuosl.org (Postfix) with ESMTP id 2088D20367
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:01:10 +0000 (UTC)
+X-UUID: beee6b93ef014787948b329bda876e1d-20210126
+X-UUID: beee6b93ef014787948b329bda876e1d-20210126
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 595013166; Tue, 26 Jan 2021 14:01:06 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs08n2.mediatek.inc (172.21.101.56) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 26 Jan 2021 14:01:04 +0800
+Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Jan 2021 14:01:03 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>
+Subject: [PATCH v2] memory: mtk-smi: Support SMI modular
+Date: Tue, 26 Jan 2021 14:00:55 +0800
+Message-ID: <20210126060055.11050-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+X-TM-SNTS-SMTP: 413277F7CA28486647A4C0608B164AEC3EA3B448FD5BFC262DF895F4FE03C3FF2000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ yi.kuo@mediatek.com, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,30 +91,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-vunmap will remove ptes.
+This patch mainly support SMI modular. Switch MTK_SMI to tristate,
+and add module_exit/module_license.
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- kernel/dma/remap.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch rebase on the clean v5.11-rc1.
+and this one: memory: mtk-smi: Use platform_register_drivers
+https://lore.kernel.org/linux-arm-kernel/20210121062429.26504-2-yong.wu@mediatek.com/
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index 905c3fa005f1..b4526668072e 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -66,6 +66,5 @@ void dma_common_free_remap(void *cpu_addr, size_t size)
- 		return;
- 	}
+change note:
+a) squash the last two of v1 into one patch.
+b) Remove module_alias
+---
+ drivers/memory/Kconfig     | 2 +-
+ drivers/memory/mtk-smi.c   | 9 +++++++++
+ include/soc/mediatek/smi.h | 2 +-
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index 3ea6913df176..05c6d4a32285 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -173,7 +173,7 @@ config JZ4780_NEMC
+ 	  memory devices such as NAND and SRAM.
  
--	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
- 	vunmap(cpu_addr);
+ config MTK_SMI
+-	bool "Mediatek SoC Memory Controller driver" if COMPILE_TEST
++	tristate "MediaTek SoC Memory Controller driver" if COMPILE_TEST
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ 	help
+ 	  This driver is for the Memory Controller module in MediaTek SoCs,
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index e2aebd2bfa8e..3a269415db73 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -597,3 +597,12 @@ static int __init mtk_smi_init(void)
+ 	return platform_register_drivers(smidrivers, ARRAY_SIZE(smidrivers));
  }
+ module_init(mtk_smi_init);
++
++static void __exit mtk_smi_exit(void)
++{
++	platform_unregister_drivers(smidrivers, ARRAY_SIZE(smidrivers));
++}
++module_exit(mtk_smi_exit);
++
++MODULE_DESCRIPTION("MediaTek SMI driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+index 5a34b87d89e3..29e2fb8f33d6 100644
+--- a/include/soc/mediatek/smi.h
++++ b/include/soc/mediatek/smi.h
+@@ -9,7 +9,7 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ 
+-#ifdef CONFIG_MTK_SMI
++#if IS_ENABLED(CONFIG_MTK_SMI)
+ 
+ #define MTK_LARB_NR_MAX		16
+ 
 -- 
-2.23.0
+2.18.0
 
 _______________________________________________
 iommu mailing list
