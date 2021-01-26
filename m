@@ -2,79 +2,85 @@ Return-Path: <SRS0=UfkB=G5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1884C433DB
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 16:31:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15BEC433DB
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 16:41:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BE3422228
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 16:31:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BE3422228
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3AA3A22273
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 16:41:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AA3A22273
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 46C3886DCA;
-	Tue, 26 Jan 2021 16:31:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CB8E51FC71;
+	Tue, 26 Jan 2021 16:41:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cSnqFo45CSOT; Tue, 26 Jan 2021 16:31:44 +0000 (UTC)
+	with ESMTP id 3yy7jjkJWmkW; Tue, 26 Jan 2021 16:40:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 100CB86F3A;
-	Tue, 26 Jan 2021 16:31:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 524D71FE0A;
+	Tue, 26 Jan 2021 16:40:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DAE94C0FA7;
-	Tue, 26 Jan 2021 16:31:43 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64D0DC013A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:31:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 287F5C0FA7;
+	Tue, 26 Jan 2021 16:40:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC492C013A
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:40:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6084E86F6B
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:31:42 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0ADAA1FE0A
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:40:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sip3XjikLULM for <iommu@lists.linux-foundation.org>;
- Tue, 26 Jan 2021 16:31:40 +0000 (UTC)
+ with ESMTP id 5F5h4AAzVTCd for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Jan 2021 16:40:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id ECD6086F3A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:31:39 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1102031B;
- Tue, 26 Jan 2021 08:31:39 -0800 (PST)
-Received: from [10.57.43.46] (unknown [10.57.43.46])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7AA543F66E;
- Tue, 26 Jan 2021 08:31:37 -0800 (PST)
-Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: Add support for driver IOMMU fault
- handlers
-To: Rob Clark <robdclark@gmail.com>
-References: <20201124191600.2051751-1-jcrouse@codeaurora.org>
- <20201124191600.2051751-2-jcrouse@codeaurora.org>
- <20210122124125.GA24102@willie-the-truck>
- <8ba2f53d-abbf-af7f-07f6-48ad7f383a37@arm.com>
- <20210125215107.GB16374@jcrouse1-lnx.qualcomm.com>
- <dc035204-ade7-03ec-0b82-2ecedc856d42@arm.com>
- <CAF6AEGtfm=vO6s3vQLNotz=spM9EdXbuNi_vfmCqVd7DmyEMCA@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d8b870cd-b0c7-2f4a-697d-4de8d437fdc5@arm.com>
-Date: Tue, 26 Jan 2021 16:31:36 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by silver.osuosl.org (Postfix) with ESMTPS id 35D761FC71
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 16:40:52 +0000 (UTC)
+Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.55])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4DQC9x6499z5JF7;
+ Wed, 27 Jan 2021 00:39:17 +0800 (CST)
+Received: from dggemm753-chm.china.huawei.com (10.1.198.59) by
+ DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Wed, 27 Jan 2021 00:40:48 +0800
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ dggemm753-chm.china.huawei.com (10.1.198.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 27 Jan 2021 00:40:47 +0800
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2106.006; Tue, 26 Jan 2021 16:40:45 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH] iommu: Check dev->iommu in iommu_dev_xxx functions
+Thread-Topic: [PATCH] iommu: Check dev->iommu in iommu_dev_xxx functions
+Thread-Index: AQHW8+RNdZVLOLYLIk+ZoY3uV2Gpc6o57K4AgAAuUAA=
+Date: Tue, 26 Jan 2021 16:40:45 +0000
+Message-ID: <8654e506fa26443f8f4413ec8fd96bf7@huawei.com>
+References: <20210126130629.8928-1-shameerali.kolothum.thodi@huawei.com>
+ <20210126135039.000039a0@arm.com>
+In-Reply-To: <20210126135039.000039a0@arm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.82.74]
 MIME-Version: 1.0
-In-Reply-To: <CAF6AEGtfm=vO6s3vQLNotz=spM9EdXbuNi_vfmCqVd7DmyEMCA@mail.gmail.com>
-Content-Language: en-GB
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Will Deacon <will@kernel.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+X-CFilter-Loop: Reflected
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
+ "will@kernel.org" <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,139 +93,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-26 16:05, Rob Clark wrote:
-> On Tue, Jan 26, 2021 at 3:41 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2021-01-25 21:51, Jordan Crouse wrote:
->>> On Fri, Jan 22, 2021 at 12:53:17PM +0000, Robin Murphy wrote:
->>>> On 2021-01-22 12:41, Will Deacon wrote:
->>>>> On Tue, Nov 24, 2020 at 12:15:58PM -0700, Jordan Crouse wrote:
->>>>>> Call report_iommu_fault() to allow upper-level drivers to register their
->>>>>> own fault handlers.
->>>>>>
->>>>>> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
->>>>>> ---
->>>>>>
->>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu.c | 16 +++++++++++++---
->>>>>>    1 file changed, 13 insertions(+), 3 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> index 0f28a8614da3..7fd18bbda8f5 100644
->>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>>>>> @@ -427,6 +427,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>>>>>     struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>>>>>     struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>>>>     int idx = smmu_domain->cfg.cbndx;
->>>>>> +  int ret;
->>>>>>     fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
->>>>>>     if (!(fsr & ARM_SMMU_FSR_FAULT))
->>>>>> @@ -436,11 +437,20 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>>>>>     iova = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
->>>>>>     cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
->>>>>> -  dev_err_ratelimited(smmu->dev,
->>>>>> -  "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
->>>>>> +  ret = report_iommu_fault(domain, dev, iova,
->>>>>> +          fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
->>>>>> +
->>>>>> +  if (ret == -ENOSYS)
->>>>>> +          dev_err_ratelimited(smmu->dev,
->>>>>> +          "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
->>>>>>                         fsr, iova, fsynr, cbfrsynra, idx);
->>>>>> -  arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
->>>>>> +  /*
->>>>>> +   * If the iommu fault returns an error (except -ENOSYS) then assume that
->>>>>> +   * they will handle resuming on their own
->>>>>> +   */
->>>>>> +  if (!ret || ret == -ENOSYS)
->>>>>> +          arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
->>>>>
->>>>> Hmm, I don't grok this part. If the fault handler returned an error and
->>>>> we don't clear the FSR, won't we just re-take the irq immediately?
->>>>
->>>> If we don't touch the FSR at all, yes. Even if we clear the fault indicator
->>>> bits, the interrupt *might* remain asserted until a stalled transaction is
->>>> actually resolved - that's that lovely IMP-DEF corner.
->>>>
->>>> Robin.
->>>>
->>>
->>> This is for stall-on-fault. The idea is that if the developer chooses to do so
->>> we would stall the GPU after a fault long enough to take a picture of it with
->>> devcoredump and then release the FSR. Since we can't take the devcoredump from
->>> the interrupt handler we schedule it in a worker and then return an error
->>> to let the main handler know that we'll come back around clear the FSR later
->>> when we are done.
->>
->> Sure, but clearing FSR is not writing to RESUME to resolve the stalled
->> transaction(s). You can already snarf the FSR contents from your
->> report_iommu_fault() handler if you want to, so either way I don't see
->> what's gained by not clearing it as expected at the point where we've
->> handled the *interrupt*, even if it will take longer to decide what to
->> do with the underlying *fault* that it signalled. I'm particularly not
->> keen on having unusual behaviour in the core interrupt handling which
->> callers may unwittingly trigger, for the sake of one
->> very-very-driver-specific flow having a slightly richer debugging
->> experience.
-> 
-> Tbf, "slightly" is an understatement.. it is a big enough improvement
-> that I've hacked up deferred resume several times to debug various
-> issues. ;-)
+Hi Robin,
 
-Oh, fear not, I fully appreciate that keeping the GPU stalled on a 
-faulting transaction is a game-changer in itself ("almost like a real 
-MMU!"). That comment was only aimed at whatever the perceived benefits 
-are of deliberately not trying to clear the SMMU interrupt (even if it 
-*would* stay clear). I have no issue with calling report_iommu_fault(), 
-I'm just wary of doing anything weird with the result.
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy@arm.com]
+> Sent: 26 January 2021 13:51
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org;
+> jean-philippe@linaro.org; will@kernel.org; linuxarm@openeuler.org; Zengtao
+> (B) <prime.zeng@hisilicon.com>
+> Subject: Re: [PATCH] iommu: Check dev->iommu in iommu_dev_xxx functions
+> =
 
-> (Which is always a bit of a PITA because of things moving around in
-> arm-smmu as well as the drm side of things.)
-> 
-> But from my recollection, we can clear FSR immediately, all we need to
-> do is defer writing ARM_SMMU_CB_RESUME
+> On Tue, 26 Jan 2021 13:06:29 +0000
+> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+> =
 
-Phew! Thanks for the reassurance :)
+> > The device iommu probe/attach might have failed leaving dev->iommu to
+> > NULL and device drivers may still invoke these functions=A0resulting a
+> > crash in iommu vendor driver code. Hence make=A0sure we check that.
+> >
+> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> > ---
+> >  drivers/iommu/iommu.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c index
+> > ffeebda8d6de..cb68153c5cc0 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -2867,7 +2867,7 @@ bool iommu_dev_has_feature(struct device *dev,
+> > enum iommu_dev_features feat) {
+> >  	const struct iommu_ops *ops =3D dev->bus->iommu_ops;
+> >
+> > -	if (ops && ops->dev_has_feat)
+> > +	if (dev->iommu && ops && ops->dev_has_feat)
+> >  		return ops->dev_has_feat(dev, feat);
+> =
 
-Robin.
+> Might make sense to make these more self-contained, e.g.:
+> =
 
-> 
-> BR,
-> -R
-> 
->>
->> For actually *handling* faults, I thought we were going to need to hook
->> up the new IOPF fault queue stuff anyway?
->>
->> Robin.
->>
->>> It is assumed that we'll have to turn off interrupts in our handler to allow
->>> this to work. Its all very implementation specific, but then again we're
->>> assuming that if you want to do this then you know what you are doing.
->>>
->>> In that spirit the error that skips the FSR should probably be something
->>> specific instead of "all errors" - that way a well meaning handler that returns
->>> a -EINVAL doesn't accidentally break itself.
->>>
->>> Jordan
->>>
->>>>> I think
->>>>> it would be better to do this unconditionally, and print the "Unhandled
->>>>> context fault" message for any non-zero value of ret.
->>>
->>>>>
->>>>> Will
->>>>>
->>>
->> _______________________________________________
->> iommu mailing list
->> iommu@lists.linux-foundation.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 	if (dev->iommu && dev->iommu->ops->foo)
+> 		dev->iommu->ops->foo()
+
+Right. Does that mean adding ops to "struct dev_iommu" or retrieve ops like
+below,
+
+if (dev->iommu && dev->iommu->iommu_dev->ops->foo)
+ 		dev->iommu->iommu_dev->ops->foo()
+ =
+
+Sorry, not clear to me.
+
+Thanks,
+Shameer
+ =
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
