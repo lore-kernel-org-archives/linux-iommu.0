@@ -2,90 +2,80 @@ Return-Path: <SRS0=UfkB=G5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C90C433E0
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:12:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E267BC433E0
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:18:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A77F422B3B
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:12:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A77F422B3B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 45E3122B37
+	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 06:18:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45E3122B37
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 34D9487024;
-	Tue, 26 Jan 2021 06:12:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t+cN7t4rOteI; Tue, 26 Jan 2021 06:12:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7A3EF8701B;
-	Tue, 26 Jan 2021 06:12:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60E16C08A1;
-	Tue, 26 Jan 2021 06:12:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56201C013A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:12:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3C6CD8681A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:12:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D0764865D0;
+	Tue, 26 Jan 2021 06:18:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HlD0FYpZoyiE; Tue, 26 Jan 2021 06:18:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 76C1C865C1;
+	Tue, 26 Jan 2021 06:18:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 41DE0C08A1;
+	Tue, 26 Jan 2021 06:18:47 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 922EBC013A
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:18:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 6D5472033E
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:18:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 40SdEourekWX for <iommu@lists.linux-foundation.org>;
- Tue, 26 Jan 2021 06:12:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
- by whitealder.osuosl.org (Postfix) with ESMTP id 71AE586817
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:12:47 +0000 (UTC)
-X-UUID: 9c99fcd34f814aa088a45e48dfc6c84a-20210126
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=2hSKPuelvgSnXJYZEXWh9wgPzMnweZ+FfzYCevNXc1E=; 
- b=LlRFfdTTXboe/PRIPzD4V1rdiw98ADeknhH1DEpOscPqtRrTFP2tBBGfKzJMcSq6yy08NXdB1z+nYSmJY8yJ0Xjcss21SnNgUH9QhFELJLDgmzzvidcPgpPS1VyDsg7hn9/ybBPyHszLfyEyeNTjNyVIt5it+EcRx8kMZxMyqjg=;
-X-UUID: 9c99fcd34f814aa088a45e48dfc6c84a-20210126
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1287511789; Tue, 26 Jan 2021 14:12:09 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Tue, 26 Jan 2021 14:12:04 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Jan 2021 14:12:04 +0800
-Message-ID: <1611641524.5302.10.camel@mhfsdcap03>
-Subject: Re: [PATCH 2/3] memory: mtk-smi: Add module_exit and module_license
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Date: Tue, 26 Jan 2021 14:12:04 +0800
-In-Reply-To: <20210125104033.2ewzumhmagmouvo5@kozik-lap>
-References: <20210121062429.26504-1-yong.wu@mediatek.com>
- <20210121062429.26504-3-yong.wu@mediatek.com>
- <20210122213427.mwjyjn2wsgnko7mk@kozik-lap>
- <1611557381.3184.21.camel@mhfsdcap03>
- <20210125084051.ipgeu2ksucdag2u4@kozik-lap>
- <1611566885.5302.4.camel@mhfsdcap03>
- <20210125104033.2ewzumhmagmouvo5@kozik-lap>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+ with ESMTP id 5wDr3L+g0GIF for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Jan 2021 06:18:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by silver.osuosl.org (Postfix) with ESMTPS id BC83C20029
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 06:18:44 +0000 (UTC)
+IronPort-SDR: AbO1asdS4TGsrIuTAnfnLetlGB9FT1BzjM4KwPYnqwc35ZKGnPyfFtFKITt4AFFFdxWA5TUm6Y
+ ZTCWV9I5iTiQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="243935273"
+X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; d="scan'208";a="243935273"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Jan 2021 22:18:41 -0800
+IronPort-SDR: 0Z5YCz0YPeEjQJ8UNYDg9bl2dQX2/Bz7B9lzLTvVp6irbXBPyWiyW72i4sFMDZiQQCyqEBFN8A
+ NBboZtl9iSVQ==
+X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; d="scan'208";a="387703385"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.28.93])
+ ([10.255.28.93])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Jan 2021 22:18:39 -0800
+Subject: Re: [RFT PATCH 0/3] Performance regression noted in v5.11-rc after
+ c062db039f40
+To: Chuck Lever <chuck.lever@oracle.com>
+References: <20210125023858.570175-1-baolu.lu@linux.intel.com>
+ <BDAEAC42-15F2-4C75-A28C-8E580F0CFF01@oracle.com>
+ <83EE54C6-F654-4D1D-92F7-F442ACEC8D70@oracle.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7937bfa5-5cb9-0a23-176c-e91e5e9ac962@linux.intel.com>
+Date: Tue, 26 Jan 2021 14:18:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 8CD6A93D9A786D93DC46E5015D38F6B1D57C4AF0878B687D987EA2D78D9546862000:8
-X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- yi.kuo@mediatek.com, Tomasz Figa <tfiga@google.com>,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <83EE54C6-F654-4D1D-92F7-F442ACEC8D70@oracle.com>
+Content-Language: en-US
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,73 +88,207 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2021-01-25 at 11:40 +0100, Krzysztof Kozlowski wrote:
-> On Mon, Jan 25, 2021 at 05:28:05PM +0800, Yong Wu wrote:
-> > On Mon, 2021-01-25 at 09:40 +0100, Krzysztof Kozlowski wrote:
-> > > On Mon, Jan 25, 2021 at 02:49:41PM +0800, Yong Wu wrote:
-> > > > On Fri, 2021-01-22 at 22:34 +0100, Krzysztof Kozlowski wrote:
-> > > > > On Thu, Jan 21, 2021 at 02:24:28PM +0800, Yong Wu wrote:
-> > > > > > The config MTK_SMI always depends on MTK_IOMMU which is built-in
-> > > > > > currently. Thus we don't have module_exit before. This patch adds
-> > > > > > module_exit and module_license. It is a preparing patch for supporting
-> > > > > > MTK_SMI could been built as a module.
-> > > > > > 
-> > > > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > > > > ---
-> > > > > >  drivers/memory/mtk-smi.c | 10 ++++++++++
-> > > > > >  1 file changed, 10 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> > > > > > index e2aebd2bfa8e..aa2a25abf04f 100644
-> > > > > > --- a/drivers/memory/mtk-smi.c
-> > > > > > +++ b/drivers/memory/mtk-smi.c
-> > > > > > @@ -597,3 +597,13 @@ static int __init mtk_smi_init(void)
-> > > > > >  	return platform_register_drivers(smidrivers, ARRAY_SIZE(smidrivers));
-> > > > > >  }
-> > > > > >  module_init(mtk_smi_init);
-> > > > > > +
-> > > > > > +static void __exit mtk_smi_exit(void)
-> > > > > > +{
-> > > > > > +	platform_unregister_drivers(smidrivers, ARRAY_SIZE(smidrivers));
-> > > > > > +}
-> > > > > > +module_exit(mtk_smi_exit);
-> > > > > > +
-> > > > > > +MODULE_DESCRIPTION("MediaTek SMI driver");
-> > > > > > +MODULE_ALIAS("platform:MediaTek-SMI");
-> > > > > 
-> > > > > Drivers do not use capital letters, so I have doubts whether this alias
-> > > > > is correct.
-> > > > 
-> > > > I didn't care the upper/lower-case. I will change to lower case in next
-> > > > time.
-> > > 
-> > > Then why do you need the alias? The name does not match driver name, so
-> > > what's the purpose of this alias/
-> > 
-> > I think it is not so necessary for us. I will delete this line in next
-> > version.
-> > 
-> > Only curious what's alias is fit in our case? normally it should be the
-> > file name: mtk-smi?
+On 2021/1/26 3:31, Chuck Lever wrote:
 > 
-> If autoloading of your module works, then remove it. The alias is
-> necessary for some cases when a device table is missing (e.g. platform
-> driver is matched via devicetree but not having the platform_device_id
-> table) or matching is done via different method (e.g. driver is matched
-> from MFD via devicetree compatible even though there is a
-> platform_device_id table).
-
-Thanks for explaination so detailly. v2 is sent just now.
-
 > 
-> Best regards,
-> Krzysztof
+>> On Jan 25, 2021, at 12:39 PM, Chuck Lever <chuck.lever@oracle.com> wrote:
+>>
+>> Hello Lu -
+>>
+>> Many thanks for your prototype.
+>>
+>>
+>>> On Jan 24, 2021, at 9:38 PM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>
+>>> This patch series is only for Request-For-Testing purpose. It aims to
+>>> fix the performance regression reported here.
+>>>
+>>> https://lore.kernel.org/linux-iommu/D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com/
+>>>
+>>> The first two patches are borrowed from here.
+>>>
+>>> https://lore.kernel.org/linux-iommu/20210107122909.16317-1-yong.wu@mediatek.com/
+>>>
+>>> Please kindly help to verification.
+>>>
+>>> Best regards,
+>>> baolu
+>>>
+>>> Lu Baolu (1):
+>>> iommu/vt-d: Add iotlb_sync_map callback
+>>>
+>>> Yong Wu (2):
+>>> iommu: Move iotlb_sync_map out from __iommu_map
+>>> iommu: Add iova and size as parameters in iotlb_sync_map
+>>>
+>>> drivers/iommu/intel/iommu.c | 86 +++++++++++++++++++++++++------------
+>>> drivers/iommu/iommu.c       | 23 +++++++---
+>>> drivers/iommu/tegra-gart.c  |  7 ++-
+>>> include/linux/iommu.h       |  3 +-
+>>> 4 files changed, 83 insertions(+), 36 deletions(-)
+>>
+>> Here are results with the NFS client at stock v5.11-rc5 and the
+>> NFS server at v5.10, showing the regression I reported earlier.
+>>
+>> 	Children see throughput for 12 initial writers  = 4534582.00 kB/sec
+>> 	Parent sees throughput for 12 initial writers   = 4458145.56 kB/sec
+>> 	Min throughput per process                      = 373101.59 kB/sec
+>> 	Max throughput per process                      = 382669.50 kB/sec
+>> 	Avg throughput per process                      = 377881.83 kB/sec
+>> 	Min xfer                                        = 1022720.00 kB
+>> 	CPU Utilization: Wall time    2.787    CPU time    1.922    CPU utilization  68.95 %
+>>
+>>
+>> 	Children see throughput for 12 rewriters        = 4542003.12 kB/sec
+>> 	Parent sees throughput for 12 rewriters         = 4538024.19 kB/sec
+>> 	Min throughput per process                      = 374672.00 kB/sec
+>> 	Max throughput per process                      = 383983.78 kB/sec
+>> 	Avg throughput per process                      = 378500.26 kB/sec
+>> 	Min xfer                                        = 1022976.00 kB
+>> 	CPU utilization: Wall time    2.733    CPU time    1.947    CPU utilization  71.25 %
+>>
+>>
+>> 	Children see throughput for 12 readers          = 4568632.03 kB/sec
+>> 	Parent sees throughput for 12 readers           = 4563672.02 kB/sec
+>> 	Min throughput per process                      = 376727.56 kB/sec
+>> 	Max throughput per process                      = 383783.91 kB/sec
+>> 	Avg throughput per process                      = 380719.34 kB/sec
+>> 	Min xfer                                        = 1029376.00 kB
+>> 	CPU utilization: Wall time    2.733    CPU time    1.898    CPU utilization  69.46 %
+>>
+>>
+>> 	Children see throughput for 12 re-readers       = 4610702.78 kB/sec
+>> 	Parent sees throughput for 12 re-readers        = 4606135.66 kB/sec
+>> 	Min throughput per process                      = 381532.78 kB/sec
+>> 	Max throughput per process                      = 387072.53 kB/sec
+>> 	Avg throughput per process                      = 384225.23 kB/sec
+>> 	Min xfer                                        = 1034496.00 kB
+>> 	CPU utilization: Wall time    2.711    CPU time    1.910    CPU utilization  70.45 %
+>>
+>> Here's the NFS client at v5.11-rc5 with your series applied.
+>> The NFS server remains at v5.10:
+>>
+>> 	Children see throughput for 12 initial writers  = 4434778.81 kB/sec
+>> 	Parent sees throughput for 12 initial writers   = 4408190.69 kB/sec
+>> 	Min throughput per process                      = 367865.28 kB/sec
+>> 	Max throughput per process                      = 371134.38 kB/sec
+>> 	Avg throughput per process                      = 369564.90 kB/sec
+>> 	Min xfer                                        = 1039360.00 kB
+>> 	CPU Utilization: Wall time    2.842    CPU time    1.904    CPU utilization  66.99 %
+>>
+>>
+>> 	Children see throughput for 12 rewriters        = 4476870.69 kB/sec
+>> 	Parent sees throughput for 12 rewriters         = 4471701.48 kB/sec
+>> 	Min throughput per process                      = 370985.34 kB/sec
+>> 	Max throughput per process                      = 374752.28 kB/sec
+>> 	Avg throughput per process                      = 373072.56 kB/sec
+>> 	Min xfer                                        = 1038592.00 kB
+>> 	CPU utilization: Wall time    2.801    CPU time    1.902    CPU utilization  67.91 %
+>>
+>>
+>> 	Children see throughput for 12 readers          = 5865268.88 kB/sec
+>> 	Parent sees throughput for 12 readers           = 5854519.73 kB/sec
+>> 	Min throughput per process                      = 487766.81 kB/sec
+>> 	Max throughput per process                      = 489623.88 kB/sec
+>> 	Avg throughput per process                      = 488772.41 kB/sec
+>> 	Min xfer                                        = 1044736.00 kB
+>> 	CPU utilization: Wall time    2.144    CPU time    1.895    CPU utilization  88.41 %
+>>
+>>
+>> 	Children see throughput for 12 re-readers       = 5847438.62 kB/sec
+>> 	Parent sees throughput for 12 re-readers        = 5839292.18 kB/sec
+>> 	Min throughput per process                      = 485835.03 kB/sec
+>> 	Max throughput per process                      = 488702.12 kB/sec
+>> 	Avg throughput per process                      = 487286.55 kB/sec
+>> 	Min xfer                                        = 1042688.00 kB
+>> 	CPU utilization: Wall time    2.148    CPU time    1.909    CPU utilization  88.84 %
+>>
+>> NFS READ throughput is almost fully restored. A normal-looking throughput
+>> result, copied from the previous thread, is:
+>>
+>> 	Children see throughput for 12 readers 		= 5921370.94 kB/sec
+>> 	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
+>>
+>> The NFS WRITE throughput result appears to be unchanged, or slightly
+>> worse than before. I don't have an explanation for this result. I applied
+>> your patches on the NFS server also without noting improvement.
+> 
+> Function-boundary tracing shows some interesting results.
+> 
+> # trace-cmd record -e rpcrdma -e iommu -p function_graph --max-graph-depth=5 -g dma_map_sg_attrs
+> 
+> Some 120KB SGLs are DMA-mapped in a single call to __iommu_map(). Other SGLs of
+> the same size need as many as one __iommu_map() call per SGL element (which
+> would be 30 for a 120KB SGL).
+> 
+> In v5.10, intel_map_sg() was structured such that an SGL is always handled with
+> a single call to domain_mapping() and thus always just a single TLB flush.
+> 
+> My amateur theorizing suggests that the SGL element coalescing done in
+> __iommu_map_sg() is not working as well as intel_map_sg() used to, which results
+> in more calls to domain_mapping(). Not only does that take longer, but it creates
+> many more DMA maps. Could that also have some impact on device TLB resources?
 
+It seems that more domain_mapping() calls are not caused by
+__iommu_map_sg() but __iommu_map().
+
+Can you please test below changes? It call intel_iommu_map() directly
+instead of __iommu_map().
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index f5a236e63ded..660d5744a117 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4916,7 +4916,7 @@ intel_iommu_sva_invalidate(struct iommu_domain 
+*domain, struct device *dev,
+  }
+  #endif
+
+-static int intel_iommu_map(struct iommu_domain *domain,
++int intel_iommu_map(struct iommu_domain *domain,
+                            unsigned long iova, phys_addr_t hpa,
+                            size_t size, int iommu_prot, gfp_t gfp)
+  {
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3d099a31ddca..a1b41fd3fb4e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -23,8 +23,13 @@
+  #include <linux/property.h>
+  #include <linux/fsl/mc.h>
+  #include <linux/module.h>
++#include <linux/intel-iommu.h>
+  #include <trace/events/iommu.h>
+
++extern int intel_iommu_map(struct iommu_domain *domain,
++                          unsigned long iova, phys_addr_t hpa,
++                          size_t size, int iommu_prot, gfp_t gfp);
++
+  static struct kset *iommu_group_kset;
+  static DEFINE_IDA(iommu_group_ida);
+
+@@ -2553,8 +2558,7 @@ static size_t __iommu_map_sg(struct iommu_domain 
+*domain, unsigned long iova,
+                 phys_addr_t s_phys = sg_phys(sg);
+
+                 if (len && s_phys != start + len) {
+-                       ret = __iommu_map(domain, iova + mapped, start,
+-                                       len, prot, gfp);
++                       ret = intel_iommu_map(domain, iova + mapped, 
+start, len, prot, gfp);
+
+                         if (ret)
+                                 goto out_err;
+
+Does it change anything?
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
