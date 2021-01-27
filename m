@@ -2,139 +2,89 @@ Return-Path: <SRS0=KfvE=G6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC226C433DB
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 18:26:20 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC24C433DB
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 19:07:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1916164DA8
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 18:26:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1916164DA8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=vmware.com
+	by mail.kernel.org (Postfix) with ESMTPS id 67D7E60C40
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 19:07:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67D7E60C40
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 78B1822EE6;
-	Wed, 27 Jan 2021 18:26:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bUaT3Gnv413E; Wed, 27 Jan 2021 18:26:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3FBC8228E2;
-	Wed, 27 Jan 2021 18:26:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E923C0FA7;
-	Wed, 27 Jan 2021 18:26:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4EE94C013A
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 18:26:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 38D3687570
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 18:26:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C711B87374;
+	Wed, 27 Jan 2021 19:07:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LT-Bi-PDMDNK; Wed, 27 Jan 2021 19:07:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 212A487366;
+	Wed, 27 Jan 2021 19:07:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DECAAC08A1;
+	Wed, 27 Jan 2021 19:07:18 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02CC1C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 19:07:17 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id ECDD086C3E
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 19:07:16 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qRDNtc+Bj4RK for <iommu@lists.linux-foundation.org>;
- Wed, 27 Jan 2021 18:26:15 +0000 (UTC)
-X-Greylist: delayed 12:41:28 by SQLgrey-1.7.6
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7CBF087376
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 18:26:15 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e3Y//DMEtQMJiI5N25BQmoajn0GzGFvAeb8kR0kowU7PVkq/edLOGE/KR1JkAqqC528TEwxFl8VW1VuELaXl/RDIGPY27taowX0BMwd8AaBDrU4pLXGIydZFDVgjJCUS4T7R/QpR3lc+rCPQYtmiN2L2eCbKqPaZVNF7LWzb46bXoxxWgeI/yxE4gv+vo10uBCGyMaGqHz0iC7Fw19zheqOsbXHm/OGyGshcyt8Flpxbw8MLuimyOyI+cbatDNVvTtuQ2oGFA3bmGr3aNIU8oGyKMjyY6pec372g46FcyVqxiHij8gwxNtTbnCOgDU0ivauAX4Llin3Qlijy6k+6Xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UG1HLDilZkuzO+uvTwoie/g0gqPAe2+gyezoMtKL7YI=;
- b=ad83fyjS01mTxjWPs9h5jKHUX8p2l14giKXKP+aFCGp1jMNTIsQoyi+A+BiEQS4BS2cWCsKgcdaJttK/Vr4LC03hZXAoCugWi0z0I0CBoqnfRRSPkwJPzQOjLjgvXO9Rg/XUXOxNgVlNeh8cfNEKCPPMOawYlVa+6R+B+x1P1g3AWKNkIH+qOU0QppK3FJcXC9nP1eQt25Jcr92oZwUePxCqpI5XCw2QOA0LuptZH2hV8W7pxmIUOnir2Ds7d3nvOb79Zx93dpkJgDddhdbQXq4oA1fHzLECroiCFPJlk5XO/T0e8y/ZeHHOegWZaggkG0oWAR+ZmqIgf1pxqKOMqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UG1HLDilZkuzO+uvTwoie/g0gqPAe2+gyezoMtKL7YI=;
- b=LhsxxJU3lsxgH2LFDArcnunOC/U3SO9J8c7oK8PC7RU9MgMHlOIpc1bOLOOuv6h6QKxek4aBQ4Pjtf6l/YR4S41Bz+r20LJXHCjWX2FgnsPiSDhES+1z37WtZJE+xrX4Tk2CDRdXav4nS+//eWgKLtFmb82cRS4E5xSghlbQLqk=
-Received: from (2603:10b6:a03:4a::18) by
- BYAPR05MB4406.namprd05.prod.outlook.com (2603:10b6:a02:ef::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3805.6; Wed, 27 Jan 2021 17:51:50 +0000
-Received: from BYAPR05MB4776.namprd05.prod.outlook.com
- ([fe80::ddba:e1e9:fde7:3b31]) by BYAPR05MB4776.namprd05.prod.outlook.com
- ([fe80::ddba:e1e9:fde7:3b31%3]) with mapi id 15.20.3805.014; Wed, 27 Jan 2021
- 17:51:50 +0000
-From: Nadav Amit <namit@vmware.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2] iommu/vt-d: do not use flush-queue when caching-mode
- is on
-Thread-Topic: [PATCH v2] iommu/vt-d: do not use flush-queue when caching-mode
- is on
-Thread-Index: AQHW9J8qsK81TA6sQUu5BavghsL9SKo7wO2A
-Date: Wed, 27 Jan 2021 17:51:50 +0000
-Message-ID: <DFC5801C-CD2A-4D2C-8AAE-CBCF76832858@vmware.com>
-References: <20210127061729.1596640-1-namit@vmware.com>
- <15c974b1-b50d-9061-9d97-fef6f3804b22@linux.intel.com>
-In-Reply-To: <15c974b1-b50d-9061-9d97-fef6f3804b22@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=vmware.com; 
-x-originating-ip: [24.6.216.183]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: eb43a804-1e8a-4d2d-d9d4-08d8c2ec3999
-x-ms-traffictypediagnostic: BYAPR05MB4406:
-x-microsoft-antispam-prvs: <BYAPR05MB44068D12187570EA6728AB12D0BB9@BYAPR05MB4406.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1824;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7XoeTWCkMI0XX1Eu3YJBpg3Poj+maxGxF8kuWyNnCmvE3DyGs5oFgF52p3IRhk9+4ZDzOYLq4ALO1lbzcT7r3md7WT159qVoJ2Q8/sZtYeDa80teKv/7ZQmG4/f6BpRUqqU/3axDHaAdEFR9wEhs6g4pX6Ajy6/ijHjMF/S1HcRERhWn925zXbypks79FJMmdZU+WrSQIMbhEvcMhenWMTmp64W5Ul0eBld68oIgk2Nr/u82gUbiu2kdXNygvjD3AX6se9NDSSf99pjTyJmwdE30llVUwTuogYQRa8rBkBos8Ja8geqYMo1cFJ5V5rO2CJ/MKCkFqx7tOQOh4oWFeu1loSnryNCINjdH2AKtlkfwzHHPWS6jSIUmViQKj+lK8AaxbxUrAY7E2mR98Kf0oTb7tfOMnsdb3qZZztkU8SrTL2I2lYKMwDy8CZ7D5BmTlJtUu9GfWkJ61TvMTUtId26lErb3gSkgso89rKS/org0OTbUBBqTYe7IZ1C34ziFE3H8ocINJH22OGtHQM+EMpK/n7vUvsSA5CEdFMru7rLdIW64isQNAeyU8RDtN5ex3MfRcLG7zY1FG8bIPbKaqg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BYAPR05MB4776.namprd05.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(376002)(366004)(39860400002)(396003)(136003)(346002)(71200400001)(186003)(8676002)(64756008)(6486002)(83380400001)(2906002)(4326008)(36756003)(478600001)(5660300002)(54906003)(66476007)(66446008)(66556008)(76116006)(2616005)(86362001)(8936002)(26005)(6506007)(66946007)(91956017)(316002)(6512007)(33656002)(53546011)(6916009)(45980500001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?4sqZnnzj24TuL0UO0LC0fij6RPKwL93KrJlrsat9YMlHHl93r98KNeyKhSNE?=
- =?us-ascii?Q?zpyTyK/LRTk2dzy8Je5PLrRNmWTPdbG/0EbtFP2MXfdKLnk5gpQiAUC5oQ6o?=
- =?us-ascii?Q?GubFumNh3Oz3FHdfO76BrMIkWGv2pw54WO3Lng8X6vTvIo3Af1YsoyxM7yRG?=
- =?us-ascii?Q?mP9BjkEs97/z0Bu6A5Wpvv+54LTDMrFddthG2wpVxDcMagi0uKnAAvjy/7fQ?=
- =?us-ascii?Q?EgkOg6VViDa8/r0PbgQyKgBQDf6RhvkkXNxg1gyzWs8XYOfblFv3hWnqn9De?=
- =?us-ascii?Q?mgjACfB9wgbJ0cKshxBXdXJ3aDsNbpKN/Qx9ISWbp41TjlI06VsNod+LxfN+?=
- =?us-ascii?Q?TXydxOt6/WPnbFN3WpJ+oe21+v03bF6e13P5lP5aZ1oJ6XPqd0E7zcxdrikY?=
- =?us-ascii?Q?ZCHty6DYKzrwXw2JMe6cfNmYhURjlmknyDjNQh78Gk+OuR45tUJ9A5M0YfEJ?=
- =?us-ascii?Q?hvP7doMdgnFEWgenLMkS0qNjlh6Y5TRHiDoPvYTaHMPMURupW+He0790q3GS?=
- =?us-ascii?Q?g5x9SdF36ZezaXlMfmZk4OoIhkIIftuUZHnTMIEbMy4NyBMbXAYMKK1Wp3nN?=
- =?us-ascii?Q?OBRBqxQ3Vt91XMMkcVcPOQsJSZxj3x3Uecsmw4iCaHl5eOQyktRkCAZI9lKy?=
- =?us-ascii?Q?0DN5EgNSrb5L9ahjMDHC7fw05SwTKcButVCgneDcZRWv5+YUSGMWtjoSbX0W?=
- =?us-ascii?Q?uoi/7oA60J5v16ceEe6nk7UBtIufEQ6X3nAXORzrpj7gUSOAhj0URyUOxmru?=
- =?us-ascii?Q?bXNyVb5KgWwMUn7dUmqFt/wButqtECffNnDMNv3K7iwVttvgr9EySOYzMcxn?=
- =?us-ascii?Q?mJPx1UauzcKnn5S8knRXiGYLZD64uNwU6D5MSX94SchYFZ2VAnHqvBuhzotH?=
- =?us-ascii?Q?Qi4GU3DOpZ/Ni5UlROeua2V7MEx8a/XfakMwKgZnG9t6bDBUommtmSAOzavh?=
- =?us-ascii?Q?a2JVobnPanlZlfkbO/eCumyXk1FK/TtX2DKMlOoi/ZzVCoO0eavG1GCQC4pY?=
- =?us-ascii?Q?ZdFiGQb3vQF/GYmHFcbDH5rFgVm9OuolVNx6RDjSNe5ihQAxE2L2ZGgQQR70?=
- =?us-ascii?Q?jgWptAsz?=
-x-ms-exchange-transport-forked: True
-Content-ID: <B2D1CB1105001B46A1E81B855DA3DBAE@namprd05.prod.outlook.com>
+ with ESMTP id UZa-xOiY4pBg for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Jan 2021 19:07:16 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id F0DAA86C39
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 19:07:15 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1CC8564DB4
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 19:07:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1611774435;
+ bh=+2fq9fqcnJYIGiasm2Y78NeRv8I7YIdMcOI8TxM795s=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=YhRvfHT6RV1BMZil1zdzFYbHrjCJm7nZH8PN85tJkCvVMFjd6eDbEasUTop/t+LPD
+ +og8JbTEYZzAi04vEHfuIFInmDsmd231LW3n5RVJFYyM6vY3hmYrtWNfd8A82XdX6m
+ DjpPaS8pSa/DuHZYs6mKcfXHpOXTTFE56zyLkjQntGO4C+hsC0Ykvmz47tpeTx/84l
+ zXaW1LY6a8F7/TYczF+XBpza56l2dKK/8HzbEQZeM6w1bYXSP9+Xt5hPZiwG5xTEFf
+ wAw/S9OAFRpNo71WJjOFETco8uFIl0z2ETgQOd81ch+lFz7xSSy2QicZgzOBZ8Zlq9
+ XFs7hqikGgclQ==
+Received: by mail-ej1-f50.google.com with SMTP id w1so4168848ejf.11
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 11:07:15 -0800 (PST)
+X-Gm-Message-State: AOAM531LhmUTDJqIHvhq4izuwyYmDK1oy+yQnnMGm+Dy053Ve6BzFfvr
+ 2uDU3AQQ/GXxSvGzQPAgbaBSZVjE5acmJA+C5A==
+X-Google-Smtp-Source: ABdhPJwZ642wt52ernlRSW6Ok++wbRCAdfK+zZt0YWbSRLkd8I/BHIp2pHEsvorc0aidjP5dLvbM2BPXjvTf/vQ2vrY=
+X-Received: by 2002:a17:906:c9d8:: with SMTP id
+ hk24mr8285418ejb.468.1611774433585; 
+ Wed, 27 Jan 2021 11:07:13 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR05MB4776.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb43a804-1e8a-4d2d-d9d4-08d8c2ec3999
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2021 17:51:50.6310 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1kuaGzD3NoafsHGAbpUEGB+5PFCwgL3QuIXVwRkqh7EjRU6WiRUtajqI+a2KWGVGhsBiR3zyaYhqnU+oPjYHAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR05MB4406
-Cc: David Woodhouse <dwmw2@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Will Deacon <will@kernel.org>
+References: <20210119105203.15530-1-yong.wu@mediatek.com>
+In-Reply-To: <20210119105203.15530-1-yong.wu@mediatek.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Wed, 27 Jan 2021 13:07:01 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJB=MMeMobznBiAUihJLBt5aeiiL+AtDWh6tajePu=Now@mail.gmail.com>
+Message-ID: <CAL_JsqJB=MMeMobznBiAUihJLBt5aeiiL+AtDWh6tajePu=Now@mail.gmail.com>
+Subject: Re: [PATCH v2] of/device: Update dma_range_map only when dev has
+ valid dma-ranges
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>,
+ srv_heupstream <srv_heupstream@mediatek.com>, Will Deacon <will@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ Tomasz Figa <tfiga@google.com>, Linux IOMMU <iommu@lists.linux-foundation.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -152,52 +102,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> On Jan 27, 2021, at 3:25 AM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> 
-> On 2021/1/27 14:17, Nadav Amit wrote:
->> From: Nadav Amit <namit@vmware.com>
->> When an Intel IOMMU is virtualized, and a physical device is
->> passed-through to the VM, changes of the virtual IOMMU need to be
->> propagated to the physical IOMMU. The hypervisor therefore needs to
->> monitor PTE mappings in the IOMMU page-tables. Intel specifications
->> provide "caching-mode" capability that a virtual IOMMU uses to report
->> that the IOMMU is virtualized and a TLB flush is needed after mapping to
->> allow the hypervisor to propagate virtual IOMMU mappings to the physical
->> IOMMU. To the best of my knowledge no real physical IOMMU reports
->> "caching-mode" as turned on.
->> Synchronizing the virtual and the physical IOMMU tables is expensive if
->> the hypervisor is unaware which PTEs have changed, as the hypervisor is
->> required to walk all the virtualized tables and look for changes.
->> Consequently, domain flushes are much more expensive than page-specific
->> flushes on virtualized IOMMUs with passthrough devices. The kernel
->> therefore exploited the "caching-mode" indication to avoid domain
->> flushing and use page-specific flushing in virtualized environments. See
->> commit 78d5f0f500e6 ("intel-iommu: Avoid global flushes with caching
->> mode.")
->> This behavior changed after commit 13cf01744608 ("iommu/vt-d: Make use
->> of iova deferred flushing"). Now, when batched TLB flushing is used (the
->> default), full TLB domain flushes are performed frequently, requiring
->> the hypervisor to perform expensive synchronization between the virtual
->> TLB and the physical one.
->> Getting batched TLB flushes to use in such circumstances page-specific
->> invalidations again is not easy, since the TLB invalidation scheme
->> assumes that "full" domain TLB flushes are performed for scalability.
->> Disable batched TLB flushes when caching-mode is on, as the performance
->> benefit from using batched TLB invalidations is likely to be much
->> smaller than the overhead of the virtual-to-physical IOMMU page-tables
->> synchronization.
->> Fixes: 78d5f0f500e6 ("intel-iommu: Avoid global flushes with caching mode.")
-> 
-> Isn't it
-> 
-> Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
-> 
-> ?
+On Tue, Jan 19, 2021 at 4:52 AM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> The commit e0d072782c73 ("dma-mapping: introduce DMA range map,
+> supplanting dma_pfn_offset") always update dma_range_map even though it was
+> already set, like in the sunxi_mbus driver. the issue is reported at [1].
+> This patch avoid this(Updating it only when dev has valid dma-ranges).
 
-Of course it is - bad copy-paste. I will send v3.
+only when dev *doesn't* have valid dma-ranges?
 
-Thanks again,
-Nadav
+> Meanwhile, dma_range_map contains the devices' dma_ranges information,
+> This patch moves dma_range_map before of_iommu_configure. The iommu
+> driver may need to know the dma_address requirements of its iommu
+> consumer devices.
+>
+> [1] https://lore.kernel.org/linux-arm-kernel/5c7946f3-b56e-da00-a750-be097c7ceb32@arm.com/
+>
+> CC: Rob Herring <robh+dt@kernel.org>
+> CC: Frank Rowand <frowand.list@gmail.com>
+> Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset"),
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  drivers/of/device.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index aedfaaafd3e7..1122daa8e273 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -162,9 +162,11 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>         mask = DMA_BIT_MASK(ilog2(end) + 1);
+>         dev->coherent_dma_mask &= mask;
+>         *dev->dma_mask &= mask;
+> -       /* ...but only set bus limit if we found valid dma-ranges earlier */
+> -       if (!ret)
+> +       /* ...but only set bus limit and range map if we found valid dma-ranges earlier */
+> +       if (!ret) {
+>                 dev->bus_dma_limit = end;
+> +               dev->dma_range_map = map;
+> +       }
+>
+>         coherent = of_dma_is_coherent(np);
+>         dev_dbg(dev, "device is%sdma coherent\n",
+> @@ -172,6 +174,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>
+>         iommu = of_iommu_configure(dev, np, id);
+>         if (PTR_ERR(iommu) == -EPROBE_DEFER) {
+> +               /* Don't touch range map if it wasn't set from a valid dma-ranges */
+> +               if (!ret)
+> +                       dev->dma_range_map = NULL;
+>                 kfree(map);
+>                 return -EPROBE_DEFER;
+>         }
+> @@ -181,7 +186,6 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>
+>         arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
+>
+> -       dev->dma_range_map = map;
+>         return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(of_dma_configure_id);
+> --
+> 2.18.0
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
