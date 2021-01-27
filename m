@@ -2,77 +2,88 @@ Return-Path: <SRS0=KfvE=G6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872E0C433E0
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 09:39:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEA7C433E0
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 09:45:13 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DBC9120758
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 09:39:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBC9120758
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0CF6C20758
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 09:45:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CF6C20758
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7480F8458F;
-	Wed, 27 Jan 2021 09:39:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RXR1z73d3o-D; Wed, 27 Jan 2021 09:39:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BD24C8458C;
-	Wed, 27 Jan 2021 09:39:43 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98F7FC08A1;
-	Wed, 27 Jan 2021 09:39:43 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EBE3C013A
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:39:42 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 13A3885BA9
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:39:42 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BDC3B86460;
+	Wed, 27 Jan 2021 09:45:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bmFono3UmXfw; Wed, 27 Jan 2021 09:45:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0271E85F37;
+	Wed, 27 Jan 2021 09:45:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFD84C08A1;
+	Wed, 27 Jan 2021 09:45:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E21AC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:45:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8C3A886DF1
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:45:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id prSKSVE5Hq6P for <iommu@lists.linux-foundation.org>;
- Wed, 27 Jan 2021 09:39:41 +0000 (UTC)
+ with ESMTP id wS5fMa6+u+OQ for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Jan 2021 09:45:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2DB948639E
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:39:41 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8957131B;
- Wed, 27 Jan 2021 01:39:40 -0800 (PST)
-Received: from [10.57.46.236] (unknown [10.57.46.236])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65DC03F66B;
- Wed, 27 Jan 2021 01:39:39 -0800 (PST)
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: add support for BBML
-To: Keqian Zhu <zhukeqian1@huawei.com>, Will Deacon <will@kernel.org>
-References: <20201126034230.777-1-thunder.leizhen@huawei.com>
- <20210122125132.GB24102@willie-the-truck>
- <aac11411-f6cd-f990-fe53-db0d8c07f3a0@huawei.com>
- <1bfd1ca0-953e-e943-f87e-144d5537bd0c@arm.com>
- <20210126101230.GA29204@willie-the-truck>
- <8a9685ec-67aa-824f-5429-f408bf79c5ab@huawei.com>
- <32f4752f-6954-183a-a0c1-b5d719c85b67@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <319e3532-4555-7431-9d6f-3c3b7c11a5d9@arm.com>
-Date: Wed, 27 Jan 2021 09:39:38 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by hemlock.osuosl.org (Postfix) with ESMTP id AD5D686DDB
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 09:45:08 +0000 (UTC)
+X-UUID: 95a941a449a945569533e47030366fa5-20210127
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=OBxOSBPDbNRIc9EIOyaVw0/Acj/J50gJQln+TyAJ4w4=; 
+ b=fKTey2UsD9ZWtXMjndTDzR8flYyWadWqD3c0di7De3krd96p/88RpeIDGsiigtf1d7pZrWTZGrqqZc4zwcJMXo36VHJTaZYbMLwlt+xy3lmI28KLMntvuUG8N4iZUXh/Pmi2FoqvhFacYiYdXTKM00S3hWiLDYCUwMiJeOk2PbU=;
+X-UUID: 95a941a449a945569533e47030366fa5-20210127
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 969588445; Wed, 27 Jan 2021 17:39:19 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Wed, 27 Jan 2021 17:39:17 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 27 Jan 2021 17:39:16 +0800
+Message-ID: <1611740356.5302.14.camel@mhfsdcap03>
+Subject: Re: [PATCH v6 07/33] iommu: Avoid reallocate default domain for a
+ group
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Wed, 27 Jan 2021 17:39:16 +0800
+In-Reply-To: <20210126222305.GB30460@willie-the-truck>
+References: <20210111111914.22211-1-yong.wu@mediatek.com>
+ <20210111111914.22211-8-yong.wu@mediatek.com>
+ <20210126222305.GB30460@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <32f4752f-6954-183a-a0c1-b5d719c85b67@huawei.com>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu <iommu@lists.linux-foundation.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- Yang Yingliang <yangyingliang@huawei.com>
+X-TM-SNTS-SMTP: F36F529AFC96016349EB7092D40E98B771F9B02D82265433FE286BC98F51FFAC2000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, linux-kernel@vger.kernel.org,
+ Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,63 +96,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-27 07:36, Keqian Zhu wrote:
+On Tue, 2021-01-26 at 22:23 +0000, Will Deacon wrote:
+> On Mon, Jan 11, 2021 at 07:18:48PM +0800, Yong Wu wrote:
+> > If group->default_domain exists, avoid reallocate it.
+> > 
+> > In some iommu drivers, there may be several devices share a group. Avoid
+> > realloc the default domain for this case.
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >  drivers/iommu/iommu.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 3d099a31ddca..f4b87e6abe80 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -266,7 +266,8 @@ int iommu_probe_device(struct device *dev)
+> >  	 * support default domains, so the return value is not yet
+> >  	 * checked.
+> >  	 */
+> > -	iommu_alloc_default_domain(group, dev);
+> > +	if (!group->default_domain)
+> > +		iommu_alloc_default_domain(group, dev);
 > 
+> I don't really get what this achieves, since iommu_alloc_default_domain()
+> looks like this:
 > 
-> On 2021/1/27 10:01, Leizhen (ThunderTown) wrote:
->>
->>
->> On 2021/1/26 18:12, Will Deacon wrote:
->>> On Mon, Jan 25, 2021 at 08:23:40PM +0000, Robin Murphy wrote:
->>>> Now we probably will need some degreee of BBML feature awareness for the
->>>> sake of SVA if and when we start using it for CPU pagetables, but I still
->>>> cannot see any need to consider it in io-pgtable.
->>>
->>> Agreed; I don't think this is something that io-pgtable should have to care
->>> about.
-> Hi,
+> static int iommu_alloc_default_domain(struct iommu_group *group,
+> 				      struct device *dev)
+> {
+> 	unsigned int type;
 > 
-> I have a question here :-).
-> If the old table is not live, then the break procedure seems unnecessary. Do I miss something?
+> 	if (group->default_domain)
+> 		return 0;
+> 
+> 	...
+> 
+> in which case, it should be fine?
 
-The MMU is allowed to prefetch translations at any time, so not 
-following the proper update procedure could still potentially lead to a 
-TLB conflict, even if there's no device traffic to worry about disrupting.
+oh. sorry, I overlooked this. the current code is enough.
+I will remove this patch. and send the next version in this week.
+Thanks very much.
 
-Robin.
+> 
+> Will
 
-> Thanks,
-> Keqian
-> 
->>
->> Yes, the SVA works in stall mode, and the failed device access requests are not
->> discarded.
->>
->> Let me look for examples. The BBML usage scenario was told by a former colleague.
->>
->>>
->>> Will
->>>
->>> .
->>>
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->> .
->>
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
