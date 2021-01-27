@@ -2,184 +2,156 @@ Return-Path: <SRS0=KfvE=G6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92231C433E0
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 03:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2618CC433E0
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 05:47:17 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C9572064C
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 03:01:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C9572064C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB89C20709
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 05:47:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB89C20709
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BC6E9857E2;
-	Wed, 27 Jan 2021 03:01:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 402B785683;
+	Wed, 27 Jan 2021 05:47:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s6Z8sQtt2uGc; Wed, 27 Jan 2021 03:01:21 +0000 (UTC)
+	with ESMTP id d3feQgZxga0v; Wed, 27 Jan 2021 05:47:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 52F6285722;
-	Wed, 27 Jan 2021 03:01:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 01F7A859D2;
+	Wed, 27 Jan 2021 05:47:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 37963C0FA7;
-	Wed, 27 Jan 2021 03:01:21 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D47CC013A
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 03:01:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9770C1E6F;
+	Wed, 27 Jan 2021 05:47:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C2B0C013A;
+ Wed, 27 Jan 2021 05:47:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4F6A287098
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 03:01:20 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8ABCA85683;
+ Wed, 27 Jan 2021 05:47:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xoi6QinDU6dH for <iommu@lists.linux-foundation.org>;
- Wed, 27 Jan 2021 03:01:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AB6F286FF0
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 03:01:17 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10R30Jju098279;
- Wed, 27 Jan 2021 03:00:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=6ABED7vdHZIkUumIMHOcPHknXa7e4/F6BvVjGomEpsY=;
- b=yhUYqNbk4/Ecbjxt56Bytxl75eQbMj9vNeuuUVbiTn8GJI1ghtAe3sNLKpZHL1dChFDi
- zy888UkWdmLPHhuak7O3mYRZKJjYKKOd6hf8ChqugzWZ7zVcmgD+HHJLGzS8LB6swEPT
- kguLTasDR0TUJZ18dPV/EsXlGvSXdEzV9UDSnawq0FOFxXLdgojvMqw8+PJUnT8f5vW8
- hjyg4H0SA+7SjAIEaxjLwcRnDmm0w/gu3jIYen+TY03fU2O3RIU5SsvBFSez9ohVTQ0U
- tcnjd4nz45HHIaff4Tv8tcnJBdZYRuqHPpg0MquxOgnGbIUPK1M16fSoXW6sFrKF+ctz OQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by aserp2130.oracle.com with ESMTP id 3689aan55c-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 27 Jan 2021 03:00:30 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10R2oBtx171969;
- Wed, 27 Jan 2021 02:58:29 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com
- (mail-co1nam11lp2169.outbound.protection.outlook.com [104.47.56.169])
- by userp3030.oracle.com with ESMTP id 368wqx8g2p-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 27 Jan 2021 02:58:29 +0000
+ with ESMTP id EPYKKKLwWKej; Wed, 27 Jan 2021 05:47:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on2113.outbound.protection.outlook.com [40.107.94.113])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id DE8D28554A;
+ Wed, 27 Jan 2021 05:47:10 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YVxU5jpAUpN1587zTgCHbtzUcDn+6WBDHkX1acA2GY8344dV494aERWll+BZDBRGZVFFHE6nsfA12aV87J40s7HkkAwvicHRD/Nl/VAFgdK0GNIkfU7iK/IMgEFB+23iC5ZgujOk8xy1G9Q+qXJXujlaJKj2UtDpg57QT327JNDxrUKcBwu1V9UK1FUgMbMg+qwEMmaZyb/a7DZL7w96vDJObK3gsJVKW0apgoVzXkVudf2ylt5kUayWIxh74ryU05g8028vz9chH8nV301Qh9MwtJMYHy16M8PmaESSYFLc1vaK3+zLKN0iMXbipAsjlJ6Q4Qsm8WPyxC+uuGdWNw==
+ b=UWCdnlD663lgkZpeOo0agjmrilm03m/+qG29F66P48Mjo/zrkiIiqd/QWBPzypCUXWWWpi73mOpAmAvGbL4yfAwrj+YjDMkux7tIJNXdjRszak9OQQcTp8n88DVDcm5mrHeUONMmbWpqMB3kfgfq9XnwDoX8Im2P0BtXqH99hCaM2cCfQM1hg9Bx7np05fw4n2pOILj4SoC82fRtJedZMcP9dGXE1n+Q8EEP1794q2FhkxUeObmVxSuHe5k5AoFVsXR8eFE75iDFdS4Ezk0rAjesxW3Y+Mxvj6Nrk0510mFs3CsiiWASCdSgOtpI90yLeRNI1zOFscLc21PMhunt9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6ABED7vdHZIkUumIMHOcPHknXa7e4/F6BvVjGomEpsY=;
- b=lbWTrNfZlyNjIzHbFAzCyriDx8rZJ3dog/C+2N5zWu6shJIlpZW4Eqlk0TYpybHm8QZxn8KjIrYpLDGWyQS/55PQM6Sz3P8bn4P4pQQxJdDYfY1fut7rcMtdOkwYhZOM4OV5q/lg6CVmhLmKVBQRKASAQbYO9Na5iw790GIhahsBCUKtJ3LJ/rBNd75dZSjm1q2XYH4JPqyIAd7Z9BE+wQ++Fg/xuyF3KewuKDlukXrhO2fFjxUZ4gCGhPnjfmUjxNM6Fv0U2X8bf14bETYGZnxQ8q1laJDRvT7/M3uqwIw1WZZLXiD7NbKbB+BX85w3yB7ZBaCHy/7ZttfkdbPEPA==
+ bh=bhm60HSubGtCpzNeOFHz36wwAA8Nc2/oOCScsQH7yTA=;
+ b=k9URkMRyaR3JUj1dcEJRLOTgK+hBxHTgFNCECc9FJC85E2XBan3crwdXf922htef0jfGLGrVv6oPYZ4M6bb/RoFI1x/wIkrXDHl8HpmJfTHoUa6DgSefTmysTmtGOtSg9IVC27lqRIASkNm4RqGWxkGnHYqcresZN+zRgBFe6gfkOarYZalYJYbuf7Y5kXw2Xzu141Sk8D7BQ8kMwW9JXaEyuw9alwhYfrqAs/D9kGVjFH95mfVX2z4w19ycYcQWefbcjPeDhjhHN7jiWAl5tarErjjee5nNFwTNkcviBB4awLC23hSPZaGCSk3NZVdjRJ9MeFqHM2xLJvrnzfn0ew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6ABED7vdHZIkUumIMHOcPHknXa7e4/F6BvVjGomEpsY=;
- b=ad1kcgLIND2Kw4Qea+vLuEXyqeP3qiov9Zzi300awk82P0hOVlwC8PsFMnAKLRljIhY3Kgu6r8dbYN7Ni5lfzaALwYyOaVg0eBWHIGrbDC7P4PBKbnrzhMtBwZlnw6Ghpkmg1y01bwRkUsb3L+qGbAzKpcKgrKvij4JQLE/uqP4=
-Received: from SJ0PR10MB4688.namprd10.prod.outlook.com (2603:10b6:a03:2db::24)
- by BY5PR10MB4049.namprd10.prod.outlook.com (2603:10b6:a03:1b2::18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Wed, 27 Jan
- 2021 02:58:25 +0000
-Received: from SJ0PR10MB4688.namprd10.prod.outlook.com
- ([fe80::6da8:6d28:b83:702b]) by SJ0PR10MB4688.namprd10.prod.outlook.com
- ([fe80::6da8:6d28:b83:702b%4]) with mapi id 15.20.3784.019; Wed, 27 Jan 2021
- 02:58:25 +0000
-From: Chuck Lever <chuck.lever@oracle.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [RFT PATCH 0/3] Performance regression noted in v5.11-rc after
- c062db039f40
-Thread-Topic: [RFT PATCH 0/3] Performance regression noted in v5.11-rc after
- c062db039f40
-Thread-Index: AQHW8sRzvAsRgI4bIEGwtoU2eSt8tao4nH8AgAAfcwCAALSugIAAoF6AgACoB4CAABIAAA==
-Date: Wed, 27 Jan 2021 02:58:25 +0000
-Message-ID: <CE0D9B50-B7CA-41D1-8B34-82AEAD864D74@oracle.com>
-References: <20210125023858.570175-1-baolu.lu@linux.intel.com>
- <BDAEAC42-15F2-4C75-A28C-8E580F0CFF01@oracle.com>
- <83EE54C6-F654-4D1D-92F7-F442ACEC8D70@oracle.com>
- <7937bfa5-5cb9-0a23-176c-e91e5e9ac962@linux.intel.com>
- <C70D7EE4-C84C-421C-818A-F13403E99B33@oracle.com>
- <c8bbeb07-92a8-cacf-7106-512aafe02921@linux.intel.com>
-In-Reply-To: <c8bbeb07-92a8-cacf-7106-512aafe02921@linux.intel.com>
+ bh=bhm60HSubGtCpzNeOFHz36wwAA8Nc2/oOCScsQH7yTA=;
+ b=JvIn+3xtJ8ZhzmtV4csxwGljCIucSdL+bwdIDR2his8akWSLbNMlbZ5KQU6NBJVrzOPBq+u3ojJNGgWIFScN/sJQL/b59XaKUL19vwzS/90Gyx4tpp5fj0VF8gU/rfgmJJaHvptQj7/xwc+Teu5pMBvoyFUZb1AfiAaIT9GQnkE=
+Received: from (2603:10b6:301:7c::11) by
+ MW4PR21MB1987.namprd21.prod.outlook.com (2603:10b6:303:78::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3825.2; Wed, 27 Jan 2021 05:47:08 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9c8:94c9:faf1:17c2]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9c8:94c9:faf1:17c2%9]) with mapi id 15.20.3825.003; Wed, 27 Jan 2021
+ 05:47:08 +0000
+To: Wei Liu <wei.liu@kernel.org>, Linux on Hyper-V List
+ <linux-hyperv@vger.kernel.org>
+Subject: RE: [PATCH v5 16/16] iommu/hyperv: setup an IO-APIC IRQ remapping
+ domain for root partition
+Thread-Topic: [PATCH v5 16/16] iommu/hyperv: setup an IO-APIC IRQ remapping
+ domain for root partition
+Thread-Index: AQHW7yP8YtCnZy7E10m8VGWiVVtuDao6/Hmg
+Date: Wed, 27 Jan 2021 05:47:08 +0000
+Message-ID: <MWHPR21MB15936ED25B56AF897B655B76D7BB9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210120120058.29138-1-wei.liu@kernel.org>
+ <20210120120058.29138-17-wei.liu@kernel.org>
+In-Reply-To: <20210120120058.29138-17-wei.liu@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=oracle.com; 
-x-originating-ip: [68.61.232.219]
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-01-27T05:47:06Z; 
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=65c0181f-1d15-4327-8596-032df4eec16b;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [66.75.126.197]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6d7d8404-c7c0-475c-0e78-08d8c26f6a8a
-x-ms-traffictypediagnostic: BY5PR10MB4049:
-x-microsoft-antispam-prvs: <BY5PR10MB404927AAA95A02B9061465FF93BB9@BY5PR10MB4049.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 46aee165-deef-40c6-03eb-08d8c286fc61
+x-ms-traffictypediagnostic: MW4PR21MB1987:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW4PR21MB19871738F9A47DCD6D87DF09D7BB9@MW4PR21MB1987.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:862;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1sUG7liUTQcFF2vdRYiEmVFKEbbemH5nHwivY/IzvTawCQ831FbvrRnotHwKfj8t6CzsxoC4GjT/zvSC1BkiCbDoBCoCGQNdzPKA+mi040tNQv24cfK0jpFQidT0dA3RsbGmrOt4oJb/2k4rmjqrrI3za9cPy0rUZ6AEjtpAoKH0yITFeFlKnLx7z/fLev9axiyOkWjWrW/txIuXoNmHkYKVOU0m5Wkt0Fb1hiPWuBijARbD1mTyz0dcF9FEfJdAJtVoVyxt447hRNX1dXIKT6eK3Ce4kTVFLpybNqNpwbOiCY5Ea6bREF8AJfEaXrvR/O8l/g007x/AwLLUqMdhyxvzmVd0DqsRwbhILjLHM/0VOIbteSStzAkLMBQP6MGbe1gwcWyC8qvD1HprBbgR0iZQ8OvuiD4rk2jWVKXokm67p9wDMemzBfCwAMK8nv3Hir9E7FmORh8KJ5NLkTTIt63Vd/kbVcvdf9gADqGHvhiS/y19wsikB93qGpc9BqYLki8BXgW3IvnvcEafpxn/wQNxYP6PpTPs0opNzEGdy/w=
+x-microsoft-antispam-message-info: rbJAzdA9/1YKdHT3iYEelTpAj6S5FXsVs+2vCU3yOrtc8sgvjFpYSNGhCUSD103aSz6c07y6sG1uKV4nBAketTEao97Wf6xiHdZ6i9f6x6FRCVQOAKE9y/YuZ89F9tK5dDcDER4cJY5M8R0VteC3Vi+5NX+fywGR18CpSy5yHzpRTUxtRbZx8KHOnIsvgKVQwYV4f8jmjvgUL97KZoqNTNAJrzJWZ/ZK7RZ2TTsJNYKveKwfRWlqvJPb4UdsQQ3KkL4ZAR0DXeySsJxIo0TEv43Y9j2+zvbKfAulTyzdUhcPjDTO0KuauTtYmC43vuk1uIl2/2RgrQu4DoIcDxilkq538gP8U/4b6KeDzon/Cx5J9rVadVMzLY9u0Dnmat7A6syZ75CYoxJwiwi3t1Zi7RAZR/sM1W+zTmtAKz5akYH/gFQYswkX/FEvQ3WmQbdUzGPk1yoPGSvU6wpal3wFPCvA47wrt864/FYuAGGEF/fZ1OnJPaYAX8Qm3GtUPXzaoQ0nJ2716kAcOc8JMRWz5A==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:SJ0PR10MB4688.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(39860400002)(396003)(376002)(136003)(366004)(346002)(30864003)(53546011)(66556008)(71200400001)(64756008)(5660300002)(4326008)(6486002)(54906003)(26005)(6506007)(186003)(478600001)(966005)(316002)(66476007)(8936002)(66946007)(6916009)(91956017)(2906002)(83380400001)(8676002)(86362001)(36756003)(76116006)(33656002)(6512007)(44832011)(2616005)(66446008)(98903001)(45980500001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?aCMZoKJVB3WL4CnlVx4ZWAOy5wcl0ThdzNKknXay00FglhTkC9a+z7ET8j4w?=
- =?us-ascii?Q?CiwMZUunALysmiMknrCz692U2Pnr62du7zffAaDQtny7jEdm+/ZUqM8Gdo5n?=
- =?us-ascii?Q?xs66GprOydukMjwA2AxauTbmwXk41dvpcPANSEAKqLNRSheDlEiDwAO9uomr?=
- =?us-ascii?Q?g2w+DIExCngM1/0aNAxhP1x1Eq0bUQ4YlskIDB+ebeEY81Ck74DNEeY9p1qc?=
- =?us-ascii?Q?0k9gUwil51i2iqV/rNNPnmfgLEXAl8WDvzyKYDXGx/2+L//u3ht6dr/3xWSM?=
- =?us-ascii?Q?3d9s0jHgIadqWe+W8QrJEGqpOAgwLUXyVOCB27+4MpAfhsjbgm64/TEboocF?=
- =?us-ascii?Q?cp2qI4jr45oXkPX9pJH9vJlAuW89dFUMOHTOfIGnrZMLqCjQUzI+wnwaV/NV?=
- =?us-ascii?Q?ftarowFuLFVTeAjji3iu91vXZ4n7zEQnC96IYE9grAy8bBpPyIVHGN8KiP3b?=
- =?us-ascii?Q?L9YbhTmLQrnxAEmdJZoaUBnDkddZlZ/r34cHevXSkGF8YH+z+QsIKpbLNQrR?=
- =?us-ascii?Q?fQuPGK94X44EhSD00UU90La9Gh9QP+XmywXNKtkVsUdQBMAe8q9OcAFWHuyX?=
- =?us-ascii?Q?fnwieImD+U4qO+ItEJNvUWfLrJA1rdA94XlgUeeLvWIQ2LCdVMGOptkrvL0l?=
- =?us-ascii?Q?bwkP0z/406F8kENnaMN+oS2fOLQPHFnAfXqOLzDxe/4zATUpZdBydqxG/qeE?=
- =?us-ascii?Q?e/aeqzk6W6hNLuJMvRqJUXbqiRtZ82vh2S8ia/3+zAvRK61yh+qLkn+bY06S?=
- =?us-ascii?Q?m3ZvzvN5IDLhiRx+3BiY0Ss9b2EG5Rt4Sq1e14C54Rb3mK8n7CJABkRxJnJC?=
- =?us-ascii?Q?abx9D/eRFEqPziTRoPDwl6viQidLv7U/owjULcARey4BjmJp/KIpEHhUaBKa?=
- =?us-ascii?Q?u8YHMPNJ5+ipsbcyTChE0ekOH7tFxVCKZruMwMRWyxiMsNluBOqJDPEmQ3jv?=
- =?us-ascii?Q?A5SEKScVTgxLDW7vtjgekSNMh1o7qbpMJpR0iszBiO+6eIfYmz2CwrXpwaJh?=
- =?us-ascii?Q?0P/ZBqDJE/XT07D6YiBQAWkhysAWu2YVi76nXAAacMUvG1ImGw6fXmIrUAT+?=
- =?us-ascii?Q?pj9fsORmgEmc3UF7EzBVccniVf8BXQ=3D=3D?=
-x-ms-exchange-transport-forked: True
-Content-ID: <4DDD7D010B20D749ADAECD1C914F4BB1@namprd10.prod.outlook.com>
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(376002)(366004)(39860400002)(136003)(346002)(186003)(26005)(7696005)(2906002)(30864003)(8936002)(83380400001)(64756008)(55016002)(5660300002)(8676002)(6506007)(9686003)(10290500003)(478600001)(66946007)(33656002)(110136005)(52536014)(76116006)(86362001)(54906003)(71200400001)(8990500004)(4326008)(316002)(66476007)(66446008)(82950400001)(7416002)(66556008)(82960400001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ILVhpiJgW3BokwwAwobXEXDlcZy3tm1muI+AAvx95kkwHuei5GDaggedBy9w?=
+ =?us-ascii?Q?EdOKsAPLzfeD723SUW+48UE6myre2Vhf4RX0CWTnS2yYANBoSe44oA6OB7Wi?=
+ =?us-ascii?Q?ixMMYt6sM+WMAVlrVHv7uZWKU64ejOy4QwMpxg8BZZMQn2bkpblJydaSBmXX?=
+ =?us-ascii?Q?vaj2QYjzFKN0HobIZ715iB1dp+RmUs+83GSiOTrRArz8mbq3irO+pMwtE026?=
+ =?us-ascii?Q?uv49As/1h4oI+BRC4WFaBMF+q70w3Q82XNFHHVjpp+VCX+mHpisPQz9N/8DT?=
+ =?us-ascii?Q?4fg/6/rGu5Zw042ctjYy9qoepKsFS66u4l/v96W5fh1wyNG2aYoC/4ZBlAwr?=
+ =?us-ascii?Q?FDTBYSOfdeJfaGQycj5Hd6llgdGMbDYLiDd9U9mPwZPYrrUP3mA/cpeCnDJ7?=
+ =?us-ascii?Q?A6Oy3fK5CQ4bxJctUXu5gLPzDsvDHqh+r4PPrMm99O4SHcsWW6j9R4r2EZsj?=
+ =?us-ascii?Q?R4+JPe1QUG2KPnBRqKkPjDUnNz3T+ITJ/GN/c59Avts1gcPvj08cFvb91XQT?=
+ =?us-ascii?Q?zMrkt7LzF3OJ/W/XihebVQjk4mShlpsyAHB3BvAcxZU/wiXrIiMGESJPAiHM?=
+ =?us-ascii?Q?uq2TaQr9ihyCV2Xi3qvL2MqkEtTvApJwimdSKI925B+wJ8mvZLHAidwsCOEX?=
+ =?us-ascii?Q?7otPw5kVxBD429ABqrnbX8xbuy207qMadfhD+f+3/ESMXA8hj5uUCHFGAYqB?=
+ =?us-ascii?Q?XhvpE6T6M89Uh5G4S7oz383BIwyWEGBQ8zADaEaOnJlODttFSrWJ7/IbPIqu?=
+ =?us-ascii?Q?WyffNnA167AwfKj4qBMpOWwjwOjFIgm1dABxPaSvrc8rps46zM5PiewQxqUi?=
+ =?us-ascii?Q?lIUKtR+Xwha8B7XjY+U7ducvkWt/pEuaf3XfyB2/sndkphllqT8l34AkXi4L?=
+ =?us-ascii?Q?TIBDdCgxsVBNuRC+UMfGpmr3iiePrVvcSK2vfya4KFAWMc+k0GCW1Ukes3Kx?=
+ =?us-ascii?Q?wSBL2Zumjm0MLis0vunU/5/0BXZbz279hBhitiXs2oGv2Va4tllpwCpE7+2y?=
+ =?us-ascii?Q?s9qtFsbG1ZKpe8bPGugZ5AtQkDIPpJScMg/isabCdkQPHAkwG6shbuPZnz99?=
+ =?us-ascii?Q?dFsACQBo?=
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4688.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d7d8404-c7c0-475c-0e78-08d8c26f6a8a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2021 02:58:25.6868 (UTC)
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46aee165-deef-40c6-03eb-08d8c286fc61
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2021 05:47:08.7208 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zcFJ+pF/V7lSuP10j5iOMYieFSdrdiSV1Vn5CwEoamNVaXV3x1bzhTNYd737Fo/l6GEsBNy3nftPbgJA4OBjQw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4049
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9876
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
- spamscore=0 phishscore=0
- adultscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101270015
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9876
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
- adultscore=0
- lowpriorityscore=0 mlxlogscore=999 clxscore=1015 phishscore=0 bulkscore=0
- spamscore=0 priorityscore=1501 mlxscore=0 suspectscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101270016
-Cc: "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Will Deacon <will@kernel.org>
+X-MS-Exchange-CrossTenant-userprincipalname: bzbu5X/5dJ02NyOarg4pzTzr3RkyzXkErJ+w9CD8j1ohoc1zzVBNUVZzhnKTIVJWbQTd6i6U/Xor/I350MUiH4un3GEaaXJp5omosO9umow=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1987
+Cc: Stephen Hemminger <sthemmin@microsoft.com>,
+ "pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>,
+ Will Deacon <will@kernel.org>, Haiyang Zhang <haiyangz@microsoft.com>,
+ "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter
+ Anvin" <hpa@zytor.com>, Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
+ Vineeth Pillai <viremana@linux.microsoft.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -192,375 +164,354 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Michael Kelley <mikelley@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> On Jan 26, 2021, at 8:53 PM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+From: Wei Liu <wei.liu@kernel.org> Sent: Wednesday, January 20, 2021 4:01 AM
 > 
-> Hi Chuck,
+> Just like MSI/MSI-X, IO-APIC interrupts are remapped by Microsoft
+> Hypervisor when Linux runs as the root partition. Implement an IRQ
+> domain to handle mapping and unmapping of IO-APIC interrupts.
 > 
-> On 1/26/21 11:52 PM, Chuck Lever wrote:
->>> On Jan 26, 2021, at 1:18 AM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>> 
->>> On 2021/1/26 3:31, Chuck Lever wrote:
->>>>> On Jan 25, 2021, at 12:39 PM, Chuck Lever <chuck.lever@oracle.com> wrote:
->>>>> 
->>>>> Hello Lu -
->>>>> 
->>>>> Many thanks for your prototype.
->>>>> 
->>>>> 
->>>>>> On Jan 24, 2021, at 9:38 PM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>>>>> 
->>>>>> This patch series is only for Request-For-Testing purpose. It aims to
->>>>>> fix the performance regression reported here.
->>>>>> 
->>>>>> https://lore.kernel.org/linux-iommu/D81314ED-5673-44A6-B597-090E3CB83EB0@oracle.com/
->>>>>> 
->>>>>> The first two patches are borrowed from here.
->>>>>> 
->>>>>> https://lore.kernel.org/linux-iommu/20210107122909.16317-1-yong.wu@mediatek.com/
->>>>>> 
->>>>>> Please kindly help to verification.
->>>>>> 
->>>>>> Best regards,
->>>>>> baolu
->>>>>> 
->>>>>> Lu Baolu (1):
->>>>>> iommu/vt-d: Add iotlb_sync_map callback
->>>>>> 
->>>>>> Yong Wu (2):
->>>>>> iommu: Move iotlb_sync_map out from __iommu_map
->>>>>> iommu: Add iova and size as parameters in iotlb_sync_map
->>>>>> 
->>>>>> drivers/iommu/intel/iommu.c | 86 +++++++++++++++++++++++++------------
->>>>>> drivers/iommu/iommu.c       | 23 +++++++---
->>>>>> drivers/iommu/tegra-gart.c  |  7 ++-
->>>>>> include/linux/iommu.h       |  3 +-
->>>>>> 4 files changed, 83 insertions(+), 36 deletions(-)
->>>>> 
->>>>> Here are results with the NFS client at stock v5.11-rc5 and the
->>>>> NFS server at v5.10, showing the regression I reported earlier.
->>>>> 
->>>>> 	Children see throughput for 12 initial writers  = 4534582.00 kB/sec
->>>>> 	Parent sees throughput for 12 initial writers   = 4458145.56 kB/sec
->>>>> 	Min throughput per process                      = 373101.59 kB/sec
->>>>> 	Max throughput per process                      = 382669.50 kB/sec
->>>>> 	Avg throughput per process                      = 377881.83 kB/sec
->>>>> 	Min xfer                                        = 1022720.00 kB
->>>>> 	CPU Utilization: Wall time    2.787    CPU time    1.922    CPU utilization  68.95 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 rewriters        = 4542003.12 kB/sec
->>>>> 	Parent sees throughput for 12 rewriters         = 4538024.19 kB/sec
->>>>> 	Min throughput per process                      = 374672.00 kB/sec
->>>>> 	Max throughput per process                      = 383983.78 kB/sec
->>>>> 	Avg throughput per process                      = 378500.26 kB/sec
->>>>> 	Min xfer                                        = 1022976.00 kB
->>>>> 	CPU utilization: Wall time    2.733    CPU time    1.947    CPU utilization  71.25 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 readers          = 4568632.03 kB/sec
->>>>> 	Parent sees throughput for 12 readers           = 4563672.02 kB/sec
->>>>> 	Min throughput per process                      = 376727.56 kB/sec
->>>>> 	Max throughput per process                      = 383783.91 kB/sec
->>>>> 	Avg throughput per process                      = 380719.34 kB/sec
->>>>> 	Min xfer                                        = 1029376.00 kB
->>>>> 	CPU utilization: Wall time    2.733    CPU time    1.898    CPU utilization  69.46 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 re-readers       = 4610702.78 kB/sec
->>>>> 	Parent sees throughput for 12 re-readers        = 4606135.66 kB/sec
->>>>> 	Min throughput per process                      = 381532.78 kB/sec
->>>>> 	Max throughput per process                      = 387072.53 kB/sec
->>>>> 	Avg throughput per process                      = 384225.23 kB/sec
->>>>> 	Min xfer                                        = 1034496.00 kB
->>>>> 	CPU utilization: Wall time    2.711    CPU time    1.910    CPU utilization  70.45 %
->>>>> 
->>>>> Here's the NFS client at v5.11-rc5 with your series applied.
->>>>> The NFS server remains at v5.10:
->>>>> 
->>>>> 	Children see throughput for 12 initial writers  = 4434778.81 kB/sec
->>>>> 	Parent sees throughput for 12 initial writers   = 4408190.69 kB/sec
->>>>> 	Min throughput per process                      = 367865.28 kB/sec
->>>>> 	Max throughput per process                      = 371134.38 kB/sec
->>>>> 	Avg throughput per process                      = 369564.90 kB/sec
->>>>> 	Min xfer                                        = 1039360.00 kB
->>>>> 	CPU Utilization: Wall time    2.842    CPU time    1.904    CPU utilization  66.99 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 rewriters        = 4476870.69 kB/sec
->>>>> 	Parent sees throughput for 12 rewriters         = 4471701.48 kB/sec
->>>>> 	Min throughput per process                      = 370985.34 kB/sec
->>>>> 	Max throughput per process                      = 374752.28 kB/sec
->>>>> 	Avg throughput per process                      = 373072.56 kB/sec
->>>>> 	Min xfer                                        = 1038592.00 kB
->>>>> 	CPU utilization: Wall time    2.801    CPU time    1.902    CPU utilization  67.91 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 readers          = 5865268.88 kB/sec
->>>>> 	Parent sees throughput for 12 readers           = 5854519.73 kB/sec
->>>>> 	Min throughput per process                      = 487766.81 kB/sec
->>>>> 	Max throughput per process                      = 489623.88 kB/sec
->>>>> 	Avg throughput per process                      = 488772.41 kB/sec
->>>>> 	Min xfer                                        = 1044736.00 kB
->>>>> 	CPU utilization: Wall time    2.144    CPU time    1.895    CPU utilization  88.41 %
->>>>> 
->>>>> 
->>>>> 	Children see throughput for 12 re-readers       = 5847438.62 kB/sec
->>>>> 	Parent sees throughput for 12 re-readers        = 5839292.18 kB/sec
->>>>> 	Min throughput per process                      = 485835.03 kB/sec
->>>>> 	Max throughput per process                      = 488702.12 kB/sec
->>>>> 	Avg throughput per process                      = 487286.55 kB/sec
->>>>> 	Min xfer                                        = 1042688.00 kB
->>>>> 	CPU utilization: Wall time    2.148    CPU time    1.909    CPU utilization  88.84 %
->>>>> 
->>>>> NFS READ throughput is almost fully restored. A normal-looking throughput
->>>>> result, copied from the previous thread, is:
->>>>> 
->>>>> 	Children see throughput for 12 readers 		= 5921370.94 kB/sec
->>>>> 	Parent sees throughput for 12 readers 		= 5914106.69 kB/sec
->>>>> 
->>>>> The NFS WRITE throughput result appears to be unchanged, or slightly
->>>>> worse than before. I don't have an explanation for this result. I applied
->>>>> your patches on the NFS server also without noting improvement.
->>>> Function-boundary tracing shows some interesting results.
->>>> # trace-cmd record -e rpcrdma -e iommu -p function_graph --max-graph-depth=5 -g dma_map_sg_attrs
->>>> Some 120KB SGLs are DMA-mapped in a single call to __iommu_map(). Other SGLs of
->>>> the same size need as many as one __iommu_map() call per SGL element (which
->>>> would be 30 for a 120KB SGL).
->>>> In v5.10, intel_map_sg() was structured such that an SGL is always handled with
->>>> a single call to domain_mapping() and thus always just a single TLB flush.
->>>> My amateur theorizing suggests that the SGL element coalescing done in
->>>> __iommu_map_sg() is not working as well as intel_map_sg() used to, which results
->>>> in more calls to domain_mapping(). Not only does that take longer, but it creates
->>>> many more DMA maps. Could that also have some impact on device TLB resources?
->>> 
->>> It seems that more domain_mapping() calls are not caused by
->>> __iommu_map_sg() but __iommu_map().
->>> 
->>> Can you please test below changes? It call intel_iommu_map() directly
->>> instead of __iommu_map().
->>> 
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index f5a236e63ded..660d5744a117 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -4916,7 +4916,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
->>> }
->>> #endif
->>> 
->>> -static int intel_iommu_map(struct iommu_domain *domain,
->>> +int intel_iommu_map(struct iommu_domain *domain,
->>>                           unsigned long iova, phys_addr_t hpa,
->>>                           size_t size, int iommu_prot, gfp_t gfp)
->>> {
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 3d099a31ddca..a1b41fd3fb4e 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -23,8 +23,13 @@
->>> #include <linux/property.h>
->>> #include <linux/fsl/mc.h>
->>> #include <linux/module.h>
->>> +#include <linux/intel-iommu.h>
->>> #include <trace/events/iommu.h>
->>> 
->>> +extern int intel_iommu_map(struct iommu_domain *domain,
->>> +                          unsigned long iova, phys_addr_t hpa,
->>> +                          size_t size, int iommu_prot, gfp_t gfp);
->>> +
->>> static struct kset *iommu_group_kset;
->>> static DEFINE_IDA(iommu_group_ida);
->>> 
->>> @@ -2553,8 +2558,7 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->>>                phys_addr_t s_phys = sg_phys(sg);
->>> 
->>>                if (len && s_phys != start + len) {
->>> -                       ret = __iommu_map(domain, iova + mapped, start,
->>> -                                       len, prot, gfp);
->>> +                       ret = intel_iommu_map(domain, iova + mapped, start, len, prot, gfp);
->>> 
->>>                        if (ret)
->>>                                goto out_err;
->>> 
->>> Does it change anything?
->> I removed yesterday's 3-patch series, and applied the above.
->> Not a full restoration, but interesting nonetheless.
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> ---
+>  arch/x86/hyperv/irqdomain.c     |  54 ++++++++++
+>  arch/x86/include/asm/mshyperv.h |   4 +
+>  drivers/iommu/hyperv-iommu.c    | 179 +++++++++++++++++++++++++++++++-
+>  3 files changed, 233 insertions(+), 4 deletions(-)
 > 
-> Do you mind having a try with all 4 patches?
-
-Much worse. I checked this result several times. I still need to go
-look more closely at the patches to see if I merged them together
-sensibly.
-
-	Children see throughput for 12 initial writers  = 3890646.38 kB/sec
-	Parent sees throughput for 12 initial writers   = 3857201.57 kB/sec
-	Min throughput per process                      = 322068.31 kB/sec 
-	Max throughput per process                      = 326518.72 kB/sec
-	Avg throughput per process                      = 324220.53 kB/sec
-	Min xfer                                        = 1034240.00 kB
-	CPU Utilization: Wall time    3.239    CPU time    1.959    CPU utilization  60.49 %
-
-
-	Children see throughput for 12 rewriters        = 3571855.25 kB/sec
-	Parent sees throughput for 12 rewriters         = 3568989.90 kB/sec
-	Min throughput per process                      = 295413.09 kB/sec 
-	Max throughput per process                      = 300169.31 kB/sec
-	Avg throughput per process                      = 297654.60 kB/sec
-	Min xfer                                        = 1032192.00 kB
-	CPU utilization: Wall time    3.495    CPU time    2.017    CPU utilization  57.70 %
-
-
-	Children see throughput for 12 readers          = 3485583.19 kB/sec
-	Parent sees throughput for 12 readers           = 3482811.89 kB/sec
-	Min throughput per process                      = 287489.16 kB/sec 
-	Max throughput per process                      = 294395.06 kB/sec
-	Avg throughput per process                      = 290465.27 kB/sec
-	Min xfer                                        = 1024256.00 kB
-	CPU utilization: Wall time    3.565    CPU time    1.984    CPU utilization  55.64 %
-
-
-	Children see throughput for 12 re-readers       = 3427079.94 kB/sec
-	Parent sees throughput for 12 re-readers        = 3424836.93 kB/sec
-	Min throughput per process                      = 283702.56 kB/sec 
-	Max throughput per process                      = 288727.31 kB/sec
-	Avg throughput per process                      = 285589.99 kB/sec
-	Min xfer                                        = 1030400.00 kB
-	CPU utilization: Wall time    3.634    CPU time    1.999    CPU utilization  55.02 %
-
-
->> 	Children see throughput for 12 initial writers 	= 4852657.22 kB/sec
->> 	Parent sees throughput for 12 initial writers 	= 4826730.38 kB/sec
->> 	Min throughput per process 			=  403196.09 kB/sec
->> 	Max throughput per process 			=  406071.47 kB/sec
->> 	Avg throughput per process 			=  404388.10 kB/sec
->> 	Min xfer 					= 1041408.00 kB
->> 	CPU Utilization: Wall time    2.596    CPU time    2.047    CPU utilization  78.84 %
->> 	Children see throughput for 12 rewriters 	= 4853900.22 kB/sec
->> 	Parent sees throughput for 12 rewriters 	= 4848623.31 kB/sec
->> 	Min throughput per process 			=  403380.81 kB/sec
->> 	Max throughput per process 			=  405478.53 kB/sec
->> 	Avg throughput per process 			=  404491.68 kB/sec
->> 	Min xfer 					= 1042944.00 kB
->> 	CPU utilization: Wall time    2.589    CPU time    2.048    CPU utilization  79.12 %
->> 	Children see throughput for 12 readers 		= 4938124.12 kB/sec
->> 	Parent sees throughput for 12 readers 		= 4932862.08 kB/sec
->> 	Min throughput per process 			=  408768.81 kB/sec
->> 	Max throughput per process 			=  413879.25 kB/sec
->> 	Avg throughput per process 			=  411510.34 kB/sec
->> 	Min xfer 					= 1036800.00 kB
->> 	CPU utilization: Wall time    2.536    CPU time    1.906    CPU utilization  75.16 %
->> 	Children see throughput for 12 re-readers 	= 4992115.16 kB/sec
->> 	Parent sees throughput for 12 re-readers 	= 4986102.07 kB/sec
->> 	Min throughput per process 			=  411103.00 kB/sec
->> 	Max throughput per process 			=  420302.97 kB/sec
->> 	Avg throughput per process 			=  416009.60 kB/sec
->> 	Min xfer 					= 1025792.00 kB
->> 	CPU utilization: Wall time    2.497    CPU time    1.887    CPU utilization  75.57 %
->> NFS WRITE throughput improves significantly. NFS READ throughput
->> improves somewhat, but not to the degree it did with yesterday's
->> patch series.
->> function_graph shows a single intel_iommu_map() is used more
->> frequently, but the following happens on occasion:
+> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+> index 19637cd60231..8e2b4e478b70 100644
+> --- a/arch/x86/hyperv/irqdomain.c
+> +++ b/arch/x86/hyperv/irqdomain.c
+> @@ -330,3 +330,57 @@ struct irq_domain * __init hv_create_pci_msi_domain(void)
+>  }
 > 
-> This is because the pages are not physically contiguous, __iommu_map_sg
-> can't coalesce them.
+>  #endif /* CONFIG_PCI_MSI */
+> +
+> +int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry)
+> +{
+> +	union hv_device_id device_id;
+> +
+> +	device_id.as_uint64 = 0;
+> +	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
+> +	device_id.ioapic.ioapic_id = (u8)ioapic_id;
+> +
+> +	return hv_unmap_interrupt(device_id.as_uint64, entry) & HV_HYPERCALL_RESULT_MASK;
 
-Understood, but why was physical contiguity not a problem for the
-intel_map_sg() function removed by commit c588072bba6b ("iommu/vt-d:
-Convert intel iommu driver to the iommu ops")? That version of the
-function did no such checking, and simply invoked domain_mapping()
-once for the entire SGL. Was that not safe to do?
+The masking is already done in hv_unmap_interrupt.
 
-(Feel free to tell me where I'm wrong, I'm really quite a neophyte
-with this level of IOMMU detail).
+> +}
+> +EXPORT_SYMBOL_GPL(hv_unmap_ioapic_interrupt);
+> +
+> +int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+> +		struct hv_interrupt_entry *entry)
+> +{
+> +	unsigned long flags;
+> +	struct hv_input_map_device_interrupt *input;
+> +	struct hv_output_map_device_interrupt *output;
+> +	union hv_device_id device_id;
+> +	struct hv_device_interrupt_descriptor *intr_desc;
+> +	u16 status;
+> +
+> +	device_id.as_uint64 = 0;
+> +	device_id.device_type = HV_DEVICE_TYPE_IOAPIC;
+> +	device_id.ioapic.ioapic_id = (u8)ioapic_id;
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	output = *this_cpu_ptr(hyperv_pcpu_output_arg);
+> +	memset(input, 0, sizeof(*input));
+> +	intr_desc = &input->interrupt_descriptor;
+> +	input->partition_id = hv_current_partition_id;
+> +	input->device_id = device_id.as_uint64;
+> +	intr_desc->interrupt_type = HV_X64_INTERRUPT_TYPE_FIXED;
+> +	intr_desc->target.vector = vector;
+> +	intr_desc->vector_count = 1;
+> +
+> +	if (level)
+> +		intr_desc->trigger_mode = HV_INTERRUPT_TRIGGER_MODE_LEVEL;
+> +	else
+> +		intr_desc->trigger_mode = HV_INTERRUPT_TRIGGER_MODE_EDGE;
+> +
+> +	__set_bit(vcpu, (unsigned long *)&intr_desc->target.vp_mask);
+> +
+> +	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_INTERRUPT, 0, 0, input, output) &
+> +			 HV_HYPERCALL_RESULT_MASK;
+> +	local_irq_restore(flags);
+> +
+> +	*entry = output->interrupt_entry;
+> +
+> +	return status;
+
+As a cross-check, I was comparing this code against hv_map_msi_interrupt().  They are
+mostly parallel, though some of the assignments are done in a different order.  It's a nit,
+but making them as parallel as possible would be nice. :-)
+
+Same 64 vCPU comment applies here as well.
 
 
-> If there's no full restoration with all four patches, it could be due to
-> ping-pongs between iommu core and the vendor iommu driver with indirect
-> calls. Hence a possible solution is to add an iommu_ops->map_sg() so
-> that all scatter gathered items could be handled in a single function as
-> before. This has already proposed by Isaac J. Manjarres.
+> +}
+> +EXPORT_SYMBOL_GPL(hv_map_ioapic_interrupt);
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> index ccc849e25d5e..345d7c6f8c37 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -263,6 +263,10 @@ static inline void hv_set_msi_entry_from_desc(union
+> hv_msi_entry *msi_entry,
 > 
-> https://lore.kernel.org/linux-iommu/1610376862-927-5-git-send-email-isaacm@codeaurora.org/
-
-That was one of the first things I tried. However, Isaac's patches
-don't provide an Intel version of .map_sg, so I made one up based on
-__iommu_map_sg, which basically copied the physical page checking
-mentioned above. It didn't perform very well.
-
-I could try again with a .map_sg that works like the old intel_map_sg()
-function, perhaps.
-
-
-> Best regards,
-> baolu
+>  struct irq_domain *hv_create_pci_msi_domain(void);
 > 
->> 395.678889: funcgraph_entry:                   |  dma_map_sg_attrs() {
->> 395.678889: funcgraph_entry:                   |    iommu_dma_map_sg() {
->> 395.678890: funcgraph_entry:        0.257 us   |      iommu_get_dma_domain();
->> 395.678890: funcgraph_entry:        0.255 us   |      iommu_dma_deferred_attach();
->> 395.678891: funcgraph_entry:                   |      iommu_dma_sync_sg_for_device() {
->> 395.678891: funcgraph_entry:        0.253 us   |        dev_is_untrusted();
->> 395.678891: funcgraph_exit:         0.773 us   |      }
->> 395.678892: funcgraph_entry:        0.250 us   |      dev_is_untrusted();
->> 395.678893: funcgraph_entry:                   |      iommu_dma_alloc_iova() {
->> 395.678893: funcgraph_entry:                   |        alloc_iova_fast() {
->> 395.678893: funcgraph_entry:        0.255 us   |          _raw_spin_lock_irqsave();
->> 395.678894: funcgraph_entry:        0.375 us   |          __lock_text_start();
->> 395.678894: funcgraph_exit:         1.435 us   |        }
->> 395.678895: funcgraph_exit:         2.002 us   |      }
->> 395.678895: funcgraph_entry:        0.252 us   |      dma_info_to_prot();
->> 395.678895: funcgraph_entry:                   |      iommu_map_sg_atomic() {
->> 395.678896: funcgraph_entry:                   |        __iommu_map_sg() {
->> 395.678896: funcgraph_entry:        1.675 us   |          intel_iommu_map();
->> 395.678898: funcgraph_entry:        1.365 us   |          intel_iommu_map();
->> 395.678900: funcgraph_entry:        1.373 us   |          intel_iommu_map();
->> 395.678901: funcgraph_entry:        1.378 us   |          intel_iommu_map();
->> 395.678903: funcgraph_entry:        1.380 us   |          intel_iommu_map();
->> 395.678905: funcgraph_entry:        1.380 us   |          intel_iommu_map();
->> 395.678906: funcgraph_entry:        1.378 us   |          intel_iommu_map();
->> 395.678908: funcgraph_entry:        1.380 us   |          intel_iommu_map();
->> 395.678910: funcgraph_entry:        1.345 us   |          intel_iommu_map();
->> 395.678911: funcgraph_entry:        1.342 us   |          intel_iommu_map();
->> 395.678913: funcgraph_entry:        1.342 us   |          intel_iommu_map();
->> 395.678915: funcgraph_entry:        1.395 us   |          intel_iommu_map();
->> 395.678916: funcgraph_entry:        1.343 us   |          intel_iommu_map();
->> 395.678918: funcgraph_entry:        1.350 us   |          intel_iommu_map();
->> 395.678920: funcgraph_entry:        1.395 us   |          intel_iommu_map();
->> 395.678921: funcgraph_entry:        1.342 us   |          intel_iommu_map();
->> 395.678923: funcgraph_entry:        1.350 us   |          intel_iommu_map();
->> 395.678924: funcgraph_entry:        1.345 us   |          intel_iommu_map();
->> 395.678926: funcgraph_entry:        1.345 us   |          intel_iommu_map();
->> 395.678928: funcgraph_entry:        1.340 us   |          intel_iommu_map();
->> 395.678929: funcgraph_entry:        1.342 us   |          intel_iommu_map();
->> 395.678931: funcgraph_entry:        1.335 us   |          intel_iommu_map();
->> 395.678933: funcgraph_entry:        1.345 us   |          intel_iommu_map();
->> 395.678934: funcgraph_entry:        1.337 us   |          intel_iommu_map();
->> 395.678936: funcgraph_entry:        1.305 us   |          intel_iommu_map();
->> 395.678938: funcgraph_entry:        1.380 us   |          intel_iommu_map();
->> 395.678939: funcgraph_entry:        1.365 us   |          intel_iommu_map();
->> 395.678941: funcgraph_entry:        1.370 us   |          intel_iommu_map();
->> 395.678943: funcgraph_entry:        1.365 us   |          intel_iommu_map();
->> 395.678945: funcgraph_entry:        1.482 us   |          intel_iommu_map();
->> 395.678946: funcgraph_exit:       + 50.753 us  |        }
->> 395.678947: funcgraph_exit:       + 51.348 us  |      }
->> 395.678947: funcgraph_exit:       + 57.975 us  |    }
->> 395.678948: funcgraph_exit:       + 58.700 us  |  }
->> 395.678953: xprtrdma_mr_map:      task:64127@5 mr.id=104 nents=30 122880@0xc5e467fde9380000:0xc0011103 (TO_DEVICE)
->> 395.678953: xprtrdma_chunk_read:  task:64127@5 pos=148 122880@0xc5e467fde9380000:0xc0011103 (more)
->> --
->> Chuck Lever
+> +int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+> +		struct hv_interrupt_entry *entry);
+> +int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
+> +
+>  #else /* CONFIG_HYPERV */
+>  static inline void hyperv_init(void) {}
+>  static inline void hyperv_setup_mmu_ops(void) {}
+> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> index b7db6024e65c..6d35e4c303c6 100644
+> --- a/drivers/iommu/hyperv-iommu.c
+> +++ b/drivers/iommu/hyperv-iommu.c
+> @@ -116,30 +116,43 @@ static const struct irq_domain_ops hyperv_ir_domain_ops = {
+>  	.free = hyperv_irq_remapping_free,
+>  };
+> 
+> +static const struct irq_domain_ops hyperv_root_ir_domain_ops;
+>  static int __init hyperv_prepare_irq_remapping(void)
+>  {
+>  	struct fwnode_handle *fn;
+>  	int i;
+> +	const char *name;
+> +	const struct irq_domain_ops *ops;
+> 
+>  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+>  	    x86_init.hyper.msi_ext_dest_id() ||
+> -	    !x2apic_supported() || hv_root_partition)
+> +	    !x2apic_supported())
 
---
-Chuck Lever
+Any reason that the check for hv_root_partition was added
+in patch #4  of this series, and then removed here?  Could
+patch #4 just be dropped?
 
+>  		return -ENODEV;
+> 
+> -	fn = irq_domain_alloc_named_id_fwnode("HYPERV-IR", 0);
+> +	if (hv_root_partition) {
+> +		name = "HYPERV-ROOT-IR";
+> +		ops = &hyperv_root_ir_domain_ops;
+> +	} else {
+> +		name = "HYPERV-IR";
+> +		ops = &hyperv_ir_domain_ops;
+> +	}
+> +
+> +	fn = irq_domain_alloc_named_id_fwnode(name, 0);
+>  	if (!fn)
+>  		return -ENOMEM;
+> 
+>  	ioapic_ir_domain =
+>  		irq_domain_create_hierarchy(arch_get_ir_parent_domain(),
+> -				0, IOAPIC_REMAPPING_ENTRY, fn,
+> -				&hyperv_ir_domain_ops, NULL);
+> +				0, IOAPIC_REMAPPING_ENTRY, fn, ops, NULL);
+> 
+>  	if (!ioapic_ir_domain) {
+>  		irq_domain_free_fwnode(fn);
+>  		return -ENOMEM;
+>  	}
+> 
+> +	if (hv_root_partition)
+> +		return 0; /* The rest is only relevant to guests */
+> +
+>  	/*
+>  	 * Hyper-V doesn't provide irq remapping function for
+>  	 * IO-APIC and so IO-APIC only accepts 8-bit APIC ID.
+> @@ -167,4 +180,162 @@ struct irq_remap_ops hyperv_irq_remap_ops = {
+>  	.enable			= hyperv_enable_irq_remapping,
+>  };
+> 
+> +/* IRQ remapping domain when Linux runs as the root partition */
+> +struct hyperv_root_ir_data {
+> +	u8 ioapic_id;
+> +	bool is_level;
+> +	struct hv_interrupt_entry entry;
+> +};
+> +
+> +static void
+> +hyperv_root_ir_compose_msi_msg(struct irq_data *irq_data, struct msi_msg *msg)
+> +{
+> +	u16 status;
+> +	u32 vector;
+> +	struct irq_cfg *cfg;
+> +	int ioapic_id;
+> +	struct cpumask *affinity;
+> +	int cpu, vcpu;
+> +	struct hv_interrupt_entry entry;
+> +	struct hyperv_root_ir_data *data = irq_data->chip_data;
+> +	struct IO_APIC_route_entry e;
+> +
+> +	cfg = irqd_cfg(irq_data);
+> +	affinity = irq_data_get_effective_affinity_mask(irq_data);
+> +	cpu = cpumask_first_and(affinity, cpu_online_mask);
+> +	vcpu = hv_cpu_number_to_vp_number(cpu);
+> +
+> +	vector = cfg->vector;
+> +	ioapic_id = data->ioapic_id;
+> +
+> +	if (data->entry.source == HV_DEVICE_TYPE_IOAPIC
 
+Does 'data' need to be checked to be non-NULL?  The parallel code in
+hv_irq_compose_msi_msg() makes such a check.
+
+> +	    && data->entry.ioapic_rte.as_uint64) {
+> +		entry = data->entry;
+> +
+> +		status = hv_unmap_ioapic_interrupt(ioapic_id, &entry);
+> +
+> +		if (status != HV_STATUS_SUCCESS)
+> +			pr_debug("%s: unexpected unmap status %d\n", __func__, status);
+> +
+> +		data->entry.ioapic_rte.as_uint64 = 0;
+> +		data->entry.source = 0; /* Invalid source */
+
+Again comparing, hv_irq_compose_msi_msg() frees the old
+entry, and then allocates a new one.   This code reuses the old entry. 
+Any reason for the difference?
+
+> +	}
+> +
+> +
+> +	status = hv_map_ioapic_interrupt(ioapic_id, data->is_level, vcpu,
+> +					vector, &entry);
+> +
+> +	if (status != HV_STATUS_SUCCESS) {
+> +		pr_err("%s: map hypercall failed, status %d\n", __func__, status);
+> +		return;
+> +	}
+> +
+> +	data->entry = entry;
+> +
+> +	/* Turn it into an IO_APIC_route_entry, and generate MSI MSG. */
+> +	e.w1 = entry.ioapic_rte.low_uint32;
+> +	e.w2 = entry.ioapic_rte.high_uint32;
+> +
+> +	memset(msg, 0, sizeof(*msg));
+> +	msg->arch_data.vector = e.vector;
+> +	msg->arch_data.delivery_mode = e.delivery_mode;
+> +	msg->arch_addr_lo.dest_mode_logical = e.dest_mode_logical;
+> +	msg->arch_addr_lo.dmar_format = e.ir_format;
+> +	msg->arch_addr_lo.dmar_index_0_14 = e.ir_index_0_14;
+> +}
+
+Having this whole function be more parallel to hv_irq_compose_msi_msg()
+would be nice. :-)
+
+> +
+> +static int hyperv_root_ir_set_affinity(struct irq_data *data,
+> +		const struct cpumask *mask, bool force)
+> +{
+> +	struct irq_data *parent = data->parent_data;
+> +	struct irq_cfg *cfg = irqd_cfg(data);
+> +	int ret;
+> +
+> +	ret = parent->chip->irq_set_affinity(parent, mask, force);
+> +	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
+> +		return ret;
+> +
+> +	send_cleanup_vector(cfg);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct irq_chip hyperv_root_ir_chip = {
+> +	.name			= "HYPERV-ROOT-IR",
+> +	.irq_ack		= apic_ack_irq,
+> +	.irq_set_affinity	= hyperv_root_ir_set_affinity,
+> +	.irq_compose_msi_msg	= hyperv_root_ir_compose_msi_msg,
+> +};
+> +
+> +static int hyperv_root_irq_remapping_alloc(struct irq_domain *domain,
+> +				     unsigned int virq, unsigned int nr_irqs,
+> +				     void *arg)
+> +{
+> +	struct irq_alloc_info *info = arg;
+> +	struct irq_data *irq_data;
+> +	struct hyperv_root_ir_data *data;
+> +	int ret = 0;
+> +
+> +	if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
+> +		return -EINVAL;
+> +
+> +	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, arg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> +	if (!data) {
+> +		irq_domain_free_irqs_common(domain, virq, nr_irqs);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	irq_data = irq_domain_get_irq_data(domain, virq);
+> +	if (!irq_data) {
+> +		kfree(data);
+> +		irq_domain_free_irqs_common(domain, virq, nr_irqs);
+> +		return -EINVAL;
+> +	}
+> +
+> +	data->ioapic_id = info->devid;
+> +	data->is_level = info->ioapic.is_level;
+> +
+> +	irq_data->chip = &hyperv_root_ir_chip;
+> +	irq_data->chip_data = data;
+> +
+> +	return 0;
+> +}
+> +
+> +static void hyperv_root_irq_remapping_free(struct irq_domain *domain,
+> +				 unsigned int virq, unsigned int nr_irqs)
+> +{
+> +	struct irq_data *irq_data;
+> +	struct hyperv_root_ir_data *data;
+> +	struct hv_interrupt_entry *e;
+> +	int i;
+> +
+> +	for (i = 0; i < nr_irqs; i++) {
+> +		irq_data = irq_domain_get_irq_data(domain, virq + i);
+> +
+> +		if (irq_data && irq_data->chip_data) {
+> +			data = irq_data->chip_data;
+
+Set irq_data->chip_data to NULL?  That seems to be done in other
+similar places in your code.
+
+> +			e = &data->entry;
+> +
+> +			if (e->source == HV_DEVICE_TYPE_IOAPIC
+> +			      && e->ioapic_rte.as_uint64)
+> +				hv_unmap_ioapic_interrupt(data->ioapic_id,
+> +							&data->entry);
+> +
+> +			kfree(data);
+> +		}
+> +	}
+> +
+> +	irq_domain_free_irqs_common(domain, virq, nr_irqs);
+> +}
+> +
+> +static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+> +	.select = hyperv_irq_remapping_select,
+> +	.alloc = hyperv_root_irq_remapping_alloc,
+> +	.free = hyperv_root_irq_remapping_free,
+> +};
+> +
+>  #endif
+> --
+> 2.20.1
 
 _______________________________________________
 iommu mailing list
