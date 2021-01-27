@@ -1,111 +1,78 @@
-Return-Path: <SRS0=UfkB=G5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=KfvE=G6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897CAC433DB
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 23:29:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282D6C433E0
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 00:34:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E3892067C
-	for <iommu@archiver.kernel.org>; Tue, 26 Jan 2021 23:29:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E3892067C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id A624C20679
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 00:34:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A624C20679
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AC06D86697;
-	Tue, 26 Jan 2021 23:29:25 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 33D4285F8E;
+	Wed, 27 Jan 2021 00:34:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gmbS0yrZbyau; Tue, 26 Jan 2021 23:29:24 +0000 (UTC)
+	with ESMTP id qTOZ3vmj4yDA; Wed, 27 Jan 2021 00:34:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E9E4E8669F;
-	Tue, 26 Jan 2021 23:29:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 55AF4863E0;
+	Wed, 27 Jan 2021 00:34:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1A26C08A1;
-	Tue, 26 Jan 2021 23:29:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F5A1C0FA7;
+	Wed, 27 Jan 2021 00:34:34 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9B280C013A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 23:29:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 867DBC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 00:34:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8085C204DB
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 23:29:23 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 743B3204A9
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 00:34:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FGK6BVtLklgG for <iommu@lists.linux-foundation.org>;
- Tue, 26 Jan 2021 23:29:22 +0000 (UTC)
+ with ESMTP id uIcF+jsKRvZC for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Jan 2021 00:34:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com
- [209.85.166.46])
- by silver.osuosl.org (Postfix) with ESMTPS id 89BE020459
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 23:29:22 +0000 (UTC)
-Received: by mail-io1-f46.google.com with SMTP id n2so37300654iom.7
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 15:29:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=CBy1erHkLMBcGk0Q3oow7s6KaRas0EaJCp36zieGK9E=;
- b=WkNRoEB8P5ECNzKdEHU1MaY1ENG6KFbiRYwxbKJgSn8K+bUaEv2F6ui/00GOkBbZw1
- DpHQFu74uw5I0+o/wfDdMfhbHoEjtEnlpK5FUIHFg83cKzDTFbXIl50qxrcJjlMeI8oV
- JPuFdPCN5FPGu20ODhMYQkx2qhQ0Hb0aqdWQI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=CBy1erHkLMBcGk0Q3oow7s6KaRas0EaJCp36zieGK9E=;
- b=VzlSrAicNl25tZVYdQmwx8jrfsJvlq2Sk2BfNj4lo+DjRNPy/1zfbkeaubxsNu3UCa
- kESoMnUEq8jIRwBHyqjVbZq4AFWEwo/eSgHS5ftO+rijj2z+a1jGTZxQshyAlgdZRvvp
- jtPjBqTCBNeMg+S9YD9X5o2YOM0KZi7DUdkwijomSURzWdRg361PBZBqksFcsZnOeGpF
- tMIIclPbF/ZSvQiTU+mh3rCmcGCJEcDaqExdx24OO/w4qpsCYkbsQxsNp6ZWKRQFaSL3
- U9vWQZ6gqLcGo1U24G/wE75qwDHVrPfGBKSXhEawdKiPBMnIEQ02BBgI0JyKpKFmQ/Hi
- NCcQ==
-X-Gm-Message-State: AOAM531FXSIP729Kp5E1ogX9dhONRkh4b/RsdZ/XMGSl1oUmPPhoQCF5
- 4bc7Lf+drXHOcanC8Z2gOXA/Ryl2APFNwA==
-X-Google-Smtp-Source: ABdhPJwqn+3u8k+IBdlqGtfdn0RFLmb1SAapwJ9xn4leF74NBQUNOWZRWGjer0Xbl+Qzj+Ua5gPKyg==
-X-Received: by 2002:a6b:b50a:: with SMTP id e10mr2712901iof.50.1611703761543; 
- Tue, 26 Jan 2021 15:29:21 -0800 (PST)
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com.
- [209.85.166.48])
- by smtp.gmail.com with ESMTPSA id e5sm91211ilu.27.2021.01.26.15.29.20
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 26 Jan 2021 15:29:20 -0800 (PST)
-Received: by mail-io1-f48.google.com with SMTP id u8so24156220ior.13
- for <iommu@lists.linux-foundation.org>; Tue, 26 Jan 2021 15:29:20 -0800 (PST)
-X-Received: by 2002:a05:6638:3012:: with SMTP id
- r18mr6700227jak.13.1611703759669; 
- Tue, 26 Jan 2021 15:29:19 -0800 (PST)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by silver.osuosl.org (Postfix) with ESMTPS id 71A5F20363
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 00:34:31 +0000 (UTC)
+IronPort-SDR: Y8K2c8n7R3gi/6xrPHwGIfCbVcilA91hPxaseVtmAhadw2Myl/uSRbpthD/MNz/Q6jDQGkixrN
+ UzGNQ3NlEdVw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9876"; a="264817499"
+X-IronPort-AV: E=Sophos;i="5.79,378,1602572400"; d="scan'208";a="264817499"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Jan 2021 16:34:31 -0800
+IronPort-SDR: VsRZ5FzjX/+6FlHDQJstXZgFzv5Og8F3n7oMmLPz5rs1v+iHLOJnJ8UALefLQHQFKClkyLQYLs
+ kjB++NkxVsQQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,378,1602572400"; d="scan'208";a="402922586"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 26 Jan 2021 16:34:28 -0800
+Subject: Re: [PATCH] iommu/vt-d: do not use flush-queue when caching-mode is on
+To: Nadav Amit <nadav.amit@gmail.com>, iommu@lists.linux-foundation.org
+References: <20210126203856.1544088-1-namit@vmware.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <cf693fca-4f5a-a6a6-cc58-3f4e3cd882b6@linux.intel.com>
+Date: Wed, 27 Jan 2021 08:26:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201125221917.150463-1-ribalda@chromium.org>
- <20201130083410.GD32234@lst.de>
- <20201201033658.GE3723071@google.com> <20201201144916.GA14682@lst.de>
- <CAAFQd5BBEbmENrrZ-vMK9cKOap19XWmfcxwrxKfjWx-wEew8rg@mail.gmail.com>
- <20201208071320.GA1667627@google.com> <20201209111639.GB22806@lst.de>
- <CANiDSCtsOdJUK3r_t8UNKhh7Px0ANNFJkuwM1fBgZ7wnVh0JFA@mail.gmail.com>
- <20210111083614.GA27589@lst.de>
- <CANiDSCvuvj47=nhoWhvzc5raMxM60w+JYRWjd0YepcbcbkrUjA@mail.gmail.com>
- <20210126170659.GA9104@lst.de>
-In-Reply-To: <20210126170659.GA9104@lst.de>
-From: Ricardo Ribalda <ribalda@chromium.org>
-Date: Wed, 27 Jan 2021 00:29:08 +0100
-X-Gmail-Original-Message-ID: <CANiDSCsz+9DJesOTJ5C5HGEH-wwuTmEd3c8yLoHjnDz=2+ndJw@mail.gmail.com>
-Message-ID: <CANiDSCsz+9DJesOTJ5C5HGEH-wwuTmEd3c8yLoHjnDz=2+ndJw@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] media: uvcvideo: Use dma_alloc_noncontiguos API
-To: ". Christoph Hellwig" <hch@lst.de>
-Cc: Sergey Senozhatsky <senozhatsky@google.com>,
- Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210126203856.1544088-1-namit@vmware.com>
+Content-Language: en-US
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,58 +85,138 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph
+Hi Nadav,
 
-Thanks for the series!
+On 1/27/21 4:38 AM, Nadav Amit wrote:
+> From: Nadav Amit <namit@vmware.com>
+> 
+> When an Intel IOMMU is virtualized, and a physical device is
+> passed-through to the VM, changes of the virtual IOMMU need to be
+> propagated to the physical IOMMU. The hypervisor therefore needs to
+> monitor PTE mappings in the IOMMU page-tables. Intel specifications
+> provide "caching-mode" capability that a virtual IOMMU uses to report
+> that the IOMMU is virtualized and a TLB flush is needed after mapping to
+> allow the hypervisor to propagate virtual IOMMU mappings to the physical
+> IOMMU. To the best of my knowledge no real physical IOMMU reports
+> "caching-mode" as turned on.
+> 
+> Synchronizing the virtual and the physical TLBs is expensive if the
+> hypervisor is unaware which PTEs have changed, as the hypervisor is
+> required to walk all the virtualized tables and look for changes.
+> Consequently, domain flushes are much more expensive than page-specific
+> flushes on virtualized IOMMUs with passthrough devices. The kernel
+> therefore exploited the "caching-mode" indication to avoid domain
+> flushing and use page-specific flushing in virtualized environments. See
+> commit 78d5f0f500e6 ("intel-iommu: Avoid global flushes with caching
+> mode.")
+> 
+> This behavior changed after commit 13cf01744608 ("iommu/vt-d: Make use
+> of iova deferred flushing"). Now, when batched TLB flushing is used (the
+> default), full TLB domain flushes are performed frequently, requiring
+> the hypervisor to perform expensive synchronization between the virtual
+> TLB and the physical one.
 
-I have a couple of questions:
+Good catch. Thank you!
 
-- Is there any platform where dma_alloc_noncontiguos can fail?
-This is, !ops->alloc_noncontiguous and !dev->coherent_dma_mask
-If yes then we need to add a function to let the driver know in
-advance that it has to use the coherent allocator (usb_alloc_coherent
-for uvc)
+> 
+> Getting batched TLB flushes to use in such circumstances page-specific
+> invalidations again is not easy, since the TLB invalidation scheme
+> assumes that "full" domain TLB flushes are performed for scalability.
+> 
+> Disable batched TLB flushes when caching-mode is on, as the performance
+> benefit from using batched TLB invalidations is likely to be much
+> smaller than the overhead of the virtual-to-physical IOMMU page-tables
+> synchronization.
+> 
+> Fixes: 78d5f0f500e6 ("intel-iommu: Avoid global flushes with caching mode.")
+> Signed-off-by: Nadav Amit <namit@vmware.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: stable@vger.kernel.org
+> ---
+>   drivers/iommu/intel/iommu.c | 26 +++++++++++++++++++++++++-
+>   1 file changed, 25 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 788119c5b021..4e08f5e17175 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5373,6 +5373,30 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> +static int
+> +intel_iommu_domain_get_attr_use_flush_queue(struct iommu_domain *domain)
 
-- In dma_alloc_noncontiguos, on the dma_alloc_pages fallback. If we
-have a device where the dma happens in only one direction, could not
-get more performance with DMA_FROM/TO_DEVICE instead of
-DMA_BIDIRECTIONAL ?
+Just nit:
 
+Can we just use this
 
-Then I have tried to use the API, and I have encountered a problem: on
-uvcvideo the device passed to the memory allocator is different for
-DMA_PAGES and NON_CONTIGUOUS:
-https://github.com/ribalda/linux/blob/042cd497739f71c8d4a83a67ee970369e2baca4a/drivers/media/usb/uvc/uvc_video.c#L1236
+static bool domain_use_flush_queue(struct iommu_domain *domain)
 
-I need to dig a bit tomorrow to figure out why this is, I have
-hardware to test both paths, so it should not be too difficult.
+?
 
+> +{
+> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> +	struct intel_iommu *iommu = domain_get_iommu(dmar_domain);
+> +
+> +	if (intel_iommu_strict)
+> +		return 0;
+> +
+> +	/*
+> +	 * The flush queue implementation does not perform page-selective
+> +	 * invalidations that are required for efficient TLB flushes in virtual
+> +	 * environments. The benefit of batching is likely to be much lower than
+> +	 * the overhead of synchronizing the virtual and physical IOMMU
+> +	 * page-tables.
+> +	 */
+> +	if (iommu && cap_caching_mode(iommu->cap)) {
+> +		pr_warn_once("IOMMU batching is partially disabled due to virtualization");
+> +		return 0;
+> +	}
 
-Thanks again
+domain_get_iommu() only returns the first iommu, and could return NULL
+when this is called before domain attaching to any device. A better
+choice could be check caching mode globally and return false if caching
+mode is supported on any iommu.
 
+        struct dmar_drhd_unit *drhd;
+        struct intel_iommu *iommu;
 
+        rcu_read_lock();
+        for_each_active_iommu(iommu, drhd) {
+                 if (cap_caching_mode(iommu->cap))
+                         return false;
+         }
+         rcu_read_unlock();
 
+> +
+> +	return 1;
+> +}
+> +
+>   static int
+>   intel_iommu_domain_get_attr(struct iommu_domain *domain,
+>   			    enum iommu_attr attr, void *data)
+> @@ -5383,7 +5407,7 @@ intel_iommu_domain_get_attr(struct iommu_domain *domain,
+>   	case IOMMU_DOMAIN_DMA:
+>   		switch (attr) {
+>   		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			*(int *)data = !intel_iommu_strict;
+> +			*(int *)data = !intel_iommu_domain_get_attr_use_flush_queue(domain);
+>   			return 0;
+>   		default:
+>   			return -ENODEV;
+> 
 
-
-
-On Tue, Jan 26, 2021 at 6:07 PM . Christoph Hellwig <hch@lst.de> wrote:
->
-> Please take a quick look at this branch:
->
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma_alloc_noncontiguous
->
-> Warning: hot off the press, and only with the v4l conversion as that
-> seemed at little easier than uvcvideo.
-
-
-
---
-Ricardo Ribalda
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
