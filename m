@@ -7,56 +7,58 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 720CBC433DB
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 16:29:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70EF1C433E6
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 16:29:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B879F20789
-	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 16:29:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B879F20789
+	by mail.kernel.org (Postfix) with ESMTPS id D29E0207A0
+	for <iommu@archiver.kernel.org>; Wed, 27 Jan 2021 16:29:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D29E0207A0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 42BED227DB;
-	Wed, 27 Jan 2021 16:29:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7080787203;
+	Wed, 27 Jan 2021 16:29:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cOI4vzWVuzQc; Wed, 27 Jan 2021 16:29:40 +0000 (UTC)
+	with ESMTP id GDrP3J5UuA2I; Wed, 27 Jan 2021 16:29:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 54C9A226F3;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8534C87201;
 	Wed, 27 Jan 2021 16:29:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 42003C0FA7;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 67060C0FA7;
 	Wed, 27 Jan 2021 16:29:40 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 368C6C013A
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 735B1C013A
  for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 16:29:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2618185A57
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6313D84B80
  for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 16:29:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1A3wNExpIh4g for <iommu@lists.linux-foundation.org>;
- Wed, 27 Jan 2021 16:29:37 +0000 (UTC)
+ with ESMTP id JlvfMYeU6cLu for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Jan 2021 16:29:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6EDE384B80
- for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 16:29:37 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A952B84DD4
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Jan 2021 16:29:38 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D60631B;
- Wed, 27 Jan 2021 08:29:36 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47F7511FB;
+ Wed, 27 Jan 2021 08:29:38 -0800 (PST)
 Received: from DESKTOP-VLO843J.arm.com (unknown [10.57.47.135])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F1F1C3F66E;
- Wed, 27 Jan 2021 08:29:34 -0800 (PST)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BAA8E3F66E;
+ Wed, 27 Jan 2021 08:29:36 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH 1/2] iommu/msm: Hook up iotlb_sync_map
-Date: Wed, 27 Jan 2021 16:29:28 +0000
-Message-Id: <e95223a0abf129230a0bec6743f837075f0a2fcb.1611764372.git.robin.murphy@arm.com>
+Subject: [PATCH 2/2] iommu/io-pgtable: Remove TLBI_ON_MAP quirk
+Date: Wed, 27 Jan 2021 16:29:29 +0000
+Message-Id: <5abb80bba3a7c371d5ffb7e59c05586deddb9a91.1611764372.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <e95223a0abf129230a0bec6743f837075f0a2fcb.1611764372.git.robin.murphy@arm.com>
+References: <e95223a0abf129230a0bec6743f837075f0a2fcb.1611764372.git.robin.murphy@arm.com>
 Cc: architt@codeaurora.org, linux-arm-msm@vger.kernel.org,
  iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org,
  linux-arm-kernel@lists.infradead.org
@@ -78,57 +80,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The core API can now accommodate invalidate-on-map style behaviour in a
-single efficient call, so hook that up instead of having io-pgatble do
-it piecemeal.
+IO_PGTABLE_QUIRK_TLBI_ON_MAP is now fully superseded by the
+core API's iotlb_sync_map callback.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
+ drivers/iommu/io-pgtable-arm-v7s.c | 8 +-------
+ include/linux/io-pgtable.h         | 5 -----
+ 2 files changed, 1 insertion(+), 12 deletions(-)
 
-Just a little quick cleanup on top of the Mediatek TLB patches now
-queued - CC'ing a bunch of folks from the Git history in the hope that
-someone can still test MSM... :)
-
- drivers/iommu/msm_iommu.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 040e85f70861..f0ba6a09b434 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -343,7 +343,6 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
- 	spin_lock_init(&priv->pgtlock);
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 1d92ac948db7..3a92f06aad43 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -535,12 +535,7 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
+ 	 * Synchronise all PTE updates for the new mapping before there's
+ 	 * a chance for anything to kick off a table walk for the new iova.
+ 	 */
+-	if (iop->cfg.quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
+-		io_pgtable_tlb_flush_walk(iop, iova, size,
+-					  ARM_V7S_BLOCK_SIZE(2));
+-	} else {
+-		wmb();
+-	}
++	wmb();
  
- 	priv->cfg = (struct io_pgtable_cfg) {
--		.quirks = IO_PGTABLE_QUIRK_TLBI_ON_MAP,
- 		.pgsize_bitmap = msm_iommu_ops.pgsize_bitmap,
- 		.ias = 32,
- 		.oas = 32,
-@@ -490,6 +489,14 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
  	return ret;
  }
+@@ -759,7 +754,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
  
-+static void msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			       size_t size)
-+{
-+	struct msm_priv *priv = to_msm_priv(domain);
-+
-+	__flush_iotlb_range(iova, size, SZ_4K, false, priv);
-+}
-+
- static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			      size_t len, struct iommu_iotlb_gather *gather)
- {
-@@ -680,6 +687,7 @@ static struct iommu_ops msm_iommu_ops = {
- 	 * kick starting the other master.
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_TLBI_ON_MAP |
+ 			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
+ 			    IO_PGTABLE_QUIRK_NON_STRICT))
+ 		return NULL;
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 2a5686ca2ba3..06753323a15e 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -68,10 +68,6 @@ struct io_pgtable_cfg {
+ 	 *	hardware which does not implement the permissions of a given
+ 	 *	format, and/or requires some format-specific default value.
+ 	 *
+-	 * IO_PGTABLE_QUIRK_TLBI_ON_MAP: If the format forbids caching invalid
+-	 *	(unmapped) entries but the hardware might do so anyway, perform
+-	 *	TLB maintenance when mapping as well as when unmapping.
+-	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_MTK_EXT: (ARM v7s format) MediaTek IOMMUs extend
+ 	 *	to support up to 34 bits PA where the bit32 and bit33 are
+ 	 *	encoded in the bit9 and bit4 of the PTE respectively.
+@@ -88,7 +84,6 @@ struct io_pgtable_cfg {
  	 */
- 	.iotlb_sync = NULL,
-+	.iotlb_sync_map = msm_iommu_sync_map,
- 	.iova_to_phys = msm_iommu_iova_to_phys,
- 	.probe_device = msm_iommu_probe_device,
- 	.release_device = msm_iommu_release_device,
-
-base-commit: 0954d61a59e3c014e52b8d938bc12dc5a2e4949c
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+ 	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
+ 	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
 -- 
 2.17.1
 
