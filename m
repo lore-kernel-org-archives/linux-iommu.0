@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 840C4C433E0
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 02:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E565C433DB
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 03:06:41 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E150B64DD0
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 02:52:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E150B64DD0
+	by mail.kernel.org (Postfix) with ESMTPS id DCCE964DD0
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 03:06:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCCE964DD0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7206B8731A;
-	Thu, 28 Jan 2021 02:52:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7A84387252;
+	Thu, 28 Jan 2021 03:06:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2toSSqMzHiPu; Thu, 28 Jan 2021 02:52:55 +0000 (UTC)
+	with ESMTP id aS3umLLtwo7N; Thu, 28 Jan 2021 03:06:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7B08587317;
-	Thu, 28 Jan 2021 02:52:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 68295871E3;
+	Thu, 28 Jan 2021 03:06:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FB98C08A1;
-	Thu, 28 Jan 2021 02:52:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B1F85C013A
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 02:52:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 501B8C08A1;
+	Thu, 28 Jan 2021 03:06:38 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74747C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 03:06:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9801E86DD0
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 02:52:53 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 5F42520461
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 03:06:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dwhHUg1VI6vN for <iommu@lists.linux-foundation.org>;
- Thu, 28 Jan 2021 02:52:52 +0000 (UTC)
+ with ESMTP id viimmZSsFiJE for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Jan 2021 03:06:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8D34086BBE
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 02:52:52 +0000 (UTC)
-IronPort-SDR: 0IcAf/Pw0r8zX3MJE00YvUadJVhap2wPBfE/XGRSRhgh1XuuJhFuuzUeQhK2wvum3c68V6Af/g
- FsE/nEgh486g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9877"; a="244249955"
-X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="244249955"
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by silver.osuosl.org (Postfix) with ESMTPS id EE7B020449
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 03:06:34 +0000 (UTC)
+IronPort-SDR: kgoxMzRMnyQB7wBzfMhkubRg7JassgUv8vsZiish+m+6/OZ2gR9GT+ax7kerUd8i2+wGi+OiAq
+ +ph9B1B/H1bQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9877"; a="179390271"
+X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="179390271"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Jan 2021 18:52:51 -0800
-IronPort-SDR: lnLg3sN5GDXacTxb3HTEfWx2SP1IOlHbUnUOZZgduxVml79LwNk3waJALlr31NNCqpUpRxWktz
- w8FlfVRNCg9g==
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jan 2021 19:06:34 -0800
+IronPort-SDR: T8XEzW529+wSCH+c4TT3ndgKSSZbVRNKpfJz+NfnL1f8Zh45EeBn2e7BFViYNHSxM8uh1U4R+P
+ J8fc0kd0Mi2g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="403315544"
+X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="403318859"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
  ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 27 Jan 2021 18:52:48 -0800
-Subject: Re: [PATCH RFC 2/9] iommu: Add iova and size as parameters in
- iotlb_sync_map
+ by fmsmga004.fm.intel.com with ESMTP; 27 Jan 2021 19:06:32 -0800
+Subject: Re: [PATCH RFC 7/9] iommu: Introduce map_sg() as an IOMMU op for
+ IOMMU drivers
 To: Chuck Lever <chuck.lever@oracle.com>
 References: <161177711359.1311.417185373365934204.stgit@manet.1015granger.net>
- <161177763296.1311.15197214300351076283.stgit@manet.1015granger.net>
+ <161177766681.1311.8296027937092927846.stgit@manet.1015granger.net>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f4cffd15-65d9-0f00-055c-d141c66ca515@linux.intel.com>
-Date: Thu, 28 Jan 2021 10:44:30 +0800
+Message-ID: <092dc0f4-5c9a-a811-00ae-2eb15d5c1675@linux.intel.com>
+Date: Thu, 28 Jan 2021 10:58:14 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <161177763296.1311.15197214300351076283.stgit@manet.1015granger.net>
+In-Reply-To: <161177766681.1311.8296027937092927846.stgit@manet.1015granger.net>
 Content-Language: en-US
 Cc: isaacm@codeaurora.org, robin.murphy@arm.com,
  iommu@lists.linux-foundation.org, will@kernel.org
@@ -91,91 +91,87 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/28/21 4:00 AM, Chuck Lever wrote:
-> From: Yong Wu <yong.wu@mediatek.com>
+Hi,
+
+On 1/28/21 4:01 AM, Chuck Lever wrote:
+> From: Isaac J. Manjarres <isaacm@codeaurora.org>
 > 
-> iotlb_sync_map allow IOMMU drivers tlb sync after completing the whole
-> mapping. This patch adds iova and size as the parameters in it. then the
-> IOMMU driver could flush tlb with the whole range once after iova mapping
-> to improve performance.
+> Add support for IOMMU drivers to have their own map_sg() callbacks.
+> This completes the path for having iommu_map_sg() invoke an IOMMU
+> driver's map_sg() callback, which can then invoke the io-pgtable
+> map_sg() callback with the entire scatter-gather list, so that it
+> can be processed entirely in the io-pgtable layer.
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> For IOMMU drivers that do not provide a callback, the default
+> implementation of iterating through the scatter-gather list, while
+> calling iommu_map() will be used.
+> 
+> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+> Tested-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+> [ cel: adjusted new iotlb_sync_map call site ]
 > Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 > ---
->   drivers/iommu/iommu.c      |    4 ++--
->   drivers/iommu/tegra-gart.c |    7 +++++--
->   include/linux/iommu.h      |    3 ++-
->   3 files changed, 9 insertions(+), 5 deletions(-)
+>   drivers/iommu/iommu.c |   12 ++++++++++++
+>   include/linux/iommu.h |    5 +++++
+>   2 files changed, 17 insertions(+)
 > 
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c304a6a30d42..3d099a31ddca 100644
+> index ed879a4d7fac..bd7adbd0339b 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -2443,7 +2443,7 @@ static int _iommu_map(struct iommu_domain *domain, unsigned long iova,
+> @@ -2551,6 +2551,18 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>   	unsigned int i = 0;
+>   	int ret;
 >   
->   	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
->   	if (ret == 0 && ops->iotlb_sync_map)
-> -		ops->iotlb_sync_map(domain);
-> +		ops->iotlb_sync_map(domain, iova, size);
->   
->   	return ret;
->   }
-> @@ -2575,7 +2575,7 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->   	}
->   
->   	if (ops->iotlb_sync_map)
-> -		ops->iotlb_sync_map(domain);
-> +		ops->iotlb_sync_map(domain, iova, mapped);
->   	return mapped;
->   
->   out_err:
-> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index fac720273889..05e8e19b8269 100644
-> --- a/drivers/iommu/tegra-gart.c
-> +++ b/drivers/iommu/tegra-gart.c
-> @@ -261,7 +261,8 @@ static int gart_iommu_of_xlate(struct device *dev,
->   	return 0;
->   }
->   
-> -static void gart_iommu_sync_map(struct iommu_domain *domain)
-> +static void gart_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-> +				size_t size)
->   {
->   	FLUSH_GART_REGS(gart_handle);
->   }
-> @@ -269,7 +270,9 @@ static void gart_iommu_sync_map(struct iommu_domain *domain)
->   static void gart_iommu_sync(struct iommu_domain *domain,
->   			    struct iommu_iotlb_gather *gather)
->   {
-> -	gart_iommu_sync_map(domain);
-> +	size_t length = gather->end - gather->start;
+> +	if (ops->map_sg) {
+> +		ret = ops->map_sg(domain, iova, sg, nents, prot, gfp, &mapped);
 > +
-> +	gart_iommu_sync_map(domain, gather->start, length);
->   }
+> +		if (ops->iotlb_sync_map)
+> +			ops->iotlb_sync_map(domain, iova, mapped);
+> +
+> +		if (ret)
+> +			goto out_err;
+> +
+> +		return mapped;
+> +	}
+> +
+>   	while (i <= nents) {
+>   		phys_addr_t s_phys = sg_phys(sg);
 >   
->   static const struct iommu_ops gart_iommu_ops = {
 > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index b3f0e2018c62..9ce0aa9e236b 100644
+> index cd5f35022a25..667edc7b034a 100644
 > --- a/include/linux/iommu.h
 > +++ b/include/linux/iommu.h
-> @@ -246,7 +246,8 @@ struct iommu_ops {
->   	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
->   		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
->   	void (*flush_iotlb_all)(struct iommu_domain *domain);
-> -	void (*iotlb_sync_map)(struct iommu_domain *domain);
-> +	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
-> +			       size_t size);
->   	void (*iotlb_sync)(struct iommu_domain *domain,
->   			   struct iommu_iotlb_gather *iotlb_gather);
->   	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
-> 
-> 
+> @@ -192,6 +192,8 @@ struct iommu_iotlb_gather {
+>    * @attach_dev: attach device to an iommu domain
+>    * @detach_dev: detach device from an iommu domain
+>    * @map: map a physically contiguous memory region to an iommu domain
+> + * @map_sg: map a scatter-gather list of physically contiguous chunks to
+> + *          an iommu domain.
+>    * @unmap: unmap a physically contiguous memory region from an iommu domain
+>    * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
+>    * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
+> @@ -243,6 +245,9 @@ struct iommu_ops {
+>   	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+>   	int (*map)(struct iommu_domain *domain, unsigned long iova,
+>   		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+> +	int (*map_sg)(struct iommu_domain *domain, unsigned long iova,
+> +		      struct scatterlist *sg, unsigned int nents, int prot,
+> +		      gfp_t gfp, size_t *mapped);
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+I might be oversensitive. But what if the vendor iommu driver uses iova
+beyond the pre-allocated range? It's safer if we could pass an iova
+length parameter as well, so that the iommu driver could do some sanity
+check.
 
 Best regards,
 baolu
+
+>   	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+>   		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
+>   	void (*flush_iotlb_all)(struct iommu_domain *domain);
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
