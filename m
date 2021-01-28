@@ -2,75 +2,79 @@ Return-Path: <SRS0=9w/B=G7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B11C433DB
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325F7C433E6
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:19:25 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99A5964DEB
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:18:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99A5964DEB
+	by mail.kernel.org (Postfix) with ESMTPS id B921D64DF0
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:19:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B921D64DF0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2B5B48742F;
-	Thu, 28 Jan 2021 15:18:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6008B87428;
+	Thu, 28 Jan 2021 15:19:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bJP6GIzwi-cJ; Thu, 28 Jan 2021 15:18:40 +0000 (UTC)
+	with ESMTP id rzqssPXPz6SH; Thu, 28 Jan 2021 15:19:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7F65D87417;
-	Thu, 28 Jan 2021 15:18:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D271B8740A;
+	Thu, 28 Jan 2021 15:19:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 78FD7C0FA7;
-	Thu, 28 Jan 2021 15:18:40 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B074BC013A
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BECABC0FA7;
+	Thu, 28 Jan 2021 15:19:23 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C39CC013A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:19:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9F5FC868A6
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8A18385F53
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:19:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0nFWgOsxM62n for <iommu@lists.linux-foundation.org>;
- Thu, 28 Jan 2021 15:18:39 +0000 (UTC)
+ with ESMTP id 3GeZBGkYUpWk for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Jan 2021 15:19:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A401F868C0
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:16 +0000 (UTC)
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DRPG938VYzjDJD;
- Thu, 28 Jan 2021 23:17:05 +0800 (CST)
-Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 28 Jan 2021 23:17:54 +0800
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 77FCA86658
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:19:06 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DRPH86F54zjDTK;
+ Thu, 28 Jan 2021 23:17:56 +0800 (CST)
+Received: from [10.174.184.42] (10.174.184.42) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 28 Jan 2021 23:18:46 +0800
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: add support for BBML
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <20201126034230.777-1-thunder.leizhen@huawei.com>
+ <20210122125132.GB24102@willie-the-truck>
+ <aac11411-f6cd-f990-fe53-db0d8c07f3a0@huawei.com>
+ <1bfd1ca0-953e-e943-f87e-144d5537bd0c@arm.com>
+ <20210126101230.GA29204@willie-the-truck>
+ <8a9685ec-67aa-824f-5429-f408bf79c5ab@huawei.com>
+ <32f4752f-6954-183a-a0c1-b5d719c85b67@huawei.com>
+ <319e3532-4555-7431-9d6f-3c3b7c11a5d9@arm.com>
 From: Keqian Zhu <zhukeqian1@huawei.com>
-To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
- <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>, "Alex
- Williamson" <alex.williamson@redhat.com>, Marc Zyngier <maz@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>
-Subject: [RFC PATCH 01/11] iommu/arm-smmu-v3: Add feature detection for HTTU
-Date: Thu, 28 Jan 2021 23:17:32 +0800
-Message-ID: <20210128151742.18840-2-zhukeqian1@huawei.com>
-X-Mailer: git-send-email 2.8.4.windows.1
-In-Reply-To: <20210128151742.18840-1-zhukeqian1@huawei.com>
-References: <20210128151742.18840-1-zhukeqian1@huawei.com>
+Message-ID: <d3aaa7e7-edb0-f867-0519-9a4e0bee35d2@huawei.com>
+Date: Thu, 28 Jan 2021 23:18:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
+In-Reply-To: <319e3532-4555-7431-9d6f-3c3b7c11a5d9@arm.com>
 X-Originating-IP: [10.174.184.42]
 X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Cornelia Huck <cohuck@redhat.com>,
- lushenming@huawei.com, Kirti Wankhede <kwankhede@nvidia.com>,
- James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com,
- Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu <iommu@lists.linux-foundation.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ Yang Yingliang <yangyingliang@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,104 +92,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: jiangkunkun <jiangkunkun@huawei.com>
 
-The SMMU which supports HTTU (Hardware Translation Table Update) can
-update the access flag and the dirty state of TTD by hardware. It is
-essential to track dirty pages of DMA.
 
-This adds feature detection, none functional change.
+On 2021/1/27 17:39, Robin Murphy wrote:
+> On 2021-01-27 07:36, Keqian Zhu wrote:
+>>
+>>
+>> On 2021/1/27 10:01, Leizhen (ThunderTown) wrote:
+>>>
+>>>
+>>> On 2021/1/26 18:12, Will Deacon wrote:
+>>>> On Mon, Jan 25, 2021 at 08:23:40PM +0000, Robin Murphy wrote:
+>>>>> Now we probably will need some degreee of BBML feature awareness for the
+>>>>> sake of SVA if and when we start using it for CPU pagetables, but I still
+>>>>> cannot see any need to consider it in io-pgtable.
+>>>>
+>>>> Agreed; I don't think this is something that io-pgtable should have to care
+>>>> about.
+>> Hi,
+>>
+>> I have a question here :-).
+>> If the old table is not live, then the break procedure seems unnecessary. Do I miss something?
+> 
+> The MMU is allowed to prefetch translations at any time, so not following the proper update procedure could still potentially lead to a TLB conflict, even if there's no device traffic to worry about disrupting.
+> 
+> Robin.
 
-Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  8 ++++++++
- include/linux/io-pgtable.h                  |  1 +
- 3 files changed, 25 insertions(+)
+Thanks. Does the MMU you mention here includes MMU and SMMU? I know that at SMMU side, ATS can prefetch translation.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8ca7415d785d..0f0fe71cc10d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1987,6 +1987,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
-+		.httu_hd	= smmu->features & ARM_SMMU_FEAT_HTTU_HD,
- 		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
- 		.tlb		= &arm_smmu_flush_ops,
- 		.iommu_dev	= smmu->dev,
-@@ -3224,6 +3225,21 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (reg & IDR0_HYP)
- 		smmu->features |= ARM_SMMU_FEAT_HYP;
- 
-+	switch (FIELD_GET(IDR0_HTTU, reg)) {
-+	case IDR0_HTTU_NONE:
-+		break;
-+	case IDR0_HTTU_HA:
-+		smmu->features |= ARM_SMMU_FEAT_HTTU_HA;
-+		break;
-+	case IDR0_HTTU_HAD:
-+		smmu->features |= ARM_SMMU_FEAT_HTTU_HA;
-+		smmu->features |= ARM_SMMU_FEAT_HTTU_HD;
-+		break;
-+	default:
-+		dev_err(smmu->dev, "unknown/unsupported HTTU!\n");
-+		return -ENXIO;
-+	}
-+
- 	/*
- 	 * The coherency feature as set by FW is used in preference to the ID
- 	 * register, but warn on mismatch.
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 96c2e9565e00..e91bea44519e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -33,6 +33,10 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_HTTU			GENMASK(7, 6)
-+#define IDR0_HTTU_NONE			0
-+#define IDR0_HTTU_HA			1
-+#define IDR0_HTTU_HAD			2
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF			GENMASK(3, 2)
- #define IDR0_TTF_AARCH64		2
-@@ -286,6 +290,8 @@
- #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
- 
- #define CTXDESC_CD_0_AA64		(1UL << 41)
-+#define CTXDESC_CD_0_HD			(1UL << 42)
-+#define CTXDESC_CD_0_HA			(1UL << 43)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
- #define CTXDESC_CD_0_A			(1UL << 46)
-@@ -604,6 +610,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
- #define ARM_SMMU_FEAT_BTM		(1 << 16)
- #define ARM_SMMU_FEAT_SVA		(1 << 17)
-+#define ARM_SMMU_FEAT_HTTU_HA		(1 << 18)
-+#define ARM_SMMU_FEAT_HTTU_HD		(1 << 19)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index ea727eb1a1a9..1a00ea8562c7 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -97,6 +97,7 @@ struct io_pgtable_cfg {
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
- 	unsigned int			oas;
-+	bool				httu_hd;
- 	bool				coherent_walk;
- 	const struct iommu_flush_ops	*tlb;
- 	struct device			*iommu_dev;
--- 
-2.19.1
-
+Keqian
+> 
+>> Thanks,
+>> Keqian
+>>
+>>>
+>>> Yes, the SVA works in stall mode, and the failed device access requests are not
+>>> discarded.
+>>>
+>>> Let me look for examples. The BBML usage scenario was told by a former colleague.
+>>>
+>>>>
+>>>> Will
+>>>>
+>>>> .
+>>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>> .
+>>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+> .
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
