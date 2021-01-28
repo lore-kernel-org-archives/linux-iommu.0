@@ -2,92 +2,78 @@ Return-Path: <SRS0=9w/B=G7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CF7C433E9
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 01:29:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3557BC433E6
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 01:51:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A33C264DD8
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 01:29:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A33C264DD8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0BF064DA1
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 01:51:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0BF064DA1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 236AD20780;
-	Thu, 28 Jan 2021 01:29:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1F2C9863E1;
+	Thu, 28 Jan 2021 01:51:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MFHeTzlLAkRm; Thu, 28 Jan 2021 01:29:09 +0000 (UTC)
+	with ESMTP id uexNraHj4d8E; Thu, 28 Jan 2021 01:51:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8FA8420763;
-	Thu, 28 Jan 2021 01:29:09 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 36FEA86191;
+	Thu, 28 Jan 2021 01:51:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B3BFC0FA7;
-	Thu, 28 Jan 2021 01:29:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4AC22C013A
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:29:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18D03C0FA7;
+	Thu, 28 Jan 2021 01:51:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13F8EC013A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:51:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2BA9A8669F
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:29:08 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EE8E3871F3
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:51:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4ad55lLzVp2a for <iommu@lists.linux-foundation.org>;
- Thu, 28 Jan 2021 01:29:06 +0000 (UTC)
+ with ESMTP id U6JQKBsVcelZ for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Jan 2021 01:51:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9E13B86690
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:29:05 +0000 (UTC)
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.57])
- by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4DR2rv3Fv3z5LbD;
- Thu, 28 Jan 2021 09:27:27 +0800 (CST)
-Received: from dggpemm100010.china.huawei.com (7.185.36.24) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Thu, 28 Jan 2021 09:28:27 +0800
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggpemm100010.china.huawei.com (7.185.36.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Thu, 28 Jan 2021 09:28:27 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.006;
- Thu, 28 Jan 2021 09:28:27 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Subject: RE: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Topic: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Index: AQHW8vWniUnMS+RFOU2UJJCa8sDlvKo39q+AgADtcaD//5AFgIAAh9tQ//+YwwCAAIUv4IAAmdoAgAKKrfA=
-Date: Thu, 28 Jan 2021 01:28:26 +0000
-Message-ID: <c4dc2cdf4a904e099641de21282f59d3@hisilicon.com>
-References: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
- <20210125154717.GW4605@ziepe.ca>
- <96b655ade2534a65974a378bb68383ee@hisilicon.com>
- <20210125231619.GY4605@ziepe.ca>
- <5f64a68042c64f37b5cba74028bd2189@hisilicon.com>
- <20210126011304.GZ4605@ziepe.ca>
- <d7fce136c3644755a7aea5794bddf453@hisilicon.com>
- <20210126182024.GA4605@ziepe.ca>
-In-Reply-To: <20210126182024.GA4605@ziepe.ca>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.200.149]
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1AB1086578
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 01:51:42 +0000 (UTC)
+IronPort-SDR: YcTnvfLwyOgeQlv1r//aIbWVGbwDs9B/e0LmdjaLZIJ8pHCdqn9A3WrkIf/DMmGAhUSkLBnR6F
+ +LWh5QY7lA7g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9877"; a="264991323"
+X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="264991323"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jan 2021 17:51:41 -0800
+IronPort-SDR: rnpuTqtNP5HTpd56nN+iQtZfrfdhwWMnRLL81Xvssp8Mo7L9PCghuihYGjHq/9M98Z90fxl9z7
+ Ag00aOHWkVmw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; d="scan'208";a="403302867"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 27 Jan 2021 17:51:39 -0800
+Subject: Re: [PATCH v3] iommu/vt-d: do not use flush-queue when caching-mode
+ is on
+To: Nadav Amit <nadav.amit@gmail.com>, iommu@lists.linux-foundation.org
+References: <20210127175317.1600473-1-namit@vmware.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <31808b1a-c5ce-b262-3022-ec6f31700728@linux.intel.com>
+Date: Thu, 28 Jan 2021 09:43:21 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "chensihang \(A\)" <chensihang1@hisilicon.com>,
- Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- Zhangfei Gao <zhangfei.gao@linaro.org>,
- "Liguozhu \(Kenneth\)" <liguozhu@hisilicon.com>,
- "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
+In-Reply-To: <20210127175317.1600473-1-namit@vmware.com>
+Content-Language: en-US
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,100 +86,127 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@ziepe.ca]
-> Sent: Wednesday, January 27, 2021 7:20 AM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> Cc: Wangzhou (B) <wangzhou1@hisilicon.com>; Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org>; Arnd Bergmann <arnd@arndb.de>; Zhangfei Gao
-> <zhangfei.gao@linaro.org>; linux-accelerators@lists.ozlabs.org;
-> linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org;
-> linux-mm@kvack.org; Liguozhu (Kenneth) <liguozhu@hisilicon.com>; chensihang
-> (A) <chensihang1@hisilicon.com>
-> Subject: Re: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
+On 1/28/21 1:53 AM, Nadav Amit wrote:
+> From: Nadav Amit <namit@vmware.com>
 > 
-> On Tue, Jan 26, 2021 at 01:26:45AM +0000, Song Bao Hua (Barry Song) wrote:
-> > > On Mon, Jan 25, 2021 at 11:35:22PM +0000, Song Bao Hua (Barry Song) wrote:
-> > >
-> > > > > On Mon, Jan 25, 2021 at 10:21:14PM +0000, Song Bao Hua (Barry Song)
-> wrote:
-> > > > > > mlock, while certainly be able to prevent swapping out, it won't
-> > > > > > be able to stop page moving due to:
-> > > > > > * memory compaction in alloc_pages()
-> > > > > > * making huge pages
-> > > > > > * numa balance
-> > > > > > * memory compaction in CMA
-> > > > >
-> > > > > Enabling those things is a major reason to have SVA device in the
-> > > > > first place, providing a SW API to turn it all off seems like the
-> > > > > wrong direction.
-> > > >
-> > > > I wouldn't say this is a major reason to have SVA. If we read the
-> > > > history of SVA and papers, people would think easy programming due
-> > > > to data struct sharing between cpu and device, and process space
-> > > > isolation in device would be the major reasons for SVA. SVA also
-> > > > declares it supports zero-copy while zero-copy doesn't necessarily
-> > > > depend on SVA.
-> > >
-> > > Once you have to explicitly make system calls to declare memory under
-> > > IO, you loose all of that.
-> > >
-> > > Since you've asked the app to be explicit about the DMAs it intends to
-> > > do, there is not really much reason to use SVA for those DMAs anymore.
-> >
-> > Let's see a non-SVA case. We are not using SVA, we can have
-> > a memory pool by hugetlb or pin, and app can allocate memory
-> > from this pool, and get stable I/O performance on the memory
-> > from the pool. But device has its separate page table which
-> > is not bound with this process, thus lacking the protection
-> > of process space isolation. Plus, CPU and device are using
-> > different address.
+> When an Intel IOMMU is virtualized, and a physical device is
+> passed-through to the VM, changes of the virtual IOMMU need to be
+> propagated to the physical IOMMU. The hypervisor therefore needs to
+> monitor PTE mappings in the IOMMU page-tables. Intel specifications
+> provide "caching-mode" capability that a virtual IOMMU uses to report
+> that the IOMMU is virtualized and a TLB flush is needed after mapping to
+> allow the hypervisor to propagate virtual IOMMU mappings to the physical
+> IOMMU. To the best of my knowledge no real physical IOMMU reports
+> "caching-mode" as turned on.
 > 
-> So you are relying on the platform to do the SVA for the device?
+> Synchronizing the virtual and the physical IOMMU tables is expensive if
+> the hypervisor is unaware which PTEs have changed, as the hypervisor is
+> required to walk all the virtualized tables and look for changes.
+> Consequently, domain flushes are much more expensive than page-specific
+> flushes on virtualized IOMMUs with passthrough devices. The kernel
+> therefore exploited the "caching-mode" indication to avoid domain
+> flushing and use page-specific flushing in virtualized environments. See
+> commit 78d5f0f500e6 ("intel-iommu: Avoid global flushes with caching
+> mode.")
+> 
+> This behavior changed after commit 13cf01744608 ("iommu/vt-d: Make use
+> of iova deferred flushing"). Now, when batched TLB flushing is used (the
+> default), full TLB domain flushes are performed frequently, requiring
+> the hypervisor to perform expensive synchronization between the virtual
+> TLB and the physical one.
+> 
+> Getting batched TLB flushes to use page-specific invalidations again in
+> such circumstances is not easy, since the TLB invalidation scheme
+> assumes that "full" domain TLB flushes are performed for scalability.
+> 
+> Disable batched TLB flushes when caching-mode is on, as the performance
+> benefit from using batched TLB invalidations is likely to be much
+> smaller than the overhead of the virtual-to-physical IOMMU page-tables
+> synchronization.
+> 
+> Fixes: 13cf01744608 ("iommu/vt-d: Make use of iova deferred flushing")
+> Signed-off-by: Nadav Amit <namit@vmware.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: stable@vger.kernel.org
+> 
+> ---
+> v2->v3:
+> 
+> * Fix the fixes tag in the commit-log (Lu).
+> * Minor English rephrasing of the commit-log.
+> 
+> v1->v2:
+> 
+> * disable flush queue for all domains if caching-mode is on for any
+>    IOMMU (Lu).
+> ---
+>   drivers/iommu/intel/iommu.c | 32 +++++++++++++++++++++++++++++++-
+>   1 file changed, 31 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 788119c5b021..de3dd617cf60 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5373,6 +5373,36 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> +static bool domain_use_flush_queue(void)
+> +{
+> +	struct dmar_drhd_unit *drhd;
+> +	struct intel_iommu *iommu;
+> +	bool r = true;
+> +
+> +	if (intel_iommu_strict)
+> +		return false;
+> +
+> +	/*
+> +	 * The flush queue implementation does not perform page-selective
+> +	 * invalidations that are required for efficient TLB flushes in virtual
+> +	 * environments. The benefit of batching is likely to be much lower than
+> +	 * the overhead of synchronizing the virtual and physical IOMMU
+> +	 * page-tables.
+> +	 */
+> +	rcu_read_lock();
+> +	for_each_active_iommu(iommu, drhd) {
+> +		if (!cap_caching_mode(iommu->cap))
+> +			continue;
+> +
+> +		pr_warn_once("IOMMU batching is disabled due to virtualization");
+> +		r = false;
+> +		break;
+> +	}
+> +	rcu_read_unlock();
+> +
+> +	return r;
+> +}
+> +
+>   static int
+>   intel_iommu_domain_get_attr(struct iommu_domain *domain,
+>   			    enum iommu_attr attr, void *data)
+> @@ -5383,7 +5413,7 @@ intel_iommu_domain_get_attr(struct iommu_domain *domain,
+>   	case IOMMU_DOMAIN_DMA:
+>   		switch (attr) {
+>   		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			*(int *)data = !intel_iommu_strict;
+> +			*(int *)data = domain_use_flush_queue();
+>   			return 0;
+>   		default:
+>   			return -ENODEV;
 > 
 
-Sorry for late response.
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-uacce and its userspace framework UADK depend on SVA, leveraging
-the enhanced security by isolated process address space.
-
-This patch is mainly an extension for performance optimization to
-get stable high-performance I/O on pinned memory even though the
-hardware supports IO page fault to get pages back after swapping
-out or page migration.
-But IO page fault will cause serious latency jitter for high-speed
-I/O.
-For slow speed device, they don't need to use this extension.
-
-> This feels like it goes back to another topic where I felt the SVA
-> setup uAPI should be shared and not buried into every driver's unique
-> ioctls.
-> 
-> Having something like this in a shared SVA system is somewhat less
-> strange.
-
-Sounds reasonable. On the other hand, uacce seems to be an common
-uAPI for SVA, and probably the only one for this moment.
-
-uacce is a framework not a specific driver as any accelerators
-can hook into this framework as long as a device provides
-uacce_ops and register itself by uacce_register(). Uacce, for
-itself, doesn't bind with any specific hardware. So uacce interfaces
-are kind of common uAPI :-)
-
-> 
-> Jason
-
-Thanks
-Barry
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
