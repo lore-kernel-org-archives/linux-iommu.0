@@ -2,66 +2,68 @@ Return-Path: <SRS0=9w/B=G7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EF0C4332E
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:18:18 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF772C4332D
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:18:17 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ACED064DE5
+	by mail.kernel.org (Postfix) with ESMTPS id 995E864DED
 	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 15:18:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACED064DE5
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 995E864DED
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 750A12E0DE;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4D5D4868C4;
 	Thu, 28 Jan 2021 15:18:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wDqnwhOutUmZ; Thu, 28 Jan 2021 15:18:13 +0000 (UTC)
+	with ESMTP id r8DmH7JGIUXV; Thu, 28 Jan 2021 15:18:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 94F262E0E3;
-	Thu, 28 Jan 2021 15:18:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0882E868AF;
+	Thu, 28 Jan 2021 15:18:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CE3FC1DA7;
-	Thu, 28 Jan 2021 15:18:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A0A5C013A
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E82E8C1DA7;
+	Thu, 28 Jan 2021 15:18:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1307C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id F1F822E0DD
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:11 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9C5AD868AB
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 34AizszSfP-H for <iommu@lists.linux-foundation.org>;
- Thu, 28 Jan 2021 15:18:09 +0000 (UTC)
+ with ESMTP id OHUNftRLqWCQ for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Jan 2021 15:18:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by silver.osuosl.org (Postfix) with ESMTPS id D7D4721503
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:05 +0000 (UTC)
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DRPFQ4vV3zlC5j;
- Thu, 28 Jan 2021 23:16:26 +0800 (CST)
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3EBD0868A8
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 15:18:12 +0000 (UTC)
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DRPG92dTFzjCyD;
+ Thu, 28 Jan 2021 23:17:05 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 28 Jan 2021 23:17:53 +0800
+ 14.3.498.0; Thu, 28 Jan 2021 23:17:58 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>,
  <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>, "Alex
  Williamson" <alex.williamson@redhat.com>, Marc Zyngier <maz@kernel.org>,
  Catalin Marinas <catalin.marinas@arm.com>
-Subject: [RFC PATCH 00/11] vfio/iommu_type1: Implement dirty log tracking
- based on smmuv3 HTTU
-Date: Thu, 28 Jan 2021 23:17:31 +0800
-Message-ID: <20210128151742.18840-1-zhukeqian1@huawei.com>
+Subject: [RFC PATCH 05/11] iommu/arm-smmu-v3: Merge a span of page to block
+ descriptor
+Date: Thu, 28 Jan 2021 23:17:36 +0800
+Message-ID: <20210128151742.18840-6-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
+In-Reply-To: <20210128151742.18840-1-zhukeqian1@huawei.com>
+References: <20210128151742.18840-1-zhukeqian1@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.174.184.42]
 X-CFilter-Loop: Reflected
@@ -82,87 +84,307 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgYWxsLAoKVGhpcyBwYXRjaCBzZXJpZXMgaW1wbGVtZW50IGEgbmV3IGRpcnR5IGxvZyB0cmFj
-a2luZyBtZXRob2QgZm9yIHZmaW8gZG1hLgoKSW50ZW50aW9u77yaCgpBcyB3ZSBrbm93LCB2Zmlv
-IGxpdmUgbWlncmF0aW9uIGlzIGFuIGltcG9ydGFudCBhbmQgdmFsdWFibGUgZmVhdHVyZSwgYnV0
-IHRoZXJlCmFyZSBzdGlsbCBtYW55IGh1cmRsZXMgdG8gc29sdmUsIGluY2x1ZGluZyBtaWdyYXRp
-b24gb2YgaW50ZXJydXB0LCBkZXZpY2Ugc3RhdGUsCkRNQSBkaXJ0eSBsb2cgdHJhY2tpbmcsIGFu
-ZCBldGMuCgpGb3Igbm93LCB0aGUgb25seSBkaXJ0eSBsb2cgdHJhY2tpbmcgaW50ZXJmYWNlIGlz
-IHBpbm5pbmcuIEl0IGhhcyBzb21lIGRyYXdiYWNrczoKMS4gT25seSBzbWFydCB2ZW5kb3IgZHJp
-dmVycyBhcmUgYXdhcmUgb2YgdGhpcy4KMi4gSXQncyBjb2Fyc2UtZ3JhaW5lZCwgdGhlIHBpbm5l
-ZC1zY29wZSBpcyBnZW5lcmFsbHkgYmlnZ2VyIHRoYW4gd2hhdCB0aGUgZGV2aWNlIGFjdHVhbGx5
-IGFjY2Vzcy4KMy4gSXQgY2FuJ3QgdHJhY2sgZGlydHkgY29udGludW91c2x5IGFuZCBwcmVjaXNl
-bHksIHZmaW8gcG9wdWxhdGVzIGFsbCBwaW5uZWQtc2NvcGUgYXMgZGlydHkuCiAgIFNvIGl0IGRv
-ZXNuJ3Qgd29yayB3ZWxsIHdpdGggaXRlcmF0aXZlbHkgZGlydHkgbG9nIGhhbmRsaW5nLgoKQWJv
-dXQgU01NVSBIVFRVOgoKSFRUVSAoSGFyZHdhcmUgVHJhbnNsYXRpb24gVGFibGUgVXBkYXRlKSBp
-cyBhIGZlYXR1cmUgb2YgQVJNIFNNTVV2MywgaXQgY2FuIHVwZGF0ZQphY2Nlc3MgZmxhZyBvci9h
-bmQgZGlydHkgc3RhdGUgb2YgdGhlIFRURCAoVHJhbnNsYXRpb24gVGFibGUgRGVzY3JpcHRvcikg
-YnkgaGFyZHdhcmUuCldpdGggSFRUVSwgc3RhZ2UxIFRURCBpcyBjbGFzc2lmaWVkIGludG8gMyB0
-eXBlczoKICAgICAgICAgICAgICAgICAgICAgICAgREJNIGJpdCAgICAgICAgICAgICBBUFsyXShy
-ZWFkb25seSBiaXQpCjEuIHdyaXRhYmxlX2NsZWFuICAgICAgICAgMSAgICAgICAgICAgICAgICAg
-ICAgICAgMQoyLiB3cml0YWJsZV9kaXJ0eSAgICAgICAgIDEgICAgICAgICAgICAgICAgICAgICAg
-IDAKMy4gcmVhZG9ubHkgICAgICAgICAgICAgICAwICAgICAgICAgICAgICAgICAgICAgICAxCgpJ
-ZiBIVFRVX0hEIChtYW5hZ2UgZGlydHkgc3RhdGUpIGlzIGVuYWJsZWQsIHNtbXUgY2FuIGNoYW5n
-ZSBUVEQgZnJvbSB3cml0YWJsZV9jbGVhbiB0bwp3cml0YWJsZV9kaXJ0eS4gVGhlbiBzb2Z0d2Fy
-ZSBjYW4gc2NhbiBUVEQgdG8gc3luYyBkaXJ0eSBzdGF0ZSBpbnRvIGRpcnR5IGJpdG1hcC4gV2l0
-aAp0aGlzIGZlYXR1cmUsIHdlIGNhbiB0cmFjayB0aGUgZGlydHkgbG9nIG9mIERNQSBjb250aW51
-b3VzbHkgYW5kIHByZWNpc2VseS4KCkFib3V0IHRoaXMgc2VyaWVzOgoKUGF0Y2ggMS0zOiBBZGQg
-ZmVhdHVyZSBkZXRlY3Rpb24gZm9yIHNtbXUgSFRUVSBhbmQgZW5hYmxlIEhUVFUgZm9yIHNtbXUg
-c3RhZ2UxIG1hcHBpbmcuCiAgICAgICAgICAgQW5kIGFkZCBmZWF0dXJlIGRldGVjdGlvbiBmb3Ig
-c21tdSBCQk1MLiBXZSBuZWVkIHRvIHNwbGl0IGJsb2NrIG1hcHBpbmcgd2hlbgogICAgICAgICAg
-IHN0YXJ0IGRpcnR5IGxvZyB0cmFja2luZyBhbmQgbWVyZ2UgcGFnZSBtYXBwaW5nIHdoZW4gc3Rv
-cCBkaXJ0eSBsb2cgdHJhY2tpbmcsCgkJICAgd2hpY2ggcmVxdWlyZXMgYnJlYWstYmVmb3JlLW1h
-a2UgcHJvY2VkdXJlLiBCdXQgaXQgbWlnaHQgY2F1c2UgcHJvYmxlbXMgd2hlbiB0aGUKCQkgICBU
-VEQgaXMgYWxpdmUuIFRoZSBJL08gc3RyZWFtcyBtaWdodCBub3QgdG9sZXJhdGUgdHJhbnNsYXRp
-b24gZmF1bHRzLiBTbyBCQk1MCgkJICAgc2hvdWxkIGJlIHVzZWQuCgpQYXRjaCA0LTc6IEFkZCBm
-b3VyIGludGVyZmFjZXMgKHNwbGl0X2Jsb2NrLCBtZXJnZV9wYWdlLCBzeW5jX2RpcnR5X2xvZyBh
-bmQgY2xlYXJfZGlydHlfbG9nKQogICAgICAgICAgIGluIElPTU1VIGxheWVyLCB0aGV5IGFyZSBl
-c3NlbnRpYWwgdG8gaW1wbGVtZW50IGRtYSBkaXJ0eSBsb2cgdHJhY2tpbmcgZm9yIHZmaW8uCgkJ
-ICAgV2UgaW1wbGVtZW50IHRoZXNlIGludGVyZmFjZXMgZm9yIGFybSBzbW11djMuCgpQYXRjaCAg
-IDg6IEFkZCBIV0RCTSAoSGFyZHdhcmUgRGlydHkgQml0IE1hbmFnZW1lbnQpIGRldmljZSBmZWF0
-dXJlIHJlcG9ydGluZyBpbiBJT01NVSBsYXllci4KClBhdGNoOS0xMTogSW1wbGVtZW50IGEgbmV3
-IGRpcnR5IGxvZyB0cmFja2luZyBtZXRob2QgZm9yIHZmaW8gYmFzZWQgb24gaW9tbXUgaHdkYm0u
-IEEgbmV3CiAgICAgICAgICAgaW9jdGwgb3BlcmF0aW9uIG5hbWVkIFZGSU9fRElSVFlfTE9HX01B
-TlVBTF9DTEVBUiBpcyBhZGRlZCwgd2hpY2ggY2FuIGVsaW1pbmF0ZQoJCSAgIHNvbWUgcmVkdW5k
-YW50IGRpcnR5IGhhbmRsaW5nIG9mIHVzZXJzcGFjZS4KCk9wdGltaXphdGlvbnMgVE8gRG86Cgox
-LiBXZSByZWNvZ25pemVkIHRoYXQgZWFjaCBzbW11X2RvbWFpbiAoYSB2ZmlvX2NvbnRhaW5lciBt
-YXkgaGFzIHNldmVyYWwgc21tdV9kb21haW4pIGhhcyBpdHMKICAgb3duIHN0YWdlMSBtYXBwaW5n
-LCBhbmQgd2UgbXVzdCBzY2FuIGFsbCB0aGVzZSBtYXBwaW5nIHRvIHN5bmMgZGlydHkgc3RhdGUu
-IFdlIHBsYW4gdG8gcmVmYWN0b3IKICAgc21tdV9kb21haW4gdG8gc3VwcG9ydCBtb3JlIHRoYW4g
-b25lIHNtbXUgaW4gb25lIHNtbXVfZG9tYWluLCB0aGVuIHRoZXNlIHNtbXVzIGNhbiBzaGFyZSBh
-IHNhbWUKICAgc3RhZ2UxIG1hcHBpbmcuCjIuIFdlIGFsc28gcmVjb2duaXplZCB0aGF0IHNjYW4g
-VFREIGlzIGEgaG90c3BvdCBvZiBwZXJmb3JtYW5jZS4gUmVjZW50bHksIEkgaGF2ZSBpbXBsZW1l
-bnQgYQogICBTVy9IVyBjb25iaW5lZCBkaXJ0eSBsb2cgdHJhY2tpbmcgYXQgTU1VIHNpZGUgWzFd
-LCB3aGljaCBjYW4gZWZmZWN0aXZlbHkgc29sdmUgdGhpcyBwcm9ibGVtLgogICBUaGlzIGlkZWEg
-Y2FuIGJlIGFwcGxpZWQgdG8gc21tdSBzaWRlIHRvby4KClRoYW5rcywKS2VxaWFuCgoKWzFdIGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWFybS1rZXJuZWwvMjAyMTAxMjYxMjQ0NDQuMjcx
-MzYtMS16aHVrZXFpYW4xQGh1YXdlaS5jb20vCgpqaWFuZ2t1bmt1biAoMTEpOgogIGlvbW11L2Fy
-bS1zbW11LXYzOiBBZGQgZmVhdHVyZSBkZXRlY3Rpb24gZm9yIEhUVFUKICBpb21tdS9hcm0tc21t
-dS12MzogRW5hYmxlIEhUVFUgZm9yIFNNTVUgc3RhZ2UxIG1hcHBpbmcKICBpb21tdS9hcm0tc21t
-dS12MzogQWRkIGZlYXR1cmUgZGV0ZWN0aW9uIGZvciBCQk1MCiAgaW9tbXUvYXJtLXNtbXUtdjM6
-IFNwbGl0IGJsb2NrIGRlc2NyaXB0b3IgdG8gYSBzcGFuIG9mIHBhZ2UKICBpb21tdS9hcm0tc21t
-dS12MzogTWVyZ2UgYSBzcGFuIG9mIHBhZ2UgdG8gYmxvY2sgZGVzY3JpcHRvcgogIGlvbW11L2Fy
-bS1zbW11LXYzOiBTY2FuIGxlYWYgVFREIHRvIHN5bmMgaGFyZHdhcmUgZGlydHkgbG9nCiAgaW9t
-bXUvYXJtLXNtbXUtdjM6IENsZWFyIGRpcnR5IGxvZyBhY2NvcmRpbmcgdG8gYml0bWFwCiAgaW9t
-bXUvYXJtLXNtbXUtdjM6IEFkZCBIV0RCTSBkZXZpY2UgZmVhdHVyZSByZXBvcnRpbmcKICB2Zmlv
-L2lvbW11X3R5cGUxOiBBZGQgSFdEQk0gc3RhdHVzIG1haW50YW5hbmNlCiAgdmZpby9pb21tdV90
-eXBlMTogT3B0aW1pemUgZGlydHkgYml0bWFwIHBvcHVsYXRpb24gYmFzZWQgb24gaW9tbXUKICAg
-IEhXREJNCiAgdmZpby9pb21tdV90eXBlMTogQWRkIHN1cHBvcnQgZm9yIG1hbnVhbCBkaXJ0eSBs
-b2cgY2xlYXIKCiBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jIHwg
-MTM4ICsrKysrKy0KIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgg
-fCAgMTQgKwogZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jICAgICAgICAgICAgICB8IDM5
-MiArKysrKysrKysrKysrKysrKysrLQogZHJpdmVycy9pb21tdS9pb21tdS5jICAgICAgICAgICAg
-ICAgICAgICAgICB8IDIyNyArKysrKysrKysrKysKIGRyaXZlcnMvdmZpby92ZmlvX2lvbW11X3R5
-cGUxLmMgICAgICAgICAgICAgfCAyMzUgKysrKysrKysrKystCiBpbmNsdWRlL2xpbnV4L2lvLXBn
-dGFibGUuaCAgICAgICAgICAgICAgICAgIHwgIDE0ICsKIGluY2x1ZGUvbGludXgvaW9tbXUuaCAg
-ICAgICAgICAgICAgICAgICAgICAgfCAgNTUgKysrCiBpbmNsdWRlL3VhcGkvbGludXgvdmZpby5o
-ICAgICAgICAgICAgICAgICAgIHwgIDI4ICstCiA4IGZpbGVzIGNoYW5nZWQsIDEwOTMgaW5zZXJ0
-aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pCgotLSAKMi4xOS4xCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+From: jiangkunkun <jiangkunkun@huawei.com>
+
+When stop dirty log tracking, we need to recover all block descriptors
+which are splited when start dirty log tracking. This adds a new
+interface named merge_page in iommu layer and arm smmuv3 implements it,
+which reinstall block mappings and unmap the span of page mappings.
+
+It's caller's duty to find contiuous physical memory.
+
+During merging page, other interfaces are not expected to be working,
+so race condition does not exist. And we flush all iotlbs after the merge
+procedure is completed to ease the pressure of iommu, as we will merge a
+huge range of page mappings in general.
+
+Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
+Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 20 ++++++
+ drivers/iommu/io-pgtable-arm.c              | 78 +++++++++++++++++++++
+ drivers/iommu/iommu.c                       | 75 ++++++++++++++++++++
+ include/linux/io-pgtable.h                  |  2 +
+ include/linux/iommu.h                       | 10 +++
+ 5 files changed, 185 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5469f4fca820..2434519e4bb6 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2529,6 +2529,25 @@ static size_t arm_smmu_split_block(struct iommu_domain *domain,
+ 	return ops->split_block(ops, iova, size);
+ }
+ 
++static size_t arm_smmu_merge_page(struct iommu_domain *domain, unsigned long iova,
++				  phys_addr_t paddr, size_t size, int prot)
++{
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
++	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
++
++	if (!(smmu->features & (ARM_SMMU_FEAT_BBML1 | ARM_SMMU_FEAT_BBML2))) {
++		dev_err(smmu->dev, "don't support BBML1/2 and merge page\n");
++		return 0;
++	}
++
++	if (!ops || !ops->merge_page) {
++		pr_err("don't support merge page\n");
++		return 0;
++	}
++
++	return ops->merge_page(ops, iova, paddr, size, prot);
++}
++
+ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ {
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+@@ -2629,6 +2648,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.split_block		= arm_smmu_split_block,
++	.merge_page		= arm_smmu_merge_page,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index f3b7f7115e38..17390f258eb1 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -800,6 +800,83 @@ static size_t arm_lpae_split_block(struct io_pgtable_ops *ops,
+ 	return __arm_lpae_split_block(data, iova, size, lvl, ptep);
+ }
+ 
++static size_t __arm_lpae_merge_page(struct arm_lpae_io_pgtable *data,
++				    unsigned long iova, phys_addr_t paddr,
++				    size_t size, int lvl, arm_lpae_iopte *ptep,
++				    arm_lpae_iopte prot)
++{
++	arm_lpae_iopte pte, *tablep;
++	struct io_pgtable *iop = &data->iop;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++
++	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
++		return 0;
++
++	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
++	pte = READ_ONCE(*ptep);
++	if (WARN_ON(!pte))
++		return 0;
++
++	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
++		if (iopte_leaf(pte, lvl, iop->fmt))
++			return size;
++
++		/* Race does not exist */
++		if (cfg->bbml == 1) {
++			prot |= ARM_LPAE_PTE_NT;
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++			io_pgtable_tlb_flush_walk(iop, iova, size,
++						  ARM_LPAE_GRANULE(data));
++
++			prot &= ~(ARM_LPAE_PTE_NT);
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++		} else {
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++		}
++
++		tablep = iopte_deref(pte, data);
++		__arm_lpae_free_pgtable(data, lvl + 1, tablep);
++		return size;
++	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
++		/* The size is too small, already merged */
++		return size;
++	}
++
++	/* Keep on walkin */
++	ptep = iopte_deref(pte, data);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl + 1, ptep, prot);
++}
++
++static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova,
++				  phys_addr_t paddr, size_t size, int iommu_prot)
++{
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++	arm_lpae_iopte *ptep = data->pgd;
++	int lvl = data->start_level;
++	arm_lpae_iopte prot;
++	long iaext = (s64)iova >> cfg->ias;
++
++	/* If no access, then nothing to do */
++	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
++		return size;
++
++	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
++		return 0;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
++		iaext = ~iaext;
++	if (WARN_ON(iaext || paddr >> cfg->oas))
++		return 0;
++
++	/* If it is smallest granule, then nothing to do */
++	if (size == ARM_LPAE_BLOCK_SIZE(ARM_LPAE_MAX_LEVELS - 1, data))
++		return size;
++
++	prot = arm_lpae_prot_to_pte(data, iommu_prot);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
++}
++
+ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+ {
+ 	unsigned long granule, page_sizes;
+@@ -879,6 +956,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 		.unmap		= arm_lpae_unmap,
+ 		.iova_to_phys	= arm_lpae_iova_to_phys,
+ 		.split_block	= arm_lpae_split_block,
++		.merge_page	= arm_lpae_merge_page,
+ 	};
+ 
+ 	return data;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 7dc0850448c3..f1261da11ea8 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2747,6 +2747,81 @@ size_t iommu_split_block(struct iommu_domain *domain, unsigned long iova,
+ }
+ EXPORT_SYMBOL_GPL(iommu_split_block);
+ 
++static size_t __iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
++				 phys_addr_t paddr, size_t size, int prot)
++{
++	const struct iommu_ops *ops = domain->ops;
++	unsigned int min_pagesz;
++	size_t pgsize, merged_size;
++	size_t merged = 0;
++
++	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
++
++	if (!IS_ALIGNED(iova | paddr | size, min_pagesz)) {
++		pr_err("unaligned: iova 0x%lx pa %pa size 0x%zx min_pagesz 0x%x\n",
++			iova, &paddr, size, min_pagesz);
++		return 0;
++	}
++
++	if (!ops || !ops->merge_page) {
++		pr_err("don't support merge page\n");
++		return 0;
++	}
++
++	while (size) {
++		pgsize = iommu_pgsize(domain, iova | paddr, size);
++
++		merged_size = ops->merge_page(domain, iova, paddr, pgsize, prot);
++
++		pr_debug("merged: iova 0x%lx pa %pa size 0x%zx\n", iova, &paddr,
++			 merged_size);
++		iova += merged_size;
++		paddr += merged_size;
++		size -= merged_size;
++		merged += merged_size;
++
++		if (merged_size != pgsize)
++			break;
++	}
++
++	return merged;
++}
++
++size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
++			size_t size, int prot)
++{
++	phys_addr_t phys;
++	dma_addr_t p, i;
++	size_t cont_size, merged_size;
++	size_t merged = 0;
++
++	while (size) {
++		phys = iommu_iova_to_phys(domain, iova);
++		cont_size = PAGE_SIZE;
++		p = phys + cont_size;
++		i = iova + cont_size;
++
++		while (cont_size < size && p == iommu_iova_to_phys(domain, i)) {
++			p += PAGE_SIZE;
++			i += PAGE_SIZE;
++			cont_size += PAGE_SIZE;
++		}
++
++		merged_size = __iommu_merge_page(domain, iova, phys, cont_size,
++				prot);
++		iova += merged_size;
++		size -= merged_size;
++		merged += merged_size;
++
++		if (merged_size != cont_size)
++			break;
++	}
++	iommu_flush_iotlb_all(domain);
++
++	return merged;
++}
++EXPORT_SYMBOL_GPL(iommu_merge_page);
++
+ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ {
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index b87c6f4ecaa2..754b62a1bbaf 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -164,6 +164,8 @@ struct io_pgtable_ops {
+ 				    unsigned long iova);
+ 	size_t (*split_block)(struct io_pgtable_ops *ops, unsigned long iova,
+ 			      size_t size);
++	size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
++			     phys_addr_t phys, size_t size, int prot);
+ };
+ 
+ /**
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index abeb811098a5..ac2b0b1bce0f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -260,6 +260,8 @@ struct iommu_ops {
+ 			       enum iommu_attr attr, void *data);
+ 	size_t (*split_block)(struct iommu_domain *domain, unsigned long iova,
+ 			      size_t size);
++	size_t (*merge_page)(struct iommu_domain *domain, unsigned long iova,
++			     phys_addr_t phys, size_t size, int prot);
+ 
+ 	/* Request/Free a list of reserved regions for a device */
+ 	void (*get_resv_regions)(struct device *dev, struct list_head *list);
+@@ -513,6 +515,8 @@ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ extern size_t iommu_split_block(struct iommu_domain *domain, unsigned long iova,
+ 				size_t size);
++extern size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
++			       size_t size, int prot);
+ 
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+@@ -913,6 +917,12 @@ static inline size_t iommu_split_block(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
++static inline size_t iommu_merge_page(struct iommu_domain *domain,
++				      unsigned long iova, size_t size, int prot)
++{
++	return -EINVAL;
++}
++
+ static inline int  iommu_device_register(struct iommu_device *iommu)
+ {
+ 	return -ENODEV;
+-- 
+2.19.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
