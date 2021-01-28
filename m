@@ -7,60 +7,59 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DCAC433E0
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 12:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF83C433E0
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 12:54:38 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C20EF64DE3
-	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 12:51:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C20EF64DE3
+	by mail.kernel.org (Postfix) with ESMTPS id 8EA5E64DE3
+	for <iommu@archiver.kernel.org>; Thu, 28 Jan 2021 12:54:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8EA5E64DE3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3788A2DFF8;
-	Thu, 28 Jan 2021 12:51:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id ED9712E0D8;
+	Thu, 28 Jan 2021 12:54:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HuNDuY8q7Ifi; Thu, 28 Jan 2021 12:51:19 +0000 (UTC)
+	with ESMTP id qz02RA0TgvLC; Thu, 28 Jan 2021 12:54:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 23EA720358;
-	Thu, 28 Jan 2021 12:51:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9412E2DFF8;
+	Thu, 28 Jan 2021 12:54:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E257FC08A1;
-	Thu, 28 Jan 2021 12:51:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EF892C013A
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:51:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77CE3C08A1;
+	Thu, 28 Jan 2021 12:54:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 09543C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:54:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D11DD873BC
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:51:16 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 038ED863F1
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:54:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e18afUru3p0Y for <iommu@lists.linux-foundation.org>;
- Thu, 28 Jan 2021 12:51:16 +0000 (UTC)
+ with ESMTP id RLZhfHQkW2Nz for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Jan 2021 12:54:33 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CB1D9873AB
- for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:51:15 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 27DC186BB2
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Jan 2021 12:54:32 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 0B69051D; Thu, 28 Jan 2021 13:51:13 +0100 (CET)
-Date: Thu, 28 Jan 2021 13:51:12 +0100
+ id 3841D59C; Thu, 28 Jan 2021 13:54:31 +0100 (CET)
+Date: Thu, 28 Jan 2021 13:54:29 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Chuck Lever <chuck.lever@oracle.com>
-Subject: Re: [PATCH RFC 2/9] iommu: Add iova and size as parameters in
- iotlb_sync_map
-Message-ID: <20210128125112.GN32671@8bytes.org>
-References: <161177711359.1311.417185373365934204.stgit@manet.1015granger.net>
- <161177763296.1311.15197214300351076283.stgit@manet.1015granger.net>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH] iommu: Check dev->iommu in iommu_dev_xxx functions
+Message-ID: <20210128125429.GO32671@8bytes.org>
+References: <20210126130629.8928-1-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <161177763296.1311.15197214300351076283.stgit@manet.1015granger.net>
+In-Reply-To: <20210126130629.8928-1-shameerali.kolothum.thodi@huawei.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: isaacm@codeaurora.org, robin.murphy@arm.com,
- iommu@lists.linux-foundation.org, will@kernel.org
+Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
+ linuxarm@openeuler.org, iommu@lists.linux-foundation.org,
+ prime.zeng@hisilicon.com, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,46 +72,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Chuck,
+On Tue, Jan 26, 2021 at 01:06:29PM +0000, Shameer Kolothum wrote:
+> The device iommu probe/attach might have failed leaving dev->iommu
+> to NULL and device drivers may still invoke these functions=A0resulting
+> a crash in iommu vendor driver code. Hence make=A0sure we check that.
+> =
 
-thanks for your optimizations!
-
-On Wed, Jan 27, 2021 at 03:00:32PM -0500, Chuck Lever wrote:
-> From: Yong Wu <yong.wu@mediatek.com>
-> 
-> iotlb_sync_map allow IOMMU drivers tlb sync after completing the whole
-> mapping. This patch adds iova and size as the parameters in it. then the
-> IOMMU driver could flush tlb with the whole range once after iova mapping
-> to improve performance.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 > ---
->  drivers/iommu/iommu.c      |    4 ++--
->  drivers/iommu/tegra-gart.c |    7 +++++--
->  include/linux/iommu.h      |    3 ++-
->  3 files changed, 9 insertions(+), 5 deletions(-)
-> 
+>  drivers/iommu/iommu.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> =
+
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c304a6a30d42..3d099a31ddca 100644
+> index ffeebda8d6de..cb68153c5cc0 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -2443,7 +2443,7 @@ static int _iommu_map(struct iommu_domain *domain, unsigned long iova,
->  
->  	ret = __iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
->  	if (ret == 0 && ops->iotlb_sync_map)
-> -		ops->iotlb_sync_map(domain);
-> +		ops->iotlb_sync_map(domain, iova, size);
+> @@ -2867,7 +2867,7 @@ bool iommu_dev_has_feature(struct device *dev, enum=
+ iommu_dev_features feat)
 
-How about using 'struct iommu_iotlb_gather' instead of directly passing
-the iova/size parameters here? The iotlb_sync() call-back uses it
-already.
+This function has been removed from the iommu-tree. Can you please
+rebase this patch against the latest 'core' branch when I pushed it
+later this week (maybe even later today)?
+A Fixes tag would be nice too.
 
 Regards,
 
