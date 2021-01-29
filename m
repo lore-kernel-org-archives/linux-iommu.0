@@ -7,66 +7,68 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 530E9C433E0
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 12:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD67EC433DB
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 12:44:54 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D366C64E8D
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 12:03:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D366C64E8D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 33E9A64E0F
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 12:44:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33E9A64E0F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 76CBB86AF2;
-	Fri, 29 Jan 2021 12:03:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C8A1E8698B;
+	Fri, 29 Jan 2021 12:44:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HKWisTGzUlP6; Fri, 29 Jan 2021 12:03:46 +0000 (UTC)
+	with ESMTP id zUAYlwOWZyOk; Fri, 29 Jan 2021 12:44:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 87DB186AE0;
-	Fri, 29 Jan 2021 12:03:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 534748698F;
+	Fri, 29 Jan 2021 12:44:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C8B3C0FA8;
-	Fri, 29 Jan 2021 12:03:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C174C0FA7;
+	Fri, 29 Jan 2021 12:44:52 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33A04C08A1
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:03:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CC815C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:44:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 202A1233B0
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:03:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id AC44A204E6
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:44:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k-eXJkp2aziV for <iommu@lists.linux-foundation.org>;
- Fri, 29 Jan 2021 12:03:43 +0000 (UTC)
+ with ESMTP id TUpytxs03jBl for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Jan 2021 12:44:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id E3EBC232D2
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:03:42 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 204EA1424;
- Fri, 29 Jan 2021 04:03:42 -0800 (PST)
-Received: from [10.57.35.163] (unknown [10.57.35.163])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA4EF3F7C3;
- Fri, 29 Jan 2021 04:03:40 -0800 (PST)
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by silver.osuosl.org (Postfix) with ESMTPS id A8DE4204E0
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 12:43:47 +0000 (UTC)
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DRxmv1t5wzMRn6;
+ Fri, 29 Jan 2021 20:42:07 +0800 (CST)
+Received: from [127.0.0.1] (10.40.193.166) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.498.0; Fri, 29 Jan 2021
+ 20:43:35 +0800
 Subject: Re: [PATCH 1/1] Revert "iommu/iova: Retry from last rb tree node if
  iova search fails"
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- iommu <iommu@lists.linux-foundation.org>,
- linux-kernel <linux-kernel@vger.kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, "Leizhen (ThunderTown)"
+ <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel
+ <linux-kernel@vger.kernel.org>
 References: <20210129092120.1482-1-thunder.leizhen@huawei.com>
  <5505b1e5-2450-d5c4-6d77-5bb21fd0b6a1@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
-Date: Fri, 29 Jan 2021 12:03:37 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <afda715d-dd7b-c6eb-be64-e4a09999b003@hisilicon.com>
+Date: Fri, 29 Jan 2021 20:43:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-In-Reply-To: <5505b1e5-2450-d5c4-6d77-5bb21fd0b6a1@huawei.com>
-Content-Language: en-GB
+In-Reply-To: <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
+X-Originating-IP: [10.40.193.166]
+X-CFilter-Loop: Reflected
 Cc: Vijayanand Jitta <vjitta@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -80,94 +82,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-29 09:48, Leizhen (ThunderTown) wrote:
-> 
-> Currently, we are thinking about the solution to the problem. However, because the end time of v5.11 is approaching, this patch is sent first.
-
-However, that commit was made for a reason - how do we justify that one 
-thing being slow is more important than another thing being completely 
-broken? It's not practical to just keep doing the patch hokey-cokey 
-based on whoever shouts loudest :(
-
-> On 2021/1/29 17:21, Zhen Lei wrote:
->> This reverts commit 4e89dce725213d3d0b0475211b500eda4ef4bf2f.
->>
->> We find that this patch has a great impact on performance. According to
->> our test: the iops decreases from 1655.6K to 893.5K, about half.
->>
->> Hardware: 1 SAS expander with 12 SAS SSD
->> Command:  Only the main parameters are listed.
->>            fio bs=4k rw=read iodepth=128 cpus_allowed=0-127
-
-FWIW, I'm 99% sure that what you really want is [1], but then you get to 
-battle against an unknown quantity of dodgy firmware instead.
-
-Robin.
-
-[1] 
-https://lore.kernel.org/linux-iommu/d412c292d222eb36469effd338e985f9d9e24cd6.1594207679.git.robin.murphy@arm.com/
-
->> Fixes: 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search fails")
->> Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>   drivers/iommu/iova.c | 23 ++++++-----------------
->>   1 file changed, 6 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index d20b8b333d30d17..f840c7207efbced 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -185,9 +185,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->>   	struct rb_node *curr, *prev;
->>   	struct iova *curr_iova;
->>   	unsigned long flags;
->> -	unsigned long new_pfn, retry_pfn;
->> +	unsigned long new_pfn;
->>   	unsigned long align_mask = ~0UL;
->> -	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
->>   
->>   	if (size_aligned)
->>   		align_mask <<= fls_long(size - 1);
->> @@ -200,25 +199,15 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->>   
->>   	curr = __get_cached_rbnode(iovad, limit_pfn);
->>   	curr_iova = rb_entry(curr, struct iova, node);
->> -	retry_pfn = curr_iova->pfn_hi + 1;
->> -
->> -retry:
->>   	do {
->> -		high_pfn = min(high_pfn, curr_iova->pfn_lo);
->> -		new_pfn = (high_pfn - size) & align_mask;
->> +		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
->> +		new_pfn = (limit_pfn - size) & align_mask;
->>   		prev = curr;
->>   		curr = rb_prev(curr);
->>   		curr_iova = rb_entry(curr, struct iova, node);
->> -	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >= low_pfn);
->> -
->> -	if (high_pfn < size || new_pfn < low_pfn) {
->> -		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
->> -			high_pfn = limit_pfn;
->> -			low_pfn = retry_pfn;
->> -			curr = &iovad->anchor.node;
->> -			curr_iova = rb_entry(curr, struct iova, node);
->> -			goto retry;
->> -		}
->> +	} while (curr && new_pfn <= curr_iova->pfn_hi);
->> +
->> +	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
->>   		iovad->max32_alloc_size = size;
->>   		goto iova32_full;
->>   	}
->>
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgUm9iaW4sCgoK5ZyoIDIwMjEvMS8yOSAyMDowMywgUm9iaW4gTXVycGh5IOWGmemBkzoKPiBP
+biAyMDIxLTAxLTI5IDA5OjQ4LCBMZWl6aGVuIChUaHVuZGVyVG93bikgd3JvdGU6Cj4+Cj4+IEN1
+cnJlbnRseSwgd2UgYXJlIHRoaW5raW5nIGFib3V0IHRoZSBzb2x1dGlvbiB0byB0aGUgcHJvYmxl
+bS4gCj4+IEhvd2V2ZXIsIGJlY2F1c2UgdGhlIGVuZCB0aW1lIG9mIHY1LjExIGlzIGFwcHJvYWNo
+aW5nLCB0aGlzIHBhdGNoIGlzIAo+PiBzZW50IGZpcnN0Lgo+Cj4gSG93ZXZlciwgdGhhdCBjb21t
+aXQgd2FzIG1hZGUgZm9yIGEgcmVhc29uIC0gaG93IGRvIHdlIGp1c3RpZnkgdGhhdCAKPiBvbmUg
+dGhpbmcgYmVpbmcgc2xvdyBpcyBtb3JlIGltcG9ydGFudCB0aGFuIGFub3RoZXIgdGhpbmcgYmVp
+bmcgCj4gY29tcGxldGVseSBicm9rZW4/IEl0J3Mgbm90IHByYWN0aWNhbCB0byBqdXN0IGtlZXAg
+ZG9pbmcgdGhlIHBhdGNoIAo+IGhva2V5LWNva2V5IGJhc2VkIG9uIHdob2V2ZXIgc2hvdXRzIGxv
+dWRlc3QgOigKPgo+PiBPbiAyMDIxLzEvMjkgMTc6MjEsIFpoZW4gTGVpIHdyb3RlOgo+Pj4gVGhp
+cyByZXZlcnRzIGNvbW1pdCA0ZTg5ZGNlNzI1MjEzZDNkMGIwNDc1MjExYjUwMGVkYTRlZjRiZjJm
+Lgo+Pj4KPj4+IFdlIGZpbmQgdGhhdCB0aGlzIHBhdGNoIGhhcyBhIGdyZWF0IGltcGFjdCBvbiBw
+ZXJmb3JtYW5jZS4gQWNjb3JkaW5nIHRvCj4+PiBvdXIgdGVzdDogdGhlIGlvcHMgZGVjcmVhc2Vz
+IGZyb20gMTY1NS42SyB0byA4OTMuNUssIGFib3V0IGhhbGYuCj4+Pgo+Pj4gSGFyZHdhcmU6IDEg
+U0FTIGV4cGFuZGVyIHdpdGggMTIgU0FTIFNTRAo+Pj4gQ29tbWFuZDogIE9ubHkgdGhlIG1haW4g
+cGFyYW1ldGVycyBhcmUgbGlzdGVkLgo+Pj4gICAgICAgICAgICBmaW8gYnM9NGsgcnc9cmVhZCBp
+b2RlcHRoPTEyOCBjcHVzX2FsbG93ZWQ9MC0xMjcKPgo+IEZXSVcsIEknbSA5OSUgc3VyZSB0aGF0
+IHdoYXQgeW91IHJlYWxseSB3YW50IGlzIFsxXSwgYnV0IHRoZW4geW91IGdldCAKPiB0byBiYXR0
+bGUgYWdhaW5zdCBhbiB1bmtub3duIHF1YW50aXR5IG9mIGRvZGd5IGZpcm13YXJlIGluc3RlYWQu
+Cj4KPiBSb2Jpbi4KPgo+IFsxXSAKPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1pb21t
+dS9kNDEyYzI5MmQyMjJlYjM2NDY5ZWZmZDMzOGU5ODVmOWQ5ZTI0Y2Q2LjE1OTQyMDc2NzkuZ2l0
+LnJvYmluLm11cnBoeUBhcm0uY29tLwoKVGhhbmsgeW91IGZvciBwb2ludGluZyB0aGF0IG91dC4g
+SSBoYXZlIHRlc3RlZCBpdCwgYW5kIGl0IHNvbHZlcyB0aGUgCnBlcmZvcm1hbmNlIGRyb3AgaXNz
+dWUgbWVudGlvbmVkIGFib3ZlLgpJIG5vdGljZWQgdGhhdCB5b3Ugc2VudCBpdCBKdWx5IDIwMjAs
+IGFuZCBkbyB5b3UgaGF2ZSBhIHBsYW4gdG8gbWVyZ2UgaXQgCnJlY2VudGx5PwoKCj4KPj4+IEZp
+eGVzOiA0ZTg5ZGNlNzI1MjEgKCJpb21tdS9pb3ZhOiBSZXRyeSBmcm9tIGxhc3QgcmIgdHJlZSBu
+b2RlIGlmIAo+Pj4gaW92YSBzZWFyY2ggZmFpbHMiKQo+Pj4gVGVzdGVkLWJ5OiBYaWFuZyBDaGVu
+IDxjaGVueGlhbmc2NkBoaXNpbGljb24uY29tPgo+Pj4gU2lnbmVkLW9mZi1ieTogWmhlbiBMZWkg
+PHRodW5kZXIubGVpemhlbkBodWF3ZWkuY29tPgo+Pj4gLS0tCj4+PiAgIGRyaXZlcnMvaW9tbXUv
+aW92YS5jIHwgMjMgKysrKysrLS0tLS0tLS0tLS0tLS0tLS0KPj4+ICAgMSBmaWxlIGNoYW5nZWQs
+IDYgaW5zZXJ0aW9ucygrKSwgMTcgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvaW92YS5jIGIvZHJpdmVycy9pb21tdS9pb3ZhLmMKPj4+IGluZGV4IGQyMGI4
+YjMzM2QzMGQxNy4uZjg0MGM3MjA3ZWZiY2VkIDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVycy9pb21t
+dS9pb3ZhLmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW92YS5jCj4+PiBAQCAtMTg1LDkgKzE4
+NSw4IEBAIHN0YXRpYyBpbnQgX19hbGxvY19hbmRfaW5zZXJ0X2lvdmFfcmFuZ2Uoc3RydWN0IAo+
+Pj4gaW92YV9kb21haW4gKmlvdmFkLAo+Pj4gICAgICAgc3RydWN0IHJiX25vZGUgKmN1cnIsICpw
+cmV2Owo+Pj4gICAgICAgc3RydWN0IGlvdmEgKmN1cnJfaW92YTsKPj4+ICAgICAgIHVuc2lnbmVk
+IGxvbmcgZmxhZ3M7Cj4+PiAtICAgIHVuc2lnbmVkIGxvbmcgbmV3X3BmbiwgcmV0cnlfcGZuOwo+
+Pj4gKyAgICB1bnNpZ25lZCBsb25nIG5ld19wZm47Cj4+PiAgICAgICB1bnNpZ25lZCBsb25nIGFs
+aWduX21hc2sgPSB+MFVMOwo+Pj4gLSAgICB1bnNpZ25lZCBsb25nIGhpZ2hfcGZuID0gbGltaXRf
+cGZuLCBsb3dfcGZuID0gaW92YWQtPnN0YXJ0X3BmbjsKPj4+ICAgICAgICAgaWYgKHNpemVfYWxp
+Z25lZCkKPj4+ICAgICAgICAgICBhbGlnbl9tYXNrIDw8PSBmbHNfbG9uZyhzaXplIC0gMSk7Cj4+
+PiBAQCAtMjAwLDI1ICsxOTksMTUgQEAgc3RhdGljIGludCAKPj4+IF9fYWxsb2NfYW5kX2luc2Vy
+dF9pb3ZhX3JhbmdlKHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92YWQsCj4+PiAgICAgICAgIGN1cnIg
+PSBfX2dldF9jYWNoZWRfcmJub2RlKGlvdmFkLCBsaW1pdF9wZm4pOwo+Pj4gICAgICAgY3Vycl9p
+b3ZhID0gcmJfZW50cnkoY3Vyciwgc3RydWN0IGlvdmEsIG5vZGUpOwo+Pj4gLSAgICByZXRyeV9w
+Zm4gPSBjdXJyX2lvdmEtPnBmbl9oaSArIDE7Cj4+PiAtCj4+PiAtcmV0cnk6Cj4+PiAgICAgICBk
+byB7Cj4+PiAtICAgICAgICBoaWdoX3BmbiA9IG1pbihoaWdoX3BmbiwgY3Vycl9pb3ZhLT5wZm5f
+bG8pOwo+Pj4gLSAgICAgICAgbmV3X3BmbiA9IChoaWdoX3BmbiAtIHNpemUpICYgYWxpZ25fbWFz
+azsKPj4+ICsgICAgICAgIGxpbWl0X3BmbiA9IG1pbihsaW1pdF9wZm4sIGN1cnJfaW92YS0+cGZu
+X2xvKTsKPj4+ICsgICAgICAgIG5ld19wZm4gPSAobGltaXRfcGZuIC0gc2l6ZSkgJiBhbGlnbl9t
+YXNrOwo+Pj4gICAgICAgICAgIHByZXYgPSBjdXJyOwo+Pj4gICAgICAgICAgIGN1cnIgPSByYl9w
+cmV2KGN1cnIpOwo+Pj4gICAgICAgICAgIGN1cnJfaW92YSA9IHJiX2VudHJ5KGN1cnIsIHN0cnVj
+dCBpb3ZhLCBub2RlKTsKPj4+IC0gICAgfSB3aGlsZSAoY3VyciAmJiBuZXdfcGZuIDw9IGN1cnJf
+aW92YS0+cGZuX2hpICYmIG5ld19wZm4gPj0gCj4+PiBsb3dfcGZuKTsKPj4+IC0KPj4+IC0gICAg
+aWYgKGhpZ2hfcGZuIDwgc2l6ZSB8fCBuZXdfcGZuIDwgbG93X3Bmbikgewo+Pj4gLSAgICAgICAg
+aWYgKGxvd19wZm4gPT0gaW92YWQtPnN0YXJ0X3BmbiAmJiByZXRyeV9wZm4gPCBsaW1pdF9wZm4p
+IHsKPj4+IC0gICAgICAgICAgICBoaWdoX3BmbiA9IGxpbWl0X3BmbjsKPj4+IC0gICAgICAgICAg
+ICBsb3dfcGZuID0gcmV0cnlfcGZuOwo+Pj4gLSAgICAgICAgICAgIGN1cnIgPSAmaW92YWQtPmFu
+Y2hvci5ub2RlOwo+Pj4gLSAgICAgICAgICAgIGN1cnJfaW92YSA9IHJiX2VudHJ5KGN1cnIsIHN0
+cnVjdCBpb3ZhLCBub2RlKTsKPj4+IC0gICAgICAgICAgICBnb3RvIHJldHJ5Owo+Pj4gLSAgICAg
+ICAgfQo+Pj4gKyAgICB9IHdoaWxlIChjdXJyICYmIG5ld19wZm4gPD0gY3Vycl9pb3ZhLT5wZm5f
+aGkpOwo+Pj4gKwo+Pj4gKyAgICBpZiAobGltaXRfcGZuIDwgc2l6ZSB8fCBuZXdfcGZuIDwgaW92
+YWQtPnN0YXJ0X3Bmbikgewo+Pj4gICAgICAgICAgIGlvdmFkLT5tYXgzMl9hbGxvY19zaXplID0g
+c2l6ZTsKPj4+ICAgICAgICAgICBnb3RvIGlvdmEzMl9mdWxsOwo+Pj4gICAgICAgfQo+Pj4KPj4K
+Pgo+IC4KPgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
