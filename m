@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00D7C433DB
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:10:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FA8C433E0
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:22:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 24F5E64E25
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:10:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24F5E64E25
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4CDDC64E16
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:21:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CDDC64E16
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DB58886962;
-	Fri, 29 Jan 2021 09:10:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7CDF12044E;
+	Fri, 29 Jan 2021 09:21:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JzYVem8G+Tck; Fri, 29 Jan 2021 09:21:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 3A43A20018;
+	Fri, 29 Jan 2021 09:21:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1EA1CC0FA8;
+	Fri, 29 Jan 2021 09:21:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05459C08A1
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:21:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E817086A37
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:21:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dyrdu1h4DflX; Fri, 29 Jan 2021 09:10:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2693986985;
-	Fri, 29 Jan 2021 09:10:56 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F09C8C0FA7;
-	Fri, 29 Jan 2021 09:10:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86AB4C013A
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7FC938706D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CSf1WnGZhTq0 for <iommu@lists.linux-foundation.org>;
- Fri, 29 Jan 2021 09:10:52 +0000 (UTC)
+ with ESMTP id uinHR7Th082d for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Jan 2021 09:21:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D26E387039
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:50 +0000 (UTC)
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DRs3Y44s9zjG2L;
- Fri, 29 Jan 2021 17:09:29 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 29 Jan 2021 17:10:35 +0800
-From: Zhou Wang <wangzhou1@hisilicon.com>
-To: Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: [RFC PATCH 2/3] iommu/io-pgtable: Export page table walk needed
- functions and macros
-Date: Fri, 29 Jan 2021 17:06:23 +0800
-Message-ID: <1611911184-116261-3-git-send-email-wangzhou1@hisilicon.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1611911184-116261-1-git-send-email-wangzhou1@hisilicon.com>
-References: <1611911184-116261-1-git-send-email-wangzhou1@hisilicon.com>
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E450D86A36
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:21:52 +0000 (UTC)
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DRsJc5S3fzjDYV;
+ Fri, 29 Jan 2021 17:20:48 +0800 (CST)
+Received: from thunder-town.china.huawei.com (10.174.176.220) by
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.498.0; Fri, 29 Jan 2021 17:21:42 +0800
+From: Zhen Lei <thunder.leizhen@huawei.com>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel" <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/1] Revert "iommu/iova: Retry from last rb tree node if iova
+ search fails"
+Date: Fri, 29 Jan 2021 17:21:20 +0800
+Message-ID: <20210129092120.1482-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
+X-Originating-IP: [10.174.176.220]
 X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: Vijayanand Jitta <vjitta@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,172 +81,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Export page table walk needed functions and macros, then page table dump
-in later debug interface could be used directly.
+This reverts commit 4e89dce725213d3d0b0475211b500eda4ef4bf2f.
 
-Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
+We find that this patch has a great impact on performance. According to
+our test: the iops decreases from 1655.6K to 893.5K, about half.
+
+Hardware: 1 SAS expander with 12 SAS SSD
+Command:  Only the main parameters are listed.
+          fio bs=4k rw=read iodepth=128 cpus_allowed=0-127
+
+Fixes: 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search fails")
+Tested-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 47 +++++-------------------------------------
- drivers/iommu/io-pgtable-arm.h | 43 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 48 insertions(+), 42 deletions(-)
+ drivers/iommu/iova.c | 23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 87def58..920a92b 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -24,35 +24,12 @@
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index d20b8b333d30d17..f840c7207efbced 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -185,9 +185,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	struct rb_node *curr, *prev;
+ 	struct iova *curr_iova;
+ 	unsigned long flags;
+-	unsigned long new_pfn, retry_pfn;
++	unsigned long new_pfn;
+ 	unsigned long align_mask = ~0UL;
+-	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
  
- #define ARM_LPAE_MAX_ADDR_BITS		52
- #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
--#define ARM_LPAE_MAX_LEVELS		4
+ 	if (size_aligned)
+ 		align_mask <<= fls_long(size - 1);
+@@ -200,25 +199,15 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	curr = __get_cached_rbnode(iovad, limit_pfn);
+ 	curr_iova = rb_entry(curr, struct iova, node);
+-	retry_pfn = curr_iova->pfn_hi + 1;
 -
--/* Struct accessors */
--#define io_pgtable_to_data(x)						\
--	container_of((x), struct arm_lpae_io_pgtable, iop)
+-retry:
+ 	do {
+-		high_pfn = min(high_pfn, curr_iova->pfn_lo);
+-		new_pfn = (high_pfn - size) & align_mask;
++		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
++		new_pfn = (limit_pfn - size) & align_mask;
+ 		prev = curr;
+ 		curr = rb_prev(curr);
+ 		curr_iova = rb_entry(curr, struct iova, node);
+-	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >= low_pfn);
 -
--#define io_pgtable_ops_to_data(x)					\
--	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
--
--/*
-- * Calculate the right shift amount to get to the portion describing level l
-- * in a virtual address mapped by the pagetable in d.
-- */
--#define ARM_LPAE_LVL_SHIFT(l,d)						\
--	(((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level) +		\
--	ilog2(sizeof(arm_lpae_iopte)))
- 
- #define ARM_LPAE_GRANULE(d)						\
- 	(sizeof(arm_lpae_iopte) << (d)->bits_per_level)
- #define ARM_LPAE_PGD_SIZE(d)						\
- 	(sizeof(arm_lpae_iopte) << (d)->pgd_bits)
- 
--/*
-- * Calculate the index at level l used to map virtual address a using the
-- * pagetable in d.
-- */
--#define ARM_LPAE_PGD_IDX(l,d)						\
--	((l) == (d)->start_level ? (d)->pgd_bits - (d)->bits_per_level : 0)
--
- #define ARM_LPAE_LVL_IDX(a,l,d)						\
- 	(((u64)(a) >> ARM_LPAE_LVL_SHIFT(l,d)) &			\
- 	 ((1 << ((d)->bits_per_level + ARM_LPAE_PGD_IDX(l,d))) - 1))
-@@ -127,34 +104,19 @@
- #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
- #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
- 
--/* IOPTE accessors */
--#define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
--
- #define iopte_type(pte)					\
- 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
- 
- #define iopte_prot(pte)	((pte) & ARM_LPAE_PTE_ATTR_MASK)
- 
--struct arm_lpae_io_pgtable {
--	struct io_pgtable	iop;
--
--	int			pgd_bits;
--	int			start_level;
--	int			bits_per_level;
--
--	void			*pgd;
--};
--
--typedef u64 arm_lpae_iopte;
--
--static inline bool iopte_leaf(arm_lpae_iopte pte, int lvl,
--			      enum io_pgtable_fmt fmt)
-+bool iopte_leaf(arm_lpae_iopte pte, int lvl, enum io_pgtable_fmt fmt)
- {
- 	if (lvl == (ARM_LPAE_MAX_LEVELS - 1) && fmt != ARM_MALI_LPAE)
- 		return iopte_type(pte) == ARM_LPAE_PTE_TYPE_PAGE;
- 
- 	return iopte_type(pte) == ARM_LPAE_PTE_TYPE_BLOCK;
- }
-+EXPORT_SYMBOL_GPL(iopte_leaf);
- 
- static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
- 				     struct arm_lpae_io_pgtable *data)
-@@ -165,8 +127,8 @@ static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
- 	return (pte | (pte >> (48 - 12))) & ARM_LPAE_PTE_ADDR_MASK;
- }
- 
--static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
--				  struct arm_lpae_io_pgtable *data)
-+phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
-+			   struct arm_lpae_io_pgtable *data)
- {
- 	u64 paddr = pte & ARM_LPAE_PTE_ADDR_MASK;
- 
-@@ -176,6 +138,7 @@ static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
- 	/* Rotate the packed high-order bits back to the top */
- 	return (paddr | (paddr << (48 - 12))) & (ARM_LPAE_PTE_ADDR_MASK << 4);
- }
-+EXPORT_SYMBOL_GPL(iopte_to_paddr);
- 
- static bool selftest_running = false;
- 
-diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
-index ba7cfdf..45e6d38 100644
---- a/drivers/iommu/io-pgtable-arm.h
-+++ b/drivers/iommu/io-pgtable-arm.h
-@@ -2,6 +2,8 @@
- #ifndef IO_PGTABLE_ARM_H_
- #define IO_PGTABLE_ARM_H_
- 
-+#include <linux/io-pgtable.h>
+-	if (high_pfn < size || new_pfn < low_pfn) {
+-		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
+-			high_pfn = limit_pfn;
+-			low_pfn = retry_pfn;
+-			curr = &iovad->anchor.node;
+-			curr_iova = rb_entry(curr, struct iova, node);
+-			goto retry;
+-		}
++	} while (curr && new_pfn <= curr_iova->pfn_hi);
 +
- #define ARM_LPAE_TCR_TG0_4K		0
- #define ARM_LPAE_TCR_TG0_64K		1
- #define ARM_LPAE_TCR_TG0_16K		2
-@@ -27,4 +29,45 @@
- #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
- #define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
- 
-+#define ARM_LPAE_MAX_LEVELS		4
-+
-+struct arm_lpae_io_pgtable {
-+	struct io_pgtable	iop;
-+
-+	int			pgd_bits;
-+	int			start_level;
-+	int			bits_per_level;
-+
-+	void			*pgd;
-+};
-+
-+/* Struct accessors */
-+#define io_pgtable_to_data(x)						\
-+	container_of((x), struct arm_lpae_io_pgtable, iop)
-+
-+#define io_pgtable_ops_to_data(x)					\
-+	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
-+
-+/* IOPTE accessors */
-+#define iopte_deref(pte, d) __va(iopte_to_paddr(pte, d))
-+
-+/*
-+ * Calculate the index at level l used to map virtual address a using the
-+ * pagetable in d.
-+ */
-+#define ARM_LPAE_PGD_IDX(l, d)						\
-+	((l) == (d)->start_level ? (d)->pgd_bits - (d)->bits_per_level : 0)
-+/*
-+ * Calculate the right shift amount to get to the portion describing level l
-+ * in a virtual address mapped by the pagetable in d.
-+ */
-+#define ARM_LPAE_LVL_SHIFT(l, d)						\
-+	(((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level) +		\
-+	ilog2(sizeof(arm_lpae_iopte)))
-+
-+typedef u64 arm_lpae_iopte;
-+
-+bool iopte_leaf(arm_lpae_iopte pte, int lvl, enum io_pgtable_fmt fmt);
-+phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
-+			   struct arm_lpae_io_pgtable *data);
- #endif /* IO_PGTABLE_ARM_H_ */
++	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+ 		iovad->max32_alloc_size = size;
+ 		goto iova32_full;
+ 	}
 -- 
-2.8.1
+1.8.3
+
 
 _______________________________________________
 iommu mailing list
