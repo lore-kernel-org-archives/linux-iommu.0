@@ -2,80 +2,65 @@ Return-Path: <SRS0=1cKf=HA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A6EC433DB
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:05:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F16DC433E0
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:10:51 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D8D264E19
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:05:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D8D264E19
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id EB2D964E23
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 09:10:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB2D964E23
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 943FA86A54;
-	Fri, 29 Jan 2021 09:05:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GIIJ8UMiPAuI; Fri, 29 Jan 2021 09:05:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9020086A02;
-	Fri, 29 Jan 2021 09:05:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 803B8C0FA7;
-	Fri, 29 Jan 2021 09:05:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACB14C013A
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:05:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 93BE787490
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:05:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 60479874A4;
+	Fri, 29 Jan 2021 09:10:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Log84rYwbhO0; Fri, 29 Jan 2021 09:10:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 799A186113;
+	Fri, 29 Jan 2021 09:10:49 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FF2DC0FA7;
+	Fri, 29 Jan 2021 09:10:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 370EEC013A
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 15A052036B
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oPwrKTlsW7o4 for <iommu@lists.linux-foundation.org>;
- Fri, 29 Jan 2021 09:05:23 +0000 (UTC)
+ with ESMTP id JaEYxAPgL6SP for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Jan 2021 09:10:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5C2EF872F2
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:05:23 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 04F8464E02;
- Fri, 29 Jan 2021 09:05:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1611911122;
- bh=/HEREiD9FXEQ02w0iDsYdpZV46bpzXWuTWwUnZCuy+g=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=T2Y4mkH4w077yIZlxHUVZE0D4RLQbzNe5OiDenFlQlsPGBt8ss4Zj5rDF9fgoTP6k
- xu/Bzo1XE71GsYZvBptwDuXs+wrULWcJy59bKBfcuSW6zcG3ZRJG1gBozI/YJrugAl
- MMUMZtS57yD2ctcrz9XePHff3N9cgreQyEruAzA8ACCzWDRviQd8aygMSvYmgMRvSG
- 44NQVC9cG3gE5XfiE0NYf8UuiODbFhBNGAYIMViLeyZGqQOYDg+cJCQNDfEsJDe6dK
- TV+HEKx68IBMweLIWECiO0hHiD7/CetE8nlx5WYoMeZIT1q53s9cIc6Eou5QJxr8Hl
- dY2QCJu/TSm3Q==
-Date: Fri, 29 Jan 2021 09:05:16 +0000
-From: Will Deacon <will@kernel.org>
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
- flag
-Message-ID: <20210129090516.GB3998@willie-the-truck>
-References: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
- <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4E6EB20358
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 09:10:46 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DRs3Y3sLjzjG2K;
+ Fri, 29 Jan 2021 17:09:29 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.498.0; Fri, 29 Jan 2021 17:10:35 +0800
+From: Zhou Wang <wangzhou1@hisilicon.com>
+To: Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>
+Subject: [RFC PATCH 0/3] iommu/arm-smmu-v3: Add debug interfaces for SMMUv3
+Date: Fri, 29 Jan 2021 17:06:21 +0800
+Message-ID: <1611911184-116261-1-git-send-email-wangzhou1@hisilicon.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: isaacm@codeaurora.org, freedreno <freedreno@lists.freedesktop.org>,
- David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Akhil P Oommen <akhilpo@codeaurora.org>,
- Sean Paul <sean@poorly.run>, Kristian H Kristensen <hoegsberg@google.com>,
- dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
- linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.69.192.58]
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,63 +78,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jan 11, 2021 at 07:45:04PM +0530, Sai Prakash Ranjan wrote:
-> Add a new page protection flag IOMMU_LLC which can be used
-> by non-coherent masters to set cacheable memory attributes
-> for an outer level of cache called as last-level cache or
-> system cache. Initial user of this page protection flag is
-> the adreno gpu and then can later be used by other clients
-> such as video where this can be used for per-buffer based
-> mapping.
-> 
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 3 +++
->  include/linux/iommu.h          | 6 ++++++
->  2 files changed, 9 insertions(+)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 7439ee7fdcdb..ebe653ef601b 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -415,6 +415,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->  		else if (prot & IOMMU_CACHE)
->  			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->  				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> +		else if (prot & IOMMU_LLC)
-> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
-> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
->  	}
->  
->  	if (prot & IOMMU_CACHE)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ffaa389ea128..1f82057df531 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -31,6 +31,12 @@
->   * if the IOMMU page table format is equivalent.
->   */
->  #define IOMMU_PRIV	(1 << 5)
-> +/*
-> + * Non-coherent masters can use this page protection flag to set cacheable
-> + * memory attributes for only a transparent outer level of cache, also known as
-> + * the last-level or system cache.
-> + */
-> +#define IOMMU_LLC	(1 << 6)
+This RFC series is the followed patch of this discussion:
+https://www.spinics.net/lists/arm-kernel/msg866187.html. 
 
-On reflection, I'm a bit worried about exposing this because I think it will
-introduce a mismatched virtual alias with the CPU (we don't even have a MAIR
-set up for this memory type). Now, we also have that issue for the PTW, but
-since we always use cache maintenance (i.e. the streaming API) for
-publishing the page-tables to a non-coheren walker, it works out. However,
-if somebody expects IOMMU_LLC to be coherent with a DMA API coherent
-allocation, then they're potentially in for a nasty surprise due to the
-mismatched outer-cacheability attributes.
+Currently there is no debug interface about SMMUv3 driver, which makes it
+not convenient when we want to dump some information, like the value of
+CD/STE, S1/S2 page table, SMMU registers or cmd/event/pri queues.
 
-So I can take patch (1) as a trivial rename, but unfortunately I think this
-needs more thought before exposing it beyond the PTW.
+This series tries to add support of dumping CD/STE and page table. The
+interface design is that user sets device/pasid firstly by sysfs files
+and then read related sysfs file to get information:
 
-Will
+ (currently only support PCI device)
+ echo <domain>:<bus>:<dev>.<fun> > /sys/kernel/debug/iommu/smmuv3/pci_dev
+ echo <pasid> > /sys/kernel/debug/iommu/smmuv3/pasid
+ 
+ Then value in CD and STE can be got by:
+ cat /sys/kernel/debug/iommu/smmuv3/ste
+ cat /sys/kernel/debug/iommu/smmuv3/cd
+ 
+ S1 and S2 page tables can be got by:
+ cat /sys/kernel/debug/iommu/smmuv3/pt_dump_s1
+ cat /sys/kernel/debug/iommu/smmuv3/pt_dump_s2
+
+For STE, CD and page table, related device and pasid are set in pci_dev
+and pasid files as above.
+
+First and second patch export some help functions or macros in arm-smmu-v3
+and io-pgtable-arm codes, so we can reuse them in debugfs.c. As a RFC, this
+series does not go further to dump SMMU registers and cmd/event/pri queues.
+I am not sure this series is in the right way, so let's post it out and have a
+discussion. Looking forward to any feedback.
+
+Zhou Wang (3):
+  iommu/arm-smmu-v3: Export cd/ste get functions
+  iommu/io-pgtable: Export page table walk needed functions and macros
+  iommu/arm-smmu-v3: Add debug interfaces for SMMUv3
+
+ drivers/iommu/Kconfig                       |  11 +
+ drivers/iommu/arm/arm-smmu-v3/Makefile      |   1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  10 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  10 +
+ drivers/iommu/arm/arm-smmu-v3/debugfs.c     | 398 ++++++++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c              |  47 +---
+ drivers/iommu/io-pgtable-arm.h              |  43 +++
+ 7 files changed, 475 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/debugfs.c
+
+-- 
+2.8.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
