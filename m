@@ -2,92 +2,98 @@ Return-Path: <SRS0=1cKf=HA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9883CC433DB
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 10:33:40 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 808D8C433DB
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 11:28:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A305164E6E
-	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 10:33:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A305164E6E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id C2F2564FEA
+	for <iommu@archiver.kernel.org>; Fri, 29 Jan 2021 11:28:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2F2564FEA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1DB658749C;
-	Fri, 29 Jan 2021 10:33:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 62A8786A22;
+	Fri, 29 Jan 2021 11:28:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id U7jmJuV6fmWl; Fri, 29 Jan 2021 10:33:37 +0000 (UTC)
+	with ESMTP id WaNxBlZ6gm23; Fri, 29 Jan 2021 11:28:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8AA5287490;
-	Fri, 29 Jan 2021 10:33:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DD9DA86A42;
+	Fri, 29 Jan 2021 11:28:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60509C0FA7;
-	Fri, 29 Jan 2021 10:33:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E74A6C013A
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 10:33:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5A33C0FA8;
+	Fri, 29 Jan 2021 11:28:05 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97FFDC08A1
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 11:28:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D336C87494
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 10:33:35 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8639586A42
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 11:28:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BEBd+GW5HIu0 for <iommu@lists.linux-foundation.org>;
- Fri, 29 Jan 2021 10:33:33 +0000 (UTC)
+ with ESMTP id 41zpmNPlif9N for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Jan 2021 11:28:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2370D87490
- for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 10:33:32 +0000 (UTC)
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.53])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4DRtt86zqhz13nFt;
- Fri, 29 Jan 2021 18:31:28 +0800 (CST)
-Received: from dggpemm500011.china.huawei.com (7.185.36.110) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Fri, 29 Jan 2021 18:33:29 +0800
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Fri, 29 Jan 2021 18:33:29 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.006;
- Fri, 29 Jan 2021 18:33:29 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: RE: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Topic: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Index: AQHW8vWniUnMS+RFOU2UJJCa8sDlvKo39q+AgADtcaD//5AFgIAAh9tQ//+YwwCAAIUv4IAEx5CAgACGO9A=
-Date: Fri, 29 Jan 2021 10:33:28 +0000
-Message-ID: <234b8c25afc440ce8245aca9081652fb@hisilicon.com>
-References: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
- <20210125154717.GW4605@ziepe.ca>
- <96b655ade2534a65974a378bb68383ee@hisilicon.com>
- <20210125231619.GY4605@ziepe.ca>
- <5f64a68042c64f37b5cba74028bd2189@hisilicon.com>
- <20210126011304.GZ4605@ziepe.ca>
- <d7fce136c3644755a7aea5794bddf453@hisilicon.com>
- <MWHPR11MB1886DC78C5FBA3636B94F2578CB99@MWHPR11MB1886.namprd11.prod.outlook.com>
-In-Reply-To: <MWHPR11MB1886DC78C5FBA3636B94F2578CB99@MWHPR11MB1886.namprd11.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.203.74]
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com
+ [209.85.216.50])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 01A0C86A22
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 11:28:02 +0000 (UTC)
+Received: by mail-pj1-f50.google.com with SMTP id s24so5641428pjp.5
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Jan 2021 03:28:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=UKt/ubY4NcKHPSuooMktGXNsT6JEg6MKsXcex2sGKe8=;
+ b=gqMrIqM9RHMHldMrUnjAkN1fRmF4cjPTc0J0+QOB+VbL7iXONd3CsW9r7nRoIz1upF
+ t1zUZXpX+e6By1m8iojw872Krj/assjDWoiEQ0X4dydPOQkKpmah0xz5+Qe/9DPSPjOs
+ nIk3KYBVdlNHnb/HFAlrb1xqghvbiRfnw6ars=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=UKt/ubY4NcKHPSuooMktGXNsT6JEg6MKsXcex2sGKe8=;
+ b=LBUek3mXMG/Csx/43kc7jRQO8kbtGSD+Wpo9bnpIzEc8Gy85kYxANDvAsfgLuYF+n9
+ xpejxplRmvfGGi9VQustGgFMAqfp1C7mkHmdZ8dLK6YQbn/IMAVw/S6XZ8m4rT2UtW1o
+ BX9LGIMK86VuORSDyP9BYbdv0J1H+APOdckhNLBnllA6wREok1BoXV9SCVCPLY1FURng
+ sG3o0OpuRoF+cXiwNqC5VkXLQ7AOL/R+avUe0YTrIoGZp7u/OzJlj0kquqNypVxjpMMh
+ W2A1KyRVRlVcVdQZY+uQNn4Z5+IymzR5bw/F8hfJg+d89Uk3RxuMVU+v3w35rb8y2sHI
+ 9X+Q==
+X-Gm-Message-State: AOAM532w+Wu96sNBYuAX7FYM0kWbVOBGrzWdWdsByKFH7PIxOKBDpt6x
+ 4mm5NLMQnr1YgjBfnpuRwPk5+A==
+X-Google-Smtp-Source: ABdhPJwyI1sjiVYZFaaB20NTokFieNiqqD/prZv9gC82hFlSGp+vl+GcwyLFrLO+OaPzTpe3i2d+ew==
+X-Received: by 2002:a17:902:ec82:b029:de:8483:50b4 with SMTP id
+ x2-20020a170902ec82b02900de848350b4mr3786253plg.41.1611919682569; 
+ Fri, 29 Jan 2021 03:28:02 -0800 (PST)
+Received: from chromium.org ([2401:fa00:8f:2:7150:e37b:6e7f:9e9e])
+ by smtp.gmail.com with ESMTPSA id k11sm8695097pgt.83.2021.01.29.03.27.58
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 29 Jan 2021 03:28:01 -0800 (PST)
+Date: Fri, 29 Jan 2021 20:27:56 +0900
+From: Tomasz Figa <tfiga@chromium.org>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v6 00/33] MT8192 IOMMU support
+Message-ID: <YBPxPAQK29cr69+r@chromium.org>
+References: <20210111111914.22211-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "chensihang \(A\)" <chensihang1@hisilicon.com>,
- Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Zhangfei Gao <zhangfei.gao@linaro.org>,
- "Liguozhu \(Kenneth\)" <liguozhu@hisilicon.com>,
- "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
+Content-Disposition: inline
+In-Reply-To: <20210111111914.22211-1-yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+ chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,114 +111,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Yong,
 
-
-> -----Original Message-----
-> From: Tian, Kevin [mailto:kevin.tian@intel.com]
-> Sent: Friday, January 29, 2021 11:09 PM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; Jason Gunthorpe
-> <jgg@ziepe.ca>
-> Cc: chensihang (A) <chensihang1@hisilicon.com>; Arnd Bergmann
-> <arnd@arndb.de>; Greg Kroah-Hartman <gregkh@linuxfoundation.org>;
-> linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org;
-> linux-mm@kvack.org; Zhangfei Gao <zhangfei.gao@linaro.org>; Liguozhu
-> (Kenneth) <liguozhu@hisilicon.com>; linux-accelerators@lists.ozlabs.org
-> Subject: RE: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
+On Mon, Jan 11, 2021 at 07:18:41PM +0800, Yong Wu wrote:
+> This patch mainly adds support for mt8192 Multimedia IOMMU and SMI.
 > 
-> > From: Song Bao Hua (Barry Song)
-> > Sent: Tuesday, January 26, 2021 9:27 AM
-> >
-> > > -----Original Message-----
-> > > From: Jason Gunthorpe [mailto:jgg@ziepe.ca]
-> > > Sent: Tuesday, January 26, 2021 2:13 PM
-> > > To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> > > Cc: Wangzhou (B) <wangzhou1@hisilicon.com>; Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org>; Arnd Bergmann <arnd@arndb.de>;
-> > Zhangfei Gao
-> > > <zhangfei.gao@linaro.org>; linux-accelerators@lists.ozlabs.org;
-> > > linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org;
-> > > linux-mm@kvack.org; Liguozhu (Kenneth) <liguozhu@hisilicon.com>;
-> > chensihang
-> > > (A) <chensihang1@hisilicon.com>
-> > > Subject: Re: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-> > >
-> > > On Mon, Jan 25, 2021 at 11:35:22PM +0000, Song Bao Hua (Barry Song)
-> > wrote:
-> > >
-> > > > > On Mon, Jan 25, 2021 at 10:21:14PM +0000, Song Bao Hua (Barry Song)
-> > wrote:
-> > > > > > mlock, while certainly be able to prevent swapping out, it won't
-> > > > > > be able to stop page moving due to:
-> > > > > > * memory compaction in alloc_pages()
-> > > > > > * making huge pages
-> > > > > > * numa balance
-> > > > > > * memory compaction in CMA
-> > > > >
-> > > > > Enabling those things is a major reason to have SVA device in the
-> > > > > first place, providing a SW API to turn it all off seems like the
-> > > > > wrong direction.
-> > > >
-> > > > I wouldn't say this is a major reason to have SVA. If we read the
-> > > > history of SVA and papers, people would think easy programming due
-> > > > to data struct sharing between cpu and device, and process space
-> > > > isolation in device would be the major reasons for SVA. SVA also
-> > > > declares it supports zero-copy while zero-copy doesn't necessarily
-> > > > depend on SVA.
-> > >
-> > > Once you have to explicitly make system calls to declare memory under
-> > > IO, you loose all of that.
-> > >
-> > > Since you've asked the app to be explicit about the DMAs it intends to
-> > > do, there is not really much reason to use SVA for those DMAs anymore.
-> >
-> > Let's see a non-SVA case. We are not using SVA, we can have
-> > a memory pool by hugetlb or pin, and app can allocate memory
-> > from this pool, and get stable I/O performance on the memory
-> > from the pool. But device has its separate page table which
-> > is not bound with this process, thus lacking the protection
-> > of process space isolation. Plus, CPU and device are using
-> > different address.
-> >
-> > And then we move to SVA case, we can still have a memory pool
-> > by hugetlb or pin, and app can allocate memory from this pool
-> > since this pool is mapped to the address space of the process,
-> > and we are able to get stable I/O performance since it is always
-> > there. But in this case, device is using the page table of
-> > process with the full permission control.
-> > And they are using same address and can possibly enjoy the easy
-> > programming if HW supports.
-> >
-> > SVA is not doom to work with IO page fault only. If we have SVA+pin,
-> > we would get both sharing address and stable I/O latency.
-> >
+> mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
+> table format. The M4U-SMI HW diagram is as below:
 > 
-> Isn't it like a traditional MAP_DMA API (imply pinning) plus specifying
-> cpu_va of the memory pool as the iova?
-
-I think it enjoys the advantage of stable I/O latency of
-traditional MAP_DMA, and also uses the process page table
-which SVA can provide. The major difference is that in
-SVA case, iova totally belongs to process and is as normal
-as other heap/stack/data:
-p = mmap(.....MAP_ANON....);
-ioctl(/dev/acc, p, PIN);
-
-SVA for itself, provides the ability to guarantee the
-address space isolation of multiple processes.  If the
-device can access the data struct  such as list, tree
-directly, they can further enjoy the convenience of
-programming SVA gives.
-
-So we are looking for a combination of stable io latency
-of traditional DMA map and the ability of SVA.
-
+>                           EMI
+>                            |
+>                           M4U
+>                            |
+>                       ------------
+>                        SMI Common
+>                       ------------
+>                            |
+>   +-------+------+------+----------------------+-------+
+>   |       |      |      |       ......         |       |
+>   |       |      |      |                      |       |
+> larb0   larb1  larb2  larb4     ......      larb19   larb20
+> disp0   disp1   mdp    vdec                   IPE      IPE
 > 
-> Thanks
-> Kevin
+> All the connections are HW fixed, SW can NOT adjust it.
+> 
+> Comparing with the preview SoC, this patchset mainly adds two new functions:
+> a) add iova 34 bits support.
+> b) add multi domains support since several HW has the special iova
+> region requirement.
+> 
+> change note:
+> v6:a) base on v5.11-rc1. and tlb v4:
+>       https://lore.kernel.org/linux-mediatek/20210107122909.16317-1-yong.wu@mediatek.com/T/#t 
+>    b) Remove the "domain id" definition in the binding header file.
+>       Get the domain from dev->dma_range_map.
+>       After this, Change many codes flow.
+>    c) the patchset adds a new common file(mtk_smi-larb-port.h).
+>       This version changes that name into mtk-memory-port.h which reflect 
+>       its file path. This only changes the file name. no other change.
+>       thus I keep all the Reviewed-by Tags.
+>       (another reason is that we will add some iommu ports unrelated with
+>        smi-larb)
+>    d) Refactor the power-domain flow suggestted by Tomasz.
+>    e) Some other small fix. use different oas for different soc; Change the
+>    macro for 34bit iova tlb flush.
+> 
 
-Thanks
-Barry
+Thanks for the fixes.
 
+I still think the concept of dma-ranges is not quire right for the
+problem we need to solve here, but it certainly works for the time being
+and it's possible to remove it in a follow up patch, so I'm fine with
+merging this as is.
+
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+
+I'll comment on my suggestion for a replacement for the dma-ranges that
+doesn't need hardcoding arbitrary address ranges in DT in a separate
+reply.
+
+Best regards,
+Tomasz
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
