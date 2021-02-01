@@ -5,85 +5,83 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6D8C433DB
-	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 19:21:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DC1C433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 19:24:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 494C064E97
-	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 19:21:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 494C064E97
+	by mail.kernel.org (Postfix) with ESMTPS id 8A8CE64EA0
+	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 19:24:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A8CE64EA0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1538185308;
-	Mon,  1 Feb 2021 19:21:07 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 24A5F2052E;
+	Mon,  1 Feb 2021 19:24:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A+ty7GypJ4bv; Mon,  1 Feb 2021 19:21:06 +0000 (UTC)
+	with ESMTP id yUAE8L6-UBjw; Mon,  1 Feb 2021 19:24:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6012581B6C;
-	Mon,  1 Feb 2021 19:21:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F29922052B;
+	Mon,  1 Feb 2021 19:24:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E300C0FA7;
-	Mon,  1 Feb 2021 19:21:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9FB21C013A
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:21:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E09EFC0FA7;
+	Mon,  1 Feb 2021 19:24:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5204C013A
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:24:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8E2BC8551F
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:21:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A20CC2051D
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:24:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iDtsQjG-Z9qT for <iommu@lists.linux-foundation.org>;
- Mon,  1 Feb 2021 19:21:04 +0000 (UTC)
-X-Greylist: delayed 00:29:09 by SQLgrey-1.7.6
-Received: from mail-io1-f74.google.com (mail-io1-f74.google.com
- [209.85.166.74])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E1FC384AA7
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:21:03 +0000 (UTC)
-Received: by mail-io1-f74.google.com with SMTP id k7so12679324ioj.5
- for <iommu@lists.linux-foundation.org>; Mon, 01 Feb 2021 11:21:03 -0800 (PST)
+ with ESMTP id gl1PADQDKQZ3 for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Feb 2021 19:24:40 +0000 (UTC)
+X-Greylist: delayed 00:29:27 by SQLgrey-1.7.6
+Received: from mail-ot1-f74.google.com (mail-ot1-f74.google.com
+ [209.85.210.74])
+ by silver.osuosl.org (Postfix) with ESMTPS id 57DEF2052E
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 19:24:40 +0000 (UTC)
+Received: by mail-ot1-f74.google.com with SMTP id p15so7802260oth.20
+ for <iommu@lists.linux-foundation.org>; Mon, 01 Feb 2021 11:24:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=sender:date:in-reply-to:message-id:mime-version:references:subject
- :from:to; bh=y6NSNhQIEZdVx/Woig+GF08BnyECPQsRFpv07tNfeBE=;
- b=XldHocSXWNUmvdcXbIrpvBTLb8nXbBn2Zduuok2rj8hE3W3V31QvgZdnPupEQPoZYP
- ETcbawsrzB76ohyeg2EXVwurYZEhXJ/VZgHEXTMjIpxXKEksDxYo6OVzRXSgYOttSMez
- fpHSpVUOfiiyl97UtYRwutY0a8N+NzpRYjiVoQnubo8dMHCinvMkqw9DLbx60CPQaKu5
- aAmM3CSeUECVn0FaX9Rvc3tsejqbDZGEniUKipSNYQ8lldAM3RhDm5KJKUols8brZ5bO
- oqQq1Ii8r1vO+vj8I+iVgBnRx/30desHgf9YzFbiYY4AtFRcgWAoeraREgbHciFMwXa2
- /f7Q==
+ :from:to; bh=dv/wJr+V9NRV+lolRhI4CVLaEjJrVVBI8C3cibP+WBU=;
+ b=Lj3UyKxA8lOIDGcPlpqgpnIQ+ae5rtq8GZJ3tw2mo4cgWWi5PDLt0PQL1ceiR7DkDT
+ fsn7U8UN+bqxxlHbLikEDWaglidRgQkkFYiDgTHcsS82JHwwx7gJtiYdyllzS5oNcaWC
+ Eg/jeZpIVEEtoFwS/sAagES8+4KsAUqFWJauvb3OSw+rWHAxuwBZDOO2pzJYGxTwRa3i
+ 6b9k7zhAfI8DOS7uaEO/5PWyeY3tCZ/Y8/padIigVO7e+pLSphaeaBtA4lxv18bUw0Hb
+ T0XuC3AQhuA5yRyaXcr1PL8TRMjE6yZNayj7+MSPQdQWYa+Q1XTmQ8XLb4lcAkkwvub7
+ l3Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
  :references:subject:from:to;
- bh=y6NSNhQIEZdVx/Woig+GF08BnyECPQsRFpv07tNfeBE=;
- b=OewSHow049zymNtGeZu+37gJEGvsbHbnQx9ypbuoWBZxHCWGM5Z3h5+lznvyYSdX7H
- fs2PCIZYDaWh1gBgAHtYGvO5V4PUDqE58XOdIvu+AiTIfAknVq/+rTR6AhY1D2pHXtpZ
- kVZop64dCrdjjA+GWw/obpysK7DFdrTJHYYCJ25Zysdl6B5cXRTkqo+pykkL9SRezwQl
- 4NzSzajUOXBoqYbsrtq4e0ixsgTLCNvp4iDbvzKwkuNJAp8EjnzX9aqojh/xQO3LGVv1
- G8h1C5rR3wn7TfyFHv5JeTtMCqe2xcSoHZ98AtBbQQVae6KN9wsPfwCQ/J1JjLoW3pB4
- LYAw==
-X-Gm-Message-State: AOAM530UggaTU9qwiOZiVDVerpLF8MURpMkFtTZHTolQ5u5WyaoHkoyA
- YN4LTOFwKQz2gSZwcue2H7BTBlba7g==
-X-Google-Smtp-Source: ABdhPJyEh8WHTSX3KID/KGB0QXG7CYFZ82eK6gqBoiX6SQN2IPJo3M4LuIvQvOzXGRBAfT0DQgR6FOjGCw==
+ bh=dv/wJr+V9NRV+lolRhI4CVLaEjJrVVBI8C3cibP+WBU=;
+ b=FMYIovUQ0JAzmjdtZ8aOwb63EbKWtIW+/za82cytVkQ4TvaVaoCjZT15M3z/q5I7Pm
+ w8shQrfbJV/5gPgWMJYdUKEQayJ61FAhT2nkO9S1QpAC/RK5qqmNHAG/8Le+5QAsvl6w
+ ncDdKiWBfu7bwJFjZYy3VbE7sln7FOmx+Q4mqfO8LPdo01Bu39aKjtkMlZmNVL1uVz8s
+ KxK7cBxZ0pl9nIxWN7/Or/HjL6X0+I9+4TuAjM8A9/XCplktKg0GX9AV/zlFmGCcUUlg
+ 4K1iLPJy2uEKpyuNZrLfKAiRuf/eeDQYrqF0s2An59j3HQj6w3x5U5KI2htForPjSCqz
+ QJWw==
+X-Gm-Message-State: AOAM532HrN/NZEdxhwweHPbJDV9xqi+qB+RMdFBFeZjCdqjqrff6T9tv
+ svIID/S+j2FD3XQ7X2nSnfQyvqqYIQ==
+X-Google-Smtp-Source: ABdhPJyh03Hh5IPZa/NXKVXEfxYK+v8U+Q/6t0H4LGYsfl6XIq6w4GCzICateDGeGMpAGtpLIcmYglBU8Q==
 X-Received: from jxgao.kir.corp.google.com
  ([2620:0:1008:11:695f:7f9e:413c:e3c7])
- (user=jxgao job=sendgmr) by 2002:a63:5223:: with SMTP id
- g35mr18277246pgb.255.1612204225231; 
- Mon, 01 Feb 2021 10:30:25 -0800 (PST)
-Date: Mon,  1 Feb 2021 10:30:16 -0800
+ (user=jxgao job=sendgmr) by 2002:a17:90a:d58a:: with SMTP id
+ v10mr196883pju.9.1612204223378; Mon, 01 Feb 2021 10:30:23 -0800 (PST)
+Date: Mon,  1 Feb 2021 10:30:15 -0800
 In-Reply-To: <20210201183017.3339130-1-jxgao@google.com>
-Message-Id: <20210201183017.3339130-3-jxgao@google.com>
+Message-Id: <20210201183017.3339130-2-jxgao@google.com>
 Mime-Version: 1.0
 References: <20210201183017.3339130-1-jxgao@google.com>
 X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
-Subject: [PATCH V2 2/3] Add swiotlb offset preserving mapping when
- dma_dma_parameters->page_offset_mask is non zero.
+Subject: [PATCH V2 1/3] Adding page_offset_mask to device_dma_parameters
 To: jxgao@google.com, erdemaktas@google.com, marcorr@google.com, hch@lst.de, 
  m.szyprowski@samsung.com, robin.murphy@arm.com, gregkh@linuxfoundation.org,
  saravanak@google.com, heikki.krogerus@linux.intel.com, 
@@ -111,87 +109,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For devices that need to preserve address offset on mapping through
-swiotlb, this patch adds offset preserving based on page_offset_mask
-and keeps the offset if the mask is non zero. This is needed for
-device drivers like NVMe.
+Some devices rely on the address offset in a page to function
+correctly (NVMe driver as an example). These devices may use
+a different page size than the Linux kernel. The address offset
+has to be preserved upon mapping, and in order to do so, we
+need to record the page_offset_mask first.
 
 Signed-off-by: Jianxiong Gao <jxgao@google.com>
 ---
- kernel/dma/swiotlb.c | 27 ++++++++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
+ include/linux/device.h      |  1 +
+ include/linux/dma-mapping.h | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 7c42df6e6100..eeb640df35f3 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -468,7 +468,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
- 	dma_addr_t tbl_dma_addr = phys_to_dma_unencrypted(hwdev, io_tlb_start);
- 	unsigned long flags;
- 	phys_addr_t tlb_addr;
--	unsigned int nslots, stride, index, wrap;
-+	unsigned int nslots, stride, index, wrap, min_align_mask, page_offset;
- 	int i;
- 	unsigned long mask;
- 	unsigned long offset_slots;
-@@ -500,12 +500,16 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
- 		    ? ALIGN(mask + 1, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT
- 		    : 1UL << (BITS_PER_LONG - IO_TLB_SHIFT);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 1779f90eeb4c..7960bf516dd7 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -291,6 +291,7 @@ struct device_dma_parameters {
+ 	 * sg limitations.
+ 	 */
+ 	unsigned int max_segment_size;
++	unsigned int min_align_mask;
+ 	unsigned long segment_boundary_mask;
+ };
  
-+	min_align_mask = dma_get_min_align_mask(hwdev);
-+	page_offset = orig_addr & min_align_mask;
-+	alloc_size += page_offset;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 2e49996a8f39..27ec3cab8cbd 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -500,6 +500,23 @@ static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
+ 	return -EIO;
+ }
+ 
++static inline unsigned int dma_get_min_align_mask(struct device *dev)
++{
++	if (dev->dma_parms)
++		return dev->dma_parms->min_align_mask;
++	return 0;
++}
 +
- 	/*
- 	 * For mappings greater than or equal to a page, we limit the stride
- 	 * (and hence alignment) to a page size.
- 	 */
- 	nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
--	if (alloc_size >= PAGE_SIZE)
-+	if ((alloc_size >= PAGE_SIZE) || (min_align_mask > (1 << IO_TLB_SHIFT)))
- 		stride = (1 << (PAGE_SHIFT - IO_TLB_SHIFT));
- 	else
- 		stride = 1;
-@@ -583,6 +587,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t orig_addr,
- 	 */
- 	for (i = 0; i < nslots; i++)
- 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
-+	/*
-+	 * When keeping the offset of the original data, we need to advance
-+	 * the tlb_addr by the offset of orig_addr.
-+	 */
-+	tlb_addr += page_offset;
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
- 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
-@@ -598,7 +607,11 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 			      enum dma_data_direction dir, unsigned long attrs)
++static inline int dma_set_min_align_mask(struct device *dev,
++		unsigned int min_align_mask)
++{
++	if (dev->dma_parms) {
++		dev->dma_parms->min_align_mask = min_align_mask;
++		return 0;
++	}
++	return -EIO;
++}
++
+ static inline int dma_get_cache_alignment(void)
  {
- 	unsigned long flags;
--	int i, count, nslots = ALIGN(alloc_size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
-+	unsigned int num_page_offset_slabs;
-+	unsigned int min_align_mask = dma_get_min_align_mask(hwdev);
-+	int i, count;
-+	int nslots = ALIGN(alloc_size + (tlb_addr & min_align_mask),
-+			1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
- 	int index = (tlb_addr - io_tlb_start) >> IO_TLB_SHIFT;
- 	phys_addr_t orig_addr = io_tlb_orig_addr[index];
- 
-@@ -610,6 +623,14 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
- 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_FROM_DEVICE);
- 
-+	/*
-+	 * When dma_get_min_align_mask is used, we may have padded more slabs
-+	 * when padding exceeds one slab. We need to move index back to the
-+	 * beginning of the padding.
-+	 */
-+	num_page_offset_slabs = (tlb_addr & min_align_mask) / (1 << IO_TLB_SHIFT);
-+	index -= num_page_offset_slabs;
-+
- 	/*
- 	 * Return the buffer to the free list by setting the corresponding
- 	 * entries to indicate the number of contiguous entries available.
+ #ifdef ARCH_DMA_MINALIGN
 -- 
 2.27.0
 
