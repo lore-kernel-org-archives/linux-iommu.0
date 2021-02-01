@@ -2,87 +2,101 @@ Return-Path: <SRS0=Rmex=HD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A62C433DB
-	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 10:44:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46208C433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 11:13:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 237DC64E94
-	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 10:44:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 237DC64E94
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id ADCC164D7F
+	for <iommu@archiver.kernel.org>; Mon,  1 Feb 2021 11:13:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADCC164D7F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CDF778459B;
-	Mon,  1 Feb 2021 10:44:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6D3352043D;
+	Mon,  1 Feb 2021 11:13:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cnAALAzX74a2; Mon,  1 Feb 2021 11:12:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 5512920000;
+	Mon,  1 Feb 2021 11:12:59 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A078C0FA7;
+	Mon,  1 Feb 2021 11:12:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 66A6EC013A
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 11:12:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5FC45859BA
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 11:12:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bwEaxzuPvZlr; Mon,  1 Feb 2021 10:44:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 40145844AA;
-	Mon,  1 Feb 2021 10:44:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28000C0174;
-	Mon,  1 Feb 2021 10:44:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87C2BC013A
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 10:44:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8327F8643B
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 10:44:30 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6ABRJHsGYobQ for <iommu@lists.linux-foundation.org>;
- Mon,  1 Feb 2021 10:44:28 +0000 (UTC)
+ with ESMTP id 063gBrt9w0iX for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Feb 2021 11:12:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 58B9E8619F
- for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 10:44:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91BE7101E;
- Mon,  1 Feb 2021 02:44:27 -0800 (PST)
-Received: from [10.57.35.163] (unknown [10.57.35.163])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 181C33FA1C;
- Mon,  1 Feb 2021 02:44:23 -0800 (PST)
-Subject: Re: [PATCH v5 06/27] dt-bindings: mediatek: Add binding for mt8192
- IOMMU
-To: Tomasz Figa <tfiga@chromium.org>, Yong Wu <yong.wu@mediatek.com>
-References: <20201209080102.26626-1-yong.wu@mediatek.com>
- <20201209080102.26626-7-yong.wu@mediatek.com> <X+L9XpkoII7tw/tX@chromium.org>
- <1608809713.26323.262.camel@mhfsdcap03>
- <CAAFQd5CCJv=0q=V45Z7mtq7FSq1c5TcH6vyqfp3MWxaA=ZexJQ@mail.gmail.com>
- <1610520301.31716.27.camel@mhfsdcap03>
- <CAAFQd5A26tZo3gpsmqbRSa3x7a1KThzt9Jw74jWsqQGrBsabhw@mail.gmail.com>
- <1611126445.19055.34.camel@mhfsdcap03>
- <CAAFQd5C3G=eE+dwOK0Vg=tcSR8LFWWG1YDta3=9nZ1G0Bv7dcA@mail.gmail.com>
- <1611560007.3184.39.camel@mhfsdcap03>
- <CAAFQd5A6rAL5iLt0iSDxNPQq5TgZ9=ZJQSkGG3GKwv+FPk9p3g@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <bf443749-8627-5d1d-d52f-64553391d1ed@arm.com>
-Date: Mon, 1 Feb 2021 10:44:23 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com
+ [209.85.128.45])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id DC869858FC
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Feb 2021 11:12:56 +0000 (UTC)
+Received: by mail-wm1-f45.google.com with SMTP id y187so12822681wmd.3
+ for <iommu@lists.linux-foundation.org>; Mon, 01 Feb 2021 03:12:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=AdJJsztSa/PfLkxaK9hi3wgOAf3rWJfVmETfVbPhDQM=;
+ b=BJZkUaVlvArotMj35gc4Ryn1jzYpJODmz4BeBqXzrXY8uWYM5d/12aV/f7BgcY6I96
+ Sz6IrQvhl4kgb1SpJ5/bNviOzCPmpquY54HzywVEmd6hLl0TdDy/tpVkg5EphHmkgaBh
+ t8P55uFMT3rvXvz8DVI44pagXmLgXNXbAq1DIZBYF8TG2YbVC+COX6RmQ2GL3woWeq57
+ FpWICNVRpruje4QN6AUBZyTEq7ciqt+XUhg00r4CJGPi1Gp4cHMcGh4Tx6or9Jwc0OMV
+ 75G38yLv2UNNalUAfk/h+NfjYgTJo8EO6E1Lr9T4EysKvQ+2BDYaBsJqXEDGw5WaJUn/
+ u4cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=AdJJsztSa/PfLkxaK9hi3wgOAf3rWJfVmETfVbPhDQM=;
+ b=H8yOolguuS8ybp4zhP5a7IjcDS8qkyFUdJfJgyzRzvEr+sYQlPUsm+eOi4q4X4dRzn
+ 5JCt9Gek3QY4lQy95L9ZGVRp66w5tueSzrJTJxNB3BFDjcV51izyU5SVvLK5JiWftgau
+ TDr0XZ1ozO7JRPuHW2FQFERMwOtkJAAWZOQ9bT4m4CUZx8wXv6k0l7kK26EUn8/dhuyn
+ X7YObE2aFKUHL6Cc59tHi9B4L6xhwnLZohGcMgpseV4cMlHBgjtXj0GEOe1lPY8sng8h
+ F8Ddz3pkSK1c6IPqZuY1Ua5IpuTtlxw6y9XQkn328T/74qDRkMybO5Az8AxCkbF5KgXC
+ PXHg==
+X-Gm-Message-State: AOAM532kYZ7+sG96tLJqEYudWkfkc1SDoV/BeAEEW78P9USj24KdMgKt
+ 1ieyKNFjKDneBrxKmuyqPL2VMw==
+X-Google-Smtp-Source: ABdhPJzbSmxDnOHXTAtKhAr3owNj0X97Hbyhk6zyvU9cBi4RZpPy0aY0Qw5qlS8+s51rHeesopHFbA==
+X-Received: by 2002:a05:600c:228c:: with SMTP id
+ 12mr14691553wmf.101.1612177975252; 
+ Mon, 01 Feb 2021 03:12:55 -0800 (PST)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id v25sm21276665wmh.4.2021.02.01.03.12.53
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 01 Feb 2021 03:12:54 -0800 (PST)
+Date: Mon, 1 Feb 2021 12:12:35 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v12 10/10] iommu/arm-smmu-v3: Add stall support for
+ platform devices
+Message-ID: <YBfiIwdVP1dXg7Yt@myrica>
+References: <20210127154322.3959196-1-jean-philippe@linaro.org>
+ <20210127154322.3959196-11-jean-philippe@linaro.org>
+ <0c609eeb-00b0-7573-fed7-5bc1e6c0b0d1@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAFQd5A6rAL5iLt0iSDxNPQq5TgZ9=ZJQSkGG3GKwv+FPk9p3g@mail.gmail.com>
-Content-Language: en-GB
-Cc: youlin.pei@mediatek.com, linux-devicetree <devicetree@vger.kernel.org>,
- Nicolas Boichat <drinkcat@chromium.org>,
- srv_heupstream <srv_heupstream@mediatek.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Evan Green <evgreen@chromium.org>, chao.hao@mediatek.com,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>,
- "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <0c609eeb-00b0-7573-fed7-5bc1e6c0b0d1@redhat.com>
+Cc: vivek.gautam@arm.com, guohanjun@huawei.com, will@kernel.org,
+ linux-acpi@vger.kernel.org, zhangfei.gao@linaro.org, lenb@kernel.org,
+ devicetree@vger.kernel.org, kevin.tian@intel.com, robh+dt@kernel.org,
+ linux-arm-kernel@lists.infradead.org, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,335 +109,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-29 11:45, Tomasz Figa wrote:
-> On Mon, Jan 25, 2021 at 4:34 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>
->> On Mon, 2021-01-25 at 13:18 +0900, Tomasz Figa wrote:
->>> On Wed, Jan 20, 2021 at 4:08 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>>>
->>>> On Wed, 2021-01-20 at 13:15 +0900, Tomasz Figa wrote:
->>>>> On Wed, Jan 13, 2021 at 3:45 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>>>>>
->>>>>> On Wed, 2021-01-13 at 14:30 +0900, Tomasz Figa wrote:
->>>>>>> On Thu, Dec 24, 2020 at 8:35 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>>>>>>>
->>>>>>>> On Wed, 2020-12-23 at 17:18 +0900, Tomasz Figa wrote:
->>>>>>>>> On Wed, Dec 09, 2020 at 04:00:41PM +0800, Yong Wu wrote:
->>>>>>>>>> This patch adds decriptions for mt8192 IOMMU and SMI.
->>>>>>>>>>
->>>>>>>>>> mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
->>>>>>>>>> table format. The M4U-SMI HW diagram is as below:
->>>>>>>>>>
->>>>>>>>>>                            EMI
->>>>>>>>>>                             |
->>>>>>>>>>                            M4U
->>>>>>>>>>                             |
->>>>>>>>>>                        ------------
->>>>>>>>>>                         SMI Common
->>>>>>>>>>                        ------------
->>>>>>>>>>                             |
->>>>>>>>>>    +-------+------+------+----------------------+-------+
->>>>>>>>>>    |       |      |      |       ......         |       |
->>>>>>>>>>    |       |      |      |                      |       |
->>>>>>>>>> larb0   larb1  larb2  larb4     ......      larb19   larb20
->>>>>>>>>> disp0   disp1   mdp    vdec                   IPE      IPE
->>>>>>>>>>
->>>>>>>>>> All the connections are HW fixed, SW can NOT adjust it.
->>>>>>>>>>
->>>>>>>>>> mt8192 M4U support 0~16GB iova range. we preassign different engines
->>>>>>>>>> into different iova ranges:
->>>>>>>>>>
->>>>>>>>>> domain-id  module     iova-range                  larbs
->>>>>>>>>>     0       disp        0 ~ 4G                      larb0/1
->>>>>>>>>>     1       vcodec      4G ~ 8G                     larb4/5/7
->>>>>>>>>>     2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
->>>>>>>>>
->>>>>>>>> Why do we preassign these addresses in DT? Shouldn't it be a user's or
->>>>>>>>> integrator's decision to split the 16 GB address range into sub-ranges
->>>>>>>>> and define which larbs those sub-ranges are shared with?
->>>>>>>>
->>>>>>>> The problem is that we can't split the 16GB range with the larb as unit.
->>>>>>>> The example is the below ccu0(larb13 port9/10) is a independent
->>>>>>>> range(domain), the others ports in larb13 is in another domain.
->>>>>>>>
->>>>>>>> disp/vcodec/cam/mdp don't have special iova requirement, they could
->>>>>>>> access any range. vcodec also can locate 8G~12G. it don't care about
->>>>>>>> where its iova locate. here I preassign like this following with our
->>>>>>>> internal project setting.
->>>>>>>
->>>>>>> Let me try to understand this a bit more. Given the split you're
->>>>>>> proposing, is there actually any isolation enforced between particular
->>>>>>> domains? For example, if I program vcodec to with a DMA address from
->>>>>>> the 0-4G range, would the IOMMU actually generate a fault, even if
->>>>>>> disp had some memory mapped at that address?
->>>>>>
->>>>>> In this case. we will get fault in current SW setting.
->>>>>>
->>>>>
->>>>> Okay, thanks.
->>>>>
->>>>>>>
->>>>>>>>
->>>>>>>> Why set this in DT?, this is only for simplifying the code. Assume we
->>>>>>>> put it in the platform data. We have up to 32 larbs, each larb has up to
->>>>>>>> 32 ports, each port may be in different iommu domains. we should have a
->>>>>>>> big array for this..however we only use a macro to get the domain in the
->>>>>>>> DT method.
->>>>>>>>
->>>>>>>> When replying this mail, I happen to see there is a "dev->dev_range_map"
->>>>>>>> which has "dma-range" information, I think I could use this value to get
->>>>>>>> which domain the device belong to. then no need put domid in DT. I will
->>>>>>>> test this.
->>>>>>>
->>>>>>> My feeling is that the only part that needs to be enforced statically
->>>>>>> is the reserved IOVA range for CCUs. The other ranges should be
->>>>>>> determined dynamically, although I think I need to understand better
->>>>>>> how the hardware and your proposed design work to tell what would be
->>>>>>> likely the best choice here.
->>>>>>
->>>>>> I have removed the domid patch in v6. and get the domain id in [27/33]
->>>>>> in v6..
->>>>>>
->>>>>> About the other ranges should be dynamical, the commit message [30/33]
->>>>>> of v6 should be helpful. the problem is that we have a bank_sel setting
->>>>>> for the iova[32:33]. currently we preassign this value. thus, all the
->>>>>> ranges are fixed. If you adjust this setting, you can let vcodec access
->>>>>> 0~4G.
->>>>>
->>>>> Okay, so it sounds like we effectively have four 4G address spaces and
->>>>> we can assign the master devices to them. I guess each of these
->>>>> address spaces makes for an IOMMU group.
->>>>
->>>> Yes. Each a address spaces is an IOMMU group.
->>>>
->>>>>
->>>>> It's fine to pre-assign the devices to those groups for now, but it
->>>>> definitely shouldn't be hardcoded in DT, because it depends on the use
->>>>> case of the device. I'll take a look at v6, but it sounds like it
->>>>> should be fine if it doesn't take the address space assignment from DT
->>>>> anymore.
->>>>
->>>> Thanks very much for your review.
->>>>
->>>
->>> Hmm, I had a look at v6 and it still has the address spaces hardcoded
->>> in the DTS.
->>
->> sorry. I didn't get here. where do you mean. or help reply in v6.
->>
->> I only added the preassign list as comment in the file
->> (dt-binding/memory/mt8192-larb-port.h). I thought our iommu consumer may
->> need it when they use these ports. they need add dma-ranges property if
->> its iova is over 4GB.
-> 
-> That's exactly the problem. v6 simply replaced one way to describe the
-> policy (domain ID) with another (dma-ranges). However, DT is not the
-> right place to describe policies, because it's the place to describe
-> hardware in a way agnostic from policies and use cases. In other
-> words, DT must not impose using the hardware in one way or another.
-> 
-> For example, we have two different companies that want to ship
-> products based on this SoC - A and B. Company A may want to put MDP
-> and camera in the same address space, but company B instead would
-> prefer MDP to be in the same address space as video. Because this
-> decision is stored in DT, one of them will have to change and rebuild
-> their kernel and maintain a downstream patch.
-
-Well, in most cases Company A and Company B will be building their own 
-products around the SoC, so will each have their own downstream DTS 
-anyway. Even if they're buying complete hardware from an OEM and just 
-shipping it with custom software configurations, it's still quite likely 
-that they'd have their own DTS tweaks for branding and possibly other 
-firmware-related things.
-
-Also note that expected use-cases frequently *are* reflected in DT - 
-pretty much every use of the "linux,shared-dma-pool" reserved-memory 
-binding, for instance. In fact memory carveouts in general are usually 
-just software policy rather than any kind of hardware or firmware 
-description. There are also plenty of DT properties for actual hardware 
-that imply "this is how you need to configure me" rather than just "this 
-is what I can do", so the distinction between "describing the platform" 
-and "telling software what to do" isn't as clear-cut as we'd like it to be.
-
-While I'm also not entirely convinced that "dma-ranges" is the perfect 
-tool for the job - as opposed to less abstraction via a larb property or 
-extra IOMMU specifier cell - it is at least descriptive to the DMA and 
-IOMMU subsystems as well as the driver, and can draw a direct parallel 
-to how some PCI host bridge drivers handle inbound windows. In many 
-cases those just need to be programmed *somehow*, so "dma-ranges" is set 
-in the DTS or inserted by the bootloader, and the kernel driver parses 
-that then programs the hardware to match. It seems like we're doing a 
-directly comparable thing here.
-
-Robin.
-
-> My suggestion to follow here would be to:
->   - stop using dma-ranges for this purpose,
->   - add an array in the MTK IOMMU driver that has a default map between
-> larbs and domains, e.g.
-> 
-> static u8 mt8192_domain_map[NUM_DOMAINS][NUM_LARBS] = {
->     [0] = { 0 , 1, 0xff },
->     [1] = { 4, 5, 7, 0xff },
->     [2] = { 2, 9, 11, 13, 14, 16, 17, 18, 19, 20, 0xff },
-> };
-> 
->   - add a kernel command line parameter that allows overriding of this map, e.g.
-> 
-> mtk_iommu.domain_map="0:0,1:1:4,5,7:2:2,9,11,13,14,16,17,18,19,20"
-> 
-> would be equivalent to the array above. Same could be also given by a
-> Kconfig entry if one can't or doesn't want to add extra command line
-> parameters.
-> 
-> Would something like this work?
-> 
->>
->>> Could we move the fixed assignment to the MTK IOMMU driver code instead,
->>> so that it can be easily adjusted as the kernel code
->>> evolves without the need to update the DTS?
->>>
->>>>>
->>>>>>
->>>>>> Currently we have no interface to adjust this setting. Suppose we add a
->>>>>> new interface for this. It would be something like:
->>>>>>
->>>>>>     int mtk_smi_larb_config_banksel(struct device *larb, int banksel)
->>>>>>
->>>>>>     Then, all the MM drivers should call it before the HW works every
->>>>>> time, and its implement will be a bit complex since we aren't sure if
->>>>>> the larb has power at that time. the important thing is that the MM
->>>>>> devices have already not known which larb it connects with as we plan to
->>>>>> delete "mediatek,larb" in their dtsi nodes.
->>>>>
->>>>>  From the practical point of view, it doesn't look like setting this on
->>>>> a per-larb basis would make much sense. The reason to switch the
->>>>> bank_sel would be to decide which MM devices can share the same
->>>>> address space. This is a security aspect, because it effectively
->>>>> determines which devices are isolated from each other.
->>>>>
->>>>> That said, I agree that for now we can just start with a fixed
->>>>> assignment. We can think of the API if there is a need to adjust the
->>>>> assignment.
->>>>
->>>> Sorry for here. I forgot a thing here. that interface above still will
->>>> not be helpful. If we don't divide the whole 16GB ranges into 4
->>>> regions(let all the other ranges be dynamical), It won't work since we
->>>> can only adjust bank_sel with the larb as unit. This is a problem. there
->>>> are many ports in a larb. Take a example, the address for vcodec read
->>>> port is 32bits while the address for vcodec write port is 33bit, then it
->>>> will fail since we only have one bank_sel setting for one larb.
->>>
->>> That's exactly why I proposed to have the API operate based on the
->>> struct device, rather than individual DMA ports. Although I guess the
->>> CCU case is different, because it's the same larb as the camera.
->>>
->>> Anyway, I agree that we don't have to come up with such an API right now.
->>
->> Thanks for the confirm.
->>
->>>
->>>> Thus we
->>>> have to use current design.
->>>>
->>>>>
->>>>>>
->>>>>>     In current design, the MM device don't need care about it and 4GB
->>>>>> range is enough for them.
->>>>>>
->>>>>
->>>>> Actually, is the current assignment correct?
->>>>
->>>> Oh. In the code (patch [32/33] of v6), I put CCU0/1 in the cam/mdp
->>>> region which start at 8G since CCU0/1 is a module of camera.
->>>>
->>>>>
->>>>> domain-id  module     iova-range                  larbs
->>>>>     0       disp        0 ~ 4G                      larb0/1
->>>>>     1       vcodec      4G ~ 8G                     larb4/5/7
->>>>>     2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
->>>>>     3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
->>>>>     4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
->>>>>
->>>>> Wouldn't CCU0 and CCU1 conflict with disp?
->>>>
->>>> About the conflict, I use patch [29/33] of v6 for this. I will reserve
->>>> this special iova region when the full domain(0-4G in this example)
->>>> initialize.
->>>>
->>>>> Should perhaps disp be assigned 12G ~ 16G instead?
->>>>
->>>> I think no need put it to 12G-16G, In previous SoC, we have only 4GB
->>>> ranges for whole MM engines. currently only cam/mdp domain exclude 128M
->>>> for CCU. it should be something wrong if this is not enough.
->>>>
->>>
->>> Indeed, space is not a problem, but from the security point of view
->>> it's undesirable. I believe CCU would be running proprietary firmware,
->>> so it should be isolated as much as possible from other components.
->>
->> CCU are in the same larb with camera. Thus, it also need locate the same
->> iova range with camera.
-> 
-> What are larb13 and larb14 used by besides CCU? Is it possible to put
-> them in a separate address space from other camera larbs?
-> 
-> Best regards,
-> Tomasz
-> 
->>
->>> And, after all, why waste the remaining 4G of address space?
->>>
->>> Best regards,
->>> Tomasz
->>>
->>>>>
->>>>> Best regards,
->>>>> Tomasz
->>>>>
->>>>>>>
->>>>>>> Best regards,
->>>>>>> Tomasz
->>>>>>>
->>>>>>>>
->>>>>>>> Thanks.
->>>>>>>>>
->>>>>>>>> Best regards,
->>>>>>>>> Tomasz
->>>>>>>>>
->>>>>>>>>>     3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
->>>>>>>>>>     4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
->>>>>>>>>>
->>>>>>>>>> The iova range for CCU0/1(camera control unit) is HW requirement.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>>>>>>>>> Reviewed-by: Rob Herring <robh@kernel.org>
->>>>>>>>>> ---
->>>>>>>>>>   .../bindings/iommu/mediatek,iommu.yaml        |  18 +-
->>>>>>>>>>   include/dt-bindings/memory/mt8192-larb-port.h | 240 ++++++++++++++++++
->>>>>>>>>>   2 files changed, 257 insertions(+), 1 deletion(-)
->>>>>>>>>>   create mode 100644 include/dt-bindings/memory/mt8192-larb-port.h
->>>>>>>>>>
->>>>>>>> [snip]
->>>>>>
->>>>
->>>
->>> _______________________________________________
->>> Linux-mediatek mailing list
->>> Linux-mediatek@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-mediatek
->>
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gU3VuLCBKYW4gMzEsIDIwMjEgYXQgMDc6Mjk6MDlQTSArMDEwMCwgQXVnZXIgRXJpYyB3cm90
+ZToKPiBIaSBKZWFuLAo+IAo+IFNvbWUgcmF0aGVyIG1pbm9yIGNvbW1lbnRzwqdxdWVzdGlvbnMg
+YmVsb3cgdGhhdCBtYXkgbm90IGp1c3RpZnkgYSByZXNwaW4uCj4gCj4gT24gMS8yNy8yMSA0OjQz
+IFBNLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIgd3JvdGU6Cj4gPiAtc3RhdGljIGJvb2wgYXJtX3Nt
+bXVfaW9wZl9zdXBwb3J0ZWQoc3RydWN0IGFybV9zbW11X21hc3RlciAqbWFzdGVyKQo+ID4gK2Jv
+b2wgYXJtX3NtbXVfbWFzdGVyX2lvcGZfc3VwcG9ydGVkKHN0cnVjdCBhcm1fc21tdV9tYXN0ZXIg
+Km1hc3RlcikKPiA+ICB7Cj4gPiAtCXJldHVybiBmYWxzZTsKPiA+ICsJLyogV2UncmUgbm90IGtl
+ZXBpbmcgdHJhY2sgb2YgU0lEcyBpbiBmYXVsdCBldmVudHMgKi8KPiBzaGFsbCB3ZT8gWypdIGJl
+bG93CgpUaGF0IHdvdWxkIHJlcXVpcmUgc3RvcmluZyB0aGUgaW5jb21pbmcgU0lEIGludG8gdGhl
+IGlvbW11X2ZhdWx0X2V2ZW50CnN0cnVjdCwgYW5kIHJldHJpZXZlIGl0IGluIGFybV9zbW11X3Bh
+Z2VfcmVzcG9uc2UoKS4gRWFzeSBlbm91Z2gsIGJ1dCBJCmRvbid0IHRoaW5rIGl0J3MgbmVlZGVk
+IGZvciBleGlzdGluZyBkZXZpY2VzLgoKPiA+ICsJaWYgKG1hc3Rlci0+bnVtX3N0cmVhbXMgIT0g
+MSkKPiA+ICsJCXJldHVybiBmYWxzZTsKWy4uLl0KPiA+ICtzdGF0aWMgaW50IGFybV9zbW11X3Bh
+Z2VfcmVzcG9uc2Uoc3RydWN0IGRldmljZSAqZGV2LAo+ID4gKwkJCQkgIHN0cnVjdCBpb21tdV9m
+YXVsdF9ldmVudCAqdW51c2VkLAo+ID4gKwkJCQkgIHN0cnVjdCBpb21tdV9wYWdlX3Jlc3BvbnNl
+ICpyZXNwKQo+ID4gK3sKPiA+ICsJc3RydWN0IGFybV9zbW11X2NtZHFfZW50IGNtZCA9IHswfTsK
+PiA+ICsJc3RydWN0IGFybV9zbW11X21hc3RlciAqbWFzdGVyID0gZGV2X2lvbW11X3ByaXZfZ2V0
+KGRldik7Cj4gPiArCWludCBzaWQgPSBtYXN0ZXItPnN0cmVhbXNbMF0uaWQ7Cj4gWypdCj4gPiAr
+Cj4gPiArCWlmIChtYXN0ZXItPnN0YWxsX2VuYWJsZWQpIHsKPiA+ICsJCWNtZC5vcGNvZGUJCT0g
+Q01EUV9PUF9SRVNVTUU7Cj4gPiArCQljbWQucmVzdW1lLnNpZAkJPSBzaWQ7Cj4gPiArCQljbWQu
+cmVzdW1lLnN0YWcJCT0gcmVzcC0+Z3JwaWQ7Cj4gPiArCQlzd2l0Y2ggKHJlc3AtPmNvZGUpIHsK
+PiA+ICsJCWNhc2UgSU9NTVVfUEFHRV9SRVNQX0lOVkFMSUQ6Cj4gYWRkIGZhbGx0aHJvdWdoPwoK
+SSB0aGluayBmYWxsdGhyb3VnaCBpcyBtYWlubHkgdXNlZnVsIHRvIHRlbGwgcmVhZGVyIGFuZCBj
+b21waWxlciB0aGF0IGEKYnJlYWsgd2FzIG9taXR0ZWQgb24gcHVycG9zZS4gV2hlbiB0d28gY2Fz
+ZXMgYXJlIHN0dWNrIHRvZ2V0aGVyIHRoZSBpbnRlbnQKdG8gbWVyZ2UgdGhlIGZsb3cgaXMgY2xl
+YXIgZW5vdWdoIGluIG15IG9waW5pb24uIEdDQydzCi1XaW1wbGljaXQtZmFsbHRocm91Z2ggZG9l
+c24ndCB3YXJuIGluIHRoaXMgY2FzZS4KCj4gPiArCQljYXNlIElPTU1VX1BBR0VfUkVTUF9GQUlM
+VVJFOgo+ID4gKwkJCWNtZC5yZXN1bWUucmVzcCA9IENNRFFfUkVTVU1FXzBfUkVTUF9BQk9SVDsK
+PiA+ICsJCQlicmVhazsKWy4uLl0KPiA+ICtzdGF0aWMgaW50IGFybV9zbW11X2hhbmRsZV9ldnQo
+c3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSwgdTY0ICpldnQpCj4gPiArewo+ID4gKwlpbnQg
+cmV0Owo+ID4gKwl1MzIgcmVhc29uOwo+ID4gKwl1MzIgcGVybSA9IDA7Cj4gPiArCXN0cnVjdCBh
+cm1fc21tdV9tYXN0ZXIgKm1hc3RlcjsKPiA+ICsJYm9vbCBzc2lkX3ZhbGlkID0gZXZ0WzBdICYg
+RVZUUV8wX1NTVjsKPiA+ICsJdTMyIHNpZCA9IEZJRUxEX0dFVChFVlRRXzBfU0lELCBldnRbMF0p
+Owo+ID4gKwlzdHJ1Y3QgaW9tbXVfZmF1bHRfZXZlbnQgZmF1bHRfZXZ0ID0geyB9Owo+ID4gKwlz
+dHJ1Y3QgaW9tbXVfZmF1bHQgKmZsdCA9ICZmYXVsdF9ldnQuZmF1bHQ7Cj4gPiArCj4gPiArCS8q
+IFN0YWdlLTIgaXMgYWx3YXlzIHBpbm5lZCBhdCB0aGUgbW9tZW50ICovCj4gPiArCWlmIChldnRb
+MV0gJiBFVlRRXzFfUzIpCj4gPiArCQlyZXR1cm4gLUVGQVVMVDsKPiA+ICsKPiA+ICsJbWFzdGVy
+ID0gYXJtX3NtbXVfZmluZF9tYXN0ZXIoc21tdSwgc2lkKTsKPiA+ICsJaWYgKCFtYXN0ZXIpCj4g
+PiArCQlyZXR1cm4gLUVJTlZBTDsKPiA+ICsKPiA+ICsJaWYgKGV2dFsxXSAmIEVWVFFfMV9Sblcp
+Cj4gPiArCQlwZXJtIHw9IElPTU1VX0ZBVUxUX1BFUk1fUkVBRDsKPiA+ICsJZWxzZQo+ID4gKwkJ
+cGVybSB8PSBJT01NVV9GQVVMVF9QRVJNX1dSSVRFOwo+ID4gKwo+ID4gKwlpZiAoZXZ0WzFdICYg
+RVZUUV8xX0luRCkKPiA+ICsJCXBlcm0gfD0gSU9NTVVfRkFVTFRfUEVSTV9FWEVDOwo+ID4gKwo+
+ID4gKwlpZiAoZXZ0WzFdICYgRVZUUV8xX1BuVSkKPiA+ICsJCXBlcm0gfD0gSU9NTVVfRkFVTFRf
+UEVSTV9QUklWOwo+ID4gKwo+ID4gKwlzd2l0Y2ggKEZJRUxEX0dFVChFVlRRXzBfSUQsIGV2dFsw
+XSkpIHsKPiA+ICsJY2FzZSBFVlRfSURfVFJBTlNMQVRJT05fRkFVTFQ6Cj4gPiArCWNhc2UgRVZU
+X0lEX0FERFJfU0laRV9GQVVMVDoKPiA+ICsJY2FzZSBFVlRfSURfQUNDRVNTX0ZBVUxUOgo+ID4g
+KwkJcmVhc29uID0gSU9NTVVfRkFVTFRfUkVBU09OX1BURV9GRVRDSDsKPiBEb2Vzbid0IGl0IHJh
+dGhlciBtYXAgdG8gSU9NTVVfRkFVTFRfUkVBU09OX0FDQ0VTUz8KPiAvKiBhY2Nlc3MgZmxhZyBj
+aGVjayBmYWlsZWQgKi8iCgpHb29kIHBvaW50LCBJIGd1ZXNzIGl0IGRpZG4ndCBleGlzdCB3aGVu
+IEkgd3JvdGUgdGhpcy4gQW5kIEFERFJfU0laRV9GQVVMVApjb3JyZXNwb25kcyB0byBJT01NVV9G
+QVVMVF9SRUFTT05fT09SX0FERFJFU1Mgbm93LCByaWdodD8KCkJ5IHRoZSB3YXkgdGhlIHdvcmRp
+bmcgb24gdGhvc2UgdHdvIGZhdWx0IHJlYXNvbnMsICJhY2Nlc3MgZmxhZyIgYW5kCiJzdGFnZSIs
+IHNlZW1zIGFyY2gtc3BlY2lmaWMgLSB4ODYgbmFtZXMgYXJlICJhY2Nlc3NlZCBmbGFnIiBhbmQg
+ImxldmVsIi4KCj4gPiArCQlicmVhazsKPiA+ICsJY2FzZSBFVlRfSURfUEVSTUlTU0lPTl9GQVVM
+VDoKPiA+ICsJCXJlYXNvbiA9IElPTU1VX0ZBVUxUX1JFQVNPTl9QRVJNSVNTSU9OOwo+ID4gKwkJ
+YnJlYWs7Cj4gPiArCWRlZmF1bHQ6Cj4gPiArCQlyZXR1cm4gLUVPUE5PVFNVUFA7Cj4gPiArCX0K
+PiA+ICsKPiA+ICsJaWYgKGV2dFsxXSAmIEVWVFFfMV9TVEFMTCkgewo+ID4gKwkJZmx0LT50eXBl
+ID0gSU9NTVVfRkFVTFRfUEFHRV9SRVE7Cj4gPiArCQlmbHQtPnBybSA9IChzdHJ1Y3QgaW9tbXVf
+ZmF1bHRfcGFnZV9yZXF1ZXN0KSB7Cj4gPiArCQkJLmZsYWdzID0gSU9NTVVfRkFVTFRfUEFHRV9S
+RVFVRVNUX0xBU1RfUEFHRSwKPiA+ICsJCQkuZ3JwaWQgPSBGSUVMRF9HRVQoRVZUUV8xX1NUQUcs
+IGV2dFsxXSksCj4gPiArCQkJLnBlcm0gPSBwZXJtLAo+ID4gKwkJCS5hZGRyID0gRklFTERfR0VU
+KEVWVFFfMl9BRERSLCBldnRbMl0pLAo+ID4gKwkJfTsKPiA+ICsKPiA+ICsJCWlmIChzc2lkX3Zh
+bGlkKSB7Cj4gPiArCQkJZmx0LT5wcm0uZmxhZ3MgfD0gSU9NTVVfRkFVTFRfUEFHRV9SRVFVRVNU
+X1BBU0lEX1ZBTElEOwo+ID4gKwkJCWZsdC0+cHJtLnBhc2lkID0gRklFTERfR0VUKEVWVFFfMF9T
+U0lELCBldnRbMF0pOwo+ID4gKwkJfQo+ID4gKwl9IGVsc2Ugewo+ID4gKwkJZmx0LT50eXBlID0g
+SU9NTVVfRkFVTFRfRE1BX1VOUkVDT1Y7Cj4gPiArCQlmbHQtPmV2ZW50ID0gKHN0cnVjdCBpb21t
+dV9mYXVsdF91bnJlY292ZXJhYmxlKSB7Cj4gPiArCQkJLnJlYXNvbiA9IHJlYXNvbiwKPiA+ICsJ
+CQkuZmxhZ3MgPSBJT01NVV9GQVVMVF9VTlJFQ09WX0FERFJfVkFMSUQgfAo+ID4gKwkJCQkgSU9N
+TVVfRkFVTFRfVU5SRUNPVl9GRVRDSF9BRERSX1ZBTElELAo+IG5pdDogc2hhbGwgSU9NTVVfRkFV
+TFRfVU5SRUNPVl9GRVRDSF9BRERSX1ZBTElEIGJlIHNldCBoZXJlPyBTdXBwb3J0ZWQKPiB1bnJl
+Y292ZXJhYmxlIGZhdWx0cyBmZWF0dXJlIHRoZSBJUEEgZmllbGQgd2hpY2ggaXMgVU5LTk9XTiBm
+b3IgUzEKPiB0cmFuc2xhdGlvbnMuIGZldGNoX2FkZHIgcmF0aGVyIHdhcwo+IGNvcnJlc3BvbmRp
+bmcgdG8gV0FMS19FQUJULkZldGNoX2FkZHIgdG8gbWUuCgpSaWdodCBJIHNob3VsZCBkcm9wIHRo
+ZSBJUEEgcGFydCBlbnRpcmVseSwgc2luY2Ugd2UgZG9uJ3QgcmVwb3J0IFMyIGZhdWx0cwppbiB0
+aGlzIHBhdGNoLgoKVGhhbmtzLApKZWFuCgo+ID4gKwkJCS5wZXJtID0gcGVybSwKPiA+ICsJCQku
+YWRkciA9IEZJRUxEX0dFVChFVlRRXzJfQUREUiwgZXZ0WzJdKSwKPiA+ICsJCQkuZmV0Y2hfYWRk
+ciA9IEZJRUxEX0dFVChFVlRRXzNfSVBBLCBldnRbM10pLAo+ID4gKwkJfTsKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
