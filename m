@@ -2,154 +2,158 @@ Return-Path: <SRS0=s4mY=HE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEA8C433DB
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 21:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980B5C433E0
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 22:34:20 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7941964DD5
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 21:03:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7941964DD5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+	by mail.kernel.org (Postfix) with ESMTPS id 12DB164F2C
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 22:34:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12DB164F2C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 52D4985C52;
-	Tue,  2 Feb 2021 21:03:36 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C9DDE84081;
+	Tue,  2 Feb 2021 22:34:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FpYTJ6MS474D; Tue,  2 Feb 2021 21:03:35 +0000 (UTC)
+	with ESMTP id Ah8ubNPu5sTv; Tue,  2 Feb 2021 22:34:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3152F85D48;
-	Tue,  2 Feb 2021 21:03:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D69CB84034;
+	Tue,  2 Feb 2021 22:34:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14E39C0FA7;
-	Tue,  2 Feb 2021 21:03:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE44DC013A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 21:03:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE89CC0FA7;
+	Tue,  2 Feb 2021 22:34:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E60F9C013A;
+ Tue,  2 Feb 2021 22:34:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D98208690D
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 21:03:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E11A4870D1;
+ Tue,  2 Feb 2021 22:34:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id di53S4dTrP7F for <iommu@lists.linux-foundation.org>;
- Tue,  2 Feb 2021 21:03:32 +0000 (UTC)
+ with ESMTP id Pot9Y6OyQYl8; Tue,  2 Feb 2021 22:34:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com
- [209.85.210.49])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D49D585C90
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 21:03:31 +0000 (UTC)
-Received: by mail-ot1-f49.google.com with SMTP id n42so21243296ota.12
- for <iommu@lists.linux-foundation.org>; Tue, 02 Feb 2021 13:03:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:subject:to:cc:references:from:autocrypt:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=Dh+UCeMx3bCw8J1Ju7frN8CdYa7M22g16iTHqWnacQM=;
- b=K6cAEqmsQxgFheE/2hF3io8g2b7S1wFmAuzG8H5yG7uaJ4lEMlzH6fh2kjOyWbTV00
- WgNA9cpnkefkittEGWm7E86AcWkWBJ6XdqoGvXqDaJJG2crmJl8RmhgY99j9tnqa+jgy
- kAPij3/YsGoWvHzgEaQy8LqI34pI4Qn8e/Iz4n6twCL7znOiWVZAW59MutD2iyJqzpLT
- z1RuyImvvRB++Ns7ksy4Bc4DURb2oETUqY4+fhokQLTL1OifBwc90ZAMhQ5NN1MKOhor
- njnG2wUdRLUeGzjzAFKgvVsMgP+NcaICfQfEu1+sjFCM6jabLI+WGKiOM/rPTmNxn78F
- O6Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=Dh+UCeMx3bCw8J1Ju7frN8CdYa7M22g16iTHqWnacQM=;
- b=GAmiX8DqXRNpoWEkr1hk37fH2haB7VmoAJqMTU1+oaHlEn/mwclE7EvFL7n47TQM/Z
- c/IAPMm5I+2qLP3JcN6zxkpKnixKL3g+9TXg1OwzYuk5J09KYGzsQiB1mMSUD72hAtVK
- o02D0YPMUoKE2AUvgVFyQrL1ft+h7wfZSWZvFFim4KVdtUWEyjR4wWcyQwTCgcCzRvjF
- IZbTu2qZHUUtGiU+TW96AQsfeD4/svWi6OW6125kJWe3ltNCCL+Gmga6Ah0IXC0VkBDW
- 78ZeQMBYDVhVLLZtgciXQLShViDN5WFAdg9MBLK+VBImCmN8H4ujg4+ljv8SY+6cjqe4
- lXmQ==
-X-Gm-Message-State: AOAM530ALGK1jm/KAyVfnkbfMdHq0ACM06lPABzsoekWji2okogLTmrD
- HFF9WuBDkqGmkA6n8gj/xM8=
-X-Google-Smtp-Source: ABdhPJwOUk0iE2KLqrIog8fkXS2qveVg/NNaXF8ksPIB/DmjNtB6WY0l3vSJDSjLUOze2gmC0gEI8Q==
-X-Received: by 2002:a05:6830:154d:: with SMTP id
- l13mr16847363otp.72.1612299811115; 
- Tue, 02 Feb 2021 13:03:31 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id
- g14sm5115898oon.23.2021.02.02.13.03.27
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 02 Feb 2021 13:03:29 -0800 (PST)
-Subject: Re: [PATCH 1/3] dt-bindings: Fix undocumented compatible strings in
- examples
-To: Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-References: <20210202205544.24812-1-robh@kernel.org>
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <e002a691-2b79-47d1-8602-a40a8e9dfcb6@roeck-us.net>
-Date: Tue, 2 Feb 2021 13:03:26 -0800
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 06604870C8;
+ Tue,  2 Feb 2021 22:34:15 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jR9EsdbF5CHRVoAurA8NqOdGNZJRifElt9GtDe3kIxuZFi4CSnVa9lTUCtxCfIY7gUPn7ENh2sYaO4QkI8AKsmIi93x1ZNgGXB0MVraEbQ326dPQm3gDPIDF5QD9kxBfvlKCeCMYzWFIr54ELD6EgY2E0udUONlktBKcoKYcXs127/Uk+/g62hljDebSqZELMtlkP8iWCxLI5lzrzyZ2jiaM3ennmiImh/Th0Qyl+LeZi5UrvJnI0uI7dxXgG4mYuXVh+MUts5+vIKo8RJVLOxUDbyOtQm9c3b9AQtGag0lhCd7iDS68LgWA4ug0BfRay8+wgWOcOZy5maxVDM2AcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QJbpCd7ikuwa7Ken4CiBTXl/Wt9bTmToSDb6XExlpCE=;
+ b=n5ShS7+KL99ru031YqCbN2Gx3GSVx7oiPCHBYvtbzFdUXOENuv3tFWJIEI0yBCnnsCyjlkGoQcfQRfdzY4hvqlsqsaX5uEcsdMEPRzfRCrzOsio3bbxx/bqD1rQPnA2SJDRg2ZurPUsIfEapSnw08gzVhyQu85W2H+/2jClH5EJDu5go/JU1om7fFHR7knHJbg3vEj/oLHaLVSalVOnJMMLiAKzZ+8mRuPaWMV786SaFcsOnHto3ISvq3lpisSQl8StHP+ukWX30BrUxqnLc+YLsHw/KKTvUEh7ynycmZCN0OwKg3V0lxc0tZUVLzto9aqItkBxpq6C/EIxihc1ptg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QJbpCd7ikuwa7Ken4CiBTXl/Wt9bTmToSDb6XExlpCE=;
+ b=zYBS1A7mYSRocMSx679vIlM/pDKrbde6/0LAe459s3ZO5utWSwW9cJ7ApRtSQOzF/St9sP3GCQuDEx3vpbxUNISfsJziZAvabpsPWI9MMULzlcSkKIDH79F4hWdv5zhTz3JdzLC+fQPCVV4wVKHsQrspc5gl/6L3MVQzXVk+3LQ=
+Authentication-Results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=amd.com;
+Received: from CY4PR12MB1352.namprd12.prod.outlook.com (2603:10b6:903:3a::13)
+ by CY4PR1201MB0021.namprd12.prod.outlook.com (2603:10b6:910:1a::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.24; Tue, 2 Feb
+ 2021 22:34:13 +0000
+Received: from CY4PR12MB1352.namprd12.prod.outlook.com
+ ([fe80::8e8:e699:d479:7e16]) by CY4PR12MB1352.namprd12.prod.outlook.com
+ ([fe80::8e8:e699:d479:7e16%8]) with mapi id 15.20.3805.028; Tue, 2 Feb 2021
+ 22:34:12 +0000
+Subject: Re: [PATCH] swiotlb: Validate bounce size in the sync/unmap path
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Martin Radev <martin.b.radev@gmail.com>
+References: <X/27MSbfDGCY9WZu@martin> <20210113113017.GA28106@lst.de>
+ <YAV0uhfkimXn1izW@martin> <20210118151428.GA72213@fedora>
+ <YA8O/2qBBzZo5hi7@martin> <YBl/4c9j+KCTA0iQ@Konrads-MacBook-Pro.local>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Message-ID: <62ac054d-f520-6b8e-2dcc-d1a81bbab4ec@amd.com>
+Date: Tue, 2 Feb 2021 16:34:09 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20210202205544.24812-1-robh@kernel.org>
+In-Reply-To: <YBl/4c9j+KCTA0iQ@Konrads-MacBook-Pro.local>
 Content-Language: en-US
-Cc: Tomer Maimon <tmaimon77@gmail.com>, Andrew Jeffery <andrew@aj.id.au>,
- Linus Walleij <linus.walleij@linaro.org>,
- Vincent Cheng <vincent.cheng.xh@renesas.com>,
- Tali Perry <tali.perry1@gmail.com>, Daniel Palmer <daniel@thingy.jp>,
- linux-i2c@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-clk@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, Chen-Yu Tsai <wens@csie.org>,
- Joel Stanley <joel@jms.id.au>, linux-watchdog@vger.kernel.org,
- Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
- Wim Van Sebroeck <wim@linux-watchdog.org>,
- Avi Fishman <avifishman70@gmail.com>, linux-kernel@vger.kernel.org,
- Stephen Boyd <sboyd@kernel.org>, iommu@lists.linux-foundation.org,
- linux-crypto@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+X-Originating-IP: [165.204.77.1]
+X-ClientProxiedBy: SA0PR11CA0171.namprd11.prod.outlook.com
+ (2603:10b6:806:1bb::26) To CY4PR12MB1352.namprd12.prod.outlook.com
+ (2603:10b6:903:3a::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.236.30.118] (165.204.77.1) by
+ SA0PR11CA0171.namprd11.prod.outlook.com (2603:10b6:806:1bb::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.21 via Frontend
+ Transport; Tue, 2 Feb 2021 22:34:11 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 66108189-beda-4da1-dcf8-08d8c7caa9d8
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB0021:
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB0021A92266D8C916C7EA993EECB59@CY4PR1201MB0021.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tBJVNwbgBuzCM8Sw9Sati/25x0Q5UDkQN3vgyzI5TdnaLWLdpXEKXbU08pH5OFflXYr9QzCgEeJvMz8rRt0Mc4L0S2xEhe7hOIyVDAtC17eAGM729ADYvBcfIdvYy5YSfDd02/dfjxFS4ueOyYndGd/R/mY44QXQqPJontDz2BGkAKSFEl+ADgsuL9nPWPjPHhP3yazhhUmPbguZBMFIq5fXJu662pu4TXhI0GUk+hVajMXO8HPxT6D1PJWKkDaulP06xGPNvyqis3IpSjZdX9tgj/uPhN3xo2QFOlR1ZNGS8Lt16QgNwjR6WHxrL1FTMBmUTLuW34jDcuHk1sM4VHQSFNU+iaXBy7IY/uLaezIA8i12FgKkjigBsR6bHOscygOZomZGwT1Vq3zx4BLsP/PYwDs+T/WWF+XfFpebpsluM9v4ksrYoZ2JLIUXsMTUCueKY60F9Jt82P3meESIIJt0XDbKnXlmlCryfn/5b2ER9JNtNV5ydNUUwLrETwpeb3JSeKVZlDO0ICXZ6neJnfTRLmnHVGXlbi3AwKaNuXw1DM2s8hvBPQHs9cgsfTmISOXmtxwjic9yKIicJChU0A4ESD4bXVGtCbNVaRowyIqOa5Mc24q8FNbMq38bKhc24iDkmfyFSxFVmepawJ9Iz+Eh7F5X73z1kMFkcCPWzVxt09KHeGhUWAEiOKz7LCS3
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:CY4PR12MB1352.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(396003)(346002)(39860400002)(376002)(366004)(7416002)(31686004)(45080400002)(4326008)(8676002)(2616005)(966005)(52116002)(478600001)(316002)(16576012)(36756003)(110136005)(6486002)(66476007)(956004)(186003)(66946007)(16526019)(53546011)(26005)(8936002)(54906003)(2906002)(5660300002)(66556008)(83380400001)(31696002)(86362001)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YUtVM3BxS3VkWXN5aDVMd1dGUTd4TWxaaFdVUTJOWlAyaFVaYkR4NEIvaUlI?=
+ =?utf-8?B?VU5pMVRaNFo1QU9wSTB6bGxlclRiMnQ3czRPUnNHUHg3TUQ4a1YrbDl5N21w?=
+ =?utf-8?B?NzBsUHVMSDh1Y2RJbTR3TXVIZGVPVUhHemd1b3FyQUphUWFQQjcxbmxsNlFB?=
+ =?utf-8?B?dmw3QS9OUU5HZGR6UzVEeWVSeXJKTlpuMytUdnYzL0R1TmFEZ3I0b3V0cHZx?=
+ =?utf-8?B?cC94TlF2KzZaRTdNVis0QzA5WkF1YTNtSDNzMCt1Z1VEWk1wT2xUNlJ2bVlr?=
+ =?utf-8?B?NlhDVElMaEx2dmtPVWU0ZDllcEFsVzFCcmJXK242ak9QS2RjNzVLWFBFa1RZ?=
+ =?utf-8?B?dFdPY1V6aFUzNmkrMkJ3QlU5NU5iNTUxQkppQytIL25yVFNIeDBqbG0xd1c5?=
+ =?utf-8?B?N2JZajZ4cHA3dmZubnBCOWdHSDY5TVg5YWh1Sk9WdXBDSnVRMy9CcFBnM1Qw?=
+ =?utf-8?B?RXpQblhXdzZVaTU5Sm5CRlN0VGdJbi9WS1V1RmZiZjJidkJvOFVYN0lYWFZ2?=
+ =?utf-8?B?dFBFVWV0bFpraGNGSCtXVzJ6cmdvRlc5azVWVjBDcjJFZG82WnpnL3RadDlG?=
+ =?utf-8?B?ekRISFExOC9OTzlwVlhSZk9JY3ZNeDUraFp1cEtiNXNJTmdRclM5RWdBNEVr?=
+ =?utf-8?B?cjlEK1h5eldBeVQ5MnNqdUtqS2FNRUZTc28xTWNPS3JRUHJnMTQ0TGtPa0FR?=
+ =?utf-8?B?aEVUTE40VXV3eXl5Sis3dVN6VWdvOWRSR20zTnRMRnIzU1RwVzBxR0U3Rys2?=
+ =?utf-8?B?Vys3UTJ0Qlo1cTIzdXg5YVMzQUtHaVBFZmhFa2tnWjI2N2pDWk5hbzdEeFBx?=
+ =?utf-8?B?K0p4VXJTWDZ6ZXJxcWV0Ni92c2tlNHdkQ3VPL1FZdkNaTklFUFRLcE12QS9P?=
+ =?utf-8?B?YTNQYVVYYkVFR216dEQrbzRVTkVzaXFkSnR3TDdrUGd5OElneWQrMkNHdmsv?=
+ =?utf-8?B?VFJoZnI4ZjAzQytUODNYaXNDRkJ5Smh5dHAvcC8wdUFndTdEUnNsclYxallN?=
+ =?utf-8?B?VFBCeWoyZnE0QXNXbHJNcGtCUm9sYU4zL3BBRDhicHllRWQ2Mk8zT29EbjdE?=
+ =?utf-8?B?QXlOWFkwalNiS3JPUk9xaTNjbGR1blQxK09CRXVJaTY1SHlRR29qV1dWZS9h?=
+ =?utf-8?B?c3duVDdIeDNSeXhPcC93Uzl5NEd0aVFOLzNDemlnWWhrdWxMZE41NHhESlFC?=
+ =?utf-8?B?UWQ4N0J5Q0UyQWdlcUhoMDFTOE93Wm4zOFA4WWZ0MFJoMTBGS1ZwOXdVdVZG?=
+ =?utf-8?B?TUgwNWZITmUraWFaNXZsSndpOTJtZElOSGpOWVUyekpWV0M4bVpBWnRMakFS?=
+ =?utf-8?B?Rm15K1RYdm5ZUG10eGJUbVJvL0tzeXcxbWpCLzgzN0sydGMvYnd0SVg1dm1B?=
+ =?utf-8?B?VHhmVXZzNzcveXVYTWIzWlYvaHByQVFuRjFtbjdXRHM3czlwbXM4bkxIcjVY?=
+ =?utf-8?B?TjZaU2R4aVRJWlI3eVRUdjlZRHcraHVzQXlQSzJhUzdtVWhyUkR2TFM4SkpI?=
+ =?utf-8?B?Q285THc0NDg1bUkvNFZWM0F5dUFtYTdLVlFEZ3c2Qlh3Y0RIc0p0bk85OUVE?=
+ =?utf-8?B?ZlloelZtQXUzQU1oM3NtOXhFbzRBOHExK01hK1crKzAyUDlHTHZRMmZhNit3?=
+ =?utf-8?B?OUNITEJSQmNaS0R6d1ZuVEgrRFZCU1FlWjUzZE1iM092UXVUYzdSN0Zzdno1?=
+ =?utf-8?B?MjJKSUFpN3N5Tjdna1o2bGlNTk1nMGc5cGxFU2UxQXcvWjZ4YXllOHdMcUtE?=
+ =?utf-8?Q?P9uH5jYSGqk64xKFOPMlmWt6ALq3GZE2QfFxhFu?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66108189-beda-4da1-dcf8-08d8c7caa9d8
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR12MB1352.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2021 22:34:12.8593 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jTxIc5imfxCkSpzwW/PJoJYJio3IHsds1f2XHD2e/gAOTCdCDCryl26aYYHEpEkTSoJSUE9DdmpLsLMrW4HzLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0021
+Cc: file@sect.tu-berlin.de, robert.buhren@sect.tu-berlin.de,
+ kvm@vger.kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ Konrad Rzeszutek Wilk <konrad@darnok.org>,
+ mathias.morbitzer@aisec.fraunhofer.de, Christoph Hellwig <hch@lst.de>,
+ kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -167,205 +171,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/2/21 12:55 PM, Rob Herring wrote:
-> Running 'dt-validate -m' will flag any compatible strings missing a schema.
-> Fix all the errors found in DT binding examples. Most of these are just
-> typos.
+On 2/2/21 10:37 AM, Konrad Rzeszutek Wilk wrote:
+> On Mon, Jan 25, 2021 at 07:33:35PM +0100, Martin Radev wrote:
+>> On Mon, Jan 18, 2021 at 10:14:28AM -0500, Konrad Rzeszutek Wilk wrote:
+>>> On Mon, Jan 18, 2021 at 12:44:58PM +0100, Martin Radev wrote:
+>>>> On Wed, Jan 13, 2021 at 12:30:17PM +0100, Christoph Hellwig wrote:
+>>>>> On Tue, Jan 12, 2021 at 04:07:29PM +0100, Martin Radev wrote:
+>>>>>> The size of the buffer being bounced is not checked if it happens
+>>>>>> to be larger than the size of the mapped buffer. Because the size
+>>>>>> can be controlled by a device, as it's the case with virtio devices,
+>>>>>> this can lead to memory corruption.
+>>>>>>
+>>>>>
+>>>>> I'm really worried about all these hodge podge hacks for not trusted
+>>>>> hypervisors in the I/O stack.  Instead of trying to harden protocols
+>>>>> that are fundamentally not designed for this, how about instead coming
+>>>>> up with a new paravirtualized I/O interface that is specifically
+>>>>> designed for use with an untrusted hypervisor from the start?
+>>>>
+>>>> Your comment makes sense but then that would require the cooperation
+>>>> of these vendors and the cloud providers to agree on something meaningful.
+>>>> I am also not sure whether the end result would be better than hardening
+>>>> this interface to catch corruption. There is already some validation in
+>>>> unmap path anyway.
+>>>>
+>>>> Another possibility is to move this hardening to the common virtio code,
+>>>> but I think the code may become more complicated there since it would
+>>>> require tracking both the dma_addr and length for each descriptor.
+>>>
+>>> Christoph,
+>>>
+>>> I've been wrestling with the same thing - this is specific to busted
+>>> drivers. And in reality you could do the same thing with a hardware
+>>> virtio device (see example in https://nam11.safelinks.protection.outlook.com/?url=http%3A%2F%2Fthunderclap.io%2F&amp;data=04%7C01%7Cthomas.lendacky%40amd.com%7Cfc27af49d9a943699f6c08d8c798eed4%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637478806973542212%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=aUVqobkOSDfDhCAEauABOUvCAaIcw%2FTh07YFxeBjBDU%3D&amp;reserved=0) - where the
+>>> mitigation is 'enable the IOMMU to do its job.'.
+>>>
+>>> AMD SEV documents speak about utilizing IOMMU to do this (AMD SEV-SNP)..
+>>> and while that is great in the future, SEV without IOMMU is now here.
+>>>
+>>> Doing a full circle here, this issue can be exploited with virtio
+>>> but you could say do that with real hardware too if you hacked the
+>>> firmware, so if you say used Intel SR-IOV NIC that was compromised
+>>> on an AMD SEV machine, and plumbed in the guest - the IOMMU inside
+>>> of the guest would be SWIOTLB code. Last line of defense against
+>>> bad firmware to say.
+>>>
+>>> As such I am leaning towards taking this code, but I am worried
+>>> about the performance hit .. but perhaps I shouldn't as if you
+>>> are using SWIOTLB=force already you are kind of taking a
+>>> performance hit?
+>>>
+>>
+>> I have not measured the performance degradation. This will hit all AMD SEV,
+>> Intel TDX, IBM Protected Virtualization VMs. I don't expect the hit to
+>> be large since there are only few added operations per hundreads of copied
+>> bytes. I could try to measure the performance hit by running some benchmark
+>> with virtio-net/virtio-blk/virtio-rng.
+>>
+>> Earlier I said:
+>>>> Another possibility is to move this hardening to the common virtio code,
+>>>> but I think the code may become more complicated there since it would
+>>>> require tracking both the dma_addr and length for each descriptor.
+>>
+>> Unfortunately, this doesn't make sense. Even if there's validation for
+>> the size in the common virtio layer, there will be some other device
+>> which controls a dma_addr and length passed to dma_unmap* in the
+>> corresponding driver. The device can target a specific dma-mapped private
+>> buffer by changing the dma_addr and set a good length to overwrite buffers
+>> following it.
+>>
+>> So, instead of doing the check in every driver and hitting a performance
+>> cost even when swiotlb is not used, it's probably better to fix it in
+>> swiotlb.
+>>
+>> @Tom Lendacky, do you think that it makes sense to harden swiotlb or
+>> some other approach may be better for the SEV features?
 > 
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Daniel Palmer <daniel@thingy.jp>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Avi Fishman <avifishman70@gmail.com>
-> Cc: Tomer Maimon <tmaimon77@gmail.com>
-> Cc: Tali Perry <tali.perry1@gmail.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Andrew Jeffery <andrew@aj.id.au>
-> Cc: Joel Stanley <joel@jms.id.au>
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Cc: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> Cc: linux-clk@vger.kernel.org
-> Cc: linux-crypto@vger.kernel.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-i2c@vger.kernel.org
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-watchdog@vger.kernel.org
+> I am not Tom, but this change seems the right way forward regardless if
+> is TDX, AMD SEV, or any other architecture that encrypt memory and use
+> SWIOTLB.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Sorry, I missed the @Tom before. I'm with Konrad and believe it makes
+sense to add these checks.
 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/clock/allwinner,sun9i-a80-usb-clocks.yaml        | 2 +-
->  Documentation/devicetree/bindings/clock/arm,syscon-icst.yaml  | 4 ++--
->  Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml        | 2 +-
->  Documentation/devicetree/bindings/gpio/mstar,msc313-gpio.yaml | 2 +-
->  .../devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml          | 2 +-
->  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml         | 2 +-
->  .../devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml   | 2 +-
->  .../devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml   | 2 +-
->  .../devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml   | 2 +-
->  Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml          | 4 +---
->  Documentation/devicetree/bindings/watchdog/ti,rti-wdt.yaml    | 4 ++--
->  11 files changed, 13 insertions(+), 15 deletions(-)
+I'm not sure if there would be a better approach for all confidential
+computing technologies. SWIOTLB works nicely, but is limited because of
+the 32-bit compatible memory location. Being able to have buffers above
+the 32-bit limit would alleviate that, but that is support that would have
+to be developed.
+
+Thanks,
+Tom
+
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/allwinner,sun9i-a80-usb-clocks.yaml b/Documentation/devicetree/bindings/clock/allwinner,sun9i-a80-usb-clocks.yaml
-> index fa0ee03a527f..53cc6df0df96 100644
-> --- a/Documentation/devicetree/bindings/clock/allwinner,sun9i-a80-usb-clocks.yaml
-> +++ b/Documentation/devicetree/bindings/clock/allwinner,sun9i-a80-usb-clocks.yaml
-> @@ -18,7 +18,7 @@ properties:
->      const: 1
->  
->    compatible:
-> -    const: allwinner,sun9i-a80-usb-clocks
-> +    const: allwinner,sun9i-a80-usb-clks
->  
->    reg:
->      maxItems: 1
-> diff --git a/Documentation/devicetree/bindings/clock/arm,syscon-icst.yaml b/Documentation/devicetree/bindings/clock/arm,syscon-icst.yaml
-> index eb241587efd1..118c5543e037 100644
-> --- a/Documentation/devicetree/bindings/clock/arm,syscon-icst.yaml
-> +++ b/Documentation/devicetree/bindings/clock/arm,syscon-icst.yaml
-> @@ -66,8 +66,8 @@ properties:
->        - arm,syscon-icst525-integratorcp-cm-mem
->        - arm,integrator-cm-auxosc
->        - arm,versatile-cm-auxosc
-> -      - arm,impd-vco1
-> -      - arm,impd-vco2
-> +      - arm,impd1-vco1
-> +      - arm,impd1-vco2
->  
->    clocks:
->      description: Parent clock for the ICST VCO
-> diff --git a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-> index 1465c9ebaf93..1d48ac712b23 100644
-> --- a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-> +++ b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
-> @@ -66,7 +66,7 @@ examples:
->      #include <dt-bindings/soc/ti,sci_pm_domain.h>
->  
->      main_crypto: crypto@4e00000 {
-> -        compatible = "ti,j721-sa2ul";
-> +        compatible = "ti,j721e-sa2ul";
->          reg = <0x4e00000 0x1200>;
->          power-domains = <&k3_pds 264 TI_SCI_PD_EXCLUSIVE>;
->          dmas = <&main_udmap 0xc000>, <&main_udmap 0x4000>,
-> diff --git a/Documentation/devicetree/bindings/gpio/mstar,msc313-gpio.yaml b/Documentation/devicetree/bindings/gpio/mstar,msc313-gpio.yaml
-> index 1f2ef408bb43..fe1e1c63ffe3 100644
-> --- a/Documentation/devicetree/bindings/gpio/mstar,msc313-gpio.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/mstar,msc313-gpio.yaml
-> @@ -46,7 +46,7 @@ examples:
->      #include <dt-bindings/gpio/msc313-gpio.h>
->  
->      gpio: gpio@207800 {
-> -      compatible = "mstar,msc313e-gpio";
-> +      compatible = "mstar,msc313-gpio";
->        #gpio-cells = <2>;
->        reg = <0x207800 0x200>;
->        gpio-controller;
-> diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-> index e3ef2d36f372..128444942aec 100644
-> --- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
-> @@ -17,7 +17,7 @@ maintainers:
->  
->  properties:
->    compatible:
-> -    const: nuvoton,npcm7xx-i2c
-> +    const: nuvoton,npcm750-i2c
->  
->    reg:
->      maxItems: 1
-> diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-> index cde1afa8dfd6..349633108bbd 100644
-> --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-> @@ -93,7 +93,7 @@ examples:
->      #include <dt-bindings/power/r8a7791-sysc.h>
->  
->      ipmmu_mx: iommu@fe951000 {
-> -        compatible = "renasas,ipmmu-r8a7791", "renasas,ipmmu-vmsa";
-> +        compatible = "renesas,ipmmu-r8a7791", "renesas,ipmmu-vmsa";
->          reg = <0xfe951000 0x1000>;
->          interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>,
->                       <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
-> diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-> index 54631dc1adb0..5dbb84049ff6 100644
-> --- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-> +++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml
-> @@ -63,7 +63,7 @@ examples:
->          reg = <0x1e6e2000 0x1a8>;
->  
->          pinctrl: pinctrl {
-> -            compatible = "aspeed,g4-pinctrl";
-> +            compatible = "aspeed,ast2400-pinctrl";
->  
->              pinctrl_i2c3_default: i2c3_default {
->                  function = "I2C3";
-> diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-> index a90c0fe0495f..ad1c33364b38 100644
-> --- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-> +++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-> @@ -81,7 +81,7 @@ examples:
->              reg = <0x1e6e2000 0x1a8>;
->  
->              pinctrl: pinctrl {
-> -                compatible = "aspeed,g5-pinctrl";
-> +                compatible = "aspeed,ast2500-pinctrl";
->                  aspeed,external-nodes = <&gfx>, <&lhc>;
->  
->                  pinctrl_i2c3_default: i2c3_default {
-> diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-> index c78ab7e2eee7..ad91c0bc54da 100644
-> --- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-> +++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-> @@ -95,7 +95,7 @@ examples:
->          reg = <0x1e6e2000 0xf6c>;
->  
->          pinctrl: pinctrl {
-> -            compatible = "aspeed,g6-pinctrl";
-> +            compatible = "aspeed,ast2600-pinctrl";
->  
->              pinctrl_pwm10g1_default: pwm10g1_default {
->                  function = "PWM10";
-> diff --git a/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
-> index 239b49fad805..658cec67743e 100644
-> --- a/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
-> +++ b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
-> @@ -59,9 +59,7 @@ additionalProperties: false
->  
->  examples:
->    - |
-> -    i2c@1 {
-> -        compatible = "abc,acme-1234";
-> -        reg = <0x01 0x400>;
-> +    i2c {
->          #address-cells = <1>;
->          #size-cells = <0>;
->          phc@5b {
-> diff --git a/Documentation/devicetree/bindings/watchdog/ti,rti-wdt.yaml b/Documentation/devicetree/bindings/watchdog/ti,rti-wdt.yaml
-> index c1348db59374..054584d7543a 100644
-> --- a/Documentation/devicetree/bindings/watchdog/ti,rti-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/ti,rti-wdt.yaml
-> @@ -57,8 +57,8 @@ examples:
->       */
->      #include <dt-bindings/soc/ti,sci_pm_domain.h>
->  
-> -    watchdog0: rti@2200000 {
-> -        compatible = "ti,rti-wdt";
-> +    watchdog@2200000 {
-> +        compatible = "ti,j7-rti-wdt";
->          reg = <0x2200000 0x100>;
->          clocks = <&k3_clks 252 1>;
->          power-domains = <&k3_pds 252 TI_SCI_PD_EXCLUSIVE>;
-> 
-
+> Let me queue it up in development branch and do some regression testing.
+>>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
