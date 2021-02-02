@@ -2,94 +2,72 @@ Return-Path: <SRS0=s4mY=HE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CCBC433E0
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 03:47:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54335C433E0
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 04:49:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F41D264ED3
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 03:47:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F41D264ED3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0244E60230
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 04:49:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0244E60230
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8689020338;
-	Tue,  2 Feb 2021 03:47:45 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gOwG8YJQDaXg; Tue,  2 Feb 2021 03:47:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1E6D920016;
-	Tue,  2 Feb 2021 03:47:43 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DA95C0174;
-	Tue,  2 Feb 2021 03:47:43 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3377CC013A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 03:47:41 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 21A9E87042
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 03:47:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A64CE86DB0;
+	Tue,  2 Feb 2021 04:49:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3Web6yQI2M9O; Tue,  2 Feb 2021 04:49:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4A3F886D42;
+	Tue,  2 Feb 2021 04:49:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3685FC0FA7;
+	Tue,  2 Feb 2021 04:49:29 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 48763C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 04:49:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 44C198667A
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 04:49:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FOXBidXwlobc for <iommu@lists.linux-foundation.org>;
- Tue,  2 Feb 2021 03:47:39 +0000 (UTC)
+ with ESMTP id BtVLUPavyCkg for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Feb 2021 04:49:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3468587041
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 03:47:38 +0000 (UTC)
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.56])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4DV9hv28l2zR5KD;
- Tue,  2 Feb 2021 11:46:23 +0800 (CST)
-Received: from dggpemm500012.china.huawei.com (7.185.36.89) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Tue, 2 Feb 2021 11:47:33 +0800
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggpemm500012.china.huawei.com (7.185.36.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Tue, 2 Feb 2021 11:47:33 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.006;
- Tue, 2 Feb 2021 11:47:33 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: RE: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Topic: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-Thread-Index: AQHW8vWniUnMS+RFOU2UJJCa8sDlvKo39q+AgADtcaD//5AFgIAAh9tQ//+YwwCAAIUv4IAEx5CAgAWazQCAADRGAIAAkKkA
-Date: Tue, 2 Feb 2021 03:47:33 +0000
-Message-ID: <06924f5853c24f99a4b1f5683bdc74e4@hisilicon.com>
-References: <1611563696-235269-1-git-send-email-wangzhou1@hisilicon.com>
- <20210125154717.GW4605@ziepe.ca>
- <96b655ade2534a65974a378bb68383ee@hisilicon.com>
- <20210125231619.GY4605@ziepe.ca>
- <5f64a68042c64f37b5cba74028bd2189@hisilicon.com>
- <20210126011304.GZ4605@ziepe.ca>
- <d7fce136c3644755a7aea5794bddf453@hisilicon.com>
- <MWHPR11MB1886DC78C5FBA3636B94F2578CB99@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210201234424.GI4718@ziepe.ca>
- <MWHPR11MB1886464FFEF10DF9AE708C4A8CB59@MWHPR11MB1886.namprd11.prod.outlook.com>
-In-Reply-To: <MWHPR11MB1886464FFEF10DF9AE708C4A8CB59@MWHPR11MB1886.namprd11.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.202.106]
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7E6A98665D
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 04:49:27 +0000 (UTC)
+IronPort-SDR: T/kGWAvDkcbHF0mVeYHDg9RIlwuj+1yn5bUb4itzkS/Pvoh0czGBz1APJFInVEbUmbeg77m2DG
+ To8GBZdnH55g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="199708354"
+X-IronPort-AV: E=Sophos;i="5.79,394,1602572400"; d="scan'208";a="199708354"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Feb 2021 20:49:27 -0800
+IronPort-SDR: wAxT30eNnXWM0H40ErK8jQjP1Q9pZ/al1hrouLQk5jVS0VeY2tqaA/bT85AeSabvD5tnK/ejrc
+ CJ1cfUArULog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,394,1602572400"; d="scan'208";a="479423181"
+Received: from allen-box.sh.intel.com ([10.239.159.128])
+ by fmsmga001.fm.intel.com with ESMTP; 01 Feb 2021 20:49:25 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 1/3] iommu/vt-d: Add new enum value and structure for SATC
+Date: Tue,  2 Feb 2021 12:40:55 +0800
+Message-Id: <20210202044057.615277-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210202044057.615277-1-baolu.lu@linux.intel.com>
+References: <20210202044057.615277-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "chensihang \(A\)" <chensihang1@hisilicon.com>,
- Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Zhangfei Gao <zhangfei.gao@linaro.org>,
- "Liguozhu \(Kenneth\)" <liguozhu@hisilicon.com>,
- "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
+Cc: Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,66 +85,54 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Yian Chen <yian.chen@intel.com>
 
+Starting from Intel Platform VT-d v3.2, BIOS may provide new remapping
+structure SATC for SOC integrated devices, according to section 8.8 of
+Intel VT-d architecture specification v3.2. The SATC structure reports
+a list of the devices that require SATC enabling via ATS capacity.
 
-> -----Original Message-----
-> From: Tian, Kevin [mailto:kevin.tian@intel.com]
-> Sent: Tuesday, February 2, 2021 3:52 PM
-> To: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; chensihang (A)
-> <chensihang1@hisilicon.com>; Arnd Bergmann <arnd@arndb.de>; Greg
-> Kroah-Hartman <gregkh@linuxfoundation.org>; linux-kernel@vger.kernel.org;
-> iommu@lists.linux-foundation.org; linux-mm@kvack.org; Zhangfei Gao
-> <zhangfei.gao@linaro.org>; Liguozhu (Kenneth) <liguozhu@hisilicon.com>;
-> linux-accelerators@lists.ozlabs.org
-> Subject: RE: [RFC PATCH v2] uacce: Add uacce_ctrl misc device
-> 
-> > From: Jason Gunthorpe <jgg@ziepe.ca>
-> > Sent: Tuesday, February 2, 2021 7:44 AM
-> >
-> > On Fri, Jan 29, 2021 at 10:09:03AM +0000, Tian, Kevin wrote:
-> > > > SVA is not doom to work with IO page fault only. If we have SVA+pin,
-> > > > we would get both sharing address and stable I/O latency.
-> > >
-> > > Isn't it like a traditional MAP_DMA API (imply pinning) plus specifying
-> > > cpu_va of the memory pool as the iova?
-> >
-> > I think their issue is the HW can't do the cpu_va trick without also
-> > involving the system IOMMU in a SVA mode
-> >
-> 
-> This is the part that I didn't understand. Using cpu_va in a MAP_DMA
-> interface doesn't require device support. It's just an user-specified
-> address to be mapped into the IOMMU page table. On the other hand,
+This patch introduces the new enum value and structure to represent the
+remapping information. Kernel should parse the information from the
+reporting structure and enable ATC for the devices as needed.
 
-The background is that uacce is based on SVA and we are building
-applications on uacce:
-https://www.kernel.org/doc/html/v5.10/misc-devices/uacce.html
-so IOMMU simply uses the page table of MMU, and don't do any
-special mapping to an user-specified address. We don't break
-the basic assumption that uacce is using SVA, otherwise, we
-need to re-build uacce and the whole base.
+Signed-off-by: Yian Chen <yian.chen@intel.com>
+---
+ include/acpi/actbl1.h | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-> sharing CPU page table through a SVA interface for an usage where I/O
-> page faults must be completely avoided seems a misleading attempt.
+diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
+index 43549547ed3e..b7ca802b66d2 100644
+--- a/include/acpi/actbl1.h
++++ b/include/acpi/actbl1.h
+@@ -514,7 +514,8 @@ enum acpi_dmar_type {
+ 	ACPI_DMAR_TYPE_ROOT_ATS = 2,
+ 	ACPI_DMAR_TYPE_HARDWARE_AFFINITY = 3,
+ 	ACPI_DMAR_TYPE_NAMESPACE = 4,
+-	ACPI_DMAR_TYPE_RESERVED = 5	/* 5 and greater are reserved */
++	ACPI_DMAR_TYPE_SATC = 5,
++	ACPI_DMAR_TYPE_RESERVED = 6	/* 5 and greater are reserved */
+ };
+ 
+ /* DMAR Device Scope structure */
+@@ -607,6 +608,14 @@ struct acpi_dmar_andd {
+ 	char device_name[1];
+ };
+ 
++/* 5: SOC Integrated Address Translation Cache Reporting Structure */
++
++struct acpi_dmar_satc {
++	struct acpi_dmar_header header;
++	u8 flags;
++	u8 reserved;
++	u16 segment;
++};
+ /*******************************************************************************
+  *
+  * DRTM - Dynamic Root of Trust for Measurement table
+-- 
+2.25.1
 
-That is not for completely avoiding IO page fault, that is just
-an extension for high-performance I/O case, providing a way to
-avoid IO latency jitter. Using it or not is totally up to users.
-
-> Even if people do want this model (e.g. mix pinning+fault), it should be
-> a mm syscall as Greg pointed out, not specific to sva.
-> 
-
-We are glad to make it a syscall if people are happy with
-it. The simplest way would be a syscall similar with
-userfaultfd  if we don't want to mess up mm_struct.
-
-> Thanks
-> Kevin
-
-Thanks
-Barry
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
