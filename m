@@ -4,76 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0920C433E0
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 06:28:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CF7C433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 06:31:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3226B64ECC
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 06:28:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3226B64ECC
+	by mail.kernel.org (Postfix) with ESMTPS id 29C7464E91
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 06:31:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29C7464E91
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E03F68567A;
-	Tue,  2 Feb 2021 06:28:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C89A485B4F;
+	Tue,  2 Feb 2021 06:31:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3S3XpsQuWH33; Tue,  2 Feb 2021 06:28:56 +0000 (UTC)
+	with ESMTP id HO0ecDZgFDuX; Tue,  2 Feb 2021 06:31:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 27DD3854CC;
-	Tue,  2 Feb 2021 06:28:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A120485ACD;
+	Tue,  2 Feb 2021 06:31:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F87EC0FA7;
-	Tue,  2 Feb 2021 06:28:56 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 35659C013A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:28:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84B22C0FA7;
+	Tue,  2 Feb 2021 06:31:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58707C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:31:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 23AEC84B88
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:28:54 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 311C22045F
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:31:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h-7Mwtpf5dsx for <iommu@lists.linux-foundation.org>;
- Tue,  2 Feb 2021 06:28:51 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from so15.mailgun.net (so15.mailgun.net [198.61.254.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 6925184AB8
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:28:50 +0000 (UTC)
+ with ESMTP id wiN-VZtNxX7O for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Feb 2021 06:31:36 +0000 (UTC)
+X-Greylist: delayed 00:05:03 by SQLgrey-1.7.6
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by silver.osuosl.org (Postfix) with ESMTPS id 54DC81FF98
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 06:31:36 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1612247331; h=Message-ID: References: In-Reply-To: Subject:
+ s=smtp; t=1612247496; h=Message-ID: References: In-Reply-To: Subject:
  Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
  MIME-Version: Sender; bh=z7Jt7mLpbCjEtcnUQ9bOehTzH3Sk9XSsW7oxWAsa7AE=;
- b=Da/5P51x4lV4MnL20IM2lMylvomGP7TVGIDFgXYPjYwcYUUrPKCK7L4Do+KvRORZDwXUUPPp
- JeI9yDjADtDgMKfNEApkOOHUFPLQzZjPeeWV1zb3DNm/0YW+ZzFKnDIN4l7WXxjm5h4fOf9U
- pgrO1jq/LgGdzh2k3XkZYCGp5uM=
-X-Mailgun-Sending-Ip: 198.61.254.15
+ b=PGLV4heM2XIv03lKQaN5vmog3pyObQUqg7rmSwP1vkVp6JU0iJhmOvp9KIH7PTYGPvhc0yTL
+ LtPaOBK02ur5r8SgqTuLHYRbc1UzXV45XFemZ3lWl0b2ldgEKJ5c+W4vlIg96hBm+ANzp15o
+ 9XGlZP0zGRuTgegPNYCyfX6Nntc=
+X-Mailgun-Sending-Ip: 104.130.122.29
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 6018f11eab96aecb9fcd43a6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 02 Feb 2021 06:28:46
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 6018f0957a21b36a9d327dcc (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 02 Feb 2021 06:26:29
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 20D20C43469; Tue,  2 Feb 2021 06:28:46 +0000 (UTC)
+ id 29122C43467; Tue,  2 Feb 2021 06:26:29 +0000 (UTC)
 Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
  (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 9DB9DC433C6;
- Tue,  2 Feb 2021 06:28:44 +0000 (UTC)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 9D118C433C6;
+ Tue,  2 Feb 2021 06:26:27 +0000 (UTC)
 MIME-Version: 1.0
-Date: Tue, 02 Feb 2021 11:58:44 +0530
+Date: Tue, 02 Feb 2021 11:56:27 +0530
 From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>, Jordan Crouse <jcrouse@codeaurora.org>,
- Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
 Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
  flag
 In-Reply-To: <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
@@ -84,21 +84,19 @@ References: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
  <20210201111556.GA7172@willie-the-truck>
  <CAF6AEGsARmkAFsjaQLfa2miMgeijo183MWDKGtW_ti-UCpzBqA@mail.gmail.com>
  <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
-Message-ID: <dc95c4d32691a588a7f660e3b20dd33e@codeaurora.org>
+Message-ID: <7e9aade14d0b7f69285852ade4a5a9f4@codeaurora.org>
 X-Sender: saiprakash.ranjan@codeaurora.org
 User-Agent: Roundcube Webmail/1.3.9
 Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
  freedreno <freedreno@lists.freedesktop.org>, David Airlie <airlied@linux.ie>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
+ Will Deacon <will@kernel.org>, Akhil P Oommen <akhilpo@codeaurora.org>,
  dri-devel <dri-devel@lists.freedesktop.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Sean Paul <sean@poorly.run>, "list@263.net:IOMMU DRIVERS , Joerg Roedel
- <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Sean Paul <sean@poorly.run>, "list@263.net:IOMMU DRIVERS , 
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
  Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>, "moderated
- list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
