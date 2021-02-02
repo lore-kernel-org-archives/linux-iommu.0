@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0DFC433E6
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3E0C433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 09:51:44 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 49CD064DDB
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49CD064DDB
+	by mail.kernel.org (Postfix) with ESMTPS id 6283264DDB
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 09:51:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6283264DDB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2389E859CF;
-	Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 334C185868;
+	Tue,  2 Feb 2021 09:51:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WYKqSKf9BEq2; Tue,  2 Feb 2021 09:51:40 +0000 (UTC)
+	with ESMTP id P408DZ70fxce; Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 95386858F7;
-	Tue,  2 Feb 2021 09:51:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B07F88593F;
+	Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C747C0174;
-	Tue,  2 Feb 2021 09:51:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 836A7C013A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABA1CC0174;
+	Tue,  2 Feb 2021 09:51:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80886C0FA8
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 66BE82226B
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6F198866C3
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BTFfXLz91uz1 for <iommu@lists.linux-foundation.org>;
- Tue,  2 Feb 2021 09:51:37 +0000 (UTC)
+ with ESMTP id TnhIsdOevJtu for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Feb 2021 09:51:39 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by silver.osuosl.org (Postfix) with ESMTPS id B832F221C6
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7553F865FC
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 09:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=64A7herlcZlvWcI6alDQM37QEUYclkAj4BcQkJo+WtM=; b=pFdpqMg6CvZGy4ZL615fryYJ8n
- joZqk/xF5frihgPn0JceJeFdTrvKXswbmFzxAmEeZIg3OXVj1rmMN7URrfz8N6RlBUaJ4Vn4/n2ZA
- V1BKC8sMoqx6fwUqsi7vxaM1VqwMZyLJ+lFA3iyDotKiAoc9T07f8gBdo762kMRrslpQfGgz9pA5b
- afS2Gxdp3OFXQmzBMYFmnbOAhvUXRECY08505M4eNrZySQ2HBwxaP6+wtsEwYMYW0gTtLk51462Ul
- 10BaoWWdKnbYAIueZ7noXhwGus+FYOesbD/RQyiHFROP1c0y4Ij0f/NfYcffZau9f17GVqcUd+S2m
- m6fPDrTA==;
+ bh=1V/H+mhD3tcZ52EzqPv1oWFhuvy8mDMctNaFk3Uutdw=; b=gGLVzoVsVpQF946JOL/QCPFHJJ
+ P6cyFN8qSNoSjsA6F5aRwdB+GLJ2vH/wtkakDEp24xS4Uwf2koPsHiathaxKdiW3D5CJadk4FwdZS
+ T4Se8WfT0ZFWzmuIjESOxVtyJNWVtLNtmkleqSQamPvc0a7/1JC44VbG1maSq0WjR0sktj2kEnAfU
+ 1MYpLKVAENwq4Irw50ZuwtPtZc3vtez7C5E9xocfeTcbdFYrf9VsuhQA0MSE4W21bVsP31ODFAJ2M
+ awVKW/C8GmxlcWQsX1A7yhB3C5kq7yxcuqi5up8kOgt0nbpFdnwQVZax2+j74iZ7Uv8G8iprQ89pS
+ EQXwku4w==;
 Received: from [2001:4bb8:198:6bf4:7f38:755e:a6e0:73e9] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1l6sLI-00F0xO-Sk; Tue, 02 Feb 2021 09:51:29 +0000
+ id 1l6sLL-00F0xY-4H; Tue, 02 Feb 2021 09:51:32 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Mauro Carvalho Chehab <mchehab@kernel.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  Tomasz Figa <tfiga@chromium.org>, Ricardo Ribalda <ribalda@chromium.org>,
  Sergey Senozhatsky <senozhatsky@google.com>,
  iommu@lists.linux-foundation.org
-Subject: [PATCH 5/7] dma-iommu: refactor iommu_dma_alloc_remap
-Date: Tue,  2 Feb 2021 10:51:08 +0100
-Message-Id: <20210202095110.1215346-6-hch@lst.de>
+Subject: [PATCH 6/7] dma-iommu: implement ->alloc_noncontiguous
+Date: Tue,  2 Feb 2021 10:51:09 +0100
+Message-Id: <20210202095110.1215346-7-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210202095110.1215346-1-hch@lst.de>
 References: <20210202095110.1215346-1-hch@lst.de>
@@ -92,128 +92,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Split out a new helper that only allocates a sg_table worth of
-memory without mapping it into contiguous kernel address space.
+Implement support for allocating a non-contiguous DMA region.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 67 ++++++++++++++++++++-------------------
- 1 file changed, 35 insertions(+), 32 deletions(-)
+ drivers/iommu/dma-iommu.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 255533faf90599..85cb004d7a44c6 100644
+index 85cb004d7a44c6..4e0b170d38d57a 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -661,23 +661,12 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- 	return pages;
- }
- 
--/**
-- * iommu_dma_alloc_remap - Allocate and map a buffer contiguous in IOVA space
-- * @dev: Device to allocate memory for. Must be a real device
-- *	 attached to an iommu_dma_domain
-- * @size: Size of buffer in bytes
-- * @dma_handle: Out argument for allocated DMA handle
-- * @gfp: Allocation flags
-- * @prot: pgprot_t to use for the remapped mapping
-- * @attrs: DMA attributes for this allocation
-- *
-- * If @size is less than PAGE_SIZE, then a full CPU page will be allocated,
-+/*
-+ * If size is less than PAGE_SIZE, then a full CPU page will be allocated,
-  * but an IOMMU which supports smaller pages might not map the whole thing.
-- *
-- * Return: Mapped virtual address, or NULL on failure.
-  */
--static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
-+static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
-+		size_t size, struct sg_table *sgt, gfp_t gfp, pgprot_t prot,
- 		unsigned long attrs)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-@@ -687,11 +676,7 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
- 	struct page **pages;
--	struct sg_table sgt;
- 	dma_addr_t iova;
--	void *vaddr;
--
--	*dma_handle = DMA_MAPPING_ERROR;
- 
- 	if (unlikely(iommu_dma_deferred_attach(dev, domain)))
- 		return NULL;
-@@ -717,38 +702,56 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
- 	if (!iova)
- 		goto out_free_pages;
- 
--	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
-+	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, GFP_KERNEL))
- 		goto out_free_iova;
- 
- 	if (!(ioprot & IOMMU_CACHE)) {
- 		struct scatterlist *sg;
- 		int i;
- 
--		for_each_sg(sgt.sgl, sg, sgt.orig_nents, i)
-+		for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
- 			arch_dma_prep_coherent(sg_page(sg), sg->length);
- 	}
- 
--	if (iommu_map_sg_atomic(domain, iova, sgt.sgl, sgt.orig_nents, ioprot)
-+	if (iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot)
- 			< size)
+@@ -718,6 +718,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
  		goto out_free_sg;
  
-+	sgt->sgl->dma_address = iova;
-+	return pages;
-+
-+out_free_sg:
-+	sg_free_table(sgt);
-+out_free_iova:
-+	iommu_dma_free_iova(cookie, iova, size, NULL);
-+out_free_pages:
-+	__iommu_dma_free_pages(pages, count);
-+	return NULL;
-+}
-+
-+static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
-+		unsigned long attrs)
-+{
-+	struct page **pages;
-+	struct sg_table sgt;
-+	void *vaddr;
-+
-+	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, prot,
-+						attrs);
-+	if (!pages)
-+		return NULL;
-+	*dma_handle = sgt.sgl->dma_address;
-+	sg_free_table(&sgt);
- 	vaddr = dma_common_pages_remap(pages, size, prot,
- 			__builtin_return_address(0));
- 	if (!vaddr)
- 		goto out_unmap;
--
--	*dma_handle = iova;
--	sg_free_table(&sgt);
- 	return vaddr;
+ 	sgt->sgl->dma_address = iova;
++	sgt->sgl->dma_length = size;
+ 	return pages;
  
- out_unmap:
--	__iommu_dma_unmap(dev, iova, size);
--out_free_sg:
--	sg_free_table(&sgt);
--out_free_iova:
--	iommu_dma_free_iova(cookie, iova, size, NULL);
--out_free_pages:
--	__iommu_dma_free_pages(pages, count);
-+	__iommu_dma_unmap(dev, *dma_handle, size);
-+	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
+ out_free_sg:
+@@ -755,6 +756,36 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
  	return NULL;
  }
  
++#ifdef CONFIG_DMA_REMAP
++static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
++		size_t size, enum dma_data_direction dir, gfp_t gfp)
++{
++	struct dma_sgt_handle *sh;
++
++	sh = kmalloc(sizeof(*sh), gfp);
++	if (!sh)
++		return NULL;
++
++	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp,
++						    PAGE_KERNEL, 0);
++	if (!sh->pages) {
++		kfree(sh);
++		return NULL;
++	}
++	return &sh->sgt;
++}
++
++static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
++		struct sg_table *sgt, enum dma_data_direction dir)
++{
++	struct dma_sgt_handle *sh = sgt_handle(sgt);
++
++	__iommu_dma_unmap(dev, sgt->sgl->dma_address, size);
++	__iommu_dma_free_pages(sh->pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
++	sg_free_table(&sh->sgt);
++}
++#endif /* CONFIG_DMA_REMAP */
++
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+ {
+@@ -1270,6 +1301,10 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.free			= iommu_dma_free,
+ 	.alloc_pages		= dma_common_alloc_pages,
+ 	.free_pages		= dma_common_free_pages,
++#ifdef CONFIG_DMA_REMAP
++	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
++	.free_noncontiguous	= iommu_dma_free_noncontiguous,
++#endif
+ 	.mmap			= iommu_dma_mmap,
+ 	.get_sgtable		= iommu_dma_get_sgtable,
+ 	.map_page		= iommu_dma_map_page,
 -- 
 2.29.2
 
