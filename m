@@ -7,77 +7,68 @@ X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B15C433DB
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 12:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFE1C433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 12:09:13 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 107AA64F61
-	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 12:08:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 107AA64F61
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7977664F64
+	for <iommu@archiver.kernel.org>; Tue,  2 Feb 2021 12:09:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7977664F64
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AD96E8677C;
-	Tue,  2 Feb 2021 12:08:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 29A628555A;
+	Tue,  2 Feb 2021 12:09:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aJxIl9RT71As; Tue,  2 Feb 2021 12:08:03 +0000 (UTC)
+	with ESMTP id 2rT06PBldKu3; Tue,  2 Feb 2021 12:09:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0C3C084973;
-	Tue,  2 Feb 2021 12:08:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 470BE85310;
+	Tue,  2 Feb 2021 12:08:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E2335C0FA7;
-	Tue,  2 Feb 2021 12:08:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EEDD6C013A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:08:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 34C79C0FA7;
+	Tue,  2 Feb 2021 12:08:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C4EF1C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:08:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id EA66F849A6
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:08:00 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B36A8851AA
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:08:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TDueJXcOXb-8 for <iommu@lists.linux-foundation.org>;
- Tue,  2 Feb 2021 12:07:59 +0000 (UTC)
+ with ESMTP id JY245aYNa3Rw for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Feb 2021 12:08:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id EB86384973
- for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:07:58 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ED3261396;
- Tue,  2 Feb 2021 04:07:57 -0800 (PST)
-Received: from [10.57.35.163] (unknown [10.57.35.163])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13D6C3F718;
- Tue,  2 Feb 2021 04:07:54 -0800 (PST)
-Subject: Re: [PATCH V2 3/3] Adding device_dma_parameters->offset_preserve_mask
- to NVMe driver.
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Jianxiong Gao <jxgao@google.com>
-References: <20210201183017.3339130-1-jxgao@google.com>
- <20210201183017.3339130-4-jxgao@google.com>
- <20210201205759.GA2128135@dhcp-10-100-145-180.wdc.com>
- <CAMGD6P2Gz9nWELMdsAhwQvXx3PXv2aXet=Tn9Rca61obZawfgw@mail.gmail.com>
- <CAMGD6P1_cs1W8jMt7Sz6broDdnFNPrxbiZW-JZ+GAtg5aoTdOQ@mail.gmail.com>
- <CAMGD6P0uwVxKuG503ahGTbPcwb+y2wRXSiE_gvzfdUrMfZ5YbA@mail.gmail.com>
- <YBk1pUbQ/JZQ7WZe@smile.fi.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a34328d1-3918-1eca-b632-57be6a40baee@arm.com>
-Date: Tue, 2 Feb 2021 12:07:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1872C8506A
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Feb 2021 12:08:50 +0000 (UTC)
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DVNq54Kjjz7YvC;
+ Tue,  2 Feb 2021 20:07:29 +0800 (CST)
+Received: from [10.174.184.42] (10.174.184.42) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 2 Feb 2021 20:08:46 +0800
+Subject: Re: [PATCH v11 03/13] vfio: VFIO_IOMMU_SET_MSI_BINDING
+To: Eric Auger <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <will@kernel.org>,
+ <joro@8bytes.org>, <maz@kernel.org>, <robin.murphy@arm.com>,
+ <alex.williamson@redhat.com>
+References: <20201116110030.32335-1-eric.auger@redhat.com>
+ <20201116110030.32335-4-eric.auger@redhat.com>
+From: Keqian Zhu <zhukeqian1@huawei.com>
+Message-ID: <635db234-33ff-c079-40cb-2de00c089e7c@huawei.com>
+Date: Tue, 2 Feb 2021 20:08:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-In-Reply-To: <YBk1pUbQ/JZQ7WZe@smile.fi.intel.com>
-Content-Language: en-GB
-Cc: heikki.krogerus@linux.intel.com, sagi@grimberg.me,
- Saravana Kannan <saravanak@google.com>, bgolaszewski@baylibre.com,
- Marc Orr <marcorr@google.com>, gregkh@linuxfoundation.org,
- rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- axboe@fb.com, iommu@lists.linux-foundation.org, jroedel@suse.de,
- Keith Busch <kbusch@kernel.org>, dan.j.williams@intel.com,
- Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20201116110030.32335-4-eric.auger@redhat.com>
+X-Originating-IP: [10.174.184.42]
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org, vivek.gautam@arm.com, zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,34 +81,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-02-02 11:21, Andy Shevchenko wrote:
-> On Mon, Feb 01, 2021 at 04:25:55PM -0800, Jianxiong Gao wrote:
-> 
->> +       if (dma_set_min_align_mask(dev->dev, NVME_CTRL_PAGE_SIZE - 1))
-> 
-> Side note: we have DMA_BIT_MASK(), please use it.
+Hi Eric,
 
-FWIW I'd actually disagree on that point. Conceptually, this is a very 
-different thing from dev->{coherent_}dma_mask. It does not need to 
-handle everything up to 2^64-1 correctly without overflow issues, and 
-data alignments typically *are* defined in terms of sizes rather than 
-numbers of bits.
+On 2020/11/16 19:00, Eric Auger wrote:
+> This patch adds the VFIO_IOMMU_SET_MSI_BINDING ioctl which aim
+> to (un)register the guest MSI binding to the host. This latter
+> then can use those stage 1 bindings to build a nested stage
+> binding targeting the physical MSIs.
+[...]
 
-In fact, it might be neat to just have callers pass a size directly to a 
-dma_set_min_align() interface which asserts that it is a power of two 
-and stores it as a mask internally.
+> +static int vfio_iommu_type1_set_msi_binding(struct vfio_iommu *iommu,
+> +					    unsigned long arg)
+> +{
+> +	struct vfio_iommu_type1_set_msi_binding msi_binding;
+> +	unsigned long minsz;
+> +	int ret = -EINVAL;
+> +
+> +	minsz = offsetofend(struct vfio_iommu_type1_set_msi_binding,
+> +			    size);
+> +
+> +	if (copy_from_user(&msi_binding, (void __user *)arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (msi_binding.argsz < minsz)
+> +		return -EINVAL;
+We can check BIND and UNBIND are not set simultaneously, just like VFIO_IOMMU_SET_PASID_TABLE.
 
-Robin.
+> +
+> +	if (msi_binding.flags == VFIO_IOMMU_UNBIND_MSI) {
+> +		vfio_unbind_msi(iommu, msi_binding.iova);
+> +		ret = 0;
+> +	} else if (msi_binding.flags == VFIO_IOMMU_BIND_MSI) {
+> +		ret = vfio_bind_msi(iommu, msi_binding.iova,
+> +				    msi_binding.gpa, msi_binding.size);
+> +	}
+> +	return ret;
+> +}
+> +
 
-> 
->> +               dev_warn(dev->dev, "dma_set_min_align_mask failed to
->> set offset\n");
-> 
+Thanks,
+Keqian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
