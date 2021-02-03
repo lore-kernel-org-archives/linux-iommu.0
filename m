@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA320C433E0
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EF9C433E6
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:39 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BCD064F9E
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BCD064F9E
+	by mail.kernel.org (Postfix) with ESMTPS id D7EAF64F8D
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7EAF64F8D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0D60F871B2;
-	Wed,  3 Feb 2021 20:57:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 381892342E;
+	Wed,  3 Feb 2021 20:57:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I-16fJQRYDcT; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
+	with ESMTP id QZe-TpH2APMT; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1F342871CA;
-	Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AE3D423600;
+	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17D9AC1834;
-	Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C86EC1DA7;
+	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA9C3C013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DEBB4C013A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D4B64871CA
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C9F0587164
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Tx3m4SosVfiz for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+ with ESMTP id asYn8qb8lxUa for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B36A3871C9
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
-IronPort-SDR: ly8SB8NaQib3nH0asaOUmtCIyKpffvsGwN/8CIDTJmeYjprHBz+BV1Tf0OZyub1POnA8UoHv36
- 9QCz0psV+skQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875325"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875325"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1C0AC871B2
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
+IronPort-SDR: lZXyw82UYJuK80A+huIDohcUa66adGH0S+S0x4mG2+jyb6TlpzzBmoOVipbqyx16EdEe5eXwGp
+ CmuMlb1oHSng==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875312"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875312"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 12:57:32 -0800
-IronPort-SDR: kNFrrJsVhMO3bLHNeasxEUDsFOnsxNGIbaNz4E9HyH4ot3x9SbSPJ7uy7Qs0AR6Aittcb//z7K
- mSmWxepxRLYg==
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510593"
+ 03 Feb 2021 12:57:30 -0800
+IronPort-SDR: z24OHgspgXrmUufwOeutvV6tlHGf9al7sBOIJbNf8aGLHBQtLiLTIBb2vJCFLQOMgpXsLQm86z
+ uHnTQ4xRdMlA==
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510575"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 03 Feb 2021 12:57:32 -0800
+ 03 Feb 2021 12:57:30 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [PATCH 12/12] irqchip: Add IMS (Interrupt Message Store) driver
-Date: Wed,  3 Feb 2021 12:56:45 -0800
-Message-Id: <1612385805-3412-13-git-send-email-megha.dey@intel.com>
+Subject: [PATCH 08/12] genirq: Set auxiliary data for an interrupt
+Date: Wed,  3 Feb 2021 12:56:41 -0800
+Message-Id: <1612385805-3412-9-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
 References: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
@@ -90,360 +90,95 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
-
-Generic IMS(Interrupt Message Store) irq chips and irq domain
-implementations for IMS based devices which store the interrupt messages
-in an array in device memory.
-
-Allocation and freeing of interrupts happens via the generic
-msi_domain_alloc/free_irqs() interface. No special purpose IMS magic
-required as long as the interrupt domain is stored in the underlying
-device struct. The irq_set_auxdata() is used to program the pasid into
-the IMS entry.
-
-[Megha : Fixed compile time errors
-         Added necessary dependencies to IMS_MSI_ARRAY config
-         Fixed polarity of IMS_VECTOR_CTRL
-         Added reads after writes to flush writes to device
-         Added set_desc ops to IMS msi domain ops
-         Tested the IMS infrastructure with the IDXD driver]
+Introduce a new function pointer in the irq_chip structure(irq_set_auxdata)
+which is responsible for updating data which is stored in a shared register
+or data storage. For example, the idxd driver uses the auxiliary data API
+to enable/set and disable PASID field that is in the IMS entry (introduced
+in a later patch) and that data are not typically present in MSI entry.
 
 Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- drivers/irqchip/Kconfig             |  14 +++
- drivers/irqchip/Makefile            |   1 +
- drivers/irqchip/irq-ims-msi.c       | 211 ++++++++++++++++++++++++++++++++++++
- include/linux/irqchip/irq-ims-msi.h |  68 ++++++++++++
- 4 files changed, 294 insertions(+)
- create mode 100644 drivers/irqchip/irq-ims-msi.c
- create mode 100644 include/linux/irqchip/irq-ims-msi.h
+ include/linux/interrupt.h |  2 ++
+ include/linux/irq.h       |  4 ++++
+ kernel/irq/manage.c       | 32 ++++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index b147f22..b50c821 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -590,4 +590,18 @@ config MST_IRQ
- 	help
- 	  Support MStar Interrupt Controller.
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index bb8ff90..d3f419b 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -496,6 +496,8 @@ extern int irq_get_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+ extern int irq_set_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+ 				 bool state);
  
-+config IMS_MSI
-+	depends on PCI
-+	select DEVICE_MSI
-+	bool
++int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val);
 +
-+config IMS_MSI_ARRAY
-+	bool "IMS Interrupt Message Store MSI controller for device memory storage arrays"
-+	depends on PCI
-+	select IMS_MSI
-+	select GENERIC_MSI_IRQ_DOMAIN
-+	help
-+	  Support for IMS Interrupt Message Store MSI controller
-+	  with IMS slot storage in a slot array in device memory
+ #ifdef CONFIG_IRQ_FORCED_THREADING
+ # ifdef CONFIG_PREEMPT_RT
+ #  define force_irqthreads	(true)
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 4aeb1c4..568cdf5 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -491,6 +491,8 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
+  *				irq_request_resources
+  * @irq_compose_msi_msg:	optional to compose message content for MSI
+  * @irq_write_msi_msg:	optional to write message content for MSI
++ * @irq_set_auxdata:	Optional function to update auxiliary data e.g. in
++ *			shared registers
+  * @irq_get_irqchip_state:	return the internal state of an interrupt
+  * @irq_set_irqchip_state:	set the internal state of a interrupt
+  * @irq_set_vcpu_affinity:	optional to target a vCPU in a virtual machine
+@@ -538,6 +540,8 @@ struct irq_chip {
+ 	void		(*irq_compose_msi_msg)(struct irq_data *data, struct msi_msg *msg);
+ 	void		(*irq_write_msi_msg)(struct irq_data *data, struct msi_msg *msg);
+ 
++	int		(*irq_set_auxdata)(struct irq_data *data, unsigned int which, u64 auxval);
 +
- endmenu
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 0ac93bf..658a6bd 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -113,3 +113,4 @@ obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
- obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
- obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
- obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
-+obj-$(CONFIG_IMS_MSI)			+= irq-ims-msi.o
-diff --git a/drivers/irqchip/irq-ims-msi.c b/drivers/irqchip/irq-ims-msi.c
-new file mode 100644
-index 0000000..fa23207
---- /dev/null
-+++ b/drivers/irqchip/irq-ims-msi.c
-@@ -0,0 +1,211 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// (C) Copyright 2021 Thomas Gleixner <tglx@linutronix.de>
-+/*
-+ * Shared interrupt chips and irq domains for IMS devices
+ 	int		(*irq_get_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool *state);
+ 	int		(*irq_set_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool state);
+ 
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index 85ede4e..68ff559 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -2860,3 +2860,35 @@ bool irq_check_status_bit(unsigned int irq, unsigned int bitmask)
+ 	return res;
+ }
+ EXPORT_SYMBOL_GPL(irq_check_status_bit);
++
++/**
++ * irq_set_auxdata - Set auxiliary data
++ * @irq:	Interrupt to update
++ * @which:	Selector which data to update
++ * @auxval:	Auxiliary data value
++ *
++ * Function to update auxiliary data for an interrupt, e.g. to update data
++ * which is stored in a shared register or data storage (e.g. IMS).
 + */
-+#include <linux/device.h>
-+#include <linux/slab.h>
-+#include <linux/msi.h>
-+#include <linux/irq.h>
-+#include <linux/irqdomain.h>
-+
-+#include <linux/irqchip/irq-ims-msi.h>
-+
-+#ifdef CONFIG_IMS_MSI_ARRAY
-+
-+struct ims_array_data {
-+	struct ims_array_info	info;
-+	unsigned long		map[0];
-+};
-+
-+static inline void iowrite32_and_flush(u32 value, void __iomem *addr)
++int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val)
 +{
-+	iowrite32(value, addr);
-+	ioread32(addr);
-+}
++	struct irq_desc *desc;
++	struct irq_data *data;
++	unsigned long flags;
++	int res = -ENODEV;
 +
-+static void ims_array_mask_irq(struct irq_data *data)
-+{
-+	struct msi_desc *desc = irq_data_get_msi_desc(data);
-+	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
-+	u32 __iomem *ctrl = &slot->ctrl;
-+
-+	iowrite32_and_flush(ioread32(ctrl) | IMS_CTRL_VECTOR_MASKBIT, ctrl);
-+}
-+
-+static void ims_array_unmask_irq(struct irq_data *data)
-+{
-+	struct msi_desc *desc = irq_data_get_msi_desc(data);
-+	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
-+	u32 __iomem *ctrl = &slot->ctrl;
-+
-+	iowrite32_and_flush(ioread32(ctrl) & ~IMS_CTRL_VECTOR_MASKBIT, ctrl);
-+}
-+
-+static void ims_array_write_msi_msg(struct irq_data *data, struct msi_msg *msg)
-+{
-+	struct msi_desc *desc = irq_data_get_msi_desc(data);
-+	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
-+
-+	iowrite32(msg->address_lo, &slot->address_lo);
-+	iowrite32(msg->address_hi, &slot->address_hi);
-+	iowrite32_and_flush(msg->data, &slot->data);
-+}
-+
-+static int ims_array_set_auxdata(struct irq_data *data, unsigned int which,
-+				 u64 auxval)
-+{
-+	struct msi_desc *desc = irq_data_get_msi_desc(data);
-+	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
-+	u32 val, __iomem *ctrl = &slot->ctrl;
-+
-+	if (which != IMS_AUXDATA_CONTROL_WORD)
-+		return -EINVAL;
-+	if (auxval & ~(u64)IMS_CONTROL_WORD_AUXMASK)
++	desc = irq_get_desc_buslock(irq, &flags, 0);
++	if (!desc)
 +		return -EINVAL;
 +
-+	val = ioread32(ctrl) & IMS_CONTROL_WORD_IRQMASK;
-+	iowrite32_and_flush(val | (u32)auxval, ctrl);
-+	return 0;
-+}
-+
-+static const struct irq_chip ims_array_msi_controller = {
-+	.name			= "IMS",
-+	.irq_mask		= ims_array_mask_irq,
-+	.irq_unmask		= ims_array_unmask_irq,
-+	.irq_write_msi_msg	= ims_array_write_msi_msg,
-+	.irq_set_auxdata	= ims_array_set_auxdata,
-+	.irq_retrigger		= irq_chip_retrigger_hierarchy,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE,
-+};
-+
-+static void ims_array_reset_slot(struct ims_slot __iomem *slot)
-+{
-+	iowrite32(0, &slot->address_lo);
-+	iowrite32(0, &slot->address_hi);
-+	iowrite32(0, &slot->data);
-+	iowrite32_and_flush(IMS_CTRL_VECTOR_MASKBIT, &slot->ctrl);
-+}
-+
-+static void ims_array_free_msi_store(struct irq_domain *domain,
-+				     struct device *dev)
-+{
-+	struct msi_domain_info *info = domain->host_data;
-+	struct ims_array_data *ims = info->data;
-+	struct msi_desc *entry;
-+
-+	for_each_msi_entry(entry, dev) {
-+		if (entry->device_msi.priv_iomem) {
-+			clear_bit(entry->device_msi.hwirq, ims->map);
-+			ims_array_reset_slot(entry->device_msi.priv_iomem);
-+			entry->device_msi.priv_iomem = NULL;
-+			entry->device_msi.hwirq = 0;
++	for (data = &desc->irq_data; data; data = irqd_get_parent_data(data)) {
++		if (data->chip->irq_set_auxdata) {
++			res = data->chip->irq_set_auxdata(data, which, val);
++			break;
 +		}
 +	}
++
++	irq_put_desc_busunlock(desc, flags);
++	return res;
 +}
-+
-+static int ims_array_alloc_msi_store(struct irq_domain *domain,
-+				     struct device *dev, int nvec)
-+{
-+	struct msi_domain_info *info = domain->host_data;
-+	struct ims_array_data *ims = info->data;
-+	struct msi_desc *entry;
-+
-+	for_each_msi_entry(entry, dev) {
-+		unsigned int idx;
-+
-+		idx = find_first_zero_bit(ims->map, ims->info.max_slots);
-+		if (idx >= ims->info.max_slots)
-+			goto fail;
-+		set_bit(idx, ims->map);
-+		entry->device_msi.priv_iomem = &ims->info.slots[idx];
-+		ims_array_reset_slot(entry->device_msi.priv_iomem);
-+		entry->device_msi.hwirq = idx;
-+	}
-+	return 0;
-+
-+fail:
-+	ims_array_free_msi_store(domain, dev);
-+	return -ENOSPC;
-+}
-+
-+struct ims_array_domain_template {
-+	struct msi_domain_ops	ops;
-+	struct msi_domain_info	info;
-+};
-+
-+static void ims_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
-+{
-+	arg->desc = desc;
-+	arg->hwirq = desc->device_msi.hwirq;
-+}
-+
-+static const struct ims_array_domain_template ims_array_domain_template = {
-+	.ops = {
-+		.msi_alloc_store	= ims_array_alloc_msi_store,
-+		.msi_free_store		= ims_array_free_msi_store,
-+		.set_desc               = ims_set_desc,
-+	},
-+	.info = {
-+		.flags		= MSI_FLAG_USE_DEF_DOM_OPS |
-+				  MSI_FLAG_USE_DEF_CHIP_OPS,
-+		.handler	= handle_edge_irq,
-+		.handler_name	= "edge",
-+	},
-+};
-+
-+struct irq_domain *
-+pci_ims_array_create_msi_irq_domain(struct pci_dev *pdev,
-+				    struct ims_array_info *ims_info)
-+{
-+	struct ims_array_domain_template *info;
-+	struct ims_array_data *data;
-+	struct irq_domain *domain;
-+	struct irq_chip *chip;
-+	unsigned int size;
-+
-+	/* Allocate new domain storage */
-+	info = kmemdup(&ims_array_domain_template,
-+		       sizeof(ims_array_domain_template), GFP_KERNEL);
-+	if (!info)
-+		return NULL;
-+	/* Link the ops */
-+	info->info.ops = &info->ops;
-+
-+	/* Allocate ims_info along with the bitmap */
-+	size = sizeof(*data);
-+	size += BITS_TO_LONGS(ims_info->max_slots) * sizeof(unsigned long);
-+	data = kzalloc(size, GFP_KERNEL);
-+	if (!data)
-+		goto err_info;
-+
-+	data->info = *ims_info;
-+	info->info.data = data;
-+
-+	/*
-+	 * Allocate an interrupt chip because the core needs to be able to
-+	 * update it with default callbacks.
-+	 */
-+	chip = kmemdup(&ims_array_msi_controller,
-+		       sizeof(ims_array_msi_controller), GFP_KERNEL);
-+	if (!chip)
-+		goto err_data;
-+	info->info.chip = chip;
-+
-+	domain = pci_subdevice_msi_create_irq_domain(pdev, &info->info);
-+	if (!domain)
-+		goto err_chip;
-+
-+	return domain;
-+
-+err_chip:
-+	kfree(chip);
-+err_data:
-+	kfree(data);
-+err_info:
-+	kfree(info);
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(pci_ims_array_create_msi_irq_domain);
-+
-+#endif /* CONFIG_IMS_MSI_ARRAY */
-diff --git a/include/linux/irqchip/irq-ims-msi.h b/include/linux/irqchip/irq-ims-msi.h
-new file mode 100644
-index 0000000..9ba767f
---- /dev/null
-+++ b/include/linux/irqchip/irq-ims-msi.h
-@@ -0,0 +1,68 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* (C) Copyright 2021 Thomas Gleixner <tglx@linutronix.de> */
-+
-+#ifndef _LINUX_IRQCHIP_IRQ_IMS_MSI_H
-+#define _LINUX_IRQCHIP_IRQ_IMS_MSI_H
-+
-+#include <linux/types.h>
-+#include <linux/bits.h>
-+
-+/**
-+ * ims_hw_slot - The hardware layout of an IMS based MSI message
-+ * @address_lo:	Lower 32bit address
-+ * @address_hi:	Upper 32bit address
-+ * @data:	Message data
-+ * @ctrl:	Control word
-+ *
-+ * This structure is used by both the device memory array and the queue
-+ * memory variants of IMS.
-+ */
-+struct ims_slot {
-+	u32	address_lo;
-+	u32	address_hi;
-+	u32	data;
-+	u32	ctrl;
-+} __packed;
-+
-+/*
-+ * The IMS control word utilizes bit 0-2 for interrupt control. The remaining
-+ * bits can contain auxiliary data.
-+ */
-+#define IMS_CONTROL_WORD_IRQMASK	GENMASK(2, 0)
-+#define IMS_CONTROL_WORD_AUXMASK	GENMASK(31, 3)
-+
-+/* Auxiliary control word data related defines */
-+enum {
-+	IMS_AUXDATA_CONTROL_WORD,
-+};
-+
-+/* Bit to mask the interrupt in ims_hw_slot::ctrl */
-+#define IMS_CTRL_VECTOR_MASKBIT		BIT(0)
-+#define IMS_CTRL_PASID_ENABLE           BIT(3)
-+#define IMS_CTRL_PASID_SHIFT            12
-+
-+/* Set pasid and enable bit for the IMS entry */
-+static inline u32 ims_ctrl_pasid_aux(unsigned int pasid, bool enable)
-+{
-+	u32 auxval = pasid << IMS_CTRL_PASID_SHIFT;
-+
-+	return enable ? auxval | IMS_CTRL_PASID_ENABLE : auxval;
-+}
-+
-+/**
-+ * struct ims_array_info - Information to create an IMS array domain
-+ * @slots:	Pointer to the start of the array
-+ * @max_slots:	Maximum number of slots in the array
-+ */
-+struct ims_array_info {
-+	struct ims_slot		__iomem *slots;
-+	unsigned int		max_slots;
-+};
-+
-+struct pci_dev;
-+struct irq_domain;
-+
-+struct irq_domain *pci_ims_array_create_msi_irq_domain(struct pci_dev *pdev,
-+						       struct ims_array_info *ims_info);
-+
-+#endif
++EXPORT_SYMBOL_GPL(irq_set_auxdata);
 -- 
 2.7.4
 
