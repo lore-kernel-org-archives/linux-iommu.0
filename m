@@ -2,68 +2,68 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B194EC433E9
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233F7C433DB
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5389564FA5
+	by mail.kernel.org (Postfix) with ESMTPS id B088864FAD
 	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5389564FA5
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B088864FAD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CAA46871DD;
-	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6A18286239;
+	Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zY40Q7KfD+RN; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+	with ESMTP id 7uaOpdgaN4XE; Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1477F871B2;
-	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5038F86234;
+	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 02E70C1834;
-	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E092C1E74;
+	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8430BC013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61DBCC013A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6FEF5871C4
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 49C9187164
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8mQUP7VvmQEk for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
+ with ESMTP id L5Zfieq0LEoZ for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 20:57:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2088F871CA
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
-IronPort-SDR: 98zsyOLBIvz6LHg9g3FkFOjQUc85FFGLx4ChxSHa7SqDdMFXVSRl9WS6uin8RSLNGncE9huN1u
- Fcm3hHi/Vudg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875301"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875301"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0FC09871A8
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:29 +0000 (UTC)
+IronPort-SDR: rjTBGKekQv95A7uGXBs2Xcn5tkTHfJ0nDZ5hCAuIGzhVHEzBeFOH0rDzTfxwmmRV4tuCDz3MWx
+ F3s1oct0zcAQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875291"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875291"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 12:57:29 -0800
-IronPort-SDR: nXgXuUUuY2ynH8GS8K/ua4Ou6tXdiK2QJjlN9r8Ghg07cXafWhsE5TtVqUVyq1a6xCrsEOuBhM
- VJXZqcvzNqCg==
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510561"
+ 03 Feb 2021 12:57:28 -0800
+IronPort-SDR: VhbifczPcXhDwHkb/ZHA/S9Oq+urvMYrbvav4fHs8Grqtb1TY7uqLIePZwzijvKOn62Hn9xw9k
+ TuLfQiddyJ2Q==
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510548"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 03 Feb 2021 12:57:29 -0800
+ 03 Feb 2021 12:57:28 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [PATCH 05/12] genirq/msi: Provide and use
- msi_domain_set_default_info_flags()
-Date: Wed,  3 Feb 2021 12:56:38 -0800
-Message-Id: <1612385805-3412-6-git-send-email-megha.dey@intel.com>
+Subject: [PATCH 02/12] x86/msi: Rename and rework pci_msi_prepare() to cover
+ non-PCI MSI
+Date: Wed,  3 Feb 2021 12:56:35 -0800
+Message-Id: <1612385805-3412-3-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
 References: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
@@ -93,84 +93,118 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-MSI interrupts have some common flags which should be set not only for
-PCI/MSI interrupts.
+Rename it to x86_msi_prepare() and handle the allocation type setup
+depending on the device type.
 
-Move the PCI/MSI flag setting into a common function so it can be reused.
+Add a new arch_msi_prepare define which will be utilized by the upcoming
+device MSI support. Define it to NULL if not provided by an architecture
+in the generic MSI header.
+
+One arch specific function for MSI support is truly enough.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- drivers/pci/msi.c   |  7 +------
- include/linux/msi.h |  1 +
- kernel/irq/msi.c    | 24 ++++++++++++++++++++++++
- 3 files changed, 26 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/msi.h          |  4 +++-
+ arch/x86/kernel/apic/msi.c          | 27 ++++++++++++++++++++-------
+ drivers/pci/controller/pci-hyperv.c |  2 +-
+ include/linux/msi.h                 |  4 ++++
+ 4 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 3162f88..20d2512 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1492,12 +1492,7 @@ struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
- 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
- 		pci_msi_domain_update_chip_ops(info);
+diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
+index b85147d..9bd214e 100644
+--- a/arch/x86/include/asm/msi.h
++++ b/arch/x86/include/asm/msi.h
+@@ -6,9 +6,11 @@
  
--	info->flags |= MSI_FLAG_ACTIVATE_EARLY;
--	if (IS_ENABLED(CONFIG_GENERIC_IRQ_RESERVATION_MODE))
--		info->flags |= MSI_FLAG_MUST_REACTIVATE;
--
--	/* PCI-MSI is oneshot-safe */
--	info->chip->flags |= IRQCHIP_ONESHOT_SAFE;
-+	msi_domain_set_default_info_flags(info);
+ typedef struct irq_alloc_info msi_alloc_info_t;
  
- 	domain = msi_create_irq_domain(fwnode, info, parent);
- 	if (!domain)
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 89acc76..d7a7f7d 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -448,6 +448,7 @@ int platform_msi_domain_alloc(struct irq_domain *domain, unsigned int virq,
- void platform_msi_domain_free(struct irq_domain *domain, unsigned int virq,
- 			      unsigned int nvec);
- void *platform_msi_get_host_data(struct irq_domain *domain);
-+void msi_domain_set_default_info_flags(struct msi_domain_info *info);
- #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
+-int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
++int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+ 		    msi_alloc_info_t *arg);
  
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index dc0e2d7..3697909 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -70,6 +70,30 @@ void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg)
- EXPORT_SYMBOL_GPL(get_cached_msi_msg);
- 
- #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
-+void msi_domain_set_default_info_flags(struct msi_domain_info *info)
-+{
-+	/* Required so that a device latches a valid MSI message on startup */
-+	info->flags |= MSI_FLAG_ACTIVATE_EARLY;
++#define arch_msi_prepare		x86_msi_prepare
 +
-+	/*
-+	 * Interrupt reservation mode allows to stear the MSI message of an
-+	 * inactive device to a special (usually spurious interrupt) target.
-+	 * This allows to prevent interrupt vector exhaustion e.g. on x86.
-+	 * But (PCI)MSI interrupts are activated early - see above - so the
-+	 * interrupt request/startup sequence would not try to allocate a
-+	 * usable vector which means that the device interrupts would end
-+	 * up on the special vector and issue spurious interrupt messages.
-+	 * Setting the reactivation flag ensures that when the interrupt
-+	 * is requested the activation is invoked again so that a real
-+	 * vector can be allocated.
-+	 */
-+	if (IS_ENABLED(CONFIG_GENERIC_IRQ_RESERVATION_MODE))
-+		info->flags |= MSI_FLAG_MUST_REACTIVATE;
-+
-+	/* MSI is oneshot-safe at least in theory */
-+	info->chip->flags |= IRQCHIP_ONESHOT_SAFE;
+ /* Structs and defines for the X86 specific MSI message format */
+ 
+ typedef struct x86_msi_data {
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 44ebe25..84b16c7 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -153,26 +153,39 @@ static struct irq_chip pci_msi_controller = {
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE,
+ };
+ 
+-int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+-		    msi_alloc_info_t *arg)
++static void pci_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct msi_desc *desc = first_pci_msi_entry(pdev);
++	struct msi_desc *desc = first_msi_entry(dev);
+ 
+-	init_irq_alloc_info(arg, NULL);
+ 	if (desc->msi_attrib.is_msix) {
+ 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSIX;
+ 	} else {
+ 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
+ 		arg->flags |= X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+ 	}
 +}
 +
- static inline void irq_chip_write_msi_msg(struct irq_data *data,
- 					  struct msi_msg *msg)
- {
++static void dev_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
++{
++	arg->type = X86_IRQ_ALLOC_TYPE_DEV_MSI;
++}
++
++int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
++		    msi_alloc_info_t *arg)
++{
++	init_irq_alloc_info(arg, NULL);
++
++	if (dev_is_pci(dev))
++		pci_msi_prepare(dev, arg);
++	else
++		dev_msi_prepare(dev, arg);
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(pci_msi_prepare);
++EXPORT_SYMBOL_GPL(x86_msi_prepare);
+ 
+ static struct msi_domain_ops pci_msi_domain_ops = {
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= x86_msi_prepare,
+ };
+ 
+ static struct msi_domain_info pci_msi_domain_info = {
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index 6db8d96..bfb47c2 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1546,7 +1546,7 @@ static struct irq_chip hv_msi_irq_chip = {
+ };
+ 
+ static struct msi_domain_ops hv_msi_ops = {
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= arch_msi_prepare,
+ 	.msi_free	= hv_msi_free,
+ };
+ 
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 360a0a7..89acc76 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -467,4 +467,8 @@ static inline struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+ }
+ #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
+ 
++#ifndef arch_msi_prepare
++# define arch_msi_prepare	NULL
++#endif
++
+ #endif /* LINUX_MSI_H */
 -- 
 2.7.4
 
