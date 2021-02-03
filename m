@@ -7,62 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5805C433E6
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B194EC433E9
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 35C5B64FAF
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35C5B64FAF
+	by mail.kernel.org (Postfix) with ESMTPS id 5389564FA5
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5389564FA5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E0ED3871C9;
-	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CAA46871DD;
+	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qRHQZVI+kw0G; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+	with ESMTP id zY40Q7KfD+RN; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2BF0C871B1;
-	Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1477F871B2;
+	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 015ECC1DA7;
-	Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02E70C1834;
+	Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C17AC013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8430BC013A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 23516871CF
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6FEF5871C4
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oVMCeaz9+WXz for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 20:57:28 +0000 (UTC)
+ with ESMTP id 8mQUP7VvmQEk for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E185E87164
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:28 +0000 (UTC)
-IronPort-SDR: XkCRR0SNsokCwGV0TMda6VIvNEe1mG2UYcl63r7Py2BZX5ykoHhbOVW8aKCBuqoAYrXlL8zzyd
- 3n/fH9Wp79+Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875289"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875289"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2088F871CA
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:30 +0000 (UTC)
+IronPort-SDR: 98zsyOLBIvz6LHg9g3FkFOjQUc85FFGLx4ChxSHa7SqDdMFXVSRl9WS6uin8RSLNGncE9huN1u
+ Fcm3hHi/Vudg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875301"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875301"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 12:57:28 -0800
-IronPort-SDR: K26s3NvHcap36eZnRUHuzYw+PL6N+gSX1FVIK6Zy3LajbF9ZmnRbBLhVGu6pzRDCSlak4Uww72
- FqbIe5f0XY0A==
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510543"
+ 03 Feb 2021 12:57:29 -0800
+IronPort-SDR: nXgXuUUuY2ynH8GS8K/ua4Ou6tXdiK2QJjlN9r8Ghg07cXafWhsE5TtVqUVyq1a6xCrsEOuBhM
+ VJXZqcvzNqCg==
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510561"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 03 Feb 2021 12:57:28 -0800
+ 03 Feb 2021 12:57:29 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [PATCH 01/12] x86/irq: Add DEV_MSI allocation type
-Date: Wed,  3 Feb 2021 12:56:34 -0800
-Message-Id: <1612385805-3412-2-git-send-email-megha.dey@intel.com>
+Subject: [PATCH 05/12] genirq/msi: Provide and use
+ msi_domain_set_default_info_flags()
+Date: Wed,  3 Feb 2021 12:56:38 -0800
+Message-Id: <1612385805-3412-6-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
 References: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
@@ -92,27 +93,84 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-For the upcoming device MSI support a new allocation type is
-required.
+MSI interrupts have some common flags which should be set not only for
+PCI/MSI interrupts.
+
+Move the PCI/MSI flag setting into a common function so it can be reused.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- arch/x86/include/asm/hw_irq.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/msi.c   |  7 +------
+ include/linux/msi.h |  1 +
+ kernel/irq/msi.c    | 24 ++++++++++++++++++++++++
+ 3 files changed, 26 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index d465ece..0531b9c 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -41,6 +41,7 @@ enum irq_alloc_type {
- 	X86_IRQ_ALLOC_TYPE_DMAR,
- 	X86_IRQ_ALLOC_TYPE_AMDVI,
- 	X86_IRQ_ALLOC_TYPE_UV,
-+	X86_IRQ_ALLOC_TYPE_DEV_MSI,
- };
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index 3162f88..20d2512 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -1492,12 +1492,7 @@ struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
+ 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
+ 		pci_msi_domain_update_chip_ops(info);
  
- struct ioapic_alloc_info {
+-	info->flags |= MSI_FLAG_ACTIVATE_EARLY;
+-	if (IS_ENABLED(CONFIG_GENERIC_IRQ_RESERVATION_MODE))
+-		info->flags |= MSI_FLAG_MUST_REACTIVATE;
+-
+-	/* PCI-MSI is oneshot-safe */
+-	info->chip->flags |= IRQCHIP_ONESHOT_SAFE;
++	msi_domain_set_default_info_flags(info);
+ 
+ 	domain = msi_create_irq_domain(fwnode, info, parent);
+ 	if (!domain)
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 89acc76..d7a7f7d 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -448,6 +448,7 @@ int platform_msi_domain_alloc(struct irq_domain *domain, unsigned int virq,
+ void platform_msi_domain_free(struct irq_domain *domain, unsigned int virq,
+ 			      unsigned int nvec);
+ void *platform_msi_get_host_data(struct irq_domain *domain);
++void msi_domain_set_default_info_flags(struct msi_domain_info *info);
+ #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
+ 
+ #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index dc0e2d7..3697909 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -70,6 +70,30 @@ void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg)
+ EXPORT_SYMBOL_GPL(get_cached_msi_msg);
+ 
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
++void msi_domain_set_default_info_flags(struct msi_domain_info *info)
++{
++	/* Required so that a device latches a valid MSI message on startup */
++	info->flags |= MSI_FLAG_ACTIVATE_EARLY;
++
++	/*
++	 * Interrupt reservation mode allows to stear the MSI message of an
++	 * inactive device to a special (usually spurious interrupt) target.
++	 * This allows to prevent interrupt vector exhaustion e.g. on x86.
++	 * But (PCI)MSI interrupts are activated early - see above - so the
++	 * interrupt request/startup sequence would not try to allocate a
++	 * usable vector which means that the device interrupts would end
++	 * up on the special vector and issue spurious interrupt messages.
++	 * Setting the reactivation flag ensures that when the interrupt
++	 * is requested the activation is invoked again so that a real
++	 * vector can be allocated.
++	 */
++	if (IS_ENABLED(CONFIG_GENERIC_IRQ_RESERVATION_MODE))
++		info->flags |= MSI_FLAG_MUST_REACTIVATE;
++
++	/* MSI is oneshot-safe at least in theory */
++	info->chip->flags |= IRQCHIP_ONESHOT_SAFE;
++}
++
+ static inline void irq_chip_write_msi_msg(struct irq_data *data,
+ 					  struct msi_msg *msg)
+ {
 -- 
 2.7.4
 
