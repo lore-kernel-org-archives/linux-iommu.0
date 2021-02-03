@@ -2,68 +2,68 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233F7C433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C04C43381
 	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:37 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B088864FAD
+	by mail.kernel.org (Postfix) with ESMTPS id DDB7964FAF
 	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B088864FAD
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDB7964FAF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6A18286239;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AD38086234;
 	Wed,  3 Feb 2021 20:57:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7uaOpdgaN4XE; Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
+	with ESMTP id vY9_CXmEb0ZS; Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5038F86234;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E5FA786241;
 	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E092C1E74;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D387EC1834;
 	Wed,  3 Feb 2021 20:57:35 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 61DBCC013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 99A34C1834
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 49C9187164
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 92108871D9
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id L5Zfieq0LEoZ for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 20:57:29 +0000 (UTC)
+ with ESMTP id L8EDCcBWrSE2 for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0FC09871A8
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:29 +0000 (UTC)
-IronPort-SDR: rjTBGKekQv95A7uGXBs2Xcn5tkTHfJ0nDZ5hCAuIGzhVHEzBeFOH0rDzTfxwmmRV4tuCDz3MWx
- F3s1oct0zcAQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875291"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875291"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4FFEA871A8
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 20:57:32 +0000 (UTC)
+IronPort-SDR: nH9QwnSpuROZ3YeJRJtcidF10wb8WGlggRPG1owObHut7FA33pTvQfcWfs0g7uiZiAlriwBJk9
+ gBcwSgcw3PLA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="160875322"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="160875322"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 12:57:28 -0800
-IronPort-SDR: VhbifczPcXhDwHkb/ZHA/S9Oq+urvMYrbvav4fHs8Grqtb1TY7uqLIePZwzijvKOn62Hn9xw9k
- TuLfQiddyJ2Q==
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510548"
+ 03 Feb 2021 12:57:32 -0800
+IronPort-SDR: jF6G3NJzGgokGR6lD1hAvEKPFO/Fs2jX0KhiYC7l727N4wANLkAtlkN2UpSdny1JbD6Y9igX/z
+ 65VuTxmCQpCw==
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="372510590"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 03 Feb 2021 12:57:28 -0800
+ 03 Feb 2021 12:57:31 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [PATCH 02/12] x86/msi: Rename and rework pci_msi_prepare() to cover
- non-PCI MSI
-Date: Wed,  3 Feb 2021 12:56:35 -0800
-Message-Id: <1612385805-3412-3-git-send-email-megha.dey@intel.com>
+Subject: [PATCH 11/12] platform-msi: Add platform check for subdevice irq
+ domain
+Date: Wed,  3 Feb 2021 12:56:44 -0800
+Message-Id: <1612385805-3412-12-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
 References: <1612385805-3412-1-git-send-email-megha.dey@intel.com>
@@ -72,7 +72,8 @@ Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
  ravi.v.shankar@intel.com, maz@kernel.org, x86@kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  jgg@mellanox.com, megha.dey@intel.com, linux-pci@vger.kernel.org,
- bhelgaas@google.com, dan.j.williams@intel.com, dwmw@amazon.co.uk
+ bhelgaas@google.com, dan.j.williams@intel.com,
+ Leon Romanovsky <leon@kernel.org>, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,120 +92,159 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Rename it to x86_msi_prepare() and handle the allocation type setup
-depending on the device type.
+The pci_subdevice_msi_create_irq_domain() should fail if the underlying
+platform is not able to support IMS (Interrupt Message Storage). Otherwise,
+the isolation of interrupt is not guaranteed.
 
-Add a new arch_msi_prepare define which will be utilized by the upcoming
-device MSI support. Define it to NULL if not provided by an architecture
-in the generic MSI header.
+For x86, IMS is only supported on bare metal for now. We could enable it
+in the virtualization environments in the future if interrupt HYPERCALL
+domain is supported or the hardware has the capability of interrupt
+isolation for subdevices.
 
-One arch specific function for MSI support is truly enough.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/linux-pci/87pn4nk7nn.fsf@nanos.tec.linutronix.de/
+Link: https://lore.kernel.org/linux-pci/877dqrnzr3.fsf@nanos.tec.linutronix.de/
+Link: https://lore.kernel.org/linux-pci/877dqqmc2h.fsf@nanos.tec.linutronix.de/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- arch/x86/include/asm/msi.h          |  4 +++-
- arch/x86/kernel/apic/msi.c          | 27 ++++++++++++++++++++-------
- drivers/pci/controller/pci-hyperv.c |  2 +-
- include/linux/msi.h                 |  4 ++++
- 4 files changed, 28 insertions(+), 9 deletions(-)
+ arch/x86/pci/common.c       | 74 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/base/platform-msi.c |  8 +++++
+ include/linux/msi.h         |  1 +
+ 3 files changed, 83 insertions(+)
 
-diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
-index b85147d..9bd214e 100644
---- a/arch/x86/include/asm/msi.h
-+++ b/arch/x86/include/asm/msi.h
-@@ -6,9 +6,11 @@
+diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
+index 3507f45..263ccf6 100644
+--- a/arch/x86/pci/common.c
++++ b/arch/x86/pci/common.c
+@@ -12,6 +12,8 @@
+ #include <linux/init.h>
+ #include <linux/dmi.h>
+ #include <linux/slab.h>
++#include <linux/iommu.h>
++#include <linux/msi.h>
  
- typedef struct irq_alloc_info msi_alloc_info_t;
- 
--int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
-+int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
- 		    msi_alloc_info_t *arg);
- 
-+#define arch_msi_prepare		x86_msi_prepare
-+
- /* Structs and defines for the X86 specific MSI message format */
- 
- typedef struct x86_msi_data {
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index 44ebe25..84b16c7 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -153,26 +153,39 @@ static struct irq_chip pci_msi_controller = {
- 	.flags			= IRQCHIP_SKIP_SET_WAKE,
- };
- 
--int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
--		    msi_alloc_info_t *arg)
-+static void pci_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
--	struct msi_desc *desc = first_pci_msi_entry(pdev);
-+	struct msi_desc *desc = first_msi_entry(dev);
- 
--	init_irq_alloc_info(arg, NULL);
- 	if (desc->msi_attrib.is_msix) {
- 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSIX;
- 	} else {
- 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
- 		arg->flags |= X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
- 	}
-+}
-+
-+static void dev_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
-+{
-+	arg->type = X86_IRQ_ALLOC_TYPE_DEV_MSI;
-+}
-+
-+int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
-+		    msi_alloc_info_t *arg)
-+{
-+	init_irq_alloc_info(arg, NULL);
-+
-+	if (dev_is_pci(dev))
-+		pci_msi_prepare(dev, arg);
-+	else
-+		dev_msi_prepare(dev, arg);
- 
- 	return 0;
+ #include <asm/acpi.h>
+ #include <asm/segment.h>
+@@ -724,3 +726,75 @@ struct pci_dev *pci_real_dma_dev(struct pci_dev *dev)
+ 	return dev;
  }
--EXPORT_SYMBOL_GPL(pci_msi_prepare);
-+EXPORT_SYMBOL_GPL(x86_msi_prepare);
+ #endif
++
++#ifdef CONFIG_DEVICE_MSI
++/*
++ * We want to figure out which context we are running in. But the hardware
++ * does not introduce a reliable way (instruction, CPUID leaf, MSR, whatever)
++ * which can be manipulated by the VMM to let the OS figure out where it runs.
++ * So we go with the below probably on_bare_metal() function as a replacement
++ * for definitely on_bare_metal() to go forward only for the very simple reason
++ * that this is the only option we have.
++ */
++static const char * const vmm_vendor_name[] = {
++	"QEMU", "Bochs", "KVM", "Xen", "VMware", "VMW", "VMware Inc.",
++	"innotek GmbH", "Oracle Corporation", "Parallels", "BHYVE"
++};
++
++static void read_type0_virtual_machine(const struct dmi_header *dm, void *p)
++{
++	u8 *data = (u8 *)dm + 0x13;
++
++	/* BIOS Information (Type 0) */
++	if (dm->type != 0 || dm->length < 0x14)
++		return;
++
++	/* Bit 4 of BIOS Characteristics Extension Byte 2*/
++	if (*data & BIT(4))
++		*((bool *)p) = true;
++}
++
++static bool smbios_virtual_machine(void)
++{
++	bool bit_present = false;
++
++	dmi_walk(read_type0_virtual_machine, &bit_present);
++
++	return bit_present;
++}
++
++static bool on_bare_metal(struct device *dev)
++{
++	int i;
++
++	if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
++		return false;
++
++	if (smbios_virtual_machine())
++		return false;
++
++	if (iommu_capable(dev->bus, IOMMU_CAP_VIOMMU_HINT))
++		return false;
++
++	for (i = 0; i < ARRAY_SIZE(vmm_vendor_name); i++)
++		if (dmi_match(DMI_SYS_VENDOR, vmm_vendor_name[i]))
++			return false;
++
++	pr_info("System running on bare metal, report to bugzilla.kernel.org if not the case.");
++
++	return true;
++}
++
++bool arch_support_pci_device_ims(struct pci_dev *pdev)
++{
++	/*
++	 * When we are running in a VMM context, the device IMS could only be
++	 * enabled when the underlying hardware supports interrupt isolation
++	 * of the subdevice, or any mechanism (trap, hypercall) is added so
++	 * that changes in the interrupt message store could be managed by the
++	 * VMM. For now, we only support the device IMS when we are running on
++	 * the bare metal.
++	 */
++	return on_bare_metal(&pdev->dev);
++}
++#endif
+diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
+index 6127b3b..d5ae26f 100644
+--- a/drivers/base/platform-msi.c
++++ b/drivers/base/platform-msi.c
+@@ -519,6 +519,11 @@ struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
+ #ifdef CONFIG_PCI
+ #include <linux/pci.h>
  
- static struct msi_domain_ops pci_msi_domain_ops = {
--	.msi_prepare	= pci_msi_prepare,
-+	.msi_prepare	= x86_msi_prepare,
- };
++bool __weak arch_support_pci_device_ims(struct pci_dev *pdev)
++{
++	return false;
++}
++
+ /**
+  * pci_subdevice_msi_create_irq_domain - Create an irq domain for subdevices
+  * @pdev:	Pointer to PCI device for which the subdevice domain is created
+@@ -530,6 +535,9 @@ struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
+ 	struct irq_domain *domain, *pdev_msi;
+ 	struct fwnode_handle *fn;
  
- static struct msi_domain_info pci_msi_domain_info = {
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 6db8d96..bfb47c2 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1546,7 +1546,7 @@ static struct irq_chip hv_msi_irq_chip = {
- };
- 
- static struct msi_domain_ops hv_msi_ops = {
--	.msi_prepare	= pci_msi_prepare,
-+	.msi_prepare	= arch_msi_prepare,
- 	.msi_free	= hv_msi_free,
- };
- 
++	if (!arch_support_pci_device_ims(pdev))
++		return NULL;
++
+ 	/*
+ 	 * Retrieve the MSI domain of the underlying PCI device's MSI
+ 	 * domain. The PCI device domain's parent domain is also the parent
 diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 360a0a7..89acc76 100644
+index a6b419d..fa02542 100644
 --- a/include/linux/msi.h
 +++ b/include/linux/msi.h
-@@ -467,4 +467,8 @@ static inline struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
- }
- #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
+@@ -478,6 +478,7 @@ struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
+ 						struct irq_domain *parent);
  
-+#ifndef arch_msi_prepare
-+# define arch_msi_prepare	NULL
-+#endif
-+
- #endif /* LINUX_MSI_H */
+ # ifdef CONFIG_PCI
++bool arch_support_pci_device_ims(struct pci_dev *pdev);
+ struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
+ 						       struct msi_domain_info *info);
+ # endif
 -- 
 2.7.4
 
