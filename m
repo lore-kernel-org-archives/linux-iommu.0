@@ -2,85 +2,79 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E4DC433E6
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 15:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D7EC433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:03:09 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33B3F64F8D
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 15:55:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33B3F64F8D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id C49FC64F95
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:03:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C49FC64F95
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C59018712C;
-	Wed,  3 Feb 2021 15:55:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 73A9B87120;
+	Wed,  3 Feb 2021 16:03:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VTLBlztmD09e; Wed,  3 Feb 2021 15:55:23 +0000 (UTC)
+	with ESMTP id tk4EyUI7ssDn; Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D517087121;
-	Wed,  3 Feb 2021 15:55:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D648D87051;
+	Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3F5BC0FA8;
-	Wed,  3 Feb 2021 15:55:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B6E48C0FA7;
+	Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89567C0174
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 15:55:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F98AC0174
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 74A0687150
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 15:55:22 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6C1EC87082
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qRgQBLz5q76V for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 15:55:21 +0000 (UTC)
+ with ESMTP id KOXuDrMzqiNc for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 16:03:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com
- [209.85.167.176])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CEA7B8712F
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 15:55:21 +0000 (UTC)
-Received: by mail-oi1-f176.google.com with SMTP id h6so339275oie.5
- for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 07:55:21 -0800 (PST)
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com
+ [209.85.167.170])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 89B6B87051
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:05 +0000 (UTC)
+Received: by mail-oi1-f170.google.com with SMTP id k25so311869oik.13
+ for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 08:03:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=qT9vhKEcJnv2UxHfk3LsH4oahpbnsqDoYZLdzv8tkwQ=;
- b=m5BiHIyksE+a7QZt1wGK7nooyjTmEdg9BPVQ5tsewp05x4o6WulQfV8SAKmiozj9rZ
- tuAItq+myHAgbJ1izJrceth2/HyBJyXYjILkaBCV77D5D6K+IyYZRvy9c2J43Buel40o
- Ep/lHhBEuphe2A8QFtRDMRefJAIABbOt1mzliZhWyl23MXwg7R61TvMDdTYIZQJnG11R
- Hyaxx7Kgo+NuNz7gEYEGeauUpntb9f3fwbL4d4krl/Be/wpzgQ0+yT1alxN+u93O3kqh
- Mn6/+ThrZpC0YsEAdTTcvk8Ock9gH3NQKwdTZqNRt8Ju8ASpO8fY6BiNaX0GX3k9o7hp
- EN6g==
-X-Gm-Message-State: AOAM531ZHxw+muYBMJegBhVJn442yrgn7KIxJBCjxlFabEq3d0cUD1N+
- Pd4PKNFHp6WR/vSYHhjwxw==
-X-Google-Smtp-Source: ABdhPJxmOBQcH5R+lFiUlGBqVbuj5kwZxcJFcUI25C3II5lOgKlwz+nfG7ePzMnfdKQ5jcv5RyiyOg==
-X-Received: by 2002:aca:4e13:: with SMTP id c19mr2424431oib.66.1612367721055; 
- Wed, 03 Feb 2021 07:55:21 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
- [24.155.109.49])
- by smtp.gmail.com with ESMTPSA id o14sm481868oof.38.2021.02.03.07.55.18
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 03 Feb 2021 07:55:19 -0800 (PST)
-Received: (nullmailer pid 1895243 invoked by uid 1000);
- Wed, 03 Feb 2021 15:55:17 -0000
-Date: Wed, 3 Feb 2021 09:55:17 -0600
-From: Rob Herring <robh@kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 3/3] dt-bindings: Fix errors in 'if' schemas
-Message-ID: <20210203155517.GC3706951@robh.at.kernel.org>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=BcE4ZZBKyxCDLDrYAu9i4Md6o808j4TR1LnI5e2y0b0=;
+ b=BcSLAHRYa+X4ikmwVo/gLsHi6xoNXut771wZjgTOnoAQFUOw17WFRuYV29KCociQKh
+ 6gWvqV1xzJo0dxJMbJ5hwK/k0+chzKmK0QWpqk/kf0uSKo/khtTKS2C18fi5QsHCp1y3
+ MuW2115JurWlwMLFWzEWsE7YflOkbzTjhubYOaIVWDa17Kk/9dytMTmcALpcmkK2kq7D
+ W/J4e9hqCYD/J2fQRwS1m9V7NlIzCxQD1T69NH3s/1nnQw9q1hGrrwzZ8dVJ1H2baTwA
+ YGLUs/9hKlSIeLTNn2bXttI01oA8xYtkA9ruyPpTIY3Mmpkw6pAkRxpAZut+tPMR9xbN
+ GSFA==
+X-Gm-Message-State: AOAM530VYfBfS1guICNmGLon20PBYmcDEolGtlHR3d3GiXuNzy+179Rg
+ ic8S1Fdm9s2hi9U/LWIwFLWWH6vaUj09JkK9FXc=
+X-Google-Smtp-Source: ABdhPJy5RnEli5EScDsGGPC/30HmbHWChMG7KZn1WeCaaLseFVr6EQuBii7Iq7M5O8vzqs7BmEy6ag0EovkF5KtgUsQ=
+X-Received: by 2002:a54:4e88:: with SMTP id c8mr2343251oiy.148.1612368184741; 
+ Wed, 03 Feb 2021 08:03:04 -0800 (PST)
+MIME-Version: 1.0
 References: <20210202205544.24812-1-robh@kernel.org>
  <20210202205544.24812-3-robh@kernel.org>
  <CAMuHMdVvtUvrQh3-3kxaqqWvHnF_UOQmt-6jq_GkX8g=cszUug@mail.gmail.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVvtUvrQh3-3kxaqqWvHnF_UOQmt-6jq_GkX8g=cszUug@mail.gmail.com>
+ <20210203155517.GC3706951@robh.at.kernel.org>
+In-Reply-To: <20210203155517.GC3706951@robh.at.kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 3 Feb 2021 17:02:53 +0100
+Message-ID: <CAMuHMdVp-YXtMBPistV0XPDHoSbW6Rz4c7=t3y2JB7B56LniBg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] dt-bindings: Fix errors in 'if' schemas
+To: Rob Herring <robh@kernel.org>
 Cc: Ulf Hansson <ulf.hansson@linaro.org>, Tomer Maimon <tmaimon77@gmail.com>,
  Geert Uytterhoeven <geert+renesas@glider.be>,
  Linus Walleij <linus.walleij@linaro.org>,
@@ -126,69 +120,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 03, 2021 at 09:01:23AM +0100, Geert Uytterhoeven wrote:
-> Hi Rob,
-> 
-> On Tue, Feb 2, 2021 at 9:55 PM Rob Herring <robh@kernel.org> wrote:
-> > Properties in if/then schemas weren't getting checked by the meta-schemas.
-> > Enabling meta-schema checks finds several errors.
+Hi Rob,
+
+On Wed, Feb 3, 2021 at 4:55 PM Rob Herring <robh@kernel.org> wrote:
+> On Wed, Feb 03, 2021 at 09:01:23AM +0100, Geert Uytterhoeven wrote:
+> > On Tue, Feb 2, 2021 at 9:55 PM Rob Herring <robh@kernel.org> wrote:
+> > > Properties in if/then schemas weren't getting checked by the meta-schemas.
+> > > Enabling meta-schema checks finds several errors.
+> > >
+> > > The use of an 'items' schema (as opposed to the list form) is wrong in
+> > > some cases as it applies to all entries. 'contains' is the correct schema
+> > > to use in the case of multiple entries.
 > >
-> > The use of an 'items' schema (as opposed to the list form) is wrong in
-> > some cases as it applies to all entries. 'contains' is the correct schema
-> > to use in the case of multiple entries.
-> 
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> 
-> Thanks for your patch!
-> 
-> > --- a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > +++ b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > @@ -81,9 +81,8 @@ properties:
-> >  if:
-> >    properties:
-> >      compatible:
-> > -      items:
-> > -        enum:
-> > -          - renesas,usb2-phy-r7s9210
-> > +      contains:
-> > +        const: renesas,usb2-phy-r7s9210
-> 
-> Single entry, so "contains" not needed?
+> > > Signed-off-by: Rob Herring <robh@kernel.org>
+> >
+> > Thanks for your patch!
+> >
+> > > --- a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > +++ b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > @@ -81,9 +81,8 @@ properties:
+> > >  if:
+> > >    properties:
+> > >      compatible:
+> > > -      items:
+> > > -        enum:
+> > > -          - renesas,usb2-phy-r7s9210
+> > > +      contains:
+> > > +        const: renesas,usb2-phy-r7s9210
+> >
+> > Single entry, so "contains" not needed?
+>
+> No, you are misunderstanding how these work. 'contains' means at least
+> one entry in an array passes with the subschema. In this case,
+> 'renesas,usb2-phy-r7s9210' must appear somewhere in the 'compatible'
+> values. (Before, it said *every* entry must be
+> 'renesas,usb2-phy-r7s9210'.) As there is a fallback compatible, we need
+> 'contains'.
+>
+> > > --- a/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
+> > > +++ b/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
+> > > @@ -76,11 +76,10 @@ required:
+> > >  if:
+> > >    properties:
+> > >      compatible:
+> > > -      items:
+> > > -        enum:
+> > > -          - renesas,pfc-r8a73a4
+> > > -          - renesas,pfc-r8a7740
+> > > -          - renesas,pfc-sh73a0
+> > > +      enum:
+> > > +        - renesas,pfc-r8a73a4
+> > > +        - renesas,pfc-r8a7740
+> > > +        - renesas,pfc-sh73a0
+> >
+> > Missing "contains"?
+>
+> No. In this case, 'compatible' is always a single entry, so no
+> 'contains' needed (but would work). If compatible is one of these 3
+> strings, then the 'if' is true.
+>
+> The original way would actually work in this case (i.e. is valid
+> json-schema), but we require 'items' to have a size (maxItems/minItems)
+> in our meta-schema.
 
-No, you are misunderstanding how these work. 'contains' means at least 
-one entry in an array passes with the subschema. In this case, 
-'renesas,usb2-phy-r7s9210' must appear somewhere in the 'compatible' 
-values. (Before, it said *every* entry must be 
-'renesas,usb2-phy-r7s9210'.) As there is a fallback compatible, we need 
-'contains'.
+Thanks for the explanation!
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> > --- a/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
-> > +++ b/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
-> > @@ -76,11 +76,10 @@ required:
-> >  if:
-> >    properties:
-> >      compatible:
-> > -      items:
-> > -        enum:
-> > -          - renesas,pfc-r8a73a4
-> > -          - renesas,pfc-r8a7740
-> > -          - renesas,pfc-sh73a0
-> > +      enum:
-> > +        - renesas,pfc-r8a73a4
-> > +        - renesas,pfc-r8a7740
-> > +        - renesas,pfc-sh73a0
-> 
-> Missing "contains"?
+Gr{oetje,eeting}s,
 
-No. In this case, 'compatible' is always a single entry, so no 
-'contains' needed (but would work). If compatible is one of these 3 
-strings, then the 'if' is true.
+                        Geert
 
-The original way would actually work in this case (i.e. is valid 
-json-schema), but we require 'items' to have a size (maxItems/minItems) 
-in our meta-schema.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Rob
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
