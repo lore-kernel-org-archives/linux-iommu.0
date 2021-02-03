@@ -2,71 +2,74 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A1DC433E6
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:42:20 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C89C433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:48:44 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0EBA664F74
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:42:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0EBA664F74
+	by mail.kernel.org (Postfix) with ESMTPS id DE6A764F60
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:48:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE6A764F60
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id BA5C520520;
-	Wed,  3 Feb 2021 09:42:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7942B85E9B;
+	Wed,  3 Feb 2021 09:48:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 38YiAomjM2qG; Wed,  3 Feb 2021 09:42:18 +0000 (UTC)
+	with ESMTP id 3wrrEAFontBF; Wed,  3 Feb 2021 09:48:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E48C2207A6;
-	Wed,  3 Feb 2021 09:42:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D3AE585250;
+	Wed,  3 Feb 2021 09:48:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CFFFDC0FA7;
-	Wed,  3 Feb 2021 09:42:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B77F1C0FA7;
+	Wed,  3 Feb 2021 09:48:42 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA118C013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:42:17 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0FA44C013A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:48:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D948586456
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:42:17 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E735386793
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:48:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p3BoXdikvznb for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 09:42:17 +0000 (UTC)
+ with ESMTP id ekDrgbVbMZeY for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 09:48:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CBBD0867A8
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:42:16 +0000 (UTC)
-IronPort-SDR: HNLt0uayskCW1JdzgvsEAT1Mkhp4FUydkEcefot1FYEuSf/WkntwkiS/2N360LvFpy2bYYPn/o
- 9px3FqlDppkg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9883"; a="181160153"
-X-IronPort-AV: E=Sophos;i="5.79,398,1602572400"; d="scan'208";a="181160153"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 01:42:16 -0800
-IronPort-SDR: S8NKJpoHR43yahxBwwC489fxvEByvmCjRfpxvztC3wxCj3ILzn+/ozMqSz2X29tHWIIO8gVudD
- irHWAJwHvnfQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,398,1602572400"; d="scan'208";a="480285048"
-Received: from allen-box.sh.intel.com ([10.239.159.128])
- by fmsmga001.fm.intel.com with ESMTP; 03 Feb 2021 01:42:14 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id C932986786
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:48:38 +0000 (UTC)
+IronPort-SDR: S+B7DAkG74VVhZQ0fgZWK+WUQxGbsEroXrEDaRGj1ykYJ66J96FjYdPxOqU/xkjEQ6WROqx+it
+ ekrSeFDAfg2A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9883"; a="199969321"
+X-IronPort-AV: E=Sophos;i="5.79,398,1602572400"; d="scan'208";a="199969321"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Feb 2021 01:48:38 -0800
+IronPort-SDR: z7L5sj5sm456OIh0RnRHAfZ7lYa+DIEDxbjIPakmowt1eQjPoMxpFsbihLkOHIdqSuCyEZB1SC
+ ruJsaFLXSn+A==
+X-IronPort-AV: E=Sophos;i="5.79,398,1602572400"; d="scan'208";a="371356323"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.211])
+ ([10.254.210.211])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Feb 2021 01:48:36 -0800
+Subject: Re: [PATCH v2 0/3] iommu/vt-d: Add support for ACPI/SATC table
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2 3/3] iommu/vt-d: Apply SATC policy
-Date: Wed,  3 Feb 2021 17:33:28 +0800
-Message-Id: <20210203093329.1617808-4-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210203093329.1617808-1-baolu.lu@linux.intel.com>
 References: <20210203093329.1617808-1-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7217f395-4998-ae81-8e9d-a08bc49956a7@linux.intel.com>
+Date: Wed, 3 Feb 2021 17:48:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
+In-Reply-To: <20210203093329.1617808-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
 Cc: Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -81,133 +84,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Yian Chen <yian.chen@intel.com>
+Add the change log. Sorry for the quick sent.
 
-Starting from Intel VT-d v3.2, Intel platform BIOS can provide a new SATC
-table structure. SATC table lists a set of SoC integrated devices that
-require ATC to work (VT-d specification v3.2, section 8.8). Furthermore,
-the new version of IOMMU supports SoC device ATS in both its Scalable mode
-and legacy mode.
+On 2021/2/3 17:33, Lu Baolu wrote:
+> The Intel VT-d specification v3.2 comes with a new ACPI SATC (SoC-
+> Integrated Address Translation Cache) reporting structure. The SoC
+> integrated device enumerated in this table has a functional
+> requirement to enable its ATC (Address Translation Cache) via the
+> ATS capability for device operation.
+> 
+> This patch set adds the code to parse the SATC table, enumerates the
+> devices in it and satisfies the ATS requirement for them. Please help
+> to review. I will queue it in VT-d update for v5.12 if no objection.
+> 
 
-When IOMMU is working in scalable mode, software must enable device ATS
-support. On the other hand, when IOMMU is in legacy mode for whatever
-reason, the hardware managed ATS will automatically take effect and the
-SATC required devices can work transparently to the software. As the
-result, software shouldn't enable ATS on that device, otherwise duplicate
-device TLB invalidations will occur.
+Change log:
+v1->v2:
+  - Rephrase some words in the cover letter, commit message and
+    code comments.
+  - Refactored a code style to make it look nicer.
 
-Signed-off-by: Yian Chen <yian.chen@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 73 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 69 insertions(+), 4 deletions(-)
+Best regards,
+baolu
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ee0932307d64..3e30c340e6a9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -872,6 +872,60 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
- 	return false;
- }
- 
-+static bool iommu_support_ats(struct intel_iommu *iommu)
-+{
-+	return ecap_dev_iotlb_support(iommu->ecap);
-+}
-+
-+static bool device_support_ats(struct pci_dev *dev)
-+{
-+	return pci_ats_supported(dev) && dmar_find_matched_atsr_unit(dev);
-+}
-+
-+static int segment_atc_required(u16 segment)
-+{
-+	struct acpi_dmar_satc *satc;
-+	struct dmar_satc_unit *satcu;
-+	int ret = 1;
-+
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
-+		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
-+		if (satcu->atc_required && satcu->devices_cnt &&
-+		    satc->segment == segment)
-+			goto out;
-+	}
-+	ret = 0;
-+out:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+
-+static int device_atc_required(struct pci_dev *dev)
-+{
-+	struct dmar_satc_unit *satcu;
-+	struct acpi_dmar_satc *satc;
-+	struct device *tmp;
-+	int i, ret = 1;
-+
-+	dev = pci_physfn(dev);
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
-+		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
-+		if (!satcu->atc_required ||
-+		    satc->segment != pci_domain_nr(dev->bus))
-+			continue;
-+
-+		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
-+			if (to_pci_dev(tmp) == dev)
-+				goto out;
-+	}
-+	ret = 0;
-+out:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
- {
- 	struct dmar_drhd_unit *drhd = NULL;
-@@ -2555,10 +2609,16 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
- 
--		if (ecap_dev_iotlb_support(iommu->ecap) &&
--		    pci_ats_supported(pdev) &&
--		    dmar_find_matched_atsr_unit(pdev))
--			info->ats_supported = 1;
-+		/*
-+		 * Support ATS by default if it's supported by both IOMMU and
-+		 * client sides, except that the device's ATS is required by
-+		 * ACPI/SATC but the IOMMU scalable mode is disabled. In that
-+		 * case the hardware managed ATS will be automatically used.
-+		 */
-+		if (iommu_support_ats(iommu) && device_support_ats(pdev)) {
-+			if (!device_atc_required(pdev) || sm_supported(iommu))
-+				info->ats_supported = 1;
-+		}
- 
- 		if (sm_supported(iommu)) {
- 			if (pasid_supported(iommu)) {
-@@ -3155,6 +3215,11 @@ static int __init init_dmars(void)
- 	 * endfor
- 	 */
- 	for_each_drhd_unit(drhd) {
-+		if (pci_ats_disabled() && segment_atc_required(drhd->segment)) {
-+			pr_warn("Scalable mode disabled -- Use hardware managed ATS because PCIe ATS is disabled but some devices in PCIe segment 0x%x require it.",
-+				drhd->segment);
-+			intel_iommu_sm = 0;
-+		}
- 		/*
- 		 * lock not needed as this is only incremented in the single
- 		 * threaded kernel __init code path all other access are read
--- 
-2.25.1
-
+> Yian Chen (3):
+>    iommu/vt-d: Add new enum value and structure for SATC
+>    iommu/vt-d: Parse SATC reporting structure
+>    iommu/vt-d: Apply SATC policy
+> 
+>   drivers/iommu/intel/dmar.c  |   8 ++
+>   drivers/iommu/intel/iommu.c | 162 +++++++++++++++++++++++++++++++++++-
+>   include/acpi/actbl1.h       |  11 ++-
+>   include/linux/dmar.h        |   2 +
+>   4 files changed, 178 insertions(+), 5 deletions(-)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
