@@ -2,91 +2,92 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802E0C433DB
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:07:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390A4C433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:08:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFAEE64F7E
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:07:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFAEE64F7E
+	by mail.kernel.org (Postfix) with ESMTPS id ADFB964E36
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 09:08:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADFB964E36
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D98785010;
-	Wed,  3 Feb 2021 09:07:51 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6397C86730;
+	Wed,  3 Feb 2021 09:08:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uVFuzrNxBf0S; Wed,  3 Feb 2021 09:07:50 +0000 (UTC)
+	with ESMTP id 8uvz30k89DiV; Wed,  3 Feb 2021 09:08:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E24BD8440A;
-	Wed,  3 Feb 2021 09:07:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1BB238650D;
+	Wed,  3 Feb 2021 09:08:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C510DC0174;
-	Wed,  3 Feb 2021 09:07:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E7546C013A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:07:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08AECC0174;
+	Wed,  3 Feb 2021 09:08:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DBB5FC013A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:08:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BDDDB204C3
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:07:48 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D1004870BD
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:08:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vd67bl8EVV11 for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 09:07:46 +0000 (UTC)
+ with ESMTP id fLQYZOPaKCZn for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 09:08:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com
- [209.85.216.47])
- by silver.osuosl.org (Postfix) with ESMTPS id B3218204C0
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:07:46 +0000 (UTC)
-Received: by mail-pj1-f47.google.com with SMTP id d2so4171205pjs.4
- for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 01:07:46 -0800 (PST)
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com
+ [209.85.210.181])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DDC48870B2
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 09:08:02 +0000 (UTC)
+Received: by mail-pf1-f181.google.com with SMTP id q20so16235242pfu.8
+ for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 01:08:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=ZlWrFn/TSCs6U2fJNlgqQGt6rx/LlAU4ePBPMQXyuj4=;
- b=BoeBXegHPtpfm1J6JIqhLbXQZbMnDJ1K0LIEg6EmgpUPSVJoeW3bDSdHkMw08nBgnx
- CT/yT4PZAKKoKN/Rs9JZEe9UcYYW7agC3luIWAD5/NsyPLog1Vt9+WCVB4V3pAwio2yv
- pEZr5EqE3k26IKBPz0DrtcEh8fScLp1RHByEDFAXjW0q34BPj4zqZDA7hBsIquZ3w8f3
- r5ncp3g7cLOBaYymEIEStumGJ0KY8LycKgF4hLhJPdqcEZgW1bEp0vjSi41CZ8poeyvr
- 7SsK+dB4FW1LtE0QoUbe1ZN+kB+Mxr6oBlySMxE7gdNSFBEhsZxqxFhO1HuqXoFkK196
- rkcQ==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=MBNJGJWi6eP7GdgbQTp5RCUskWudTGe2wTYTqTKx4V0=;
+ b=KMPbBYyLh4qQHs05QbeBHjZsRM8xJCZqoLV4jmxvxGh9VSJYY3tqs3KSgOuS/vkZPa
+ /VF6M0NN3pl7lNwnoxe55k0Fq2BMz+FEAC0yZR5Xh1q5rqvlfMqu8BQct6pplCDxvN/X
+ VtUMl3rUhzIhsK+0N5Sd19LyDexd/4jgZUTex/AjvORZ4PU98zqOL0H+uKHW55UeM4j4
+ GVAgryL62ak360L4TrJizJLWdmJq6ioYMtowxDs9dXYAYouEh969NSRSHXOi6tzRC7ZG
+ dRv9oEHlOzuEEWwWu19nbcj9nFfZTYxH4DXC8dbw2GqDly0W7nmJAucGWmWsdn+Umr/2
+ 72sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=ZlWrFn/TSCs6U2fJNlgqQGt6rx/LlAU4ePBPMQXyuj4=;
- b=OgZ2AZh6B0Gv2VX8LlKrWAe7gCj/Gw9IE32mAOR481ZvSCTTkzknx4VTXcAn0hglaW
- eumKhradMaXXKJ6xc9XcYNAN6WKfxPOwnUhcHy1hrNWg9WkNXpXPNKyMp2YUMU5/6bMp
- kj4DCd/HSLipIl6YSwlwIogVfZ342TGv7KXbImdJhJ7i7cDAnHf+me26FFbKdU0Z8mrC
- Sjy4cniOhBVVnKOULqvEdS+WtWOmZWprUNCVpm90jhG5YrvALnLUI/sB5nW3f3J4cpWr
- BOXeevqRsyNVcGczZjO/XzOVQDdzn0Cx6v/O7U7RCdFH0UHq9HPgZvZTGe3Sk0+prE+9
- usAg==
-X-Gm-Message-State: AOAM532DatS1ekqs1eqJbzvcZcUF5Bldxla7IP+Nd7qBC7+ykOkt33oM
- d9cekC18JoV7OJhv4uKnPxE=
-X-Google-Smtp-Source: ABdhPJzk5sUgntpfAW2isz8JD3HlK8ruAhrrayyoG3um2jd4JvwT9MPXOJFEL2QSOLqYLaPD+bnTBQ==
-X-Received: by 2002:a17:902:6b45:b029:e0:7a3:a8c with SMTP id
- g5-20020a1709026b45b02900e007a30a8cmr2303023plt.1.1612343266293; 
- Wed, 03 Feb 2021 01:07:46 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=MBNJGJWi6eP7GdgbQTp5RCUskWudTGe2wTYTqTKx4V0=;
+ b=lRxujbyTxOMdSQ6ZkSuBHCCQRjsBMj/5Mof2ELjhC7Pa/csT4Lq1M3EW2OlUq9+IDc
+ D8cHcu2mU5rNl5xsK/IqOS7KyZ+2XRgIOk2hxHD3JdFnfOlTs8xUkr8+MIxaga/DnrZ4
+ 8aBNOfZbPEvoeWtW2mXrPa3NRNGy9h9fnIPGOBzNog3+t+T2IcENYx2ieL58WWXLvTGA
+ +lXevHOvOGSthBR/tbmPb2COTxoz8a3y86IC4T5I87Mq3ZJlxnDgIie+BD+AZTX0KSFA
+ zR2QWlmMTTcH2i6qhVtavcoZpjjCYvN2nQxKQz5vdq1LRMGAwt3t6PKy47gn0k51OKWo
+ l2ag==
+X-Gm-Message-State: AOAM532/bjiI+6Zj86mfTW8zXMkJTLhPOvSiJifrb1EA2kQuuXF9ulBe
+ xdCd8jyau3zHzwVrkxnc+UQ=
+X-Google-Smtp-Source: ABdhPJyon0Q21+AWXR2McqbrrUaVGjOGMgM5ykj/OuwX2mo8spdaqpXn5ey5eVy3BBFR//zq36f7dg==
+X-Received: by 2002:a63:d601:: with SMTP id q1mr2555343pgg.417.1612343282495; 
+ Wed, 03 Feb 2021 01:08:02 -0800 (PST)
 Received: from ubt.spreadtrum.com ([117.18.48.82])
- by smtp.gmail.com with ESMTPSA id y12sm1586403pfp.166.2021.02.03.01.07.40
+ by smtp.gmail.com with ESMTPSA id y12sm1586403pfp.166.2021.02.03.01.07.57
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 03 Feb 2021 01:07:45 -0800 (PST)
+ Wed, 03 Feb 2021 01:08:01 -0800 (PST)
 From: Chunyan Zhang <zhang.lyra@gmail.com>
 To: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
  Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 0/2] Add Unisoc iommu basic driver
-Date: Wed,  3 Feb 2021 17:07:25 +0800
-Message-Id: <20210203090727.789939-1-zhang.lyra@gmail.com>
+Subject: [PATCH v3 1/2] dt-bindings: iommu: add bindings for sprd iommu
+Date: Wed,  3 Feb 2021 17:07:26 +0800
+Message-Id: <20210203090727.789939-2-zhang.lyra@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210203090727.789939-1-zhang.lyra@gmail.com>
+References: <20210203090727.789939-1-zhang.lyra@gmail.com>
 MIME-Version: 1.0
 Cc: devicetree@vger.kernel.org, Chunyan Zhang <zhang.lyra@gmail.com>,
  linux-kernel@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
@@ -111,57 +112,94 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Chunyan Zhang <chunyan.zhang@unisoc.com>
 
-Changes since v2:
-* Added a WARN and return 0 if an invalid iova was passed to sprd_iommu_iova_to_phys();
-* Changed the name of sprd_iommu_write();
-* Revised CONFIG_SPRD_IOMMU help graph in Kconfig.
-* Revised comments for the struct sprd_iommu_device;
-* Converted to use "GPL" instread of "GPL v2", they are same as license-rules.rst shows.
+This iommu module can be used by Unisoc's multimedia devices, such as
+display, Image codec(jpeg) and a few signal processors, including
+VSP(video), GSP(graphic), ISP(image), and CPP(camera pixel processor), etc.
 
-Changes since v1:
-* Fixed compile errors reported by kernel test robot <lkp@intel.com>.
-* Changed to use syscon to get mapped registers for iommu and media devices to avoid double map issue.
-* Addressed Robin's comments:
-- Added including offset in the returned physical address if the input virtual address isn't page-aligned;
-- Added platform_device_put() after calling of_find_device_by_node();
-- Removed iommu register offset from driver, it will be defined as the cell of DT reference to syscon phandle;
-- Removed multi compatible strings which are not needed;
-- Added comments for the function sprd_iommu_clk_enable();
-- Added clocks property in bindings;
-- Set device_driver.suppress_bind_attrs to disable unbind the devices via sysfs;
-- A few trivial fixes.
-
-Changes since RFC v2:
-* Addressed Robin's comments:
-- Add COMPILE_TEST support;
-- Use DMA allocator for PTE;
-- Revised to avoid resource leak issue;
-- Added ->iotlb_sync implemented;
-- Moved iommu group allocation to probe;
-- Changed some function names to make them sprd specific;
-* Added support for more iommu instance;
-
-Changes since RFC v1:
-* Rebased on v5.11-rc1;
-* Changed sprd-iommu to tristate;
-* Removed check for args_count of iommu OF node, since there's no args
-  for sprd-iommu device node;
-* Added another IP version (i.e. vau);
-* Removed unnecessary configs selection from CONFIG_SPRD_IOMMU;
-* Changed to get zeroed pages.
-
-Chunyan Zhang (2):
-  dt-bindings: iommu: add bindings for sprd iommu
-  iommu: add Unisoc iommu basic driver
-
- .../devicetree/bindings/iommu/sprd,iommu.yaml |  72 +++
- drivers/iommu/Kconfig                         |  12 +
- drivers/iommu/Makefile                        |   1 +
- drivers/iommu/sprd-iommu.c                    | 600 ++++++++++++++++++
- 4 files changed, 685 insertions(+)
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+---
+ .../devicetree/bindings/iommu/sprd,iommu.yaml | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
- create mode 100644 drivers/iommu/sprd-iommu.c
 
+diff --git a/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
+new file mode 100644
+index 000000000000..4fc99e81fa66
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
+@@ -0,0 +1,72 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright 2020 Unisoc Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/sprd,iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Unisoc IOMMU and Multi-media MMU
++
++maintainers:
++  - Chunyan Zhang <zhang.lyra@gmail.com>
++
++properties:
++  compatible:
++    enum:
++      - sprd,iommu-v1
++
++  "#iommu-cells":
++    const: 0
++    description:
++      Unisoc IOMMUs are all single-master IOMMU devices, therefore no
++      additional information needs to associate with its master device.
++      Please refer to the generic bindings document for more details,
++      Documentation/devicetree/bindings/iommu/iommu.txt
++
++  reg:
++    maxItems: 1
++    description:
++      Not required if 'sprd,iommu-regs' is defined.
++
++  clocks:
++    description:
++      Reference to a gate clock phandle, since access to some of IOMMUs are
++      controlled by gate clock, but this is not required.
++
++  sprd,iommu-regs:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description:
++      Reference to a syscon phandle plus 1 cell, the syscon defines the
++      register range used by the iommu and the media device, the cell
++      defines the offset for iommu registers. Since iommu module shares
++      the same register range with the media device which uses it.
++
++required:
++  - compatible
++  - "#iommu-cells"
++
++oneOf:
++  - required:
++      - reg
++  - required:
++      - sprd,iommu-regs
++
++additionalProperties: false
++
++examples:
++  - |
++    iommu_disp: iommu-disp {
++      compatible = "sprd,iommu-v1";
++      sprd,iommu-regs = <&dpu_regs 0x800>;
++      #iommu-cells = <0>;
++    };
++
++  - |
++    iommu_jpg: iommu-jpg {
++      compatible = "sprd,iommu-v1";
++      sprd,iommu-regs = <&jpg_regs 0x300>;
++      #iommu-cells = <0>;
++      clocks = <&mm_gate 1>;
++    };
++
++...
 -- 
 2.25.1
 
