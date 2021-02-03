@@ -2,107 +2,98 @@ Return-Path: <SRS0=gtiV=HF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D7EC433E0
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:03:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2C8C433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:48:03 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C49FC64F95
-	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:03:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C49FC64F95
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id CB2FA64F7C
+	for <iommu@archiver.kernel.org>; Wed,  3 Feb 2021 16:48:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB2FA64F7C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 73A9B87120;
-	Wed,  3 Feb 2021 16:03:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EB2168696D;
+	Wed,  3 Feb 2021 16:48:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tk4EyUI7ssDn; Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
+	with ESMTP id Os9lU9-c7Q8B; Wed,  3 Feb 2021 16:48:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D648D87051;
-	Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DAC1980A61;
+	Wed,  3 Feb 2021 16:48:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B6E48C0FA7;
-	Wed,  3 Feb 2021 16:03:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F98AC0174
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE257C0FA8;
+	Wed,  3 Feb 2021 16:48:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2FA49C0174
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:47:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6C1EC87082
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:06 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2423186081
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:47:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KOXuDrMzqiNc for <iommu@lists.linux-foundation.org>;
- Wed,  3 Feb 2021 16:03:05 +0000 (UTC)
+ with ESMTP id LVjx3OkGj76d for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Feb 2021 16:47:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com
- [209.85.167.170])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 89B6B87051
- for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:03:05 +0000 (UTC)
-Received: by mail-oi1-f170.google.com with SMTP id k25so311869oik.13
- for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 08:03:05 -0800 (PST)
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com
+ [209.85.167.173])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6DE5C8607D
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Feb 2021 16:47:58 +0000 (UTC)
+Received: by mail-oi1-f173.google.com with SMTP id j25so564222oii.0
+ for <iommu@lists.linux-foundation.org>; Wed, 03 Feb 2021 08:47:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=qZEmNp2ZakxDJznFqcVZ1P80OyQOGPyM6d5UCk5d3vk=;
+ b=lrPEG74DOtqh0L7paTBjafFI44X0ikYaEsGMLmHNqbxviTPPH2RmXs68TIGDoMrrC1
+ DjwAxBpCyW1/ZZ/A1Mimjxt21m2+NePiopmTdSUrmjhtvyiwZ31SAHWPe++B7SGi6YJV
+ dOHc9ig1W+xyZ6263TnU6LVUd8RyDzTwUXkVWh4m0MuUvp7u46NIDMTe1RFSJ03m3QqH
+ lhed1HQeGZphcYM/6mCFIxFXlYyKIG4gL4tOl9gr9ChfCJI7lTUqro7G4WXbJDYhRvAW
+ tehtMsu6xdSQKpB/mqrFgpd6bs/dy57W3Ay5G60j4GwuamIYASeUDTfiEkTiPdrU6uVR
+ yWCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=BcE4ZZBKyxCDLDrYAu9i4Md6o808j4TR1LnI5e2y0b0=;
- b=BcSLAHRYa+X4ikmwVo/gLsHi6xoNXut771wZjgTOnoAQFUOw17WFRuYV29KCociQKh
- 6gWvqV1xzJo0dxJMbJ5hwK/k0+chzKmK0QWpqk/kf0uSKo/khtTKS2C18fi5QsHCp1y3
- MuW2115JurWlwMLFWzEWsE7YflOkbzTjhubYOaIVWDa17Kk/9dytMTmcALpcmkK2kq7D
- W/J4e9hqCYD/J2fQRwS1m9V7NlIzCxQD1T69NH3s/1nnQw9q1hGrrwzZ8dVJ1H2baTwA
- YGLUs/9hKlSIeLTNn2bXttI01oA8xYtkA9ruyPpTIY3Mmpkw6pAkRxpAZut+tPMR9xbN
- GSFA==
-X-Gm-Message-State: AOAM530VYfBfS1guICNmGLon20PBYmcDEolGtlHR3d3GiXuNzy+179Rg
- ic8S1Fdm9s2hi9U/LWIwFLWWH6vaUj09JkK9FXc=
-X-Google-Smtp-Source: ABdhPJy5RnEli5EScDsGGPC/30HmbHWChMG7KZn1WeCaaLseFVr6EQuBii7Iq7M5O8vzqs7BmEy6ag0EovkF5KtgUsQ=
-X-Received: by 2002:a54:4e88:: with SMTP id c8mr2343251oiy.148.1612368184741; 
- Wed, 03 Feb 2021 08:03:04 -0800 (PST)
+ bh=qZEmNp2ZakxDJznFqcVZ1P80OyQOGPyM6d5UCk5d3vk=;
+ b=Oy/nrTI4TrKUu/X5YIHXgZPJnvloS5ASQbvnN4Qe9attww1wVRPUOKhT2+G/qmJX1E
+ 1KJqxEn1idXtfV3TdS66Ro6opYwBFvXemjWsUDWA00YU4JoDkcpWLtbja+DTGcgdgO78
+ bcI+PpyDTFC6P+QXHMp6GmbJ3iKxR9SWZLeqaXM8nLGwXoChw++K+iifBeVxXC7RcxWu
+ YsqdNGW4CyYqJSS8WxEezz07vdHjrwbu5ZKCHmz72PlPvbQpx1XGSZHPzcKmzW1UTSIx
+ 4BgVRXrs8wMqPyzVgFE3CJUAZXZ/i8BphP4xnPNfkWv98cyKshCaLY/W0OjyVspuvhjn
+ kFTw==
+X-Gm-Message-State: AOAM532sOFdjZpRZFJiGjdydxlYV1Cv2la8FaufjPvV25Bv3a4nllhPB
+ +Xi0MYcT1IQUUlqqzfmUJ+cn7oqb/Z8vADVgwt5tAw==
+X-Google-Smtp-Source: ABdhPJz2RpbhkniHRFTWA/PnemwFxygMLB82C8ofE36DFtyCupwdbGrY9bzMHloCpMlEZy/Z9AXkapfX8D+WwztZi8I=
+X-Received: by 2002:aca:b9c1:: with SMTP id j184mr2575743oif.63.1612370877454; 
+ Wed, 03 Feb 2021 08:47:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20210202205544.24812-1-robh@kernel.org>
- <20210202205544.24812-3-robh@kernel.org>
- <CAMuHMdVvtUvrQh3-3kxaqqWvHnF_UOQmt-6jq_GkX8g=cszUug@mail.gmail.com>
- <20210203155517.GC3706951@robh.at.kernel.org>
-In-Reply-To: <20210203155517.GC3706951@robh.at.kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 3 Feb 2021 17:02:53 +0100
-Message-ID: <CAMuHMdVp-YXtMBPistV0XPDHoSbW6Rz4c7=t3y2JB7B56LniBg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] dt-bindings: Fix errors in 'if' schemas
-To: Rob Herring <robh@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Tomer Maimon <tmaimon77@gmail.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>,
- Linus Walleij <linus.walleij@linaro.org>,
- Vincent Cheng <vincent.cheng.xh@renesas.com>,
- DRI Development <dri-devel@lists.freedesktop.org>,
- Tali Perry <tali.perry1@gmail.com>, Eric Anholt <eric@anholt.net>,
- Daniel Palmer <daniel@thingy.jp>, Linux I2C <linux-i2c@vger.kernel.org>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- linux-clk <linux-clk@vger.kernel.org>, linux-leds <linux-leds@vger.kernel.org>,
- Florian Fainelli <f.fainelli@gmail.com>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Vinod Koul <vkoul@kernel.org>,
- Kishon Vijay Abraham I <kishon@ti.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, Chen-Yu Tsai <wens@csie.org>,
- Joel Stanley <joel@jms.id.au>, Guenter Roeck <linux@roeck-us.net>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>,
- Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
- Ray Jui <rjui@broadcom.com>, Maxime Ripard <mripard@kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Wim Van Sebroeck <wim@linux-watchdog.org>,
- Avi Fishman <avifishman70@gmail.com>, Scott Branden <sbranden@broadcom.com>,
- Stephen Boyd <sboyd@kernel.org>, Linux MMC List <linux-mmc@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Andrew Jeffery <andrew@aj.id.au>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
- "David S. Miller" <davem@davemloft.net>
+References: <20210201183017.3339130-1-jxgao@google.com>
+ <20210201183017.3339130-4-jxgao@google.com>
+ <20210201205759.GA2128135@dhcp-10-100-145-180.wdc.com>
+ <CAMGD6P2Gz9nWELMdsAhwQvXx3PXv2aXet=Tn9Rca61obZawfgw@mail.gmail.com>
+ <CAMGD6P1_cs1W8jMt7Sz6broDdnFNPrxbiZW-JZ+GAtg5aoTdOQ@mail.gmail.com>
+ <20210203133712.GA24674@lst.de>
+In-Reply-To: <20210203133712.GA24674@lst.de>
+Date: Wed, 3 Feb 2021 08:47:45 -0800
+Message-ID: <CAMGD6P1Ksn4DJ0w=O20Ou7BOKAW9yzwJgRV57xaqLdVDK4ATaQ@mail.gmail.com>
+Subject: Re: [PATCH V2 3/3] Adding device_dma_parameters->offset_preserve_mask
+ to NVMe driver.
+To: Christoph Hellwig <hch@lst.de>
+Cc: heikki.krogerus@linux.intel.com, sagi@grimberg.me,
+ Saravana Kannan <saravanak@google.com>, bgolaszewski@baylibre.com,
+ Marc Orr <marcorr@google.com>, gregkh@linuxfoundation.org,
+ rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ axboe@fb.com, iommu@lists.linux-foundation.org, jroedel@suse.de,
+ Keith Busch <kbusch@kernel.org>, dan.j.williams@intel.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,87 +106,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jianxiong Gao via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jianxiong Gao <jxgao@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Rob,
-
-On Wed, Feb 3, 2021 at 4:55 PM Rob Herring <robh@kernel.org> wrote:
-> On Wed, Feb 03, 2021 at 09:01:23AM +0100, Geert Uytterhoeven wrote:
-> > On Tue, Feb 2, 2021 at 9:55 PM Rob Herring <robh@kernel.org> wrote:
-> > > Properties in if/then schemas weren't getting checked by the meta-schemas.
-> > > Enabling meta-schema checks finds several errors.
-> > >
-> > > The use of an 'items' schema (as opposed to the list form) is wrong in
-> > > some cases as it applies to all entries. 'contains' is the correct schema
-> > > to use in the case of multiple entries.
-> >
-> > > Signed-off-by: Rob Herring <robh@kernel.org>
-> >
-> > Thanks for your patch!
-> >
-> > > --- a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > +++ b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
-> > > @@ -81,9 +81,8 @@ properties:
-> > >  if:
-> > >    properties:
-> > >      compatible:
-> > > -      items:
-> > > -        enum:
-> > > -          - renesas,usb2-phy-r7s9210
-> > > +      contains:
-> > > +        const: renesas,usb2-phy-r7s9210
-> >
-> > Single entry, so "contains" not needed?
 >
-> No, you are misunderstanding how these work. 'contains' means at least
-> one entry in an array passes with the subschema. In this case,
-> 'renesas,usb2-phy-r7s9210' must appear somewhere in the 'compatible'
-> values. (Before, it said *every* entry must be
-> 'renesas,usb2-phy-r7s9210'.) As there is a fallback compatible, we need
-> 'contains'.
+> Please try with this extra patch:
 >
-> > > --- a/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
-> > > +++ b/Documentation/devicetree/bindings/pinctrl/renesas,pfc.yaml
-> > > @@ -76,11 +76,10 @@ required:
-> > >  if:
-> > >    properties:
-> > >      compatible:
-> > > -      items:
-> > > -        enum:
-> > > -          - renesas,pfc-r8a73a4
-> > > -          - renesas,pfc-r8a7740
-> > > -          - renesas,pfc-sh73a0
-> > > +      enum:
-> > > +        - renesas,pfc-r8a73a4
-> > > +        - renesas,pfc-r8a7740
-> > > +        - renesas,pfc-sh73a0
-> >
-> > Missing "contains"?
->
-> No. In this case, 'compatible' is always a single entry, so no
-> 'contains' needed (but would work). If compatible is one of these 3
-> strings, then the 'if' is true.
->
-> The original way would actually work in this case (i.e. is valid
-> json-schema), but we require 'items' to have a size (maxItems/minItems)
-> in our meta-schema.
+I have tried with the extra patch and it still fails to boot.
+I have attached dmesg output for the error:
 
-Thanks for the explanation!
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
+-------------dmesg starts here-----------------
+[    6.357755] XFS (nvme0n1p2): Mounting V5 Filesystem
+[    6.430092] XFS (nvme0n1p2): Torn write (CRC failure) detected at
+log block 0x20d0. Truncating head block from 0x20e0.
+[    6.442828] XFS (nvme0n1p2): Starting recovery (logdev: internal)
+[    7.272456] XFS (nvme0n1p2): Ending recovery (logdev: internal)
+[    7.610250] systemd-journald[434]: Received SIGTERM from PID 1 (systemd).
+...
+[   10.054121] systemd[755]:
+/usr/lib/systemd/system-generators/systemd-rc-local-generator
+terminated by signal ABRT.
+[   10.726122] audit: type=1400 audit(1612370261.090:4): avc:  denied
+{ search } for  pid=783 comm="systemd-sysctl" name="crash"
+dev="nvme0n1p2" ino=50789805
+scontext=system_u:system_r:systemd_sysctl_t:s0
+tcontext=system_u:object_r:kdump_crash_t:s0 tclass=dir permissive=0
+[   10.751764] audit: type=1400 audit(1612370261.090:5): avc:  denied
+{ search } for  pid=783 comm="systemd-sysctl" name="crash"
+dev="nvme0n1p2" ino=50789805
+scontext=system_u:system_r:systemd_sysctl_t:s0
+tcontext=system_u:object_r:kdump_crash_t:s0 tclass=dir permissive=0
+[   12.366607] xfs filesystem being remounted at / supports timestamps
+until 2038 (0x7fffffff)
+[   12.376379] audit: type=1400 audit(1612370262.740:6): avc:  denied
+{ write } for  pid=788 comm="systemd-remount" name="crash"
+dev="nvme0n1p2" ino=50789805 scontext=system_u:system_r:init_t:s0
+tcontext=system_u:object_r:kdump_crash_t:s0 tclass=dir permissive=0
+[   12.413155] systemd-journald[781]: Received request to flush
+runtime journal from PID 1
+[   12.428917] audit: type=1400 audit(1612370262.793:7): avc:  denied
+{ write } for  pid=815 comm="journalctl" name="crash" dev="nvme0n1p2"
+ino=50789805 scontext=system_u:system_r:init_t:s0
+tcontext=system_u:object_r:kdump_crash_t:s0 tclass=dir permissive=0
+[   12.453006] audit: type=1400 audit(1612370262.799:8): avc:  denied
+{ write } for  pid=817 comm="systemd-random-" name="crash"
+dev="nvme0n1p2" ino=50789805 scontext=system_u:system_r:init_t:s0
+tcontext=system_u:object_r:kdump_crash_t:s0 tclass=dir permissive=0
+[   13.306030] plymouth[853]: segfault at 0 ip 00007f2eabca8090 sp
+00007fffe94d8c08 error 6 in libc-2.28.so[7f2eabbcd000+1b9000]
+[   13.318772] Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00
+[   78.782418] sed[911]: segfault at 0 ip 00007fc3540da090 sp
+00007ffdb4373ff8 error 6 in libc-2.28.so[7fc353fff000+1b9000]
+[   78.794007] Code: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 <00> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00
+--------------dmesg ends here-----------
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Jianxiong Gao
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
