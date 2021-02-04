@@ -2,76 +2,115 @@ Return-Path: <SRS0=5Yk+=HG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4C2C433DB
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 19:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39386C433E0
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 20:25:42 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A57A964F53
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 19:53:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A57A964F53
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9674564F48
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 20:25:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9674564F48
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5105F87188;
-	Thu,  4 Feb 2021 19:53:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 52CF78726D;
+	Thu,  4 Feb 2021 20:25:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I3KHwvXykUNe; Thu,  4 Feb 2021 19:52:59 +0000 (UTC)
+	with ESMTP id EWDF1IJpdjEh; Thu,  4 Feb 2021 20:25:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3459F87234;
-	Thu,  4 Feb 2021 19:52:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 98C9E87268;
+	Thu,  4 Feb 2021 20:25:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 297D4C07FD;
-	Thu,  4 Feb 2021 19:52:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4EB02C013A
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 19:52:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8AA45C0174;
+	Thu,  4 Feb 2021 20:25:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04263C013A
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 20:25:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3A63C87234
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 19:52:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EA13986813
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 20:25:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xyt0LX7504zg for <iommu@lists.linux-foundation.org>;
- Thu,  4 Feb 2021 19:52:56 +0000 (UTC)
+ with ESMTP id W_b1Nw1yLr1T for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Feb 2021 20:25:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9F55B87188
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 19:52:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E3A8143B;
- Thu,  4 Feb 2021 11:52:56 -0800 (PST)
-Received: from [10.57.49.26] (unknown [10.57.49.26])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BB573F73B;
- Thu,  4 Feb 2021 11:52:53 -0800 (PST)
-Subject: Re: [RFC PATCH 06/11] iommu/arm-smmu-v3: Scan leaf TTD to sync
- hardware dirty log
-To: Keqian Zhu <zhukeqian1@huawei.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
- kvmarm@lists.cs.columbia.edu, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
- Marc Zyngier <maz@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>
-References: <20210128151742.18840-1-zhukeqian1@huawei.com>
- <20210128151742.18840-7-zhukeqian1@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2a731fe7-5879-8d89-7b96-d7385117b869@arm.com>
-Date: Thu, 4 Feb 2021 19:52:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AB4708680B
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 20:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1612470336;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=0HKszGpu1NTkG70KhLGBCppG7Db6sBfqpDeGrPhKZVs=;
+ b=Ax1BMyVSf+I9EsVjHorJMK2r1ORrp9UnLyvadpkMrigIrBnum/p9+76E12rfqZ2t78VuGC
+ cSAMrEZYEeyHzsZx8EEFS/LoVww1lvGEad8+1c+E2Tnn0t8sAKCKhEUaj5wko7axpIZDmc
+ 6+Rd3yLNXQnT0kBDK4yQuOmz2L3AgX4=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-224-AXfSX9kGPXyvq2H1-bS7Ug-1; Thu, 04 Feb 2021 15:25:28 -0500
+X-MC-Unique: AXfSX9kGPXyvq2H1-bS7Ug-1
+Received: by mail-io1-f69.google.com with SMTP id a2so3957829iod.22
+ for <iommu@lists.linux-foundation.org>; Thu, 04 Feb 2021 12:25:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=0HKszGpu1NTkG70KhLGBCppG7Db6sBfqpDeGrPhKZVs=;
+ b=J9FEpwLMqjXAsKWCk5L+NaPYF3bSIDvj5Hb7sh8U8tv7ntazlvxlswS855717sxwiU
+ J7lBk8MfZ3PDYwyEnSigkT8tZ6HWqi6HP/Jr7STZ7UmfAlf5SKGgQzCp+hRzqS/yr7PW
+ FouvHZNE4DNyRgN4UAjpbym/D8dJ3pchpvjua9dY4/5mvDxmIAEXqD6uTpbc0m5mAfjO
+ xXo0Iw/ZBM/yZ3oxHLoQdXJiEpvEyElS5PKcgQhHFpyGWj90rw70IEVXh80NYLszn2Y7
+ ofsOkeyudcq0Db1V88SlIeT2n6bttjv2FAle2mMrUkpWbKlvPsPiqbgpOea5OGDFqAUw
+ b3Qw==
+X-Gm-Message-State: AOAM5314T/jQoh6HHbx1kHJSbiibYtX6czDz41J8wRgBMzrAtnywvkBS
+ 2TPz83MTBiqnAXcAp4dpDMvBikoQbvv8xbw1J8E6NfxbkxYIGkvsbIhItN4sksif6sEYhnX4LVR
+ mnuuBMaELIY8D86tLyH+Nz7FpPz0VeQ==
+X-Received: by 2002:a02:6402:: with SMTP id t2mr1289374jac.90.1612470326265;
+ Thu, 04 Feb 2021 12:25:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyBVFW6tkM+zQROI6KSYGitD7KHwxfl1DQKMAtzjO/sE8lExVHey66MC8kY6G7y4PjEE50LtA==
+X-Received: by 2002:a02:6402:: with SMTP id t2mr1289360jac.90.1612470326108;
+ Thu, 04 Feb 2021 12:25:26 -0800 (PST)
+Received: from localhost ([97.118.140.0])
+ by smtp.gmail.com with ESMTPSA id r7sm3133018ilo.31.2021.02.04.12.25.25
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 04 Feb 2021 12:25:25 -0800 (PST)
+Date: Thu, 4 Feb 2021 13:25:24 -0700
+From: Al Stone <ahs3@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [EXTERNAL] Re: Question regarding VIOT proposal
+Message-ID: <20210204202524.GO702808@redhat.com>
+References: <20201105134503.GA950007@myrica>
+ <MW2PR2101MB113096E822AD835F658808B480EE0@MW2PR2101MB1130.namprd21.prod.outlook.com>
+ <20201106135745.GB974750@myrica>
+ <MW2PR2101MB11301F2185D1C9016310728E80F21@MW2PR2101MB1130.namprd21.prod.outlook.com>
+ <20201203230127.GD4343@redhat.com>
+ <20201204180924.GA1922896@myrica>
+ <20201204201825.GG4343@redhat.com> <YBkYsSHGUfG91NoN@myrica>
+ <20210202202713.GF702808@redhat.com> <YBpjAF3Q+NeJblE9@myrica>
 MIME-Version: 1.0
-In-Reply-To: <20210128151742.18840-7-zhukeqian1@huawei.com>
-Content-Language: en-GB
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Cornelia Huck <cohuck@redhat.com>,
- lushenming@huawei.com, Kirti Wankhede <kwankhede@nvidia.com>,
- James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com
+In-Reply-To: <YBpjAF3Q+NeJblE9@myrica>
+User-Agent: Mutt/1.14.6 (2020-07-11)
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=ahs3@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "mst@redhat.com" <mst@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Boeuf,
+ Sebastien" <sebastien.boeuf@intel.com>,
+ Alexander Grest <Alexander.Grest@microsoft.com>,
+ Yinghan Yang <Yinghan.Yang@microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,319 +123,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-01-28 15:17, Keqian Zhu wrote:
-> From: jiangkunkun <jiangkunkun@huawei.com>
+On 03 Feb 2021 09:46, Jean-Philippe Brucker wrote:
+> On Tue, Feb 02, 2021 at 01:27:13PM -0700, Al Stone wrote:
+> > On 02 Feb 2021 10:17, Jean-Philippe Brucker wrote:
+> > > Hi Al,
+> > > 
+> > > On Fri, Dec 04, 2020 at 01:18:25PM -0700, Al Stone wrote:
+> > > > > I updated the doc: https://jpbrucker.net/virtio-iommu/viot/viot-v9.pdf
+> > > > > You can incorporate it into the ASWG proposal.
+> > > > > Changes since v8:
+> > > > > * One typo (s/programing/programming/)
+> > > > > * Modified the PCI Range node to include a segment range.
+> > > > > 
+> > > > > I also updated the Linux and QEMU implementations on branch
+> > > > > virtio-iommu/devel in https://jpbrucker.net/git/linux/ and
+> > > > > https://jpbrucker.net/git/qemu/
+> > > > > 
+> > > > > Thanks again for helping with this
+> > > > > 
+> > > > > Jean
+> > > > 
+> > > > Perfect.  Thanks.  I'll update the ASWG info right away.
+> > > 
+> > > Has there been any more feedback on the VIOT specification? I'm wondering
+> > > when we can start upstreaming support for it.
+> > > 
+> > > Thanks,
+> > > Jean
+> > 
+> > Ah, sorry, Jean.  I meant to get back to you sooner.  My apologies.
+> > 
+> > The latest version that resulted from the discussion with Yinghan of
+> > Microsoft is the one in front the ASWG; I think if you upstream that
+> > version, it should be identical to the spec when it is next published
+> > (post ACPI 6.4).
+> > 
+> > The process is: (1) propose the change, (2) review it in committee,
+> > (3) give people more time to think about it, then (4) have a finale
+> > vote.  We've been iterating over (1), (2) and (3).  Since there was
+> > no new discussion at the last meeting, we should have the final vote
+> > on this (4) in the next meeting.  I had hoped we could do that last
+> > week but the meeting was canceled at the last minute.  I hope to have
+> > the final vote this Thursday and will let you know as soon as it has
+> > been decided.
+> > 
+> > My apologies for the delays; getting things done by committee always
+> > takes a bazillion times longer than one would think.
 > 
-> During dirty log tracking, user will try to retrieve dirty log from
-> iommu if it supports hardware dirty log. This adds a new interface
-> named sync_dirty_log in iommu layer and arm smmuv3 implements it,
-> which scans leaf TTD and treats it's dirty if it's writable (As we
-> just enable HTTU for stage1, so check AP[2] is not set).
+> No worries, thanks a lot for the update!
 > 
-> Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
-> Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 27 +++++++
->   drivers/iommu/io-pgtable-arm.c              | 90 +++++++++++++++++++++
->   drivers/iommu/iommu.c                       | 41 ++++++++++
->   include/linux/io-pgtable.h                  |  4 +
->   include/linux/iommu.h                       | 17 ++++
->   5 files changed, 179 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 2434519e4bb6..43d0536b429a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2548,6 +2548,32 @@ static size_t arm_smmu_merge_page(struct iommu_domain *domain, unsigned long iov
->   	return ops->merge_page(ops, iova, paddr, size, prot);
->   }
->   
-> +static int arm_smmu_sync_dirty_log(struct iommu_domain *domain,
-> +				   unsigned long iova, size_t size,
-> +				   unsigned long *bitmap,
-> +				   unsigned long base_iova,
-> +				   unsigned long bitmap_pgshift)
-> +{
-> +	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-> +	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-> +
-> +	if (!(smmu->features & ARM_SMMU_FEAT_HTTU_HD)) {
-> +		dev_err(smmu->dev, "don't support HTTU_HD and sync dirty log\n");
-> +		return -EPERM;
-> +	}
-> +
-> +	if (!ops || !ops->sync_dirty_log) {
-> +		pr_err("don't support sync dirty log\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	/* To ensure all inflight transactions are completed */
-> +	arm_smmu_flush_iotlb_all(domain);
+> Thanks,
+> Jean
 
-What about transactions that arrive between the point that this 
-completes, and the point - potentially much later - that we actually 
-access any given PTE during the walk? I don't see what this is supposed 
-to be synchronising against, even if it were just a CMD_SYNC (I 
-especially don't see why we'd want to knock out the TLBs).
+Sigh.  Just got a note that today's meeting has been canceled :(.
 
-> +
-> +	return ops->sync_dirty_log(ops, iova, size, bitmap,
-> +			base_iova, bitmap_pgshift);
-> +}
-> +
->   static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   {
->   	return iommu_fwspec_add_ids(dev, args->args, 1);
-> @@ -2649,6 +2675,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.domain_set_attr	= arm_smmu_domain_set_attr,
->   	.split_block		= arm_smmu_split_block,
->   	.merge_page		= arm_smmu_merge_page,
-> +	.sync_dirty_log		= arm_smmu_sync_dirty_log,
->   	.of_xlate		= arm_smmu_of_xlate,
->   	.get_resv_regions	= arm_smmu_get_resv_regions,
->   	.put_resv_regions	= generic_iommu_put_resv_regions,
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 17390f258eb1..6cfe1ef3fedd 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -877,6 +877,95 @@ static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova
->   	return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
->   }
->   
-> +static int __arm_lpae_sync_dirty_log(struct arm_lpae_io_pgtable *data,
-> +				     unsigned long iova, size_t size,
-> +				     int lvl, arm_lpae_iopte *ptep,
-> +				     unsigned long *bitmap,
-> +				     unsigned long base_iova,
-> +				     unsigned long bitmap_pgshift)
-> +{
-> +	arm_lpae_iopte pte;
-> +	struct io_pgtable *iop = &data->iop;
-> +	size_t base, next_size;
-> +	unsigned long offset;
-> +	int nbits, ret;
-> +
-> +	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-> +		return -EINVAL;
-> +
-> +	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-> +	pte = READ_ONCE(*ptep);
-> +	if (WARN_ON(!pte))
-> +		return -EINVAL;
-> +
-> +	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-> +		if (iopte_leaf(pte, lvl, iop->fmt)) {
-> +			if (pte & ARM_LPAE_PTE_AP_RDONLY)
-> +				return 0;
-> +
-> +			/* It is writable, set the bitmap */
-> +			nbits = size >> bitmap_pgshift;
-> +			offset = (iova - base_iova) >> bitmap_pgshift;
-> +			bitmap_set(bitmap, offset, nbits);
-> +			return 0;
-> +		} else {
-> +			/* To traverse next level */
-> +			next_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
-> +			ptep = iopte_deref(pte, data);
-> +			for (base = 0; base < size; base += next_size) {
-> +				ret = __arm_lpae_sync_dirty_log(data,
-> +						iova + base, next_size, lvl + 1,
-> +						ptep, bitmap, base_iova, bitmap_pgshift);
-> +				if (ret)
-> +					return ret;
-> +			}
-> +			return 0;
-> +		}
-> +	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
-> +		if (pte & ARM_LPAE_PTE_AP_RDONLY)
-> +			return 0;
-> +
-> +		/* Though the size is too small, also set bitmap */
-> +		nbits = size >> bitmap_pgshift;
-> +		offset = (iova - base_iova) >> bitmap_pgshift;
-> +		bitmap_set(bitmap, offset, nbits);
-> +		return 0;
-> +	}
-> +
-> +	/* Keep on walkin */
-> +	ptep = iopte_deref(pte, data);
-> +	return __arm_lpae_sync_dirty_log(data, iova, size, lvl + 1, ptep,
-> +			bitmap, base_iova, bitmap_pgshift);
-> +}
-> +
-> +static int arm_lpae_sync_dirty_log(struct io_pgtable_ops *ops,
-> +				   unsigned long iova, size_t size,
-> +				   unsigned long *bitmap,
-> +				   unsigned long base_iova,
-> +				   unsigned long bitmap_pgshift)
-> +{
-> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	arm_lpae_iopte *ptep = data->pgd;
-> +	int lvl = data->start_level;
-> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +	long iaext = (s64)iova >> cfg->ias;
-> +
-> +	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
-> +		return -EINVAL;
-> +
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-> +		iaext = ~iaext;
-> +	if (WARN_ON(iaext))
-> +		return -EINVAL;
-> +
-> +	if (data->iop.fmt != ARM_64_LPAE_S1 &&
-> +	    data->iop.fmt != ARM_32_LPAE_S1)
-> +		return -EINVAL;
-> +
-> +	return __arm_lpae_sync_dirty_log(data, iova, size, lvl, ptep,
-> +					 bitmap, base_iova, bitmap_pgshift);
-> +}
-> +
->   static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->   {
->   	unsigned long granule, page_sizes;
-> @@ -957,6 +1046,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
->   		.iova_to_phys	= arm_lpae_iova_to_phys,
->   		.split_block	= arm_lpae_split_block,
->   		.merge_page	= arm_lpae_merge_page,
-> +		.sync_dirty_log	= arm_lpae_sync_dirty_log,
->   	};
->   
->   	return data;
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f1261da11ea8..69f268069282 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2822,6 +2822,47 @@ size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
->   }
->   EXPORT_SYMBOL_GPL(iommu_merge_page);
->   
-> +int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-> +			 size_t size, unsigned long *bitmap,
-> +			 unsigned long base_iova, unsigned long bitmap_pgshift)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +	unsigned int min_pagesz;
-> +	size_t pgsize;
-> +	int ret;
-> +
-> +	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-> +
-> +	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-> +		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-> +		       iova, size, min_pagesz);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!ops || !ops->sync_dirty_log) {
-> +		pr_err("don't support sync dirty log\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	while (size) {
-> +		pgsize = iommu_pgsize(domain, iova, size);
-> +
-> +		ret = ops->sync_dirty_log(domain, iova, pgsize,
-> +					  bitmap, base_iova, bitmap_pgshift);
+So, next week for the final vote.  OTOH, there have been no comments
+of any sort on the proposal -- and silence is good, in this case.
 
-Once again, we have a worst-of-both-worlds iteration that doesn't make 
-much sense. iommu_pgsize() essentially tells you the best supported size 
-that an IOVA range *can* be mapped with, but we're iterating a range 
-that's already mapped, so we don't know if it's relevant, and either way 
-it may not bear any relation to the granularity of the bitmap, which is 
-presumably what actually matters.
+-- 
+ciao,
+al
+-----------------------------------
+Al Stone
+Software Engineer
+Red Hat, Inc.
+ahs3@redhat.com
+-----------------------------------
 
-Logically, either we should iterate at the bitmap granularity here, and 
-the driver just says whether the given iova chunk contains any dirty 
-pages or not, or we just pass everything through to the driver and let 
-it do the whole job itself. Doing a little bit of both is just an 
-overcomplicated mess.
-
-I'm skimming patch #7 and pretty much the same comments apply, so I 
-can't be bothered to repeat them there...
-
-Robin.
-
-> +		if (ret)
-> +			break;
-> +
-> +		pr_debug("dirty_log_sync: iova 0x%lx pagesz 0x%zx\n", iova,
-> +			 pgsize);
-> +
-> +		iova += pgsize;
-> +		size -= pgsize;
-> +	}
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sync_dirty_log);
-> +
->   void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   {
->   	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 754b62a1bbaf..f44551e4a454 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -166,6 +166,10 @@ struct io_pgtable_ops {
->   			      size_t size);
->   	size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
->   			     phys_addr_t phys, size_t size, int prot);
-> +	int (*sync_dirty_log)(struct io_pgtable_ops *ops,
-> +			      unsigned long iova, size_t size,
-> +			      unsigned long *bitmap, unsigned long base_iova,
-> +			      unsigned long bitmap_pgshift);
->   };
->   
->   /**
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ac2b0b1bce0f..8069c8375e63 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -262,6 +262,10 @@ struct iommu_ops {
->   			      size_t size);
->   	size_t (*merge_page)(struct iommu_domain *domain, unsigned long iova,
->   			     phys_addr_t phys, size_t size, int prot);
-> +	int (*sync_dirty_log)(struct iommu_domain *domain,
-> +			      unsigned long iova, size_t size,
-> +			      unsigned long *bitmap, unsigned long base_iova,
-> +			      unsigned long bitmap_pgshift);
->   
->   	/* Request/Free a list of reserved regions for a device */
->   	void (*get_resv_regions)(struct device *dev, struct list_head *list);
-> @@ -517,6 +521,10 @@ extern size_t iommu_split_block(struct iommu_domain *domain, unsigned long iova,
->   				size_t size);
->   extern size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
->   			       size_t size, int prot);
-> +extern int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-> +				size_t size, unsigned long *bitmap,
-> +				unsigned long base_iova,
-> +				unsigned long bitmap_pgshift);
->   
->   /* Window handling function prototypes */
->   extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
-> @@ -923,6 +931,15 @@ static inline size_t iommu_merge_page(struct iommu_domain *domain,
->   	return -EINVAL;
->   }
->   
-> +static inline int iommu_sync_dirty_log(struct iommu_domain *domain,
-> +				       unsigned long iova, size_t size,
-> +				       unsigned long *bitmap,
-> +				       unsigned long base_iova,
-> +				       unsigned long pgshift)
-> +{
-> +	return -EINVAL;
-> +}
-> +
->   static inline int  iommu_device_register(struct iommu_device *iommu)
->   {
->   	return -ENODEV;
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
