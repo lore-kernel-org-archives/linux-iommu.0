@@ -2,64 +2,65 @@ Return-Path: <SRS0=5Yk+=HG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 653AFC433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 07:01:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F45C433E0
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 07:01:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6E7D64F47
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 07:01:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6E7D64F47
+	by mail.kernel.org (Postfix) with ESMTPS id 8136864D99
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 07:01:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8136864D99
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5DAAC8613E;
-	Thu,  4 Feb 2021 07:01:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1EDA520470;
+	Thu,  4 Feb 2021 07:01:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k2lE2LpIg8Df; Thu,  4 Feb 2021 07:01:12 +0000 (UTC)
+	with ESMTP id m0fSdveZ8toz; Thu,  4 Feb 2021 07:01:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A55E286113;
-	Thu,  4 Feb 2021 07:01:12 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C65E52000A;
+	Thu,  4 Feb 2021 07:01:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7694FC08A1;
-	Thu,  4 Feb 2021 07:01:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D3D7EC013A
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC35EC08A1;
+	Thu,  4 Feb 2021 07:01:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F3440C013A
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B8EFE86119
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EACEC85EE7
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HusjSjZdN9Uf for <iommu@lists.linux-foundation.org>;
- Thu,  4 Feb 2021 07:01:09 +0000 (UTC)
+ with ESMTP id qNTx9I51btsx for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Feb 2021 07:01:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 058F986113
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:08 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C4F3E871C7
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 07:01:12 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAFED11FB;
- Wed,  3 Feb 2021 23:01:07 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 124CC12FC;
+ Wed,  3 Feb 2021 23:01:12 -0800 (PST)
 Received: from p8cg001049571a15.arm.com (unknown [10.163.94.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 472063F694;
- Wed,  3 Feb 2021 23:01:04 -0800 (PST)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7A96F3F694;
+ Wed,  3 Feb 2021 23:01:08 -0800 (PST)
 From: Anshuman Khandual <anshuman.khandual@arm.com>
 To: linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
  catalin.marinas@arm.com, akpm@linux-foundation.org
-Subject: [RFC 0/3] mm/page_alloc: Fix pageblock_order with
- HUGETLB_PAGE_SIZE_VARIABLE
-Date: Thu,  4 Feb 2021 12:31:21 +0530
-Message-Id: <1612422084-30429-1-git-send-email-anshuman.khandual@arm.com>
+Subject: [RFC 1/3] mm/page_alloc: Fix pageblock_order when HUGETLB_PAGE_ORDER
+ >= MAX_ORDER
+Date: Thu,  4 Feb 2021 12:31:22 +0530
+Message-Id: <1612422084-30429-2-git-send-email-anshuman.khandual@arm.com>
 X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
+In-Reply-To: <1612422084-30429-1-git-send-email-anshuman.khandual@arm.com>
+References: <1612422084-30429-1-git-send-email-anshuman.khandual@arm.com>
 Cc: Anshuman Khandual <anshuman.khandual@arm.com>,
  Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
@@ -76,13 +77,16 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The following warning gets triggered while trying to boot a 64K page size
-without THP config kernel on arm64 platform.
+With HUGETLB_PAGE_SIZE_VARIABLE enabled, pageblock_order cannot be assigned
+as HUGETLB_PAGE_ORDER when it is greater than or equal to MAX_ORDER during
+set_pageblock_order(). Otherwise  the following warning is triggered during
+boot as detected on an arm64 platform.
 
 WARNING: CPU: 5 PID: 124 at mm/vmstat.c:1080 __fragmentation_index+0xa4/0xc0
 Modules linked in:
@@ -118,58 +122,32 @@ Hardware name: linux,dummy-virt (DT)
 [    8.833491]  ret_from_fork+0x10/0x30
 [    8.834150] ---[ end trace 472836f79c15516b ]---
 
-This warning comes from __fragmentation_index() when the requested order
-is greater than MAX_ORDER.
+The above warning happens because pageblock_order exceeds MAX_ORDER, caused
+by large HUGETLB_PAGE_ORDER on certain platforms like arm64. Lets prevent
+the scenario by first checking HUGETLB_PAGE_ORDER against MAX_ORDER, before
+its assignment as pageblock_order.
 
-static int __fragmentation_index(unsigned int order,
-				 struct contig_page_info *info)
-{
-        unsigned long requested = 1UL << order;
-
-        if (WARN_ON_ONCE(order >= MAX_ORDER)) <===== Triggered here
-                return 0;
-
-Digging it further reveals that pageblock_order has been assigned a value
-which is greater than MAX_ORDER failing the above check. But why this
-happened ? Because HUGETLB_PAGE_ORDER for the given config on arm64 is
-greater than MAX_ORDER.
-
-The solution involves enabling HUGETLB_PAGE_SIZE_VARIABLE which would make
-pageblock_order a variable instead of constant HUGETLB_PAGE_ORDER. But that
-change alone also did not really work as pageblock_order still got assigned
-as HUGETLB_PAGE_ORDER in set_pageblock_order(). HUGETLB_PAGE_ORDER needs to
-be less than MAX_ORDER for its appropriateness as pageblock_order otherwise
-just fallback to MAX_ORDER - 1 as before. While here it also fixes a build
-problem via type casting MAX_ORDER in rmem_cma_setup().
-
-This series applies in v5.11-rc6 and has been slightly tested on arm64. But
-looking for some early feedbacks particularly with respect to concerns in
-subscribing HUGETLB_PAGE_SIZE_VARIABLE on a platform where the hugetlb page
-size is config dependent but not really a runtime variable. Even though it
-appears that HUGETLB_PAGE_SIZE_VARIABLE is used only while computing the
-pageblock_order, could there be other implications ?
-
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Christoph Hellwig <hch@lst.de>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: iommu@lists.linux-foundation.org
 Cc: linux-mm@kvack.org
 Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ mm/page_alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Anshuman Khandual (3):
-  mm/page_alloc: Fix pageblock_order when HUGETLB_PAGE_ORDER >= MAX_ORDER
-  arm64/hugetlb: Enable HUGETLB_PAGE_SIZE_VARIABLE
-  dma-contiguous: Type cast MAX_ORDER as unsigned int
-
- arch/arm64/Kconfig      | 4 ++++
- kernel/dma/contiguous.c | 2 +-
- mm/page_alloc.c         | 2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
-
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 519a60d5b6f7..36473f2fa683 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6798,7 +6798,7 @@ void __init set_pageblock_order(void)
+ 	if (pageblock_order)
+ 		return;
+ 
+-	if (HPAGE_SHIFT > PAGE_SHIFT)
++	if ((HPAGE_SHIFT > PAGE_SHIFT) && (HUGETLB_PAGE_ORDER < MAX_ORDER))
+ 		order = HUGETLB_PAGE_ORDER;
+ 	else
+ 		order = MAX_ORDER - 1;
 -- 
 2.20.1
 
