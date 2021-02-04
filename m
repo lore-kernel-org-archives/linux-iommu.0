@@ -2,89 +2,68 @@ Return-Path: <SRS0=5Yk+=HG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F65C433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 23:25:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 078B3C433DB
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 23:50:44 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0888B64FB2
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 23:25:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0888B64FB2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3A16164FA4
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 23:50:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A16164FA4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B56E78729A;
-	Thu,  4 Feb 2021 23:25:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E4BEB86931;
+	Thu,  4 Feb 2021 23:50:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BfF+7UyY4NGw; Thu,  4 Feb 2021 23:25:55 +0000 (UTC)
+	with ESMTP id iYdhrwVr_ogU; Thu,  4 Feb 2021 23:50:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E833C87297;
-	Thu,  4 Feb 2021 23:25:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 05306868EF;
+	Thu,  4 Feb 2021 23:50:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C1D0BC07FD;
-	Thu,  4 Feb 2021 23:25:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 404BEC013A
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:25:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2ECBC07FD;
+	Thu,  4 Feb 2021 23:50:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D38BC013A
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:50:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D72B02DF03
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:25:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7712986DBB
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:50:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SmwlJWwQA76L for <iommu@lists.linux-foundation.org>;
- Thu,  4 Feb 2021 23:25:52 +0000 (UTC)
+ with ESMTP id MYIJALwszwmc for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Feb 2021 23:50:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com
- [209.85.210.50])
- by silver.osuosl.org (Postfix) with ESMTPS id 0FD1A20471
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:25:52 +0000 (UTC)
-Received: by mail-ot1-f50.google.com with SMTP id v1so5140832ott.10
- for <iommu@lists.linux-foundation.org>; Thu, 04 Feb 2021 15:25:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=v2nkVg18wGZEoa8kUGTJqurwpIhtPaAbXmqRIWrxCUE=;
- b=lcGQCBmCAhK9z1DAk27qo4bYzLfYYiW/onw0M70MTSwd7smDtZ/jqQvSuWIAoddCGr
- u02kBUrXHg1EMTsXnJKkHEnlpo4gMJDuuYh55uDgQrehfVKpdBJhS58ahPQZVWdMpb0M
- QwT/vb3x7fNpYzhwVE8iLnJRqj7idYk52upfbj0yd4+4tb3fGs4Gb+yuxj1w3kRycGvr
- Vq7MVrAd7bHjhJD/yCAxs1L62qhw7v/vTxpgddBxri9NScQfvpdUS9bkdVIQpncGQ6kd
- O4JKehh67uNwwN3F3N6AR47+oQjVcHrb5+F8GuX4fxsoBFT5X2oz8qpj3VUFH40MxmCx
- SHXw==
-X-Gm-Message-State: AOAM530FhrSGqG2iYoylwGym1tRMFGNZrzy/KVakOpjwb8EeetdXUWjZ
- bgkvIU/8e4SZQaQEfnWGfg==
-X-Google-Smtp-Source: ABdhPJwJqr3wnatNUe8DWoShRTE94TDBe87ONFVy1DR98EDCJ7JzDYuizEWR+rUsPGi1b34+LdMtCQ==
-X-Received: by 2002:a05:6830:1f4e:: with SMTP id
- u14mr1333850oth.65.1612481151222; 
- Thu, 04 Feb 2021 15:25:51 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
- [24.155.109.49])
- by smtp.gmail.com with ESMTPSA id w10sm1445771oih.8.2021.02.04.15.25.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 04 Feb 2021 15:25:50 -0800 (PST)
-Received: (nullmailer pid 1311195 invoked by uid 1000);
- Thu, 04 Feb 2021 23:25:49 -0000
-Date: Thu, 4 Feb 2021 17:25:49 -0600
-From: Rob Herring <robh@kernel.org>
-To: Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iommu: add bindings for sprd iommu
-Message-ID: <20210204232549.GA1305874@robh.at.kernel.org>
-References: <20210203090727.789939-1-zhang.lyra@gmail.com>
- <20210203090727.789939-2-zhang.lyra@gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 498F486DB5
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 23:50:40 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8822FD6E;
+ Thu,  4 Feb 2021 15:50:39 -0800 (PST)
+Received: from [10.57.49.26] (unknown [10.57.49.26])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C5C63F719;
+ Thu,  4 Feb 2021 15:50:38 -0800 (PST)
+Subject: Re: [PATCH] dma-mapping: benchmark: pretend DMA is transmitting
+To: Barry Song <song.bao.hua@hisilicon.com>, m.szyprowski@samsung.com,
+ hch@lst.de, iommu@lists.linux-foundation.org
+References: <20210204225847.8884-1-song.bao.hua@hisilicon.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <8d714a55-7bbc-128e-3e39-492ebf204223@arm.com>
+Date: Thu, 4 Feb 2021 23:50:37 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210203090727.789939-2-zhang.lyra@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Chunyan Zhang <chunyan.zhang@unisoc.com>, Sheng Xu <sheng.xu@unisoc.com>,
- iommu@lists.linux-foundation.org, Baolin Wang <baolin.wang7@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210204225847.8884-1-song.bao.hua@hisilicon.com>
+Content-Language: en-GB
+Cc: linux-kernel@vger.kernel.org, linuxarm@openeuler.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,109 +76,155 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 03, 2021 at 05:07:26PM +0800, Chunyan Zhang wrote:
-> From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+On 2021-02-04 22:58, Barry Song wrote:
+> In a real dma mapping user case, after dma_map is done, data will be
+> transmit. Thus, in multi-threaded user scenario, IOMMU contention
+> should not be that severe. For example, if users enable multiple
+> threads to send network packets through 1G/10G/100Gbps NIC, usually
+> the steps will be: map -> transmission -> unmap.  Transmission delay
+> reduces the contention of IOMMU. Here a delay is added to simulate
+> the transmission for TX case so that the tested result could be
+> more accurate.
 > 
-> This iommu module can be used by Unisoc's multimedia devices, such as
-> display, Image codec(jpeg) and a few signal processors, including
-> VSP(video), GSP(graphic), ISP(image), and CPP(camera pixel processor), etc.
-> 
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> RX case would be much more tricky. It is not supported yet.
+
+I guess it might be a reasonable approximation to map several pages, 
+then unmap them again after a slightly more random delay. Or maybe 
+divide the threads into pairs of mappers and unmappers respectively 
+filling up and draining proper little buffer pools.
+
+> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
 > ---
->  .../devicetree/bindings/iommu/sprd,iommu.yaml | 72 +++++++++++++++++++
->  1 file changed, 72 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
+>   kernel/dma/map_benchmark.c                      | 11 +++++++++++
+>   tools/testing/selftests/dma/dma_map_benchmark.c | 17 +++++++++++++++--
+>   2 files changed, 26 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
-> new file mode 100644
-> index 000000000000..4fc99e81fa66
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
-> @@ -0,0 +1,72 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright 2020 Unisoc Inc.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/sprd,iommu.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Unisoc IOMMU and Multi-media MMU
-> +
-> +maintainers:
-> +  - Chunyan Zhang <zhang.lyra@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - sprd,iommu-v1
-> +
-> +  "#iommu-cells":
-> +    const: 0
-> +    description:
-> +      Unisoc IOMMUs are all single-master IOMMU devices, therefore no
-> +      additional information needs to associate with its master device.
-> +      Please refer to the generic bindings document for more details,
-> +      Documentation/devicetree/bindings/iommu/iommu.txt
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description:
-> +      Not required if 'sprd,iommu-regs' is defined.
-> +
-> +  clocks:
-> +    description:
-> +      Reference to a gate clock phandle, since access to some of IOMMUs are
-> +      controlled by gate clock, but this is not required.
-> +
-> +  sprd,iommu-regs:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    description:
-> +      Reference to a syscon phandle plus 1 cell, the syscon defines the
-> +      register range used by the iommu and the media device, the cell
-> +      defines the offset for iommu registers. Since iommu module shares
-> +      the same register range with the media device which uses it.
-> +
-> +required:
-> +  - compatible
-> +  - "#iommu-cells"
-> +
-> +oneOf:
-> +  - required:
-> +      - reg
-> +  - required:
-> +      - sprd,iommu-regs
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    iommu_disp: iommu-disp {
-> +      compatible = "sprd,iommu-v1";
-> +      sprd,iommu-regs = <&dpu_regs 0x800>;
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> index 1b1b8ff875cb..1976db7e34e4 100644
+> --- a/kernel/dma/map_benchmark.c
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -21,6 +21,7 @@
+>   #define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+>   #define DMA_MAP_MAX_THREADS	1024
+>   #define DMA_MAP_MAX_SECONDS	300
+> +#define DMA_MAP_MAX_TRANS_DELAY	(10 * 1000 * 1000) /* 10ms */
 
-If the IOMMU is contained within another device, then it should just be 
-a child node of that device. Or just make 'dpu_regs' an IOMMU provider 
-(i.e. just add #iommu-cells to it).
+Using MSEC_PER_SEC might be sufficiently self-documenting?
 
-> +      #iommu-cells = <0>;
-> +    };
+>   #define DMA_MAP_BIDIRECTIONAL	0
+>   #define DMA_MAP_TO_DEVICE	1
+> @@ -36,6 +37,7 @@ struct map_benchmark {
+>   	__s32 node; /* which numa node this benchmark will run on */
+>   	__u32 dma_bits; /* DMA addressing capability */
+>   	__u32 dma_dir; /* DMA data direction */
+> +	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+>   	__u64 expansion[10];	/* For future use */
+>   };
+>   
+> @@ -87,6 +89,10 @@ static int map_benchmark_thread(void *data)
+>   		map_etime = ktime_get();
+>   		map_delta = ktime_sub(map_etime, map_stime);
+>   
+> +		/* Pretend DMA is transmitting */
+> +		if (map->dir != DMA_FROM_DEVICE)
+> +			ndelay(map->bparam.dma_trans_ns);
+
+TBH I think the option of a fixed delay between map and unmap might be a 
+handy thing in general, so having the direction check at all seems 
+needlessly restrictive. As long as the driver implements all the basic 
+building blocks, combining them to simulate specific traffic patterns 
+can be left up to the benchmark tool.
+
+Robin.
+
 > +
-> +  - |
-> +    iommu_jpg: iommu-jpg {
-> +      compatible = "sprd,iommu-v1";
-> +      sprd,iommu-regs = <&jpg_regs 0x300>;
-> +      #iommu-cells = <0>;
-> +      clocks = <&mm_gate 1>;
-> +    };
+>   		unmap_stime = ktime_get();
+>   		dma_unmap_single(map->dev, dma_addr, PAGE_SIZE, map->dir);
+>   		unmap_etime = ktime_get();
+> @@ -218,6 +224,11 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
+>   			return -EINVAL;
+>   		}
+>   
+> +		if (map->bparam.dma_trans_ns > DMA_MAP_MAX_TRANS_DELAY) {
+> +			pr_err("invalid transmission delay\n");
+> +			return -EINVAL;
+> +		}
 > +
-> +...
-> -- 
-> 2.25.1
+>   		if (map->bparam.node != NUMA_NO_NODE &&
+>   		    !node_possible(map->bparam.node)) {
+>   			pr_err("invalid numa node\n");
+> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+> index 7065163a8388..dbf426e2fb7f 100644
+> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
+> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+> @@ -14,6 +14,7 @@
+>   #define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+>   #define DMA_MAP_MAX_THREADS	1024
+>   #define DMA_MAP_MAX_SECONDS     300
+> +#define DMA_MAP_MAX_TRANS_DELAY	(10 * 1000 * 1000) /* 10ms */
+>   
+>   #define DMA_MAP_BIDIRECTIONAL	0
+>   #define DMA_MAP_TO_DEVICE	1
+> @@ -35,6 +36,7 @@ struct map_benchmark {
+>   	__s32 node; /* which numa node this benchmark will run on */
+>   	__u32 dma_bits; /* DMA addressing capability */
+>   	__u32 dma_dir; /* DMA data direction */
+> +	__u32 dma_trans_ns; /* delay for DMA transmission in ns */
+>   	__u64 expansion[10];	/* For future use */
+>   };
+>   
+> @@ -45,12 +47,12 @@ int main(int argc, char **argv)
+>   	/* default single thread, run 20 seconds on NUMA_NO_NODE */
+>   	int threads = 1, seconds = 20, node = -1;
+>   	/* default dma mask 32bit, bidirectional DMA */
+> -	int bits = 32, dir = DMA_MAP_BIDIRECTIONAL;
+> +	int bits = 32, xdelay = 0, dir = DMA_MAP_BIDIRECTIONAL;
+>   
+>   	int cmd = DMA_MAP_BENCHMARK;
+>   	char *p;
+>   
+> -	while ((opt = getopt(argc, argv, "t:s:n:b:d:")) != -1) {
+> +	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:")) != -1) {
+>   		switch (opt) {
+>   		case 't':
+>   			threads = atoi(optarg);
+> @@ -67,6 +69,9 @@ int main(int argc, char **argv)
+>   		case 'd':
+>   			dir = atoi(optarg);
+>   			break;
+> +		case 'x':
+> +			xdelay = atoi(optarg);
+> +			break;
+>   		default:
+>   			return -1;
+>   		}
+> @@ -84,6 +89,12 @@ int main(int argc, char **argv)
+>   		exit(1);
+>   	}
+>   
+> +	if (xdelay < 0 || xdelay > DMA_MAP_MAX_TRANS_DELAY) {
+> +		fprintf(stderr, "invalid transmit delay, must be in 0-%d\n",
+> +			DMA_MAP_MAX_TRANS_DELAY);
+> +		exit(1);
+> +	}
+> +
+>   	/* suppose the mininum DMA zone is 1MB in the world */
+>   	if (bits < 20 || bits > 64) {
+>   		fprintf(stderr, "invalid dma mask bit, must be in 20-64\n");
+> @@ -107,6 +118,8 @@ int main(int argc, char **argv)
+>   	map.node = node;
+>   	map.dma_bits = bits;
+>   	map.dma_dir = dir;
+> +	map.dma_trans_ns = xdelay;
+> +
+>   	if (ioctl(fd, cmd, &map)) {
+>   		perror("ioctl");
+>   		exit(1);
 > 
 _______________________________________________
 iommu mailing list
