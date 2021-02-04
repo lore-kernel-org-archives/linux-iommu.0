@@ -2,67 +2,67 @@ Return-Path: <SRS0=5Yk+=HG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C9FC433DB
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 01:53:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FFFC433E0
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 01:53:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E79564DDE
-	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 01:53:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E79564DDE
+	by mail.kernel.org (Postfix) with ESMTPS id DC58264E42
+	for <iommu@archiver.kernel.org>; Thu,  4 Feb 2021 01:53:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC58264E42
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C90AF87158;
-	Thu,  4 Feb 2021 01:53:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A4B6A86388;
+	Thu,  4 Feb 2021 01:53:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XRENXI-nFXFC; Thu,  4 Feb 2021 01:53:05 +0000 (UTC)
+	with ESMTP id M7glpZdb4klw; Thu,  4 Feb 2021 01:53:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CB45D8716D;
-	Thu,  4 Feb 2021 01:53:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 05776861BC;
+	Thu,  4 Feb 2021 01:53:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B91B4C0174;
-	Thu,  4 Feb 2021 01:53:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E82CAC0174;
+	Thu,  4 Feb 2021 01:53:07 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 02119C013A
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28E2FC013A
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D22ED27261
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:02 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0FC82272F6
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E5-bJezrrpyS for <iommu@lists.linux-foundation.org>;
- Thu,  4 Feb 2021 01:53:01 +0000 (UTC)
+ with ESMTP id odvrvM4h8BDl for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Feb 2021 01:53:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by silver.osuosl.org (Postfix) with ESMTPS id 233A7272F6
- for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:01 +0000 (UTC)
-IronPort-SDR: yHsNXUOrVZISMK/+zTK6f+07sunTA+6bf6fipBHK+A6bJhpOcFpeZDwSlIeJsnqTLHpAr89XeQ
- BhjejB5ekdTA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="245227158"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="245227158"
+ by silver.osuosl.org (Postfix) with ESMTPS id 3049F27261
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Feb 2021 01:53:03 +0000 (UTC)
+IronPort-SDR: QI8BSgHDDQ74+Xpna9GDRvCJkCrEcw7x0kvBZcP766y+wawFITBbdN/+2wiWQWtR5N1PBm3iPA
+ zmtap8fOJn4Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="245227163"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="245227163"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Feb 2021 17:53:00 -0800
-IronPort-SDR: WqXfhB77lwvJniN/7aIIkSlXSMBTF50+WMkSfbw4yIhVzvNbD4xkiLs1tsI4+vEIXI5Ymib64i
- AYvqDWbPfaAQ==
+ 03 Feb 2021 17:53:02 -0800
+IronPort-SDR: A5mRTn80PqqwngEqFGIBKNmGZg4RBwTbS5MgEWodKdycVHj3Eb3LTJ2AyFYQ2VpGn5rzzpqYwE
+ J/9DOTKjdrvQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="406911228"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; d="scan'208";a="406911241"
 Received: from allen-box.sh.intel.com ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 03 Feb 2021 17:52:58 -0800
+ by fmsmga004.fm.intel.com with ESMTP; 03 Feb 2021 17:53:00 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 6/7] iommu/vt-d: Parse SATC reporting structure
-Date: Thu,  4 Feb 2021 09:44:00 +0800
-Message-Id: <20210204014401.2846425-7-baolu.lu@linux.intel.com>
+Subject: [PATCH 7/7] iommu/vt-d: Apply SATC policy
+Date: Thu,  4 Feb 2021 09:44:01 +0800
+Message-Id: <20210204014401.2846425-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210204014401.2846425-1-baolu.lu@linux.intel.com>
 References: <20210204014401.2846425-1-baolu.lu@linux.intel.com>
@@ -89,232 +89,124 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Yian Chen <yian.chen@intel.com>
 
-Software should parse every SATC table and all devices in the tables
-reported by the BIOS and keep the information in kernel list for further
-reference.
+Starting from Intel VT-d v3.2, Intel platform BIOS can provide a new SATC
+table structure. SATC table lists a set of SoC integrated devices that
+require ATC to work (VT-d specification v3.2, section 8.8). Furthermore,
+the new version of IOMMU supports SoC device ATS in both its Scalable mode
+and legacy mode.
+
+When IOMMU is working in scalable mode, software must enable device ATS
+support. On the other hand, when IOMMU is in legacy mode for whatever
+reason, the hardware managed ATS will automatically take effect and the
+SATC required devices can work transparently to the software. As the
+result, software shouldn't enable ATS on that device, otherwise duplicate
+device TLB invalidations will occur.
 
 Signed-off-by: Yian Chen <yian.chen@intel.com>
 Link: https://lore.kernel.org/r/20210203093329.1617808-1-baolu.lu@linux.intel.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/dmar.c  |  8 ++++
- drivers/iommu/intel/iommu.c | 89 +++++++++++++++++++++++++++++++++++++
- include/linux/dmar.h        |  2 +
- 3 files changed, 99 insertions(+)
+ drivers/iommu/intel/iommu.c | 73 +++++++++++++++++++++++++++++++++++--
+ 1 file changed, 69 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 980e8ae090af..d5c51b5c20af 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -526,6 +526,7 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
- 	struct acpi_dmar_reserved_memory *rmrr;
- 	struct acpi_dmar_atsr *atsr;
- 	struct acpi_dmar_rhsa *rhsa;
-+	struct acpi_dmar_satc *satc;
- 
- 	switch (header->type) {
- 	case ACPI_DMAR_TYPE_HARDWARE_UNIT:
-@@ -555,6 +556,10 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
- 		/* We don't print this here because we need to sanity-check
- 		   it first. So print it in dmar_parse_one_andd() instead. */
- 		break;
-+	case ACPI_DMAR_TYPE_SATC:
-+		satc = container_of(header, struct acpi_dmar_satc, header);
-+		pr_info("SATC flags: 0x%x\n", satc->flags);
-+		break;
- 	}
- }
- 
-@@ -642,6 +647,7 @@ parse_dmar_table(void)
- 		.cb[ACPI_DMAR_TYPE_ROOT_ATS] = &dmar_parse_one_atsr,
- 		.cb[ACPI_DMAR_TYPE_HARDWARE_AFFINITY] = &dmar_parse_one_rhsa,
- 		.cb[ACPI_DMAR_TYPE_NAMESPACE] = &dmar_parse_one_andd,
-+		.cb[ACPI_DMAR_TYPE_SATC] = &dmar_parse_one_satc,
- 	};
- 
- 	/*
-@@ -2077,6 +2083,7 @@ static guid_t dmar_hp_guid =
- #define	DMAR_DSM_FUNC_DRHD		1
- #define	DMAR_DSM_FUNC_ATSR		2
- #define	DMAR_DSM_FUNC_RHSA		3
-+#define	DMAR_DSM_FUNC_SATC		4
- 
- static inline bool dmar_detect_dsm(acpi_handle handle, int func)
- {
-@@ -2094,6 +2101,7 @@ static int dmar_walk_dsm_resource(acpi_handle handle, int func,
- 		[DMAR_DSM_FUNC_DRHD] = ACPI_DMAR_TYPE_HARDWARE_UNIT,
- 		[DMAR_DSM_FUNC_ATSR] = ACPI_DMAR_TYPE_ROOT_ATS,
- 		[DMAR_DSM_FUNC_RHSA] = ACPI_DMAR_TYPE_HARDWARE_AFFINITY,
-+		[DMAR_DSM_FUNC_SATC] = ACPI_DMAR_TYPE_SATC,
- 	};
- 
- 	if (!dmar_detect_dsm(handle, func))
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ecbd05d8a1fc..ee0932307d64 100644
+index ee0932307d64..3e30c340e6a9 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -316,8 +316,18 @@ struct dmar_atsr_unit {
- 	u8 include_all:1;		/* include all ports */
- };
- 
-+struct dmar_satc_unit {
-+	struct list_head list;		/* list of SATC units */
-+	struct acpi_dmar_header *hdr;	/* ACPI header */
-+	struct dmar_dev_scope *devices;	/* target devices */
-+	struct intel_iommu *iommu;	/* the corresponding iommu */
-+	int devices_cnt;		/* target device count */
-+	u8 atc_required:1;		/* ATS is required */
-+};
-+
- static LIST_HEAD(dmar_atsr_units);
- static LIST_HEAD(dmar_rmrr_units);
-+static LIST_HEAD(dmar_satc_units);
- 
- #define for_each_rmrr_units(rmrr) \
- 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
-@@ -3716,6 +3726,57 @@ int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg)
- 	return 0;
+@@ -872,6 +872,60 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
+ 	return false;
  }
  
-+static struct dmar_satc_unit *dmar_find_satc(struct acpi_dmar_satc *satc)
++static bool iommu_support_ats(struct intel_iommu *iommu)
 +{
-+	struct dmar_satc_unit *satcu;
-+	struct acpi_dmar_satc *tmp;
-+
-+	list_for_each_entry_rcu(satcu, &dmar_satc_units, list,
-+				dmar_rcu_check()) {
-+		tmp = (struct acpi_dmar_satc *)satcu->hdr;
-+		if (satc->segment != tmp->segment)
-+			continue;
-+		if (satc->header.length != tmp->header.length)
-+			continue;
-+		if (memcmp(satc, tmp, satc->header.length) == 0)
-+			return satcu;
-+	}
-+
-+	return NULL;
++	return ecap_dev_iotlb_support(iommu->ecap);
 +}
 +
-+int dmar_parse_one_satc(struct acpi_dmar_header *hdr, void *arg)
++static bool device_support_ats(struct pci_dev *dev)
++{
++	return pci_ats_supported(dev) && dmar_find_matched_atsr_unit(dev);
++}
++
++static int segment_atc_required(u16 segment)
 +{
 +	struct acpi_dmar_satc *satc;
 +	struct dmar_satc_unit *satcu;
++	int ret = 1;
 +
-+	if (system_state >= SYSTEM_RUNNING && !intel_iommu_enabled)
-+		return 0;
-+
-+	satc = container_of(hdr, struct acpi_dmar_satc, header);
-+	satcu = dmar_find_satc(satc);
-+	if (satcu)
-+		return 0;
-+
-+	satcu = kzalloc(sizeof(*satcu) + hdr->length, GFP_KERNEL);
-+	if (!satcu)
-+		return -ENOMEM;
-+
-+	satcu->hdr = (void *)(satcu + 1);
-+	memcpy(satcu->hdr, hdr, hdr->length);
-+	satcu->atc_required = satc->flags & 0x1;
-+	satcu->devices = dmar_alloc_dev_scope((void *)(satc + 1),
-+					      (void *)satc + satc->header.length,
-+					      &satcu->devices_cnt);
-+	if (satcu->devices_cnt && !satcu->devices) {
-+		kfree(satcu);
-+		return -ENOMEM;
-+	}
-+	list_add_rcu(&satcu->list, &dmar_satc_units);
-+
-+	return 0;
-+}
-+
- static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- {
- 	int sp, ret;
-@@ -3823,6 +3884,7 @@ static void intel_iommu_free_dmars(void)
- {
- 	struct dmar_rmrr_unit *rmrru, *rmrr_n;
- 	struct dmar_atsr_unit *atsru, *atsr_n;
-+	struct dmar_satc_unit *satcu, *satc_n;
- 
- 	list_for_each_entry_safe(rmrru, rmrr_n, &dmar_rmrr_units, list) {
- 		list_del(&rmrru->list);
-@@ -3834,6 +3896,11 @@ static void intel_iommu_free_dmars(void)
- 		list_del(&atsru->list);
- 		intel_iommu_free_atsr(atsru);
- 	}
-+	list_for_each_entry_safe(satcu, satc_n, &dmar_satc_units, list) {
-+		list_del(&satcu->list);
-+		dmar_free_dev_scope(&satcu->devices, &satcu->devices_cnt);
-+		kfree(satcu);
-+	}
- }
- 
- int dmar_find_matched_atsr_unit(struct pci_dev *dev)
-@@ -3885,8 +3952,10 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- 	int ret;
- 	struct dmar_rmrr_unit *rmrru;
- 	struct dmar_atsr_unit *atsru;
-+	struct dmar_satc_unit *satcu;
- 	struct acpi_dmar_atsr *atsr;
- 	struct acpi_dmar_reserved_memory *rmrr;
-+	struct acpi_dmar_satc *satc;
- 
- 	if (!intel_iommu_enabled && system_state >= SYSTEM_RUNNING)
- 		return 0;
-@@ -3927,6 +3996,23 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- 				break;
- 		}
- 	}
-+	list_for_each_entry(satcu, &dmar_satc_units, list) {
++	rcu_read_lock();
++	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
 +		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
-+		if (info->event == BUS_NOTIFY_ADD_DEVICE) {
-+			ret = dmar_insert_dev_scope(info, (void *)(satc + 1),
-+					(void *)satc + satc->header.length,
-+					satc->segment, satcu->devices,
-+					satcu->devices_cnt);
-+			if (ret > 0)
-+				break;
-+			else if (ret < 0)
-+				return ret;
-+		} else if (info->event == BUS_NOTIFY_REMOVED_DEVICE) {
-+			if (dmar_remove_dev_scope(info, satc->segment,
-+					satcu->devices, satcu->devices_cnt))
-+				break;
-+		}
++		if (satcu->atc_required && satcu->devices_cnt &&
++		    satc->segment == segment)
++			goto out;
 +	}
- 
- 	return 0;
- }
-@@ -4270,6 +4356,9 @@ int __init intel_iommu_init(void)
- 	if (list_empty(&dmar_atsr_units))
- 		pr_info("No ATSR found\n");
- 
-+	if (list_empty(&dmar_satc_units))
-+		pr_info("No SATC found\n");
++	ret = 0;
++out:
++	rcu_read_unlock();
++	return ret;
++}
 +
- 	if (dmar_map_gfx)
- 		intel_iommu_gfx_mapped = 1;
- 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 65565820328a..e04436a7ff27 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -138,6 +138,7 @@ extern void intel_iommu_shutdown(void);
- extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg);
- extern int dmar_parse_one_atsr(struct acpi_dmar_header *header, void *arg);
- extern int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg);
-+extern int dmar_parse_one_satc(struct acpi_dmar_header *hdr, void *arg);
- extern int dmar_release_one_atsr(struct acpi_dmar_header *hdr, void *arg);
- extern int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert);
- extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
-@@ -149,6 +150,7 @@ static inline void intel_iommu_shutdown(void) { }
- #define	dmar_parse_one_atsr		dmar_res_noop
- #define	dmar_check_one_atsr		dmar_res_noop
- #define	dmar_release_one_atsr		dmar_res_noop
-+#define	dmar_parse_one_satc		dmar_res_noop
- 
- static inline int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
++static int device_atc_required(struct pci_dev *dev)
++{
++	struct dmar_satc_unit *satcu;
++	struct acpi_dmar_satc *satc;
++	struct device *tmp;
++	int i, ret = 1;
++
++	dev = pci_physfn(dev);
++	rcu_read_lock();
++	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
++		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
++		if (!satcu->atc_required ||
++		    satc->segment != pci_domain_nr(dev->bus))
++			continue;
++
++		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
++			if (to_pci_dev(tmp) == dev)
++				goto out;
++	}
++	ret = 0;
++out:
++	rcu_read_unlock();
++	return ret;
++}
++
+ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
  {
+ 	struct dmar_drhd_unit *drhd = NULL;
+@@ -2555,10 +2609,16 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	if (dev && dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(info->dev);
+ 
+-		if (ecap_dev_iotlb_support(iommu->ecap) &&
+-		    pci_ats_supported(pdev) &&
+-		    dmar_find_matched_atsr_unit(pdev))
+-			info->ats_supported = 1;
++		/*
++		 * Support ATS by default if it's supported by both IOMMU and
++		 * client sides, except that the device's ATS is required by
++		 * ACPI/SATC but the IOMMU scalable mode is disabled. In that
++		 * case the hardware managed ATS will be automatically used.
++		 */
++		if (iommu_support_ats(iommu) && device_support_ats(pdev)) {
++			if (!device_atc_required(pdev) || sm_supported(iommu))
++				info->ats_supported = 1;
++		}
+ 
+ 		if (sm_supported(iommu)) {
+ 			if (pasid_supported(iommu)) {
+@@ -3155,6 +3215,11 @@ static int __init init_dmars(void)
+ 	 * endfor
+ 	 */
+ 	for_each_drhd_unit(drhd) {
++		if (pci_ats_disabled() && segment_atc_required(drhd->segment)) {
++			pr_warn("Scalable mode disabled -- Use hardware managed ATS because PCIe ATS is disabled but some devices in PCIe segment 0x%x require it.",
++				drhd->segment);
++			intel_iommu_sm = 0;
++		}
+ 		/*
+ 		 * lock not needed as this is only incremented in the single
+ 		 * threaded kernel __init code path all other access are read
 -- 
 2.25.1
 
