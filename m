@@ -2,79 +2,72 @@ Return-Path: <SRS0=Vrxx=HH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47209C433E0
-	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 18:13:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4962C433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 21:57:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CBE8E64E88
-	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 18:13:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBE8E64E88
+	by mail.kernel.org (Postfix) with ESMTPS id 6203E64FC5
+	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 21:57:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6203E64FC5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7E3A72E12E;
-	Fri,  5 Feb 2021 18:13:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C90F0873B5;
+	Fri,  5 Feb 2021 21:57:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ur869nVh0w3i; Fri,  5 Feb 2021 18:13:12 +0000 (UTC)
+	with ESMTP id NXqRHNvsrmdH; Fri,  5 Feb 2021 21:57:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0FDE520372;
-	Fri,  5 Feb 2021 18:13:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 26B27873B3;
+	Fri,  5 Feb 2021 21:57:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A4F9C0174;
-	Fri,  5 Feb 2021 18:13:12 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 601CBC013A
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 18:13:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10F2CC08A1;
+	Fri,  5 Feb 2021 21:57:25 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CEB87C013A
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 21:57:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4F1E287308
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 18:13:11 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B5E8586B85
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 21:57:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3VROYpv9c438 for <iommu@lists.linux-foundation.org>;
- Fri,  5 Feb 2021 18:13:10 +0000 (UTC)
+ with ESMTP id uuMFdTJdDE_v for <iommu@lists.linux-foundation.org>;
+ Fri,  5 Feb 2021 21:57:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D0E5D87311
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 18:13:10 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7FE6F64E56;
- Fri,  5 Feb 2021 18:13:10 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 18E6686B84
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 21:57:22 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1197560C3D;
+ Fri,  5 Feb 2021 21:57:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1612548790;
- bh=TuFNjPw1NsrOwjuRo3deQ7Iau/3JzS2c+Vvx+VpO4yA=;
- h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
- b=pUSxiIb+nPFA/B3n7GVwjiXtPRdn8tBBQIUbuZ8KbaAZ130Tl5Fq1hG+BFEIDGMGP
- oOiFSKcQed8jNCvl6o/MHoi6xyf1c8hBjuCoCaIHUfH07UveZCPPkuqJts6AntH+Jm
- 6X0CHSNs3+TxxPTYrbVoeioCqd5CWXdY7c8xwnqd2d8mSmsmxOdLwrv3jiVCTKyaW9
- 53UFQcs+6UqE2PdqOI7XrN7frLFiN1RT92iqJJd9s1M++V1EmGsxjwPCeyAjXZhHOn
- IV4exwKqrw0Rt4JCRXA3boPcrsgxn+P6guY/8cvDDed8zagR0HRp3owBALQbc+z41d
- 6jlWjnVxQFC8w==
-Subject: Re: [git pull] IOMMU Fix for Linux v5.11-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20210205160146.GA28800@8bytes.org>
-References: <20210205160146.GA28800@8bytes.org>
-X-PR-Tracked-List-Id: Development issues for Linux IOMMU support
- <iommu.lists.linux-foundation.org>
-X-PR-Tracked-Message-Id: <20210205160146.GA28800@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
- tags/iommu-fixes-v5.11-rc6
-X-PR-Tracked-Commit-Id: 4c9fb5d9140802db4db9f66c23887f43174e113c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 97ba0c7413f83ab3b43a5ba05362ecc837fce518
-Message-Id: <161254879049.14736.13228089910092450378.pr-tracker-bot@kernel.org>
-Date: Fri, 05 Feb 2021 18:13:10 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
+ s=k20201202; t=1612562241;
+ bh=ZN48Ca5F36yaf5Drs7x+C/29r4xyz8+M1y9jXHdbi24=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=nAY41uOB3KikAGegz2nWmDV69PPAzAYy+ERiEx8Qb53sk+fWwA2JhgIP65ysw1XM6
+ P6Go38C8VoIMQYjqjOm6d5kYhctDXJn4YnRx3d1zH45JSDWN6MchYsgcsS/XK0T4eE
+ uhdPxyKlzZNDDVvQqP+fuy/brUD1J7ADC172BhA9JWSNDjvMab2ouNWAa2WuFAEo7q
+ IN9KmPJyiXSvKCxB9YuQO2QutSwa1w2Sv4ZrespGhDGPz+b+drFIp3cMW7k4XtsdzH
+ 2UT7EUqyovINJ+VeSjRlH45K11zEAPjyNGv0NKuQwLx82L41Qm2x2G9n0iU4MxjLi+
+ xez5xCE2ixOaQ==
+Date: Fri, 5 Feb 2021 15:57:18 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jon Derrick <jonathan.derrick@intel.com>
+Subject: Re: [PATCH v2 2/2] PCI: vmd: Disable MSI/X remapping when possible
+Message-ID: <20210205215718.GA202474@bjorn-Precision-5520>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20210204190906.38515-3-jonathan.derrick@intel.com>
+Cc: Nirmal Patel <nirmal.patel@intel.com>, Will Deacon <will@kernel.org>,
+ linux-pci@vger.kernel.org, Kapil Karkra <kapil.karkra@intel.com>,
+ iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,24 +80,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pull request you sent on Fri, 5 Feb 2021 17:01:57 +0100:
+On Thu, Feb 04, 2021 at 12:09:06PM -0700, Jon Derrick wrote:
+> VMD will retransmit child device MSI/X using its own MSI/X table and
+> requester-id. This limits the number of MSI/X available to the whole
+> child device domain to the number of VMD MSI/X interrupts.
+> 
+> Some VMD devices have a mode where this remapping can be disabled,
+> allowing child device interrupts to bypass processing with the VMD MSI/X
+> domain interrupt handler and going straight the child device interrupt
+> handler, allowing for better performance and scaling. The requester-id
+> still gets changed to the VMD endpoint's requester-id, and the interrupt
+> remapping handlers have been updated to properly set IRTE for child
+> device interrupts to the VMD endpoint's context.
+> 
+> Some VMD platforms have existing production BIOS which rely on MSI/X
+> remapping and won't explicitly program the MSI/X remapping bit. This
+> re-enables MSI/X remapping on unload.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.11-rc6
+Trivial comments below.  Would you mind using "MSI-X" instead of
+"MSI/X" so it matches the usage in the PCIe specs?  Several mentions
+above (including subject) and below.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/97ba0c7413f83ab3b43a5ba05362ecc837fce518
+> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+> ---
+>  drivers/pci/controller/vmd.c | 60 ++++++++++++++++++++++++++++--------
+>  1 file changed, 48 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
+> index 5e80f28f0119..a319ce49645b 100644
+> --- a/drivers/pci/controller/vmd.c
+> +++ b/drivers/pci/controller/vmd.c
+> @@ -59,6 +59,13 @@ enum vmd_features {
+>  	 * be used for MSI remapping
+>  	 */
+>  	VMD_FEAT_OFFSET_FIRST_VECTOR		= (1 << 3),
+> +
+> +	/*
+> +	 * Device can bypass remapping MSI/X transactions into its MSI/X table,
+> +	 * avoding the requirement of a VMD MSI domain for child device
 
-Thank you!
+s/avoding/avoiding/
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> +	 * interrupt handling
+
+Maybe a period at the end of the sentence.
+
+> +	 */
+> +	VMD_FEAT_BYPASS_MSI_REMAP		= (1 << 4),
+>  };
+>  
+>  /*
+> @@ -306,6 +313,15 @@ static struct msi_domain_info vmd_msi_domain_info = {
+>  	.chip		= &vmd_msi_controller,
+>  };
+>  
+> +static void vmd_enable_msi_remapping(struct vmd_dev *vmd, bool enable)
+> +{
+> +	u16 reg;
+> +
+> +	pci_read_config_word(vmd->dev, PCI_REG_VMCONFIG, &reg);
+> +	reg = enable ? (reg & ~0x2) : (reg | 0x2);
+
+Would be nice to have a #define for 0x2.
+
+> +	pci_write_config_word(vmd->dev, PCI_REG_VMCONFIG, reg);
+> +}
+> +
+>  static int vmd_create_irq_domain(struct vmd_dev *vmd)
+>  {
+>  	struct fwnode_handle *fn;
+> @@ -325,6 +341,13 @@ static int vmd_create_irq_domain(struct vmd_dev *vmd)
+>  
+>  static void vmd_remove_irq_domain(struct vmd_dev *vmd)
+>  {
+> +	/*
+> +	 * Some production BIOS won't enable remapping between soft reboots.
+> +	 * Ensure remapping is restored before unloading the driver.
+> +	 */
+> +	if (!vmd->msix_count)
+> +		vmd_enable_msi_remapping(vmd, true);
+> +
+>  	if (vmd->irq_domain) {
+>  		struct fwnode_handle *fn = vmd->irq_domain->fwnode;
+>  
+> @@ -679,15 +702,31 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
+>  
+>  	sd->node = pcibus_to_node(vmd->dev->bus);
+>  
+> -	ret = vmd_create_irq_domain(vmd);
+> -	if (ret)
+> -		return ret;
+> -
+>  	/*
+> -	 * Override the irq domain bus token so the domain can be distinguished
+> -	 * from a regular PCI/MSI domain.
+> +	 * Currently MSI remapping must be enabled in guest passthrough mode
+> +	 * due to some missing interrupt remapping plumbing. This is probably
+> +	 * acceptable because the guest is usually CPU-limited and MSI
+> +	 * remapping doesn't become a performance bottleneck.
+>  	 */
+> -	irq_domain_update_bus_token(vmd->irq_domain, DOMAIN_BUS_VMD_MSI);
+> +	if (!(features & VMD_FEAT_BYPASS_MSI_REMAP) || offset[0] || offset[1]) {
+> +		ret = vmd_alloc_irqs(vmd);
+> +		if (ret)
+> +			return ret;
+> +
+> +		vmd_enable_msi_remapping(vmd, true);
+> +
+> +		ret = vmd_create_irq_domain(vmd);
+> +		if (ret)
+> +			return ret;
+> +
+> +		/*
+> +		 * Override the irq domain bus token so the domain can be
+> +		 * distinguished from a regular PCI/MSI domain.
+> +		 */
+> +		irq_domain_update_bus_token(vmd->irq_domain, DOMAIN_BUS_VMD_MSI);
+> +	} else {
+> +		vmd_enable_msi_remapping(vmd, false);
+> +	}
+>  
+>  	pci_add_resource(&resources, &vmd->resources[0]);
+>  	pci_add_resource_offset(&resources, &vmd->resources[1], offset[0]);
+> @@ -753,10 +792,6 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>  	if (features & VMD_FEAT_OFFSET_FIRST_VECTOR)
+>  		vmd->first_vec = 1;
+>  
+> -	err = vmd_alloc_irqs(vmd);
+> -	if (err)
+> -		return err;
+> -
+>  	spin_lock_init(&vmd->cfg_lock);
+>  	pci_set_drvdata(dev, vmd);
+>  	err = vmd_enable_domain(vmd, features);
+> @@ -825,7 +860,8 @@ static const struct pci_device_id vmd_ids[] = {
+>  		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP,},
+>  	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VMD_28C0),
+>  		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW |
+> -				VMD_FEAT_HAS_BUS_RESTRICTIONS,},
+> +				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> +				VMD_FEAT_BYPASS_MSI_REMAP,},
+>  	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x467f),
+>  		.driver_data = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+>  				VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> -- 
+> 2.27.0
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
