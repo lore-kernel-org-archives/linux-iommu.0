@@ -2,102 +2,106 @@ Return-Path: <SRS0=Vrxx=HH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66731C433E0
-	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 12:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5086C433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 12:47:02 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AD40D64FCB
-	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 12:08:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD40D64FCB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 101FD64FCD
+	for <iommu@archiver.kernel.org>; Fri,  5 Feb 2021 12:47:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 101FD64FCD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4C16286B09;
-	Fri,  5 Feb 2021 12:08:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B422386B04;
+	Fri,  5 Feb 2021 12:47:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1dP9sIqu9Nud; Fri,  5 Feb 2021 12:08:27 +0000 (UTC)
+	with ESMTP id 77ImiYyyuxl6; Fri,  5 Feb 2021 12:46:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B070D85EF1;
-	Fri,  5 Feb 2021 12:08:27 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E6B1D860F8;
+	Fri,  5 Feb 2021 12:46:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95379C08A1;
-	Fri,  5 Feb 2021 12:08:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 922D6C013A
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:08:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D6AE4C0174;
+	Fri,  5 Feb 2021 12:46:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E018EC013A
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:46:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 74F7386AFB
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:08:26 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id CE87687035
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:46:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eiz7oQRiqTpL for <iommu@lists.linux-foundation.org>;
- Fri,  5 Feb 2021 12:08:25 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6CA8F85EF1
- for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:08:25 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1612526905; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=jfqR04OojBMDuGxs+SKledWITYRZ9/XMsQMvFZFDfyg=;
- b=p0mUCchpybL8ytpnxDOxdqEGrVRolz7HL1nCBdMgbQV9bamRa+BaL9RC0jZOOfcKJ7OFTUJR
- gYnfagIvSDdvYqOdEsZ5UO7FsRa0xHVeiZ/1gcQpljY/q6moQyxyHmG4o/TM8GBRVT9p3+kn
- 4ehMZJdHjG9t3hK1hr7Aadvv6wo=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 601d353834db06ef796eab91 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 05 Feb 2021 12:08:24
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id AD59BC433C6; Fri,  5 Feb 2021 12:08:23 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 7A201C433ED;
- Fri,  5 Feb 2021 12:08:22 +0000 (UTC)
+ with ESMTP id GZbJDyq4GRri for <iommu@lists.linux-foundation.org>;
+ Fri,  5 Feb 2021 12:46:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 317B386F77
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Feb 2021 12:46:56 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 115CUYPJ079869;
+ Fri, 5 Feb 2021 12:46:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=zXwtIkuYEvqCQ/ph9hBq5tQzsewQzXSxbOL7lVa4vXg=;
+ b=oH1DGtQvWsFrFUqJ19MwDJRh34+8Yu03cm+lpQkudCPi/di7LwYhcw4ZMEZ4lVkvcojZ
+ zYuIwAjkAhbxaMwqyVFBF1BHpOtY+vMh48Vajs6mwdAaILpboJJoDZ2dC3PXorURrE9t
+ adkCNmNZKw4Ipg4Q+ec3wb0uKgpZ7WzzVBgZ5cTUnYekFvIo5GNi3gSvOMqtpgcuxZWY
+ vpmCCnQuDA6IAhqd7/csnwlfnX34A27zJ8yOzv/6xkB2bGeeLxZitUxZZwdKlO2kyX2G
+ PXUcdckWkwK8+1EkoTys0aL4ywUxpQAOhEp0id70M3BXMgGldczItGn/oGXk1wRpSNfM 7g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by userp2130.oracle.com with ESMTP id 36cxvrcb5r-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 05 Feb 2021 12:46:40 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 115CVOCK100352;
+ Fri, 5 Feb 2021 12:46:34 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by aserp3020.oracle.com with ESMTP id 36dhc437au-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 05 Feb 2021 12:46:34 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 115CkRpd001622;
+ Fri, 5 Feb 2021 12:46:30 GMT
+Received: from mwanda (/41.210.143.249)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Fri, 05 Feb 2021 04:46:26 -0800
+Date: Fri, 5 Feb 2021 15:46:17 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Joerg Roedel <joro@8bytes.org>, Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH] iommu/mediatek: Fix error code in probe()
+Message-ID: <YB0+GU5akSdu29Vu@mwanda>
 MIME-Version: 1.0
-Date: Fri, 05 Feb 2021 17:38:22 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
- flag
-In-Reply-To: <20210203214612.GB19847@willie-the-truck>
-References: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
- <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
- <20210129090516.GB3998@willie-the-truck>
- <5d23fce629323bcda71594010824aad0@codeaurora.org>
- <20210201111556.GA7172@willie-the-truck>
- <CAF6AEGsARmkAFsjaQLfa2miMgeijo183MWDKGtW_ti-UCpzBqA@mail.gmail.com>
- <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
- <7e9aade14d0b7f69285852ade4a5a9f4@codeaurora.org>
- <20210203214612.GB19847@willie-the-truck>
-Message-ID: <4988e2ef35f76a0c2f1fe3f66f023a3b@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- freedreno <freedreno@lists.freedesktop.org>, David Airlie <airlied@linux.ie>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS , 
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>, Sean Paul <sean@poorly.run>,
- Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9885
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
+ adultscore=0 suspectscore=0
+ spamscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102050083
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9885
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ mlxlogscore=999
+ mlxscore=0 priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1011
+ suspectscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102050083
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,101 +114,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-02-04 03:16, Will Deacon wrote:
-> On Tue, Feb 02, 2021 at 11:56:27AM +0530, Sai Prakash Ranjan wrote:
->> On 2021-02-01 23:50, Jordan Crouse wrote:
->> > On Mon, Feb 01, 2021 at 08:20:44AM -0800, Rob Clark wrote:
->> > > On Mon, Feb 1, 2021 at 3:16 AM Will Deacon <will@kernel.org> wrote:
->> > > > On Fri, Jan 29, 2021 at 03:12:59PM +0530, Sai Prakash Ranjan wrote:
->> > > > > On 2021-01-29 14:35, Will Deacon wrote:
->> > > > > > On Mon, Jan 11, 2021 at 07:45:04PM +0530, Sai Prakash Ranjan wrote:
->> > > > > > > +#define IOMMU_LLC        (1 << 6)
->> > > > > >
->> > > > > > On reflection, I'm a bit worried about exposing this because I think it
->> > > > > > will
->> > > > > > introduce a mismatched virtual alias with the CPU (we don't even have a
->> > > > > > MAIR
->> > > > > > set up for this memory type). Now, we also have that issue for the PTW,
->> > > > > > but
->> > > > > > since we always use cache maintenance (i.e. the streaming API) for
->> > > > > > publishing the page-tables to a non-coheren walker, it works out.
->> > > > > > However,
->> > > > > > if somebody expects IOMMU_LLC to be coherent with a DMA API coherent
->> > > > > > allocation, then they're potentially in for a nasty surprise due to the
->> > > > > > mismatched outer-cacheability attributes.
->> > > > > >
->> > > > >
->> > > > > Can't we add the syscached memory type similar to what is done on android?
->> > > >
->> > > > Maybe. How does the GPU driver map these things on the CPU side?
->> > >
->> > > Currently we use writecombine mappings for everything, although there
->> > > are some cases that we'd like to use cached (but have not merged
->> > > patches that would give userspace a way to flush/invalidate)
->> > >
->> >
->> > LLC/system cache doesn't have a relationship with the CPU cache.  Its
->> > just a
->> > little accelerator that sits on the connection from the GPU to DDR and
->> > caches
->> > accesses. The hint that Sai is suggesting is used to mark the buffers as
->> > 'no-write-allocate' to prevent GPU write operations from being cached in
->> > the LLC
->> > which a) isn't interesting and b) takes up cache space for read
->> > operations.
->> >
->> > Its easiest to think of the LLC as a bonus accelerator that has no cost
->> > for
->> > us to use outside of the unfortunate per buffer hint.
->> >
->> > We do have to worry about the CPU cache w.r.t I/O coherency (which is a
->> > different hint) and in that case we have all of concerns that Will
->> > identified.
->> >
->> 
->> For mismatched outer cacheability attributes which Will mentioned, I 
->> was
->> referring to [1] in android kernel.
-> 
-> I've lost track of the conversation here :/
-> 
-> When the GPU has a buffer mapped with IOMMU_LLC, is the buffer also 
-> mapped
-> into the CPU and with what attributes? Rob said "writecombine for
-> everything" -- does that mean ioremap_wc() / MEMREMAP_WC?
-> 
+This error path is supposed to return -EINVAL.  It used to return
+directly but we added some clean up and accidentally removed the
+error code.  Also I fixed a typo in the error message.
 
-Rob answered this.
+Fixes: c0b57581b73b ("iommu/mediatek: Add power-domain operation")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/iommu/mtk_iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> Finally, we need to be careful when we use the word "hint" as 
-> "allocation
-> hint" has a specific meaning in the architecture, and if we only 
-> mismatch on
-> those then we're actually ok. But I think IOMMU_LLC is more than just a
-> hint, since it actually drives eviction policy (i.e. it enables 
-> writeback).
-> 
-> Sorry for the pedantry, but I just want to make sure we're all talking
-> about the same things!
-> 
-
-Sorry for the confusion which probably was caused by my mentioning of
-android, NWA(no write allocate) is an allocation hint which we can 
-ignore
-for now as it is not introduced yet in upstream.
-
-Thanks,
-Sai
-
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 0ad14a7604b1..5f78ac0dc30e 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -886,7 +886,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	link = device_link_add(data->smicomm_dev, dev,
+ 			DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+ 	if (!link) {
+-		dev_err(dev, "Unable link %s.\n", dev_name(data->smicomm_dev));
++		dev_err(dev, "Unable to link %s.\n", dev_name(data->smicomm_dev));
++		ret = -EINVAL;
+ 		goto out_runtime_disable;
+ 	}
+ 
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.30.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
