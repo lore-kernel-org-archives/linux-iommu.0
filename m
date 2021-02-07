@@ -7,62 +7,63 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC3FC433E6
-	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09E1C433DB
+	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 815F864DF2
-	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 815F864DF2
+	by mail.kernel.org (Postfix) with ESMTPS id B619D64E15
+	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B619D64E15
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6EBC085ABE;
-	Sun,  7 Feb 2021 16:10:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A219685ABE;
+	Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id USXp-ek6qH1U; Sun,  7 Feb 2021 16:09:59 +0000 (UTC)
+	with ESMTP id CoRaG4wMxkA2; Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 772288453F;
-	Sun,  7 Feb 2021 16:09:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2E6ED83EFD;
+	Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 643D4C0174;
-	Sun,  7 Feb 2021 16:09:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13946C08A1;
+	Sun,  7 Feb 2021 16:10:04 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E44A5C013A
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:09:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D25CC0174
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:10:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D3C9F822C6
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:09:57 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0C91C8476C
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:10:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ah3ppBv8DYgo for <iommu@lists.linux-foundation.org>;
- Sun,  7 Feb 2021 16:09:55 +0000 (UTC)
+ with ESMTP id paKEqN4XfO60 for <iommu@lists.linux-foundation.org>;
+ Sun,  7 Feb 2021 16:10:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B580185ABE
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:09:52 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 19F3483EFD
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 16:10:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=tHBexmHGDU8sjj38AZ8OoEmgptCGTXSoPlkiz2alw+s=; b=PBdwbGIJlKrg+agS8u5um5z3+E
- lRbcNlTzG3ntexPbto0mi2062ImrpQVKR3XGI4/cKR3mfaGRiJgDHdqMFG0mP1KLhbe2zWELau6xh
- YOi37Sez5qoaovImrcBXFeSYI28UxhVa7x6E+3aB/UaioGgM4KIS8iunU4KBsKMISwsyXxkncv/EY
- ltEqLzdq2KfRLnJTlX6hBx+PgpoKnaxT0DPfw5Cg0VXBcqnxvcAYaken/jlwA5MX8p28MsZpw1aey
- uebkJGJud2BW7OZYmg4y//+8KPP9MHqx0t9vTK7eomCKEuKDWTNHRowqZmVS/2c7Yhr8Mk8ky1CZU
- OASFkWow==;
+ bh=II87lVlVi39N4h2hDH/RczH9V+xrUdtPsM3lWkdXNMw=; b=f8tMOfWQPN+aI2qzvJbaH14hPP
+ zUj0n8mdP6winTuA7Ld5imaXHoukB6enEo6lpPJY+gbSl/jdcrgT44RWZQn/fvkyEITRM+o9or5eu
+ 42eQVAHxivLfAwJv+PiXGneSRGScJivDXMw3UpV/vAFaBWvOxesQIxEHKndOLafA+pwX+pN3A8fvZ
+ kRU7PMlUyNuF99RbDyJsfWPFAbPrlpVxKVJHEDHbNnO4liTGTjj/Xg8BXtv5tSYchEQJT2//eY8SE
+ PUZCpnQwbq8lfxC2xYn6xNbU/fxFrjtoq/ILQmud6M79thxiPQrjFHkq1boJ0lxkXWSaDjtq13XNN
+ 9tvDIyrQ==;
 Received: from [2001:4bb8:184:7d04:4590:5583:6cb7:77c7] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1l8md5-004tmP-JA; Sun, 07 Feb 2021 16:09:44 +0000
+ id 1l8mdD-004top-Qm; Sun, 07 Feb 2021 16:09:52 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: [PATCH 4/8] xen-swiotlb: remove xen_set_nslabs
-Date: Sun,  7 Feb 2021 17:09:30 +0100
-Message-Id: <20210207160934.2955931-5-hch@lst.de>
+Subject: [PATCH 8/8] xen-swiotlb: remove the unused size argument from
+ xen_swiotlb_fixup
+Date: Sun,  7 Feb 2021 17:09:34 +0100
+Message-Id: <20210207160934.2955931-9-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210207160934.2955931-1-hch@lst.de>
 References: <20210207160934.2955931-1-hch@lst.de>
@@ -89,61 +90,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The xen_set_nslabs function is a little weird, as it has just one
-caller, that caller passes a global variable as the argument,
-which is then overriden in the function and a derivative of it
-returned.  Just add a cpp symbol for the default size using a readable
-constant and open code the remaining three lines in the caller.
-
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/xen/swiotlb-xen.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ drivers/xen/swiotlb-xen.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 4298f74a083985..57f8d5fadc1fcd 100644
+index b2d9e77059bf5a..621a20c1143597 100644
 --- a/drivers/xen/swiotlb-xen.c
 +++ b/drivers/xen/swiotlb-xen.c
-@@ -138,16 +138,6 @@ xen_swiotlb_fixup(void *buf, size_t size, unsigned long nslabs)
- 	} while (i < nslabs);
+@@ -104,8 +104,7 @@ static int is_xen_swiotlb_buffer(struct device *dev, dma_addr_t dma_addr)
  	return 0;
  }
--static unsigned long xen_set_nslabs(unsigned long nr_tbl)
--{
--	if (!nr_tbl) {
--		xen_io_tlb_nslabs = (64 * 1024 * 1024 >> IO_TLB_SHIFT);
--		xen_io_tlb_nslabs = ALIGN(xen_io_tlb_nslabs, IO_TLB_SEGSIZE);
--	} else
--		xen_io_tlb_nslabs = nr_tbl;
--
--	return xen_io_tlb_nslabs << IO_TLB_SHIFT;
--}
  
- enum xen_swiotlb_err {
- 	XEN_SWIOTLB_UNKNOWN = 0,
-@@ -170,6 +160,9 @@ static const char *xen_swiotlb_error(enum xen_swiotlb_err err)
- 	}
- 	return "";
- }
-+
-+#define DEFAULT_NSLABS		ALIGN(SZ_64M >> IO_TLB_SHIFT, IO_TLB_SEGSIZE)
-+
- int __ref xen_swiotlb_init(int verbose, bool early)
+-static int
+-xen_swiotlb_fixup(void *buf, size_t size, unsigned long nslabs)
++static int xen_swiotlb_fixup(void *buf, unsigned long nslabs)
  {
- 	unsigned long bytes, order;
-@@ -179,8 +172,10 @@ int __ref xen_swiotlb_init(int verbose, bool early)
- 
- 	xen_io_tlb_nslabs = swiotlb_nr_tbl();
- retry:
--	bytes = xen_set_nslabs(xen_io_tlb_nslabs);
--	order = get_order(xen_io_tlb_nslabs << IO_TLB_SHIFT);
-+	if (!xen_io_tlb_nslabs)
-+		xen_io_tlb_nslabs = DEFAULT_NSLABS;
-+	bytes = xen_io_tlb_nslabs << IO_TLB_SHIFT;
-+	order = get_order(bytes);
- 
+ 	int i, rc;
+ 	int dma_bits;
+@@ -195,7 +194,7 @@ int __ref xen_swiotlb_init(void)
  	/*
- 	 * IO TLB memory already allocated. Just use it.
+ 	 * And replace that memory with pages under 4GB.
+ 	 */
+-	rc = xen_swiotlb_fixup(start, bytes, nslabs);
++	rc = xen_swiotlb_fixup(start, nslabs);
+ 	if (rc) {
+ 		free_pages((unsigned long)start, order);
+ 		m_ret = XEN_SWIOTLB_EFIXUP;
+@@ -243,7 +242,7 @@ void __init xen_swiotlb_init_early(void)
+ 	/*
+ 	 * And replace that memory with pages under 4GB.
+ 	 */
+-	rc = xen_swiotlb_fixup(start, bytes, nslabs);
++	rc = xen_swiotlb_fixup(start, nslabs);
+ 	if (rc) {
+ 		memblock_free(__pa(start), PAGE_ALIGN(bytes));
+ 		if (repeat--) {
 -- 
 2.29.2
 
