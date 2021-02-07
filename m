@@ -2,78 +2,77 @@ Return-Path: <SRS0=bugC=HJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAAEC433DB
-	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 12:41:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1208C433E0
+	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 15:56:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6644D64DFF
-	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 12:41:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6644D64DFF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 186F2601FB
+	for <iommu@archiver.kernel.org>; Sun,  7 Feb 2021 15:56:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 186F2601FB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 0920D204D6;
-	Sun,  7 Feb 2021 12:41:42 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E640B867AC;
+	Sun,  7 Feb 2021 15:56:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 72p6cwVv-std; Sun,  7 Feb 2021 12:41:39 +0000 (UTC)
+	with ESMTP id 6Y8SFYY+djRL; Sun,  7 Feb 2021 15:56:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 56086204D1;
-	Sun,  7 Feb 2021 12:41:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1EC048691C;
+	Sun,  7 Feb 2021 15:56:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39401C0174;
-	Sun,  7 Feb 2021 12:41:39 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 100F1C013A
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 12:41:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0815DC0891;
+	Sun,  7 Feb 2021 15:56:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B898C013A
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 15:56:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E5B718562A
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 12:41:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 348DD8678B
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 15:56:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TlZ-1M1kxhhU for <iommu@lists.linux-foundation.org>;
- Sun,  7 Feb 2021 12:41:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4378E85618
- for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 12:41:33 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DYTJQ5l8qz164sd;
- Sun,  7 Feb 2021 20:40:06 +0800 (CST)
-Received: from [10.174.184.42] (10.174.184.42) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Sun, 7 Feb 2021 20:41:20 +0800
-Subject: Re: [RFC PATCH 06/11] iommu/arm-smmu-v3: Scan leaf TTD to sync
- hardware dirty log
-To: Robin Murphy <robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <kvm@vger.kernel.org>,
- <kvmarm@lists.cs.columbia.edu>, <iommu@lists.linux-foundation.org>, "Will
- Deacon" <will@kernel.org>, Alex Williamson <alex.williamson@redhat.com>,
- "Marc Zyngier" <maz@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>
-References: <20210128151742.18840-1-zhukeqian1@huawei.com>
- <20210128151742.18840-7-zhukeqian1@huawei.com>
- <2a731fe7-5879-8d89-7b96-d7385117b869@arm.com>
-From: Keqian Zhu <zhukeqian1@huawei.com>
-Message-ID: <04b101d2-b9ee-1f3a-3cde-f63717f60b08@huawei.com>
-Date: Sun, 7 Feb 2021 20:41:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+ with ESMTP id pdxpKRHW-dlP for <iommu@lists.linux-foundation.org>;
+ Sun,  7 Feb 2021 15:56:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A4C408691C
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Feb 2021 15:56:10 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 3732F68B02; Sun,  7 Feb 2021 16:56:02 +0100 (CET)
+Date: Sun, 7 Feb 2021 16:56:01 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Dongli Zhang <dongli.zhang@oracle.com>
+Subject: Re: [PATCH RFC v1 5/6] xen-swiotlb: convert variables to arrays
+Message-ID: <20210207155601.GA25111@lst.de>
+References: <20210203233709.19819-1-dongli.zhang@oracle.com>
+ <20210203233709.19819-6-dongli.zhang@oracle.com>
+ <20210204084023.GA32328@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <2a731fe7-5879-8d89-7b96-d7385117b869@arm.com>
-X-Originating-IP: [10.174.184.42]
-X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Cornelia Huck <cohuck@redhat.com>,
- lushenming@huawei.com, Kirti Wankhede <kwankhede@nvidia.com>,
- James Morse <james.morse@arm.com>, wanghaibin.wang@huawei.com
+Content-Disposition: inline
+In-Reply-To: <20210204084023.GA32328@lst.de>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: ulf.hansson@linaro.org, airlied@linux.ie, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, bhelgaas@google.com, paulus@samba.org,
+ hpa@zytor.com, hch@lst.de, sstabellini@kernel.org, adrian.hunter@intel.com,
+ mpe@ellerman.id.au, x86@kernel.org, joe.jin@oracle.com, mingo@kernel.org,
+ peterz@infradead.org, mingo@redhat.com, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ matthew.auld@intel.com, thomas.lendacky@amd.com, konrad.wilk@oracle.com,
+ intel-gfx@lists.freedesktop.org, jani.nikula@linux.intel.com, bp@alien8.de,
+ rodrigo.vivi@intel.com, nouveau@lists.freedesktop.org,
+ boris.ostrovsky@oracle.com, chris@chris-wilson.co.uk, jgross@suse.com,
+ tsbogend@alpha.franken.de, robin.murphy@arm.com, linux-mmc@vger.kernel.org,
+ linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org,
+ tglx@linutronix.de, daniel@ffwll.ch, akpm@linux-foundation.org,
+ linuxppc-dev@lists.ozlabs.org, rppt@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,326 +90,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
-On 2021/2/5 3:52, Robin Murphy wrote:
-> On 2021-01-28 15:17, Keqian Zhu wrote:
->> From: jiangkunkun <jiangkunkun@huawei.com>
->>
->> During dirty log tracking, user will try to retrieve dirty log from
->> iommu if it supports hardware dirty log. This adds a new interface
->> named sync_dirty_log in iommu layer and arm smmuv3 implements it,
->> which scans leaf TTD and treats it's dirty if it's writable (As we
->> just enable HTTU for stage1, so check AP[2] is not set).
->>
->> Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
->> Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
->> ---
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 27 +++++++
->>   drivers/iommu/io-pgtable-arm.c              | 90 +++++++++++++++++++++
->>   drivers/iommu/iommu.c                       | 41 ++++++++++
->>   include/linux/io-pgtable.h                  |  4 +
->>   include/linux/iommu.h                       | 17 ++++
->>   5 files changed, 179 insertions(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 2434519e4bb6..43d0536b429a 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -2548,6 +2548,32 @@ static size_t arm_smmu_merge_page(struct iommu_domain *domain, unsigned long iov
->>       return ops->merge_page(ops, iova, paddr, size, prot);
->>   }
->>   +static int arm_smmu_sync_dirty_log(struct iommu_domain *domain,
->> +                   unsigned long iova, size_t size,
->> +                   unsigned long *bitmap,
->> +                   unsigned long base_iova,
->> +                   unsigned long bitmap_pgshift)
->> +{
->> +    struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
->> +    struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
->> +
->> +    if (!(smmu->features & ARM_SMMU_FEAT_HTTU_HD)) {
->> +        dev_err(smmu->dev, "don't support HTTU_HD and sync dirty log\n");
->> +        return -EPERM;
->> +    }
->> +
->> +    if (!ops || !ops->sync_dirty_log) {
->> +        pr_err("don't support sync dirty log\n");
->> +        return -ENODEV;
->> +    }
->> +
->> +    /* To ensure all inflight transactions are completed */
->> +    arm_smmu_flush_iotlb_all(domain);
+On Thu, Feb 04, 2021 at 09:40:23AM +0100, Christoph Hellwig wrote:
+> So one thing that has been on my mind for a while:  I'd really like
+> to kill the separate dma ops in Xen swiotlb.  If we compare xen-swiotlb
+> to swiotlb the main difference seems to be:
 > 
-> What about transactions that arrive between the point that this completes, and the point - potentially much later - that we actually access any given PTE during the walk? I don't see what this is supposed to be synchronising against, even if it were just a CMD_SYNC (I especially don't see why we'd want to knock out the TLBs).
-The idea is that pgtable may be updated by HTTU *before* or *after* actual DMA access.
-
-1) For PCI ATS. As SMMU spec (3.13.6.1 Hardware flag update for ATS & PRI) states:
-
-"In addition to the behavior that is described earlier in this section, if hardware-management of Dirty state is enabled
-and an ATS request for write access (with NW == 0) is made to a page that is marked Writable Clean, the SMMU
-assumes a write will be made to that page and marks the page as Writable Dirty before returning the ATS response
-that grants write access. When this happens, the modification to the page data by a device is not visible before
-the page state is visible as Writable Dirty."
-
-The problem is that guest memory may be dirtied *after* we actually handle it.
-
-2) For inflight DMA. As SMMU spec (3.13.4 HTTU behavior summary) states:
-
-"In addition, the completion of a TLB invalidation operation makes TTD updates that were caused by
-transactions that are themselves completed by the completion of the TLB invalidation visible. Both
-broadcast and explicit CMD_TLBI_* invalidations have this property."
-
-The problem is that we should flush all dma transaction after guest stop.
-
-
-
-The key to solve these problems is that we should invalidate related TLB.
-1) TLBI can flush inflight dma translation (before dirty_log_sync()).
-2) If a DMA translation uses ATC and occurs after we have handle dirty memory, then the ATC has been invalidated, so this will remark page as dirty (in dirty_log_clear()).
-
-Thanks,
-Keqian
-
+>  - additional reasons to bounce I/O vs the plain DMA capable
+>  - the possibility to do a hypercall on arm/arm64
+>  - an extra translation layer before doing the phys_to_dma and vice
+>    versa
+>  - an special memory allocator
 > 
->> +
->> +    return ops->sync_dirty_log(ops, iova, size, bitmap,
->> +            base_iova, bitmap_pgshift);
->> +}
->> +
->>   static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->>   {
->>       return iommu_fwspec_add_ids(dev, args->args, 1);
->> @@ -2649,6 +2675,7 @@ static struct iommu_ops arm_smmu_ops = {
->>       .domain_set_attr    = arm_smmu_domain_set_attr,
->>       .split_block        = arm_smmu_split_block,
->>       .merge_page        = arm_smmu_merge_page,
->> +    .sync_dirty_log        = arm_smmu_sync_dirty_log,
->>       .of_xlate        = arm_smmu_of_xlate,
->>       .get_resv_regions    = arm_smmu_get_resv_regions,
->>       .put_resv_regions    = generic_iommu_put_resv_regions,
->> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
->> index 17390f258eb1..6cfe1ef3fedd 100644
->> --- a/drivers/iommu/io-pgtable-arm.c
->> +++ b/drivers/iommu/io-pgtable-arm.c
->> @@ -877,6 +877,95 @@ static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova
->>       return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
->>   }
->>   +static int __arm_lpae_sync_dirty_log(struct arm_lpae_io_pgtable *data,
->> +                     unsigned long iova, size_t size,
->> +                     int lvl, arm_lpae_iopte *ptep,
->> +                     unsigned long *bitmap,
->> +                     unsigned long base_iova,
->> +                     unsigned long bitmap_pgshift)
->> +{
->> +    arm_lpae_iopte pte;
->> +    struct io_pgtable *iop = &data->iop;
->> +    size_t base, next_size;
->> +    unsigned long offset;
->> +    int nbits, ret;
->> +
->> +    if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
->> +        return -EINVAL;
->> +
->> +    ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
->> +    pte = READ_ONCE(*ptep);
->> +    if (WARN_ON(!pte))
->> +        return -EINVAL;
->> +
->> +    if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
->> +        if (iopte_leaf(pte, lvl, iop->fmt)) {
->> +            if (pte & ARM_LPAE_PTE_AP_RDONLY)
->> +                return 0;
->> +
->> +            /* It is writable, set the bitmap */
->> +            nbits = size >> bitmap_pgshift;
->> +            offset = (iova - base_iova) >> bitmap_pgshift;
->> +            bitmap_set(bitmap, offset, nbits);
->> +            return 0;
->> +        } else {
->> +            /* To traverse next level */
->> +            next_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
->> +            ptep = iopte_deref(pte, data);
->> +            for (base = 0; base < size; base += next_size) {
->> +                ret = __arm_lpae_sync_dirty_log(data,
->> +                        iova + base, next_size, lvl + 1,
->> +                        ptep, bitmap, base_iova, bitmap_pgshift);
->> +                if (ret)
->> +                    return ret;
->> +            }
->> +            return 0;
->> +        }
->> +    } else if (iopte_leaf(pte, lvl, iop->fmt)) {
->> +        if (pte & ARM_LPAE_PTE_AP_RDONLY)
->> +            return 0;
->> +
->> +        /* Though the size is too small, also set bitmap */
->> +        nbits = size >> bitmap_pgshift;
->> +        offset = (iova - base_iova) >> bitmap_pgshift;
->> +        bitmap_set(bitmap, offset, nbits);
->> +        return 0;
->> +    }
->> +
->> +    /* Keep on walkin */
->> +    ptep = iopte_deref(pte, data);
->> +    return __arm_lpae_sync_dirty_log(data, iova, size, lvl + 1, ptep,
->> +            bitmap, base_iova, bitmap_pgshift);
->> +}
->> +
->> +static int arm_lpae_sync_dirty_log(struct io_pgtable_ops *ops,
->> +                   unsigned long iova, size_t size,
->> +                   unsigned long *bitmap,
->> +                   unsigned long base_iova,
->> +                   unsigned long bitmap_pgshift)
->> +{
->> +    struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->> +    arm_lpae_iopte *ptep = data->pgd;
->> +    int lvl = data->start_level;
->> +    struct io_pgtable_cfg *cfg = &data->iop.cfg;
->> +    long iaext = (s64)iova >> cfg->ias;
->> +
->> +    if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
->> +        return -EINVAL;
->> +
->> +    if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
->> +        iaext = ~iaext;
->> +    if (WARN_ON(iaext))
->> +        return -EINVAL;
->> +
->> +    if (data->iop.fmt != ARM_64_LPAE_S1 &&
->> +        data->iop.fmt != ARM_32_LPAE_S1)
->> +        return -EINVAL;
->> +
->> +    return __arm_lpae_sync_dirty_log(data, iova, size, lvl, ptep,
->> +                     bitmap, base_iova, bitmap_pgshift);
->> +}
->> +
->>   static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->>   {
->>       unsigned long granule, page_sizes;
->> @@ -957,6 +1046,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
->>           .iova_to_phys    = arm_lpae_iova_to_phys,
->>           .split_block    = arm_lpae_split_block,
->>           .merge_page    = arm_lpae_merge_page,
->> +        .sync_dirty_log    = arm_lpae_sync_dirty_log,
->>       };
->>         return data;
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index f1261da11ea8..69f268069282 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2822,6 +2822,47 @@ size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_merge_page);
->>   +int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
->> +             size_t size, unsigned long *bitmap,
->> +             unsigned long base_iova, unsigned long bitmap_pgshift)
->> +{
->> +    const struct iommu_ops *ops = domain->ops;
->> +    unsigned int min_pagesz;
->> +    size_t pgsize;
->> +    int ret;
->> +
->> +    min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
->> +
->> +    if (!IS_ALIGNED(iova | size, min_pagesz)) {
->> +        pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
->> +               iova, size, min_pagesz);
->> +        return -EINVAL;
->> +    }
->> +
->> +    if (!ops || !ops->sync_dirty_log) {
->> +        pr_err("don't support sync dirty log\n");
->> +        return -ENODEV;
->> +    }
->> +
->> +    while (size) {
->> +        pgsize = iommu_pgsize(domain, iova, size);
->> +
->> +        ret = ops->sync_dirty_log(domain, iova, pgsize,
->> +                      bitmap, base_iova, bitmap_pgshift);
-> 
-> Once again, we have a worst-of-both-worlds iteration that doesn't make much sense. iommu_pgsize() essentially tells you the best supported size that an IOVA range *can* be mapped with, but we're iterating a range that's already mapped, so we don't know if it's relevant, and either way it may not bear any relation to the granularity of the bitmap, which is presumably what actually matters.
-> 
-> Logically, either we should iterate at the bitmap granularity here, and the driver just says whether the given iova chunk contains any dirty pages or not, or we just pass everything through to the driver and let it do the whole job itself. Doing a little bit of both is just an overcomplicated mess.
-> 
-> I'm skimming patch #7 and pretty much the same comments apply, so I can't be bothered to repeat them there...
-> 
-> Robin.
-> 
->> +        if (ret)
->> +            break;
->> +
->> +        pr_debug("dirty_log_sync: iova 0x%lx pagesz 0x%zx\n", iova,
->> +             pgsize);
->> +
->> +        iova += pgsize;
->> +        size -= pgsize;
->> +    }
->> +
->> +    return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_sync_dirty_log);
->> +
->>   void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->>   {
->>       const struct iommu_ops *ops = dev->bus->iommu_ops;
->> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
->> index 754b62a1bbaf..f44551e4a454 100644
->> --- a/include/linux/io-pgtable.h
->> +++ b/include/linux/io-pgtable.h
->> @@ -166,6 +166,10 @@ struct io_pgtable_ops {
->>                     size_t size);
->>       size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
->>                    phys_addr_t phys, size_t size, int prot);
->> +    int (*sync_dirty_log)(struct io_pgtable_ops *ops,
->> +                  unsigned long iova, size_t size,
->> +                  unsigned long *bitmap, unsigned long base_iova,
->> +                  unsigned long bitmap_pgshift);
->>   };
->>     /**
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index ac2b0b1bce0f..8069c8375e63 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -262,6 +262,10 @@ struct iommu_ops {
->>                     size_t size);
->>       size_t (*merge_page)(struct iommu_domain *domain, unsigned long iova,
->>                    phys_addr_t phys, size_t size, int prot);
->> +    int (*sync_dirty_log)(struct iommu_domain *domain,
->> +                  unsigned long iova, size_t size,
->> +                  unsigned long *bitmap, unsigned long base_iova,
->> +                  unsigned long bitmap_pgshift);
->>         /* Request/Free a list of reserved regions for a device */
->>       void (*get_resv_regions)(struct device *dev, struct list_head *list);
->> @@ -517,6 +521,10 @@ extern size_t iommu_split_block(struct iommu_domain *domain, unsigned long iova,
->>                   size_t size);
->>   extern size_t iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
->>                      size_t size, int prot);
->> +extern int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
->> +                size_t size, unsigned long *bitmap,
->> +                unsigned long base_iova,
->> +                unsigned long bitmap_pgshift);
->>     /* Window handling function prototypes */
->>   extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
->> @@ -923,6 +931,15 @@ static inline size_t iommu_merge_page(struct iommu_domain *domain,
->>       return -EINVAL;
->>   }
->>   +static inline int iommu_sync_dirty_log(struct iommu_domain *domain,
->> +                       unsigned long iova, size_t size,
->> +                       unsigned long *bitmap,
->> +                       unsigned long base_iova,
->> +                       unsigned long pgshift)
->> +{
->> +    return -EINVAL;
->> +}
->> +
->>   static inline int  iommu_device_register(struct iommu_device *iommu)
->>   {
->>       return -ENODEV;
->>
-> .
-> 
+> I wonder if inbetween a few jump labels or other no overhead enablement
+> options and possibly better use of the dma_range_map we could kill
+> off most of swiotlb-xen instead of maintaining all this code duplication?
+
+So I looked at this a bit more.
+
+For x86 with XENFEAT_auto_translated_physmap (how common is that?)
+pfn_to_gfn is a nop, so plain phys_to_dma/dma_to_phys do work as-is.
+
+xen_arch_need_swiotlb always returns true for x86, and
+range_straddles_page_boundary should never be true for the
+XENFEAT_auto_translated_physmap case.
+
+So as far as I can tell the mapping fast path for the
+XENFEAT_auto_translated_physmap can be trivially reused from swiotlb.
+
+That leaves us with the next more complicated case, x86 or fully cache
+coherent arm{,64} without XENFEAT_auto_translated_physmap.  In that case
+we need to patch in a phys_to_dma/dma_to_phys that performs the MFN
+lookup, which could be done using alternatives or jump labels.
+I think if that is done right we should also be able to let that cover
+the foreign pages in is_xen_swiotlb_buffer/is_swiotlb_buffer, but
+in that worst case that would need another alternative / jump label.
+
+For non-coherent arm{,64} we'd also need to use alternatives or jump
+labels to for the cache maintainance ops, but that isn't a hard problem
+either.
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
