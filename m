@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4464DC433E6
-	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 16:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C35EC433E0
+	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 16:41:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0638E64E8C
-	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 16:41:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0638E64E8C
+	by mail.kernel.org (Postfix) with ESMTPS id 6060764E92
+	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 16:41:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6060764E92
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DD85586D78;
-	Mon,  8 Feb 2021 16:41:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4AAF086DAF;
+	Mon,  8 Feb 2021 16:41:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qZMmrDB2qRPM; Mon,  8 Feb 2021 16:41:16 +0000 (UTC)
+	with ESMTP id y8Kf2LfOTkue; Mon,  8 Feb 2021 16:41:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 520AE86DCC;
-	Mon,  8 Feb 2021 16:41:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 36A2F86E03;
+	Mon,  8 Feb 2021 16:41:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E9BEC1DA9;
-	Mon,  8 Feb 2021 16:41:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86E79C013A
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 16:41:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23926C0FA7;
+	Mon,  8 Feb 2021 16:41:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D9CEC013A
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 16:41:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7586C86FD1
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 16:41:13 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 37C212107A
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 16:41:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FWKFo4ytRZnc for <iommu@lists.linux-foundation.org>;
+ with ESMTP id e2SAxx4WFTWh for <iommu@lists.linux-foundation.org>;
  Mon,  8 Feb 2021 16:41:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kapsi.fi (mail.kapsi.fi [91.232.154.25])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D666786FB1
+ by silver.osuosl.org (Postfix) with ESMTPS id F25E0207A9
  for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 16:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -51,24 +51,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=dMAh1MNck3e2VRmcao1RhRO5KxC9ewWuSldpLdYqPJE=; b=2Bavg5JYwLJkBoT+joSv1vCEss
- dDQMGRJApeOztQqsbb+LsVsiyDuKS/bbcfe0Ybm/ncO/bwNI2A9v/SSfzGfpX2JznB1z6nwwEbid2
- hP8hzI1bbDag/COrEujQiEeXrt156euzfcRyOfr8d5AK61OXq85Z3nAPtT9e9eIKQwUKefPWrf1cs
- sz5AOPTZPJkE4n4IsCHOiwE/HDBDOG41NzYSks8ziE71WcXTwe2RdY3XFXQYUyBUlceFiruyGs82Y
- Q3OpUBVzupKr6MgWM8N5xAND0u3sYq6bWBrz715PekJ2f08NSQha4pc2/9ozLU0tdrILcngH8b+hD
- ov0NeY8A==;
+ bh=F1rC5T4ZapwS/nZNabUxiFFNVft1bYY7SlMPjy6IXuo=; b=DS/mhD79INrZwg8e4YrAjaoGrY
+ OLcGQqAca31ghk4QNjCMcVtGKSrmtxWS54lbpCoWjGcRQ1vskvtvuYhBZ9R2IYXLiPy8aESnGYKp7
+ jGUgU5jOEatKby0SfdgdnAipPvwSMtkThxlYqRaQ9hj1btn26XgDB80U85N+ooNPGNvSIdxfo0rq/
+ 4/77RjmOgwCRILBPW8GYvhfRb2pk5R/7pdOBx3n4WOe5rS5ZZgnwk7FlYMtPbMy+f83CnmKQEGgKz
+ i1Hno+TqAArrtDNvZcGx2/U+egMHWZhuBqAsVM1Wm23dsxQd13DPmmESgHjRXAOAZKWIci75XdM0D
+ +p0C+6xg==;
 Received: from dsl-hkibng22-54f986-236.dhcp.inet.fi ([84.249.134.236]
  helo=toshino.localdomain)
  by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
  (Exim 4.89) (envelope-from <mperttunen@nvidia.com>)
- id 1l99as-0000Cr-Td; Mon, 08 Feb 2021 18:40:58 +0200
+ id 1l99as-0000Cr-JC; Mon, 08 Feb 2021 18:40:58 +0200
 From: Mikko Perttunen <mperttunen@nvidia.com>
 To: thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
  will@kernel.org, robh+dt@kernel.org, frowand.list@gmail.com,
  robin.murphy@arm.com
-Subject: [RFC PATCH 4/8] gpu: host1x: Program context stream ID on submission
-Date: Mon,  8 Feb 2021 18:38:44 +0200
-Message-Id: <20210208163848.2504291-5-mperttunen@nvidia.com>
+Subject: [RFC PATCH 1/8] of/device: Allow specifying a custom iommu_spec to
+ of_dma_configure
+Date: Mon,  8 Feb 2021 18:38:41 +0200
+Message-Id: <20210208163848.2504291-2-mperttunen@nvidia.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210208163848.2504291-1-mperttunen@nvidia.com>
 References: <20210208163848.2504291-1-mperttunen@nvidia.com>
@@ -97,157 +98,190 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add code to do stream ID switching at the beginning of a job. The
-stream ID is switched to the stream ID specified by the context
-passed in the job structure.
+To allow for more customized device tree bindings that point to IOMMUs,
+allow manual specification of iommu_spec to of_dma_configure.
 
-Before switching the stream ID, an OP_DONE wait is done on the
-channel's engine to ensure that there is no residual ongoing
-work that might do DMA using the new stream ID.
+The initial use case for this is with Host1x, where the driver manages
+a set of device tree-defined IOMMU contexts that are dynamically
+allocated to various users. These contexts don't correspond to
+platform devices and are instead attached to dummy devices on a custom
+software bus.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- drivers/gpu/host1x/hw/channel_hw.c        | 52 +++++++++++++++++++++--
- drivers/gpu/host1x/hw/host1x06_hardware.h | 10 +++++
- drivers/gpu/host1x/hw/host1x07_hardware.h | 10 +++++
- include/linux/host1x.h                    |  4 ++
- 4 files changed, 72 insertions(+), 4 deletions(-)
+ drivers/iommu/of_iommu.c  | 12 ++++++++----
+ drivers/of/device.c       |  9 +++++----
+ include/linux/of_device.h | 34 +++++++++++++++++++++++++++-------
+ include/linux/of_iommu.h  |  6 ++++--
+ 4 files changed, 44 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/gpu/host1x/hw/channel_hw.c b/drivers/gpu/host1x/hw/channel_hw.c
-index d88a32f73f5e..f97296864da8 100644
---- a/drivers/gpu/host1x/hw/channel_hw.c
-+++ b/drivers/gpu/host1x/hw/channel_hw.c
-@@ -129,6 +129,45 @@ static void host1x_channel_set_streamid(struct host1x_channel *channel)
- #endif
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e505b9130a1c..3fefa6c63863 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -87,8 +87,7 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
+ 
+-static int of_iommu_xlate(struct device *dev,
+-			  struct of_phandle_args *iommu_spec)
++int of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
+ {
+ 	const struct iommu_ops *ops;
+ 	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
+@@ -117,6 +116,7 @@ static int of_iommu_xlate(struct device *dev,
+ 	module_put(ops->owner);
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(of_iommu_xlate);
+ 
+ static int of_iommu_configure_dev_id(struct device_node *master_np,
+ 				     struct device *dev,
+@@ -177,7 +177,8 @@ static int of_iommu_configure_device(struct device_node *master_np,
+ 
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np,
+-					   const u32 *id)
++					   const u32 *id,
++					   struct of_phandle_args *iommu_spec)
+ {
+ 	const struct iommu_ops *ops = NULL;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+@@ -209,7 +210,10 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		err = pci_for_each_dma_alias(to_pci_dev(dev),
+ 					     of_pci_iommu_init, &info);
+ 	} else {
+-		err = of_iommu_configure_device(master_np, dev, id);
++		if (iommu_spec)
++			err = of_iommu_xlate(dev, iommu_spec);
++		else
++			err = of_iommu_configure_device(master_np, dev, id);
+ 
+ 		fwspec = dev_iommu_fwspec_get(dev);
+ 		if (!err && fwspec)
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index aedfaaafd3e7..84ada2110c5b 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -88,8 +88,9 @@ int of_device_add(struct platform_device *ofdev)
+  * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
+  * to fix up DMA configuration.
+  */
+-int of_dma_configure_id(struct device *dev, struct device_node *np,
+-			bool force_dma, const u32 *id)
++int __of_dma_configure(struct device *dev, struct device_node *np,
++			bool force_dma, const u32 *id,
++			struct of_phandle_args *iommu_spec)
+ {
+ 	const struct iommu_ops *iommu;
+ 	const struct bus_dma_region *map = NULL;
+@@ -170,7 +171,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	dev_dbg(dev, "device is%sdma coherent\n",
+ 		coherent ? " " : " not ");
+ 
+-	iommu = of_iommu_configure(dev, np, id);
++	iommu = of_iommu_configure(dev, np, id, iommu_spec);
+ 	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
+ 		kfree(map);
+ 		return -EPROBE_DEFER;
+@@ -184,7 +185,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	dev->dma_range_map = map;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(of_dma_configure_id);
++EXPORT_SYMBOL_GPL(__of_dma_configure);
+ 
+ int of_device_register(struct platform_device *pdev)
+ {
+diff --git a/include/linux/of_device.h b/include/linux/of_device.h
+index 07ca187fc5e4..40cc3e788cb9 100644
+--- a/include/linux/of_device.h
++++ b/include/linux/of_device.h
+@@ -55,14 +55,27 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+ 	return of_node_get(cpu_dev->of_node);
  }
  
-+static void host1x_channel_program_engine_streamid(struct host1x_job *job)
-+{
-+#if HOST1X_HW >= 6
-+	u32 fence;
-+
-+	if (!job->context)
-+		return;
-+
-+	fence = host1x_syncpt_incr_max(job->syncpt, 1);
-+
-+	/* First, increment a syncpoint on OP_DONE condition.. */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
-+		HOST1X_UCLASS_INCR_SYNCPT_INDX_F(job->syncpt->id) |
-+			HOST1X_UCLASS_INCR_SYNCPT_COND_F(1));
-+
-+	/* Wait for syncpoint to increment */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(HOST1X_CLASS_HOST1X,
-+			host1x_uclass_wait_syncpt_r(), 1),
-+		host1x_class_host_wait_syncpt(job->syncpt->id, fence));
-+
-+	/*
-+	 * Now that we know the engine is idle, return to class and
-+	 * change stream ID.
-+	 */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(job->class, 0, 0),
-+		HOST1X_OPCODE_NOP);
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setpayload(job->context->stream_id),
-+		host1x_opcode_setstreamid(job->engine_streamid_offset / 4));
-+#endif
-+}
-+
- static int channel_submit(struct host1x_job *job)
+-int of_dma_configure_id(struct device *dev,
++int __of_dma_configure(struct device *dev,
+ 		     struct device_node *np,
+-		     bool force_dma, const u32 *id);
++		     bool force_dma, const u32 *id,
++		     struct of_phandle_args *iommu_spec);
+ static inline int of_dma_configure(struct device *dev,
+ 				   struct device_node *np,
+ 				   bool force_dma)
  {
- 	struct host1x_channel *ch = job->channel;
-@@ -184,18 +223,23 @@ static int channel_submit(struct host1x_job *job)
- 	if (sp->base)
- 		synchronize_syncpt_base(job);
+-	return of_dma_configure_id(dev, np, force_dma, NULL);
++	return __of_dma_configure(dev, np, force_dma, NULL, NULL);
++}
++static inline int of_dma_configure_id(struct device *dev,
++				      struct device_node *np,
++				      bool force_dma, const u32 *id)
++{
++	return __of_dma_configure(dev, np, force_dma, id, NULL);
++}
++static inline int
++of_dma_configure_iommu_spec(struct device *dev, struct device_node *np,
++			    bool force_dma, struct of_phandle_args *iommu_spec)
++{
++	return __of_dma_configure(dev, np, force_dma, NULL, iommu_spec);
+ }
+ #else /* CONFIG_OF */
  
--	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
--
- 	host1x_hw_syncpt_assign_to_channel(host, sp, ch);
- 
--	job->syncpt_end = syncval;
--
- 	/* add a setclass for modules that require it */
- 	if (job->class)
- 		host1x_cdma_push(&ch->cdma,
- 				 host1x_opcode_setclass(job->class, 0, 0),
- 				 HOST1X_OPCODE_NOP);
- 
-+	/*
-+	 * Ensure engine DMA is idle and set new stream ID. May increment
-+	 * syncpt max.
-+	 */
-+	host1x_channel_program_engine_streamid(job);
-+
-+	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
-+	job->syncpt_end = syncval;
-+
- 	submit_gathers(job);
- 
- 	/* end CDMA submit & stash pinned hMems into sync queue */
-diff --git a/drivers/gpu/host1x/hw/host1x06_hardware.h b/drivers/gpu/host1x/hw/host1x06_hardware.h
-index 01a142a09800..5d515745eee7 100644
---- a/drivers/gpu/host1x/hw/host1x06_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x06_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
+@@ -112,18 +125,25 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+ 	return NULL;
  }
  
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
-+
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
+-static inline int of_dma_configure_id(struct device *dev,
++static inline int of_dma_configure(struct device *dev,
+ 				   struct device_node *np,
+ 				   bool force_dma)
  {
- 	return (12 << 28) | count;
-diff --git a/drivers/gpu/host1x/hw/host1x07_hardware.h b/drivers/gpu/host1x/hw/host1x07_hardware.h
-index e6582172ebfd..82c0cc9bb0b5 100644
---- a/drivers/gpu/host1x/hw/host1x07_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x07_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
+ 	return 0;
  }
- 
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
+-static inline int of_dma_configure(struct device *dev,
+-				   struct device_node *np,
+-				   bool force_dma)
 +
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
++static inline int of_dma_configure_id(struct device *dev,
++				      struct device_node *np,
++				      bool force_dma, const u32 *id)
  {
- 	return (12 << 28) | count;
-diff --git a/include/linux/host1x.h b/include/linux/host1x.h
-index 3cf3c6a0b225..3bf19080f1c1 100644
---- a/include/linux/host1x.h
-+++ b/include/linux/host1x.h
-@@ -272,6 +272,10 @@ struct host1x_job {
- 	/* Callback called when job is freed */
- 	void (*release)(struct host1x_job *job);
- 	void *user_data;
+ 	return 0;
+ }
 +
-+	/* Options for configuring engine data stream ID */
-+	struct host1x_context *context;
-+	u32 engine_streamid_offset;
- };
++static inline int
++of_dma_configure_iommu_spec(struct device *dev, struct device_node *np,
++			    bool force_dma, struct of_phandle_args *iommu_spec)
++{	return 0;
++}
+ #endif /* CONFIG_OF */
  
- struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
+ #endif /* _LINUX_OF_DEVICE_H */
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 16f4b3e87f20..e8d1e6d32d77 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -14,7 +14,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 
+ extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					struct device_node *master_np,
+-					const u32 *id);
++					const u32 *id,
++					struct of_phandle_args *iommu_spec);
+ 
+ #else
+ 
+@@ -27,7 +28,8 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 
+ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					 struct device_node *master_np,
+-					 const u32 *id)
++					 const u32 *id,
++					 struct of_phandle_args *iommu_spec);
+ {
+ 	return NULL;
+ }
 -- 
 2.30.0
 
