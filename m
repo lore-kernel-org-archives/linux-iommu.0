@@ -2,86 +2,76 @@ Return-Path: <SRS0=aVDl=HK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3433FC433E0
-	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 13:11:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F7CC433E0
+	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 14:50:40 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E65064E87
-	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 13:11:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E65064E87
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id D8C2864E6C
+	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 14:50:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8C2864E6C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4CC7C867AE;
-	Mon,  8 Feb 2021 13:11:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 42B4B2079A;
+	Mon,  8 Feb 2021 14:50:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u31314+IrV1h; Mon,  8 Feb 2021 13:11:13 +0000 (UTC)
+	with ESMTP id T7ttzwk0VbHH; Mon,  8 Feb 2021 14:50:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 97F6E8678B;
-	Mon,  8 Feb 2021 13:11:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C04C7204E8;
+	Mon,  8 Feb 2021 14:50:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A39DC0174;
-	Mon,  8 Feb 2021 13:11:13 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4561DC013A
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 13:11:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95356C1DA9;
+	Mon,  8 Feb 2021 14:50:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D4ACC1DA9
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 343318678B
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 13:11:12 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6B527204E8
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hx7iHG0EtkfJ for <iommu@lists.linux-foundation.org>;
- Mon,  8 Feb 2021 13:11:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com
- [209.85.167.51])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A730E867C2
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 13:11:10 +0000 (UTC)
-Received: by mail-lf1-f51.google.com with SMTP id w36so8506925lfu.4
- for <iommu@lists.linux-foundation.org>; Mon, 08 Feb 2021 05:11:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to;
- bh=0+b5gxqNPJNWrAnejzYehpggD7XHAx7oZRdyZlNEzTo=;
- b=gN0z2hSVzPA6LOmyf1OZABL0JT6Di3qSwOt28sdjkuJgTM7R3ExyswTP+iqQoMhjUR
- Q/fWYWI/LOef/+SdroWd9Ec3eXt2BDWM4AT4mDCngBkQWTaGe/PtojQLxKICLslAwg9J
- Ll2KiF7qwmWFqjVbrVvvi7PJVDFbmn3qQoU4MqNOi7r4WPzpieDhNvCfofI5rmcuHGWv
- 6JjjfSo0BpSCB7o7Zmtb3Ai29O0wLeK3IA8VJwuJieGvbx6HijouhM7wmnPbsXwtnums
- F+urK5WSK4HaQ1LWmxmBmTW9pRFsxvXih2A8oe5AhQ5ZvuWzATB6hF6OPYzToJYOymUJ
- iX/w==
-X-Gm-Message-State: AOAM531G2ZIkfn424vyz4L1ry6KgzqjfR6ccvWRDyXGEtAgMOzzyfUNR
- FydqLO4SfPDAe84xqbdnP80=
-X-Google-Smtp-Source: ABdhPJyJrgoSBZIuC41bLp1cidOYHD3JHUeA3RbTakuAdRfsgyt0qEd7seIIi2UkyBGp0woVUscUag==
-X-Received: by 2002:a19:7009:: with SMTP id h9mr9987648lfc.271.1612789868792; 
- Mon, 08 Feb 2021 05:11:08 -0800 (PST)
-Received: from rocinante ([95.155.85.46])
- by smtp.gmail.com with ESMTPSA id x20sm2086063lfe.256.2021.02.08.05.11.07
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 08 Feb 2021 05:11:08 -0800 (PST)
-Date: Mon, 8 Feb 2021 14:11:07 +0100
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Jon Derrick <jonathan.derrick@intel.com>
-Subject: Re: [PATCH v3 2/2] PCI: vmd: Disable MSI-X remapping when possible
-Message-ID: <YCE4a4swLUTw6j9Y@rocinante>
-References: <20210206033502.103964-1-jonathan.derrick@intel.com>
- <20210206033502.103964-3-jonathan.derrick@intel.com>
+ with ESMTP id 5C9FGJWbK4JR for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Feb 2021 14:50:35 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3039A20338
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+ References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-Type:Content-ID:Content-Description;
+ bh=LbVdEP6Q8sdgfOzBxgO4V1zaoOM6OhmNlKX6TnKe0gU=; b=UK19lT76lf81jqlGSn+5yRUE9A
+ eoh59SO2HusP3NHZuWli8aBBZic3BEbHGUbWFa03/NI6EczhF8dU8W0c2Ir3uY9Ft7ra8yTF4tCMa
+ IVFb8ENbP93Zp2VMVVjBgslqUtgvkHTkZ1+dJ/5yvb7bKv87d3epy0cEot9Y3xegVTzOer7Ksv09+
+ 1PBy0uKNz03QNHOfhP+JpYDShZ/zk2bctze+zLppzHiOwcsejgLRD5F+r/Y7m0l/99v7Ur5wRhnLn
+ YXTQdrVoOtwut87NEo64JkgMv0+AgVp5UQ0eSAh7yh+mb3xOUs+MIQuIbh8+e0D+qqxlxP85YnACM
+ ojngzDHQ==;
+Received: from [2001:4bb8:184:7d04:e3ed:f9d6:78e2:6f0f] (helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+ id 1l97rx-0066da-9O; Mon, 08 Feb 2021 14:50:29 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 1/6] MIPS/malta: simplify plat_setup_iocoherency
+Date: Mon,  8 Feb 2021 15:50:19 +0100
+Message-Id: <20210208145024.3320420-2-hch@lst.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210208145024.3320420-1-hch@lst.de>
+References: <20210208145024.3320420-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210206033502.103964-3-jonathan.derrick@intel.com>
-Cc: Nirmal Patel <nirmal.patel@intel.com>, linux-pci@vger.kernel.org,
- Kapil Karkra <kapil.karkra@intel.com>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <helgaas@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,34 +84,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgSm9uLAoKVGhhbmsgeW91IGZvciBhbGwgdGhlIHdvcmsgaGVyZSEKCkp1c3QgYSBudW1iZXIg
-b2Ygc3VnZ2VzdGlvbnMsIG1haW5seSBuaXRwaWNrcywgc28gZmVlbCBmcmVlIHRvIGlnbm9yZQp0
-aGVzZSwgb2YgY291cnNlLgoKWy4uLl0KPiArI2RlZmluZSBWTUNGR19NU0lfUk1QX0RJUwkweDIK
-Wy4uLl0KCldoYXQgYWJvdXQgY2FsbGluZyB0aGlzIFZNQ09ORklHX01TSV9SRU1BUCBzbyB0aGF0
-IGlzIG1vcmUKc2VsZi1leHBsYW5hdG9yeSAoaXQgYWxzbyBzaGFyZXMgc29tZSBzaW1pbGFyaXR5
-IHdpdGggdGhlClBDSV9SRUdfVk1DT05GSUcgZGVmaW50aXRpb24pLgoKWy4uLl0KPiArCVZNRF9G
-RUFUX0JZUEFTU19NU0lfUkVNQVAJCT0gKDEgPDwgNCksClsuLi5dCgpGb2xsb3dpbmcgb24gdGhl
-IG5hbWluZyB0aGF0IGluY2x1ZGVkICJIQVMiIHRvIGluZGljYXRlIGEgZmVhdHVyZSAob3IKc3Vw
-cG9ydCBmb3IgdGhlcmVvZiksIHBlcmhhcHMgd2UgY291bGQgbmFtZSB0aGlzIGFzLCBmb3IgZXhh
-bXBsZToKCglWTURfRkVBVF9DQU5fQllQQVNTX01TSV9SRU1BUAoKV2hhdCBkbyB5b3UgdGhpbms/
-CgpbLi4uXSAKPiArc3RhdGljIHZvaWQgdm1kX2VuYWJsZV9tc2lfcmVtYXBwaW5nKHN0cnVjdCB2
-bWRfZGV2ICp2bWQsIGJvb2wgZW5hYmxlKQo+ICt7Cj4gKwl1MTYgcmVnOwo+ICsKPiArCXBjaV9y
-ZWFkX2NvbmZpZ193b3JkKHZtZC0+ZGV2LCBQQ0lfUkVHX1ZNQ09ORklHLCAmcmVnKTsKPiArCXJl
-ZyA9IGVuYWJsZSA/IChyZWcgJiB+Vk1DRkdfTVNJX1JNUF9ESVMpIDogKHJlZyB8IFZNQ0ZHX01T
-SV9STVBfRElTKTsKPiArCXBjaV93cml0ZV9jb25maWdfd29yZCh2bWQtPmRldiwgUENJX1JFR19W
-TUNPTkZJRywgcmVnKTsKPiArfQoKSSB3b25kZXIgaWYgY2FsbGluZyB0aGlzIGZ1bmN0aW9uIHZt
-ZF9zZXRfbXNpX3JlbWFwcGluZygpIHdvdWxkIGJlIG1vcmUKYWxpZ25lZCB3aXRoIHdoYXQgaXQg
-ZG9lcywgc2luY2UgaXQgdHVybnMgdGhlIE1TSSByZW1hcHBpbmcgc3VwcG9ydCBvbgphbmQgb2Zm
-LCBzbyB0byBzcGVhaywgYXMgbmVlZGVkLiAgRG8geW91IHRoaW5rIHRoaXMgd291bGQgYmUgT0sg
-dG8gZG8/CgpbLi4uXQo+ICsJCS8qCj4gKwkJICogT3ZlcnJpZGUgdGhlIGlycSBkb21haW4gYnVz
-IHRva2VuIHNvIHRoZSBkb21haW4gY2FuIGJlCj4gKwkJICogZGlzdGluZ3Vpc2hlZCBmcm9tIGEg
-cmVndWxhciBQQ0kvTVNJIGRvbWFpbi4KPiArCQkgKi8KCkl0IHdvdWxkIGJlICJJUlEiIGhlcmUu
-CgpSZXZpZXdlZC1ieTogS3J6eXN6dG9mIFdpbGN6ecWEc2tpIDxrd0BsaW51eC5jb20+CgpLcnp5
-c3p0b2YKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Merge plat_enable_iocoherency into plat_setup_iocoherency to simplify
+the code a bit.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/mips/mti-malta/malta-setup.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/arch/mips/mti-malta/malta-setup.c b/arch/mips/mti-malta/malta-setup.c
+index e1fb8b5349447e..f3fec5a5a07c76 100644
+--- a/arch/mips/mti-malta/malta-setup.c
++++ b/arch/mips/mti-malta/malta-setup.c
+@@ -90,7 +90,7 @@ static void __init fd_activate(void)
+ }
+ #endif
+ 
+-static int __init plat_enable_iocoherency(void)
++static void __init plat_setup_iocoherency(void)
+ {
+ 	int supported = 0;
+ 	u32 cfg;
+@@ -118,19 +118,13 @@ static int __init plat_enable_iocoherency(void)
+ 		/* Nothing special needs to be done to enable coherency */
+ 		pr_info("CMP IOCU detected\n");
+ 		cfg = __raw_readl((u32 *)CKSEG1ADDR(ROCIT_CONFIG_GEN0));
+-		if (!(cfg & ROCIT_CONFIG_GEN0_PCI_IOCU)) {
++		if (cfg & ROCIT_CONFIG_GEN0_PCI_IOCU)
++			supported = 1;
++		else
+ 			pr_crit("IOCU OPERATION DISABLED BY SWITCH - DEFAULTING TO SW IO COHERENCY\n");
+-			return 0;
+-		}
+-		supported = 1;
+ 	}
+-	hw_coherentio = supported;
+-	return supported;
+-}
+ 
+-static void __init plat_setup_iocoherency(void)
+-{
+-	if (plat_enable_iocoherency()) {
++	if (supported)
+ 		if (coherentio == IO_COHERENCE_DISABLED)
+ 			pr_info("Hardware DMA cache coherency disabled\n");
+ 		else
+@@ -141,6 +135,7 @@ static void __init plat_setup_iocoherency(void)
+ 		else
+ 			pr_info("Software DMA cache coherency enabled\n");
+ 	}
++	hw_coherentio = supported;
+ }
+ 
+ static void __init pci_clock_check(void)
+-- 
+2.29.2
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
