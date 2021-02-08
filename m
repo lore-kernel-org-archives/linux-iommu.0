@@ -7,63 +7,64 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 481F9C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4A2C433DB
 	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 14:50:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8FDE564DD5
-	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 14:50:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8FDE564DD5
+	by mail.kernel.org (Postfix) with ESMTPS id 5663764DD5
+	for <iommu@archiver.kernel.org>; Mon,  8 Feb 2021 14:50:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5663764DD5
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4C75D867D5;
-	Mon,  8 Feb 2021 14:50:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 11ED185C05;
+	Mon,  8 Feb 2021 14:50:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GNpq1LbAnMT9; Mon,  8 Feb 2021 14:50:52 +0000 (UTC)
+	with ESMTP id Jez2MecbeCz3; Mon,  8 Feb 2021 14:50:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 91CEB8690F;
-	Mon,  8 Feb 2021 14:50:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3164985AA1;
+	Mon,  8 Feb 2021 14:50:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E107C1E6F;
-	Mon,  8 Feb 2021 14:50:52 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 88534C013A
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 230D7C0FA7;
+	Mon,  8 Feb 2021 14:50:43 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D401C013A
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 774F587060
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 373582078B
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YhynBMKF+Dv1 for <iommu@lists.linux-foundation.org>;
- Mon,  8 Feb 2021 14:50:50 +0000 (UTC)
+ with ESMTP id AIFK1yUbFGLu for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Feb 2021 14:50:40 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DB68B86FAB
- for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 8C31920788
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Feb 2021 14:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=EPoiozZS6/Cvp+l1A8bZazJRGXrcXgormcPYzPOKxGQ=; b=BDunB0gBYgJ2R+w+QAi2mR/CSA
- 0PbAGk5flA4O6lJxRN6sKdMbQ0SoudMZd/funMFRlZj9WA9c9zubNKRW3GM22pC1fdKI6i8mlVBaD
- nyEBbXTylPOk7uX/Vi7O8Xv78vIgIrlrZvE0yAAvy5DJIpAMxqaVIQfxBFxeaXLq8SLVRewRjjNxk
- Bpoq6dzsNkcVnv8zxmWC3/QeHpW90CtIsfKdLQv//ujL3aU8gU//DRrZLHLxZ/VaFeihcGcwpAS2t
- qsBUwl3Bfdm6/+LyXiz6sJSdnYTaUzDRz5Cxv/rZKEHpWZtIxUv/T6VQhFdEuiBbZkeAZOXlzJN98
- jswI31Tw==;
+ bh=aFhPYGLoYcGU6Ykd7tgOcPfeJpRv4i64UK7IzVFmOyw=; b=Wqn9F2nkW7EbNgVcEA0xn00cNJ
+ hFeO35gRq902ZDyisNpxQ8AFhzSiiDH/qqV01qfYQWB1Q2Jte25pCcvxR434YjVVtD1agFVmfdymc
+ AoWQKf5rVR/uToJTh634oN5kGvvyTyI7noVlej1gVzEECH/KS5Op/RrkhuTz2eAPv+PpMAsV9YY1L
+ LnO6k3xvBNCfBqCltBPURv5KDWNbfz6LrxrZnmCNuwumtVzpBX/qHojQBvaVgGVoOEExwIxoUr3uc
+ Hnj9DwW2nJLtOE+RLTp+TH4BVOaC2LllrA3evV8K34E5kPxtJjLsSHm2+sQepCAvAQLFvo06mBFO3
+ YaM+kojQ==;
 Received: from [2001:4bb8:184:7d04:e3ed:f9d6:78e2:6f0f] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1l97sA-0066eF-KK; Mon, 08 Feb 2021 14:50:43 +0000
+ id 1l97s1-0066ds-Nf; Mon, 08 Feb 2021 14:50:34 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 6/6] MIPS: remove CONFIG_DMA_PERDEV_COHERENT
-Date: Mon,  8 Feb 2021 15:50:24 +0100
-Message-Id: <20210208145024.3320420-7-hch@lst.de>
+Subject: [PATCH 3/6] MIPS: move the {no,
+ }nocoherentio options to the malta setup code
+Date: Mon,  8 Feb 2021 15:50:21 +0100
+Message-Id: <20210208145024.3320420-4-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210208145024.3320420-1-hch@lst.de>
 References: <20210208145024.3320420-1-hch@lst.de>
@@ -89,61 +90,70 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Just select DMA_NONCOHERENT and ARCH_HAS_SETUP_DMA_OPS from the
-MIPS_GENERIC platform instead.
+There are only two MIPS platforms that are conditionally DMA coherent.
+Of those alchemcy forces the coherentcy base on the platform, while
+malta allows a mix of hardware defaults and manual overrides.  Move the
+command line options for these overrides to the malta setup code, as
+they can't have an effect for alchemy.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/mips/Kconfig              | 8 ++------
- arch/mips/mm/dma-noncoherent.c | 2 +-
- 2 files changed, 3 insertions(+), 7 deletions(-)
+ arch/mips/kernel/setup.c          | 16 ----------------
+ arch/mips/mti-malta/malta-setup.c | 16 ++++++++++++++++
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 1f1603a08a6d2d..fae02b0b9c599a 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -123,6 +123,7 @@ choice
- 
- config MIPS_GENERIC_KERNEL
- 	bool "Generic board-agnostic MIPS kernel"
-+	select ARCH_HAS_SETUP_DMA_OPS
- 	select MIPS_GENERIC
- 	select BOOT_RAW
- 	select BUILTIN_DTB
-@@ -132,7 +133,7 @@ config MIPS_GENERIC_KERNEL
- 	select CPU_MIPSR2_IRQ_EI
- 	select CPU_MIPSR2_IRQ_VI
- 	select CSRC_R4K
--	select DMA_PERDEV_COHERENT
-+	select DMA_NONCOHERENT
- 	select HAVE_PCI
- 	select IRQ_MIPS_CPU
- 	select MIPS_AUTO_PFN_OFFSET
-@@ -1127,11 +1128,6 @@ config FW_CFE
- config ARCH_SUPPORTS_UPROBES
- 	bool
- 
--config DMA_PERDEV_COHERENT
--	bool
--	select ARCH_HAS_SETUP_DMA_OPS
--	select DMA_NONCOHERENT
+diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+index 7e1f8e2774373d..8e205a4e18c27b 100644
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -811,20 +811,4 @@ arch_initcall(debugfs_mips);
+ enum coherent_io_user_state coherentio = IO_COHERENCE_DEFAULT;
+ EXPORT_SYMBOL_GPL(coherentio);
+ int hw_coherentio;	/* Actual hardware supported DMA coherency setting. */
 -
- config DMA_NONCOHERENT
- 	bool
- 	#
-diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index 90b562753eb892..212f3ce75a6bd3 100644
---- a/arch/mips/mm/dma-noncoherent.c
-+++ b/arch/mips/mm/dma-noncoherent.c
-@@ -135,7 +135,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+-static int __init setcoherentio(char *str)
+-{
+-	coherentio = IO_COHERENCE_ENABLED;
+-	pr_info("Hardware DMA cache coherency (command line)\n");
+-	return 0;
+-}
+-early_param("coherentio", setcoherentio);
+-
+-static int __init setnocoherentio(char *str)
+-{
+-	coherentio = IO_COHERENCE_DISABLED;
+-	pr_info("Software DMA cache coherency (command line)\n");
+-	return 0;
+-}
+-early_param("nocoherentio", setnocoherentio);
+ #endif
+diff --git a/arch/mips/mti-malta/malta-setup.c b/arch/mips/mti-malta/malta-setup.c
+index f3fec5a5a07c76..33449a2692c3a3 100644
+--- a/arch/mips/mti-malta/malta-setup.c
++++ b/arch/mips/mti-malta/malta-setup.c
+@@ -90,6 +90,22 @@ static void __init fd_activate(void)
  }
  #endif
  
--#ifdef CONFIG_DMA_PERDEV_COHERENT
-+#ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		const struct iommu_ops *iommu, bool coherent)
++static int __init setcoherentio(char *str)
++{
++	coherentio = IO_COHERENCE_ENABLED;
++	pr_info("Hardware DMA cache coherency (command line)\n");
++	return 0;
++}
++early_param("coherentio", setcoherentio);
++
++static int __init setnocoherentio(char *str)
++{
++	coherentio = IO_COHERENCE_DISABLED;
++	pr_info("Software DMA cache coherency (command line)\n");
++	return 0;
++}
++early_param("nocoherentio", setnocoherentio);
++
+ static void __init plat_setup_iocoherency(void)
  {
+ 	int supported = 0;
 -- 
 2.29.2
 
