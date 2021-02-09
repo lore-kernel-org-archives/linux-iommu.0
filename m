@@ -2,75 +2,115 @@ Return-Path: <SRS0=nJTY=HL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 651A0C433DB
-	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 09:18:13 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4675DC433E0
+	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 09:20:05 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0166664EBD
-	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 09:18:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0166664EBD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id CDFAB64EBA
+	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 09:20:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CDFAB64EBA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BC95A8736F;
-	Tue,  9 Feb 2021 09:18:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8EA076F8C4
+	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 09:20:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EmiL0AXrEFSE; Tue,  9 Feb 2021 09:18:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id H2XoPibd5-yy for <iommu@archiver.kernel.org>;
+	Tue,  9 Feb 2021 09:20:03 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+	id 76EE06F6EA; Tue,  9 Feb 2021 09:20:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 03299872E9;
-	Tue,  9 Feb 2021 09:18:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 82AD56F5FD;
+	Tue,  9 Feb 2021 09:19:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D40F9C0891;
-	Tue,  9 Feb 2021 09:18:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D58C4C013A
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:18:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 41301C0891;
+	Tue,  9 Feb 2021 09:19:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 15DD1C013A
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:19:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C992A870D1
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:18:08 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0403F850D6
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:19:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WLBesQP9rpUQ for <iommu@lists.linux-foundation.org>;
- Tue,  9 Feb 2021 09:18:07 +0000 (UTC)
+ with ESMTP id dkkk5ZxIfkmt for <iommu@lists.linux-foundation.org>;
+ Tue,  9 Feb 2021 09:19:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by hemlock.osuosl.org (Postfix) with ESMTPS id EC2CA870C7
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:18:06 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DZchc0Dr5z165bR;
- Tue,  9 Feb 2021 17:16:32 +0800 (CST)
-Received: from [127.0.0.1] (10.40.188.87) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.498.0; Tue, 9 Feb 2021
- 17:17:46 +0800
-Subject: Re: [RFC PATCH v3 1/2] mempinfd: Add new syscall to provide memory pin
-To: Andy Lutomirski <luto@amacapital.net>
-References: <1612685884-19514-2-git-send-email-wangzhou1@hisilicon.com>
- <ED58431F-5972-47D1-BF50-93A20AD86C46@amacapital.net>
-From: Zhou Wang <wangzhou1@hisilicon.com>
-Message-ID: <2e6cf99f-beb6-9bef-1316-5e58fb0aa86e@hisilicon.com>
-Date: Tue, 9 Feb 2021 17:17:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 58C5A85082
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 09:19:54 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1199ALen133205;
+ Tue, 9 Feb 2021 09:19:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=eAlfirjFPihoK/mVAVic9Bz9nKfTspoU2b002Thx3AM=;
+ b=YEOpzUrNhfU54eiph6icmJICKD5YX/bSS/aQx2vG2VNy/Y+oGw8692bvsVrFesi/cNBJ
+ +ZfQStgtjYGtYbatqd1sydNzQ+bLgb46Dh1rmrvaQVtS+nE+VQwe3ncX6V6UK6ENz/S1
+ +KVR7R3hhXwVqXXup+VRoZXYNBdqtBOL4I13sQ1u8wGjViH0WDLWZ18AfMC+02K3L9KK
+ PpJgHCxY2su25D9Hgqb5zIUueQOS5z1JqFLUeyaKwbQrLxrQKKiIAvQpeRJUA+nk+r0e
+ IXCDbMH+di0ydphrfDjmOFL3IePLO6QyaaDth4STzDLTr1fGEAeW1nqXcmkLw7E6VeGG MA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by aserp2130.oracle.com with ESMTP id 36hgmaeweh-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 09 Feb 2021 09:19:38 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1199BNCv091397;
+ Tue, 9 Feb 2021 09:19:36 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by aserp3020.oracle.com with ESMTP id 36j510y9wm-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 09 Feb 2021 09:19:36 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 1199JXkl007635;
+ Tue, 9 Feb 2021 09:19:34 GMT
+Received: from kadam (/102.36.221.92) by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 09 Feb 2021 01:19:33 -0800
+Date: Tue, 9 Feb 2021 12:19:23 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH][next] iommu/mediatek: Fix unsigned domid comparison with
+ less than zero
+Message-ID: <20210209091923.GO2696@kadam>
+References: <20210203135936.23016-1-colin.king@canonical.com>
+ <20210204092558.GA20244@willie-the-truck>
 MIME-Version: 1.0
-In-Reply-To: <ED58431F-5972-47D1-BF50-93A20AD86C46@amacapital.net>
-X-Originating-IP: [10.40.188.87]
-X-CFilter-Loop: Reflected
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com,
- Sihang Chen <chensihang1@hisilicon.com>, jgg@ziepe.ca,
- linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Alexander Viro <viro@zeniv.linux.org.uk>,
- gregkh@linuxfoundation.org, zhangfei.gao@linaro.org,
- Andrew Morton <akpm@linux-foundation.org>, liguozhu@hisilicon.com,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20210204092558.GA20244@willie-the-truck>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9889
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ bulkscore=0 adultscore=0
+ mlxlogscore=999 phishscore=0 spamscore=0 suspectscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102090045
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9889
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+ priorityscore=1501 malwarescore=0
+ spamscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 impostorscore=0
+ suspectscore=0 mlxscore=0 clxscore=1011 mlxlogscore=999 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102090045
+Cc: Anan sun <anan.sun@mediatek.com>, kernel-janitors@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Chao Hao <chao.hao@mediatek.com>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Colin King <colin.king@canonical.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,50 +123,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS8yLzggNjowMiwgQW5keSBMdXRvbWlyc2tpIHdyb3RlOgo+IAo+IAo+PiBPbiBGZWIg
-NywgMjAyMSwgYXQgMTI6MzEgQU0sIFpob3UgV2FuZyA8d2FuZ3pob3UxQGhpc2lsaWNvbi5jb20+
-IHdyb3RlOgo+Pgo+PiDvu79TVkEoc2hhcmUgdmlydHVhbCBhZGRyZXNzKSBvZmZlcnMgYSB3YXkg
-Zm9yIGRldmljZSB0byBzaGFyZSBwcm9jZXNzIHZpcnR1YWwKPj4gYWRkcmVzcyBzcGFjZSBzYWZl
-bHksIHdoaWNoIG1ha2VzIG1vcmUgY29udmVuaWVudCBmb3IgdXNlciBzcGFjZSBkZXZpY2UKPj4g
-ZHJpdmVyIGNvZGluZy4gSG93ZXZlciwgSU8gcGFnZSBmYXVsdHMgbWF5IGhhcHBlbiB3aGVuIGRv
-aW5nIERNQQo+PiBvcGVyYXRpb25zLiBBcyB0aGUgbGF0ZW5jeSBvZiBJTyBwYWdlIGZhdWx0IGlz
-IHJlbGF0aXZlbHkgYmlnLCBETUEKPj4gcGVyZm9ybWFuY2Ugd2lsbCBiZSBhZmZlY3RlZCBzZXZl
-cmVseSB3aGVuIHRoZXJlIGFyZSBJTyBwYWdlIGZhdWx0cy4KPj4gRnJvbSBhIGxvbmcgdGVybSB2
-aWV3LCBETUEgcGVyZm9ybWFuY2Ugd2lsbCBiZSBub3Qgc3RhYmxlLgo+Pgo+PiBJbiBoaWdoLXBl
-cmZvcm1hbmNlIEkvTyBjYXNlcywgYWNjZWxlcmF0b3JzIG1pZ2h0IHdhbnQgdG8gcGVyZm9ybQo+
-PiBJL08gb24gYSBtZW1vcnkgd2l0aG91dCBJTyBwYWdlIGZhdWx0cyB3aGljaCBjYW4gcmVzdWx0
-IGluIGRyYW1hdGljYWxseQo+PiBpbmNyZWFzZWQgbGF0ZW5jeS4gQ3VycmVudCBtZW1vcnkgcmVs
-YXRlZCBBUElzIGNvdWxkIG5vdCBhY2hpZXZlIHRoaXMKPj4gcmVxdWlyZW1lbnQsIGUuZy4gbWxv
-Y2sgY2FuIG9ubHkgYXZvaWQgbWVtb3J5IHRvIHN3YXAgdG8gYmFja3VwIGRldmljZSwKPj4gcGFn
-ZSBtaWdyYXRpb24gY2FuIHN0aWxsIHRyaWdnZXIgSU8gcGFnZSBmYXVsdC4KPj4KPj4gVmFyaW91
-cyBkcml2ZXJzIHdvcmtpbmcgdW5kZXIgdHJhZGl0aW9uYWwgbm9uLVNWQSBtb2RlIGFyZSB1c2lu
-Zwo+PiB0aGVpciBvd24gc3BlY2lmaWMgaW9jdGwgdG8gZG8gcGluLiBTdWNoIGlvY3RsIGNhbiBi
-ZSBzZWVuIGluIHY0bDIsCj4+IGdwdSwgaW5maW5pYmFuZCwgbWVkaWEsIHZmaW8sIGV0Yy4gRHJp
-dmVycyBhcmUgdXN1YWxseSBkb2luZyBkbWEKPj4gbWFwcGluZyB3aGlsZSBkb2luZyBwaW4uCj4+
-Cj4+IEJ1dCwgaW4gU1ZBIG1vZGUsIHBpbiBjb3VsZCBiZSBhIGNvbW1vbiBuZWVkIHdoaWNoIGlz
-bid0IG5lY2Vzc2FyaWx5Cj4+IGJvdW5kIHdpdGggYW55IGRyaXZlcnMsIGFuZCBuZWl0aGVyIGlz
-IGRtYSBtYXBwaW5nIG5lZWRlZCBieSBkcml2ZXJzCj4+IHNpbmNlIGRldmljZXMgYXJlIHVzaW5n
-IHRoZSB2aXJ0dWFsIGFkZHJlc3Mgb2YgQ1BVLiBUaHVzLCBJdCBpcyBiZXR0ZXIKPj4gdG8gaW50
-cm9kdWNlIGEgbmV3IGNvbW1vbiBzeXNjYWxsIGZvciBpdC4KPj4KPj4gVGhpcyBwYXRjaCBsZXZl
-cmFnZXMgdGhlIGRlc2lnbiBvZiB1c2VyZmF1bHRmZCBhbmQgYWRkcyBtZW1waW5mZCBmb3IgcGlu
-Cj4+IHRvIGF2b2lkIG1lc3NpbmcgdXAgbW1fc3RydWN0LiBBIGZkIHdpbGwgYmUgZ290IGJ5IG1l
-bXBpbmZkLCB0aGVuIHVzZXIKPj4gc3BhY2UgY2FuIGRvIHBpbi91bnBpbiBwYWdlcyBieSBpb2N0
-bHMgb2YgdGhpcyBmZCwgYWxsIHBpbm5lZCBwYWdlcyB1bmRlcgo+PiBvbmUgZmlsZSB3aWxsIGJl
-IHVucGlubmVkIGluIGZpbGUgcmVsZWFzZSBwcm9jZXNzLiBMaWtlIHBpbiBwYWdlIGNhc2VzIGlu
-Cj4+IG90aGVyIHBsYWNlcywgY2FuX2RvX21sb2NrIGlzIHVzZWQgdG8gY2hlY2sgcGVybWlzc2lv
-biBhbmQgaW5wdXQKPj4gcGFyYW1ldGVycy4KPiAKPiAKPiBDYW4geW91IGRvY3VtZW50IHdoYXQg
-dGhlIHN5c2NhbGwgZG9lcz8KCldpbGwgYWRkIHJlbGF0ZWQgZG9jdW1lbnQgaW4gRG9jdW1lbnRh
-dGlvbi92bS4KCj4gCj4gVXNlcmZhdWx0ZmQgaXMgYW4gZmQgYmVjYXVzZSBvbmUgcHJvZ3JhbSBj
-b250cm9scyBhbm90aGVyLiAgSXMgbWVtcGluZmQgbGlrZSB0aGlzPwoKV2UgdXNlIG1lbXBpbmZk
-IGxpa2U6IChzZWUgcGF0Y2ggMi8yKQoKZmQgPSBtZW1waW5mZCgpOwp2YSA9IG1hbGxvYyhzaXpl
-KTsKc3RydWN0IG1lbV9waW5fYWRkcmVzcyBhZGRyOwphZGRyLnZhID0gdmE7CmFkZHIuc2l6ZSA9
-IHNpemU7CmlvY3RsKGZkLCBNRU1fQ01EX1BJTiwgJmFkZHIpOwppb2N0bChmZCwgTUVNX0NNRF9V
-TlBJTiwgJmFkZHIpOwpjbG9zZShmZCk7CgpCZXN0LApaaG91Cgo+IC4KPiAKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Thu, Feb 04, 2021 at 09:25:58AM +0000, Will Deacon wrote:
+> On Wed, Feb 03, 2021 at 01:59:36PM +0000, Colin King wrote:
+> > From: Colin Ian King <colin.king@canonical.com>
+> > 
+> > Currently the check for domid < 0 is always false because domid
+> > is unsigned.  Fix this by making it signed.
+> > 
+> > Addresses-CoverityL ("Unsigned comparison against 0")
+> 
+> Typo here ('L' instead of ':')
+> 
+> > Fixes: ab1d5281a62b ("iommu/mediatek: Add iova reserved function")
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 0ad14a7604b1..823d719945b2 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -640,7 +640,7 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
+> >  				       struct list_head *head)
+> >  {
+> >  	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+> > -	unsigned int domid = mtk_iommu_get_domain_id(dev, data->plat_data), i;
+> > +	int domid = mtk_iommu_get_domain_id(dev, data->plat_data), i;
+> 
+> Not sure if it's intentional, but this also makes 'i' signed. It probably
+> should remain 'unsigned' to match 'iova_region_nr' in
+> 'struct mtk_iommu_plat_data'.
+
+
+iova_region_nr is either 1 or 5 so unsigned doesn't matter.
+
+I once almost introduced a bug where the iterator was supposed to be
+size_t.  I fixed a bug by making it signed but I ended up introducing a
+new bug.  But generally that's pretty rare.  The more common case is
+that making iterators unsigned introduces bugs.
+
+It's better to default to "int i;" and if more complicated types are
+required that should stand out.  "size_t pg_idx;" or whatever.
+
+regards,
+dan carpenter
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
