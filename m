@@ -2,72 +2,104 @@ Return-Path: <SRS0=nJTY=HL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EA0C433DB
-	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 08:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A93AC433E0
+	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 08:30:15 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A13D164EB8
-	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 08:04:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A13D164EB8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id E787D64EC2
+	for <iommu@archiver.kernel.org>; Tue,  9 Feb 2021 08:30:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E787D64EC2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 77E8C85087;
-	Tue,  9 Feb 2021 08:04:35 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8307B86204;
+	Tue,  9 Feb 2021 08:30:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0ETJmbaovvJa; Tue,  9 Feb 2021 08:04:34 +0000 (UTC)
+	with ESMTP id LEDMer-JLMdS; Tue,  9 Feb 2021 08:30:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D31F78495A;
-	Tue,  9 Feb 2021 08:04:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 13B84860D2;
+	Tue,  9 Feb 2021 08:30:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C075FC0174;
-	Tue,  9 Feb 2021 08:04:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58489C013A
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:04:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03F22C0174;
+	Tue,  9 Feb 2021 08:30:14 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4982CC013A
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:30:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 43F5085036
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:04:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2DFC687281
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:30:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kEwPMTMoMNOG for <iommu@lists.linux-foundation.org>;
- Tue,  9 Feb 2021 08:04:32 +0000 (UTC)
+ with ESMTP id tj6fRz4CjnbX for <iommu@lists.linux-foundation.org>;
+ Tue,  9 Feb 2021 08:30:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9DF588495A
- for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:04:32 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BE0D664E50;
- Tue,  9 Feb 2021 08:04:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1612857872;
- bh=zPK+5MZsx1tSvH2HRp1p3HtPtCmnOHY9jiF0A95/QwE=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Avm+GfAVXF4EksYujMA/CDdtYumq9mFdLJEs2zSEghuaaGAEeAmAE8ALnUIuCt+aM
- zb7IZIEoOJxxxT8U7DM62ZovMxPGZGcVVPmz0oBWmqNTKEf33vg9GEFOaSVsNBjQo+
- fNJYB/4IPVoWeLGW/uCJ6r0XhQ7Q6Qyb82RAit68=
-Date: Tue, 9 Feb 2021 09:04:29 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Sumit Garg <sumit.garg@linaro.org>
-Subject: Re: DMA direct mapping fix for 5.4 and earlier stable branches
-Message-ID: <YCJCDZGa1Dhqv6Ni@kroah.com>
-References: <CAFA6WYNazCmYN20irLdNV+2vcv5dqR+grvaY-FA7q2WOBMs__g@mail.gmail.com>
- <YCIym62vHfbG+dWf@kroah.com>
- <CAFA6WYM+xJ0YDKenWFPMHrTz4gLWatnog84wyk31Xy2dTiT2RA@mail.gmail.com>
+Received: from mail-il1-f169.google.com (mail-il1-f169.google.com
+ [209.85.166.169])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9376C87269
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Feb 2021 08:30:11 +0000 (UTC)
+Received: by mail-il1-f169.google.com with SMTP id p15so15336176ilq.8
+ for <iommu@lists.linux-foundation.org>; Tue, 09 Feb 2021 00:30:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=CD7Xj/h3myZPE11iClGnY0ITJjZw2WaNmh4Gs5ySEmU=;
+ b=Z8/glXM4r2nvS+LxLw4u5mH2ajnyiNqMAp89KxvOsQ79QYUf+J9Uxi5WqPcaOfU9de
+ 0V8+b6akhQ45QuTYOPMxUyD9qmM8oScMqOS8Oj1e9r9VWtH5UVoa43jhATVtS5gBZMuR
+ jtwW+wPVpUEXAjtRmVt/91CORyu68Fm8Gyuew=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=CD7Xj/h3myZPE11iClGnY0ITJjZw2WaNmh4Gs5ySEmU=;
+ b=ieN56Vy7u5Bj/kRphL2P9QZAZR9LfAr0fAhN+d9lypTz1DgogoT4DOiRPDI4j/C+TA
+ vO78x+reHeXKcOxivJIZkoSjDkRxTlbjsFHTyJ5fRumKDgFydbrIdkOTAmuDTRlhF24e
+ bVwwSs2AVkiWwU4sb6Y+QaemYx9bPKZG+IrIo25mK0LvrbD2mb6crQdFy5079e4iRLCs
+ ONRzE9eZ7ttSfWxWj7qC/pbEb2asUjwKtV2BcFkQbHvU6ZX5neuyxj+rlW8jYpVyI7Lx
+ Ga2A9FtxAwNUZ8JD7rpVXffPxsDJru3nr12gnXaRKE4zQo6tcxGZ0rPGzIGEUAOX3jzJ
+ yRfw==
+X-Gm-Message-State: AOAM532sPwSF6VIJpTIdmHjY+8G/kOXXZrXqh5E7NyHDZEAeYrCqRNnJ
+ EhpAsYNXc6mRi8yAuvcDBBCrv2wkllX/Iw==
+X-Google-Smtp-Source: ABdhPJw+lgYtILasoUOw2lzMMtWsSAuUTtkZb09CfWejXNljIZ5lh8JYLYDXKlMX68Ca0nmSPNkK3Q==
+X-Received: by 2002:a05:6e02:1bee:: with SMTP id
+ y14mr11839550ilv.256.1612859410701; 
+ Tue, 09 Feb 2021 00:30:10 -0800 (PST)
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com.
+ [209.85.166.47])
+ by smtp.gmail.com with ESMTPSA id d9sm10144070ilo.20.2021.02.09.00.30.09
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 09 Feb 2021 00:30:09 -0800 (PST)
+Received: by mail-io1-f47.google.com with SMTP id q7so17953625iob.0
+ for <iommu@lists.linux-foundation.org>; Tue, 09 Feb 2021 00:30:09 -0800 (PST)
+X-Received: by 2002:a5d:894d:: with SMTP id b13mr18083060iot.150.1612859408996; 
+ Tue, 09 Feb 2021 00:30:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAFA6WYM+xJ0YDKenWFPMHrTz4gLWatnog84wyk31Xy2dTiT2RA@mail.gmail.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>,
+References: <20210202095110.1215346-1-hch@lst.de>
+ <20210207184855.GA27553@lst.de>
+ <CAAFQd5BzAvgiTLGFse+ZWUrFtZ1Ysf+p+e-4rW8gq_iP0xhWEA@mail.gmail.com>
+ <20210209082213.GA31902@lst.de>
+In-Reply-To: <20210209082213.GA31902@lst.de>
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Tue, 9 Feb 2021 09:29:58 +0100
+X-Gmail-Original-Message-ID: <CANiDSCuzKczCnAdC9b0r-6WVBFYXYnvQHKbxSeYq2QW1uVsDLQ@mail.gmail.com>
+Message-ID: <CANiDSCuzKczCnAdC9b0r-6WVBFYXYnvQHKbxSeYq2QW1uVsDLQ@mail.gmail.com>
+Subject: Re: add a new dma_alloc_noncontiguous API v2
+To: Christoph Hellwig <hch@lst.de>
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- stable <stable@vger.kernel.org>, obayashi.yoshimasa@socionext.com,
- iommu@lists.linux-foundation.org, robin.murphy@arm.com, hch@lst.de
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,113 +117,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 09, 2021 at 01:28:47PM +0530, Sumit Garg wrote:
-> Thanks Greg for your response.
-> 
-> On Tue, 9 Feb 2021 at 12:28, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+Hi Christoph
+
+On Tue, Feb 9, 2021 at 9:22 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Mon, Feb 08, 2021 at 08:33:50PM +0900, Tomasz Figa wrote:
+> > Sorry for the delay. The whole series looks very good to me. Thanks a lot.
 > >
-> > On Tue, Feb 09, 2021 at 11:39:25AM +0530, Sumit Garg wrote:
-> > > Hi Christoph, Greg,
-> > >
-> > > Currently we are observing an incorrect address translation
-> > > corresponding to DMA direct mapping methods on 5.4 stable kernel while
-> > > sharing dmabuf from one device to another where both devices have
-> > > their own coherent DMA memory pools.
-> >
-> > What devices have this problem?
-> 
-> The problem is seen with V4L2 device drivers which are currently under
-> development for UniPhier PXs3 Reference Board from Socionext [1].
+> > Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+>
+> Thanks.
+>
+> Ricardo, do the uvcvideo changes look good to you?  I'd like to queue
+> the series up for this merge window.
 
-Ok, so it's not even a driver in the 5.4 kernel today, so there's
-nothing I can do here as there is no regression of the existing source
-tree.
+Let me test them in real hardware today.
 
-> Following is brief description of the test framework:
-> 
-> The issue is observed while trying to construct a Gstreamer pipeline
-> leveraging hardware video converter engine (VPE device) and hardware
-> video encode/decode engine (CODEC device) where we use dmabuf
-> framework for Zero-Copy.
-> 
-> Example GStreamer pipeline is:
-> gst-launch-1.0 -v -e videotestsrc \
-> > ! video/x-raw, width=480, height=270, format=NV15 \
-> > ! v4l2convert device=/dev/vpe0 capture-io-mode=dmabuf-import \
-> > ! video/x-raw, width=480, height=270, format=NV12 \
-> > ! v4l2h265enc device=/dev/codec0 output-io-mode=dmabuf \
-> > ! video/x-h265, format=byte-stream, width=480, height=270 \
-> > ! filesink location=out.hevc
-> 
-> Using GStreamer's V4L2 plugin,
-> - v4l2convert controls VPE driver,
-> - v4l2h265enc controls CODEC driver.
-> 
-> In the above pipeline, VPE driver imports CODEC driver's DMABUF for Zero-Copy.
-> 
-> [1] arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dts
-> 
-> > And why can't then just use 5.10 to
-> > solve this issue as that problem has always been present for them,
-> > right?
-> 
-> As the drivers are currently under development and Socionext has
-> chosen 5.4 stable kernel for their development. So I will let
-> Obayashi-san answer this if it's possible for them to migrate to 5.10
-> instead?
+Thanks!
 
-Why pick a kernel that doesn not support the features they require?
-That seems very odd and unwise.
 
-> BTW, this problem belongs to the common code, so others may experience
-> this issue as well.
-
-Then they should move to 5.10 or newer as this just doesn't work on
-older kernels, right?
-
-> > > I am able to root cause this issue which is caused by incorrect virt
-> > > to phys translation for addresses belonging to vmalloc space using
-> > > virt_to_page(). But while looking at the mainline kernel, this patch
-> > > [1] changes address translation from virt->to->phys to dma->to->phys
-> > > which fixes the issue observed on 5.4 stable kernel as well (minimal
-> > > fix [2]).
-> > >
-> > > So I would like to seek your suggestion for backport to stable kernels
-> > > (5.4 or earlier) as to whether we should backport the complete
-> > > mainline commit [1] or we should just apply the minimal fix [2]?
-> >
-> > Whenever you try to create a "minimal" fix, 90% of the time it is wrong
-> > and does not work and I end up having to deal with the mess.
-> 
-> I agree with your concerns for having to apply a non-mainline commit
-> onto a stable kernel.
-> 
-> >  What
-> > prevents you from doing the real thing here?  Are the patches to big?
-> >
-> 
-> IMHO, yes the mainline patch is big enough to touch multiple
-> architectures. But if that's the only way preferred then I can
-> backport the mainline patch instead.
-> 
-> > And again, why not just use 5.10 for this hardware?  What hardware is
-> > it?
-> >
-> 
-> Please see my response above.
-
-If a feature in the kernel was not present on older kernels, trying to
-shoe-horn it into them is not wise at all.  You pick a kernel version
-to reflect the features/options that you require, and it sounds like 5.4
-just will not work for them, so to stick with that would be quite
-foolish.
-
-Just move to 5.10, much simpler!
-
-thanks,
-
-greg k-h
+-- 
+Ricardo Ribalda
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
