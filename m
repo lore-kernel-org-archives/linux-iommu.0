@@ -2,80 +2,65 @@ Return-Path: <SRS0=5Lc9=HM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA8EC433DB
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:57:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4674EC433E0
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 10:47:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C7EA64E37
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:57:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C7EA64E37
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 382BC64E38
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 10:47:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 382BC64E38
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=alpha.franken.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1DE596F617
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:57:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E3A0F866DA;
+	Wed, 10 Feb 2021 10:47:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5E15OunigTDK for <iommu@archiver.kernel.org>;
-	Wed, 10 Feb 2021 09:57:20 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
-	id 4DED86F4E9; Wed, 10 Feb 2021 09:57:20 +0000 (UTC)
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sBI55W1ExJMF; Wed, 10 Feb 2021 10:47:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D979F6F4A4;
-	Wed, 10 Feb 2021 09:57:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 129DF86713;
+	Wed, 10 Feb 2021 10:47:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A68F2C1DA9;
-	Wed, 10 Feb 2021 09:57:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4DC5AC0891
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:57:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F22E4C0174;
+	Wed, 10 Feb 2021 10:47:31 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A4F3C013A
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 10:47:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 393F56F4A4
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:57:16 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 07D16861B2
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 10:47:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wztl9ooTFUG7 for <iommu@lists.linux-foundation.org>;
- Wed, 10 Feb 2021 09:57:12 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
- id 3E4D16F5A5; Wed, 10 Feb 2021 09:57:12 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 20F426F4AA
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:57:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=zv/VmYuwxVvoo/n9c/37HOAvH7le8SbnMlWPuXBA878=; b=ZDqQZe7P3RNTTpCp/htm+BAQ8L
- 7DjHAx1m5S9Dl8vZbnsNG45h40kSmtQnGGA2XRvYsokbuhclkeFRBKvPVE1qekUzvxyQC0aTb36B6
- IU7v+Ch+pMG5tLDx+y5nOY5pnS4uPTO5Jou2hEprSozEg092Edgmpngx5990xOS85xVceiwrY6Jkh
- 0VPqzwPdMvdPKJyQipgUJxqMk3ko08s9sCl6Nj4NeBZX/zkscg0qp9ST/qhRzTi1UyWMJJQE5pBjt
- s8vz1P0D2Y81vMwt1q4xhvorgwEbSdwrb0Q1lC3OpT0KO+OraiDZqiBP5E6DsAyRKszIbvi5YAZGf
- ZSGxQPjA==;
-Received: from [2001:4bb8:184:7d04:5e70:671e:7b3:191] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1l9mEy-008g4g-5r; Wed, 10 Feb 2021 09:56:57 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4/6] driver core: lift dma_default_coherent into common code
-Date: Wed, 10 Feb 2021 10:56:39 +0100
-Message-Id: <20210210095641.23856-5-hch@lst.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210210095641.23856-1-hch@lst.de>
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kUs2lYlCaRfc for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Feb 2021 10:47:28 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7539485FA2
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 10:47:28 +0000 (UTC)
+Received: from uucp (helo=alpha)
+ by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+ id 1l9n1q-00079N-00; Wed, 10 Feb 2021 11:47:26 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+ id 4361AC0E24; Wed, 10 Feb 2021 11:46:51 +0100 (CET)
+Date: Wed, 10 Feb 2021 11:46:51 +0100
+From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: MIPS noncoherent DMA cleanups v2
+Message-ID: <20210210104651.GA11540@alpha.franken.de>
 References: <20210210095641.23856-1-hch@lst.de>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, linux-mips@vger.kernel.org,
+Content-Disposition: inline
+In-Reply-To: <20210210095641.23856-1-hch@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ iommu@lists.linux-foundation.org, linux-mips@vger.kernel.org,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -94,252 +79,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Lift the dma_default_coherent variable from the mips architecture code
-to the driver core.  This allows an architecture to sdefault all device
-to be DMA coherent at run time, even if the kernel is build with support
-for DMA noncoherent device.  By allowing device_initialize to set the
-->dma_coherent field to this default the amount of arch hooks required
-for this behavior can be greatly reduced.
+On Wed, Feb 10, 2021 at 10:56:35AM +0100, Christoph Hellwig wrote:
+> Hi Thomas,
+> 
+> this series cleans up some of the mips (maybe) noncoherent support.
+> It also remove the need for the special <asm/dma-coherence.h> header only
+> provided by mips.
+> 
+> Changes since v1:
+>  - fix a bisection issue due to a missing brace
+>  - simplify the parameter parsing given that it happens after
+>    plat_mem_init
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/mips/Kconfig                     |  1 -
- arch/mips/alchemy/common/setup.c      |  2 +-
- arch/mips/include/asm/dma-coherence.h | 22 ----------------------
- arch/mips/kernel/setup.c              |  4 ----
- arch/mips/mm/c-r4k.c                  |  2 +-
- arch/mips/mm/dma-noncoherent.c        |  1 -
- arch/mips/mti-malta/malta-setup.c     |  2 +-
- arch/mips/pci/pci-alchemy.c           |  2 +-
- arch/mips/pistachio/init.c            |  1 -
- drivers/base/core.c                   |  6 ++++++
- include/linux/dma-map-ops.h           |  5 ++---
- kernel/dma/Kconfig                    |  3 ---
- kernel/dma/mapping.c                  |  2 ++
- 13 files changed, 14 insertions(+), 39 deletions(-)
- delete mode 100644 arch/mips/include/asm/dma-coherence.h
+LGTM and passed all tests I did so far. I'll give it a few days for
+others to look at and apply it to mips-next for 5.12.
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 0a17bedf4f0dba..0e86162df65541 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -1128,7 +1128,6 @@ config ARCH_SUPPORTS_UPROBES
- 	bool
- 
- config DMA_MAYBE_COHERENT
--	select ARCH_HAS_DMA_COHERENCE_H
- 	select DMA_NONCOHERENT
- 	bool
- 
-diff --git a/arch/mips/alchemy/common/setup.c b/arch/mips/alchemy/common/setup.c
-index 39e5b9cd882b10..2388d68786f4a7 100644
---- a/arch/mips/alchemy/common/setup.c
-+++ b/arch/mips/alchemy/common/setup.c
-@@ -28,8 +28,8 @@
- #include <linux/init.h>
- #include <linux/ioport.h>
- #include <linux/mm.h>
-+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
- 
--#include <asm/dma-coherence.h>
- #include <asm/mipsregs.h>
- 
- #include <au1000.h>
-diff --git a/arch/mips/include/asm/dma-coherence.h b/arch/mips/include/asm/dma-coherence.h
-deleted file mode 100644
-index 846c5ade30d12d..00000000000000
---- a/arch/mips/include/asm/dma-coherence.h
-+++ /dev/null
-@@ -1,22 +0,0 @@
--/*
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- * Copyright (C) 2006  Ralf Baechle <ralf@linux-mips.org>
-- *
-- */
--#ifndef __ASM_DMA_COHERENCE_H
--#define __ASM_DMA_COHERENCE_H
--
--#ifdef CONFIG_DMA_MAYBE_COHERENT
--extern bool dma_default_coherent;
--static inline bool dev_is_dma_coherent(struct device *dev)
--{
--	return dma_default_coherent;
--}
--#else
--#define dma_default_coherent	(!IS_ENABLED(CONFIG_DMA_NONCOHERENT))
--#endif
--
--#endif
-diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
-index aef418e6e65879..d6b2ba527f5b81 100644
---- a/arch/mips/kernel/setup.c
-+++ b/arch/mips/kernel/setup.c
-@@ -37,7 +37,6 @@
- #include <asm/cdmm.h>
- #include <asm/cpu.h>
- #include <asm/debug.h>
--#include <asm/dma-coherence.h>
- #include <asm/sections.h>
- #include <asm/setup.h>
- #include <asm/smp-ops.h>
-@@ -807,9 +806,6 @@ arch_initcall(debugfs_mips);
- #endif
- 
- #ifdef CONFIG_DMA_MAYBE_COHERENT
--bool dma_default_coherent;
--EXPORT_SYMBOL_GPL(dma_default_coherent);
--
- static int __init setcoherentio(char *str)
- {
- 	dma_default_coherent = true;
-diff --git a/arch/mips/mm/c-r4k.c b/arch/mips/mm/c-r4k.c
-index 58afbc3e4ada03..3c4a50e12cebd4 100644
---- a/arch/mips/mm/c-r4k.c
-+++ b/arch/mips/mm/c-r4k.c
-@@ -19,6 +19,7 @@
- #include <linux/mm.h>
- #include <linux/export.h>
- #include <linux/bitops.h>
-+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
- 
- #include <asm/bcache.h>
- #include <asm/bootinfo.h>
-@@ -35,7 +36,6 @@
- #include <asm/war.h>
- #include <asm/cacheflush.h> /* for run_uncached() */
- #include <asm/traps.h>
--#include <asm/dma-coherence.h>
- #include <asm/mips-cps.h>
- 
- /*
-diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index 38d3d9143b47fb..90b562753eb892 100644
---- a/arch/mips/mm/dma-noncoherent.c
-+++ b/arch/mips/mm/dma-noncoherent.c
-@@ -10,7 +10,6 @@
- 
- #include <asm/cache.h>
- #include <asm/cpu-type.h>
--#include <asm/dma-coherence.h>
- #include <asm/io.h>
- 
- /*
-diff --git a/arch/mips/mti-malta/malta-setup.c b/arch/mips/mti-malta/malta-setup.c
-index 1cdcb76d393ed1..21cb3ac1237b76 100644
---- a/arch/mips/mti-malta/malta-setup.c
-+++ b/arch/mips/mti-malta/malta-setup.c
-@@ -13,8 +13,8 @@
- #include <linux/pci.h>
- #include <linux/screen_info.h>
- #include <linux/time.h>
-+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
- 
--#include <asm/dma-coherence.h>
- #include <asm/fw/fw.h>
- #include <asm/mips-cps.h>
- #include <asm/mips-boards/generic.h>
-diff --git a/arch/mips/pci/pci-alchemy.c b/arch/mips/pci/pci-alchemy.c
-index 54c86b40d30498..1c722dd0c1302d 100644
---- a/arch/mips/pci/pci-alchemy.c
-+++ b/arch/mips/pci/pci-alchemy.c
-@@ -17,8 +17,8 @@
- #include <linux/init.h>
- #include <linux/syscore_ops.h>
- #include <linux/vmalloc.h>
-+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
- 
--#include <asm/dma-coherence.h>
- #include <asm/mach-au1x00/au1000.h>
- #include <asm/tlbmisc.h>
- 
-diff --git a/arch/mips/pistachio/init.c b/arch/mips/pistachio/init.c
-index 558995ed6fe886..7d3057e586d277 100644
---- a/arch/mips/pistachio/init.c
-+++ b/arch/mips/pistachio/init.c
-@@ -13,7 +13,6 @@
- #include <linux/of_fdt.h>
- 
- #include <asm/cacheflush.h>
--#include <asm/dma-coherence.h>
- #include <asm/fw/fw.h>
- #include <asm/mips-boards/generic.h>
- #include <asm/mips-cps.h>
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 6eb4c7a904c560..7c0406e675e98f 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -28,6 +28,7 @@
- #include <linux/sched/signal.h>
- #include <linux/sched/mm.h>
- #include <linux/sysfs.h>
-+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
- 
- #include "base.h"
- #include "power/power.h"
-@@ -2603,6 +2604,11 @@ void device_initialize(struct device *dev)
- 	INIT_LIST_HEAD(&dev->links.suppliers);
- 	INIT_LIST_HEAD(&dev->links.defer_sync);
- 	dev->links.status = DL_DEV_NO_DRIVER;
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+	dev->dma_coherent = dma_default_coherent;
-+#endif
- }
- EXPORT_SYMBOL_GPL(device_initialize);
- 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 70fcd0f610ea48..1e98b8c1e055a9 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -229,11 +229,10 @@ bool dma_free_from_pool(struct device *dev, void *start, size_t size);
- int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
- 		dma_addr_t dma_start, u64 size);
- 
--#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
--#include <asm/dma-coherence.h>
--#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
- 	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
- 	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+extern bool dma_default_coherent;
- static inline bool dev_is_dma_coherent(struct device *dev)
- {
- 	return dev->dma_coherent;
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 479fc145acfc16..77b4055087430c 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -33,9 +33,6 @@ config NEED_DMA_MAP_STATE
- config ARCH_DMA_ADDR_T_64BIT
- 	def_bool 64BIT || PHYS_ADDR_T_64BIT
- 
--config ARCH_HAS_DMA_COHERENCE_H
--	bool
--
- config ARCH_HAS_DMA_SET_MASK
- 	bool
- 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index f87a89d086544b..84de6b1c5fab49 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -16,6 +16,8 @@
- #include "debug.h"
- #include "direct.h"
- 
-+bool dma_default_coherent;
-+
- /*
-  * Managed DMA API
-  */
+Thomas.
+
 -- 
-2.29.2
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
