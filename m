@@ -2,98 +2,76 @@ Return-Path: <SRS0=5Lc9=HM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,INVALID_MSGID,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,T_KAM_HTML_FONT_INVALID,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A09C433DB
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 06:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65796C433DB
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 16:13:31 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E408564DE7
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 06:15:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E408564DE7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id D159264E6F
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 16:13:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D159264E6F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B3C1F85B4D;
-	Wed, 10 Feb 2021 06:15:11 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A053386AFD;
+	Wed, 10 Feb 2021 16:13:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KZdQH2U9QeZi; Wed, 10 Feb 2021 06:15:09 +0000 (UTC)
+	with ESMTP id UF4-J0UXG_Zf; Wed, 10 Feb 2021 16:13:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DDFBA84AE1;
-	Wed, 10 Feb 2021 06:15:09 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DDE7B86AAC;
+	Wed, 10 Feb 2021 16:13:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0852C0174;
-	Wed, 10 Feb 2021 06:15:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00DFDC013A
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 06:15:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4B1AC0174;
+	Wed, 10 Feb 2021 16:13:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A15CC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 16:13:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D9713600BB
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 06:15:07 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 291FD874B0
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 16:13:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w2eT7YfIEe-B for <iommu@lists.linux-foundation.org>;
- Wed, 10 Feb 2021 06:15:06 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
- id E669B6EAA1; Wed, 10 Feb 2021 06:15:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9480A600BB
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 06:15:04 +0000 (UTC)
-Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.53])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Db8Z50rnyz13rq9;
- Wed, 10 Feb 2021 14:12:45 +0800 (CST)
-Received: from dggema765-chm.china.huawei.com (10.1.198.207) by
- DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Wed, 10 Feb 2021 14:15:00 +0800
-Received: from dggpemm000003.china.huawei.com (7.185.36.128) by
- dggema765-chm.china.huawei.com (10.1.198.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Wed, 10 Feb 2021 14:15:01 +0800
-Received: from dggpemm000003.china.huawei.com ([7.185.36.128]) by
- dggpemm000003.china.huawei.com ([7.185.36.128]) with mapi id 15.01.2106.002;
- Wed, 10 Feb 2021 14:15:00 +0800
-From: zhukeqian <zhukeqian1@huawei.com>
-To: Yi Sun <yi.y.sun@linux.intel.com>
-Subject: RE: [RFC PATCH 10/11] vfio/iommu_type1: Optimize dirty bitmap
- population based on iommu HWDBM
-Thread-Topic: [RFC PATCH 10/11] vfio/iommu_type1: Optimize dirty bitmap
- population based on iommu HWDBM
-Thread-Index: AQHW/ThRSJft86PRz0y+dM++XckwuqpL+skAgAM6NwCAAbivUg==
-Date: Wed, 10 Feb 2021 06:15:00 +0000
-Message-ID: DF48D01B-4A2F-4813-959E-9E44C457B7F8
-References: <20210128151742.18840-1-zhukeqian1@huawei.com>
- <20210128151742.18840-11-zhukeqian1@huawei.com>
- <20210207095630.GA28580@yi.y.sun>
- <407d28db-1f86-8d4f-ab15-3c3ac56bbe7f@huawei.com>,
- <20210209115744.GB28580@yi.y.sun>
-In-Reply-To: <20210209115744.GB28580@yi.y.sun>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
+Received: from hemlock.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id T311w0RbOPTT for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Feb 2021 16:13:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 142AD87495
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 16:13:28 +0000 (UTC)
+IronPort-SDR: Cca8rPH8mwbNqvdDtmO8C40nV9RQj364kG8TXLoAYfQDP+vbXg/QKU4DKUFuByXUzP7dEIPM4+
+ 48ns8zDob+fw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9891"; a="178592264"
+X-IronPort-AV: E=Sophos;i="5.81,168,1610438400"; d="scan'208";a="178592264"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 Feb 2021 08:13:27 -0800
+IronPort-SDR: XgVnhs5fdnTJX83avyKPOc4F7/T5wk5386OP+5Ao2+yUj/+dd9JFMfxg0R4fpTj56Wi4exlAWU
+ bfgil4wA/pjQ==
+X-IronPort-AV: E=Sophos;i="5.81,168,1610438400"; d="scan'208";a="380191376"
+Received: from mjyalung-mobl.amr.corp.intel.com (HELO
+ jderrick-mobl.amr.corp.intel.com) ([10.209.178.245])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 Feb 2021 08:13:26 -0800
+From: Jon Derrick <jonathan.derrick@intel.com>
+To: <linux-pci@vger.kernel.org>,
+	<iommu@lists.linux-foundation.org>
+Subject: [PATCH v4 1/2] iommu/vt-d: Use Real PCI DMA device for IRTE
+Date: Wed, 10 Feb 2021 09:13:14 -0700
+Message-Id: <20210210161315.316097-2-jonathan.derrick@intel.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210210161315.316097-1-jonathan.derrick@intel.com>
+References: <20210210161315.316097-1-jonathan.derrick@intel.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>, kvm <kvm@vger.kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Will Deacon <will@kernel.org>,
- kvmarm <kvmarm@lists.cs.columbia.edu>, Marc Zyngier <maz@kernel.org>,
- jiangkunkun <jiangkunkun@huawei.com>,
- "Wanghaibin \(D\)" <wanghaibin.wang@huawei.com>, "Tian,
- Kevin" <kevin.tian@intel.com>, "yan.y.zhao" <yan.y.zhao@intel.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel <linux-kernel@vger.kernel.org>,
- lushenming <lushenming@huawei.com>, iommu <iommu@lists.linux-foundation.org>,
- James Morse <james.morse@arm.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Krzysztof Wilczynski <kw@linux.com>, Nirmal Patel <nirmal.patel@intel.com>,
+ Kapil Karkra <kapil.karkra@intel.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <helgaas@kernel.org>, Jon Derrick <jonathan.derrick@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,129 +84,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8852971724039242704=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============8852971724039242704==
-Content-Language: zh-CN
-Content-Type: multipart/alternative;
-	boundary="_000_DF48D01B4A2F4813959E9E44C457B7F8_"
+VMD retransmits child device MSI-X with the VMD endpoint's requester-id.
+In order to support direct interrupt remapping of VMD child devices,
+ensure that the IRTE is programmed with the VMD endpoint's requester-id
+using pci_real_dma_dev().
 
---_000_DF48D01B4A2F4813959E9E44C457B7F8_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+---
+ drivers/iommu/intel/irq_remapping.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-SGksDQoNCkNoZWVycyBmb3IgdGhlc2UgZGlzY3Vzc2lvbi4gOikNCg0KSSBhbSBvbiB2YWNhdGlv
-biwgYW5kIHdpbGwgY29tZSBiYWNrIGF0IDIuMTguDQoNClRoYW5rcywNCktlcWlhbg0KDQpPbiAy
-MS0wMi0wNyAxODo0MDozNiwgS2VxaWFuIFpodSB3cm90ZToNCj4gSGkgWWksDQo+DQo+IE9uIDIw
-MjEvMi83IDE3OjU2LCBZaSBTdW4gd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBPbiAyMS0wMS0y
-OCAyMzoxNzo0MSwgS2VxaWFuIFpodSB3cm90ZToNCj4gPg0KPiA+IFsuLi5dDQo+ID4NCj4gPj4g
-K3N0YXRpYyB2b2lkIHZmaW9fZG1hX2RpcnR5X2xvZ19zdGFydChzdHJ1Y3QgdmZpb19pb21tdSAq
-aW9tbXUsDQo+ID4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IHZmaW9f
-ZG1hICpkbWEpDQo+ID4+ICt7DQo+ID4+ICsgc3RydWN0IHZmaW9fZG9tYWluICpkOw0KPiA+PiAr
-DQo+ID4+ICsgbGlzdF9mb3JfZWFjaF9lbnRyeShkLCAmaW9tbXUtPmRvbWFpbl9saXN0LCBuZXh0
-KSB7DQo+ID4+ICsgICAgICAgICAgLyogR28gdGhyb3VnaCBhbGwgZG9tYWluIGFueXdheSBldmVu
-IGlmIHdlIGZhaWwgKi8NCj4gPj4gKyAgICAgICAgICBpb21tdV9zcGxpdF9ibG9jayhkLT5kb21h
-aW4sIGRtYS0+aW92YSwgZG1hLT5zaXplKTsNCj4gPj4gKyB9DQo+ID4+ICt9DQo+ID4NCj4gPiBU
-aGlzIHNob3VsZCBiZSBhIHN3aXRjaCB0byBwcmVwYXJlIGZvciBkaXJ0eSBsb2cgc3RhcnQuIFBl
-ciBJbnRlbA0KPiA+IFZ0ZCBzcGVjLCB0aGVyZSBpcyBTTEFERSBkZWZpbmVkIGluIFNjYWxhYmxl
-LU1vZGUgUEFTSUQgVGFibGUgRW50cnkuDQo+ID4gSXQgZW5hYmxlcyBBY2Nlc3NlZC9EaXJ0eSBG
-bGFncyBpbiBzZWNvbmQtbGV2ZWwgcGFnaW5nIGVudHJpZXMuDQo+ID4gU28sIGEgZ2VuZXJpYyBp
-b21tdSBpbnRlcmZhY2UgaGVyZSBpcyBiZXR0ZXIuIEZvciBJbnRlbCBpb21tdSwgaXQNCj4gPiBl
-bmFibGVzIFNMQURFLiBGb3IgQVJNLCBpdCBzcGxpdHMgYmxvY2suDQo+IEluZGVlZCwgYSBnZW5l
-cmljIGludGVyZmFjZSBuYW1lIGlzIGJldHRlci4NCj4NCj4gVGhlIHZlbmRvciBpb21tdSBkcml2
-ZXIgcGxheXMgdmVuZG9yJ3Mgc3BlY2lmaWMgYWN0aW9ucyB0byBzdGFydCBkaXJ0eSBsb2csIGFu
-ZCBJbnRlbCBpb21tdSBhbmQgQVJNIHNtbXUgbWF5IGRpZmZlci4gQmVzaWRlcywgd2UgbWF5IGFk
-ZCBtb3JlIGFjdGlvbnMgaW4gQVJNIHNtbXUgZHJpdmVyIGluIGZ1dHVyZS4NCj4NCj4gT25lIHF1
-ZXN0aW9uOiBUaG91Z2ggSSBhbSBub3QgZmFtaWxpYXIgd2l0aCBJbnRlbCBpb21tdSwgSSB0aGlu
-ayBpdCBhbHNvIHNob3VsZCBzcGxpdCBibG9jayBtYXBwaW5nIGJlc2lkZXMgZW5hYmxlIFNMQURF
-LiBSaWdodD8NCj4NCkkgYW0gbm90IGZhbWlsaWFyIHdpdGggQVJNIHNtbXUuIDopIFNvIEkgd2Fu
-dCB0byBjbGFyaWZ5IGlmIHRoZSBibG9jaw0KaW4gc21tdSBpcyBiaWcgcGFnZSwgZS5nLiAyTSBw
-YWdlPyBJbnRlbCBWdGQgbWFuYWdlcyB0aGUgbWVtb3J5IHBlcg0KcGFnZSwgNEtCLzJNQi8xR0Iu
-IFRoZXJlIGFyZSB0d28gd2F5cyB0byBtYW5hZ2UgZGlydHkgcGFnZXMuDQoxLiBLZWVwIGRlZmF1
-bHQgZ3JhbnVsYXJpdHkuIEp1c3Qgc2V0IFNMQURFIHRvIGVuYWJsZSB0aGUgZGlydHkgdHJhY2su
-DQoyLiBTcGxpdCBiaWcgcGFnZSB0byA0S0IgdG8gZ2V0IGZpbmVyIGdyYW51bGFyaXR5Lg0KDQpC
-dXQgcXVlc3Rpb24gYWJvdXQgdGhlIHNlY29uZCBzb2x1dGlvbiBpcyBpZiBpdCBjYW4gYmVuZWZp
-dCB0aGUgdXNlcg0Kc3BhY2UsIGUuZy4gbGl2ZSBtaWdyYXRpb24uIElmIG15IHVuZGVyc3RhbmRp
-bmcgYWJvdXQgc21tdSBibG9jayAoaS5lLg0KdGhlIGJpZyBwYWdlKSBpcyBjb3JyZWN0LCBoYXZl
-IHlvdSBjb2xsZWN0ZWQgc29tZSBwZXJmb3JtYW5jZSBkYXRhIHRvDQpwcm92ZSB0aGF0IHRoZSBz
-cGxpdCBjYW4gaW1wcm92ZSBwZXJmb3JtYW5jZT8gVGhhbmtzIQ0KDQo+IFRoYW5rcywNCj4gS2Vx
-aWFuDQoNCg==
-
---_000_DF48D01B4A2F4813959E9E44C457B7F8_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
-
-PCFET0NUWVBFIGh0bWw+DQo8aHRtbD4NCjxoZWFkPg0KPG1ldGEgaHR0cC1lcXVpdj0iQ29udGVu
-dC1UeXBlIiBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgiPg0KPC9tYXRhPjxzdHls
-ZSB0eXBlPSJ0ZXh0L2NzcyI+Cioge2JveC1zaXppbmc6Ym9yZGVyLWJveDt9CmJvZHkge2ZvbnQt
-ZmFtaWx5OiBDYWxpYnJpO30KPC9zdHlsZT4NCjwvaGVhZD4NCjxib2R5Pg0KPGRpdj4NCjxkaXYg
-aWQ9ImZvY3VzIj4NCjxkaXY+SGksIDwvZGl2Pg0KPGRpdj48YnI+DQo8L2Rpdj4NCjxkaXY+Q2hl
-ZXJzIGZvciB0aGVzZSBkaXNjdXNzaW9uLiA6KSA8L2Rpdj4NCjxkaXY+PGJyPg0KPC9kaXY+DQo8
-ZGl2PkkgYW0gb24gdmFjYXRpb24sIGFuZCB3aWxsIGNvbWUgYmFjayBhdCAyLjE4LiA8L2Rpdj4N
-CjxkaXY+PGJyPg0KPC9kaXY+DQo8ZGl2PlRoYW5rcywgPC9kaXY+DQo8ZGl2PktlcWlhbiA8L2Rp
-dj4NCjxkaXY+PGJyPg0KPC9kaXY+DQo8L2Rpdj4NCjxkaXYgbmFtZT0ibWFpbF9oaXN0X2NvbnRl
-bnQiPjxmb250IHNpemU9IjIiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEwcHQ7IGJhY2tncm91
-bmQtY29sb3I6IGluaGVyaXQ7Ij4NCjxkaXYgY2xhc3M9IlBsYWluVGV4dCI+T24gMjEtMDItMDcg
-MTg6NDA6MzYsIEtlcWlhbiBaaHUgd3JvdGU6IDxicj4NCiZndDsgSGkgWWksIDxicj4NCiZndDsg
-PGJyPg0KJmd0OyBPbiAyMDIxLzIvNyAxNzo1NiwgWWkgU3VuIHdyb3RlOiA8YnI+DQomZ3Q7ICZn
-dDsgSGksIDxicj4NCiZndDsgJmd0OyA8YnI+DQomZ3Q7ICZndDsgT24gMjEtMDEtMjggMjM6MTc6
-NDEsIEtlcWlhbiBaaHUgd3JvdGU6IDxicj4NCiZndDsgJmd0OyA8YnI+DQomZ3Q7ICZndDsgWy4u
-Ll0gPGJyPg0KJmd0OyAmZ3Q7IDxicj4NCiZndDsgJmd0OyZndDsgJiM0MztzdGF0aWMgdm9pZCB2
-ZmlvX2RtYV9kaXJ0eV9sb2dfc3RhcnQoc3RydWN0IHZmaW9faW9tbXUgKmlvbW11LCA8YnI+DQom
-Z3Q7ICZndDsmZ3Q7ICYjNDM7ICZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyBzdHJ1Y3QgdmZpb19kbWEgKmRtYSkgPGJyPg0KJmd0OyAm
-Z3Q7Jmd0OyAmIzQzO3sgPGJyPg0KJmd0OyAmZ3Q7Jmd0OyAmIzQzOyBzdHJ1Y3QgdmZpb19kb21h
-aW4gKmQ7IDxicj4NCiZndDsgJmd0OyZndDsgJiM0MzsgPGJyPg0KJmd0OyAmZ3Q7Jmd0OyAmIzQz
-OyBsaXN0X2Zvcl9lYWNoX2VudHJ5KGQsICZhbXA7aW9tbXUtJmd0O2RvbWFpbl9saXN0LCBuZXh0
-KSB7IDxicj4NCiZndDsgJmd0OyZndDsgJiM0MzsgJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IC8qIEdvIHRocm91Z2ggYWxsIGRvbWFpbiBhbnl3YXkgZXZl
-biBpZiB3ZSBmYWlsICovIDxicj4NCiZndDsgJmd0OyZndDsgJiM0MzsgJm5ic3A7Jm5ic3A7Jm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IGlvbW11X3NwbGl0X2Jsb2NrKGQtJmd0
-O2RvbWFpbiwgZG1hLSZndDtpb3ZhLCBkbWEtJmd0O3NpemUpOyA8YnI+DQomZ3Q7ICZndDsmZ3Q7
-ICYjNDM7IH0gPGJyPg0KJmd0OyAmZ3Q7Jmd0OyAmIzQzO30gPGJyPg0KJmd0OyAmZ3Q7IDxicj4N
-CiZndDsgJmd0OyBUaGlzIHNob3VsZCBiZSBhIHN3aXRjaCB0byBwcmVwYXJlIGZvciBkaXJ0eSBs
-b2cgc3RhcnQuIFBlciBJbnRlbCA8YnI+DQomZ3Q7ICZndDsgVnRkIHNwZWMsIHRoZXJlIGlzIFNM
-QURFIGRlZmluZWQgaW4gU2NhbGFibGUtTW9kZSBQQVNJRCBUYWJsZSBFbnRyeS4gPGJyPg0KJmd0
-OyAmZ3Q7IEl0IGVuYWJsZXMgQWNjZXNzZWQvRGlydHkgRmxhZ3MgaW4gc2Vjb25kLWxldmVsIHBh
-Z2luZyBlbnRyaWVzLiA8YnI+DQomZ3Q7ICZndDsgU28sIGEgZ2VuZXJpYyBpb21tdSBpbnRlcmZh
-Y2UgaGVyZSBpcyBiZXR0ZXIuIEZvciBJbnRlbCBpb21tdSwgaXQgPGJyPg0KJmd0OyAmZ3Q7IGVu
-YWJsZXMgU0xBREUuIEZvciBBUk0sIGl0IHNwbGl0cyBibG9jay4gPGJyPg0KJmd0OyBJbmRlZWQs
-IGEgZ2VuZXJpYyBpbnRlcmZhY2UgbmFtZSBpcyBiZXR0ZXIuIDxicj4NCiZndDsgPGJyPg0KJmd0
-OyBUaGUgdmVuZG9yIGlvbW11IGRyaXZlciBwbGF5cyB2ZW5kb3IncyBzcGVjaWZpYyBhY3Rpb25z
-IHRvIHN0YXJ0IGRpcnR5IGxvZywgYW5kIEludGVsIGlvbW11IGFuZCBBUk0gc21tdSBtYXkgZGlm
-ZmVyLiBCZXNpZGVzLCB3ZSBtYXkgYWRkIG1vcmUgYWN0aW9ucyBpbiBBUk0gc21tdSBkcml2ZXIg
-aW4gZnV0dXJlLg0KPGJyPg0KJmd0OyA8YnI+DQomZ3Q7IE9uZSBxdWVzdGlvbjogVGhvdWdoIEkg
-YW0gbm90IGZhbWlsaWFyIHdpdGggSW50ZWwgaW9tbXUsIEkgdGhpbmsgaXQgYWxzbyBzaG91bGQg
-c3BsaXQgYmxvY2sgbWFwcGluZyBiZXNpZGVzIGVuYWJsZSBTTEFERS4gUmlnaHQ/DQo8YnI+DQom
-Z3Q7IDxicj4NCkkgYW0gbm90IGZhbWlsaWFyIHdpdGggQVJNIHNtbXUuIDopIFNvIEkgd2FudCB0
-byBjbGFyaWZ5IGlmIHRoZSBibG9jayA8YnI+DQppbiBzbW11IGlzIGJpZyBwYWdlLCBlLmcuIDJN
-IHBhZ2U/IEludGVsIFZ0ZCBtYW5hZ2VzIHRoZSBtZW1vcnkgcGVyIDxicj4NCnBhZ2UsIDRLQi8y
-TUIvMUdCLiBUaGVyZSBhcmUgdHdvIHdheXMgdG8gbWFuYWdlIGRpcnR5IHBhZ2VzLiA8YnI+DQox
-LiBLZWVwIGRlZmF1bHQgZ3JhbnVsYXJpdHkuIEp1c3Qgc2V0IFNMQURFIHRvIGVuYWJsZSB0aGUg
-ZGlydHkgdHJhY2suIDxicj4NCjIuIFNwbGl0IGJpZyBwYWdlIHRvIDRLQiB0byBnZXQgZmluZXIg
-Z3JhbnVsYXJpdHkuIDxicj4NCjxicj4NCkJ1dCBxdWVzdGlvbiBhYm91dCB0aGUgc2Vjb25kIHNv
-bHV0aW9uIGlzIGlmIGl0IGNhbiBiZW5lZml0IHRoZSB1c2VyIDxicj4NCnNwYWNlLCBlLmcuIGxp
-dmUgbWlncmF0aW9uLiBJZiBteSB1bmRlcnN0YW5kaW5nIGFib3V0IHNtbXUgYmxvY2sgKGkuZS4g
-PGJyPg0KdGhlIGJpZyBwYWdlKSBpcyBjb3JyZWN0LCBoYXZlIHlvdSBjb2xsZWN0ZWQgc29tZSBw
-ZXJmb3JtYW5jZSBkYXRhIHRvIDxicj4NCnByb3ZlIHRoYXQgdGhlIHNwbGl0IGNhbiBpbXByb3Zl
-IHBlcmZvcm1hbmNlPyBUaGFua3MhIDxicj4NCjxicj4NCiZndDsgVGhhbmtzLCA8YnI+DQomZ3Q7
-IEtlcWlhbiA8YnI+DQo8L2Rpdj4NCjwvc3Bhbj48L2ZvbnQ+PGJyPg0KPC9kaXY+DQo8L2Rpdj4N
-CjxkaXY+PC9kaXY+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
-
---_000_DF48D01B4A2F4813959E9E44C457B7F8_--
-
---===============8852971724039242704==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 685200a5cff0..1939e070eec8 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1276,7 +1276,8 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
+ 		break;
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+ 	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+-		set_msi_sid(irte, msi_desc_to_pci_dev(info->desc));
++		set_msi_sid(irte,
++			    pci_real_dma_dev(msi_desc_to_pci_dev(info->desc)));
+ 		break;
+ 	default:
+ 		BUG_ON(1);
+-- 
+2.27.0
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8852971724039242704==--
