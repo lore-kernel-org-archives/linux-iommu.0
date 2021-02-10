@@ -7,63 +7,65 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE1CC433DB
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:56:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F88C433E0
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:57:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D04FC60235
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:56:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D04FC60235
+	by mail.kernel.org (Postfix) with ESMTPS id E616B64E37
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 09:57:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E616B64E37
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7C48E8722F;
-	Wed, 10 Feb 2021 09:56:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 97DDD86739;
+	Wed, 10 Feb 2021 09:57:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LeQrZ0s5r0Ha; Wed, 10 Feb 2021 09:56:54 +0000 (UTC)
+	with ESMTP id ImePX0CnwPY3; Wed, 10 Feb 2021 09:57:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BEF1787227;
-	Wed, 10 Feb 2021 09:56:54 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2145F86730;
+	Wed, 10 Feb 2021 09:57:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A20DAC0891;
-	Wed, 10 Feb 2021 09:56:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D6C5C013A
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E717C0891;
+	Wed, 10 Feb 2021 09:57:00 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9A25CC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E84CB8558A
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 67DA16F62B
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6wPqM3rxx1J2 for <iommu@lists.linux-foundation.org>;
- Wed, 10 Feb 2021 09:56:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Z3kry6uYiHPh for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Feb 2021 09:56:57 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+ id 611466F4D2; Wed, 10 Feb 2021 09:56:57 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3974584F61
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 69BA36F499
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 09:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=7mvLgu1+Gyqd04nyTJl2tT4bnW3tEVEKyJ4XIZnRr1Y=; b=ieikQQAMDHkfRGHAsR3EZ4LdRF
- XHtcGxUwEVvFbFsRfy+TLDLAPGUrnkuC7+jMiQay2ou/D8WJh7S9PzTIwqnG+tobigY50b8OBfols
- UXn+wasaF6b/BBgjAE6f+q+ocziytpwDr7DvTFflWrDN2eipufomVE3drrox0nsMxxIm+QuArUdOz
- oDFWtDIsRT3yQZJuZB8/Lcyd5ASvzxnMijIhRh+QZkiWatE0fOwHe/duzmC28AeOm72G9RrPXyM9e
- sB5rmSqABEuLkZwfpsd+obDpLC8xOMAipLnLm8za4elA1gjc8ZrZZS+M5W3OP1i7xm8tsTl4m6OGq
- zg5ogTaQ==;
+ bh=8LNOsPgjWIgMUBWaUxbVqhVEgDcpqshclRns6ZWbyUk=; b=Tb6BTJyVgqk6wZXJPDM/6g+NVX
+ f3Y5oD+Htxwy08eJQg7Lf+U6wJ8D+KkflU2o8pV3wtTHqLdt3nfDeEYp2ZCNItD+wnC6GwzmWmwEA
+ AwnpaGrua8tl6O+4WVoJLMW/sVfqTekXHplkJrQ1ax6FgOTmR4QIdGEJvFtANlNHgt/wh5J6KcvLA
+ a3CQq9eVdTx6squwDFR02NEEP/8pEs/mh6hQQC0FAmA+KKDS7jzMnYspEwqmGov0iukbmnVp4nTZD
+ Ug1IKJmsinE/CFTnDwHAQ0EJQyR0RTY2BA2v+gRiSMskS/PKGheTlUty6k44LzwYgvILc3izbUtQU
+ m/HE1H4A==;
 Received: from [2001:4bb8:184:7d04:5e70:671e:7b3:191] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1l9mEo-008g4A-JP; Wed, 10 Feb 2021 09:56:47 +0000
+ id 1l9mEr-008g4I-L1; Wed, 10 Feb 2021 09:56:50 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 1/6] MIPS/malta: simplify plat_setup_iocoherency
-Date: Wed, 10 Feb 2021 10:56:36 +0100
-Message-Id: <20210210095641.23856-2-hch@lst.de>
+Subject: [PATCH 2/6] MIPS/alchemy: factor out the DMA coherent setup
+Date: Wed, 10 Feb 2021 10:56:37 +0100
+Message-Id: <20210210095641.23856-3-hch@lst.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210210095641.23856-1-hch@lst.de>
 References: <20210210095641.23856-1-hch@lst.de>
@@ -89,77 +91,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Given that plat_mem_setup runs before earlyparams are handled and malta
-selects CONFIG_DMA_MAYBE_COHERENT, coherentio can only be set to
-IO_COHERENCE_DEFAULT at this point.  So remove the checking for other
-options and merge plat_enable_iocoherency into plat_setup_iocoherency
-to simplify the code a bit.
+Factor out a alchemy_dma_coherent helper that determines if the platform
+is DMA coherent.  Also stop initializing the hw_coherentio variable, given
+that is only ever set to a non-zero value by the malta setup code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/mips/mti-malta/malta-setup.c | 32 +++++++++----------------------
- 1 file changed, 9 insertions(+), 23 deletions(-)
+ arch/mips/alchemy/common/setup.c | 33 ++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/arch/mips/mti-malta/malta-setup.c b/arch/mips/mti-malta/malta-setup.c
-index e1fb8b5349447e..4caff9e3b45637 100644
---- a/arch/mips/mti-malta/malta-setup.c
-+++ b/arch/mips/mti-malta/malta-setup.c
-@@ -90,16 +90,15 @@ static void __init fd_activate(void)
- }
- #endif
+diff --git a/arch/mips/alchemy/common/setup.c b/arch/mips/alchemy/common/setup.c
+index 0f60efe0481ecc..c2da68e7984450 100644
+--- a/arch/mips/alchemy/common/setup.c
++++ b/arch/mips/alchemy/common/setup.c
+@@ -37,6 +37,23 @@
+ extern void __init board_setup(void);
+ extern void __init alchemy_set_lpj(void);
  
--static int __init plat_enable_iocoherency(void)
-+static void __init plat_setup_iocoherency(void)
++static bool alchemy_dma_coherent(void)
++{
++	switch (alchemy_get_cputype()) {
++	case ALCHEMY_CPU_AU1000:
++	case ALCHEMY_CPU_AU1500:
++	case ALCHEMY_CPU_AU1100:
++		return false;
++	case ALCHEMY_CPU_AU1200:
++		/* Au1200 AB USB does not support coherent memory */
++		if ((read_c0_prid() & PRID_REV_MASK) == 0)
++			return false;
++		return true;
++	default:
++		return true;
++	}
++}
++
+ void __init plat_mem_setup(void)
  {
--	int supported = 0;
- 	u32 cfg;
+ 	alchemy_set_lpj();
+@@ -48,20 +65,8 @@ void __init plat_mem_setup(void)
+ 		/* Clear to obtain best system bus performance */
+ 		clear_c0_config(1 << 19); /* Clear Config[OD] */
  
- 	if (mips_revision_sconid == MIPS_REVISION_SCON_BONITO) {
- 		if (BONITO_PCICACHECTRL & BONITO_PCICACHECTRL_CPUCOH_PRES) {
- 			BONITO_PCICACHECTRL |= BONITO_PCICACHECTRL_CPUCOH_EN;
- 			pr_info("Enabled Bonito CPU coherency\n");
--			supported = 1;
-+			hw_coherentio = 1;
- 		}
- 		if (strstr(fw_getcmdline(), "iobcuncached")) {
- 			BONITO_PCICACHECTRL &= ~BONITO_PCICACHECTRL_IOBCCOH_EN;
-@@ -118,29 +117,16 @@ static int __init plat_enable_iocoherency(void)
- 		/* Nothing special needs to be done to enable coherency */
- 		pr_info("CMP IOCU detected\n");
- 		cfg = __raw_readl((u32 *)CKSEG1ADDR(ROCIT_CONFIG_GEN0));
--		if (!(cfg & ROCIT_CONFIG_GEN0_PCI_IOCU)) {
-+		if (cfg & ROCIT_CONFIG_GEN0_PCI_IOCU)
-+			hw_coherentio = 1;
-+		else
- 			pr_crit("IOCU OPERATION DISABLED BY SWITCH - DEFAULTING TO SW IO COHERENCY\n");
--			return 0;
--		}
--		supported = 1;
- 	}
--	hw_coherentio = supported;
--	return supported;
--}
- 
--static void __init plat_setup_iocoherency(void)
--{
--	if (plat_enable_iocoherency()) {
--		if (coherentio == IO_COHERENCE_DISABLED)
--			pr_info("Hardware DMA cache coherency disabled\n");
--		else
--			pr_info("Hardware DMA cache coherency enabled\n");
--	} else {
--		if (coherentio == IO_COHERENCE_ENABLED)
--			pr_info("Hardware DMA cache coherency unsupported, but enabled from command line!\n");
--		else
--			pr_info("Software DMA cache coherency enabled\n");
+-	hw_coherentio = 0;
+-	coherentio = IO_COHERENCE_ENABLED;
+-	switch (alchemy_get_cputype()) {
+-	case ALCHEMY_CPU_AU1000:
+-	case ALCHEMY_CPU_AU1500:
+-	case ALCHEMY_CPU_AU1100:
+-		coherentio = IO_COHERENCE_DISABLED;
+-		break;
+-	case ALCHEMY_CPU_AU1200:
+-		/* Au1200 AB USB does not support coherent memory */
+-		if (0 == (read_c0_prid() & PRID_REV_MASK))
+-			coherentio = IO_COHERENCE_DISABLED;
+-		break;
 -	}
-+	if (hw_coherentio)
-+		pr_info("Hardware DMA cache coherency enabled\n");
-+	else
-+		pr_info("Software DMA cache coherency enabled\n");
- }
++	coherentio = alchemy_dma_coherent() ?
++		IO_COHERENCE_ENABLED : IO_COHERENCE_DISABLED;
  
- static void __init pci_clock_check(void)
+ 	board_setup();	/* board specific setup */
+ 
 -- 
 2.29.2
 
