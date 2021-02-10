@@ -6,115 +6,79 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E323CC433E6
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 18:04:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3B8C433E0
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 18:51:19 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E50764DB1
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 18:04:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E50764DB1
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	by mail.kernel.org (Postfix) with ESMTPS id AC05B64E2A
+	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 18:51:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC05B64E2A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 03E4C6F78A
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 18:04:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5ABEB86E38;
+	Wed, 10 Feb 2021 18:51:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S1CHmZ3S3zGJ for <iommu@archiver.kernel.org>;
-	Wed, 10 Feb 2021 18:04:22 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
-	id D55246F70E; Wed, 10 Feb 2021 18:04:21 +0000 (UTC)
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PVywszqH+7dr; Wed, 10 Feb 2021 18:51:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AA9786F69E;
-	Wed, 10 Feb 2021 18:04:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D992A86B3A;
+	Wed, 10 Feb 2021 18:51:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 833FDC0891;
-	Wed, 10 Feb 2021 18:04:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 687DDC013A
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:04:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1B69C0174;
+	Wed, 10 Feb 2021 18:51:17 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA887C0174
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:51:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 562D1874C5
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:04:13 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 97D4886E3F
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:51:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v5DJjFw8fdAI for <iommu@lists.linux-foundation.org>;
- Wed, 10 Feb 2021 18:04:09 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com
- [209.85.222.173])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0A058874C3
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:04:08 +0000 (UTC)
-Received: by mail-qk1-f173.google.com with SMTP id l27so2524408qki.9
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 10:04:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=fn4OROpwcMvlPuFG0mr8IX6FA+jFG3+mu5LheKqkXo0=;
- b=iPiobhPwf6KAYITESCCZiytaCFr72WzGFqO5Krxg583eeHZJJswee2IVlHJuHVFk51
- hUWKXhD6qUJQZ9akF+hoJ0SBMSynl89auCrmXzGqpwVR8TTrOwLCakALhhncmc/31KKO
- w5cpzUSnU3cZ2kGIXac5w3JXTOg1uG5uRsLrYjb0siJVoMpiahMmcfRtKm3eynVnB77A
- qq+aY8bUIaIHuFg9y9XapEOc7TwpMRqaDXdJ3B4ZZnVPlh2aFbugjNjlrCgAvTvQbuiv
- 8rQnonVEPXVhg74c+0AallmP+gLOo6xaV7ay5dZwzBUgW+9vToCfuh+GOlDUSGRfOBpQ
- oKbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=fn4OROpwcMvlPuFG0mr8IX6FA+jFG3+mu5LheKqkXo0=;
- b=hEsGrNfXNjTKdilRC2VBhorqGWfhMcSQAbVcKg9Z1uGScEf8rGt2vlgAHdaZsUANCR
- DyumlM9xJrU7qS2p9ZqDQjICQUAZpQ6PY6ac1KUo4YVe5cW0cxa4OQc9UjHKJ7bAaLj5
- VA9rESb2ynEv9ltkzsToNqS+gO2eCbnppzP12p7vTZDK3BvebirAxk8qu9k1ZeDqButc
- ypOTHz2tSrs2CykSCzSEbqzLFVA3DSA9kN76YF0ybiOURcqxf5b1UmTTBf/kGntIDO5b
- 8nQM3AQ1YhyKcb+eYO1oR2py8Xe747eVJT0n3JJZaBA34JJmn3fIWTNEG61w0zYxKwYl
- hTlA==
-X-Gm-Message-State: AOAM533D+8bfFuPYduyJW2pzTlnC4O5yzybmrObjHtxeyz3kCutY8npj
- vkji7pKcvGkthFE4wzEAgfdWRA==
-X-Google-Smtp-Source: ABdhPJyf3nDN5LDKdSKYE48IyBU6XZ6U0kgAEb02GCT83X4HerFr5BHXcsaa/epIdRev4YLuR0GG8A==
-X-Received: by 2002:a37:6f01:: with SMTP id k1mr4613354qkc.252.1612980247944; 
- Wed, 10 Feb 2021 10:04:07 -0800 (PST)
-Received: from ziepe.ca
- (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net.
- [142.162.115.133])
- by smtp.gmail.com with ESMTPSA id j46sm1828038qtk.1.2021.02.10.10.04.06
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 10 Feb 2021 10:04:06 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
- id 1l9tqP-0068Ck-JW; Wed, 10 Feb 2021 14:04:05 -0400
-Date: Wed, 10 Feb 2021 14:04:05 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+ with ESMTP id vOYw0cQqEzDV for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Feb 2021 18:51:14 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B487386EC3
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 18:51:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=EjxwxHUNaOq23km6417evCVsqogE3nHC3sVFoKbPKg8=; b=cbatPENJ45p15QeKsGBV3IHWYB
+ MYY+XRAjvFdyEP+iDEN7xkSzpBF8JaSpuGwjfgDQQEVoM/xpsvi3INdXoOuJZl4r0QQlnvHCCAciJ
+ K/i0cA3Pwgde9FWWOLhdkA6YYagUEcEIMGbqk7+KZOOQ+qxq6cOSsGyLEBBVqyg8IR/EhcXGSzAi5
+ DrmHQ7abaKogcEgwxl2IxF8lApwCsy2ypMG647U37oOag2em5SznPVPpv05MjbAzva3gYU3woa/oH
+ +xIIvR6HMXdLr+peIu0bMCI/atrUkCcGpsugia1PXfoSpgp6DYOk2ID3l6Da2Zgsc8BsE+tykWGjN
+ kz8+SQ8Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat
+ Linux)) id 1l9uZg-009FhE-Fm; Wed, 10 Feb 2021 18:50:53 +0000
+Date: Wed, 10 Feb 2021 18:50:52 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Zhou Wang <wangzhou1@hisilicon.com>
 Subject: Re: [RFC PATCH v3 1/2] mempinfd: Add new syscall to provide memory pin
-Message-ID: <20210210180405.GP4718@ziepe.ca>
-References: <1612685884-19514-1-git-send-email-wangzhou1@hisilicon.com>
- <1612685884-19514-2-git-send-email-wangzhou1@hisilicon.com>
- <a587bd61-9194-4b46-c122-8b4da7b941a8@redhat.com>
- <20210208183348.GV4718@ziepe.ca>
- <0dca000a6cd34d8183062466ba7d6eaf@hisilicon.com>
- <20210208213023.GZ4718@ziepe.ca>
- <0868d209d7424942a46d1238674cf75d@hisilicon.com>
- <20210209135331.GF4718@ziepe.ca>
- <2527b4ac8df14fa1b427bef65dace719@hisilicon.com>
+Message-ID: <20210210185052.GE308988@casper.infradead.org>
+References: <1612685884-19514-2-git-send-email-wangzhou1@hisilicon.com>
+ <ED58431F-5972-47D1-BF50-93A20AD86C46@amacapital.net>
+ <2e6cf99f-beb6-9bef-1316-5e58fb0aa86e@hisilicon.com>
+ <YCJX6QFQ4hsNRrFj@kroah.com>
+ <f73951ba-84be-b7f8-8c79-db84bc9081f3@hisilicon.com>
+ <YCJ5k/Bxxkg3BNNj@kroah.com>
+ <2237506a-0c98-7ba6-5d5f-b60b637174c5@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <2527b4ac8df14fa1b427bef65dace719@hisilicon.com>
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "chensihang \(A\)" <chensihang1@hisilicon.com>,
- David Hildenbrand <david@redhat.com>,
- "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- Alexander Viro <viro@zeniv.linux.org.uk>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- "Liguozhu \(Kenneth\)" <liguozhu@hisilicon.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <2237506a-0c98-7ba6-5d5f-b60b637174c5@hisilicon.com>
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com,
+ Sihang Chen <chensihang1@hisilicon.com>, jgg@ziepe.ca,
+ Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ Andy Lutomirski <luto@amacapital.net>, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Alexander Viro <viro@zeniv.linux.org.uk>,
+ linux-api@vger.kernel.org, zhangfei.gao@linaro.org,
+ Andrew Morton <akpm@linux-foundation.org>, liguozhu@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,24 +96,15 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 09, 2021 at 10:22:47PM +0000, Song Bao Hua (Barry Song) wrote:
+On Tue, Feb 09, 2021 at 08:20:18PM +0800, Zhou Wang wrote:
+> Agree, will add it in next version.
 
-> The problem is that SVA declares we can use any memory of a process
-> to do I/O. And in real scenarios, we are unable to customize most
-> applications to make them use the pool. So we are looking for some
-> extension generically for applications such as Nginx, Ceph.
-
-But those applications will suffer jitter even if their are using CPU
-to do the same work. I fail to see why adding an accelerator suddenly
-means the application owner will care about jitter introduced by
-migration/etc.
-
-Again in proper SVA it should be quite unlikely to take a fault caused
-by something like migration, on the same likelyhood as the CPU. If
-things are faulting so much this is a problem then I think it is a
-system level problem with doing too much page motion.
-
-Jason
+No, don't do another version.  Jason is right, this approach is wrong.
+The point of SVA is that it doesn't require the application to do
+anything special.  If jitter from too-frequent page migration is actually
+a problem, then fix the frequency of page migration.  Don't pretend that
+this particular application is so important that it prevents the kernel
+from doing its housekeeping.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
