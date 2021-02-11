@@ -2,92 +2,109 @@ Return-Path: <SRS0=8k88=HN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F9EC433E0
-	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 08:38:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2598BC433DB
+	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 09:08:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D8FC364E01
-	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 08:38:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8FC364E01
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A72BB64DCF
+	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 09:08:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A72BB64DCF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B677286D52;
-	Thu, 11 Feb 2021 08:38:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5731E8755B;
+	Thu, 11 Feb 2021 09:08:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id L9Itusj5L09o; Thu, 11 Feb 2021 08:38:05 +0000 (UTC)
+	with ESMTP id EpYOt54m6CEF; Thu, 11 Feb 2021 09:08:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B4E5486D65;
-	Thu, 11 Feb 2021 08:38:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 13CD287553;
+	Thu, 11 Feb 2021 09:08:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A603CC0891;
-	Thu, 11 Feb 2021 08:38:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4FE31C013A
- for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 08:38:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0FC7C0174;
+	Thu, 11 Feb 2021 09:08:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DA419C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 09:08:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3CD8C86D52
- for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 08:38:04 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C173A6F48C
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 09:08:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ASTgM8fs2NCg for <iommu@lists.linux-foundation.org>;
- Thu, 11 Feb 2021 08:38:03 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 8C76786D3C
- for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 08:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1613032682;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=OshEwSbCv9NPTYWa6eOuk9tJUyjlTdPMJ4VCPbd4Iv0=;
- b=HxPsNGhXHaIWPMcxOcmiU1izS3iDwqJ694uepCIfmTy74PaN1jsaFBno6PIlODamT7UyC9
- dPl5ctnRFz0gAGr682BmUrj2mDoCeDpghTRHuz6AoHynryRCYD7NYe+Wxxbyk+UpXad5oX
- C7xVl5Qt/+yKzyX8ueWnwi6k1b1z1BA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-339-blTG32R_OI-ZaE04sIMUog-1; Thu, 11 Feb 2021 03:37:56 -0500
-X-MC-Unique: blTG32R_OI-ZaE04sIMUog-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 548D2AFA83;
- Thu, 11 Feb 2021 08:37:54 +0000 (UTC)
-Received: from [10.36.114.52] (ovpn-114-52.ams2.redhat.com [10.36.114.52])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 83EC16268E;
- Thu, 11 Feb 2021 08:37:51 +0000 (UTC)
-Subject: Re: [PATCH 0/3] mm/page_alloc: Fix pageblock_order with
- HUGETLB_PAGE_SIZE_VARIABLE
-To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org,
- linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com,
- akpm@linux-foundation.org, will@kernel.org
-References: <1613024531-19040-1-git-send-email-anshuman.khandual@arm.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat GmbH
-Message-ID: <683c812a-ce3d-ef74-10d1-eaf8a3ae93d4@redhat.com>
-Date: Thu, 11 Feb 2021 09:37:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KA2kjSVgkMa8 for <iommu@lists.linux-foundation.org>;
+ Thu, 11 Feb 2021 09:08:33 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+ id CE5BF6F4F8; Thu, 11 Feb 2021 09:08:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com
+ [209.85.166.46])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 28A4E6F48C
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 09:08:32 +0000 (UTC)
+Received: by mail-io1-f46.google.com with SMTP id e133so4908628iof.8
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 01:08:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=kdA1Kwoq/S/LKCIqEWml1fSvv8WMuf1jYn8nBhMfcnI=;
+ b=VUe+0kbaY+lBr2aOAuw3nZWDJynOj1vx+bapgsEHj20UriFRNFl8g9448c3tGnRubi
+ +EvwR0jgW8sfzeMtztTntSjlCZcTr67yBraggSLDUOTlaKo5GBN06hoxX9GWra1YGQiL
+ NLztfh16+p4gv4RNidsFwTb/kVDRP5dc/m0TY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=kdA1Kwoq/S/LKCIqEWml1fSvv8WMuf1jYn8nBhMfcnI=;
+ b=So/TOMeiTTxoU1a2fyq0nyHsyd21Wv8kLu1V2hVvRNLcHZz9G942LXrgiFyHccYkyv
+ 162SEiICI7wCQfuK9qX5JByjpeqJHBHItF5tXDiULTulHgQEi+CfJlR4f0/9Op6nU+TW
+ OQrM57ncsxrh5AZyyivWt02sh/y0Fo1ieEM4TGfwzLT+Stzi45u/D6wwjkf5zRgW/adn
+ AFRovCTZdFqHkuhzK9Y1WbaARGVw8X/HYs2wyealYGGl3tNH7XeFem9fYWBEMiCkqhfx
+ nfJf28aJqarO3wyz1e/wyPoxg4sS1aN8OB520x0qBPKvnK101dbjYC35lvGkNUtHO4WJ
+ 0vig==
+X-Gm-Message-State: AOAM533l19vOmBklwZoxYrvC0uYLcKiS3VWQ1Wy81ar3nwiOvF3YRtvH
+ vbUUTg3MmCcqJ0Ba0c4sUsaeZUZvhsn2NA==
+X-Google-Smtp-Source: ABdhPJyOci/ErKmwvZkSOD5Q33IQ0cuLedsFknmygRbfLzzGqkT+GDafP27QPPMw0P2QYIoIdx2M3Q==
+X-Received: by 2002:a02:ccc5:: with SMTP id k5mr7735688jaq.105.1613034511150; 
+ Thu, 11 Feb 2021 01:08:31 -0800 (PST)
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com.
+ [209.85.166.182])
+ by smtp.gmail.com with ESMTPSA id i3sm2249084ilm.56.2021.02.11.01.08.29
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 11 Feb 2021 01:08:29 -0800 (PST)
+Received: by mail-il1-f182.google.com with SMTP id o7so4469436ils.2
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 01:08:29 -0800 (PST)
+X-Received: by 2002:a92:730a:: with SMTP id o10mr4922650ilc.160.1613034508965; 
+ Thu, 11 Feb 2021 01:08:28 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1613024531-19040-1-git-send-email-anshuman.khandual@arm.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+References: <20210202095110.1215346-1-hch@lst.de>
+ <20210207184855.GA27553@lst.de>
+ <CAAFQd5BzAvgiTLGFse+ZWUrFtZ1Ysf+p+e-4rW8gq_iP0xhWEA@mail.gmail.com>
+ <20210209082213.GA31902@lst.de>
+ <CANiDSCuzKczCnAdC9b0r-6WVBFYXYnvQHKbxSeYq2QW1uVsDLQ@mail.gmail.com>
+ <CANiDSCvPodsmcOi1fMwvZsyMxWsRQWNT7VkbZs4=XePYXfiXow@mail.gmail.com>
+ <20210209170217.GA10199@lst.de>
+In-Reply-To: <20210209170217.GA10199@lst.de>
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Thu, 11 Feb 2021 10:08:18 +0100
+X-Gmail-Original-Message-ID: <CANiDSCs8dXVoWuwkVs=v+=s770MpzH1xiDuj-080-98ynuz97g@mail.gmail.com>
+Message-ID: <CANiDSCs8dXVoWuwkVs=v+=s770MpzH1xiDuj-080-98ynuz97g@mail.gmail.com>
+Subject: Re: add a new dma_alloc_noncontiguous API v2
+To: Christoph Hellwig <hch@lst.de>
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,90 +117,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 11.02.21 07:22, Anshuman Khandual wrote:
-> The following warning gets triggered while trying to boot a 64K page size
-> without THP config kernel on arm64 platform.
-> 
-> WARNING: CPU: 5 PID: 124 at mm/vmstat.c:1080 __fragmentation_index+0xa4/0xc0
-> Modules linked in:
-> CPU: 5 PID: 124 Comm: kswapd0 Not tainted 5.11.0-rc6-00004-ga0ea7d62002 #159
-> Hardware name: linux,dummy-virt (DT)
-> [    8.810673] pstate: 20400005 (nzCv daif +PAN -UAO -TCO BTYPE=--)
-> [    8.811732] pc : __fragmentation_index+0xa4/0xc0
-> [    8.812555] lr : fragmentation_index+0xf8/0x138
-> [    8.813360] sp : ffff0000864079b0
-> [    8.813958] x29: ffff0000864079b0 x28: 0000000000000372
-> [    8.814901] x27: 0000000000007682 x26: ffff8000135b3948
-> [    8.815847] x25: 1fffe00010c80f48 x24: 0000000000000000
-> [    8.816805] x23: 0000000000000000 x22: 000000000000000d
-> [    8.817764] x21: 0000000000000030 x20: ffff0005ffcb4d58
-> [    8.818712] x19: 000000000000000b x18: 0000000000000000
-> [    8.819656] x17: 0000000000000000 x16: 0000000000000000
-> [    8.820613] x15: 0000000000000000 x14: ffff8000114c6258
-> [    8.821560] x13: ffff6000bff969ba x12: 1fffe000bff969b9
-> [    8.822514] x11: 1fffe000bff969b9 x10: ffff6000bff969b9
-> [    8.823461] x9 : dfff800000000000 x8 : ffff0005ffcb4dcf
-> [    8.824415] x7 : 0000000000000001 x6 : 0000000041b58ab3
-> [    8.825359] x5 : ffff600010c80f48 x4 : dfff800000000000
-> [    8.826313] x3 : ffff8000102be670 x2 : 0000000000000007
-> [    8.827259] x1 : ffff000086407a60 x0 : 000000000000000d
-> [    8.828218] Call trace:
-> [    8.828667]  __fragmentation_index+0xa4/0xc0
-> [    8.829436]  fragmentation_index+0xf8/0x138
-> [    8.830194]  compaction_suitable+0x98/0xb8
-> [    8.830934]  wakeup_kcompactd+0xdc/0x128
-> [    8.831640]  balance_pgdat+0x71c/0x7a0
-> [    8.832327]  kswapd+0x31c/0x520
-> [    8.832902]  kthread+0x224/0x230
-> [    8.833491]  ret_from_fork+0x10/0x30
-> [    8.834150] ---[ end trace 472836f79c15516b ]---
-> 
-> This warning comes from __fragmentation_index() when the requested order
-> is greater than MAX_ORDER.
-> 
-> static int __fragmentation_index(unsigned int order,
-> 				 struct contig_page_info *info)
-> {
->          unsigned long requested = 1UL << order;
-> 
->          if (WARN_ON_ONCE(order >= MAX_ORDER)) <===== Triggered here
->                  return 0;
-> 
-> Digging it further reveals that pageblock_order has been assigned a value
-> which is greater than MAX_ORDER failing the above check. But why this
-> happened ? Because HUGETLB_PAGE_ORDER for the given config on arm64 is
-> greater than MAX_ORDER.
-> 
-> The solution involves enabling HUGETLB_PAGE_SIZE_VARIABLE which would make
-> pageblock_order a variable instead of constant HUGETLB_PAGE_ORDER. But that
-> change alone also did not really work as pageblock_order still got assigned
-> as HUGETLB_PAGE_ORDER in set_pageblock_order(). HUGETLB_PAGE_ORDER needs to
-> be less than MAX_ORDER for its appropriateness as pageblock_order otherwise
-> just fallback to MAX_ORDER - 1 as before. While here it also fixes a build
-> problem via type casting MAX_ORDER in rmem_cma_setup().
+Hi Christoph
 
-I'm wondering, is there any real value in allowing FORCE_MAX_ZONEORDER 
-to be "11" with ARM64_64K_PAGES/ARM64_16K_PAGES?
+What are your merge plans for the uvc change?
+http://git.infradead.org/users/hch/dma-mapping.git/commit/3dc47131f8aacc2093f68a9971d24c754e435520
 
-Meaning: are there any real use cases that actually build a kernel 
-without TRANSPARENT_HUGEPAGE and with ARM64_64K_PAGES/ARM64_16K_PAGES?
+Are you going to remove the patch on your Merge request and then send
+it for review to Laurent? or merge it through your tree with a S-o-B
+him?
 
-As builds are essentially broken, I assume this is not that relevant? Or 
-how long has it been broken?
+Thanks
 
-It might be easier to just drop the "TRANSPARENT_HUGEPAGE" part from the 
-FORCE_MAX_ZONEORDER config.
+On Tue, Feb 9, 2021 at 6:02 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Tue, Feb 09, 2021 at 03:46:13PM +0100, Ricardo Ribalda wrote:
+> > Hi Christoph
+> >
+> > I have tested it in both arm and x86, since there are not significant
+> > changes with the previous version I did not do a performance test.
+>
+> I'll take this as a Tested-by.
+
+
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Ricardo Ribalda
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
