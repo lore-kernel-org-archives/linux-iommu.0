@@ -1,102 +1,71 @@
-Return-Path: <SRS0=5Lc9=HM=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=8k88=HN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65549C433E0
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 21:39:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D419C433E0
+	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 06:22:05 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7F3764EDF
-	for <iommu@archiver.kernel.org>; Wed, 10 Feb 2021 21:39:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7F3764EDF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0998764D5D
+	for <iommu@archiver.kernel.org>; Thu, 11 Feb 2021 06:22:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0998764D5D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8D6C3874F7;
-	Wed, 10 Feb 2021 21:39:18 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UPpYMI3XyW1K; Wed, 10 Feb 2021 21:39:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AFED2874F5;
-	Wed, 10 Feb 2021 21:39:17 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98002C0891;
-	Wed, 10 Feb 2021 21:39:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACA17C013A
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 21:39:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9933186A63
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 21:39:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A889687204;
+	Thu, 11 Feb 2021 06:22:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hGQh5oaV+om4 for <iommu@lists.linux-foundation.org>;
- Wed, 10 Feb 2021 21:39:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 68C8086E97
- for <iommu@lists.linux-foundation.org>; Wed, 10 Feb 2021 21:39:13 +0000 (UTC)
-Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.55])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4DbY5Y0SHwzR9M9;
- Thu, 11 Feb 2021 05:37:53 +0800 (CST)
-Received: from dggpemm100011.china.huawei.com (7.185.36.112) by
- DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Thu, 11 Feb 2021 05:39:09 +0800
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggpemm100011.china.huawei.com (7.185.36.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Thu, 11 Feb 2021 05:39:09 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.006;
- Thu, 11 Feb 2021 05:39:09 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Subject: RE: [RFC PATCH v3 1/2] mempinfd: Add new syscall to provide memory pin
-Thread-Topic: [RFC PATCH v3 1/2] mempinfd: Add new syscall to provide memory
- pin
-Thread-Index: AQHW/SrsWWMRpilf2UC1Pz29QqsBVqpNZGQAgACtCgCAAKKukP//jqmAgADcIzCAADaMgIABCrxAgADNm4CAALRckA==
-Date: Wed, 10 Feb 2021 21:39:09 +0000
-Message-ID: <8a676b45ebaa49e8886f4bf9b762bb75@hisilicon.com>
-References: <1612685884-19514-1-git-send-email-wangzhou1@hisilicon.com>
- <1612685884-19514-2-git-send-email-wangzhou1@hisilicon.com>
- <a587bd61-9194-4b46-c122-8b4da7b941a8@redhat.com>
- <20210208183348.GV4718@ziepe.ca>
- <0dca000a6cd34d8183062466ba7d6eaf@hisilicon.com>
- <20210208213023.GZ4718@ziepe.ca>
- <0868d209d7424942a46d1238674cf75d@hisilicon.com>
- <20210209135331.GF4718@ziepe.ca>
- <2527b4ac8df14fa1b427bef65dace719@hisilicon.com>
- <20210210180405.GP4718@ziepe.ca>
-In-Reply-To: <20210210180405.GP4718@ziepe.ca>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.201.223]
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NiO-5QvrcEqP; Thu, 11 Feb 2021 06:22:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 771F086C02;
+	Thu, 11 Feb 2021 06:22:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6699DC0174;
+	Thu, 11 Feb 2021 06:22:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 617E6C013A
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 06:22:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 416836F49E
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 06:22:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Twmk_txo0ART for <iommu@lists.linux-foundation.org>;
+ Thu, 11 Feb 2021 06:22:00 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+ id D32366F4E1; Thu, 11 Feb 2021 06:22:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 790E26F49E
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Feb 2021 06:21:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A98A113E;
+ Wed, 10 Feb 2021 22:21:57 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.94.253])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A4B153F73B;
+ Wed, 10 Feb 2021 22:21:52 -0800 (PST)
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+To: linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+ catalin.marinas@arm.com, akpm@linux-foundation.org, will@kernel.org
+Subject: [PATCH 0/3] mm/page_alloc: Fix pageblock_order with
+ HUGETLB_PAGE_SIZE_VARIABLE
+Date: Thu, 11 Feb 2021 11:52:08 +0530
+Message-Id: <1613024531-19040-1-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "chensihang \(A\)" <chensihang1@hisilicon.com>,
- David Hildenbrand <david@redhat.com>,
- "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- Alexander Viro <viro@zeniv.linux.org.uk>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- "Liguozhu \(Kenneth\)" <liguozhu@hisilicon.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, David Hildenbrand <david@redhat.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,57 +83,109 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+The following warning gets triggered while trying to boot a 64K page size
+without THP config kernel on arm64 platform.
 
+WARNING: CPU: 5 PID: 124 at mm/vmstat.c:1080 __fragmentation_index+0xa4/0xc0
+Modules linked in:
+CPU: 5 PID: 124 Comm: kswapd0 Not tainted 5.11.0-rc6-00004-ga0ea7d62002 #159
+Hardware name: linux,dummy-virt (DT)
+[    8.810673] pstate: 20400005 (nzCv daif +PAN -UAO -TCO BTYPE=--)
+[    8.811732] pc : __fragmentation_index+0xa4/0xc0
+[    8.812555] lr : fragmentation_index+0xf8/0x138
+[    8.813360] sp : ffff0000864079b0
+[    8.813958] x29: ffff0000864079b0 x28: 0000000000000372
+[    8.814901] x27: 0000000000007682 x26: ffff8000135b3948
+[    8.815847] x25: 1fffe00010c80f48 x24: 0000000000000000
+[    8.816805] x23: 0000000000000000 x22: 000000000000000d
+[    8.817764] x21: 0000000000000030 x20: ffff0005ffcb4d58
+[    8.818712] x19: 000000000000000b x18: 0000000000000000
+[    8.819656] x17: 0000000000000000 x16: 0000000000000000
+[    8.820613] x15: 0000000000000000 x14: ffff8000114c6258
+[    8.821560] x13: ffff6000bff969ba x12: 1fffe000bff969b9
+[    8.822514] x11: 1fffe000bff969b9 x10: ffff6000bff969b9
+[    8.823461] x9 : dfff800000000000 x8 : ffff0005ffcb4dcf
+[    8.824415] x7 : 0000000000000001 x6 : 0000000041b58ab3
+[    8.825359] x5 : ffff600010c80f48 x4 : dfff800000000000
+[    8.826313] x3 : ffff8000102be670 x2 : 0000000000000007
+[    8.827259] x1 : ffff000086407a60 x0 : 000000000000000d
+[    8.828218] Call trace:
+[    8.828667]  __fragmentation_index+0xa4/0xc0
+[    8.829436]  fragmentation_index+0xf8/0x138
+[    8.830194]  compaction_suitable+0x98/0xb8
+[    8.830934]  wakeup_kcompactd+0xdc/0x128
+[    8.831640]  balance_pgdat+0x71c/0x7a0
+[    8.832327]  kswapd+0x31c/0x520
+[    8.832902]  kthread+0x224/0x230
+[    8.833491]  ret_from_fork+0x10/0x30
+[    8.834150] ---[ end trace 472836f79c15516b ]---
 
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@ziepe.ca]
-> Sent: Thursday, February 11, 2021 7:04 AM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> Cc: David Hildenbrand <david@redhat.com>; Wangzhou (B)
-> <wangzhou1@hisilicon.com>; linux-kernel@vger.kernel.org;
-> iommu@lists.linux-foundation.org; linux-mm@kvack.org;
-> linux-arm-kernel@lists.infradead.org; linux-api@vger.kernel.org; Andrew
-> Morton <akpm@linux-foundation.org>; Alexander Viro <viro@zeniv.linux.org.uk>;
-> gregkh@linuxfoundation.org; kevin.tian@intel.com; jean-philippe@linaro.org;
-> eric.auger@redhat.com; Liguozhu (Kenneth) <liguozhu@hisilicon.com>;
-> zhangfei.gao@linaro.org; chensihang (A) <chensihang1@hisilicon.com>
-> Subject: Re: [RFC PATCH v3 1/2] mempinfd: Add new syscall to provide memory
-> pin
-> 
-> On Tue, Feb 09, 2021 at 10:22:47PM +0000, Song Bao Hua (Barry Song) wrote:
-> 
-> > The problem is that SVA declares we can use any memory of a process
-> > to do I/O. And in real scenarios, we are unable to customize most
-> > applications to make them use the pool. So we are looking for some
-> > extension generically for applications such as Nginx, Ceph.
-> 
-> But those applications will suffer jitter even if their are using CPU
-> to do the same work. I fail to see why adding an accelerator suddenly
-> means the application owner will care about jitter introduced by
-> migration/etc.
+This warning comes from __fragmentation_index() when the requested order
+is greater than MAX_ORDER.
 
-The only point for this is that when migration occurs on the accelerator,
-the impact/jitter is much bigger than it does on CPU. Then the accelerator
-might be unhelpful.
+static int __fragmentation_index(unsigned int order,
+				 struct contig_page_info *info)
+{
+        unsigned long requested = 1UL << order;
 
-> 
-> Again in proper SVA it should be quite unlikely to take a fault caused
-> by something like migration, on the same likelyhood as the CPU. If
-> things are faulting so much this is a problem then I think it is a
-> system level problem with doing too much page motion.
+        if (WARN_ON_ONCE(order >= MAX_ORDER)) <===== Triggered here
+                return 0;
 
-My point is that single one SVA application shouldn't require system
-to make global changes, such as disabling numa balancing, disabling
-THP, to decrease page fault frequency by affecting other applications.
+Digging it further reveals that pageblock_order has been assigned a value
+which is greater than MAX_ORDER failing the above check. But why this
+happened ? Because HUGETLB_PAGE_ORDER for the given config on arm64 is
+greater than MAX_ORDER.
 
-Anyway, guys are in lunar new year. Hopefully, we are getting more
-real benchmark data afterwards to make the discussion more targeted.
+The solution involves enabling HUGETLB_PAGE_SIZE_VARIABLE which would make
+pageblock_order a variable instead of constant HUGETLB_PAGE_ORDER. But that
+change alone also did not really work as pageblock_order still got assigned
+as HUGETLB_PAGE_ORDER in set_pageblock_order(). HUGETLB_PAGE_ORDER needs to
+be less than MAX_ORDER for its appropriateness as pageblock_order otherwise
+just fallback to MAX_ORDER - 1 as before. While here it also fixes a build
+problem via type casting MAX_ORDER in rmem_cma_setup().
 
-> 
-> Jason
+This series applies on v5.11-rc7 and has been slightly tested on arm64. But
+looking for some early feedbacks particularly with respect to concerns in
+subscribing HUGETLB_PAGE_SIZE_VARIABLE on a platform where the hugetlb page
+size is config dependent but not really a runtime variable. Even though it
+appears that HUGETLB_PAGE_SIZE_VARIABLE is used only while computing the
+pageblock_order, could there be other implications ?
 
-Thanks
-Barry
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+
+Changes in V1:
+
+- Rebased on 5.11-rc7
+- Dropped the RFC
+
+Changes in RFC:
+
+https://lore.kernel.org/linux-mm/1612422084-30429-1-git-send-email-anshuman.khandual@arm.com/
+
+Anshuman Khandual (3):
+  mm/page_alloc: Fix pageblock_order when HUGETLB_PAGE_ORDER >= MAX_ORDER
+  arm64/hugetlb: Enable HUGETLB_PAGE_SIZE_VARIABLE
+  dma-contiguous: Type cast MAX_ORDER as unsigned int
+
+ arch/arm64/Kconfig      | 4 ++++
+ kernel/dma/contiguous.c | 2 +-
+ mm/page_alloc.c         | 2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
