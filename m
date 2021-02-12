@@ -2,86 +2,92 @@ Return-Path: <SRS0=FWOh=HO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D54B4C433DB
-	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 17:28:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1817C433DB
+	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 18:13:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 59A1C64E9A
-	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 17:28:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59A1C64E9A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5D10664E9A
+	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 18:13:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D10664E9A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 255A587627;
-	Fri, 12 Feb 2021 17:28:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C0E887027;
+	Fri, 12 Feb 2021 18:13:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3TT+KNWCZc4B; Fri, 12 Feb 2021 17:28:46 +0000 (UTC)
+	with ESMTP id hzLKqMcL2btk; Fri, 12 Feb 2021 18:13:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C7E558761C;
-	Fri, 12 Feb 2021 17:28:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8605587062;
+	Fri, 12 Feb 2021 18:13:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B2420C0891;
-	Fri, 12 Feb 2021 17:28:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E691C0174;
+	Fri, 12 Feb 2021 18:13:48 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 811A2C013A
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 17:28:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93862C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 18:13:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 67F9E6F654
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 17:28:45 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8E3E56F527
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 18:13:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NPlcf4S78D_h for <iommu@lists.linux-foundation.org>;
- Fri, 12 Feb 2021 17:28:44 +0000 (UTC)
+ with ESMTP id S1ERopjmhJFk for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Feb 2021 18:13:45 +0000 (UTC)
 Received: by smtp3.osuosl.org (Postfix, from userid 1001)
- id 4F9966F68A; Fri, 12 Feb 2021 17:28:44 +0000 (UTC)
+ id BCB236F659; Fri, 12 Feb 2021 18:13:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id DC4A16F674
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 17:28:41 +0000 (UTC)
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.53])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4DcgRM2rSbz5RKj;
- Sat, 13 Feb 2021 01:27:11 +0800 (CST)
-Received: from dggemm751-chm.china.huawei.com (10.1.198.57) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Sat, 13 Feb 2021 01:28:37 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggemm751-chm.china.huawei.com (10.1.198.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Sat, 13 Feb 2021 01:28:36 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2106.006; Fri, 12 Feb 2021 17:28:34 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Robin Murphy <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH v2] iommu: Check dev->iommu in iommu_dev_xxx functions
-Thread-Topic: [PATCH v2] iommu: Check dev->iommu in iommu_dev_xxx functions
-Thread-Index: AdcBTrfjz4ngs6VWSn6F9Rp3qrl5mQADsiaAAAAQ0NAAAVXqEA==
-Date: Fri, 12 Feb 2021 17:28:34 +0000
-Message-ID: <33cf95925cfb47dda3ee472e00b9846c@huawei.com>
-References: <c82f6d0cced74c43947714e7de576d5a@huawei.com>
- <d541ebeb-5b89-7a9d-50a2-3867f9cf78b3@arm.com> 
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.89.255]
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 17A236F5B5
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 18:13:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1613153621;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=QLqsR4sSEYCEMnG5ZaXCSNXnc9ht4025gA+UtCzISME=;
+ b=Wlq8ngyByc2sPEc9l+/oXMHPH1gaLZ5H8SmR7HWne5gaenJxCF0GYAB+Lujlga08nUE958
+ YUrfknbPhq2Hu2woJVq1RUaEynqS0LU7DtWgadf13c8zllFe9P9oV0/NN3rtQ/G+9icHzS
+ oyNM+q1tnGYZfDdQBZ7VHmyYHkyButk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-456-bsa7C5m5OF-etwpAJO51Pg-1; Fri, 12 Feb 2021 13:13:37 -0500
+X-MC-Unique: bsa7C5m5OF-etwpAJO51Pg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C801D80196C;
+ Fri, 12 Feb 2021 18:13:34 +0000 (UTC)
+Received: from [10.36.114.34] (ovpn-114-34.ams2.redhat.com [10.36.114.34])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 8387A60BF1;
+ Fri, 12 Feb 2021 18:13:24 +0000 (UTC)
+Subject: Re: [PATCH 1/2] iommu: Report domain nesting info for arm-smmu-v3
+To: Vivek Gautam <vivek.gautam@arm.com>, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
+ virtualization@lists.linux-foundation.org
+References: <20210212105859.8445-1-vivek.gautam@arm.com>
+ <20210212105859.8445-2-vivek.gautam@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <28c0204d-2a5e-4eb9-d869-9dbd6edab55a@redhat.com>
+Date: Fri, 12 Feb 2021 19:13:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "will@kernel.org" <will@kernel.org>,
- "linuxarm@openeuler.org" <linuxarm@openeuler.org>, "Zengtao
- \(B\)" <prime.zeng@hisilicon.com>
+In-Reply-To: <20210212105859.8445-2-vivek.gautam@arm.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, mst@redhat.com,
+ will.deacon@arm.com, alex.williamson@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,78 +100,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2hhbWVlcmFsaSBLb2xv
-dGh1bSBUaG9kaQ0KPiBTZW50OiAxMiBGZWJydWFyeSAyMDIxIDE2OjQ1DQo+IFRvOiAnUm9iaW4g
-TXVycGh5JyA8cm9iaW4ubXVycGh5QGFybS5jb20+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnOw0KPiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZw0KPiBDYzogam9yb0A4Ynl0
-ZXMub3JnOyBqZWFuLXBoaWxpcHBlQGxpbmFyby5vcmc7IHdpbGxAa2VybmVsLm9yZzsgWmVuZ3Rh
-byAoQikNCj4gPHByaW1lLnplbmdAaGlzaWxpY29uLmNvbT47IGxpbnV4YXJtQG9wZW5ldWxlci5v
-cmcNCj4gU3ViamVjdDogUkU6IFtQQVRDSCB2Ml0gaW9tbXU6IENoZWNrIGRldi0+aW9tbXUgaW4g
-aW9tbXVfZGV2X3h4eCBmdW5jdGlvbnMNCj4gDQo+IA0KPiANCj4gPiAtLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KPiA+IEZyb206IFJvYmluIE11cnBoeSBbbWFpbHRvOnJvYmluLm11cnBoeUBh
-cm0uY29tXQ0KPiA+IFNlbnQ6IDEyIEZlYnJ1YXJ5IDIwMjEgMTY6MzkNCj4gPiBUbzogU2hhbWVl
-cmFsaSBLb2xvdGh1bSBUaG9kaSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29t
-PjsNCj4gPiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBpb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZw0KPiA+IENjOiBqb3JvQDhieXRlcy5vcmc7IGplYW4tcGhpbGlwcGVAbGlu
-YXJvLm9yZzsgd2lsbEBrZXJuZWwub3JnOyBaZW5ndGFvIChCKQ0KPiA+IDxwcmltZS56ZW5nQGhp
-c2lsaWNvbi5jb20+OyBsaW51eGFybUBvcGVuZXVsZXIub3JnDQo+ID4gU3ViamVjdDogUmU6IFtQ
-QVRDSCB2Ml0gaW9tbXU6IENoZWNrIGRldi0+aW9tbXUgaW4gaW9tbXVfZGV2X3h4eA0KPiBmdW5j
-dGlvbnMNCj4gPg0KPiA+IE9uIDIwMjEtMDItMTIgMTQ6NTQsIFNoYW1lZXJhbGkgS29sb3RodW0g
-VGhvZGkgd3JvdGU6DQo+ID4gPiBIaSBSb2Jpbi9Kb2VyZywNCj4gPiA+DQo+ID4gPj4gLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiA+PiBGcm9tOiBTaGFtZWVyIEtvbG90aHVtDQo+IFtt
-YWlsdG86c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tXQ0KPiA+ID4+IFNlbnQ6
-IDAxIEZlYnJ1YXJ5IDIwMjEgMTI6NDENCj4gPiA+PiBUbzogbGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZzsgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcNCj4gPiA+PiBDYzogam9y
-b0A4Ynl0ZXMub3JnOyByb2Jpbi5tdXJwaHlAYXJtLmNvbTsgamVhbi1waGlsaXBwZUBsaW5hcm8u
-b3JnOw0KPiA+ID4+IHdpbGxAa2VybmVsLm9yZzsgWmVuZ3RhbyAoQikgPHByaW1lLnplbmdAaGlz
-aWxpY29uLmNvbT47DQo+ID4gPj4gbGludXhhcm1Ab3BlbmV1bGVyLm9yZw0KPiA+ID4+IFN1Ympl
-Y3Q6IFtMaW51eGFybV0gW1BBVENIIHYyXSBpb21tdTogQ2hlY2sgZGV2LT5pb21tdSBpbg0KPiA+
-IGlvbW11X2Rldl94eHgNCj4gPiA+PiBmdW5jdGlvbnMNCj4gPiA+Pg0KPiA+ID4+IFRoZSBkZXZp
-Y2UgaW9tbXUgcHJvYmUvYXR0YWNoIG1pZ2h0IGhhdmUgZmFpbGVkIGxlYXZpbmcgZGV2LT5pb21t
-dQ0KPiA+ID4+IHRvIE5VTEwgYW5kIGRldmljZSBkcml2ZXJzIG1heSBzdGlsbCBpbnZva2UgdGhl
-c2UgZnVuY3Rpb25zIHJlc3VsdGluZw0KPiA+ID4+IGluIGEgY3Jhc2ggaW4gaW9tbXUgdmVuZG9y
-IGRyaXZlciBjb2RlLiBIZW5jZSBtYWtlIHN1cmUgd2UgY2hlY2sgdGhhdC4NCj4gPiA+Pg0KPiA+
-ID4+IEFsc28gYWRkZWQgaW9tbXVfb3BzIHRvIHRoZSAic3RydWN0IGRldl9pb21tdSIgYW5kIHNl
-dCBpdCBpZiB0aGUgZGV2DQo+ID4gPj4gaXMgc3VjY2Vzc2Z1bGx5IGFzc29jaWF0ZWQgd2l0aCBh
-biBpb21tdS4NCj4gPiA+Pg0KPiA+ID4+IEZpeGVzOsKgYTNhMTk1OTI5ZDQwICgiaW9tbXU6IEFk
-ZCBBUElzIGZvciBtdWx0aXBsZSBkb21haW5zIHBlcg0KPiBkZXZpY2UiKQ0KPiA+ID4+IFNpZ25l
-ZC1vZmYtYnk6IFNoYW1lZXIgS29sb3RodW0NCj4gPiA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9k
-aUBodWF3ZWkuY29tPg0KPiA+ID4+IC0tLQ0KPiA+ID4+IHYxIC0tPiB2MjoNCj4gPiA+PiAgIC1B
-ZGRlZCBpb21tdV9vcHMgdG8gc3RydWN0IGRldl9pb21tdSBiYXNlZCBvbiB0aGUgZGlzY3Vzc2lv
-biB3aXRoDQo+ID4gUm9iaW4uDQo+ID4gPj4gICAtUmViYXNlZCBhZ2FpbnN0IGlvbW11LXRyZWUg
-Y29yZSBicmFuY2guDQo+ID4gPg0KPiA+ID4gQSBnZW50bGUgcGluZyBvbiB0aGlzLi4uDQo+ID4N
-Cj4gPiBJcyB0aGVyZSBhIGNvbnZpbmNpbmcganVzdGlmaWNhdGlvbiBmb3IgbWFpbnRhaW5pbmcg
-eWV0IGFub3RoZXIgY29weSBvZg0KPiA+IHRoZSBvcHMgcG9pbnRlciByYXRoZXIgdGhhbiBzaW1w
-bHkgZGVyZWZlcmVuY2luZyBpb21tdV9kZXYtPm9wcyBhdCBwb2ludA0KPiA+IG9mIHVzZT8NCj4g
-Pg0KPiANCj4gVEJILCBub3RoaW5nIEkgY2FuIHRoaW5rIG9mIG5vdy4gVGhhdCB3YXMgbWFpbmx5
-IHRoZSB3YXkgSSBpbnRlcnByZXRlZCB5b3VyDQo+IHN1Z2dlc3Rpb24NCj4gZnJvbSB0aGUgdjEu
-ICBOb3cgaXQgbG9va3MgbGlrZSB5b3UgZGlkbuKAmXQgbWVhbiBpdCA6KS4gSSBhbSBPayB0byBy
-ZXdvcmsgaXQgdG8NCj4gZGVyZWZlcmVuY2UNCj4gaXQgZnJvbSBpb21tdV9kZXYuIFBsZWFzZSBs
-ZXQgbWUga25vdy4NCg0KU28gd2UgY2FuIGRvIHNvbWV0aGluZyBsaWtlIHRoaXMsDQoNCmluZGV4
-IGZkNzZlMmY1NzlmZS4uNWZkMzFhM2NlYzE4IDEwMDY0NA0KLS0tIGEvZHJpdmVycy9pb21tdS9p
-b21tdS5jDQorKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMNCkBAIC0yODY1LDEwICsyODY1LDEy
-IEBAIEVYUE9SVF9TWU1CT0xfR1BMKGlvbW11X2Z3c3BlY19hZGRfaWRzKTsNCiAgKi8NCiBpbnQg
-aW9tbXVfZGV2X2VuYWJsZV9mZWF0dXJlKHN0cnVjdCBkZXZpY2UgKmRldiwgZW51bSBpb21tdV9k
-ZXZfZmVhdHVyZXMgZmVhdCkNCiB7DQotICAgICAgIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9w
-cyA9IGRldi0+YnVzLT5pb21tdV9vcHM7DQorICAgICAgIGlmIChkZXYtPmlvbW11ICYmIGRldi0+
-aW9tbXUtPmlvbW11X2RldiAmJiBkZXYtPmlvbW11LT5pb21tdV9kZXYtPm9wcykNCisgICAgICAg
-ICAgICAgICBzdHJ1Y3QgaW9tbXVfb3BzICAqb3BzID0gZGV2LT5pb21tdS0+aW9tbXVfZGV2LT5v
-cHM7DQogDQotICAgICAgIGlmIChvcHMgJiYgb3BzLT5kZXZfZW5hYmxlX2ZlYXQpDQotICAgICAg
-ICAgICAgICAgcmV0dXJuIG9wcy0+ZGV2X2VuYWJsZV9mZWF0KGRldiwgZmVhdCk7DQorICAgICAg
-ICAgICAgICAgaWYgKG9wcy0+ZGV2X2VuYWJsZV9mZWF0KQ0KKyAgICAgICAgICAgICAgICAgICAg
-ICAgcmV0dXJuIG9wcy0+ZGV2X2VuYWJsZV9mZWF0KGRldiwgZmVhdCk7DQorICAgICAgIH0NCiAN
-CiAgICAgICAgcmV0dXJuIC1FTk9ERVY7DQogfQ0KDQpBZ2Fpbiwgbm90IHN1cmUgd2UgbmVlZCB0
-byBkbyB0aGUgY2hlY2tpbmcgZm9yIGlvbW11LT5kZXYgYW5kIG9wcyBoZXJlLiBJZiB0aGUNCmRl
-di0+aW9tbXUgaXMgc2V0LCBpcyBpdCBzYWZlIHRvIGFzc3VtZSB0aGF0IHdlIGhhdmUgYSB2YWxp
-ZCBpb21tdS0+aW9tbXVfZGV2DQphbmQgb3BzIGFsd2F5cz8gKE1heSBiZSBpdCBpcyBzYWZlciB0
-byBkbyB0aGUgY2hlY2tpbmcgaW4gY2FzZSBzb21ldGhpbmcNCmVsc2UgYnJlYWtzIHRoaXMgYXNz
-dW1wdGlvbiBpbiBmdXR1cmUpLiBQbGVhc2UgbGV0IG1lIGtub3cgeW91ciB0aG91Z2h0cy4NCg0K
-VGhhbmtzLA0KU2hhbWVlcg0KDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+Hi Vivek,
+On 2/12/21 11:58 AM, Vivek Gautam wrote:
+> Add a vendor specific structure for domain nesting info for
+> arm smmu-v3, and necessary info fields required to populate
+> stage1 page tables.
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
+> ---
+>  include/uapi/linux/iommu.h | 31 +++++++++++++++++++++++++------
+>  1 file changed, 25 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 4d3d988fa353..5f059bcf7720 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -323,7 +323,8 @@ struct iommu_gpasid_bind_data {
+>  #define IOMMU_GPASID_BIND_VERSION_1	1
+>  	__u32 version;
+>  #define IOMMU_PASID_FORMAT_INTEL_VTD	1
+> -#define IOMMU_PASID_FORMAT_LAST		2
+> +#define IOMMU_PASID_FORMAT_ARM_SMMU_V3	2
+> +#define IOMMU_PASID_FORMAT_LAST		3
+>  	__u32 format;
+>  	__u32 addr_width;
+>  #define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid */
+> @@ -409,6 +410,21 @@ struct iommu_nesting_info_vtd {
+>  	__u64	ecap_reg;
+>  };
+>  
+> +/*
+> + * struct iommu_nesting_info_arm_smmuv3 - Arm SMMU-v3 nesting info.
+> + */
+> +struct iommu_nesting_info_arm_smmuv3 {
+> +	__u32	flags;
+> +	__u16	asid_bits;
+> +
+> +	/* Arm LPAE page table format as per kernel */
+> +#define ARM_PGTBL_32_LPAE_S1		(0x0)
+> +#define ARM_PGTBL_64_LPAE_S1		(0x2)
+Shouldn't it be a bitfield instead as both can be supported (the actual
+driver only supports 64b table format though). Does it match matches
+IDR0.TTF?
+> +	__u8	pgtbl_fmt;
+So I understand this API is supposed to allow VFIO to expose those info
+early enough to the userspace to help configuring the viommu and avoid
+errors later on. I wonder how far we want to go on this path. What about
+those other caps that impact the STE/CD validity. There may be others...
+
+SMMU_IDR0.CD2L (support of 2 stage CD)
+SMMU_IDR0.TTENDIAN (endianness)
+SMMU_IDR0.HTTU (if 0 forbids HA/HD setting in the CD)
+SMMU_IDR3.STT (impacts T0SZ)
+
+Thanks
+
+Eric
+
+> +
+> +	__u8	padding[9];
+> +};
+> +
+>  /*
+>   * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+>   *			       userspace should check it before using
+> @@ -445,11 +461,13 @@ struct iommu_nesting_info_vtd {
+>   * +---------------+------------------------------------------------------+
+>   *
+>   * data struct types defined for @format:
+> - * +================================+=====================================+
+> - * | @format                        | data struct                         |
+> - * +================================+=====================================+
+> - * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
+> - * +--------------------------------+-------------------------------------+
+> + * +================================+======================================+
+> + * | @format                        | data struct                          |
+> + * +================================+======================================+
+> + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd        |
+> + * +---------------+-------------------------------------------------------+
+> + * | IOMMU_PASID_FORMAT_ARM_SMMU_V3 | struct iommu_nesting_info_arm_smmuv3 |
+> + * +--------------------------------+--------------------------------------+
+>   *
+>   */
+>  struct iommu_nesting_info {
+> @@ -466,6 +484,7 @@ struct iommu_nesting_info {
+>  	/* Vendor specific data */
+>  	union {
+>  		struct iommu_nesting_info_vtd vtd;
+> +		struct iommu_nesting_info_arm_smmuv3 smmuv3;
+>  	} vendor;
+>  };
+>  
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
