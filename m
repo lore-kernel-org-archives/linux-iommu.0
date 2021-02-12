@@ -2,73 +2,97 @@ Return-Path: <SRS0=FWOh=HO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BF3C433DB
-	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 07:19:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA087C433DB
+	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 08:55:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2193F64E6C
-	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 07:19:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2193F64E6C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6ABE664E6C
+	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 08:55:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6ABE664E6C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E8C958466C;
-	Fri, 12 Feb 2021 07:19:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 237116F644
+	for <iommu@archiver.kernel.org>; Fri, 12 Feb 2021 08:55:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BdjtR1psgVMo; Fri, 12 Feb 2021 07:19:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Sk5mh_777i4G for <iommu@archiver.kernel.org>;
+	Fri, 12 Feb 2021 08:55:31 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+	id 301636F5C7; Fri, 12 Feb 2021 08:55:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3412E84542;
-	Fri, 12 Feb 2021 07:19:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DFE1E6F477;
+	Fri, 12 Feb 2021 08:55:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B6CDC0891;
-	Fri, 12 Feb 2021 07:19:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79EC2C013A
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 07:19:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79E26C0174;
+	Fri, 12 Feb 2021 08:55:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D558C013A
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 08:55:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 68F8E85EA8
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 07:19:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F20376F477
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 08:55:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7t8jrhxkAfll for <iommu@lists.linux-foundation.org>;
- Fri, 12 Feb 2021 07:19:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2082485FAC
- for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 07:19:08 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86BA7113E;
- Thu, 11 Feb 2021 23:19:07 -0800 (PST)
-Received: from [192.168.0.130] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E2C83F73D;
- Thu, 11 Feb 2021 23:19:03 -0800 (PST)
-Subject: Re: [PATCH 3/3] dma-contiguous: Type cast MAX_ORDER as unsigned int
-To: Christoph Hellwig <hch@lst.de>
-References: <1613024531-19040-1-git-send-email-anshuman.khandual@arm.com>
- <1613024531-19040-4-git-send-email-anshuman.khandual@arm.com>
- <20210211080417.GC14448@lst.de>
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <cb6b039a-5a8f-b2c4-2c9e-bcd973ba6232@arm.com>
-Date: Fri, 12 Feb 2021 12:49:28 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0jcFYypBjtwv for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Feb 2021 08:55:26 +0000 (UTC)
+Received: by smtp3.osuosl.org (Postfix, from userid 1001)
+ id 0CCD96F5C7; Fri, 12 Feb 2021 08:55:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0EE626F477
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Feb 2021 08:55:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1613120122;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=nma5RrDL02zgQCnQAmwMQggmlffp24gdJp2OtX7ZPuI=;
+ b=GrhwezraI6jnv9CqC41BRlV+ikJ2kjxywJ0d1ottoP3WOPhMT58IiMWFsPgBvmjDCGXm2D
+ 1L40DaJWJiw1M0qsNl7InN87vWMiDOiGb9MDWFRVzvZ5OirAT5MBy3wgv/UCQF6GrWAnX1
+ dlLKILG0b9a7CJGfEjmM91aLfuu9cIc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-295-1LGCv3TxNmmITacLXAFtsw-1; Fri, 12 Feb 2021 03:55:20 -0500
+X-MC-Unique: 1LGCv3TxNmmITacLXAFtsw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 176EB6D4E0;
+ Fri, 12 Feb 2021 08:55:18 +0000 (UTC)
+Received: from [10.36.114.34] (ovpn-114-34.ams2.redhat.com [10.36.114.34])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id B842F62AF8;
+ Fri, 12 Feb 2021 08:55:10 +0000 (UTC)
+Subject: Re: [PATCH v13 02/15] iommu: Introduce bind/unbind_guest_msi
+To: Keqian Zhu <zhukeqian1@huawei.com>, eric.auger.pro@gmail.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
+ joro@8bytes.org, maz@kernel.org, robin.murphy@arm.com,
+ alex.williamson@redhat.com
+References: <20201118112151.25412-1-eric.auger@redhat.com>
+ <20201118112151.25412-3-eric.auger@redhat.com>
+ <6a70d93d-329f-4129-bd90-03f8589c5de4@huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <1ef4f5ae-9ca6-7c6d-f8a9-31240e5688c2@redhat.com>
+Date: Fri, 12 Feb 2021 09:55:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210211080417.GC14448@lst.de>
+In-Reply-To: <6a70d93d-329f-4129-bd90-03f8589c5de4@huawei.com>
 Content-Language: en-US
-Cc: Mark Rutland <mark.rutland@arm.com>, David Hildenbrand <david@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org, catalin.marinas@arm.com,
- akpm@linux-foundation.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: jean-philippe@linaro.org, vivek.gautam@arm.com, zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,61 +105,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyLzExLzIxIDE6MzQgUE0sIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOgo+IE9uIFRodSwg
-RmViIDExLCAyMDIxIGF0IDExOjUyOjExQU0gKzA1MzAsIEFuc2h1bWFuIEtoYW5kdWFsIHdyb3Rl
-Ogo+PiBUeXBlIGNhc3QgTUFYX09SREVSIGFzIHVuc2lnbmVkIGludCB0byBmaXggdGhlIGZvbGxv
-d2luZyBidWlsZCB3YXJuaW5nLgo+Pgo+PiBJbiBmaWxlIGluY2x1ZGVkIGZyb20gLi9pbmNsdWRl
-L2xpbnV4L2tlcm5lbC5oOjE0LAo+PiAgICAgICAgICAgICAgICAgIGZyb20gLi9pbmNsdWRlL2Fz
-bS1nZW5lcmljL2J1Zy5oOjIwLAo+PiAgICAgICAgICAgICAgICAgIGZyb20gLi9hcmNoL2FybTY0
-L2luY2x1ZGUvYXNtL2J1Zy5oOjI2LAo+PiAgICAgICAgICAgICAgICAgIGZyb20gLi9pbmNsdWRl
-L2xpbnV4L2J1Zy5oOjUsCj4+ICAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgv
-bW1kZWJ1Zy5oOjUsCj4+ICAgICAgICAgICAgICAgICAgZnJvbSAuL2FyY2gvYXJtNjQvaW5jbHVk
-ZS9hc20vbWVtb3J5Lmg6MTY2LAo+PiAgICAgICAgICAgICAgICAgIGZyb20gLi9hcmNoL2FybTY0
-L2luY2x1ZGUvYXNtL3BhZ2UuaDo0MiwKPj4gICAgICAgICAgICAgICAgICBmcm9tIGtlcm5lbC9k
-bWEvY29udGlndW91cy5jOjQ2Ogo+PiBrZXJuZWwvZG1hL2NvbnRpZ3VvdXMuYzogSW4gZnVuY3Rp
-b24g4oCYcm1lbV9jbWFfc2V0dXDigJk6Cj4+IC4vaW5jbHVkZS9saW51eC9taW5tYXguaDoxODoy
-ODogd2FybmluZzogY29tcGFyaXNvbiBvZiBkaXN0aW5jdCBwb2ludGVyCj4+IHR5cGVzIGxhY2tz
-IGEgY2FzdAo+PiAgICghIShzaXplb2YoKHR5cGVvZih4KSAqKTEgPT0gKHR5cGVvZih5KSAqKTEp
-KSkKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+Cj4+IC4vaW5jbHVkZS9saW51eC9t
-aW5tYXguaDozMjo0OiBub3RlOiBpbiBleHBhbnNpb24gb2YgbWFjcm8g4oCYX190eXBlY2hlY2vi
-gJkKPj4gICAgKF9fdHlwZWNoZWNrKHgsIHkpICYmIF9fbm9fc2lkZV9lZmZlY3RzKHgsIHkpKQo+
-PiAgICAgXn5+fn5+fn5+fn4KPj4gLi9pbmNsdWRlL2xpbnV4L21pbm1heC5oOjQyOjI0OiBub3Rl
-OiBpbiBleHBhbnNpb24gb2YgbWFjcm8g4oCYX19zYWZlX2NtcOKAmQo+PiAgIF9fYnVpbHRpbl9j
-aG9vc2VfZXhwcihfX3NhZmVfY21wKHgsIHkpLCBcCj4+ICAgICAgICAgICAgICAgICAgICAgICAg
-IF5+fn5+fn5+fn4KPj4gLi9pbmNsdWRlL2xpbnV4L21pbm1heC5oOjU4OjE5OiBub3RlOiBpbiBl
-eHBhbnNpb24gb2YgbWFjcm8KPj4g4oCYX19jYXJlZnVsX2NtcOKAmQo+PiAgI2RlZmluZSBtYXgo
-eCwgeSkgX19jYXJlZnVsX2NtcCh4LCB5LCA+KQo+PiAgICAgICAgICAgICAgICAgICAgXn5+fn5+
-fn5+fn5+fgo+PiBrZXJuZWwvZG1hL2NvbnRpZ3VvdXMuYzo0MDI6MzU6IG5vdGU6IGluIGV4cGFu
-c2lvbiBvZiBtYWNybyDigJhtYXjigJkKPj4gICBwaHlzX2FkZHJfdCBhbGlnbiA9IFBBR0VfU0la
-RSA8PCBtYXgoTUFYX09SREVSIC0gMSwgcGFnZWJsb2NrX29yZGVyKTsKPj4KPj4gQ2M6IENocmlz
-dG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPgo+PiBDYzogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlw
-cm93c2tpQHNhbXN1bmcuY29tPgo+PiBDYzogUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJt
-LmNvbT4KPj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+IENjOiBsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCj4+IFNpZ25lZC1vZmYtYnk6IEFuc2h1bWFuIEtoYW5k
-dWFsIDxhbnNodW1hbi5raGFuZHVhbEBhcm0uY29tPgo+PiAtLS0KPj4gIGtlcm5lbC9kbWEvY29u
-dGlndW91cy5jIHwgMiArLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRl
-bGV0aW9uKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvZG1hL2NvbnRpZ3VvdXMuYyBiL2tl
-cm5lbC9kbWEvY29udGlndW91cy5jCj4+IGluZGV4IDNkNjNkOTFjYmE1Yy4uMWMyNzgyMzQ5ZDcx
-IDEwMDY0NAo+PiAtLS0gYS9rZXJuZWwvZG1hL2NvbnRpZ3VvdXMuYwo+PiArKysgYi9rZXJuZWwv
-ZG1hL2NvbnRpZ3VvdXMuYwo+PiBAQCAtMzk5LDcgKzM5OSw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1
-Y3QgcmVzZXJ2ZWRfbWVtX29wcyBybWVtX2NtYV9vcHMgPSB7Cj4+ICAKPj4gIHN0YXRpYyBpbnQg
-X19pbml0IHJtZW1fY21hX3NldHVwKHN0cnVjdCByZXNlcnZlZF9tZW0gKnJtZW0pCj4+ICB7Cj4+
-IC0JcGh5c19hZGRyX3QgYWxpZ24gPSBQQUdFX1NJWkUgPDwgbWF4KE1BWF9PUkRFUiAtIDEsIHBh
-Z2VibG9ja19vcmRlcik7Cj4+ICsJcGh5c19hZGRyX3QgYWxpZ24gPSBQQUdFX1NJWkUgPDwgbWF4
-KCh1bnNpZ25lZCBpbnQpTUFYX09SREVSIC0gMSwgcGFnZWJsb2NrX29yZGVyKTsKPiAKPiBNQVhf
-T1JERVIgYW5kIHBhZ2VibG9ja19vcmRlciBzaG91bGQgYmUgdGhlIHNhbWUgdHlwZS4gIFNvIGVp
-dGhlciBmaXgKClJpZ2h0LgoKPiBNQVhfT1JERVIgdG8gYmUgYW4gdW5zaWduZWQgY29uc3RhbnQs
-IHdoaWNoIHdvdWxkIGJlIGZ1bmRhbWVudGFsbHkKPiB0aGUgcmlnaHQgdGhpbmcgdG8gZG8gYnV0
-IG1pZ2h0IGNhdXNlIHNvbWUgZmFsbG91dCwgb3IgdHVybgo+IHBhZ2VibG9ja19vcmRlciBpbnRv
-IGFuIGludCwgd2hpY2ggaXMgcHJvYmFibHkgbXVjaCBlaXRoZXIgYXMgdGhlIHN0dWIKPiBkZWZp
-bmUgb2YgaXQgYWxyZWFkeSBoYXMgYW4gaW50ZWdlciB0eXBlIGRlcml2ZWQgZnJvbSBNQVhfT1JE
-RVIgYXMgd2VsbC4KClJpZ2h0LCB3aWxsIGNoYW5nZSBwYWdlYmxvY2tfb3JkZXIgYXMgJ2ludCcg
-d2hpY2ggd291bGQgYmUgZWFzaWVyLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+Hi Keqian,
+
+On 2/1/21 12:52 PM, Keqian Zhu wrote:
+> Hi Eric,
+> 
+> On 2020/11/18 19:21, Eric Auger wrote:
+>> On ARM, MSI are translated by the SMMU. An IOVA is allocated
+>> for each MSI doorbell. If both the host and the guest are exposed
+>> with SMMUs, we end up with 2 different IOVAs allocated by each.
+>> guest allocates an IOVA (gIOVA) to map onto the guest MSI
+>> doorbell (gDB). The Host allocates another IOVA (hIOVA) to map
+>> onto the physical doorbell (hDB).
+>>
+>> So we end up with 2 untied mappings:
+>>          S1            S2
+>> gIOVA    ->    gDB
+>>               hIOVA    ->    hDB
+>>
+>> Currently the PCI device is programmed by the host with hIOVA
+>> as MSI doorbell. So this does not work.
+>>
+>> This patch introduces an API to pass gIOVA/gDB to the host so
+>> that gIOVA can be reused by the host instead of re-allocating
+>> a new IOVA. So the goal is to create the following nested mapping:
+> Does the gDB can be reused under non-nested mode?
+
+Under non nested mode the hIOVA is allocated within the MSI reserved
+region exposed by the SMMU driver, [0x8000000, 80fffff]. see
+iommu_dma_prepare_msi/iommu_dma_get_msi_page in dma_iommu.c. this hIOVA
+is programmed in the physical device so that the physical SMMU
+translates it into the physical doorbell (hDB = host physical ITS
+doorbell). The gDB is not used at pIOMMU programming level. It is only
+used when setting up the KVM irq route.
+
+Hope this answers your question.
+
+> 
+>>
+>>          S1            S2
+>> gIOVA    ->    gDB     ->    hDB
+>>
+>> and program the PCI device with gIOVA MSI doorbell.
+>>
+>> In case we have several devices attached to this nested domain
+>> (devices belonging to the same group), they cannot be isolated
+>> on guest side either. So they should also end up in the same domain
+>> on guest side. We will enforce that all the devices attached to
+>> the host iommu domain use the same physical doorbell and similarly
+>> a single virtual doorbell mapping gets registered (1 single
+>> virtual doorbell is used on guest as well).
+>>
+> [...]
+> 
+>> + *
+>> + * The associated IOVA can be reused by the host to create a nested
+>> + * stage2 binding mapping translating into the physical doorbell used
+>> + * by the devices attached to the domain.
+>> + *
+>> + * All devices within the domain must share the same physical doorbell.
+>> + * A single MSI GIOVA/GPA mapping can be attached to an iommu_domain.
+>> + */
+>> +
+>> +int iommu_bind_guest_msi(struct iommu_domain *domain,
+>> +			 dma_addr_t giova, phys_addr_t gpa, size_t size)
+>> +{
+>> +	if (unlikely(!domain->ops->bind_guest_msi))
+>> +		return -ENODEV;
+>> +
+>> +	return domain->ops->bind_guest_msi(domain, giova, gpa, size);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_bind_guest_msi);
+>> +
+>> +void iommu_unbind_guest_msi(struct iommu_domain *domain,
+>> +			    dma_addr_t iova)
+> nit: s/iova/giova
+sure
+> 
+>> +{
+>> +	if (unlikely(!domain->ops->unbind_guest_msi))
+>> +		return;
+>> +
+>> +	domain->ops->unbind_guest_msi(domain, iova);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_unbind_guest_msi);
+>> +
+> [...]
+> 
+> Thanks,
+> Keqian
+> 
+
+Thanks
+
+Eric
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
