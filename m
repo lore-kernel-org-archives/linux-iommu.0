@@ -2,106 +2,86 @@ Return-Path: <SRS0=1/MC=HT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B53C433DB
-	for <iommu@archiver.kernel.org>; Wed, 17 Feb 2021 09:38:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB81C433E0
+	for <iommu@archiver.kernel.org>; Wed, 17 Feb 2021 15:08:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7154564DEC
-	for <iommu@archiver.kernel.org>; Wed, 17 Feb 2021 09:38:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7154564DEC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id B04F664E28
+	for <iommu@archiver.kernel.org>; Wed, 17 Feb 2021 15:08:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B04F664E28
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=yandex-team.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3D4FD6F4D0
-	for <iommu@archiver.kernel.org>; Wed, 17 Feb 2021 09:38:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5B91F87170;
+	Wed, 17 Feb 2021 15:08:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Zuh7Cteo9PXR for <iommu@archiver.kernel.org>;
-	Wed, 17 Feb 2021 09:38:26 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
-	id 32DC16F5DD; Wed, 17 Feb 2021 09:38:26 +0000 (UTC)
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hnD9rhaj1PR4; Wed, 17 Feb 2021 15:08:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 38A6B6F48C;
-	Wed, 17 Feb 2021 09:38:19 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AECDC847B8;
+	Wed, 17 Feb 2021 15:08:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 029CEC0174;
-	Wed, 17 Feb 2021 09:38:19 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3365EC013A
- for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 09:38:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A1147C0174;
+	Wed, 17 Feb 2021 15:08:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0FADDC013A
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 14:35:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 19A0E85F59
- for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 09:38:17 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0A2AB86111
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 14:35:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VXzzf1OCXGKX for <iommu@lists.linux-foundation.org>;
- Wed, 17 Feb 2021 09:38:16 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com
- [209.85.221.53])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 496A185F52
- for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 09:38:16 +0000 (UTC)
-Received: by mail-wr1-f53.google.com with SMTP id u14so16645287wri.3
- for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 01:38:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=E/Q0zJsuaggU5QB2u6YiyUvlNfydKAw6Pm4VsbOhWzQ=;
- b=KUjmskxuk6vWaykM1GsqTGjAhaKSaP08TsEhQIGIJPjJEUXNgXZHdnhPEpQIVhRf/E
- RP5Kcrz5Brgh+URT7+pcgeiMA5K7A7PWN5lgU6XFGAdwrbXpnQg1xwMdWQZdUfvCq6wg
- c2el7LEdwv81Fiuog4ajgtlfFAc2iZx3ZTkNtJwpLuyxrsyrXqnoTCnes3/jjwjPhhxI
- WjvdWOjHGqgTTbjYpwYzDES0xo+FiAT3oz9xzCR9uDAxEX+ZnIQh03Wgn3dE1jFt9bs3
- nU8aR9XXNP2Vizc5lpyUP/swpO4jywvOm+xDkQL5vBfruErnC9k+VlWxDXhGm5la0nxy
- uZPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=E/Q0zJsuaggU5QB2u6YiyUvlNfydKAw6Pm4VsbOhWzQ=;
- b=FERJAtnby8QmOHKz0x3aQirHX4VyludFcA3Vh2rUZkBwR8YYJ/VQSvhGDtLVIlnnfy
- JiqCDNIROb13LQmLuPhq/1P7/BlDacnphdTCH9E7NdCFjZ2mDeqdcLDXGLox8s1db9em
- K6utyLz9Y/FB3L7iBrYXC0BEdYvsbiLvPf6fDzYpcwZVFcZTigykE6vc9h68ItM6P/Wb
- L0b5WOQHhCfLaZkx1mXgUrLl2cLdd+RQRDzoKmMnVKz32SDJIxTPZOJ9PtaQO0gKIsll
- TeCWJGNJDe7W388b93pSUpKaGVB0sSBq5Yb+IGQzkdka89ECmyG/wOALXSVECQAY5q7k
- oy7Q==
-X-Gm-Message-State: AOAM531cl3Gcxrg0D7hfWQ6axoWtWtEo/blUt7cvEp9CRXw4Hw/AHtdV
- Z7A8Zp0wGrvlnL0mrVTA7NuhOw==
-X-Google-Smtp-Source: ABdhPJycae9ofTrdJiMsu1v+/HqpFVkEVSE2GObFXU2kRCVxV0//z9W8mX5TSbwmJtowhBIhgcYZwA==
-X-Received: by 2002:adf:e805:: with SMTP id o5mr27988517wrm.227.1613554694814; 
- Wed, 17 Feb 2021 01:38:14 -0800 (PST)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id u14sm3025603wro.10.2021.02.17.01.38.13
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 17 Feb 2021 01:38:14 -0800 (PST)
-Date: Wed, 17 Feb 2021 10:37:55 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Al Stone <ahs3@redhat.com>
-Subject: Re: [EXTERNAL] Re: Question regarding VIOT proposal
-Message-ID: <YCzj85YDWRxmrCHo@myrica>
-References: <20201106135745.GB974750@myrica>
- <MW2PR2101MB11301F2185D1C9016310728E80F21@MW2PR2101MB1130.namprd21.prod.outlook.com>
- <20201203230127.GD4343@redhat.com>
- <20201204180924.GA1922896@myrica>
- <20201204201825.GG4343@redhat.com> <YBkYsSHGUfG91NoN@myrica>
- <20210202202713.GF702808@redhat.com> <YBpjAF3Q+NeJblE9@myrica>
- <20210204202524.GO702808@redhat.com>
- <20210216213103.GT702808@redhat.com>
+ with ESMTP id 288LMe3lnxkx for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Feb 2021 14:35:04 +0000 (UTC)
+X-Greylist: delayed 00:06:03 by SQLgrey-1.7.6
+Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net
+ [77.88.29.217])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 241CD86F7E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Feb 2021 14:35:03 +0000 (UTC)
+Received: from myt5-23f0be3aa648.qloud-c.yandex.net
+ (myt5-23f0be3aa648.qloud-c.yandex.net
+ [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
+ by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id E89CE2E0C61;
+ Wed, 17 Feb 2021 17:28:57 +0300 (MSK)
+Received: from myt5-70c90f7d6d7d.qloud-c.yandex.net
+ (myt5-70c90f7d6d7d.qloud-c.yandex.net [2a02:6b8:c12:3e2c:0:640:70c9:f7d])
+ by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id
+ bPjqwWRHUA-SvxaPpXq; Wed, 17 Feb 2021 17:28:57 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.com;
+ s=default; 
+ t=1613572137; bh=/M/W/rry6PW248aDe81ggUEdVdPjrAZqjQQ99mtBe3k=;
+ h=Message-Id:Date:Subject:To:From:Cc;
+ b=0tTT32VPUOg0z6LDzc8HPZL7d+d+PsB/jnFYWLRT2W3Nx0ZQqEhQPu5Vgl4mDACv/
+ jzmSZRbdIPVH/coLWDDW0dtNFTi8c2sWCb1xIobGnBma8wAzB5fNXbw89N0R5+FF0K
+ zxVqX78wxQq6HHVH0faWVIV2B4F9FvO1C2lJLueg=
+Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net;
+ dkim=pass header.i=@yandex-team.com
+Received: from dynamic-vpn.dhcp.yndx.net (dynamic-vpn.dhcp.yndx.net
+ [2a02:6b8:b080:6619::1:17])
+ by myt5-70c90f7d6d7d.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id
+ IlngOxqDDd-SuoS9OgN; Wed, 17 Feb 2021 17:28:57 +0300
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+ (Client certificate not present)
+From: Andrey Ryabinin <arbn@yandex-team.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu/amd: Fix sleeping in atomic in increase_address_space()
+Date: Wed, 17 Feb 2021 17:30:04 +0300
+Message-Id: <20210217143004.19165-1-arbn@yandex-team.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210216213103.GT702808@redhat.com>
-Cc: "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "mst@redhat.com" <mst@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Boeuf,
- Sebastien" <sebastien.boeuf@intel.com>,
- Alexander Grest <Alexander.Grest@microsoft.com>,
- Yinghan Yang <Yinghan.Yang@microsoft.com>
+X-Mailman-Approved-At: Wed, 17 Feb 2021 15:08:55 +0000
+Cc: Andrey Ryabinin <arbn@yandex-team.com>, valesini@yandex-team.ru,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Qian Cai <cai@lca.pw>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,21 +99,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 16, 2021 at 02:31:03PM -0700, Al Stone wrote:
-> Would you believe last week's meeting was canceled, too?  Not sure
-> why the chair/co-chair are doing this but I'm finding it a little
-> frustrating.
-> 
-> We'll try again this week ... again, apologies for the delays.  I'd
-> recommend going with the last version posted just so progress can be
-> made.  The spec can always be fixed later.
+increase_address_space() calls get_zeroed_page(gfp) under spin_lock with
+disabled interrupts. gfp flags passed to increase_address_space() may allow
+sleeping, so it comes to this:
 
-Thanks, I'll send the acpica changes for review and follow with QEMU and
-Linux patches. These things also take time so I might as well start in
-parallel.
+ BUG: sleeping function called from invalid context at mm/page_alloc.c:4342
+ in_atomic(): 1, irqs_disabled(): 1, pid: 21555, name: epdcbbf1qnhbsd8
 
-Thanks,
-Jean
+ Call Trace:
+  dump_stack+0x66/0x8b
+  ___might_sleep+0xec/0x110
+  __alloc_pages_nodemask+0x104/0x300
+  get_zeroed_page+0x15/0x40
+  iommu_map_page+0xdd/0x3e0
+  amd_iommu_map+0x50/0x70
+  iommu_map+0x106/0x220
+  vfio_iommu_type1_ioctl+0x76e/0x950 [vfio_iommu_type1]
+  do_vfs_ioctl+0xa3/0x6f0
+  ksys_ioctl+0x66/0x70
+  __x64_sys_ioctl+0x16/0x20
+  do_syscall_64+0x4e/0x100
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fix this by moving get_zeroed_page() out of spin_lock/unlock section.
+
+Fixes: 754265bcab ("iommu/amd: Fix race in increase_address_space()")
+Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
+Cc: <stable@vger.kernel.org>
+---
+ drivers/iommu/amd/iommu.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index f0adbc48fd17..9256f84f5ebf 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1502,6 +1502,10 @@ static bool increase_address_space(struct protection_domain *domain,
+ 	bool ret = true;
+ 	u64 *pte;
+ 
++	pte = (void *)get_zeroed_page(gfp);
++	if (!pte)
++		return false;
++
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 
+ 	amd_iommu_domain_get_pgtable(domain, &pgtable);
+@@ -1513,10 +1517,6 @@ static bool increase_address_space(struct protection_domain *domain,
+ 	if (WARN_ON_ONCE(pgtable.mode == PAGE_MODE_6_LEVEL))
+ 		goto out;
+ 
+-	pte = (void *)get_zeroed_page(gfp);
+-	if (!pte)
+-		goto out;
+-
+ 	*pte = PM_LEVEL_PDE(pgtable.mode, iommu_virt_to_phys(pgtable.root));
+ 
+ 	pgtable.root  = pte;
+@@ -1530,10 +1530,12 @@ static bool increase_address_space(struct protection_domain *domain,
+ 	 */
+ 	amd_iommu_domain_set_pgtable(domain, pte, pgtable.mode);
+ 
++	pte = NULL;
+ 	ret = true;
+ 
+ out:
+ 	spin_unlock_irqrestore(&domain->lock, flags);
++	free_page((unsigned long)pte);
+ 
+ 	return ret;
+ }
+-- 
+2.26.2
 
 _______________________________________________
 iommu mailing list
