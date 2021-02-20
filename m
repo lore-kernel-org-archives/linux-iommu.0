@@ -7,81 +7,77 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEFCC433E0
-	for <iommu@archiver.kernel.org>; Sat, 20 Feb 2021 02:05:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32446C433E0
+	for <iommu@archiver.kernel.org>; Sat, 20 Feb 2021 02:21:35 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40BEA64EAF
-	for <iommu@archiver.kernel.org>; Sat, 20 Feb 2021 02:05:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40BEA64EAF
+	by mail.kernel.org (Postfix) with ESMTPS id B590B64EDF
+	for <iommu@archiver.kernel.org>; Sat, 20 Feb 2021 02:21:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B590B64EDF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DA9116F608
-	for <iommu@archiver.kernel.org>; Sat, 20 Feb 2021 02:05:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6D7378757B;
+	Sat, 20 Feb 2021 02:21:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Hdt-FTLO7Vgt for <iommu@archiver.kernel.org>;
-	Sat, 20 Feb 2021 02:05:23 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
-	id 6AC176F615; Sat, 20 Feb 2021 02:05:22 +0000 (UTC)
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xT3KW9JRa62a; Sat, 20 Feb 2021 02:21:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6DC256F4B0;
-	Sat, 20 Feb 2021 02:05:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 93D1887496;
+	Sat, 20 Feb 2021 02:21:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 44789C000B;
-	Sat, 20 Feb 2021 02:05:21 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3271BC0001
- for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:05:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7824EC000A;
+	Sat, 20 Feb 2021 02:21:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ACDFAC0001
+ for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:21:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0C0F96F4B0
- for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:05:20 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7F66984014
+ for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:21:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WDwgJYDZsECc for <iommu@lists.linux-foundation.org>;
- Sat, 20 Feb 2021 02:05:19 +0000 (UTC)
-Received: by smtp3.osuosl.org (Postfix, from userid 1001)
- id 488746F51D; Sat, 20 Feb 2021 02:05:19 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YUleETeSPh6j for <iommu@lists.linux-foundation.org>;
+ Sat, 20 Feb 2021 02:21:30 +0000 (UTC)
+Received: by smtp1.osuosl.org (Postfix, from userid 1001)
+ id A272D84026; Sat, 20 Feb 2021 02:21:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 98B276F4B8
- for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:05:17 +0000 (UTC)
-IronPort-SDR: M3vTzahj8ydjtcj44uTz4NX9Kg20w5nSOEqOn2JcO79Rg+yFPaM+hxe6L6XNdMi91iXHcmgf7o
- 1qDm0+Y0l3tA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9900"; a="268884333"
-X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; d="scan'208";a="268884333"
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A56B284014
+ for <iommu@lists.linux-foundation.org>; Sat, 20 Feb 2021 02:21:28 +0000 (UTC)
+IronPort-SDR: 9A+uhPYFdiLbWZwdZmgbJTeUv2RRngNWhs/YOnyqL09V/O307xVvb2NDp9Kcjqc4Sfe9mOfYt4
+ IPjztcbgHjBg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9900"; a="268887025"
+X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; d="scan'208";a="268887025"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Feb 2021 18:05:16 -0800
-IronPort-SDR: L4szXu6McC6DCriW0XNhCH60S6/xZTDzjLsldnupGU/EfYEAErcAU5uQpZ8BIvEu6tgd1F3c8/
- 1/nBEFLkwzNw==
+ 19 Feb 2021 18:21:27 -0800
+IronPort-SDR: jgSY0f4qrxlE3DaXtKwmJn+gTZ7v2A0K0Dsz0yVXZEqgzjfpCj4FuGBdhJnfB3jnzvAZU82IRc
+ 2EmChZmwK2iA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; d="scan'208";a="420512454"
+X-IronPort-AV: E=Sophos;i="5.81,191,1610438400"; d="scan'208";a="420588765"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
  ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 19 Feb 2021 18:05:09 -0800
-Subject: Re: [PATCH 1/4] iommu/vt-d: Enable write protect for supervisor SVM
+ by fmsmga004.fm.intel.com with ESMTP; 19 Feb 2021 18:21:24 -0800
+Subject: Re: [PATCH 3/4] iommu/vt-d: Reject unsupported page request modes
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
  LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
  Joerg Roedel <joro@8bytes.org>
 References: <1613683878-89946-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1613683878-89946-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1613683878-89946-4-git-send-email-jacob.jun.pan@linux.intel.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <fba522cc-7f34-a090-4669-e7720452033b@linux.intel.com>
-Date: Sat, 20 Feb 2021 09:56:26 +0800
+Message-ID: <fb796569-4612-4ba9-0859-310bd13a32fc@linux.intel.com>
+Date: Sat, 20 Feb 2021 10:12:41 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <1613683878-89946-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1613683878-89946-4-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>,
- Yi Sun <yi.y.sun@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Wu Hao <hao.wu@intel.com>
+ Raj Ashok <ashok.raj@intel.com>, Yi Sun <yi.y.sun@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, Wu Hao <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,92 +95,49 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob and Sanjay,
-
 On 2/19/21 5:31 AM, Jacob Pan wrote:
-> Write protect bit, when set, inhibits supervisor writes to the read-only
-> pages. In supervisor shared virtual addressing (SVA), where page tables
-> are shared between CPU and DMA, IOMMU PASID entry WPE bit should match
-> CR0.WP bit in the CPU.
-> This patch sets WPE bit for supervisor PASIDs if CR0.WP is set.
+> When supervisor/privilige mode SVM is used, we bind init_mm.pgd with
+> a supervisor PASID. There should not be any page fault for init_mm.
+> Execution request with DMA read is also not supported.
+> 
+> This patch checks PRQ descriptor for both unsupported configurations,
+> reject them both with invalid responses.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
- From reading the commit message, the intention of this patch is to match
-PASID entry WPE bith with CPU CR0.WP if 1) SRE is set (supervisor
-pasid); 2) page table is shared between CPU and IOMMU. Do I understand
-it right?
-
-But what the real code doing is failing pasid entry setup for first
-level translation if CPU CR0.WP is not set. It's not consistent with
-what described above.
-
-What I am thinking is that, as long as SRE is set, we should always set
-WPE in intel_pasid_setup_first_level(). For supervisor SVA case, we
-should check CPU CR0.WP in intel_svm_bind_mm() and abort binding if
-CR0.WP is not set.
-
-Thought?
+Fixes: 1c4f88b7f1f92 ("iommu/vt-d: Shared virtual address in scalable mode")
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
 
-> 
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
->   drivers/iommu/intel/pasid.c | 26 ++++++++++++++++++++++++++
->   1 file changed, 26 insertions(+)
+>   drivers/iommu/intel/svm.c | 12 +++++++++++-
+>   1 file changed, 11 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 0cceaabc3ce6..0b7e0e726ade 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -410,6 +410,15 @@ static inline void pasid_set_sre(struct pasid_entry *pe)
->   	pasid_set_bits(&pe->val[2], 1 << 0, 1);
->   }
->   
-> +/*
-> + * Setup the WPE(Write Protect Enable) field (Bit 132) of a
-> + * scalable mode PASID entry.
-> + */
-> +static inline void pasid_set_wpe(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[2], 1 << 4, 1 << 4);
-> +}
-> +
->   /*
->    * Setup the P(Present) field (Bit 0) of a scalable mode PASID
->    * entry.
-> @@ -553,6 +562,20 @@ static void pasid_flush_caches(struct intel_iommu *iommu,
->   	}
->   }
->   
-> +static inline int pasid_enable_wpe(struct pasid_entry *pte)
-> +{
-> +	unsigned long cr0 = read_cr0();
-> +
-> +	/* CR0.WP is normally set but just to be sure */
-> +	if (unlikely(!(cr0 & X86_CR0_WP))) {
-> +		pr_err_ratelimited("No CPU write protect!\n");
-> +		return -EINVAL;
-> +	}
-> +	pasid_set_wpe(pte);
-> +
-> +	return 0;
-> +};
-> +
->   /*
->    * Set up the scalable mode pasid table entry for first only
->    * translation type.
-> @@ -584,6 +607,9 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
->   			return -EINVAL;
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 23a1e4f58c54..ff7ae7cc17d5 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -1113,7 +1113,17 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>   			       ((unsigned long long *)req)[1]);
+>   			goto no_pasid;
 >   		}
->   		pasid_set_sre(pte);
-> +		if (pasid_enable_wpe(pte))
-> +			return -EINVAL;
-> +
->   	}
->   
->   	if (flags & PASID_FLAG_FL5LP) {
+> -
+> +		/* We shall not receive page request for supervisor SVM */
+> +		if (req->pm_req && (req->rd_req | req->wr_req)) {
+> +			pr_err("Unexpected page request in Privilege Mode");
+> +			/* No need to find the matching sdev as for bad_req */
+> +			goto no_pasid;
+> +		}
+> +		/* DMA read with exec requeset is not supported. */
+> +		if (req->exe_req && req->rd_req) {
+> +			pr_err("Execution request not supported\n");
+> +			goto no_pasid;
+> +		}
+>   		if (!svm || svm->pasid != req->pasid) {
+>   			rcu_read_lock();
+>   			svm = ioasid_find(NULL, req->pasid, NULL);
 > 
 _______________________________________________
 iommu mailing list
