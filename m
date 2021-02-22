@@ -5,59 +5,59 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7DBC433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB218C433E9
 	for <iommu@archiver.kernel.org>; Mon, 22 Feb 2021 15:55:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2442864EC3
+	by mail.kernel.org (Postfix) with ESMTPS id 61A7E64F00
 	for <iommu@archiver.kernel.org>; Mon, 22 Feb 2021 15:55:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2442864EC3
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61A7E64F00
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F08E185F7D;
-	Mon, 22 Feb 2021 15:54:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 41B4F86101;
+	Mon, 22 Feb 2021 15:55:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t4RCD8v26O0c; Mon, 22 Feb 2021 15:54:57 +0000 (UTC)
+	with ESMTP id bNLXjwOa-Oug; Mon, 22 Feb 2021 15:54:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F1C71860F2;
-	Mon, 22 Feb 2021 15:54:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6B4AB8610E;
+	Mon, 22 Feb 2021 15:54:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DBBADC000A;
-	Mon, 22 Feb 2021 15:54:56 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B9829C0001
- for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 66529C000A;
+	Mon, 22 Feb 2021 15:54:58 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 664A2C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A6E8A6F584
- for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:55 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5612986108
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pVXMvnWy9_EX for <iommu@lists.linux-foundation.org>;
- Mon, 22 Feb 2021 15:54:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A55376F4D3
- for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:53 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Dkmsp5cdxzlNSL;
- Mon, 22 Feb 2021 23:52:46 +0800 (CST)
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OkYAoUwKKZCM for <iommu@lists.linux-foundation.org>;
+ Mon, 22 Feb 2021 15:54:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 05BE085F7D
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Feb 2021 15:54:56 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Dkmtk25jGzjPyy;
+ Mon, 22 Feb 2021 23:53:34 +0800 (CST)
 Received: from S00345302A-PC.china.huawei.com (10.47.88.147) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 22 Feb 2021 23:54:37 +0800
+ 14.3.498.0; Mon, 22 Feb 2021 23:54:43 +0800
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, <kvmarm@lists.cs.columbia.edu>
-Subject: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for NESTED stage
- with BTM
-Date: Mon, 22 Feb 2021 15:53:37 +0000
-Message-ID: <20210222155338.26132-5-shameerali.kolothum.thodi@huawei.com>
+Subject: [RFC PATCH 5/5] KVM: arm64: Make sure pinned vmid is released on VM
+ exit
+Date: Mon, 22 Feb 2021 15:53:38 +0000
+Message-ID: <20210222155338.26132-6-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com>
 References: <20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com>
@@ -83,110 +83,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If the SMMU supports BTM and the device belongs to NESTED domain
-with shared pasid table, we need to use the VMID allocated by the
-KVM for the s2 configuration. Hence, request a pinned VMID from KVM.
+Since the pinned VMID space is not recycled, we need to make sure that
+we release the vmid back into the pool when we are done with it.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 49 ++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 2 deletions(-)
+ arch/arm64/kvm/arm.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 26bf7da1bcd0..04f83f7c8319 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -28,6 +28,7 @@
- #include <linux/pci.h>
- #include <linux/pci-ats.h>
- #include <linux/platform_device.h>
-+#include <linux/kvm_host.h>
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index 8955968be49f..d9900ffb88f4 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -181,8 +181,16 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
+ 	kvm_vgic_destroy(kvm);
  
- #include <linux/amba/bus.h>
- 
-@@ -2195,6 +2196,33 @@ static void arm_smmu_bitmap_free(unsigned long *map, int idx)
- 	clear_bit(idx, map);
- }
- 
-+static int arm_smmu_pinned_vmid_get(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_master *master;
+ 	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
+-		if (kvm->vcpus[i]) {
+-			kvm_vcpu_destroy(kvm->vcpus[i]);
++		struct kvm_vcpu *vcpu = kvm->vcpus[i];
 +
-+	master = list_first_entry_or_null(&smmu_domain->devices,
-+					  struct arm_smmu_master, domain_head);
-+	if (!master)
-+		return -EINVAL;
++		if (vcpu) {
++			struct kvm_vmid *vmid = &vcpu->arch.hw_mmu->vmid;
 +
-+	return kvm_pinned_vmid_get(master->dev);
-+}
-+
-+static int arm_smmu_pinned_vmid_put(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_master *master;
-+
-+	master = list_first_entry_or_null(&smmu_domain->devices,
-+					  struct arm_smmu_master, domain_head);
-+	if (!master)
-+		return -EINVAL;
-+
-+	if (smmu_domain->s2_cfg.vmid)
-+		return kvm_pinned_vmid_put(master->dev);
-+
-+	return 0;
-+}
-+
- static void arm_smmu_domain_free(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -2215,8 +2243,11 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 		mutex_unlock(&arm_smmu_asid_lock);
++			if (refcount_read(&vmid->pinned)) {
++				ida_free(&kvm_pinned_vmids, vmid->vmid);
++				refcount_set(&vmid->pinned, 0);
++			}
++			kvm_vcpu_destroy(vcpu);
+ 			kvm->vcpus[i] = NULL;
+ 		}
  	}
- 	if (s2_cfg->set) {
--		if (s2_cfg->vmid)
--			arm_smmu_bitmap_free(smmu->vmid_map, s2_cfg->vmid);
-+		if (s2_cfg->vmid) {
-+			if (!(smmu->features & ARM_SMMU_FEAT_BTM) &&
-+			    smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-+				arm_smmu_bitmap_free(smmu->vmid_map, s2_cfg->vmid);
-+		}
- 	}
- 
- 	kfree(smmu_domain);
-@@ -3199,6 +3230,17 @@ static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
- 				!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB))
- 			goto out;
- 
-+		if (smmu->features & ARM_SMMU_FEAT_BTM) {
-+			ret = arm_smmu_pinned_vmid_get(smmu_domain);
-+			if (ret < 0)
-+				goto out;
-+
-+			if (smmu_domain->s2_cfg.vmid)
-+				arm_smmu_bitmap_free(smmu->vmid_map, smmu_domain->s2_cfg.vmid);
-+
-+			smmu_domain->s2_cfg.vmid = (u16)ret;
-+		}
-+
- 		smmu_domain->s1_cfg.cdcfg.cdtab_dma = cfg->base_ptr;
- 		smmu_domain->s1_cfg.s1cdmax = cfg->pasid_bits;
- 		smmu_domain->s1_cfg.s1fmt = cfg->vendor_data.smmuv3.s1fmt;
-@@ -3221,6 +3263,7 @@ static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
- static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_master *master;
- 	unsigned long flags;
- 
-@@ -3237,6 +3280,8 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
- 		arm_smmu_install_ste_for_dev(master);
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
-+	if (smmu->features & ARM_SMMU_FEAT_BTM)
-+		arm_smmu_pinned_vmid_put(smmu_domain);
- unlock:
- 	mutex_unlock(&smmu_domain->init_mutex);
- }
 -- 
 2.17.1
 
