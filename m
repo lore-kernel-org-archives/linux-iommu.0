@@ -7,77 +7,77 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A04C433E0
-	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0779C433E6
+	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:20 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E1A4464EC3
-	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1A4464EC3
+	by mail.kernel.org (Postfix) with ESMTPS id 4447464E85
+	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4447464E85
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A589D83A6A;
-	Tue, 23 Feb 2021 21:08:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 06C798249B;
+	Tue, 23 Feb 2021 21:08:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1GpUzv5qZgqm; Tue, 23 Feb 2021 21:08:15 +0000 (UTC)
+	with ESMTP id C5_C29qtbwjb; Tue, 23 Feb 2021 21:08:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7490E82457;
-	Tue, 23 Feb 2021 21:08:15 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9690C8248C;
+	Tue, 23 Feb 2021 21:08:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53CF6C000A;
-	Tue, 23 Feb 2021 21:08:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06339C0001
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8271EC000A;
+	Tue, 23 Feb 2021 21:08:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B84B2C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D9BD243020
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:13 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A69196061C
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vk3yjxwliEKm for <iommu@lists.linux-foundation.org>;
- Tue, 23 Feb 2021 21:08:13 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G49iJ0SPGDV4 for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Feb 2021 21:08:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 21B6042FFB
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:12 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A549C60656
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1614114492;
+ s=mimecast20190719; t=1614114495;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=MidqRbnoCgHqjW/gvw5lx7fr10QlBFdAtVhbFpPCAK0=;
- b=bJbr8QSU3qcQw9y0OGAD+gblEgUe7uPmBqYMF3BZ4Nf/dDUgmGXve3B9mp7N8y86SmwxUQ
- fji4NonCYf9aFhSzz9mImsWC78vULrYJyhRVNHNlzqOun0zyeI7PLMDb2QZmoAi+X4na7d
- eVFbmJNZDoRp0ItX+IqgRFiBoWH/iyE=
+ bh=DDvyG5TVr/zkrVHXr19OIy1qfeCOwHBTVauPIQEiDDQ=;
+ b=AprQsszDyiYdps/4mN1+SXpqq2aVZXik+IttIhfzzXdkxF0M18IGrGF+y/KMW7egFgQ3e/
+ n2kpDFB0OOErpHh63Sps/622hOvtLzD6QZWerPOEAlPxrByx5wbrZudb9wX0v+/hggKIB1
+ KZKTiU8rn/u8E3jYgtNSpIiFzzr7Kpw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-571-r-l-agpQNzGR7NnqIgxgWQ-1; Tue, 23 Feb 2021 16:08:05 -0500
-X-MC-Unique: r-l-agpQNzGR7NnqIgxgWQ-1
+ us-mta-330-EEga1GFGMC61V9-JqZTDWA-1; Tue, 23 Feb 2021 16:07:38 -0500
+X-MC-Unique: EEga1GFGMC61V9-JqZTDWA-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
  [10.5.11.14])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BBB1C107ACF3;
- Tue, 23 Feb 2021 21:08:01 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EAD1CCC624;
+ Tue, 23 Feb 2021 21:07:34 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-114-34.ams2.redhat.com [10.36.114.34])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 434EA5D9D0;
- Tue, 23 Feb 2021 21:07:52 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 84EBD5D9D0;
+ Tue, 23 Feb 2021 21:07:26 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
-Subject: [PATCH v12 11/13] vfio: Document nested stage control
-Date: Tue, 23 Feb 2021 22:06:23 +0100
-Message-Id: <20210223210625.604517-12-eric.auger@redhat.com>
+Subject: [PATCH v12 08/13] vfio/pci: Add framework for custom interrupt indices
+Date: Tue, 23 Feb 2021 22:06:20 +0100
+Message-Id: <20210223210625.604517-9-eric.auger@redhat.com>
 In-Reply-To: <20210223210625.604517-1-eric.auger@redhat.com>
 References: <20210223210625.604517-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -102,120 +102,306 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The VFIO API was enhanced to support nested stage control: a bunch of
-new iotcls, one DMA FAULT region and an associated specific IRQ.
-
-Let's document the process to follow to set up nested mode.
+Implement IRQ capability chain infrastructure. All interrupt
+indexes beyond VFIO_PCI_NUM_IRQS are handled as extended
+interrupts. They are registered with a specific type/subtype
+and supported flags.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
 
 v11 -> v12:
-s/VFIO_REGION_INFO_CAP_PRODUCER_FAULT/VFIO_REGION_INFO_CAP_DMA_FAULT
-
-v8 -> v9:
-- new names for SET_MSI_BINDING and SET_PASID_TABLE
-- new layout for the DMA FAULT memory region and specific IRQ
-
-v2 -> v3:
-- document the new fault API
-
-v1 -> v2:
-- use the new ioctl names
-- add doc related to fault handling
+- check !vdev->num_ext_irqs in vfio_pci_set_ext_irq_trigger()
+  [Shameer, Qubingbing]
 ---
- Documentation/driver-api/vfio.rst | 77 +++++++++++++++++++++++++++++++
- 1 file changed, 77 insertions(+)
+ drivers/vfio/pci/vfio_pci.c         | 99 +++++++++++++++++++++++------
+ drivers/vfio/pci/vfio_pci_intrs.c   | 62 ++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_private.h | 14 ++++
+ 3 files changed, 157 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/driver-api/vfio.rst b/Documentation/driver-api/vfio.rst
-index f1a4d3c3ba0b..14e41324237d 100644
---- a/Documentation/driver-api/vfio.rst
-+++ b/Documentation/driver-api/vfio.rst
-@@ -239,6 +239,83 @@ group and can access them as follows::
- 	/* Gratuitous device reset and go... */
- 	ioctl(device, VFIO_DEVICE_RESET);
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index a528b72b57d2..e6b94bad77da 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -610,6 +610,14 @@ static void vfio_pci_disable(struct vfio_pci_device *vdev)
+ 	ret = iommu_unregister_device_fault_handler(&vdev->pdev->dev);
+ 	WARN_ON(ret == -EBUSY);
  
-+IOMMU Dual Stage Control
-+------------------------
++	for (i = 0; i < vdev->num_ext_irqs; i++)
++		vfio_pci_set_irqs_ioctl(vdev, VFIO_IRQ_SET_DATA_NONE |
++					VFIO_IRQ_SET_ACTION_TRIGGER,
++					VFIO_PCI_NUM_IRQS + i, 0, 0, NULL);
++	vdev->num_ext_irqs = 0;
++	kfree(vdev->ext_irqs);
++	vdev->ext_irqs = NULL;
 +
-+Some IOMMUs support 2 stages/levels of translation. "Stage" corresponds to
-+the ARM terminology while "level" corresponds to Intel's VTD terminology. In
-+the following text we use either without distinction.
-+
-+This is useful when the guest is exposed with a virtual IOMMU and some
-+devices are assigned to the guest through VFIO. Then the guest OS can use
-+stage 1 (IOVA -> GPA), while the hypervisor uses stage 2 for VM isolation
-+(GPA -> HPA).
-+
-+The guest gets ownership of the stage 1 page tables and also owns stage 1
-+configuration structures. The hypervisor owns the root configuration structure
-+(for security reason), including stage 2 configuration. This works as long
-+configuration structures and page table format are compatible between the
-+virtual IOMMU and the physical IOMMU.
-+
-+Assuming the HW supports it, this nested mode is selected by choosing the
-+VFIO_TYPE1_NESTING_IOMMU type through:
-+
-+ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
-+
-+This forces the hypervisor to use the stage 2, leaving stage 1 available for
-+guest usage.
-+
-+Once groups are attached to the container, the guest stage 1 translation
-+configuration data can be passed to VFIO by using
-+
-+ioctl(container, VFIO_IOMMU_SET_PASID_TABLE, &pasid_table_info);
-+
-+This allows to combine the guest stage 1 configuration structure along with
-+the hypervisor stage 2 configuration structure. Stage 1 configuration
-+structures are dependent on the IOMMU type.
-+
-+As the stage 1 translation is fully delegated to the HW, translation faults
-+encountered during the translation process need to be propagated up to
-+the virtualizer and re-injected into the guest.
-+
-+The userspace must be prepared to receive faults. The VFIO-PCI device
-+exposes one dedicated DMA FAULT region: it contains a ring buffer and
-+its header that allows to manage the head/tail indices. The region is
-+identified by the following index/subindex:
-+- VFIO_REGION_TYPE_NESTED/VFIO_REGION_SUBTYPE_NESTED_DMA_FAULT
-+
-+The DMA FAULT region exposes a VFIO_REGION_INFO_CAP_DMA_FAULT
-+region capability that allows the userspace to retrieve the ABI version
-+of the fault records filled by the host.
-+
-+On top of that region, the userspace can be notified whenever a fault
-+occurs at the physical level. It can use the VFIO_IRQ_TYPE_NESTED/
-+VFIO_IRQ_SUBTYPE_DMA_FAULT specific IRQ to attach the eventfd to be
-+signalled.
-+
-+The ring buffer containing the fault records can be mmapped. When
-+the userspace consumes a fault in the queue, it should increment
-+the consumer index to allow new fault records to replace the used ones.
-+
-+The queue size and the entry size can be retrieved in the header.
-+The tail index should never overshoot the producer index as in any
-+other circular buffer scheme. Also it must be less than the queue size
-+otherwise the change fails.
-+
-+When the guest invalidates stage 1 related caches, invalidations must be
-+forwarded to the host through
-+ioctl(container, VFIO_IOMMU_CACHE_INVALIDATE, &inv_data);
-+Those invalidations can happen at various granularity levels, page, context, ...
-+
-+The ARM SMMU specification introduces another challenge: MSIs are translated by
-+both the virtual SMMU and the physical SMMU. To build a nested mapping for the
-+IOVA programmed into the assigned device, the guest needs to pass its IOVA/MSI
-+doorbell GPA binding to the host. Then the hypervisor can build a nested stage 2
-+binding eventually translating into the physical MSI doorbell.
-+
-+This is achieved by calling
-+ioctl(container, VFIO_IOMMU_SET_MSI_BINDING, &guest_binding);
-+
- VFIO User API
- -------------------------------------------------------------------------------
+ 	/* Device closed, don't need mutex here */
+ 	list_for_each_entry_safe(ioeventfd, ioeventfd_tmp,
+ 				 &vdev->ioeventfds_list, next) {
+@@ -825,6 +833,9 @@ static int vfio_pci_get_irq_count(struct vfio_pci_device *vdev, int irq_type)
+ 			return 1;
+ 	} else if (irq_type == VFIO_PCI_REQ_IRQ_INDEX) {
+ 		return 1;
++	} else if (irq_type >= VFIO_PCI_NUM_IRQS &&
++		   irq_type < VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs) {
++		return 1;
+ 	}
  
+ 	return 0;
+@@ -1010,7 +1021,7 @@ static long vfio_pci_ioctl(void *device_data,
+ 			info.flags |= VFIO_DEVICE_FLAGS_RESET;
+ 
+ 		info.num_regions = VFIO_PCI_NUM_REGIONS + vdev->num_regions;
+-		info.num_irqs = VFIO_PCI_NUM_IRQS;
++		info.num_irqs = VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs;
+ 
+ 		if (IS_ENABLED(CONFIG_VFIO_PCI_ZDEV)) {
+ 			int ret = vfio_pci_info_zdev_add_caps(vdev, &caps);
+@@ -1189,36 +1200,87 @@ static long vfio_pci_ioctl(void *device_data,
+ 
+ 	} else if (cmd == VFIO_DEVICE_GET_IRQ_INFO) {
+ 		struct vfio_irq_info info;
++		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
++		unsigned long capsz;
+ 
+ 		minsz = offsetofend(struct vfio_irq_info, count);
+ 
++		/* For backward compatibility, cannot require this */
++		capsz = offsetofend(struct vfio_irq_info, cap_offset);
++
+ 		if (copy_from_user(&info, (void __user *)arg, minsz))
+ 			return -EFAULT;
+ 
+-		if (info.argsz < minsz || info.index >= VFIO_PCI_NUM_IRQS)
++		if (info.argsz < minsz ||
++			info.index >= VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs)
+ 			return -EINVAL;
+ 
+-		switch (info.index) {
+-		case VFIO_PCI_INTX_IRQ_INDEX ... VFIO_PCI_MSIX_IRQ_INDEX:
+-		case VFIO_PCI_REQ_IRQ_INDEX:
+-			break;
+-		case VFIO_PCI_ERR_IRQ_INDEX:
+-			if (pci_is_pcie(vdev->pdev))
+-				break;
+-			fallthrough;
+-		default:
+-			return -EINVAL;
+-		}
++		if (info.argsz >= capsz)
++			minsz = capsz;
+ 
+ 		info.flags = VFIO_IRQ_INFO_EVENTFD;
+ 
+-		info.count = vfio_pci_get_irq_count(vdev, info.index);
+-
+-		if (info.index == VFIO_PCI_INTX_IRQ_INDEX)
++		switch (info.index) {
++		case VFIO_PCI_INTX_IRQ_INDEX:
+ 			info.flags |= (VFIO_IRQ_INFO_MASKABLE |
+ 				       VFIO_IRQ_INFO_AUTOMASKED);
+-		else
++			break;
++		case VFIO_PCI_MSI_IRQ_INDEX ... VFIO_PCI_MSIX_IRQ_INDEX:
++		case VFIO_PCI_REQ_IRQ_INDEX:
+ 			info.flags |= VFIO_IRQ_INFO_NORESIZE;
++			break;
++		case VFIO_PCI_ERR_IRQ_INDEX:
++			info.flags |= VFIO_IRQ_INFO_NORESIZE;
++			if (!pci_is_pcie(vdev->pdev))
++				return -EINVAL;
++			break;
++		default:
++		{
++			struct vfio_irq_info_cap_type cap_type = {
++				.header.id = VFIO_IRQ_INFO_CAP_TYPE,
++				.header.version = 1 };
++			int ret, i;
++
++			if (info.index >= VFIO_PCI_NUM_IRQS +
++						vdev->num_ext_irqs)
++				return -EINVAL;
++			info.index = array_index_nospec(info.index,
++							VFIO_PCI_NUM_IRQS +
++							vdev->num_ext_irqs);
++			i = info.index - VFIO_PCI_NUM_IRQS;
++
++			info.flags = vdev->ext_irqs[i].flags;
++			cap_type.type = vdev->ext_irqs[i].type;
++			cap_type.subtype = vdev->ext_irqs[i].subtype;
++
++			ret = vfio_info_add_capability(&caps,
++					&cap_type.header,
++					sizeof(cap_type));
++			if (ret)
++				return ret;
++		}
++		}
++
++		info.count = vfio_pci_get_irq_count(vdev, info.index);
++
++		if (caps.size) {
++			info.flags |= VFIO_IRQ_INFO_FLAG_CAPS;
++			if (info.argsz < sizeof(info) + caps.size) {
++				info.argsz = sizeof(info) + caps.size;
++				info.cap_offset = 0;
++			} else {
++				vfio_info_cap_shift(&caps, sizeof(info));
++				if (copy_to_user((void __user *)arg +
++						  sizeof(info), caps.buf,
++						  caps.size)) {
++					kfree(caps.buf);
++					return -EFAULT;
++				}
++				info.cap_offset = sizeof(info);
++			}
++
++			kfree(caps.buf);
++		}
+ 
+ 		return copy_to_user((void __user *)arg, &info, minsz) ?
+ 			-EFAULT : 0;
+@@ -1237,7 +1299,8 @@ static long vfio_pci_ioctl(void *device_data,
+ 		max = vfio_pci_get_irq_count(vdev, hdr.index);
+ 
+ 		ret = vfio_set_irqs_validate_and_prepare(&hdr, max,
+-						 VFIO_PCI_NUM_IRQS, &data_size);
++				VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs,
++				&data_size);
+ 		if (ret)
+ 			return ret;
+ 
+diff --git a/drivers/vfio/pci/vfio_pci_intrs.c b/drivers/vfio/pci/vfio_pci_intrs.c
+index 869dce5f134d..d67995fe872f 100644
+--- a/drivers/vfio/pci/vfio_pci_intrs.c
++++ b/drivers/vfio/pci/vfio_pci_intrs.c
+@@ -19,6 +19,7 @@
+ #include <linux/vfio.h>
+ #include <linux/wait.h>
+ #include <linux/slab.h>
++#include <linux/nospec.h>
+ 
+ #include "vfio_pci_private.h"
+ 
+@@ -635,6 +636,24 @@ static int vfio_pci_set_req_trigger(struct vfio_pci_device *vdev,
+ 					       count, flags, data);
+ }
+ 
++static int vfio_pci_set_ext_irq_trigger(struct vfio_pci_device *vdev,
++					unsigned int index, unsigned int start,
++					unsigned int count, uint32_t flags,
++					void *data)
++{
++	int i;
++
++	if (start != 0 || count > 1 || !vdev->num_ext_irqs)
++		return -EINVAL;
++
++	index = array_index_nospec(index,
++				   VFIO_PCI_NUM_IRQS + vdev->num_ext_irqs);
++	i = index - VFIO_PCI_NUM_IRQS;
++
++	return vfio_pci_set_ctx_trigger_single(&vdev->ext_irqs[i].trigger,
++					       count, flags, data);
++}
++
+ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev, uint32_t flags,
+ 			    unsigned index, unsigned start, unsigned count,
+ 			    void *data)
+@@ -684,6 +703,13 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev, uint32_t flags,
+ 			break;
+ 		}
+ 		break;
++	default:
++		switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
++		case VFIO_IRQ_SET_ACTION_TRIGGER:
++			func = vfio_pci_set_ext_irq_trigger;
++			break;
++		}
++		break;
+ 	}
+ 
+ 	if (!func)
+@@ -691,3 +717,39 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev, uint32_t flags,
+ 
+ 	return func(vdev, index, start, count, flags, data);
+ }
++
++int vfio_pci_get_ext_irq_index(struct vfio_pci_device *vdev,
++			       unsigned int type, unsigned int subtype)
++{
++	int i;
++
++	for (i = 0; i <  vdev->num_ext_irqs; i++) {
++		if (vdev->ext_irqs[i].type == type &&
++		    vdev->ext_irqs[i].subtype == subtype) {
++			return i;
++		}
++	}
++	return -EINVAL;
++}
++
++int vfio_pci_register_irq(struct vfio_pci_device *vdev,
++			  unsigned int type, unsigned int subtype,
++			  u32 flags)
++{
++	struct vfio_ext_irq *ext_irqs;
++
++	ext_irqs = krealloc(vdev->ext_irqs,
++			    (vdev->num_ext_irqs + 1) * sizeof(*ext_irqs),
++			    GFP_KERNEL);
++	if (!ext_irqs)
++		return -ENOMEM;
++
++	vdev->ext_irqs = ext_irqs;
++
++	vdev->ext_irqs[vdev->num_ext_irqs].type = type;
++	vdev->ext_irqs[vdev->num_ext_irqs].subtype = subtype;
++	vdev->ext_irqs[vdev->num_ext_irqs].flags = flags;
++	vdev->ext_irqs[vdev->num_ext_irqs].trigger = NULL;
++	vdev->num_ext_irqs++;
++	return 0;
++}
+diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
+index 1d9b0f648133..e180b5435c8f 100644
+--- a/drivers/vfio/pci/vfio_pci_private.h
++++ b/drivers/vfio/pci/vfio_pci_private.h
+@@ -77,6 +77,13 @@ struct vfio_pci_region {
+ 	u32				flags;
+ };
+ 
++struct vfio_ext_irq {
++	u32				type;
++	u32				subtype;
++	u32				flags;
++	struct eventfd_ctx		*trigger;
++};
++
+ struct vfio_pci_dummy_resource {
+ 	struct resource		resource;
+ 	int			index;
+@@ -111,6 +118,8 @@ struct vfio_pci_device {
+ 	struct vfio_pci_irq_ctx	*ctx;
+ 	int			num_ctx;
+ 	int			irq_type;
++	struct vfio_ext_irq	*ext_irqs;
++	int			num_ext_irqs;
+ 	int			num_regions;
+ 	struct vfio_pci_region	*region;
+ 	u8			msi_qmax;
+@@ -154,6 +163,11 @@ struct vfio_pci_device {
+ 
+ extern void vfio_pci_intx_mask(struct vfio_pci_device *vdev);
+ extern void vfio_pci_intx_unmask(struct vfio_pci_device *vdev);
++extern int vfio_pci_register_irq(struct vfio_pci_device *vdev,
++				 unsigned int type, unsigned int subtype,
++				 u32 flags);
++extern int vfio_pci_get_ext_irq_index(struct vfio_pci_device *vdev,
++				      unsigned int type, unsigned int subtype);
+ 
+ extern int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev,
+ 				   uint32_t flags, unsigned index,
 -- 
 2.26.2
 
