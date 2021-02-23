@@ -7,77 +7,78 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BAFC433DB
-	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DD0C433E0
+	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:52 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9409164EBB
-	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9409164EBB
+	by mail.kernel.org (Postfix) with ESMTPS id E3E6B64E7A
+	for <iommu@archiver.kernel.org>; Tue, 23 Feb 2021 21:08:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3E6B64E7A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4C3DC43023;
-	Tue, 23 Feb 2021 21:08:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B130B4E456;
+	Tue, 23 Feb 2021 21:08:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GhIsbya3mTdc; Tue, 23 Feb 2021 21:08:39 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dIw7b91bsgI4; Tue, 23 Feb 2021 21:08:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3E80742FFB;
-	Tue, 23 Feb 2021 21:08:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 753F84CFE0;
+	Tue, 23 Feb 2021 21:08:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D129C000A;
-	Tue, 23 Feb 2021 21:08:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 07843C0001
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 509E6C000A;
+	Tue, 23 Feb 2021 21:08:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3DCD8C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DD95882499
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 392C16066A
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gcdIyESy7R9u for <iommu@lists.linux-foundation.org>;
- Tue, 23 Feb 2021 21:08:37 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bzAA0f0sZbKF for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Feb 2021 21:08:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3593482457
- for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:37 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 78D1260656
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Feb 2021 21:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1614114516;
+ s=mimecast20190719; t=1614114527;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=2A+UxmjgYX3NKEigcEzDsWb1xLUpHLySe93FlLrjxpc=;
- b=VhQ7vaeunlH72ewpekSVFed31YS7mw8CNpwr7/a1AtinoM0rtzLFDmTKfgZkjh77bjUofL
- /OgFYCn3ZM26qot5j7DSeJu61t2KZs/Z/39eZt83Fx9a7s6wO13QX557G/2StUoU62ljks
- YXPd1mijMWjs/7QvfQOaXaDkJ6cEP4M=
+ bh=wBstdMXs79EJykLHS2kM7Pc567oyQTx13taKoYZoVkE=;
+ b=OQkOqpoYKLNmiQzkvxOGyZQhZnztarxwDVG53NG4JeSi/oYpp5wfKMNH824KWVbATJyWeC
+ i7kFAkN/EEMUEf9q8FUeUxI8054J6a9fiZjyiUXr9fXJ5+eNxdUXacjEoLvvm9MuczrtO8
+ vfMVXISZQsc7zy2+XtQCyoLES1vLyD4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-1-HAyij1w_N1ii647t3ps2sg-1; Tue, 23 Feb 2021 16:07:56 -0500
-X-MC-Unique: HAyij1w_N1ii647t3ps2sg-1
+ us-mta-276-TVbmlccvOb6B0ll0BxUn1w-1; Tue, 23 Feb 2021 16:07:29 -0500
+X-MC-Unique: TVbmlccvOb6B0ll0BxUn1w-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
  [10.5.11.14])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DFE5D107ACF5;
- Tue, 23 Feb 2021 21:07:51 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4886B803F59;
+ Tue, 23 Feb 2021 21:07:26 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-114-34.ams2.redhat.com [10.36.114.34])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 437905D9D0;
- Tue, 23 Feb 2021 21:07:41 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id E0FCF5D9D0;
+ Tue, 23 Feb 2021 21:07:16 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
-Subject: [PATCH v12 10/13] vfio/pci: Register and allow DMA FAULT IRQ signaling
-Date: Tue, 23 Feb 2021 22:06:22 +0100
-Message-Id: <20210223210625.604517-11-eric.auger@redhat.com>
+Subject: [PATCH v12 07/13] vfio: Use capability chains to handle device
+ specific irq
+Date: Tue, 23 Feb 2021 22:06:19 +0100
+Message-Id: <20210223210625.604517-8-eric.auger@redhat.com>
 In-Reply-To: <20210223210625.604517-1-eric.auger@redhat.com>
 References: <20210223210625.604517-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -102,66 +103,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Register the VFIO_IRQ_TYPE_NESTED/VFIO_IRQ_SUBTYPE_DMA_FAULT
-IRQ that allows to signal a nested mode DMA fault.
+From: Tina Zhang <tina.zhang@intel.com>
 
+Caps the number of irqs with fixed indexes and uses capability chains
+to chain device specific irqs.
+
+Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
+[Eric: Put cap_offset at the end of the vfio_irq_info struct,
+remove GFX IRQ at the moment and remove any reference to this latter
+in the commit message]
 
 ---
-
-v10 -> v11:
-- the irq now is registered in vfio_pci_dma_fault_init()
-  in case the domain is nested
 ---
- drivers/vfio/pci/vfio_pci.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ include/uapi/linux/vfio.h | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index e6b94bad77da..f3fa6d4318ae 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -396,6 +396,7 @@ vfio_pci_iommu_dev_fault_handler(struct iommu_fault *fault, void *data)
- 		(struct vfio_region_dma_fault *)vdev->fault_pages;
- 	struct iommu_fault *new;
- 	u32 head, tail, size;
-+	int ext_irq_index;
- 	int ret = -EINVAL;
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index bc46e5d6daa4..3688215843fe 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -702,11 +702,27 @@ struct vfio_irq_info {
+ #define VFIO_IRQ_INFO_MASKABLE		(1 << 1)
+ #define VFIO_IRQ_INFO_AUTOMASKED	(1 << 2)
+ #define VFIO_IRQ_INFO_NORESIZE		(1 << 3)
++#define VFIO_IRQ_INFO_FLAG_CAPS		(1 << 4) /* Info supports caps */
+ 	__u32	index;		/* IRQ index */
+ 	__u32	count;		/* Number of IRQs within this index */
++	__u32	cap_offset;	/* Offset within info struct of first cap */
+ };
+ #define VFIO_DEVICE_GET_IRQ_INFO	_IO(VFIO_TYPE, VFIO_BASE + 9)
  
- 	if (WARN_ON(!reg))
-@@ -420,7 +421,19 @@ vfio_pci_iommu_dev_fault_handler(struct iommu_fault *fault, void *data)
- 	ret = 0;
- unlock:
- 	mutex_unlock(&vdev->fault_queue_lock);
--	return ret;
-+	if (ret)
-+		return ret;
++/*
++ * The irq type capability allows IRQs unique to a specific device or
++ * class of devices to be exposed.
++ *
++ * The structures below define version 1 of this capability.
++ */
++#define VFIO_IRQ_INFO_CAP_TYPE      3
 +
-+	ext_irq_index = vfio_pci_get_ext_irq_index(vdev, VFIO_IRQ_TYPE_NESTED,
-+						   VFIO_IRQ_SUBTYPE_DMA_FAULT);
-+	if (ext_irq_index < 0)
-+		return -EINVAL;
++struct vfio_irq_info_cap_type {
++	struct vfio_info_cap_header header;
++	__u32 type;     /* global per bus driver */
++	__u32 subtype;  /* type specific */
++};
 +
-+	mutex_lock(&vdev->igate);
-+	if (vdev->ext_irqs[ext_irq_index].trigger)
-+		eventfd_signal(vdev->ext_irqs[ext_irq_index].trigger, 1);
-+	mutex_unlock(&vdev->igate);
-+	return 0;
- }
+ /**
+  * VFIO_DEVICE_SET_IRQS - _IOW(VFIO_TYPE, VFIO_BASE + 10, struct vfio_irq_set)
+  *
+@@ -808,7 +824,8 @@ enum {
+ 	VFIO_PCI_MSIX_IRQ_INDEX,
+ 	VFIO_PCI_ERR_IRQ_INDEX,
+ 	VFIO_PCI_REQ_IRQ_INDEX,
+-	VFIO_PCI_NUM_IRQS
++	VFIO_PCI_NUM_IRQS = 5	/* Fixed user ABI, IRQ indexes >=5 use   */
++				/* device specific cap to define content */
+ };
  
- #define DMA_FAULT_RING_LENGTH 512
-@@ -475,6 +488,12 @@ static int vfio_pci_dma_fault_init(struct vfio_pci_device *vdev)
- 	if (ret) /* the dma fault region is freed in vfio_pci_disable() */
- 		goto out;
- 
-+	ret = vfio_pci_register_irq(vdev, VFIO_IRQ_TYPE_NESTED,
-+				    VFIO_IRQ_SUBTYPE_DMA_FAULT,
-+				    VFIO_IRQ_INFO_EVENTFD);
-+	if (ret) /* the fault handler is also freed in vfio_pci_disable() */
-+		goto out;
-+
- 	return 0;
- out:
- 	kfree(vdev->fault_pages);
+ /*
 -- 
 2.26.2
 
