@@ -2,67 +2,68 @@ Return-Path: <SRS0=CXUA=H4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5AFC433E9
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0670C433E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F5D764F3F
+	by mail.kernel.org (Postfix) with ESMTPS id 4CC7264F22
 	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F5D764F3F
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CC7264F22
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3D64C4331B;
-	Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OTu6d7W6FN0E; Fri, 26 Feb 2021 20:11:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1DAF4431C4;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1E6054EF49;
 	Fri, 26 Feb 2021 20:11:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 27_L7KvnXn45; Fri, 26 Feb 2021 20:11:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 242584F093;
+	Fri, 26 Feb 2021 20:11:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F0130C000A;
-	Fri, 26 Feb 2021 20:11:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0E99C0014;
+	Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 08A27C0001
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 256F4C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D41F6842DA
+ by smtp1.osuosl.org (Postfix) with ESMTP id 84E5E842D2
  for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id joShjovgZHcv for <iommu@lists.linux-foundation.org>;
- Fri, 26 Feb 2021 20:11:13 +0000 (UTC)
+ with ESMTP id 7HpgwIeAbBkj for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Feb 2021 20:11:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1DB7584336
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:13 +0000 (UTC)
-IronPort-SDR: HECN4T9wPxAjnr7puUr1BeZcyQqZdzulJ7Ij0lgWXeuHck2RvQDkpWdrR2vDsJsBpZTXIipimZ
- G/uk3r6yqouw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="247407438"
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="247407438"
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9F366842DA
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:12 +0000 (UTC)
+IronPort-SDR: zNyHG8nDSqK80jrBtRN9oQdkESIIMTA3BLhx7oiITCy01DJA2IPzq00bkK0OhVXhMYHc6bkZeW
+ b768FOO2pCMA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="247407429"
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="247407429"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Feb 2021 12:11:12 -0800
-IronPort-SDR: u4IAvGdLeToPWo/koT5J5hjXR2dHjNUyI+wV88uEkb9QnkDbyoyO6UoKv2YP3Z7gUMSeRDGQRA
- 2O1bk3wGK+KQ==
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109431"
+ 26 Feb 2021 12:11:11 -0800
+IronPort-SDR: IyZ2IpXRfbmEHcV4hiAMmMvrpklHRgTe7EdusvO1084PNG83I0fduqXETi5E4sUMFXg4iEUdbn
+ akD/3E8MYV3A==
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109420"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
  26 Feb 2021 12:11:11 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [Patch V2 04/13] genirq/proc: Take buslock on affinity write
-Date: Fri, 26 Feb 2021 12:11:08 -0800
-Message-Id: <1614370277-23235-5-git-send-email-megha.dey@intel.com>
+Subject: [Patch V2 02/13] x86/msi: Rename and rework pci_msi_prepare() to
+ cover non-PCI MSI
+Date: Fri, 26 Feb 2021 12:11:06 -0800
+Message-Id: <1614370277-23235-3-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
 References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
@@ -92,66 +93,119 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Until now interrupt chips which support setting affinity are not locking
-the associated bus lock for two reasons:
+Rename it to x86_msi_prepare() and handle the allocation type setup
+depending on the device type.
 
- - All chips which support affinity setting do not use buslock because they
-   just can operated directly on the hardware.
+Add a new arch_msi_prepare define which will be utilized by the upcoming
+device MSI support. Define it to NULL if not provided by an architecture
+in the generic MSI header.
 
- - All chips which use buslock do not support affinity setting because
-   their interrupt chips are not capable. These chips are usually connected
-   over a bus like I2C, SPI etc. and have an interrupt output which is
-   conneted to CPU interrupt of some sort. So there is no way to set the
-   affinity on the chip itself.
-
-Upcoming hardware which is PCIE based sports a non standard MSI(X) variant
-which stores the MSI message in RAM which is associated to e.g. a device
-queue. The device manages this RAM and writes have to be issued via command
-queues or similar mechanisms which is obviously not possible from interrupt
-disabled, raw spinlock held context.
-
-The buslock mechanism of irq chips can be utilized to support that. The
-affinity write to the chip writes to shadow state, marks it pending and the
-irq chip's irq_bus_sync_unlock() callback handles the command queue and
-wait for completion similar to the other chip operations on I2C or SPI
-buses.
-
-Change the locking in irq_set_affinity() to bus_lock/unlock to help with
-that. There are a few other callers than the proc interface, but none of
-them is affected by this change as none of them affects an irq chip with
-bus lock support.
+One arch specific function for MSI support is truly enough.
 
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- kernel/irq/manage.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/msi.h          |  4 +++-
+ arch/x86/kernel/apic/msi.c          | 27 ++++++++++++++++++++-------
+ drivers/pci/controller/pci-hyperv.c |  2 +-
+ include/linux/msi.h                 |  4 ++++
+ 4 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index dec3f73..85ede4e 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -443,16 +443,16 @@ int irq_update_affinity_desc(unsigned int irq,
+diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
+index b85147d..9bd214e 100644
+--- a/arch/x86/include/asm/msi.h
++++ b/arch/x86/include/asm/msi.h
+@@ -6,9 +6,11 @@
  
- int __irq_set_affinity(unsigned int irq, const struct cpumask *mask, bool force)
+ typedef struct irq_alloc_info msi_alloc_info_t;
+ 
+-int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
++int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+ 		    msi_alloc_info_t *arg);
+ 
++#define arch_msi_prepare		x86_msi_prepare
++
+ /* Structs and defines for the X86 specific MSI message format */
+ 
+ typedef struct x86_msi_data {
+diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
+index 44ebe25..84b16c7 100644
+--- a/arch/x86/kernel/apic/msi.c
++++ b/arch/x86/kernel/apic/msi.c
+@@ -153,26 +153,39 @@ static struct irq_chip pci_msi_controller = {
+ 	.flags			= IRQCHIP_SKIP_SET_WAKE,
+ };
+ 
+-int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+-		    msi_alloc_info_t *arg)
++static void pci_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
  {
--	struct irq_desc *desc = irq_to_desc(irq);
-+	struct irq_desc *desc;
- 	unsigned long flags;
- 	int ret;
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct msi_desc *desc = first_pci_msi_entry(pdev);
++	struct msi_desc *desc = first_msi_entry(dev);
  
-+	desc = irq_get_desc_buslock(irq, &flags, IRQ_GET_DESC_CHECK_GLOBAL);
- 	if (!desc)
- 		return -EINVAL;
+-	init_irq_alloc_info(arg, NULL);
+ 	if (desc->msi_attrib.is_msix) {
+ 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSIX;
+ 	} else {
+ 		arg->type = X86_IRQ_ALLOC_TYPE_PCI_MSI;
+ 		arg->flags |= X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
+ 	}
++}
++
++static void dev_msi_prepare(struct device *dev, msi_alloc_info_t *arg)
++{
++	arg->type = X86_IRQ_ALLOC_TYPE_DEV_MSI;
++}
++
++int x86_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
++		    msi_alloc_info_t *arg)
++{
++	init_irq_alloc_info(arg, NULL);
++
++	if (dev_is_pci(dev))
++		pci_msi_prepare(dev, arg);
++	else
++		dev_msi_prepare(dev, arg);
  
--	raw_spin_lock_irqsave(&desc->lock, flags);
- 	ret = irq_set_affinity_locked(irq_desc_get_irq_data(desc), mask, force);
--	raw_spin_unlock_irqrestore(&desc->lock, flags);
-+	irq_put_desc_busunlock(desc, flags);
- 	return ret;
+ 	return 0;
  }
+-EXPORT_SYMBOL_GPL(pci_msi_prepare);
++EXPORT_SYMBOL_GPL(x86_msi_prepare);
  
+ static struct msi_domain_ops pci_msi_domain_ops = {
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= x86_msi_prepare,
+ };
+ 
+ static struct msi_domain_info pci_msi_domain_info = {
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index 27a17a1..ac4fe8b7 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1546,7 +1546,7 @@ static struct irq_chip hv_msi_irq_chip = {
+ };
+ 
+ static struct msi_domain_ops hv_msi_ops = {
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= arch_msi_prepare,
+ 	.msi_free	= hv_msi_free,
+ };
+ 
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index aef35fd..f3e54d2 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -473,4 +473,8 @@ static inline struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+ }
+ #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
+ 
++#ifndef arch_msi_prepare
++# define arch_msi_prepare	NULL
++#endif
++
+ #endif /* LINUX_MSI_H */
 -- 
 2.7.4
 
