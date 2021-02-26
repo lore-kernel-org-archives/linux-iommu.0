@@ -2,113 +2,77 @@ Return-Path: <SRS0=CXUA=H4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-10.6 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17E4C433E0
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 09:36:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E03C433E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 09:43:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 45DEA64EEE
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 09:36:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45DEA64EEE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id CC64964EED
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 09:43:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC64964EED
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D17074330A;
-	Fri, 26 Feb 2021 09:36:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 647356F679;
+	Fri, 26 Feb 2021 09:43:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DIg2uaPKe07a; Fri, 26 Feb 2021 09:36:15 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LtfZQuCbYkJK; Fri, 26 Feb 2021 09:43:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AAE7642FB2;
-	Fri, 26 Feb 2021 09:36:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4B64A6F6A5;
+	Fri, 26 Feb 2021 09:43:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DAA9C000B;
-	Fri, 26 Feb 2021 09:36:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1BFE3C0001
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:36:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1AC84C000B;
+	Fri, 26 Feb 2021 09:43:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CDC22C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:43:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E9FD1431CE
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:36:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B15B64EF90
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:43:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MLmMsFdh9y4N for <iommu@lists.linux-foundation.org>;
- Fri, 26 Feb 2021 09:36:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1KOzFVJbJP-O for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Feb 2021 09:43:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com
- [209.85.166.54])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1BCAC42FB2
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:36:11 +0000 (UTC)
-Received: by mail-io1-f54.google.com with SMTP id z13so8991037iox.8
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 01:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=E8MT/YBSt9+GOAVKSt/z+/x/oAmJs4mba4MVCW+FEPI=;
- b=YlJGaB2HjeORjhsgYOy8pctb9+8JkGl/ZdIRVJcfQxCMoR62lL7XtrY95NgsqhINjE
- lSgvnnp9tfO6u1oKErjW0g+HTDOG3GFiOyn5d4dJiyFIJKbzFBupmPEB/V7jXmUb4d2q
- N9u5qLxflCWFXhFfzUGrtIkZV0aKvT2pOtERk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=E8MT/YBSt9+GOAVKSt/z+/x/oAmJs4mba4MVCW+FEPI=;
- b=JT64vdloWLTWFMKiQKc0HRIQSjVmbIyqPNeuIDb2BCd9kU6vuYANRepUB8S+IZsLe7
- /t4HJx5ZbrTlE2MH/gNQfkW4f3dGuDBQ2FdewIf1vciEr/ZOH0AALZ2XYEl1krjmv/Mx
- Kk/JsRGVXyiFrdE3vC52ICWJqfSSsWEYsKQJjb6/Z76ATxUEBBwp5Y6ncTsZ7Ea6yd0f
- 1o29wwPLX4z4RFAPGPnHBbEQqqe/VmxJzKIVzzgF9zAvIbtQsZloE+LBtlM0ZZ6tHj0C
- CENdCKrrvBpeMi2+Yb8KxfOCTUQe2h4ndss67574nfWG5mzdnyRqmCjCjTE6l2aXl8r1
- x7jQ==
-X-Gm-Message-State: AOAM530HxxQoAR14RXHQmz4u/zp7SUuAj3LCCQ3WMFa0/SZ8ldcLtto6
- 1S6C1/xLyPLgI4ykodY2TZSb88sHb1rdZQ==
-X-Google-Smtp-Source: ABdhPJyWgrsIzaIiQ5YGYWD4CzTfvx7V73CY6jFylkt/217Rg1OcR2r/k1v15Os95EyHJ666Stig4w==
-X-Received: by 2002:a02:7119:: with SMTP id n25mr1131926jac.48.1614332169771; 
- Fri, 26 Feb 2021 01:36:09 -0800 (PST)
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com.
- [209.85.166.42])
- by smtp.gmail.com with ESMTPSA id i3sm4276673ilm.56.2021.02.26.01.36.08
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 26 Feb 2021 01:36:09 -0800 (PST)
-Received: by mail-io1-f42.google.com with SMTP id i8so8994738iog.7
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 01:36:08 -0800 (PST)
-X-Received: by 2002:a02:b61a:: with SMTP id h26mr2057255jam.90.1614332168202; 
- Fri, 26 Feb 2021 01:36:08 -0800 (PST)
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 01D054EF53
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 09:43:42 +0000 (UTC)
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Dn4S81Wj2z16D0R;
+ Fri, 26 Feb 2021 17:42:00 +0800 (CST)
+Received: from [127.0.0.1] (10.40.188.87) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.498.0; Fri, 26 Feb 2021
+ 17:43:27 +0800
+Subject: Re: [PATCH v12 10/10] iommu/arm-smmu-v3: Add stall support for
+ platform devices
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20210127154322.3959196-1-jean-philippe@linaro.org>
+ <20210127154322.3959196-11-jean-philippe@linaro.org>
+ <8adc79cc-7afb-dfe8-4f7b-07fa6dc5b905@hisilicon.com>
+ <YBfij71tyYvh8LhB@myrica>
+From: Zhou Wang <wangzhou1@hisilicon.com>
+Message-ID: <fabffd28-7497-2758-c2bf-9d31aa562085@hisilicon.com>
+Date: Fri, 26 Feb 2021 17:43:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-References: <20210209062131.2300005-1-tientzu@chromium.org>
- <20210209062131.2300005-13-tientzu@chromium.org>
- <CALiNf298+DLjTK6ALe0mYrRuCP_LtztMGuQQCS90ubDctbS0kw@mail.gmail.com>
- <20210226051740.GB2072@lst.de>
-In-Reply-To: <20210226051740.GB2072@lst.de>
-From: Claire Chang <tientzu@chromium.org>
-Date: Fri, 26 Feb 2021 17:35:57 +0800
-X-Gmail-Original-Message-ID: <CALiNf29tSQ1R8zh35neQWuWqDPek+Jr8QzyPQQvTsW2cZBMEUw@mail.gmail.com>
-Message-ID: <CALiNf29tSQ1R8zh35neQWuWqDPek+Jr8QzyPQQvTsW2cZBMEUw@mail.gmail.com>
-Subject: Re: [PATCH v4 12/14] swiotlb: Add restricted DMA alloc/free support.
-To: Christoph Hellwig <hch@lst.de>
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- Rob Herring <robh+dt@kernel.org>, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YBfij71tyYvh8LhB@myrica>
+X-Originating-IP: [10.40.188.87]
+X-CFilter-Loop: Reflected
+Cc: devicetree@vger.kernel.org, kevin.tian@intel.com,
+ linux-acpi@vger.kernel.org, robin.murphy@arm.com, sudeep.holla@arm.com,
+ rjw@rjwysocki.net, vivek.gautam@arm.com, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, linux-accelerators@lists.ozlabs.org, guohanjun@huawei.com,
+ zhangfei.gao@linaro.org, will@kernel.org, linux-arm-kernel@lists.infradead.org,
+ lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,27 +90,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Feb 26, 2021 at 1:17 PM Christoph Hellwig <hch@lst.de> wrote:
->
-> On Fri, Feb 26, 2021 at 12:17:50PM +0800, Claire Chang wrote:
-> > Do you think I should fix this and rebase on the latest linux-next
-> > now? I wonder if there are more factor and clean up coming and I
-> > should wait after that.
->
-> Here is my preferred plan:
->
->  1) wait for my series to support the min alignment in swiotlb to
->     land in Linus tree
->  2) I'll resend my series with the further swiotlb cleanup and
->     refactoring, which includes a slightly rebased version of your
->     patch to add the io_tlb_mem structure
->  3) resend your series on top of that as a baseline
->
-> This is my current WIP tree for 2:
->
->   http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-struct
+On 2021/2/1 19:14, Jean-Philippe Brucker wrote:
+> Hi Zhou,
+> 
+> On Mon, Feb 01, 2021 at 09:18:42AM +0800, Zhou Wang wrote:
+>>> @@ -1033,8 +1076,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>>>  			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
+>>>  			CTXDESC_CD_0_V;
+>>>  
+>>> -		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
+>>> -		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+>>> +		if (smmu_domain->stall_enabled)
+>>
+>> Could we add ssid checking here? like: if (smmu_domain->stall_enabled && ssid).
+>> The reason is if not CD.S will also be set when ssid is 0, which is not needed.
+> 
+> Some drivers may want to get stall events on SSID 0:
+> https://lore.kernel.org/kvm/20210125090402.1429-1-lushenming@huawei.com/#t
+> 
+> Are you seeing an issue with stall events on ssid 0?  Normally there
+> shouldn't be any fault on this context, but if they happen and no handler
+> is registered, the SMMU driver will just abort them and report them like a
+> non-stall event.
 
-Sounds good to me. Thanks!
+Hi Jean,
+
+I notice that there is problem. In my case, I expect that CD0 is for kernel
+and other CDs are for user space. Normally there shouldn't be any fault in
+kernel, however, we have RAS case which is for some reason there may has
+invalid address access from hardware device.
+
+So at least there are two different address access failures: 1. hardware RAS problem;
+2. software fault fail(e.g. kill process when doing DMA). Handlings for these
+two are different: for 1, we should reset hardware device; for 2, stop related
+DMA is enough.
+
+Currently if SMMU returns the same signal(by SMMU resume abort), master device
+driver can not tell these two kinds of cases.
+
+From the basic concept, if a CD is used for kernel, its S bit should not be set.
+How about we add iommu domain check here too, if DMA domain we do not set S bit for
+CD0, if unmanaged domain we set S bit for all CDs?
+
+Thanks,
+Zhou
+
+> 
+> Thanks,
+> Jean
+> 
+> .
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
