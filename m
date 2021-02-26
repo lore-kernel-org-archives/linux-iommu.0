@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AD9C4332B
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:21 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17BBC433E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:22 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A0BC64F40
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A0BC64F40
+	by mail.kernel.org (Postfix) with ESMTPS id 67AA864F1F
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67AA864F1F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D9CEF6F9C0;
+	by smtp1.osuosl.org (Postfix) with ESMTP id E555384347;
 	Fri, 26 Feb 2021 20:11:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a6G5-y9kpq9d; Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LwFJDMnR1sKt; Fri, 26 Feb 2021 20:11:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A11AE6F9BE;
+	by smtp1.osuosl.org (Postfix) with ESMTP id C8F1A8434D;
 	Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DA52DC0017;
-	Fri, 26 Feb 2021 20:11:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B8622C0013
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 244C7C0001;
+	Fri, 26 Feb 2021 20:11:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18487C000A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9BAC54F0A7
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:16 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7C96C8433C
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PWZehSgfOuDy for <iommu@lists.linux-foundation.org>;
- Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xXQv8QMbLTsz for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Feb 2021 20:11:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7135D4A053
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
-IronPort-SDR: Rd86kw2Ix7+zD/cX3ItxfK/zAgywGNKnr6xkObiymg1AWeBN+oTU9ZSZjtLggPKNFzIU4+BOJr
- nOBsa1IwsGTg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="186039452"
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="186039452"
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DE00784314
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:12 +0000 (UTC)
+IronPort-SDR: OgCCef02FNxveIBK1DTy7XbhR6t7fDTNeE0rt7u4//jmYwt2zbqrDnjR2e/oICUbrCHJQB4dVz
+ ohf21g0dvVlw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="247407434"
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="247407434"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Feb 2021 12:11:14 -0800
-IronPort-SDR: Yo/KNtvXneOxHD6NG7HH8FE9wVW+KzGpM+KyH432qTshqa1T8Sq2664sNn9RpZibK33r8a5KZX
- ELNvHeW965Rw==
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109452"
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Feb 2021 12:11:11 -0800
+IronPort-SDR: 9a5BHwtORTSc9pmdEveYrYSpW5OSc02+TG8BWYRk565yyJcLKsOy5Z/u0qzo+h2HBNK6ChRZKM
+ xUhEmdpFHWjQ==
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109427"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 26 Feb 2021 12:11:14 -0800
+ 26 Feb 2021 12:11:11 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [Patch V2 10/13] iommu: Add capability IOMMU_CAP_VIOMMU_HINT
-Date: Fri, 26 Feb 2021 12:11:14 -0800
-Message-Id: <1614370277-23235-11-git-send-email-megha.dey@intel.com>
+Subject: [Patch V2 03/13] platform-msi: Provide default irq_chip:: Ack
+Date: Fri, 26 Feb 2021 12:11:07 -0800
+Message-Id: <1614370277-23235-4-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
 References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
@@ -90,104 +90,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Some IOMMU specification defines some kind of hint mechanism, through
-which BIOS can imply that OS runs in a virtualized environment. For
-example, the caching mode defined in VT-d spec and NpCache capability
-defined in the AMD IOMMU specification. This hint could also be used
-outside of the IOMMU subsystem, where it could be used with other known
-means (CPUID, smbios) to sense whether Linux is running in a virtualized
-environment. Add a capability bit so that it could be used there.
+For the upcoming device MSI support it's required to have a default
+irq_chip::ack implementation (irq_chip_ack_parent) so the drivers do not
+need to care.
 
-Cc: Joerg Roedel <joro@8bytes.org>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- drivers/iommu/amd/iommu.c    | 2 ++
- drivers/iommu/intel/iommu.c  | 5 +++++
- drivers/iommu/virtio-iommu.c | 9 +++++++++
- include/linux/iommu.h        | 2 ++
- 4 files changed, 18 insertions(+)
+ drivers/base/platform-msi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a69a8b5..a912318 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2140,6 +2140,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- 		return (irq_remapping_enabled == 1);
- 	case IOMMU_CAP_NOEXEC:
- 		return false;
-+	case IOMMU_CAP_VIOMMU_HINT:
-+		return amd_iommu_np_cache;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ee09323..55fa198 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -294,6 +294,7 @@ static inline void context_clear_entry(struct context_entry *context)
-  */
- static struct dmar_domain *si_domain;
- static int hw_pass_through = 1;
-+static int intel_caching_mode;
- 
- #define for_each_domain_iommu(idx, domain)			\
- 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
-@@ -3253,6 +3254,8 @@ static int __init init_dmars(void)
- 
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through = 0;
-+		if (cap_caching_mode(iommu->cap))
-+			intel_caching_mode = 1;
- 		intel_svm_check(iommu);
- 	}
- 
-@@ -5113,6 +5116,8 @@ static bool intel_iommu_capable(enum iommu_cap cap)
- 		return domain_update_iommu_snooping(NULL) == 1;
- 	if (cap == IOMMU_CAP_INTR_REMAP)
- 		return irq_remapping_enabled == 1;
-+	if (cap == IOMMU_CAP_VIOMMU_HINT)
-+		return intel_caching_mode;
- 
- 	return false;
- }
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 2bfdd57..e4941ca 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -931,7 +931,16 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
- }
- 
-+static bool viommu_capable(enum iommu_cap cap)
-+{
-+	if (cap == IOMMU_CAP_VIOMMU_HINT)
-+		return true;
-+
-+	return false;
-+}
-+
- static struct iommu_ops viommu_ops = {
-+	.capable		= viommu_capable,
- 	.domain_alloc		= viommu_domain_alloc,
- 	.domain_free		= viommu_domain_free,
- 	.attach_dev		= viommu_attach_dev,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e7fe51..9d0ade4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -94,6 +94,8 @@ enum iommu_cap {
- 					   transactions */
- 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
- 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
-+	IOMMU_CAP_VIOMMU_HINT,		/* IOMMU can detect a hit for running in
-+					   VM */
- };
- 
- /*
+diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
+index 2c1e2e0..9d9ccfc 100644
+--- a/drivers/base/platform-msi.c
++++ b/drivers/base/platform-msi.c
+@@ -101,6 +101,8 @@ static void platform_msi_update_chip_ops(struct msi_domain_info *info)
+ 		chip->irq_mask = irq_chip_mask_parent;
+ 	if (!chip->irq_unmask)
+ 		chip->irq_unmask = irq_chip_unmask_parent;
++	if (!chip->irq_ack)
++		chip->irq_ack = irq_chip_ack_parent;
+ 	if (!chip->irq_eoi)
+ 		chip->irq_eoi = irq_chip_eoi_parent;
+ 	if (!chip->irq_set_affinity)
 -- 
 2.7.4
 
