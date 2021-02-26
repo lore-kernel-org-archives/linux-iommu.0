@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D61C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F3FC433DB
 	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C2A1864F1F
-	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2A1864F1F
+	by mail.kernel.org (Postfix) with ESMTPS id 4BDB464F1F
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 20:11:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BDB464F1F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 772016F9D4;
-	Fri, 26 Feb 2021 20:11:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B17024F0AC;
+	Fri, 26 Feb 2021 20:11:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XcbR0WAf7-JD; Fri, 26 Feb 2021 20:11:23 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gsREgNnxFvQ0; Fri, 26 Feb 2021 20:11:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E55AC6F9C6;
-	Fri, 26 Feb 2021 20:11:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DF5944F0C1;
+	Fri, 26 Feb 2021 20:11:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9FC1EC0019;
-	Fri, 26 Feb 2021 20:11:22 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B2CFC0001
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8590C0016;
+	Fri, 26 Feb 2021 20:11:21 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3279DC0013
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 553F284346
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 770434B799
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HAMRSJY2BDEW for <iommu@lists.linux-foundation.org>;
- Fri, 26 Feb 2021 20:11:14 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GxIjfaAc6Zsd for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Feb 2021 20:11:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6AB11842D2
- for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:14 +0000 (UTC)
-IronPort-SDR: 4pFSKgnQJbIbIt4g9k2gqUmmTBloFKyeAdBM2l2t8fglunyL9TkGI8rQ+qS2ZggSZ5dge2I6yV
- kTNCWO049eOw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="247407451"
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="247407451"
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DCE964F07A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 20:11:15 +0000 (UTC)
+IronPort-SDR: JqQvioPIA2EcAHV5xcpc9eOfrMQfwLuvUl7tT0dVrW1pREavaw5nK0FvedlaWfoTT6raozMcJS
+ qGSoodUrYegA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9907"; a="186039461"
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="186039461"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Feb 2021 12:11:13 -0800
-IronPort-SDR: 2O8Bb0nl9sJ8koTH0I8Pftu3UbS4RCIhJBkkw7Eheb1P/ldui9Khm3YVSEW/cT8K8rEgkdiV+6
- XwmX7rteDhWw==
-X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109439"
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Feb 2021 12:11:15 -0800
+IronPort-SDR: l8rKYvxAd3WhPCjppPB1z+QYNNOCIF1Jf/BzlyVS9i5076WJM/YC9rcYScxQhFw4ErgXPe4sxP
+ uKISFwCdieeQ==
+X-IronPort-AV: E=Sophos;i="5.81,209,1610438400"; d="scan'208";a="405109460"
 Received: from megha-z97x-ud7-th.sc.intel.com ([143.183.85.154])
  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA;
- 26 Feb 2021 12:11:12 -0800
+ 26 Feb 2021 12:11:14 -0800
 From: Megha Dey <megha.dey@intel.com>
 To: tglx@linutronix.de
-Subject: [Patch V2 06/13] platform-msi: Add device MSI infrastructure
-Date: Fri, 26 Feb 2021 12:11:10 -0800
-Message-Id: <1614370277-23235-7-git-send-email-megha.dey@intel.com>
+Subject: [Patch V2 12/13] irqchip: Add IMS (Interrupt Message Store) driver
+Date: Fri, 26 Feb 2021 12:11:16 -0800
+Message-Id: <1614370277-23235-13-git-send-email-megha.dey@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
 References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
@@ -90,247 +90,358 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thomas Gleixner <tglx@linutronix.de>
+Generic IMS(Interrupt Message Store) irq chips and irq domain
+implementations for IMS based devices which store the interrupt messages
+in an array in device memory.
 
-Add device specific MSI domain infrastructure for devices which have their
-own resource management and interrupt chip. These devices are not related
-to PCI and contrary to platform MSI they do not share a common resource and
-interrupt chip. They provide their own domain specific resource management
-and interrupt chip.
+Allocation and freeing of interrupts happens via the generic
+msi_domain_alloc/free_irqs() interface. No special purpose IMS magic
+required as long as the interrupt domain is stored in the underlying
+device struct. The irq_set_auxdata() is used to program the pasid into
+the IMS entry.
 
-This utilizes the new alloc/free override in a non evil way which avoids
-having yet another set of specialized alloc/free functions. Just using
-msi_domain_alloc/free_irqs() is sufficient
-
-While initially it was suggested and tried to piggyback device MSI on
-platform MSI, the better variant is to reimplement platform MSI on top of
-device MSI.
+[Megha: Fixed compile time errors
+        Added necessary dependencies to IMS_MSI_ARRAY config
+        Fixed polarity of IMS_VECTOR_CTRL
+        Added reads after writes to flush writes to device
+        Added set_desc ops to IMS msi domain ops
+        Tested the IMS infrastructure with the IDXD driver]
 
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Megha Dey <megha.dey@intel.com>
 ---
- drivers/base/platform-msi.c | 131 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/irqdomain.h   |   1 +
- include/linux/msi.h         |  24 ++++++++
- kernel/irq/Kconfig          |   4 ++
- 4 files changed, 160 insertions(+)
+ drivers/irqchip/Kconfig             |  14 +++
+ drivers/irqchip/Makefile            |   1 +
+ drivers/irqchip/irq-ims-msi.c       | 211 ++++++++++++++++++++++++++++++++++++
+ include/linux/irqchip/irq-ims-msi.h |  68 ++++++++++++
+ 4 files changed, 294 insertions(+)
+ create mode 100644 drivers/irqchip/irq-ims-msi.c
+ create mode 100644 include/linux/irqchip/irq-ims-msi.h
 
-diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
-index 9d9ccfc..6127b3b 100644
---- a/drivers/base/platform-msi.c
-+++ b/drivers/base/platform-msi.c
-@@ -419,3 +419,134 @@ int platform_msi_domain_alloc(struct irq_domain *domain, unsigned int virq,
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index e74fa20..2fb0c24 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -586,4 +586,18 @@ config MST_IRQ
+ 	help
+ 	  Support MStar Interrupt Controller.
  
- 	return err;
- }
++config IMS_MSI
++	depends on PCI
++	select DEVICE_MSI
++	bool
 +
-+#ifdef CONFIG_DEVICE_MSI
++config IMS_MSI_ARRAY
++	bool "IMS Interrupt Message Store MSI controller for device memory storage arrays"
++	depends on PCI
++	select IMS_MSI
++	select GENERIC_MSI_IRQ_DOMAIN
++	help
++	  Support for IMS Interrupt Message Store MSI controller
++	  with IMS slot storage in a slot array in device memory
++
+ endmenu
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index c59b95a..e903201 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -113,3 +113,4 @@ obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
+ obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
+ obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
+ obj-$(CONFIG_MACH_REALTEK_RTL)		+= irq-realtek-rtl.o
++obj-$(CONFIG_IMS_MSI)			+= irq-ims-msi.o
+diff --git a/drivers/irqchip/irq-ims-msi.c b/drivers/irqchip/irq-ims-msi.c
+new file mode 100644
+index 0000000..fa23207
+--- /dev/null
++++ b/drivers/irqchip/irq-ims-msi.c
+@@ -0,0 +1,211 @@
++// SPDX-License-Identifier: GPL-2.0
++// (C) Copyright 2021 Thomas Gleixner <tglx@linutronix.de>
 +/*
-+ * Device specific MSI domain infrastructure for devices which have their
-+ * own resource management and interrupt chip. These devices are not
-+ * related to PCI and contrary to platform MSI they do not share a common
-+ * resource and interrupt chip. They provide their own domain specific
-+ * resource management and interrupt chip.
++ * Shared interrupt chips and irq domains for IMS devices
 + */
++#include <linux/device.h>
++#include <linux/slab.h>
++#include <linux/msi.h>
++#include <linux/irq.h>
++#include <linux/irqdomain.h>
 +
-+static void device_msi_free_msi_entries(struct device *dev)
-+{
-+	struct list_head *msi_list = dev_to_msi_list(dev);
-+	struct msi_desc *entry, *tmp;
++#include <linux/irqchip/irq-ims-msi.h>
 +
-+	list_for_each_entry_safe(entry, tmp, msi_list, list) {
-+		list_del(&entry->list);
-+		free_msi_entry(entry);
-+	}
-+}
++#ifdef CONFIG_IMS_MSI_ARRAY
 +
-+/**
-+ * device_msi_free_irqs - Free MSI interrupts assigned to  a device
-+ * @dev:	Pointer to the device
-+ *
-+ * Frees the interrupt and the MSI descriptors.
-+ */
-+static void device_msi_free_irqs(struct irq_domain *domain, struct device *dev)
-+{
-+	__msi_domain_free_irqs(domain, dev);
-+	device_msi_free_msi_entries(dev);
-+}
-+
-+/**
-+ * device_msi_alloc_irqs - Allocate MSI interrupts for a device
-+ * @dev:	Pointer to the device
-+ * @nvec:	Number of vectors
-+ *
-+ * Allocates the required number of MSI descriptors and the corresponding
-+ * interrupt descriptors.
-+ */
-+static int device_msi_alloc_irqs(struct irq_domain *domain, struct device *dev, int nvec)
-+{
-+	int i, ret = -ENOMEM;
-+
-+	for (i = 0; i < nvec; i++) {
-+		struct msi_desc *entry = alloc_msi_entry(dev, 1, NULL);
-+
-+		if (!entry)
-+			goto fail;
-+		list_add_tail(&entry->list, dev_to_msi_list(dev));
-+	}
-+
-+	ret = __msi_domain_alloc_irqs(domain, dev, nvec);
-+	if (!ret)
-+		return 0;
-+fail:
-+	device_msi_free_msi_entries(dev);
-+	return ret;
-+}
-+
-+static void device_msi_update_dom_ops(struct msi_domain_info *info)
-+{
-+	if (!info->ops->domain_alloc_irqs)
-+		info->ops->domain_alloc_irqs = device_msi_alloc_irqs;
-+	if (!info->ops->domain_free_irqs)
-+		info->ops->domain_free_irqs = device_msi_free_irqs;
-+	if (!info->ops->msi_prepare)
-+		info->ops->msi_prepare = arch_msi_prepare;
-+}
-+
-+/**
-+ * device_msi_create_msi_irq_domain - Create an irq domain for devices
-+ * @fwnode:	Firmware node of the interrupt controller
-+ * @info:	MSI domain info to configure the new domain
-+ * @parent:	Parent domain
-+ */
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent)
-+{
-+	struct irq_domain *domain;
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
-+		platform_msi_update_chip_ops(info);
-+
-+	if (info->flags & MSI_FLAG_USE_DEF_DOM_OPS)
-+		device_msi_update_dom_ops(info);
-+
-+	msi_domain_set_default_info_flags(info);
-+
-+	domain = msi_create_irq_domain(fn, info, parent);
-+	if (domain)
-+		irq_domain_update_bus_token(domain, DOMAIN_BUS_DEVICE_MSI);
-+	return domain;
-+}
-+
-+#ifdef CONFIG_PCI
-+#include <linux/pci.h>
-+
-+/**
-+ * pci_subdevice_msi_create_irq_domain - Create an irq domain for subdevices
-+ * @pdev:	Pointer to PCI device for which the subdevice domain is created
-+ * @info:	MSI domain info to configure the new domain
-+ */
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info)
-+{
-+	struct irq_domain *domain, *pdev_msi;
-+	struct fwnode_handle *fn;
-+
-+	/*
-+	 * Retrieve the MSI domain of the underlying PCI device's MSI
-+	 * domain. The PCI device domain's parent domain is also the parent
-+	 * domain of the new subdevice domain.
-+	 */
-+	pdev_msi = dev_get_msi_domain(&pdev->dev);
-+	if (!pdev_msi)
-+		return NULL;
-+
-+	fn = irq_domain_alloc_named_fwnode(dev_name(&pdev->dev));
-+	if (!fn)
-+		return NULL;
-+	domain = device_msi_create_irq_domain(fn, info, pdev_msi->parent);
-+	if (!domain)
-+		irq_domain_free_fwnode(fn);
-+	return domain;
-+}
-+EXPORT_SYMBOL_GPL(pci_subdevice_msi_create_irq_domain);
-+#endif /* CONFIG_PCI */
-+#endif /* CONFIG_DEVICE_MSI */
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index 42d1968..06c88ba 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -85,6 +85,7 @@ enum irq_domain_bus_token {
- 	DOMAIN_BUS_TI_SCI_INTA_MSI,
- 	DOMAIN_BUS_WAKEUP,
- 	DOMAIN_BUS_VMD_MSI,
-+	DOMAIN_BUS_DEVICE_MSI,
- };
- 
- /**
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index f6e52de..46e879c 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -95,6 +95,18 @@ struct ti_sci_inta_msi_desc {
- };
- 
- /**
-+ * device_msi_desc - Device MSI specific MSI descriptor data
-+ * @priv:		Pointer to device specific private data
-+ * @priv_iomem:		Pointer to device specific private io memory
-+ * @hwirq:		The hardware irq number in the device domain
-+ */
-+struct device_msi_desc {
-+	void		*priv;
-+	void __iomem	*priv_iomem;
-+	u16		hwirq;
++struct ims_array_data {
++	struct ims_array_info	info;
++	unsigned long		map[0];
 +};
 +
++static inline void iowrite32_and_flush(u32 value, void __iomem *addr)
++{
++	iowrite32(value, addr);
++	ioread32(addr);
++}
++
++static void ims_array_mask_irq(struct irq_data *data)
++{
++	struct msi_desc *desc = irq_data_get_msi_desc(data);
++	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
++	u32 __iomem *ctrl = &slot->ctrl;
++
++	iowrite32_and_flush(ioread32(ctrl) | IMS_CTRL_VECTOR_MASKBIT, ctrl);
++}
++
++static void ims_array_unmask_irq(struct irq_data *data)
++{
++	struct msi_desc *desc = irq_data_get_msi_desc(data);
++	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
++	u32 __iomem *ctrl = &slot->ctrl;
++
++	iowrite32_and_flush(ioread32(ctrl) & ~IMS_CTRL_VECTOR_MASKBIT, ctrl);
++}
++
++static void ims_array_write_msi_msg(struct irq_data *data, struct msi_msg *msg)
++{
++	struct msi_desc *desc = irq_data_get_msi_desc(data);
++	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
++
++	iowrite32(msg->address_lo, &slot->address_lo);
++	iowrite32(msg->address_hi, &slot->address_hi);
++	iowrite32_and_flush(msg->data, &slot->data);
++}
++
++static int ims_array_set_auxdata(struct irq_data *data, unsigned int which,
++				 u64 auxval)
++{
++	struct msi_desc *desc = irq_data_get_msi_desc(data);
++	struct ims_slot __iomem *slot = desc->device_msi.priv_iomem;
++	u32 val, __iomem *ctrl = &slot->ctrl;
++
++	if (which != IMS_AUXDATA_CONTROL_WORD)
++		return -EINVAL;
++	if (auxval & ~(u64)IMS_CONTROL_WORD_AUXMASK)
++		return -EINVAL;
++
++	val = ioread32(ctrl) & IMS_CONTROL_WORD_IRQMASK;
++	iowrite32_and_flush(val | (u32)auxval, ctrl);
++	return 0;
++}
++
++static const struct irq_chip ims_array_msi_controller = {
++	.name			= "IMS",
++	.irq_mask		= ims_array_mask_irq,
++	.irq_unmask		= ims_array_unmask_irq,
++	.irq_write_msi_msg	= ims_array_write_msi_msg,
++	.irq_set_auxdata	= ims_array_set_auxdata,
++	.irq_retrigger		= irq_chip_retrigger_hierarchy,
++	.flags			= IRQCHIP_SKIP_SET_WAKE,
++};
++
++static void ims_array_reset_slot(struct ims_slot __iomem *slot)
++{
++	iowrite32(0, &slot->address_lo);
++	iowrite32(0, &slot->address_hi);
++	iowrite32(0, &slot->data);
++	iowrite32_and_flush(IMS_CTRL_VECTOR_MASKBIT, &slot->ctrl);
++}
++
++static void ims_array_free_msi_store(struct irq_domain *domain,
++				     struct device *dev)
++{
++	struct msi_domain_info *info = domain->host_data;
++	struct ims_array_data *ims = info->data;
++	struct msi_desc *entry;
++
++	for_each_msi_entry(entry, dev) {
++		if (entry->device_msi.priv_iomem) {
++			clear_bit(entry->device_msi.hwirq, ims->map);
++			ims_array_reset_slot(entry->device_msi.priv_iomem);
++			entry->device_msi.priv_iomem = NULL;
++			entry->device_msi.hwirq = 0;
++		}
++	}
++}
++
++static int ims_array_alloc_msi_store(struct irq_domain *domain,
++				     struct device *dev, int nvec)
++{
++	struct msi_domain_info *info = domain->host_data;
++	struct ims_array_data *ims = info->data;
++	struct msi_desc *entry;
++
++	for_each_msi_entry(entry, dev) {
++		unsigned int idx;
++
++		idx = find_first_zero_bit(ims->map, ims->info.max_slots);
++		if (idx >= ims->info.max_slots)
++			goto fail;
++		set_bit(idx, ims->map);
++		entry->device_msi.priv_iomem = &ims->info.slots[idx];
++		ims_array_reset_slot(entry->device_msi.priv_iomem);
++		entry->device_msi.hwirq = idx;
++	}
++	return 0;
++
++fail:
++	ims_array_free_msi_store(domain, dev);
++	return -ENOSPC;
++}
++
++struct ims_array_domain_template {
++	struct msi_domain_ops	ops;
++	struct msi_domain_info	info;
++};
++
++static void ims_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
++{
++	arg->desc = desc;
++	arg->hwirq = desc->device_msi.hwirq;
++}
++
++static const struct ims_array_domain_template ims_array_domain_template = {
++	.ops = {
++		.msi_alloc_store	= ims_array_alloc_msi_store,
++		.msi_free_store		= ims_array_free_msi_store,
++		.set_desc               = ims_set_desc,
++	},
++	.info = {
++		.flags		= MSI_FLAG_USE_DEF_DOM_OPS |
++				  MSI_FLAG_USE_DEF_CHIP_OPS,
++		.handler	= handle_edge_irq,
++		.handler_name	= "edge",
++	},
++};
++
++struct irq_domain *
++pci_ims_array_create_msi_irq_domain(struct pci_dev *pdev,
++				    struct ims_array_info *ims_info)
++{
++	struct ims_array_domain_template *info;
++	struct ims_array_data *data;
++	struct irq_domain *domain;
++	struct irq_chip *chip;
++	unsigned int size;
++
++	/* Allocate new domain storage */
++	info = kmemdup(&ims_array_domain_template,
++		       sizeof(ims_array_domain_template), GFP_KERNEL);
++	if (!info)
++		return NULL;
++	/* Link the ops */
++	info->info.ops = &info->ops;
++
++	/* Allocate ims_info along with the bitmap */
++	size = sizeof(*data);
++	size += BITS_TO_LONGS(ims_info->max_slots) * sizeof(unsigned long);
++	data = kzalloc(size, GFP_KERNEL);
++	if (!data)
++		goto err_info;
++
++	data->info = *ims_info;
++	info->info.data = data;
++
++	/*
++	 * Allocate an interrupt chip because the core needs to be able to
++	 * update it with default callbacks.
++	 */
++	chip = kmemdup(&ims_array_msi_controller,
++		       sizeof(ims_array_msi_controller), GFP_KERNEL);
++	if (!chip)
++		goto err_data;
++	info->info.chip = chip;
++
++	domain = pci_subdevice_msi_create_irq_domain(pdev, &info->info);
++	if (!domain)
++		goto err_chip;
++
++	return domain;
++
++err_chip:
++	kfree(chip);
++err_data:
++	kfree(data);
++err_info:
++	kfree(info);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(pci_ims_array_create_msi_irq_domain);
++
++#endif /* CONFIG_IMS_MSI_ARRAY */
+diff --git a/include/linux/irqchip/irq-ims-msi.h b/include/linux/irqchip/irq-ims-msi.h
+new file mode 100644
+index 0000000..9ba767f
+--- /dev/null
++++ b/include/linux/irqchip/irq-ims-msi.h
+@@ -0,0 +1,68 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* (C) Copyright 2021 Thomas Gleixner <tglx@linutronix.de> */
++
++#ifndef _LINUX_IRQCHIP_IRQ_IMS_MSI_H
++#define _LINUX_IRQCHIP_IRQ_IMS_MSI_H
++
++#include <linux/types.h>
++#include <linux/bits.h>
++
 +/**
-  * struct msi_desc - Descriptor structure for MSI based interrupts
-  * @list:	List head for management
-  * @irq:	The base interrupt number
-@@ -166,6 +178,7 @@ struct msi_desc {
- 		struct platform_msi_desc platform;
- 		struct fsl_mc_msi_desc fsl_mc;
- 		struct ti_sci_inta_msi_desc inta;
-+		struct device_msi_desc device_msi;
- 	};
- };
- 
-@@ -457,6 +470,17 @@ void *platform_msi_get_host_data(struct irq_domain *domain);
- void msi_domain_set_default_info_flags(struct msi_domain_info *info);
- #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
- 
-+#ifdef CONFIG_DEVICE_MSI
-+struct irq_domain *device_msi_create_irq_domain(struct fwnode_handle *fn,
-+						struct msi_domain_info *info,
-+						struct irq_domain *parent);
++ * ims_hw_slot - The hardware layout of an IMS based MSI message
++ * @address_lo:	Lower 32bit address
++ * @address_hi:	Upper 32bit address
++ * @data:	Message data
++ * @ctrl:	Control word
++ *
++ * This structure is used by both the device memory array and the queue
++ * memory variants of IMS.
++ */
++struct ims_slot {
++	u32	address_lo;
++	u32	address_hi;
++	u32	data;
++	u32	ctrl;
++} __packed;
 +
-+# ifdef CONFIG_PCI
-+struct irq_domain *pci_subdevice_msi_create_irq_domain(struct pci_dev *pdev,
-+						       struct msi_domain_info *info);
-+# endif
-+#endif /* CONFIG_DEVICE_MSI */
++/*
++ * The IMS control word utilizes bit 0-2 for interrupt control. The remaining
++ * bits can contain auxiliary data.
++ */
++#define IMS_CONTROL_WORD_IRQMASK	GENMASK(2, 0)
++#define IMS_CONTROL_WORD_AUXMASK	GENMASK(31, 3)
 +
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
- void pci_msi_domain_write_msg(struct irq_data *irq_data, struct msi_msg *msg);
- struct irq_domain *pci_msi_create_irq_domain(struct fwnode_handle *fwnode,
-diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-index d79ef24..7223327 100644
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -89,6 +89,10 @@ config GENERIC_MSI_IRQ_DOMAIN
- 	select IRQ_DOMAIN_HIERARCHY
- 	select GENERIC_MSI_IRQ
- 
-+config DEVICE_MSI
-+	bool
-+	select GENERIC_MSI_IRQ_DOMAIN
++/* Auxiliary control word data related defines */
++enum {
++	IMS_AUXDATA_CONTROL_WORD,
++};
 +
- config IRQ_MSI_IOMMU
- 	bool
- 
++/* Bit to mask the interrupt in ims_hw_slot::ctrl */
++#define IMS_CTRL_VECTOR_MASKBIT		BIT(0)
++#define IMS_CTRL_PASID_ENABLE           BIT(3)
++#define IMS_CTRL_PASID_SHIFT            12
++
++/* Set pasid and enable bit for the IMS entry */
++static inline u32 ims_ctrl_pasid_aux(unsigned int pasid, bool enable)
++{
++	u32 auxval = pasid << IMS_CTRL_PASID_SHIFT;
++
++	return enable ? auxval | IMS_CTRL_PASID_ENABLE : auxval;
++}
++
++/**
++ * struct ims_array_info - Information to create an IMS array domain
++ * @slots:	Pointer to the start of the array
++ * @max_slots:	Maximum number of slots in the array
++ */
++struct ims_array_info {
++	struct ims_slot		__iomem *slots;
++	unsigned int		max_slots;
++};
++
++struct pci_dev;
++struct irq_domain;
++
++struct irq_domain *pci_ims_array_create_msi_irq_domain(struct pci_dev *pdev,
++						       struct ims_array_info *ims_info);
++
++#endif
 -- 
 2.7.4
 
