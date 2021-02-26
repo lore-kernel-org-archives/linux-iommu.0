@@ -1,76 +1,115 @@
-Return-Path: <SRS0=d1gY=H3=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=CXUA=H4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20444C433E0
-	for <iommu@archiver.kernel.org>; Thu, 25 Feb 2021 22:17:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D179C433E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 04:18:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BCB5464F2C
-	for <iommu@archiver.kernel.org>; Thu, 25 Feb 2021 22:17:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCB5464F2C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9A5C364EE3
+	for <iommu@archiver.kernel.org>; Fri, 26 Feb 2021 04:18:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A5C364EE3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 82ABB84246;
-	Thu, 25 Feb 2021 22:17:23 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 239EC4ECB1;
+	Fri, 26 Feb 2021 04:18:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H3nfoyXc4k-d; Thu, 25 Feb 2021 22:17:22 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3OIX7kRTb8-5; Fri, 26 Feb 2021 04:18:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7CAF984241;
-	Thu, 25 Feb 2021 22:17:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C393A4EC72;
+	Fri, 26 Feb 2021 04:18:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41D50C000A;
-	Thu, 25 Feb 2021 22:17:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CF13AC0001
- for <iommu@lists.linux-foundation.org>; Thu, 25 Feb 2021 22:17:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95815C000A;
+	Fri, 26 Feb 2021 04:18:06 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A760C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 04:18:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A9D9F43326
- for <iommu@lists.linux-foundation.org>; Thu, 25 Feb 2021 22:17:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 172554EC72
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 04:18:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sas9yvMqb8sF for <iommu@lists.linux-foundation.org>;
- Thu, 25 Feb 2021 22:17:20 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id eyZJeSs09kJJ for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Feb 2021 04:18:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0A23C43324
- for <iommu@lists.linux-foundation.org>; Thu, 25 Feb 2021 22:17:19 +0000 (UTC)
-IronPort-SDR: /8jrOjHh7U/PgQIgoHEp0K/yIVpmOnLcpQxKR8yLl2B52JtEhs25P3qHHdpagqqtcySxEOtqiX
- bttFycil9gog==
-X-IronPort-AV: E=McAfee;i="6000,8403,9906"; a="205211217"
-X-IronPort-AV: E=Sophos;i="5.81,207,1610438400"; d="scan'208";a="205211217"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Feb 2021 14:17:18 -0800
-IronPort-SDR: HBKSHiLe0MtfvnRN4zT3jI0f0Rqf5KuNeB1ORFZDVA8T397xDurDMDhDQchjk4a8veYMxlqzmu
- CNop4lCWAW1w==
-X-IronPort-AV: E=Sophos;i="5.81,207,1610438400"; d="scan'208";a="404589780"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Feb 2021 14:17:18 -0800
-Date: Thu, 25 Feb 2021 22:17:11 +0000
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v6 08/12] fork: Clear PASID for new mm
-Message-ID: <YDgh53AcQHT+T3L0@otcwcpicx3.sc.intel.com>
-References: <1594684087-61184-1-git-send-email-fenghua.yu@intel.com>
- <1594684087-61184-9-git-send-email-fenghua.yu@intel.com>
- <YDYoL/zZ9YaGgwSV@myrica>
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com
+ [209.85.166.51])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4642C4EC53
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Feb 2021 04:18:04 +0000 (UTC)
+Received: by mail-io1-f51.google.com with SMTP id z13so8366409iox.8
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Feb 2021 20:18:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=fDTKQXWPODousjcFxfPrAdhXiScgfthwkHIVsnIoPbM=;
+ b=abTtJIMMZ8KToSFWbjzFi32HOkPDN2rxZ+IfBv+eO62ap/dN702Uq0mU9oHC9j+snt
+ vnVWV+5jH/p/0R+4U10lm2zTMAo+mTTld64KVC2G+prj4nocAzeugJM4VE5FsldHI9zg
+ D677137O5m7d9bvVpQQ+IkqHWrA56M7YEa+Ng=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=fDTKQXWPODousjcFxfPrAdhXiScgfthwkHIVsnIoPbM=;
+ b=Wcv0YAmVnWomy+SXkGbeYgePLMQ8n0LVNydH+X1JevVYRFxIb/VQTcKlwrEVSyQVSt
+ L1vP1NQKx9tmEwPjdnOJgG+eNAJDZ08HqKXuQlcxuUo2Fqgzo3V2RQZSH4ILQ3M2rh5t
+ YT/QxLxZ6oXj8sGfS4YnHlWYpJKOrth0OSN+dErPwR/WNGiWD4JeTwEsIf4W7XKx3gfa
+ qVUCZuT8EO2KXLKTiHulAEKUWXi9WgoM8dqID9W9KsNLlhkxaR+pCWYU5/29d/mGp7tc
+ Vy027hojvaopQ/6jX+uNs9zwxRL0q664YXtKPTAe1E+hH9bsjqwKPVxonDzZQyAlb2l9
+ WsLw==
+X-Gm-Message-State: AOAM531LZaugL52y7CUFJCih5OWzNPnP7RFJLKXMzLgSfFcmQ9y5gX/b
+ cgKArUZxWAFhMxI5J4d2LewC1Uj/AQR0WQ==
+X-Google-Smtp-Source: ABdhPJzgNJLi+AGlN+61gNdgLOm7ktxcGCNcN7u7J+69BNmZ8CEpL4QryuDP/2AdhItw+TAxWxt/3w==
+X-Received: by 2002:a6b:3ec3:: with SMTP id l186mr674947ioa.193.1614313083069; 
+ Thu, 25 Feb 2021 20:18:03 -0800 (PST)
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com.
+ [209.85.166.46])
+ by smtp.gmail.com with ESMTPSA id y5sm4195904ilh.24.2021.02.25.20.18.01
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 25 Feb 2021 20:18:02 -0800 (PST)
+Received: by mail-io1-f46.google.com with SMTP id n14so8385967iog.3
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Feb 2021 20:18:01 -0800 (PST)
+X-Received: by 2002:a05:6638:5:: with SMTP id z5mr1097392jao.84.1614313081344; 
+ Thu, 25 Feb 2021 20:18:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YDYoL/zZ9YaGgwSV@myrica>
-Cc: Ashok Raj <ashok.raj@intel.com>, zhangfei.gao@foxmail.com,
- linux-kernel <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Jacob Jun Pan <jacob.jun.pan@intel.com>
+References: <20210209062131.2300005-1-tientzu@chromium.org>
+ <20210209062131.2300005-13-tientzu@chromium.org>
+In-Reply-To: <20210209062131.2300005-13-tientzu@chromium.org>
+From: Claire Chang <tientzu@chromium.org>
+Date: Fri, 26 Feb 2021 12:17:50 +0800
+X-Gmail-Original-Message-ID: <CALiNf298+DLjTK6ALe0mYrRuCP_LtztMGuQQCS90ubDctbS0kw@mail.gmail.com>
+Message-ID: <CALiNf298+DLjTK6ALe0mYrRuCP_LtztMGuQQCS90ubDctbS0kw@mail.gmail.com>
+Subject: Re: [PATCH v4 12/14] swiotlb: Add restricted DMA alloc/free support.
+To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
+ Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
+ jgross@suse.com, 
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
+ benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
+ mingo@kernel.org, sstabellini@kernel.org,
+ Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+ xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
+ linux-devicetree <devicetree@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org,
+ Nicolas Boichat <drinkcat@chromium.org>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,40 +127,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Jean,
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index fd9c1bd183ac..8b77fd64199e 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -836,6 +836,40 @@ late_initcall(swiotlb_create_default_debugfs);
+>  #endif
+>
+>  #ifdef CONFIG_DMA_RESTRICTED_POOL
+> +struct page *dev_swiotlb_alloc(struct device *dev, size_t size, gfp_t gfp)
+> +{
+> +       struct swiotlb *swiotlb;
+> +       phys_addr_t tlb_addr;
+> +       unsigned int index;
+> +
+> +       /* dev_swiotlb_alloc can be used only in the context which permits sleeping. */
+> +       if (!dev->dev_swiotlb || !gfpflags_allow_blocking(gfp))
 
-On Wed, Feb 24, 2021 at 11:19:27AM +0100, Jean-Philippe Brucker wrote:
-> Hi Fenghua,
-> 
-> [Trimmed the Cc list]
-> 
-> On Mon, Jul 13, 2020 at 04:48:03PM -0700, Fenghua Yu wrote:
-> > When a new mm is created, its PASID should be cleared, i.e. the PASID is
-> > initialized to its init state 0 on both ARM and X86.
-> 
-> I just noticed this patch was dropped in v7, and am wondering whether we
-> could still upstream it. Does x86 need a child with a new address space
-> (!CLONE_VM) to inherit the PASID of the parent?  That doesn't make much
-> sense with regard to IOMMU structures - same PASID indexing multiple PGDs?
+Just noticed that !gfpflags_allow_blocking(gfp) shouldn't be here.
 
-You are right: x86 should clear mm->pasid when a new mm is created.
-This patch somehow is losted:(
+Hi Christoph,
 
-> 
-> Currently iommu_sva_alloc_pasid() assumes mm->pasid is always initialized
-> to 0 and fails on forked tasks. I'm trying to figure out how to fix this.
-> Could we clear the pasid on fork or does it break the x86 model?
+Do you think I should fix this and rebase on the latest linux-next
+now? I wonder if there are more factor and clean up coming and I
+should wait after that.
 
-x86 calls ioasid_alloc() instead of iommu_sva_alloc_pasid(). So
-functionality is not a problem without this patch on x86. But I think
-we do need to have this patch in the kernel because PASID is per addr
-space and two addr spaces shouldn't have the same PASID.
-
-Who will accept this patch?
-
-Thanks.
-
--Fenghua
+Thanks,
+Claire
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
