@@ -1,76 +1,80 @@
-Return-Path: <SRS0=v/hM=H5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Pr8R=H6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.4 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FECC433DB
-	for <iommu@archiver.kernel.org>; Sat, 27 Feb 2021 18:34:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E2CC433E0
+	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A02664E76
-	for <iommu@archiver.kernel.org>; Sat, 27 Feb 2021 18:34:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A02664E76
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+	by mail.kernel.org (Postfix) with ESMTPS id 9566564E55
+	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9566564E55
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E182A8428A;
-	Sat, 27 Feb 2021 18:34:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 51F1A4F078;
+	Sun, 28 Feb 2021 06:33:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jVwr80fNDBcA; Sat, 27 Feb 2021 18:34:06 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rT_mXJ_xLfNN; Sun, 28 Feb 2021 06:33:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7CC0A84248;
-	Sat, 27 Feb 2021 18:34:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id ED0B84F0A6;
+	Sun, 28 Feb 2021 06:33:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64758C000A;
-	Sat, 27 Feb 2021 18:34:06 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82A94C0001
- for <iommu@lists.linux-foundation.org>; Sat, 27 Feb 2021 18:34:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AEC32C000E;
+	Sun, 28 Feb 2021 06:33:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B99BC000B
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 635886F506
- for <iommu@lists.linux-foundation.org>; Sat, 27 Feb 2021 18:34:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E4E864F0A4
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TqTKLbPmuvID for <iommu@lists.linux-foundation.org>;
- Sat, 27 Feb 2021 18:34:02 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [157.25.102.26])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5B2446F4B8
- for <iommu@lists.linux-foundation.org>; Sat, 27 Feb 2021 18:34:02 +0000 (UTC)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
- id BB9BE92009C; Sat, 27 Feb 2021 19:33:57 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
- by angie.orcam.me.uk (Postfix) with ESMTP id AE2C292009B;
- Sat, 27 Feb 2021 19:33:57 +0100 (CET)
-Date: Sat, 27 Feb 2021 19:33:57 +0100 (CET)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/6] driver core: lift dma_default_coherent into common
- code
-In-Reply-To: <alpine.DEB.2.21.2102221140180.1900@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2102271927430.44210@angie.orcam.me.uk>
-References: <20210208145024.3320420-1-hch@lst.de>
- <20210208145024.3320420-6-hch@lst.de>
- <alpine.DEB.2.21.2102081654060.35623@angie.orcam.me.uk>
- <20210208161043.GA14083@lst.de>
- <alpine.DEB.2.21.2102091213070.35623@angie.orcam.me.uk>
- <alpine.DEB.2.21.2102151342050.1521@angie.orcam.me.uk>
- <alpine.DEB.2.21.2102210407090.2021@angie.orcam.me.uk>
- <20210222075937.GA21946@lst.de>
- <alpine.DEB.2.21.2102221140180.1900@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-mips@vger.kernel.org,
- linux-kernel@vger.kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tGvqBH3OKbVP for <iommu@lists.linux-foundation.org>;
+ Sun, 28 Feb 2021 06:33:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E56534F063
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:10 +0000 (UTC)
+IronPort-SDR: J7RQTTt7Y0TjcUv/ygzkzc+eGKFZH69BWjV1K2gt1W4VcW8lFZrc4IktOdpdWi3dYw0ZNKNhTE
+ RBTIUvN1+3gw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9908"; a="183755898"
+X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="183755898"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Feb 2021 22:33:09 -0800
+IronPort-SDR: hnVkePC/wEnT+/HL2gHIbAQbFByil5YHx+ktvhwo4sg34QFPUG9YGQGxrJ6ncZRA7lZHesKh0c
+ ect8uTsA01Eg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="517029700"
+Received: from otc-wp-03.jf.intel.com ([10.54.39.79])
+ by orsmga004.jf.intel.com with ESMTP; 27 Feb 2021 22:33:09 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ "Lu Baolu" <baolu.lu@linux.intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
+ cgroups@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+ Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
+Subject: [PATCH V4 02/18] iommu/ioasid: Rename ioasid_set_data()
+Date: Sat, 27 Feb 2021 14:01:10 -0800
+Message-Id: <1614463286-97618-3-git-send-email-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Wu Hao <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,46 +87,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 22 Feb 2021, Maciej W. Rozycki wrote:
+Rename ioasid_set_data() to ioasid_attach_data() to avoid confusion with
+struct ioasid_set. ioasid_set is a group of IOASIDs that share a common
+token.
 
-> > > I haven't booted Linux on my Malta for a while now, but it turns out to 
-> > > work just fine, and your patch set does not regress it booting multi-user 
-> > > NFS-rooted over FDDI.
-> > > 
-> > >  I note however that the system does not reboot properly:
-> > > 
-> > > sd 0:0:0:0: [sda] Synchronizing SCSI cache
-> > > reboot: Restarting system
-> > > Reboot failed -- System halted
-> > > 
-> > > which is a regression, and also the MMIO-mapped discrete CBUS UART (ttyS2) 
-> > > does not sign in anymore either:
-> > 
-> > Do you mean a regression with this series, or just compared to when you
-> > last tested?
-> 
->  When last tested.  Years ago, so nothing for you to be concerned.  I'll 
-> look into it sometime unless someone beats me to.  Don't hold your breath 
-> though.  Sorry to be unclear.
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel/svm.c | 6 +++---
+ drivers/iommu/ioasid.c    | 6 +++---
+ include/linux/ioasid.h    | 4 ++--
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
- For the record, Malta reboot requires:
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 18a9f05df407..0053df9edffc 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -371,7 +371,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 			svm->gpasid = data->gpasid;
+ 			svm->flags |= SVM_FLAG_GUEST_PASID;
+ 		}
+-		ioasid_set_data(data->hpasid, svm);
++		ioasid_attach_data(data->hpasid, svm);
+ 		INIT_LIST_HEAD_RCU(&svm->devs);
+ 		mmput(svm->mm);
+ 	}
+@@ -425,7 +425,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 	list_add_rcu(&sdev->list, &svm->devs);
+  out:
+ 	if (!IS_ERR_OR_NULL(svm) && list_empty(&svm->devs)) {
+-		ioasid_set_data(data->hpasid, NULL);
++		ioasid_attach_data(data->hpasid, NULL);
+ 		kfree(svm);
+ 	}
+ 
+@@ -468,7 +468,7 @@ int intel_svm_unbind_gpasid(struct device *dev, u32 pasid)
+ 				 * the unbind, IOMMU driver will get notified
+ 				 * and perform cleanup.
+ 				 */
+-				ioasid_set_data(pasid, NULL);
++				ioasid_attach_data(pasid, NULL);
+ 				kfree(svm);
+ 			}
+ 		}
+diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+index 50ee27bbd04e..eeadf4586e0a 100644
+--- a/drivers/iommu/ioasid.c
++++ b/drivers/iommu/ioasid.c
+@@ -259,14 +259,14 @@ void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
+ EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
+ 
+ /**
+- * ioasid_set_data - Set private data for an allocated ioasid
++ * ioasid_attach_data - Set private data for an allocated ioasid
+  * @ioasid: the ID to set data
+  * @data:   the private data
+  *
+  * For IOASID that is already allocated, private data can be set
+  * via this API. Future lookup can be done via ioasid_find.
+  */
+-int ioasid_set_data(ioasid_t ioasid, void *data)
++int ioasid_attach_data(ioasid_t ioasid, void *data)
+ {
+ 	struct ioasid_data *ioasid_data;
+ 	int ret = 0;
+@@ -288,7 +288,7 @@ int ioasid_set_data(ioasid_t ioasid, void *data)
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(ioasid_set_data);
++EXPORT_SYMBOL_GPL(ioasid_attach_data);
+ 
+ /**
+  * ioasid_alloc - Allocate an IOASID
+diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+index e9dacd4b9f6b..60ea279802b8 100644
+--- a/include/linux/ioasid.h
++++ b/include/linux/ioasid.h
+@@ -40,7 +40,7 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+ 		  bool (*getter)(void *));
+ int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+ void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
+-int ioasid_set_data(ioasid_t ioasid, void *data);
++int ioasid_attach_data(ioasid_t ioasid, void *data);
+ 
+ #else /* !CONFIG_IOASID */
+ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+@@ -73,7 +73,7 @@ static inline void ioasid_unregister_allocator(struct ioasid_allocator_ops *allo
+ {
+ }
+ 
+-static inline int ioasid_set_data(ioasid_t ioasid, void *data)
++static inline int ioasid_attach_data(ioasid_t ioasid, void *data)
+ {
+ 	return -ENOTSUPP;
+ }
+-- 
+2.25.1
 
-CONFIG_POWER_RESET=y
-CONFIG_POWER_RESET_SYSCON=y
-
-to work these days, which wasn't picked automatically on an older config 
-regeneration for me.  Sorry for the noise then, although ISTM that these 
-would better be picked up automatically by reverse dependencies.  What's 
-the point of omitting reboot support?
-
- Still looking into the CBUS UART issue.
-
-  Maciej
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
