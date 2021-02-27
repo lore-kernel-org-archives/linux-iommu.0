@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7AFC4332D
-	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F78C433E6
+	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:29 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6167F64E59
-	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6167F64E59
+	by mail.kernel.org (Postfix) with ESMTPS id 7467664E51
+	for <iommu@archiver.kernel.org>; Sun, 28 Feb 2021 06:33:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7467664E51
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 368C68400F;
-	Sun, 28 Feb 2021 06:33:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wu9OdVtV2Gar; Sun, 28 Feb 2021 06:33:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 68CEA83FF1;
-	Sun, 28 Feb 2021 06:33:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A2F68C0017;
-	Sun, 28 Feb 2021 06:33:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E852C000B
- for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 83A7B6F965
- for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 380C56F965;
+	Sun, 28 Feb 2021 06:33:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zqe6CZAd0utN for <iommu@lists.linux-foundation.org>;
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OGiK_nFERJKv; Sun, 28 Feb 2021 06:33:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1728F6F9CC;
+	Sun, 28 Feb 2021 06:33:23 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FB0FC001F;
+	Sun, 28 Feb 2021 06:33:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40873C001B
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 72EA54338C
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:14 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BDt30BIdaAVu for <iommu@lists.linux-foundation.org>;
  Sun, 28 Feb 2021 06:33:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D47076F5BC
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7DD63433BD
  for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 06:33:12 +0000 (UTC)
-IronPort-SDR: 1md2izVgvZGlr9wb0q26Ah2Y/EyNECg9l6tiRgFvJay/9b4hvvbNX3iq96104aK9GSFCq2GEDS
- ovycYxJ+5Wew==
-X-IronPort-AV: E=McAfee;i="6000,8403,9908"; a="247624820"
-X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="247624820"
+IronPort-SDR: /7pFMDVvW5gEzQSVvx80jNt/Klos7/MvGC286IMyLPul42cdla1D0wphM1rWs51704pzLkUh73
+ e/4JSpF9B04g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9908"; a="247624816"
+X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="247624816"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  27 Feb 2021 22:33:10 -0800
-IronPort-SDR: tbRZKK+vUMEdRufM6ZrxaDYyvvFN15WVuP4e9FL0GklsqCy35097fCgWmhpVEXYeITP4V1RJIj
- AHXAulb/mgQA==
+IronPort-SDR: fYlVC9ne3ocbRyTYqqdSjSNHWJ/y6MOKeukSYbfFFCiCPsZEwMgp8eVO7e5WwQ+u7zprn8BX3y
+ UdXgFugPUYPQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="517029749"
+X-IronPort-AV: E=Sophos;i="5.81,211,1610438400"; d="scan'208";a="517029740"
 Received: from otc-wp-03.jf.intel.com ([10.54.39.79])
  by orsmga004.jf.intel.com with ESMTP; 27 Feb 2021 22:33:10 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -65,9 +65,9 @@ To: LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
  cgroups@vger.kernel.org, Tejun Heo <tj@kernel.org>,
  Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [RFC PATCH 18/18] ioasid: Add /dev/ioasid for userspace
-Date: Sat, 27 Feb 2021 14:01:26 -0800
-Message-Id: <1614463286-97618-19-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [RFC PATCH 15/18] cgroup: Introduce ioasids controller
+Date: Sat, 27 Feb 2021 14:01:23 -0800
+Message-Id: <1614463286-97618-16-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -93,638 +93,463 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Liu Yi L <yi.l.liu@intel.com>
+IOASIDs are used to associate DMA requests with virtual address spaces.
+They are a system-wide limited resource made available to the userspace
+applications. Let it be VMs or user-space device drivers.
 
-I/O Address Space IDs (IOASIDs) is used to tag DMA requests to target
-multiple DMA address spaces for physical devices. Its PCI terminology
-is called PASID (Process Address Space ID). Platforms with PASID support
-can provide PASID granularity DMA isolation, which is very useful for
-efficient and secure device sharing (SVA, subdevice passthrough, etc.).
+This RFC patch introduces a cgroup controller to address the following
+problems:
+1. Some user applications exhaust all the available IOASIDs thus
+depriving others of the same host.
+2. System admins need to provision VMs based on their needs for IOASIDs,
+e.g. the number of VMs with assigned devices that perform DMA requests
+with PASID.
 
-Today only kernel drivers are allowed to allocate IOASIDs [1]. This patch
-aims to extend this capability to userspace as required in device pass-
-through scenarios. For example, a userspace driver may want to create its
-own DMA address spaces besides the default IOVA address space established
-by the kernel on the assigned device (e.g. vDPA control vq [2] and guest
-SVA [3]), thus need to get IOASIDs from the kernel IOASID allocator for
-tagging. In concept, each device can have its own IOASID space, thus it's
-also possible for userspace driver to manage a private IOASID space itself,
-say, when PF/VF is assigned. However it doesn't work for subdevice pass-
-through, as multiple subdevices under the same parent device share a single
-IOASID space thus IOASIDs must be centrally managed by the kernel in such
-case.
+This patch is nowhere near its completion, it merely provides the basic
+functionality for resource distribution and cgroup hierarchy
+organizational changes.
 
-This patch introduces a /dev/ioasid interface for this purpose (per discussion
-in [4]). An IOASID is just a number before it is tagged to a specific DMA
-address space. The actual IOASID tagging (to DMA requests) and association
-(with DMA address spaces) operations from userspace are scrutinized by specific
-device passthrough frameworks, which must ensure that a malicious driver
-cannot program arbitrary IOASIDs to its assigned device to access DMA address
-spaces that don't belong to it, this is out of the scope of this patch (a
-reference VFIO implementation will be posted soon).
+Since this is part of a greater effort to enable Shared Virtual Address
+(SVA) virtualization. We would like to have a direction check and
+collect feedback early. For details, please refer to the documentation:
+Documentation/admin-guide/cgroup-v1/ioasids.rst
 
-Open:
-
-PCIe PASID is 20bit implying a space with 1M IOASIDs. although it's plenty
-there was an open [4] on whether this user interface is open to all processes
-or only selective processes (e.g. with device assigned). In this patchseries,
-a cgroup controller is introduced to manage IOASID quota that a process is
-allowed to use. A cgroup-enabled system may by default set quota=0 to disallow
-IOASID allocation for most processes, and then having the virt management
-stack to adjust the quota for a process which gets device assigned. But yeah,
-we are also willing to hear more suggestions.
-
-[1] https://lore.kernel.org/linux-iommu/1565900005-62508-8-git-send-email-jacob.jun.pan@linux.intel.com/
-[2] https://lore.kernel.org/kvm/20201216064818.48239-1-jasowang@redhat.com/
-[3] https://lore.kernel.org/linux-iommu/1599734733-6431-1-git-send-email-yi.l.liu@intel.com/
-[4] https://lore.kernel.org/kvm/20201014171055.328a52f4@w520.home/
-
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- Documentation/userspace-api/index.rst  |   1 +
- Documentation/userspace-api/ioasid.rst |  49 ++++
- drivers/iommu/Kconfig                  |   5 +
- drivers/iommu/Makefile                 |   1 +
- drivers/iommu/intel/Kconfig            |   1 +
- drivers/iommu/ioasid_user.c            | 297 +++++++++++++++++++++++++
- include/linux/ioasid.h                 |  26 +++
- include/linux/miscdevice.h             |   1 +
- include/uapi/linux/ioasid.h            |  98 ++++++++
- 9 files changed, 479 insertions(+)
- create mode 100644 Documentation/userspace-api/ioasid.rst
- create mode 100644 drivers/iommu/ioasid_user.c
- create mode 100644 include/uapi/linux/ioasid.h
+ include/linux/cgroup_subsys.h |   4 +
+ include/linux/ioasid.h        |  17 ++
+ init/Kconfig                  |   7 +
+ kernel/cgroup/Makefile        |   1 +
+ kernel/cgroup/ioasids.c       | 345 ++++++++++++++++++++++++++++++++++
+ 5 files changed, 374 insertions(+)
+ create mode 100644 kernel/cgroup/ioasids.c
 
-diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-index acd2cc2a538d..69e1be7c67ee 100644
---- a/Documentation/userspace-api/index.rst
-+++ b/Documentation/userspace-api/index.rst
-@@ -24,6 +24,7 @@ place where this information is gathered.
-    ioctl/index
-    iommu
-    media/index
-+   ioasid
+diff --git a/include/linux/cgroup_subsys.h b/include/linux/cgroup_subsys.h
+index acb77dcff3b4..cda75ecdcdcb 100644
+--- a/include/linux/cgroup_subsys.h
++++ b/include/linux/cgroup_subsys.h
+@@ -57,6 +57,10 @@ SUBSYS(hugetlb)
+ SUBSYS(pids)
+ #endif
  
- .. only::  subproject and html
- 
-diff --git a/Documentation/userspace-api/ioasid.rst b/Documentation/userspace-api/ioasid.rst
-new file mode 100644
-index 000000000000..879d6cbae858
---- /dev/null
-+++ b/Documentation/userspace-api/ioasid.rst
-@@ -0,0 +1,49 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+.. ioasid:
-+
-+=====================================
-+IOASID Userspace API
-+=====================================
-+
-+The IOASID UAPI is used for userspace IOASID allocation/free requests,
-+thus IOASID management is centralized in the IOASID core[1] in the kernel. The
-+primary use case is guest Shared Virtual Address (SVA) today.
-+
-+Requests such as allocation/free can be issued by the users and managed
-+on a per-process basis through the ioasid core. Upon opening ("/dev/ioasid"),
-+a process obtains a unique handle associated with the process's mm_struct.
-+This handle is mapped to an FD in the userspace. Only a single open is
-+allowed per process.
-+
-+File descriptors can be transferred across processes by employing fork() or
-+UNIX domain socket. FDs obtained by transfer cannot be used to perform
-+IOASID requests. The following behaviors are recommended for the
-+applications:
-+
-+ - forked children close the parent's IOASID FDs immediately, open new
-+   /dev/ioasid FDs if IOASID allocation is desired
-+
-+ - do not share FDs via UNIX domain socket, e.g. via sendmsg
-+
-+================
-+Userspace APIs
-+================
-+
-+/dev/ioasid provides below ioctls:
-+
-+*) IOASID_GET_API_VERSION: returns the API version, userspace should check
-+   the API version first with the one it has embedded.
-+*) IOASID_GET_INFO: returns the information on the /dev/ioasid.
-+   - ioasid_bits: the ioasid bit width supported by this uAPI, userspace
-+     should check the ioasid_bits returned by this ioctl with the ioasid
-+     bits it wants and should fail if it's smaller than the one that
-+     userspace wants, otherwise, allocation will be failed.
-+*) IOASID_REQUEST_ALLOC: returns an IOASID which is allocated in kernel within
-+   the specified ioasid range.
-+*) IOASID_REQUEST_FREE: free an IOASID per userspace's request.
-+
-+For detailed definition, please see include/uapi/linux/ioasid.h.
-+
-+.. contents:: :local:
-+
-+[1] Documentation/driver-api/ioasid.rst
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 192ef8f61310..830f4ec28a16 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -7,6 +7,11 @@ config IOMMU_IOVA
- config IOASID
- 	tristate
- 
-+config IOASID_USER
-+	tristate
-+	depends on IOASID
-+	default n
-+
- # IOMMU_API always gets selected by whoever wants it.
- config IOMMU_API
- 	bool
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 61bd30cd8369..305dd019ff49 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOASID) += ioasid.o
-+obj-$(CONFIG_IOASID_USER) += ioasid_user.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-index 28a3d1596c76..a6d9dea61d58 100644
---- a/drivers/iommu/intel/Kconfig
-+++ b/drivers/iommu/intel/Kconfig
-@@ -13,6 +13,7 @@ config INTEL_IOMMU
- 	select DMAR_TABLE
- 	select SWIOTLB
- 	select IOASID
-+	select IOASID_USER
- 	select IOMMU_DMA
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
-diff --git a/drivers/iommu/ioasid_user.c b/drivers/iommu/ioasid_user.c
-new file mode 100644
-index 000000000000..2f8957cd055a
---- /dev/null
-+++ b/drivers/iommu/ioasid_user.c
-@@ -0,0 +1,297 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Support IOASID allocation/free from user space.
-+ *
-+ * Copyright (C) 2021 Intel Corporation.
-+ *     Author: Liu Yi L <yi.l.liu@intel.com>
-+ *
-+ */
-+
-+#include <linux/ioasid.h>
-+#include <linux/file.h>
-+#include <linux/fs.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sched/mm.h>
-+#include <linux/miscdevice.h>
-+
-+#define DRIVER_VERSION  "0.1"
-+#define DRIVER_AUTHOR   "Liu Yi L <yi.l.liu@intel.com>"
-+#define DRIVER_DESC     "IOASID management for user space"
-+
-+/* Current user ioasid uapi supports 31 bits */
-+#define IOASID_BITS	31
-+
-+struct ioasid_user_token {
-+	unsigned long long val;
-+};
-+
-+struct ioasid_user {
-+	struct kref		kref;
-+	struct ioasid_set	*ioasid_set;
-+	struct mutex		lock;
-+	struct list_head	next;
-+	struct ioasid_user_token	token;
-+};
-+
-+static struct mutex		ioasid_user_lock;
-+static struct list_head		ioasid_user_list;
-+
-+/* called with ioasid_user_lock held */
-+static void ioasid_user_release(struct kref *kref)
-+{
-+	struct ioasid_user *iuser = container_of(kref, struct ioasid_user, kref);
-+
-+	ioasid_free_all_in_set(iuser->ioasid_set);
-+	list_del(&iuser->next);
-+	mutex_unlock(&ioasid_user_lock);
-+	ioasid_set_free(iuser->ioasid_set);
-+	kfree(iuser);
-+}
-+
-+void ioasid_user_put(struct ioasid_user *iuser)
-+{
-+	kref_put_mutex(&iuser->kref, ioasid_user_release, &ioasid_user_lock);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_user_put);
-+
-+static void ioasid_user_get(struct ioasid_user *iuser)
-+{
-+	kref_get(&iuser->kref);
-+}
-+
-+struct ioasid_user *ioasid_user_get_from_task(struct task_struct *task)
-+{
-+	struct mm_struct *mm = get_task_mm(task);
-+	unsigned long long val = (unsigned long long)mm;
-+	struct ioasid_user *iuser;
-+	bool found = false;
-+
-+	if (!mm)
-+		return NULL;
-+
-+	mutex_lock(&ioasid_user_lock);
-+	/* Search existing ioasid_user with current mm pointer */
-+	list_for_each_entry(iuser, &ioasid_user_list, next) {
-+		if (iuser->token.val == val) {
-+			ioasid_user_get(iuser);
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	mmput(mm);
-+
-+	mutex_unlock(&ioasid_user_lock);
-+	return found ? iuser : NULL;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_user_get_from_task);
-+
-+void ioasid_user_for_each_id(struct ioasid_user *iuser, void *data,
-+			    void (*fn)(ioasid_t id, void *data))
-+{
-+	mutex_lock(&iuser->lock);
-+	ioasid_set_for_each_ioasid(iuser->ioasid_set, fn, data);
-+	mutex_unlock(&iuser->lock);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_user_for_each_id);
-+
-+static int ioasid_fops_open(struct inode *inode, struct file *filep)
-+{
-+	struct mm_struct *mm = get_task_mm(current);
-+	unsigned long long val = (unsigned long long)mm;
-+	struct ioasid_set *iset;
-+	struct ioasid_user *iuser;
-+	int ret = 0;
-+
-+	mutex_lock(&ioasid_user_lock);
-+	/* Only allow one single open per process */
-+	list_for_each_entry(iuser, &ioasid_user_list, next) {
-+		if (iuser->token.val == val) {
-+			ret = -EBUSY;
-+			goto out;
-+		}
-+	}
-+
-+	iuser = kzalloc(sizeof(*iuser), GFP_KERNEL);
-+	if (!iuser) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	/*
-+	 * IOASID core provides a 'IOASID set' concept to track all
-+	 * IOASIDs associated with a token. Here we use mm_struct as
-+	 * the token and create a IOASID set per mm_struct. All the
-+	 * containers of the process share the same IOASID set.
-+	 */
-+	iset = ioasid_set_alloc(mm, 0, IOASID_SET_TYPE_MM);
-+	if (IS_ERR(iset)) {
-+		kfree(iuser);
-+		ret = PTR_ERR(iset);
-+		goto out;
-+	}
-+
-+	iuser->ioasid_set = iset;
-+	kref_init(&iuser->kref);
-+	iuser->token.val = val;
-+	mutex_init(&iuser->lock);
-+	filep->private_data = iuser;
-+
-+	list_add(&iuser->next, &ioasid_user_list);
-+out:
-+	mutex_unlock(&ioasid_user_lock);
-+	mmput(mm);
-+	return ret;
-+}
-+
-+static int ioasid_fops_release(struct inode *inode, struct file *filep)
-+{
-+	struct ioasid_user *iuser = filep->private_data;
-+
-+	filep->private_data = NULL;
-+
-+	ioasid_user_put(iuser);
-+
-+	return 0;
-+}
-+
-+static int ioasid_get_info(struct ioasid_user *iuser, unsigned long arg)
-+{
-+	struct ioasid_info info;
-+	unsigned long minsz;
-+
-+	minsz = offsetofend(struct ioasid_info, ioasid_bits);
-+
-+	if (copy_from_user(&info, (void __user *)arg, minsz))
-+		return -EFAULT;
-+
-+	if (info.argsz < minsz || info.flags)
-+		return -EINVAL;
-+
-+	info.ioasid_bits = IOASID_BITS;
-+
-+	return copy_to_user((void __user *)arg, &info, minsz) ? -EFAULT : 0;
-+}
-+
-+static int ioasid_alloc_request(struct ioasid_user *iuser, unsigned long arg)
-+{
-+	struct ioasid_alloc_request req;
-+	unsigned long minsz;
-+	ioasid_t ioasid;
-+
-+	minsz = offsetofend(struct ioasid_alloc_request, range);
-+
-+	if (copy_from_user(&req, (void __user *)arg, minsz))
-+		return -EFAULT;
-+
-+	if (req.argsz < minsz || req.flags)
-+		return -EINVAL;
-+
-+	if (req.range.min > req.range.max ||
-+	    req.range.min >= (1 << IOASID_BITS) ||
-+	    req.range.max >= (1 << IOASID_BITS))
-+		return -EINVAL;
-+
-+	ioasid = ioasid_alloc(iuser->ioasid_set, req.range.min,
-+			    req.range.max, NULL);
-+
-+	if (ioasid == INVALID_IOASID)
-+		return -EINVAL;
-+
-+	return ioasid;
-+
-+}
-+
-+static int ioasid_free_request(struct ioasid_user *iuser, unsigned long arg)
-+{
-+	int ioasid;
-+
-+	if (copy_from_user(&ioasid, (void __user *)arg, sizeof(ioasid)))
-+		return -EFAULT;
-+
-+	if (ioasid < 0)
-+		return -EINVAL;
-+
-+	ioasid_free(iuser->ioasid_set, ioasid);
-+
-+	return 0;
-+}
-+
-+static long ioasid_fops_unl_ioctl(struct file *filep,
-+				  unsigned int cmd, unsigned long arg)
-+{
-+	struct ioasid_user *iuser = filep->private_data;
-+	long ret = -EINVAL;
-+
-+	if (!iuser)
-+		return ret;
-+
-+	mutex_lock(&iuser->lock);
-+
-+	switch (cmd) {
-+	case IOASID_GET_API_VERSION:
-+		ret = IOASID_API_VERSION;
-+		break;
-+	case IOASID_GET_INFO:
-+		ret = ioasid_get_info(iuser, arg);
-+		break;
-+	case IOASID_REQUEST_ALLOC:
-+		ret = ioasid_alloc_request(iuser, arg);
-+		break;
-+	case IOASID_REQUEST_FREE:
-+		ret = ioasid_free_request(iuser, arg);
-+		break;
-+	default:
-+		pr_err("Unsupported cmd %u\n", cmd);
-+		break;
-+	}
-+
-+	mutex_unlock(&iuser->lock);
-+	return ret;
-+}
-+
-+static const struct file_operations ioasid_user_fops = {
-+	.owner		= THIS_MODULE,
-+	.open		= ioasid_fops_open,
-+	.release	= ioasid_fops_release,
-+	.unlocked_ioctl	= ioasid_fops_unl_ioctl,
-+};
-+
-+static struct miscdevice ioasid_user = {
-+	.minor = IOASID_MINOR,
-+	.name = "ioasid_user",
-+	.fops = &ioasid_user_fops,
-+	.nodename = "ioasid",
-+	.mode = S_IRUGO | S_IWUGO,
-+};
-+
-+
-+static int __init ioasid_user_init(void)
-+{
-+	int ret;
-+
-+	ret = misc_register(&ioasid_user);
-+	if (ret) {
-+		pr_err("ioasid_user: misc device register failed\n");
-+		return ret;
-+	}
-+
-+	mutex_init(&ioasid_user_lock);
-+	INIT_LIST_HEAD(&ioasid_user_list);
-+	return 0;
-+}
-+
-+static void __exit ioasid_user_exit(void)
-+{
-+	WARN_ON(!list_empty(&ioasid_user_list));
-+	misc_deregister(&ioasid_user);
-+}
-+
-+module_init(ioasid_user_init);
-+module_exit(ioasid_user_exit);
-+
-+MODULE_VERSION(DRIVER_VERSION);
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR(DRIVER_AUTHOR);
-+MODULE_DESCRIPTION(DRIVER_DESC);
++#if IS_ENABLED(CONFIG_CGROUP_IOASIDS)
++SUBSYS(ioasids)
++#endif
++
+ #if IS_ENABLED(CONFIG_CGROUP_RDMA)
+ SUBSYS(rdma)
+ #endif
 diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 5ea4710efb02..b82abe6325f7 100644
+index 4547086797df..5ea4710efb02 100644
 --- a/include/linux/ioasid.h
 +++ b/include/linux/ioasid.h
-@@ -6,6 +6,7 @@
- #include <linux/errno.h>
- #include <linux/xarray.h>
- #include <linux/refcount.h>
-+#include <uapi/linux/ioasid.h>
- 
- #define INVALID_IOASID ((ioasid_t)-1)
- typedef unsigned int ioasid_t;
-@@ -152,6 +153,31 @@ static inline int ioasid_cg_uncharge(struct ioasid_set *set)
- #endif /* CGROUP_IOASIDS */
+@@ -135,8 +135,25 @@ void ioasid_set_for_each_ioasid(struct ioasid_set *sdata,
+ 				void *data);
+ int ioasid_register_notifier_mm(struct mm_struct *mm, struct notifier_block *nb);
+ void ioasid_unregister_notifier_mm(struct mm_struct *mm, struct notifier_block *nb);
++#ifdef CONFIG_CGROUP_IOASIDS
++int ioasid_cg_charge(struct ioasid_set *set);
++void ioasid_cg_uncharge(struct ioasid_set *set);
++#else
++/* No cgroup control, allocation will proceed until run out total pool */
++static inline int ioasid_cg_charge(struct ioasid_set *set)
++{
++	return 0;
++}
++
++static inline int ioasid_cg_uncharge(struct ioasid_set *set)
++{
++	return 0;
++}
++#endif /* CGROUP_IOASIDS */
  bool ioasid_queue_work(struct work_struct *work);
- 
-+/* IOASID userspace support */
-+struct ioasid_user;
-+#if IS_ENABLED(CONFIG_IOASID_USER)
-+extern struct ioasid_user *ioasid_user_get_from_task(struct task_struct *task);
-+extern void ioasid_user_put(struct ioasid_user *iuser);
-+extern void ioasid_user_for_each_id(struct ioasid_user *iuser, void *data,
-+				   void (*fn)(ioasid_t id, void *data));
-+
-+#else /* CONFIG_IOASID_USER */
-+static inline struct ioasid_user *
-+ioasid_user_get_from_task(struct task_struct *task)
-+{
-+	return ERR_PTR(-ENOTTY);
-+}
-+
-+static inline void ioasid_user_put(struct ioasid_user *iuser)
-+{
-+}
-+
-+static inline void ioasid_user_for_each_id(struct ioasid_user *iuser, void *data,
-+					  void (*fn)(ioasid_t id, void *data))
-+{
-+}
-+#endif /* CONFIG_IOASID_USER */
 +
  #else /* !CONFIG_IOASID */
- 
++
  static inline void ioasid_install_capacity(ioasid_t total)
-diff --git a/include/linux/miscdevice.h b/include/linux/miscdevice.h
-index 0676f18093f9..9823901f11a4 100644
---- a/include/linux/miscdevice.h
-+++ b/include/linux/miscdevice.h
-@@ -21,6 +21,7 @@
- #define APOLLO_MOUSE_MINOR	7	/* unused */
- #define PC110PAD_MINOR		9	/* unused */
- /*#define ADB_MOUSE_MINOR	10	FIXME OBSOLETE */
-+#define IOASID_MINOR		129     /* /dev/ioasid     */
- #define WATCHDOG_MINOR		130	/* Watchdog timer     */
- #define TEMP_MINOR		131	/* Temperature Sensor */
- #define APM_MINOR_DEV		134
-diff --git a/include/uapi/linux/ioasid.h b/include/uapi/linux/ioasid.h
+ {
+ }
+diff --git a/init/Kconfig b/init/Kconfig
+index b77c60f8b963..9a23683dad98 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1017,6 +1017,13 @@ config CGROUP_PIDS
+ 	  since the PIDs limit only affects a process's ability to fork, not to
+ 	  attach to a cgroup.
+ 
++config CGROUP_IOASIDS
++	bool "IOASIDs controller"
++	depends on IOASID
++	help
++	  Provides enforcement of IO Address Space ID limits in the scope of a
++	  cgroup.
++
+ config CGROUP_RDMA
+ 	bool "RDMA controller"
+ 	help
+diff --git a/kernel/cgroup/Makefile b/kernel/cgroup/Makefile
+index 5d7a76bfbbb7..c5ad7c9a2305 100644
+--- a/kernel/cgroup/Makefile
++++ b/kernel/cgroup/Makefile
+@@ -3,6 +3,7 @@ obj-y := cgroup.o rstat.o namespace.o cgroup-v1.o freezer.o
+ 
+ obj-$(CONFIG_CGROUP_FREEZER) += legacy_freezer.o
+ obj-$(CONFIG_CGROUP_PIDS) += pids.o
++obj-$(CONFIG_CGROUP_IOASIDS) += ioasids.o
+ obj-$(CONFIG_CGROUP_RDMA) += rdma.o
+ obj-$(CONFIG_CPUSETS) += cpuset.o
+ obj-$(CONFIG_CGROUP_DEBUG) += debug.o
+diff --git a/kernel/cgroup/ioasids.c b/kernel/cgroup/ioasids.c
 new file mode 100644
-index 000000000000..1529070c0317
+index 000000000000..ac43813da6ad
 --- /dev/null
-+++ b/include/uapi/linux/ioasid.h
-@@ -0,0 +1,98 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++++ b/kernel/cgroup/ioasids.c
+@@ -0,0 +1,345 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * PASID (Processor Address Space ID) is a PCIe concept for tagging
-+ * address spaces in DMA requests. When system-wide PASID allocation
-+ * is required by the underlying iommu driver (e.g. Intel VT-d), this
-+ * provides an interface for userspace to request ioasid alloc/free
-+ * for its assigned devices.
++ * IO Address Space ID limiting controller for cgroups.
 + *
-+ * Copyright (C) 2021 Intel Corporation.  All rights reserved.
-+ *     Author: Liu Yi L <yi.l.liu@intel.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
 + */
-+#ifndef _UAPI_IOASID_H
-+#define _UAPI_IOASID_H
++#define pr_fmt(fmt)	"ioasids_cg: " fmt
 +
-+#include <linux/types.h>
-+#include <linux/ioctl.h>
++#include <linux/kernel.h>
++#include <linux/threads.h>
++#include <linux/atomic.h>
++#include <linux/cgroup.h>
++#include <linux/slab.h>
 +#include <linux/ioasid.h>
++#include <linux/sched/mm.h>
++#include <linux/sched/task.h>
 +
-+#define IOASID_API_VERSION	0
++#define IOASIDS_MAX_STR "max"
++static DEFINE_MUTEX(ioasids_cg_lock);
 +
-+
-+/* Kernel & User level defines for IOASID IOCTLs. */
-+
-+#define IOASID_TYPE	('i')
-+#define IOASID_BASE	100
-+
-+/* -------- IOCTLs for IOASID file descriptor (/dev/ioasid) -------- */
-+
-+/**
-+ * IOASID_GET_API_VERSION - _IO(IOASID_TYPE, IOASID_BASE + 0)
-+ *
-+ * Report the version of the IOASID API.  This allows us to bump the entire
-+ * API version should we later need to add or change features in incompatible
-+ * ways.
-+ * Return: IOASID_API_VERSION
-+ * Availability: Always
-+ */
-+#define IOASID_GET_API_VERSION		_IO(IOASID_TYPE, IOASID_BASE + 0)
-+
-+/**
-+ * IOASID_GET_INFO - _IOR(IOASID_TYPE, IOASID_BASE + 1, struct ioasid_info)
-+ *
-+ * Retrieve information about the IOASID object. Fills in provided
-+ * struct ioasid_info. Caller sets argsz.
-+ *
-+ * @argsz:	 user filled size of this data.
-+ * @flags:	 currently reserved for future extension. must set to 0.
-+ * @ioasid_bits: maximum supported PASID bits, 0 represents no PASID
-+ *		 support.
-+
-+ * Availability: Always
-+ */
-+struct ioasid_info {
-+	__u32	argsz;
-+	__u32	flags;
-+	__u32	ioasid_bits;
++struct ioasids_cgroup {
++	struct cgroup_subsys_state	css;
++	atomic64_t			counter;
++	atomic64_t			limit;
++	struct cgroup_file		events_file;
++	/* Number of times allocations failed because limit was hit. */
++	atomic64_t			events_limit;
 +};
-+#define IOASID_GET_INFO _IO(IOASID_TYPE, IOASID_BASE + 1)
++
++static struct ioasids_cgroup *css_ioasids(struct cgroup_subsys_state *css)
++{
++	return container_of(css, struct ioasids_cgroup, css);
++}
++
++static struct ioasids_cgroup *parent_ioasids(struct ioasids_cgroup *ioasids)
++{
++	return css_ioasids(ioasids->css.parent);
++}
++
++static struct cgroup_subsys_state *
++ioasids_css_alloc(struct cgroup_subsys_state *parent)
++{
++	struct ioasids_cgroup *ioasids;
++
++	ioasids = kzalloc(sizeof(struct ioasids_cgroup), GFP_KERNEL);
++	if (!ioasids)
++		return ERR_PTR(-ENOMEM);
++
++	atomic64_set(&ioasids->counter, 0);
++	atomic64_set(&ioasids->limit, 0);
++	atomic64_set(&ioasids->events_limit, 0);
++	return &ioasids->css;
++}
++
++static void ioasids_css_free(struct cgroup_subsys_state *css)
++{
++	kfree(css_ioasids(css));
++}
 +
 +/**
-+ * IOASID_REQUEST_ALLOC - _IOWR(IOASID_TYPE, IOASID_BASE + 2,
-+ *					struct ioasid_request)
++ * ioasids_cancel - uncharge the local IOASID count
++ * @ioasids: the ioasid cgroup state
++ * @num: the number of ioasids to cancel
 + *
-+ * Alloc a PASID within @range. @range is [min, max], which means both
-+ * @min and @max are inclusive.
-+ * User space should provide min, max no more than the ioasid bits reports
-+ * in ioasid_info via IOASID_GET_INFO.
-+ *
-+ * @argsz: user filled size of this data.
-+ * @flags: currently reserved for future extension. must set to 0.
-+ * @range: allocated ioasid is expected in the range.
-+ *
-+ * returns: allocated ID on success, -errno on failure
 + */
-+struct ioasid_alloc_request {
-+	__u32	argsz;
-+	__u32	flags;
-+	struct {
-+		__u32	min;
-+		__u32	max;
-+	} range;
++static void ioasids_cancel(struct ioasids_cgroup *ioasids, int num)
++{
++	WARN_ON_ONCE(atomic64_add_negative(-num, &ioasids->counter));
++}
++
++/**
++ * ioasids_uncharge - hierarchically uncharge the ioasid count
++ * @ioasids: the ioasid cgroup state
++ * @num: the number of ioasids to uncharge
++ */
++static void ioasids_uncharge(struct ioasids_cgroup *ioasids, int num)
++{
++	struct ioasids_cgroup *p;
++
++	for (p = ioasids; parent_ioasids(p); p = parent_ioasids(p))
++		ioasids_cancel(p, num);
++}
++
++/**
++ * ioasids_charge - hierarchically charge the ioasid count
++ * @ioasids: the ioasid cgroup state
++ * @num: the number of ioasids to charge
++ */
++static void ioasids_charge(struct ioasids_cgroup *ioasids, int num)
++{
++	struct ioasids_cgroup *p;
++
++	for (p = ioasids; parent_ioasids(p); p = parent_ioasids(p))
++		atomic64_add(num, &p->counter);
++}
++
++/**
++ * ioasids_try_charge - hierarchically try to charge the ioasid count
++ * @ioasids: the ioasid cgroup state
++ * @num: the number of ioasids to charge
++ */
++static int ioasids_try_charge(struct ioasids_cgroup *ioasids, int num)
++{
++	struct ioasids_cgroup *p, *q;
++
++	for (p = ioasids; parent_ioasids(p); p = parent_ioasids(p)) {
++		int64_t new = atomic64_add_return(num, &p->counter);
++		int64_t limit = atomic64_read(&p->limit);
++
++		if (new > limit)
++			goto revert;
++	}
++
++	return 0;
++
++revert:
++	for (q = ioasids; q != p; q = parent_ioasids(q))
++		ioasids_cancel(q, num);
++	ioasids_cancel(p, num);
++	cgroup_file_notify(&ioasids->events_file);
++
++	return -EAGAIN;
++}
++
++
++/**
++ * ioasid_cg_charge - Check and charge IOASIDs cgroup
++ *
++ * @set: IOASID set used for allocation
++ *
++ * The IOASID quota is managed per cgroup, all process based allocations
++ * must be validated per cgroup hierarchy.
++ * Return 0 if a single IOASID can be allocated or error if failed in various
++ * checks.
++ */
++int ioasid_cg_charge(struct ioasid_set *set)
++{
++	struct mm_struct *mm = get_task_mm(current);
++	struct cgroup_subsys_state *css;
++	struct ioasids_cgroup *ioasids;
++	int ret = 0;
++
++	/* Must be called with a valid mm, not during process exit */
++	if (set->type != IOASID_SET_TYPE_MM)
++		return ret;
++	if (!mm)
++		return -EINVAL;
++	/* We only charge user process allocated PASIDs */
++	if (set->type != IOASID_SET_TYPE_MM) {
++		ret = -EINVAL;
++		goto exit_drop;
++	}
++	if (set->token != mm) {
++		pr_err("No permisson to allocate IOASID\n");
++		ret = -EPERM;
++		goto exit_drop;
++	}
++	rcu_read_lock();
++	css = task_css(current, ioasids_cgrp_id);
++	ioasids = css_ioasids(css);
++	rcu_read_unlock();
++	ret = ioasids_try_charge(ioasids, 1);
++	if (ret)
++		pr_warn("%s: Unable to charge IOASID %d\n", __func__, ret);
++exit_drop:
++	mmput_async(mm);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(ioasid_cg_charge);
++
++/* Uncharge IOASIDs cgroup after freeing an IOASID */
++void ioasid_cg_uncharge(struct ioasid_set *set)
++{
++	struct cgroup_subsys_state *css;
++	struct ioasids_cgroup *ioasids;
++	struct mm_struct *mm;
++
++	/* We only charge user process allocated PASIDs */
++	if (set->type != IOASID_SET_TYPE_MM)
++		return;
++	mm = set->token;
++	if (!mmget_not_zero(mm)) {
++		pr_err("MM defunct! Cannot uncharge IOASID\n");
++		return;
++	}
++	rcu_read_lock();
++	css = task_css(current, ioasids_cgrp_id);
++	ioasids = css_ioasids(css);
++	rcu_read_unlock();
++	ioasids_uncharge(ioasids, 1);
++	mmput_async(mm);
++}
++EXPORT_SYMBOL_GPL(ioasid_cg_uncharge);
++
++static int ioasids_can_attach(struct cgroup_taskset *tset)
++{
++	struct cgroup_subsys_state *dst_css;
++	static struct ioasid_set *set;
++	struct task_struct *leader;
++
++	/*
++	 * IOASIDs are managed at per process level, we only support domain mode
++	 * in task management model. Loop through all processes by each thread
++	 * leader, charge the leader's css.
++	 */
++	cgroup_taskset_for_each_leader(leader, dst_css, tset) {
++		struct ioasids_cgroup *ioasids = css_ioasids(dst_css);
++		struct cgroup_subsys_state *old_css;
++		struct ioasids_cgroup *old_ioasids;
++		struct mm_struct *mm = get_task_mm(leader);
++
++		set = ioasid_find_mm_set(mm);
++		mmput(mm);
++		if (!set)
++			continue;
++
++		old_css = task_css(leader, ioasids_cgrp_id);
++		old_ioasids = css_ioasids(old_css);
++
++		ioasids_charge(ioasids, atomic_read(&set->nr_ioasids));
++		ioasids_uncharge(old_ioasids, atomic_read(&set->nr_ioasids));
++	}
++
++	return 0;
++}
++
++static void ioasids_cancel_attach(struct cgroup_taskset *tset)
++{
++	struct cgroup_subsys_state *dst_css;
++	struct task_struct *task;
++
++	cgroup_taskset_for_each(task, dst_css, tset) {
++		struct ioasids_cgroup *ioasids = css_ioasids(dst_css);
++		struct cgroup_subsys_state *old_css;
++		struct ioasids_cgroup *old_ioasids;
++
++		old_css = task_css(task, ioasids_cgrp_id);
++		old_ioasids = css_ioasids(old_css);
++
++		ioasids_charge(old_ioasids, 1);
++		ioasids_uncharge(ioasids, 1);
++	}
++}
++
++static ssize_t ioasids_max_write(struct kernfs_open_file *of, char *buf,
++			      size_t nbytes, loff_t off)
++{
++	struct cgroup_subsys_state *css = of_css(of);
++	struct ioasids_cgroup *ioasids = css_ioasids(css);
++	int64_t limit, limit_cur;
++	int err;
++
++	mutex_lock(&ioasids_cg_lock);
++	/* Check whether we are growing or shrinking */
++	limit_cur = atomic64_read(&ioasids->limit);
++	buf = strstrip(buf);
++	if (!strcmp(buf, IOASIDS_MAX_STR)) {
++		/* Returns how many IOASIDs was in the pool */
++		limit = ioasid_reserve_capacity(0);
++		ioasid_reserve_capacity(limit - limit_cur);
++		goto set_limit;
++	}
++	err = kstrtoll(buf, 0, &limit);
++	if (err)
++		goto done_unlock;
++
++	err = nbytes;
++	/* Check whether we are growing or shrinking */
++	limit_cur = atomic64_read(&ioasids->limit);
++	if (limit < 0 || limit == limit_cur) {
++		err = -EINVAL;
++		goto done_unlock;
++	}
++	if (limit < limit_cur)
++		err = ioasid_cancel_capacity(limit_cur - limit);
++	else
++		err = ioasid_reserve_capacity(limit - limit_cur);
++	if (err < 0)
++		goto done_unlock;
++
++set_limit:
++	err = nbytes;
++	atomic64_set(&ioasids->limit, limit);
++done_unlock:
++	mutex_unlock(&ioasids_cg_lock);
++	return err;
++}
++
++static int ioasids_max_show(struct seq_file *sf, void *v)
++{
++	struct cgroup_subsys_state *css = seq_css(sf);
++	struct ioasids_cgroup *ioasids = css_ioasids(css);
++	int64_t limit = atomic64_read(&ioasids->limit);
++
++	seq_printf(sf, "%lld\n", limit);
++
++	return 0;
++}
++
++static s64 ioasids_current_read(struct cgroup_subsys_state *css,
++			     struct cftype *cft)
++{
++	struct ioasids_cgroup *ioasids = css_ioasids(css);
++
++	return atomic64_read(&ioasids->counter);
++}
++
++static int ioasids_events_show(struct seq_file *sf, void *v)
++{
++	struct ioasids_cgroup *ioasids = css_ioasids(seq_css(sf));
++
++	seq_printf(sf, "max %lld\n", (s64)atomic64_read(&ioasids->events_limit));
++	return 0;
++}
++
++static struct cftype ioasids_files[] = {
++	{
++		.name = "max",
++		.write = ioasids_max_write,
++		.seq_show = ioasids_max_show,
++		.flags = CFTYPE_NOT_ON_ROOT,
++	},
++	{
++		.name = "current",
++		.read_s64 = ioasids_current_read,
++		.flags = CFTYPE_NOT_ON_ROOT,
++	},
++	{
++		.name = "events",
++		.seq_show = ioasids_events_show,
++		.file_offset = offsetof(struct ioasids_cgroup, events_file),
++		.flags = CFTYPE_NOT_ON_ROOT,
++	},
++	{ }	/* terminate */
 +};
-+#define IOASID_REQUEST_ALLOC	_IO(IOASID_TYPE, IOASID_BASE + 2)
 +
-+/**
-+ * IOASID_REQUEST_FREE - _IOWR(IOASID_TYPE, IOASID_BASE + 3, int)
-+ *
-+ * Free a PASID.
-+ *
-+ * returns: 0 on success, -errno on failure
-+ */
-+#define IOASID_REQUEST_FREE	_IO(IOASID_TYPE, IOASID_BASE + 3)
++struct cgroup_subsys ioasids_cgrp_subsys = {
++	.css_alloc	= ioasids_css_alloc,
++	.css_free	= ioasids_css_free,
++	.can_attach	= ioasids_can_attach,
++	.cancel_attach	= ioasids_cancel_attach,
++	.legacy_cftypes	= ioasids_files,
++	.dfl_cftypes	= ioasids_files,
++	.threaded	= false,
++};
 +
-+#endif /* _UAPI_IOASID_H */
 -- 
 2.25.1
 
