@@ -2,76 +2,107 @@ Return-Path: <SRS0=Fdbd=H7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50443C433DB
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 07:47:04 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51EFC433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 08:03:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1180364E3F
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 07:47:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1180364E3F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 5185C64E38
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 08:03:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5185C64E38
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D83C643025;
-	Mon,  1 Mar 2021 07:47:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EB68A84359;
+	Mon,  1 Mar 2021 08:03:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w7PlZDYbrK1a; Mon,  1 Mar 2021 07:47:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Tq5-0Aer0Nkg; Mon,  1 Mar 2021 08:03:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AC5B5414EF;
-	Mon,  1 Mar 2021 07:47:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7399C8433B;
+	Mon,  1 Mar 2021 08:03:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D214C000B;
-	Mon,  1 Mar 2021 07:47:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A359EC0001
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:47:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 362CAC000D;
+	Mon,  1 Mar 2021 08:03:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71A10C000B
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 08:03:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 915B942D19
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:47:01 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4E6776067E
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 08:03:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FmviYe5mSn_W for <iommu@lists.linux-foundation.org>;
- Mon,  1 Mar 2021 07:47:01 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ED24F414EF
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:47:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=EvDfqiSn3rulcjf6po/DEAzkDiYY8dbrnWHudBCB31U=; b=NuEeiEt+jz2nL+G8tqDzAjhDCT
- sk6sMFuu25E/9wU2JOTtwf+LIn3rI3KgAlpoyZOe+7Mx17+VbccT2ZU56rfmAJ587I+611Cv6Eua9
- P05heQ5oMUcxoDbrElSx3XK56ZAjA7Ykza3keQrj7x2FYuE2HaI2HKli9tU4e3LXIpv8p6snIXBJt
- U6oC4aVDBLMcWx4CBS5dL7ZoC00Q0Vb8WtjON8vC6PlFKcqIg2ugdoyrWD9bS7LJoxzsTUJ5t2Ska
- yp+PFgZ3gDWG1NEsIbSXfPb156pc19QFB4tERdHFZHJNeq9oZObZ81KUJSGDAB7JWDe9bxrRiQzY1
- UkjKlPYg==;
-Received: from [2001:4bb8:19b:e4b7:cdf9:733f:4874:8eb4] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1lGdGJ-00FRGy-Ot; Mon, 01 Mar 2021 07:46:44 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: [PATCH 14/14] swiotlb: remove swiotlb_nr_tbl
-Date: Mon,  1 Mar 2021 08:44:36 +0100
-Message-Id: <20210301074436.919889-15-hch@lst.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210301074436.919889-1-hch@lst.de>
-References: <20210301074436.919889-1-hch@lst.de>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LfprFsnuWwUy for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Mar 2021 08:02:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com
+ [209.85.216.54])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 48AC26067F
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 08:02:50 +0000 (UTC)
+Received: by mail-pj1-f54.google.com with SMTP id i14so8924929pjz.4
+ for <iommu@lists.linux-foundation.org>; Mon, 01 Mar 2021 00:02:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=nAI7JFt1UD5ie/O04aHZr9x4mcfS7unkHBLNfxD5o+o=;
+ b=SFaZ0gv6F24x7eFsuB2qsvQxjOf3Z+NhYyfCnsBtSzeXCrFOVHKKq3cSMflFuJEf7t
+ RGkm8xdQyxTkIASw+sSLeDsi6bS8cuUJLEj3I7f1uzp/SlsigQ81CL1idwQRhKYtySuc
+ Nf5CkyIB/9l5D+Lwyo3YJLUVwOnYuTD05igzy8OO8W0sxzCR3gbQt+mE1/efA1mdlkcX
+ i24auZTkaainMkAvmedRh78l+f8LL6f3fMnLehJZgPPrxXS/oec671sWwECykyt2X0ZH
+ aD5+Q0buxKK8LEVfX5qmhHkROCoyl46sIed4OWUwQ9uEjKLz64z2B1pt4a25yW7JbqnG
+ qd7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=nAI7JFt1UD5ie/O04aHZr9x4mcfS7unkHBLNfxD5o+o=;
+ b=CLKn2mYpn+QWXKTvwrJ4FGGBd+tmJB1lzdAhn8U887AAbDiuPM9VDV6noab6dqevT/
+ fUlt32ZkHyzfCj7lYhIwIJz7ZKD5Ar30jS+R3/XIDEsajCDqurLd9Eq9Sd6o+JKF6PTT
+ FFiMkybOacvIjTU3AMSzhnASaKsSNbAzzoIGY+R0HLJA6GSw5FEPk4GJvqS3oeryuzaE
+ 41FoKrcI09XAo6/hCM5hyChP5nzeWzltiRNHH1R0Nn23F+h6wGod/8dvpPxfijyG0xyh
+ z6VTZdUjc9/NeGySA1OfKdLIVvKKzAGeP3qhTc+ir1KBb92m31+wx1xyGdbUUodv76W8
+ AEPg==
+X-Gm-Message-State: AOAM533zd5moFBnnG05ihcPoDCU/4BGWkXM9NEkbooPqKh4wjoWiTAtG
+ jaIJ38kWn/tnzpWzBonAJWc=
+X-Google-Smtp-Source: ABdhPJxKvn8bfIKb0AorjDObEuU809Zbvx4VRRIltMlNLHlIeNwYJzfXaB/rm0L8/nXEY/CuxicR0w==
+X-Received: by 2002:a17:902:e54e:b029:de:8c70:2ed0 with SMTP id
+ n14-20020a170902e54eb02900de8c702ed0mr14283605plf.3.1614585769917; 
+ Mon, 01 Mar 2021 00:02:49 -0800 (PST)
+Received: from google.com ([2409:10:2e40:5100:b0d4:9de6:fcfc:43a8])
+ by smtp.gmail.com with ESMTPSA id t23sm12102971pgv.34.2021.03.01.00.02.46
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 01 Mar 2021 00:02:49 -0800 (PST)
+Date: Mon, 1 Mar 2021 17:02:43 +0900
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 6/7] dma-iommu: implement ->alloc_noncontiguous
+Message-ID: <YDyfo9OKkRHxd89O@google.com>
+References: <20210202095110.1215346-1-hch@lst.de>
+ <20210202095110.1215346-7-hch@lst.de>
+ <CAAFQd5BXAWeB2h4RvqsF1q8ip-Rhew80c7y1_og22-x3rS8KOQ@mail.gmail.com>
+ <20210216084947.GA23897@lst.de> <YDyVFi26RPz5RrJB@google.com>
+ <20210301072128.GA27039@lst.de>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Michael Ellerman <mpe@ellerman.id.au>, iommu@lists.linux-foundation.org,
- xen-devel@lists.xenproject.org, Claire Chang <tientzu@chromium.org>,
- linuxppc-dev@lists.ozlabs.org, Dongli Zhang <dongli.zhang@oracle.com>
+Content-Disposition: inline
+In-Reply-To: <20210301072128.GA27039@lst.de>
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Ricardo Ribalda <ribalda@chromium.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,99 +120,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-All callers just use it to check if swiotlb is active at all, for which
-they can just use is_swiotlb_active.  In the longer run drivers need
-to stop using is_swiotlb_active as well, but let's do the simple step
-first.
+On (21/03/01 08:21), Christoph Hellwig wrote:
+> On Mon, Mar 01, 2021 at 04:17:42PM +0900, Sergey Senozhatsky wrote:
+> > > > Do you think we could add the attrs parameter to the
+> > > > dma_alloc_noncontiguous() API?
+> > > 
+> > > Yes, we could probably do that.
+> > 
+> > I can cook a patch, unless somebody is already looking into it.
+> 
+> I plan to resend the whole series with the comments very soon.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/gpu/drm/i915/gem/i915_gem_internal.c | 2 +-
- drivers/gpu/drm/nouveau/nouveau_ttm.c        | 2 +-
- drivers/pci/xen-pcifront.c                   | 2 +-
- include/linux/swiotlb.h                      | 1 -
- kernel/dma/swiotlb.c                         | 7 +------
- 5 files changed, 4 insertions(+), 10 deletions(-)
+Oh, OK.
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-index ad22f42541bda6..a9d65fc8aa0eab 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-@@ -42,7 +42,7 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
- 
- 	max_order = MAX_ORDER;
- #ifdef CONFIG_SWIOTLB
--	if (swiotlb_nr_tbl()) {
-+	if (is_swiotlb_active()) {
- 		unsigned int max_segment;
- 
- 		max_segment = swiotlb_max_segment();
-diff --git a/drivers/gpu/drm/nouveau/nouveau_ttm.c b/drivers/gpu/drm/nouveau/nouveau_ttm.c
-index a37bc3d7b38b3b..9662522aa0664a 100644
---- a/drivers/gpu/drm/nouveau/nouveau_ttm.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_ttm.c
-@@ -321,7 +321,7 @@ nouveau_ttm_init(struct nouveau_drm *drm)
- 	}
- 
- #if IS_ENABLED(CONFIG_SWIOTLB) && IS_ENABLED(CONFIG_X86)
--	need_swiotlb = !!swiotlb_nr_tbl();
-+	need_swiotlb = is_swiotlb_active();
- #endif
- 
- 	ret = ttm_bo_device_init(&drm->ttm.bdev, &nouveau_bo_driver,
-diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
-index c6fe0cfec0f681..a549e822033fd6 100644
---- a/drivers/pci/xen-pcifront.c
-+++ b/drivers/pci/xen-pcifront.c
-@@ -693,7 +693,7 @@ static int pcifront_connect_and_init_dma(struct pcifront_device *pdev)
- 
- 	spin_unlock(&pcifront_dev_lock);
- 
--	if (!err && !swiotlb_nr_tbl()) {
-+	if (!err && !is_swiotlb_active()) {
- 		err = pci_xen_swiotlb_init_late();
- 		if (err)
- 			dev_err(&pdev->xdev->dev, "Could not setup SWIOTLB!\n");
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 63f7a63f61d098..216854a5e5134b 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -37,7 +37,6 @@ enum swiotlb_force {
- 
- extern void swiotlb_init(int verbose);
- int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
--extern unsigned long swiotlb_nr_tbl(void);
- unsigned long swiotlb_size_or_default(void);
- extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
- extern int swiotlb_late_init_with_default_size(size_t default_size);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b7bcd7b804bfe8..809d5fdc204675 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -94,12 +94,6 @@ setup_io_tlb_npages(char *str)
- }
- early_param("swiotlb", setup_io_tlb_npages);
- 
--unsigned long swiotlb_nr_tbl(void)
--{
--	return io_tlb_default_mem ? io_tlb_default_mem->nslabs : 0;
--}
--EXPORT_SYMBOL_GPL(swiotlb_nr_tbl);
--
- unsigned int swiotlb_max_segment(void)
- {
- 	return io_tlb_default_mem ? max_segment : 0;
-@@ -652,6 +646,7 @@ bool is_swiotlb_active(void)
- {
- 	return io_tlb_default_mem != NULL;
- }
-+EXPORT_SYMBOL_GPL(is_swiotlb_active);
- 
- #ifdef CONFIG_DEBUG_FS
- 
--- 
-2.29.2
+I thought the series was in linux-next already so a single patch
+would do.
 
+	-ss
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
