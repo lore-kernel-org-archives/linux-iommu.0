@@ -2,78 +2,106 @@ Return-Path: <SRS0=Fdbd=H7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF11AC433E0
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 00:53:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E88C433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 07:17:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 447D564E31
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 00:53:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 447D564E31
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9310B64E41
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 07:17:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9310B64E41
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E78F260640;
-	Mon,  1 Mar 2021 00:53:39 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 502B482F13;
+	Mon,  1 Mar 2021 07:17:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id anfi6vz6DEPs; Mon,  1 Mar 2021 00:53:39 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fArA8bmnReDU; Mon,  1 Mar 2021 07:17:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C0446605C1;
-	Mon,  1 Mar 2021 00:53:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 436CF82EF0;
+	Mon,  1 Mar 2021 07:17:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A55FFC000B;
-	Mon,  1 Mar 2021 00:53:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59A3BC0001
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 00:53:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E772C0011;
+	Mon,  1 Mar 2021 07:17:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18419C0001
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:17:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 47EF643014
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 00:53:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 07C7F605E5
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:17:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DQTnKH-VpllW for <iommu@lists.linux-foundation.org>;
- Mon,  1 Mar 2021 00:53:35 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IcL0bli3Fdhh for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Mar 2021 07:17:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp2.osuosl.org (Postfix) with ESMTPS id BF2A642FAC
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 00:53:35 +0000 (UTC)
-IronPort-SDR: +/ax2Eea8LW96rKDWVPuknRIyxynmki1hVx6G4MnGhqLK1kG3vumBrHznMFvFXT6EmnhxAZwZp
- nVMg5+To2n6g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9909"; a="205918296"
-X-IronPort-AV: E=Sophos;i="5.81,214,1610438400"; d="scan'208";a="205918296"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Feb 2021 16:53:34 -0800
-IronPort-SDR: aLtvsQrI8QH9YaUUUS8Mqo5aWURR0Uy3wyoquBZY82C2dk5qiZwjjBI8llH7I1nfYXpcIl/0pT
- xNtPnoa4SDcQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,214,1610438400"; d="scan'208";a="426753275"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 28 Feb 2021 16:53:32 -0800
-Subject: Re: [PATCH] iommu/vt-d: Fix status code for Allocate/Free PASID
- command
-To: Zenghui Yu <yuzenghui@huawei.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <20210227073909.432-1-yuzenghui@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <30c18a6d-fd0f-6e63-c231-d6f068410342@linux.intel.com>
-Date: Mon, 1 Mar 2021 08:44:39 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com
+ [209.85.216.53])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 71336605E4
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 07:17:49 +0000 (UTC)
+Received: by mail-pj1-f53.google.com with SMTP id
+ i4-20020a17090a7184b02900bfb60fbc6bso1966362pjk.0
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Feb 2021 23:17:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=gONCc0ixoRKjPUJ0zP8hmFkWFvyDxygh0qJOWZmcFdU=;
+ b=N/8qgwXtE/G/fdawu/Fmb4mJBx6ezmXyU21jAUzWM6K/79Lrri652nxJ472KigfrE/
+ VURa7PizmidkddaH4izsdfcMqcr5v6p2X3pFUDQegRATUcnZO/lMjJzs6cjCBlSFo+jt
+ r7ZsPHlSVhYG8ejRDtmG+UT4Epzy/QzbTxFLB9U0U8TiiI5nQPHxz4PLaY9WXATtFRIQ
+ ftr1hyefCK1dsRM+ko6czzc1Kx3N8isfrl2h+t5brWYvS6lqplvSn89WHL2bfFvxfvN6
+ Gu3mzywhSyX2AGEtW/n+Egp/qJzvKrlwXmSwPuBNPI7GcyxW6lVq4yIyJ/HT9cCULa/n
+ y5Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=gONCc0ixoRKjPUJ0zP8hmFkWFvyDxygh0qJOWZmcFdU=;
+ b=db58yBORS6m0xcg2Tz+gkOJcRYiOZourt0pOueM5q0qUIFsKwmLQ6X/lhN92NI6qW4
+ Ouw57I8kTKxJ3peKtlykKEyn2s9uoktaFHGkm0YQO9USf1hgkPAYPV9YGwZCV3d2lHK4
+ v6hOIFM5PCMSz3wUFmjVwZuzAFOZzvsLr62nDQqY2QNfPI50FXL8RJVkNsNyR42OQahi
+ KPSlft/EF7jUl0/P7kJLyXgT4feAV79NyDS0M9Ayktk+Sjq9zOzWozKd8jsIgElRsXbu
+ RH8ij6vM31JYUxwtRRRa07arGS38qiSZ9fu71BQdBKja7XBTXBYUV/vKmB1/H0S8slH5
+ 4Jug==
+X-Gm-Message-State: AOAM533z8KY2i2MI1q/Nlx9RmIqFz+/FSWhCOxnyJq8OmPYQ70A0hMaY
+ EWemBig8kzxpM1borIjexNI=
+X-Google-Smtp-Source: ABdhPJwsIHRc09CGc3LHIDlq4x0PhiyRF7geKl4Fls4ZybTN+ojHynqyozoqUa+9wweO0267NYAUoQ==
+X-Received: by 2002:a17:902:8d95:b029:e2:c956:f085 with SMTP id
+ v21-20020a1709028d95b02900e2c956f085mr14054151plo.35.1614583068826; 
+ Sun, 28 Feb 2021 23:17:48 -0800 (PST)
+Received: from google.com ([2409:10:2e40:5100:b0d4:9de6:fcfc:43a8])
+ by smtp.gmail.com with ESMTPSA id u129sm16185037pfu.219.2021.02.28.23.17.45
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 28 Feb 2021 23:17:48 -0800 (PST)
+Date: Mon, 1 Mar 2021 16:17:42 +0900
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 6/7] dma-iommu: implement ->alloc_noncontiguous
+Message-ID: <YDyVFi26RPz5RrJB@google.com>
+References: <20210202095110.1215346-1-hch@lst.de>
+ <20210202095110.1215346-7-hch@lst.de>
+ <CAAFQd5BXAWeB2h4RvqsF1q8ip-Rhew80c7y1_og22-x3rS8KOQ@mail.gmail.com>
+ <20210216084947.GA23897@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <20210227073909.432-1-yuzenghui@huawei.com>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, dwmw2@infradead.org, wanghaibin.wang@huawei.com,
- will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <20210216084947.GA23897@lst.de>
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Ricardo Ribalda <ribalda@chromium.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,49 +114,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/27/21 3:39 PM, Zenghui Yu wrote:
-> As per Intel vt-d spec, Rev 3.0 (section 10.4.45 "Virtual Command Response
-> Register"), the status code of "No PASID available" error in response to
-> the Allocate PASID command is 2, not 1. The same for "Invalid PASID" error
-> in response to the Free PASID command.
+On (21/02/16 09:49), Christoph Hellwig wrote:
+> > When working on the videobuf2 integration with Sergey I noticed that
+> > we always pass 0 as DMA attrs here, which removes the ability for
+> > drivers to use DMA_ATTR_ALLOC_SINGLE_PAGES.
+> > 
+> > It's quite important from a system stability point of view, because by
+> > default the iommu_dma allocator would prefer big order allocations for
+> > TLB locality reasons. For many devices, though, it doesn't really
+> > affect the performance, because of random access patterns, so single
+> > pages are good enough and reduce the risk of allocation failures or
+> > latency due to fragmentation.
+> > 
+> > Do you think we could add the attrs parameter to the
+> > dma_alloc_noncontiguous() API?
 > 
-> We will otherwise see confusing kernel log under the command failure from
-> guest side. Fix it.
-> 
-> Fixes: 24f27d32ab6b ("iommu/vt-d: Enlightened PASID allocation")
-> Signed-off-by: Zenghui Yu <yuzenghui@huawei.com>
-> ---
->   drivers/iommu/intel/pasid.h | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-> index 97dfcffbf495..444c0bec221a 100644
-> --- a/drivers/iommu/intel/pasid.h
-> +++ b/drivers/iommu/intel/pasid.h
-> @@ -30,8 +30,8 @@
->   #define VCMD_VRSP_IP			0x1
->   #define VCMD_VRSP_SC(e)			(((e) >> 1) & 0x3)
->   #define VCMD_VRSP_SC_SUCCESS		0
-> -#define VCMD_VRSP_SC_NO_PASID_AVAIL	1
-> -#define VCMD_VRSP_SC_INVALID_PASID	1
-> +#define VCMD_VRSP_SC_NO_PASID_AVAIL	2
-> +#define VCMD_VRSP_SC_INVALID_PASID	2
->   #define VCMD_VRSP_RESULT_PASID(e)	(((e) >> 8) & 0xfffff)
->   #define VCMD_CMD_OPERAND(e)		((e) << 8)
->   /*
-> 
+> Yes, we could probably do that.
 
-Thanks a lot for catching this.
+I can cook a patch, unless somebody is already looking into it.
 
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
+	-ss
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
