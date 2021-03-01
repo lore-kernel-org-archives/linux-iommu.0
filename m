@@ -6,69 +6,79 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B07C433DB
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 13:20:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D579C433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 15:50:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C2BC764E07
-	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 13:20:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2BC764E07
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8569C64DE3
+	for <iommu@archiver.kernel.org>; Mon,  1 Mar 2021 15:50:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8569C64DE3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9093943017;
-	Mon,  1 Mar 2021 13:20:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2CB9A60659;
+	Mon,  1 Mar 2021 15:50:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HAjD-zl5lVyT; Mon,  1 Mar 2021 13:20:31 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id E9vguPr4m4yk; Mon,  1 Mar 2021 15:50:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 64B5E42FC0;
-	Mon,  1 Mar 2021 13:20:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C713460640;
+	Mon,  1 Mar 2021 15:50:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FF46C000B;
-	Mon,  1 Mar 2021 13:20:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 08070C0001
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 13:20:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A684EC000B;
+	Mon,  1 Mar 2021 15:50:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 83008C0001
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 15:50:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id EA59C4F23C
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 13:20:29 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 64FD483DA5
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 15:50:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id n7rHWQXB6xWq for <iommu@lists.linux-foundation.org>;
- Mon,  1 Mar 2021 13:20:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kp-ztfpgROVl for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Mar 2021 15:50:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 790E64F22D
- for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 13:20:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B38C1FB;
- Mon,  1 Mar 2021 05:20:27 -0800 (PST)
-Received: from [10.57.48.219] (unknown [10.57.48.219])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0845A3F70D;
- Mon,  1 Mar 2021 05:20:25 -0800 (PST)
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6943F83DA4
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Mar 2021 15:50:40 +0000 (UTC)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Dq4KJ5Dj4z67tT2;
+ Mon,  1 Mar 2021 23:43:00 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 1 Mar 2021 16:50:36 +0100
+Received: from [10.47.7.243] (10.47.7.243) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 1 Mar 2021
+ 15:50:35 +0000
 Subject: Re: [PATCH 1/1] Revert "iommu/iova: Retry from last rb tree node if
  iova search fails"
-To: John Garry <john.garry@huawei.com>,
- "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- iommu <iommu@lists.linux-foundation.org>,
- linux-kernel <linux-kernel@vger.kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, "Leizhen (ThunderTown)"
+ <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel
+ <linux-kernel@vger.kernel.org>
 References: <20210129092120.1482-1-thunder.leizhen@huawei.com>
  <5505b1e5-2450-d5c4-6d77-5bb21fd0b6a1@huawei.com>
  <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
  <7e18829a-3e7e-cc82-9d33-366cf2025624@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <4c634a22-7168-b51c-a012-2009fc03e6c3@arm.com>
-Date: Mon, 1 Mar 2021 13:20:19 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+ <4c634a22-7168-b51c-a012-2009fc03e6c3@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <d090b869-b3ac-fecc-9efd-d870e43e0d99@huawei.com>
+Date: Mon, 1 Mar 2021 15:48:42 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <7e18829a-3e7e-cc82-9d33-366cf2025624@huawei.com>
-Content-Language: en-GB
+In-Reply-To: <4c634a22-7168-b51c-a012-2009fc03e6c3@arm.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.7.243]
+X-ClientProxiedBy: lhreml747-chm.china.huawei.com (10.201.108.197) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Cc: Vijayanand Jitta <vjitta@codeaurora.org>, Linuxarm <linuxarm@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -82,110 +92,140 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMi0yNSAxMzo1NCwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAyOS8wMS8yMDIxIDEy
-OjAzLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDIwMjEtMDEtMjkgMDk6NDgsIExlaXpoZW4g
-KFRodW5kZXJUb3duKSB3cm90ZToKPj4+Cj4+PiBDdXJyZW50bHksIHdlIGFyZSB0aGlua2luZyBh
-Ym91dCB0aGUgc29sdXRpb24gdG8gdGhlIHByb2JsZW0uIAo+Pj4gSG93ZXZlciwgYmVjYXVzZSB0
-aGUgZW5kIHRpbWUgb2YgdjUuMTEgaXMgYXBwcm9hY2hpbmcsIHRoaXMgcGF0Y2ggaXMgCj4+PiBz
-ZW50IGZpcnN0Lgo+Pgo+PiBIb3dldmVyLCB0aGF0IGNvbW1pdCB3YXMgbWFkZSBmb3IgYSByZWFz
-b24gLSBob3cgZG8gd2UganVzdGlmeSB0aGF0IAo+PiBvbmUgdGhpbmcgYmVpbmcgc2xvdyBpcyBt
-b3JlIGltcG9ydGFudCB0aGFuIGFub3RoZXIgdGhpbmcgYmVpbmcgCj4+IGNvbXBsZXRlbHkgYnJv
-a2VuPyBJdCdzIG5vdCBwcmFjdGljYWwgdG8ganVzdCBrZWVwIGRvaW5nIHRoZSBwYXRjaCAKPj4g
-aG9rZXktY29rZXkgYmFzZWQgb24gd2hvZXZlciBzaG91dHMgbG91ZGVzdCA6KAo+Pgo+Pj4gT24g
-MjAyMS8xLzI5IDE3OjIxLCBaaGVuIExlaSB3cm90ZToKPj4+PiBUaGlzIHJldmVydHMgY29tbWl0
-IDRlODlkY2U3MjUyMTNkM2QwYjA0NzUyMTFiNTAwZWRhNGVmNGJmMmYuCj4+Pj4KPj4+PiBXZSBm
-aW5kIHRoYXQgdGhpcyBwYXRjaCBoYXMgYSBncmVhdCBpbXBhY3Qgb24gcGVyZm9ybWFuY2UuIEFj
-Y29yZGluZyB0bwo+Pj4+IG91ciB0ZXN0OiB0aGUgaW9wcyBkZWNyZWFzZXMgZnJvbSAxNjU1LjZL
-IHRvIDg5My41SywgYWJvdXQgaGFsZi4KPj4+Pgo+Pj4+IEhhcmR3YXJlOiAxIFNBUyBleHBhbmRl
-ciB3aXRoIDEyIFNBUyBTU0QKPj4+PiBDb21tYW5kOsKgIE9ubHkgdGhlIG1haW4gcGFyYW1ldGVy
-cyBhcmUgbGlzdGVkLgo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgIGZpbyBicz00ayBydz1yZWFk
-IGlvZGVwdGg9MTI4IGNwdXNfYWxsb3dlZD0wLTEyNwo+Pgo+PiBGV0lXLCBJJ20gOTklIHN1cmUg
-dGhhdCB3aGF0IHlvdSByZWFsbHkgd2FudCBpcyBbMV0sIGJ1dCB0aGVuIHlvdSBnZXQgCj4+IHRv
-IGJhdHRsZSBhZ2FpbnN0IGFuIHVua25vd24gcXVhbnRpdHkgb2YgZG9kZ3kgZmlybXdhcmUgaW5z
-dGVhZC4KPj4KPiAKPiBTb21ldGhpbmcgd2hpY2ggaGFzIG5vdCBiZWVuIHNhaWQgYmVmb3JlIGlz
-IHRoYXQgdGhpcyBvbmx5IGhhcHBlbnMgZm9yIAo+IHN0cmljdCBtb2RlLgoKSSB0aGluayB0aGF0
-IG1ha2VzIHNlbnNlIC0gb25jZSB5b3UgKmhhdmUqIGFjdHVhbGx5IGZhaWxlZCB0byBhbGxvY2F0
-ZSAKZnJvbSB0aGUgMzItYml0IHNwYWNlLCBtYXgzMl9hbGxvY19zaXplIHdpbGwgbWFrZSBzdWJz
-ZXF1ZW50IGF0dGVtcHRzIApmYWlsIGltbWVkaWF0ZWx5LiBJbiBub24tc3RyaWN0IG1vZGUgeW91
-J3JlIG1vc3QgbGlrZWx5IGZyZWVpbmcgMzItYml0IApJT1ZBcyBiYWNrIHRvIHRoZSB0cmVlIC0g
-YW5kIHRodXMgcmVzZXQgbWF4MzJfYWxsb2Nfc2l6ZSAtIG11Y2ggbGVzcyAKb2Z0ZW4sIGFuZCB5
-b3UnbGwgbWFrZSBtb3JlIHRvdGFsIHNwYWNlIGF2YWlsYWJsZSBlYWNoIHRpbWUsIGJvdGggb2Yg
-CndoaWNoIHdpbGwgYW1vcnRpc2UgdGhlIGNvc3Qgb2YgZ2V0dGluZyBiYWNrIGludG8gdGhhdCBm
-YWlsZWQgc3RhdGUgCmFnYWluLiBDb252ZXJzZWx5LCB0aGUgd29yc3QgY2FzZSBpbiBzdHJpY3Qg
-bW9kZSBpcyB0byBoYXZlIG11bHRpcGxlIAp0aHJlYWRzIGdldHRpbmcgaW50byB0aGlzIHBhdGhv
-bG9naWNhbCBjeWNsZToKCjE6IGFsbG9jYXRlLCBnZXQgbGFzdCBhdmFpbGFibGUgSU9WQQoyOiBh
-bGxvY2F0ZSwgZmFpbCBhbmQgc2V0IG1heDMyX2FsbG9jX3NpemUKMzogZnJlZSBvbmUgSU9WQSwg
-cmVzZXQgbWF4MzJfYWxsb2Nfc2l6ZSwgZ290byAxCgpOb3csIGdpdmVuIHRoZSBicm9rZW4gYmVo
-YXZpb3VyIHdoZXJlIHRoZSBjYWNoZWQgUEZOIGNhbiBnZXQgc3R1Y2sgbmVhciAKdGhlIGJvdHRv
-bSBvZiB0aGUgYWRkcmVzcyBzcGFjZSwgc3RlcCAyIG1pZ2h0IHdlbGwgaGF2ZSBiZWVuIGZhc3Rl
-ciBhbmQgCm1vcmUgcHJlbWF0dXJlIHRoYW4gaXQgc2hvdWxkIGhhdmUsIGJ1dCBJIGhvcGUgeW91
-IGNhbiBhcHByZWNpYXRlIHRoYXQgCnJlbHlpbmcgb24gYW4gYWxsb2NhdG9yIGJlaW5nIGJyb2tl
-biBhdCBpdHMgZnVuZGFtZW50YWwgcHVycG9zZSBvZiAKYWxsb2NhdGluZyBpcyBub3QgYSBnb29k
-IG9yIHN1c3RhaW5hYmxlIHRoaW5nIHRvIGRvLgoKV2hpbGUgbWF4MzJfYWxsb2Nfc2l6ZSBpbmRp
-cmVjdGx5IHRyYWNrcyB0aGUgbGFyZ2VzdCAqY29udGlndW91cyogCmF2YWlsYWJsZSBzcGFjZSwg
-b25lIG9mIHRoZSBpZGVhcyBmcm9tIHdoaWNoIGl0IGdyZXcgd2FzIHRvIHNpbXBseSBrZWVwIApj
-b3VudCBvZiB0aGUgdG90YWwgbnVtYmVyIG9mIGZyZWUgUEZOcy4gSWYgeW91J3JlIHJlYWxseSBz
-cGVuZGluZyAKc2lnbmlmaWNhbnQgdGltZSBkZXRlcm1pbmluZyB0aGF0IHRoZSB0cmVlIGlzIGZ1
-bGwsIGFzIG9wcG9zZWQgdG8ganVzdCAKdGFraW5nIGxvbmdlciB0byBldmVudHVhbGx5IHN1Y2Nl
-ZWQsIHRoZW4gaXQgbWlnaHQgYmUgcmVsYXRpdmVseSAKaW5ub2N1b3VzIHRvIHRhY2sgb24gdGhh
-dCBzZW1pLXJlZHVuZGFudCBleHRyYSBhY2NvdW50aW5nIGFzIGEgCnNlbGYtY29udGFpbmVkIHF1
-aWNrIGZpeCBmb3IgdGhhdCB3b3JzdCBjYXNlLgoKPiBBbnl3YXksIHdlIHNlZSB+NTAlIHRocm91
-Z2hwdXQgcmVncmVzc2lvbiwgd2hpY2ggaXMgaW50b2xlcmFibGUuIEFzIHNlZW4gCj4gaW4gWzBd
-LCBJIHB1dCB0aGlzIGRvd24gdG8gdGhlIGZhY3QgdGhhdCB3ZSBoYXZlIHNvIG1hbnkgSU9WQSBy
-ZXF1ZXN0cyAKPiB3aGljaCBleGNlZWQgdGhlIHJjYWNoZSBzaXplIGxpbWl0LCB3aGljaCBtZWFu
-cyBtYW55IFJCIHRyZWUgYWNjZXNzZXMgCj4gZm9yIG5vbi1jYWNoZWJsZSBJT1ZBcywgd2hpY2gg
-YXJlIG5vdyBzbG93ZXIuCj4gCj4gT24gYW5vdGhlciBwb2ludCwgYXMgZm9yIGxvbmd0ZXJtIElP
-VkEgYWdpbmcgaXNzdWUsIGl0IHNlZW1zIHRoYXQgdGhlcmUgCj4gaXMgbm8gY29uY2x1c2lvbiB0
-aGVyZS4gSG93ZXZlciBJIGRpZCBtZW50aW9uIHRoZSBpc3N1ZSBvZiBJT1ZBIHNpemVzIAo+IGV4
-Y2VlZGluZyByY2FjaGUgc2l6ZSBmb3IgdGhhdCBpc3N1ZSwgc28gbWF5YmUgd2UgY2FuIGZpbmQg
-YSBjb21tb24gCj4gc29sdXRpb24uIFNpbWlsYXIgdG8gYSBmaXhlZCByY2FjaGUgZGVwb3Qgc2l6
-ZSwgaXQgc2VlbXMgdGhhdCBoYXZpbmcgYSAKPiBmaXhlZCByY2FjaGUgbWF4IHNpemUgcmFuZ2Ug
-dmFsdWUgKGF0IDYpIGRvZXNuJ3Qgc2NhbGUgZWl0aGVyLgoKV2VsbCwgSSdkIHNheSB0aGF0J3Mg
-bW9yZSBvZiBhIHdvcmtsb2FkIHR1bmluZyB0aGluZyB0aGFuIGEgc2NhbGFiaWxpdHkgCm9uZSAt
-IGEgbWFzc2l2ZSBzeXN0ZW0gd2l0aCBodW5kcmVkcyBvZiBDUFVzIHRoYXQgc3BlbmRzIGFsbCBk
-YXkgCmZsaW5naW5nIDE1MDAtYnl0ZSBuZXR3b3JrIHBhY2tldHMgYXJvdW5kIGFzIGZhc3QgYXMg
-aXQgY2FuIG1pZ2h0IGJlIApoYXBweSB3aXRoIGFuIGV2ZW4gc21hbGxlciB2YWx1ZSBhbmQgdXNp
-bmcgdGhlIHNhdmVkIG1lbW9yeSBmb3IgCnNvbWV0aGluZyBlbHNlLiBJSVJDIHRoZSB2YWx1ZSBv
-ZiA2IGlzIGEgZmFpcmx5IGFyYml0cmFyeSBjaG9pY2UgZm9yIGEgCnRyYWRlb2ZmIGJldHdlZW4g
-ZXhwZWN0ZWQgdXRpbGl0eSBhbmQgbWVtb3J5IGNvbnN1bXB0aW9uLCBzbyBtYWtpbmcgaXQgYSAK
-S2NvbmZpZyBvciBjb21tYW5kLWxpbmUgdHVuZWFibGUgZG9lcyBzZWVtIGxpa2UgYSBzZW5zaWJs
-ZSB0aGluZyB0byBleHBsb3JlLgoKPiBBcyBmb3IgNGU4OWRjZTcyNTIxLCBzbyBldmVuIGlmIGl0
-J3MgcHJvcGVyIHRvIHJldHJ5IGZvciBhIGZhaWxlZCBhbGxvYywgCj4gaXQgaXMgbm90IGFsd2F5
-cyBuZWNlc3NhcnkuIEkgbWVhbiwgaWYgd2UncmUgbGltaXRpbmcgb3Vyc2VsdmVzIHRvIDMyYiAK
-PiBzdWJzcGFjZSBmb3IgdGhpcyBTQUMgdHJpY2sgYW5kIHdlIGZhaWwgdGhlIGFsbG9jLCB0aGVu
-IHdlIGNhbiB0cnkgdGhlIAo+IHNwYWNlIGFib3ZlIDMyYiBmaXJzdCAoaWYgdXNhYmxlKS4gSWYg
-dGhhdCBmYWlscywgdGhlbiByZXRyeSB0aGVyZS4gSSAKPiBkb24ndCBzZWUgYSBuZWVkIHRvIHJl
-dHJ5IHRoZSAzMmIgc3Vic3BhY2UgaWYgd2UncmUgbm90IGxpbWl0ZWQgdG8gaXQuIAo+IEhvdyBh
-Ym91dCBpdD8gV2UgdHJpZWQgdGhhdCBpZGVhIGFuZCBpdCBsb29rcyB0byBqdXN0IGFib3V0IHJl
-c3RvcmUgCj4gcGVyZm9ybWFuY2UuCgpUaGUgdGhpbmcgaXMsIGlmIHlvdSBkbyBoYXZlIGFuIGFj
-dHVhbCBQQ0kgZGV2aWNlIHdoZXJlIERBQyBtaWdodCBtZWFuIGEgCjMzJSB0aHJvdWdocHV0IGxv
-c3MgYW5kIHlvdSdyZSBtYXBwaW5nIGEgbG9uZy1saXZlZCBidWZmZXIsIG9yIHlvdSdyZSBvbiAK
-b25lIG9mIHRoZXNlIHN5c3RlbXMgd2hlcmUgZmlybXdhcmUgZmFpbHMgdG8gZG9jdW1lbnQgYWRk
-cmVzcyBsaW1pdHMgYW5kIAp1c2luZyB0aGUgZnVsbCBJT01NVSBhZGRyZXNzIHdpZHRoIHF1aWV0
-bHkgYnJlYWtzIHRoaW5ncywgdGhlbiB5b3UgCmFsbW9zdCBjZXJ0YWlubHkgKmRvKiB3YW50IHRo
-ZSBhbGxvY2F0b3IgdG8gYWN0dWFsbHkgZG8gYSBwcm9wZXIgam9iIG9mIAp0cnlpbmcgdG8gc2F0
-aXNmeSB0aGUgZ2l2ZW4gcmVxdWVzdC4KCkZ1cnRoZXJtb3JlLCB3aGF0IHlvdSBwcm9wb3NlIGlz
-IHN0aWxsIGZyYWdpbGUgZm9yIHlvdXIgb3duIHVzZS1jYXNlIAphbnl3YXkuIElmIHNvbWVvbmUg
-bWFrZXMgaW50ZXJuYWwgY2hhbmdlcyB0byB0aGUgYWxsb2NhdG9yIC0gY29udmVydHMgaXQgCnRv
-IGEgZGlmZmVyZW50IHRyZWUgc3RydWN0dXJlLCBpbXBsZW1lbnRzIHNwbGl0IGxvY2tpbmcgZm9y
-IGNvbmN1cnJlbmN5LCAKdGhhdCBzb3J0IG9mIHRoaW5nIC0gYW5kIGl0IGZ1bmRhbWVudGFsbHkg
-bG9zZXMgdGhlIGRvZGd5IGNhY2hlZDMyX25vZGUgCmJlaGF2aW91ciB3aGljaCBtYWtlcyB0aGUg
-aW5pdGlhbCBmYWlsdXJlIHVuaW50ZW50aW9uYWxseSBmYXN0IGZvciB5b3VyIAp3b3JrbG9hZCdz
-IGFsbG9jYXRpb24gcGF0dGVybiwgdGhhdCBleHRyYSBjb21wbGV4aXR5IHdpbGwgc3VkZGVubHkg
-anVzdCAKYmUgZGVhZCB3ZWlnaHQgYW5kIHlvdSdsbCBwcm9iYWJseSBiZSBjb21wbGFpbmluZyBv
-ZiBhIHBlcmZvcm1hbmNlIApyZWdyZXNzaW9uIGFnYWluLgoKV2UncmUgdGFsa2luZyBhYm91dCBh
-biBhbGxvY2F0aW9uIHRoYXQgeW91IGtub3cgeW91IGRvbid0IG5lZWQgdG8gbWFrZSwgCmFuZCB0
-aGF0IHlvdSBldmVuIGV4cGVjdCB0byBmYWlsLCBzbyBJIHN0aWxsIG1haW50YWluIHRoYXQgaXQn
-cyBhYnN1cmQgCnRvIGZvY3VzIG9uIG9wdGltaXNpbmcgZm9yIGZhaWx1cmU7IGZvY3VzIG9uICpu
-b3QgZXZlbiBkb2luZyBpdCBhdCBhbGwqLiAKSXQganVzdCBuZWVkcyBhbiBhcHByb2FjaCB0aGF0
-J3Mgbm90IGdvaW5nIHRvIG1lc3MgdXAgdGhlIHVua25vd24gYnV0IAphcHBhcmVudGx5IG5vbnpl
-cm8gbnVtYmVyIG9mIHN5c3RlbXMgaW5hZHZlcnRlbnRseSByZWx5aW5nIG9uIDMyLWJpdCAKSU9W
-QXMgZm9yIGNvcnJlY3RuZXNzLgoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+On 01/03/2021 13:20, Robin Murphy wrote:
+>>> FWIW, I'm 99% sure that what you really want is [1], but then you get
+>>> to battle against an unknown quantity of dodgy firmware instead.
+>>>
+>> Something which has not been said before is that this only happens for
+>> strict mode.
+> I think that makes sense - once you*have*  actually failed to allocate
+> from the 32-bit space, max32_alloc_size will make subsequent attempts
+> fail immediately. In non-strict mode you're most likely freeing 32-bit
+> IOVAs back to the tree - and thus reset max32_alloc_size - much less
+> often, and you'll make more total space available each time, both of
+> which will amortise the cost of getting back into that failed state
+> again. Conversely, the worst case in strict mode is to have multiple
+> threads getting into this pathological cycle:
+> 
+> 1: allocate, get last available IOVA
+> 2: allocate, fail and set max32_alloc_size
+> 3: free one IOVA, reset max32_alloc_size, goto 1
+> 
+> Now, given the broken behaviour where the cached PFN can get stuck near
+> the bottom of the address space, step 2 might well have been faster and
+> more premature than it should have, but I hope you can appreciate that
+> relying on an allocator being broken at its fundamental purpose of
+> allocating is not a good or sustainable thing to do.
+
+I figure that you're talking about 4e89dce72521 now. I would have liked 
+to know which real-life problem it solved in practice.
+
+> 
+> While max32_alloc_size indirectly tracks the largest*contiguous*  
+> available space, one of the ideas from which it grew was to simply keep
+> count of the total number of free PFNs. If you're really spending
+> significant time determining that the tree is full, as opposed to just
+> taking longer to eventually succeed, then it might be relatively
+> innocuous to tack on that semi-redundant extra accounting as a
+> self-contained quick fix for that worst case.
+> 
+>> Anyway, we see ~50% throughput regression, which is intolerable. As seen
+>> in [0], I put this down to the fact that we have so many IOVA requests
+>> which exceed the rcache size limit, which means many RB tree accesses
+>> for non-cacheble IOVAs, which are now slower.
+
+I will attempt to prove this by increasing RCACHE RANGE, such that all 
+IOVA sizes may be cached.
+
+>>
+>> On another point, as for longterm IOVA aging issue, it seems that there
+>> is no conclusion there. However I did mention the issue of IOVA sizes
+>> exceeding rcache size for that issue, so maybe we can find a common
+>> solution. Similar to a fixed rcache depot size, it seems that having a
+>> fixed rcache max size range value (at 6) doesn't scale either.
+> Well, I'd say that's more of a workload tuning thing than a scalability
+> one -
+
+ok
+
+> a massive system with hundreds of CPUs that spends all day
+> flinging 1500-byte network packets around as fast as it can might be
+> happy with an even smaller value and using the saved memory for
+> something else. IIRC the value of 6 is a fairly arbitrary choice for a
+> tradeoff between expected utility and memory consumption, so making it a
+> Kconfig or command-line tuneable does seem like a sensible thing to explore.
+
+Even if it is were configurable, wouldn't it make sense to have it 
+configurable per IOVA domain?
+
+Furthermore, as mentioned above, I still want to solve this IOVA aging 
+issue, and this fixed RCACHE RANGE size seems to be the at the center of 
+that problem.
+
+> 
+>> As for 4e89dce72521, so even if it's proper to retry for a failed alloc,
+>> it is not always necessary. I mean, if we're limiting ourselves to 32b
+>> subspace for this SAC trick and we fail the alloc, then we can try the
+>> space above 32b first (if usable). If that fails, then retry there. I
+>> don't see a need to retry the 32b subspace if we're not limited to it.
+>> How about it? We tried that idea and it looks to just about restore
+>> performance.
+> The thing is, if you do have an actual PCI device where DAC might mean a
+> 33% throughput loss and you're mapping a long-lived buffer, or you're on
+> one of these systems where firmware fails to document address limits and
+> using the full IOMMU address width quietly breaks things, then you
+> almost certainly*do*  want the allocator to actually do a proper job of
+> trying to satisfy the given request.
+
+If those conditions were true, then it seems quite a tenuous position, 
+so trying to help that scenario in general terms will have limited efficacy.
+
+> 
+> Furthermore, what you propose is still fragile for your own use-case
+> anyway. If someone makes internal changes to the allocator - converts it
+> to a different tree structure, implements split locking for concurrency,
+> that sort of thing - and it fundamentally loses the dodgy cached32_node
+> behaviour which makes the initial failure unintentionally fast for your
+> workload's allocation pattern, that extra complexity will suddenly just
+> be dead weight and you'll probably be complaining of a performance
+> regression again.
+> 
+> We're talking about an allocation that you know you don't need to make,
+> and that you even expect to fail, so I still maintain that it's absurd
+> to focus on optimising for failure; 
+
+Of course, but....
+
+> focus on*not even doing it at all*.
+> It just needs an approach that's not going to mess up the unknown but
+> apparently nonzero number of systems inadvertently relying on 32-bit
+> IOVAs for correctness.
+
+We are seeing a ~50% throughput performance hit, and it's quite 
+reasonable to request a short-term fix, rather than accepting that this 
+problem is something which we need to solve medium/long-term and we 
+don't know how yet.
+
+Going forward, we should try to fix/workaround any broken platforms, 
+rather than hide them all. Indeed, the current approach will just give 
+rise to more broken platforms - people only fix generally what they see 
+is broken. I do wonder how many there really are.
+
+So how about stick the change to avoid the SAC trick for PCIe devices 
+behind a kconfig option, and handle issues on a case-by-case basis, as 
+they arise? I think that this is what Joerg suggested earlier.
+
+In addition to that, revisit IOVA aging issue and related topic of fixed 
+RCACHE RANGE. Hopefully we can solve our short-term performance issue there.
+
+Thanks,
+John
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
