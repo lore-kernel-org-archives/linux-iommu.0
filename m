@@ -2,86 +2,75 @@ Return-Path: <SRS0=VFJV=IA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,
+	DATE_IN_FUTURE_06_12,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA66C433DB
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 12:32:56 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03390C433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 12:36:54 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A314664F39
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 12:32:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A314664F39
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6739864F39
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 12:36:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6739864F39
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4A7CF43125;
-	Tue,  2 Mar 2021 12:32:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id M5doPR0kjGL1; Tue,  2 Mar 2021 12:32:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3551043111;
-	Tue,  2 Mar 2021 12:32:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95289C000A;
-	Tue,  2 Mar 2021 12:32:53 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF120C0001
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:32:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8E90F605DD
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:32:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0D2276F62C;
+	Tue,  2 Mar 2021 12:36:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Y0gwBBYUa7Ri for <iommu@lists.linux-foundation.org>;
- Tue,  2 Mar 2021 12:32:50 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9FaQrV_GJ_MQ; Tue,  2 Mar 2021 12:36:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id AD8826F5FC;
+	Tue,  2 Mar 2021 12:36:51 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84335C000A;
+	Tue,  2 Mar 2021 12:36:51 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B4C67C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:36:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id A33F443118
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:36:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PkAfRbi1sJpg for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Mar 2021 12:36:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6CB6760612
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:32:50 +0000 (UTC)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DqbtX75nlz67rNr;
- Tue,  2 Mar 2021 20:25:08 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 2 Mar 2021 13:32:47 +0100
-Received: from [10.47.2.166] (10.47.2.166) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Tue, 2 Mar 2021
- 12:32:45 +0000
-Subject: Re: [PATCH 1/1] Revert "iommu/iova: Retry from last rb tree node if
- iova search fails"
-From: John Garry <john.garry@huawei.com>
-To: Robin Murphy <robin.murphy@arm.com>, "Leizhen (ThunderTown)"
- <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>, Joerg Roedel
- <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel
- <linux-kernel@vger.kernel.org>
-References: <20210129092120.1482-1-thunder.leizhen@huawei.com>
- <5505b1e5-2450-d5c4-6d77-5bb21fd0b6a1@huawei.com>
- <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
- <7e18829a-3e7e-cc82-9d33-366cf2025624@huawei.com>
- <4c634a22-7168-b51c-a012-2009fc03e6c3@arm.com>
- <d090b869-b3ac-fecc-9efd-d870e43e0d99@huawei.com>
-Message-ID: <0cb64d74-0ec1-2284-f67a-b1619a3eb138@huawei.com>
-Date: Tue, 2 Mar 2021 12:30:51 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 74ED7430A5
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 12:36:48 +0000 (UTC)
+IronPort-SDR: LnIBCZtBIu2IPTvNmnSaWsIjI6/HsL2Ls5iw5/p8O9OffIL7XRw4bMjMeOdc2u/TZ/yalTBHS5
+ XuDElw4dwz6w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9910"; a="174429424"
+X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; d="scan'208";a="174429424"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Mar 2021 04:36:47 -0800
+IronPort-SDR: /P+Qc/iEKgAQks6WSjR7kEqlqYljDwvgWcGDkQl4X/J8RtV0FH1TNS4nMoqLEy2E0DNSOVfSYm
+ MbkLpwsVgXMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,216,1610438400"; d="scan'208";a="427471978"
+Received: from yiliu-dev.bj.intel.com (HELO dual-ub.bj.intel.com)
+ ([10.238.156.135])
+ by fmsmga004.fm.intel.com with ESMTP; 02 Mar 2021 04:36:42 -0800
+From: Liu Yi L <yi.l.liu@intel.com>
+To: alex.williamson@redhat.com, eric.auger@redhat.com,
+ baolu.lu@linux.intel.com, joro@8bytes.org
+Subject: [Patch v8 00/10] vfio: expose virtual Shared Virtual Addressing to VMs
+Date: Wed,  3 Mar 2021 04:35:35 +0800
+Message-Id: <20210302203545.436623-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <d090b869-b3ac-fecc-9efd-d870e43e0d99@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.2.166]
-X-ClientProxiedBy: lhreml745-chm.china.huawei.com (10.201.108.195) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Vijayanand Jitta <vjitta@codeaurora.org>, Linuxarm <linuxarm@huawei.com>
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
+ iommu@lists.linux-foundation.org, vivek.gautam@arm.com, yi.y.sun@intel.com,
+ jgg@nvidia.com, Lingshan.Zhu@intel.com, jasowang@redhat.com, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,56 +83,194 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 01/03/2021 15:48, John Garry wrote:
->>
->> While max32_alloc_size indirectly tracks the largest*contiguous* 
->> available space, one of the ideas from which it grew was to simply keep
->> count of the total number of free PFNs. If you're really spending
->> significant time determining that the tree is full, as opposed to just
->> taking longer to eventually succeed, then it might be relatively
->> innocuous to tack on that semi-redundant extra accounting as a
->> self-contained quick fix for that worst case.
->>
->>> Anyway, we see ~50% throughput regression, which is intolerable. As seen
->>> in [0], I put this down to the fact that we have so many IOVA requests
->>> which exceed the rcache size limit, which means many RB tree accesses
->>> for non-cacheble IOVAs, which are now slower.
-> 
-> I will attempt to prove this by increasing RCACHE RANGE, such that all 
-> IOVA sizes may be cached.
+Shared Virtual Addressing (SVA), a.k.a, Shared Virtual Memory (SVM) on
+Intel platforms allows address space sharing between device DMA and
+applications. SVA can reduce programming complexity and enhance security.
 
-About this one, as expected, we restore performance by increasing the 
-RCACHE RANGE.
+This VFIO series is intended to expose SVA usage to VMs. i.e. Sharing
+guest application address space with passthru devices. This is called
+vSVA in this series. The whole vSVA enabling requires QEMU/VFIO/IOMMU
+changes. For IOMMU and QEMU changes, they are in separate series (listed
+in the "Related series").
 
-Some figures:
-Baseline v5.12-rc1
+The high-level architecture for SVA virtualization is as below, the key
+design of vSVA support is to utilize the dual-stage IOMMU translation (
+also known as IOMMU nesting translation) capability in host IOMMU.
 
-strict mode:
-600K IOPs
 
-Revert "iommu/iova: Retry from last rb tree node if iova search fails":
-1215K
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest process CR3, FL only|
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush -
+    '-------------'                       |
+    |             |                       V
+    |             |                CR3 in GPA
+    '-------------'
+Guest
+------| Shadow |--------------------------|--------
+      v        v                          v
+Host
+    .-------------.  .----------------------.
+    |   pIOMMU    |  | Bind FL for GVA-GPA  |
+    |             |  '----------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.------------------------------.
+    |             |   |SL for GPA-HPA, default domain|
+    |             |   '------------------------------'
+    '-------------'
+Where:
+ - FL = First level/stage one page tables
+ - SL = Second level/stage two page tables
 
-Increase IOVA RCACHE range 6 -> 10 (All IOVAs size requests now 
-cacheable for this experiment):
-1400K
+This patch series has been updated regards to the disscussion around PASID
+allocation in v7 [1]. This series has removed the PASID allocation, and
+adapted to the /dev/ioasid solution [2]. Therefore the patches in this series
+has been re-ordered. And the Patch Overview is as below:
 
-Reduce LLDD max SGE count 124 -> 16:
-1288K
+ 1. reports IOMMU nesting info to userspace ( patch 0001, 0002, 0003, 0010)
+ 2. vfio support for binding guest page table to host (patch 0004)
+ 3. vfio support for IOMMU cache invalidation from VMs (patch 0005)
+ 4. vfio support for vSVA usage on IOMMU-backed mdevs (patch 0006, 0007)
+ 5. expose PASID capability to VM (patch 0008)
+ 6. add doc for VFIO dual stage control (patch 0009)
 
-non-strict mode
-1650K
+The complete vSVA kernel upstream patches are divided into three phases:
+    1. Common APIs and PCI device direct assignment
+    2. IOMMU-backed Mediated Device assignment
+    3. Page Request Services (PRS) support
 
-So ideally we can work towards something for which IOVAs of all size 
-could be cached.
+This patchset is aiming for the phase 1 and phase 2. And it has dependency on IOASID
+extension from Jacobd Pan [3]. Complete set for current vSVA kernel and QEMU can be
+found in [4] and [5].
 
-Cheers,
-John
+[1] https://lore.kernel.org/kvm/DM5PR11MB14351121729909028D6EB365C31D0@DM5PR11MB1435.namprd11.prod.outlook.com/
+[2] https://lore.kernel.org/linux-iommu/1614463286-97618-19-git-send-email-jacob.jun.pan@linux.intel.com/
+[3] https://lore.kernel.org/linux-iommu/1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com/
+[4] https://github.com/jacobpan/linux/tree/vsva-linux-5.12-rc1-v8
+[5] https://github.com/luxis1999/qemu/tree/vsva_5.12_rc1_qemu_rfcv11
+
+Regards,
+Yi Liu
+
+Changelog:
+	- Patch v7 -> Patch v8:
+	  a) removed the PASID allocation out of this series, it is covered by below patch:
+	     https://lore.kernel.org/linux-iommu/1614463286-97618-19-git-send-email-jacob.jun.pan@linux.intel.com/
+	  Patch v7: https://lore.kernel.org/kvm/1599734733-6431-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v6 -> Patch v7:
+	  a) drop [PATCH v6 01/15] of v6 as it's merged by Alex.
+	  b) rebase on Jacob's v8 IOMMU uapi enhancement and v2 IOASID extension patchset.
+	  c) Address comments against v6 from Alex and Eric.
+	  Patch v6: https://lore.kernel.org/kvm/1595917664-33276-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v5 -> Patch v6:
+	  a) Address comments against v5 from Eric.
+	  b) rebase on Jacob's v6 IOMMU uapi enhancement
+	  Patch v5: https://lore.kernel.org/kvm/1594552870-55687-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v4 -> Patch v5:
+	  a) Address comments against v4
+	  Patch v4: https://lore.kernel.org/kvm/1593861989-35920-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v3 -> Patch v4:
+	  a) Address comments against v3
+	  b) Add rb from Stefan on patch 14/15
+	  Patch v3: https://lore.kernel.org/kvm/1592988927-48009-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v2 -> Patch v3:
+	  a) Rebase on top of Jacob's v3 iommu uapi patchset
+	  b) Address comments from Kevin and Stefan Hajnoczi
+	  c) Reuse DOMAIN_ATTR_NESTING to get iommu nesting info
+	  d) Drop [PATCH v2 07/15] iommu/uapi: Add iommu_gpasid_unbind_data
+	  Patch v2: https://lore.kernel.org/kvm/1591877734-66527-1-git-send-email-yi.l.liu@intel.com/
+
+	- Patch v1 -> Patch v2:
+	  a) Refactor vfio_iommu_type1_ioctl() per suggestion from Christoph
+	     Hellwig.
+	  b) Re-sequence the patch series for better bisect support.
+	  c) Report IOMMU nesting cap info in detail instead of a format in
+	     v1.
+	  d) Enforce one group per nesting type container for vfio iommu type1
+	     driver.
+	  e) Build the vfio_mm related code from vfio.c to be a separate
+	     vfio_pasid.ko.
+	  f) Add PASID ownership check in IOMMU driver.
+	  g) Adopted to latest IOMMU UAPI design. Removed IOMMU UAPI version
+	     check. Added iommu_gpasid_unbind_data for unbind requests from
+	     userspace.
+	  h) Define a single ioctl:VFIO_IOMMU_NESTING_OP for bind/unbind_gtbl
+	     and cahce_invld.
+	  i) Document dual stage control in vfio.rst.
+	  Patch v1: https://lore.kernel.org/kvm/1584880325-10561-1-git-send-email-yi.l.liu@intel.com/
+
+	- RFC v3 -> Patch v1:
+	  a) Address comments to the PASID request(alloc/free) path
+	  b) Report PASID alloc/free availabitiy to user-space
+	  c) Add a vfio_iommu_type1 parameter to support pasid quota tuning
+	  d) Adjusted to latest ioasid code implementation. e.g. remove the
+	     code for tracking the allocated PASIDs as latest ioasid code
+	     will track it, VFIO could use ioasid_free_set() to free all
+	     PASIDs.
+	  RFC v3: https://lore.kernel.org/kvm/1580299912-86084-1-git-send-email-yi.l.liu@intel.com/
+
+	- RFC v2 -> v3:
+	  a) Refine the whole patchset to fit the roughly parts in this series
+	  b) Adds complete vfio PASID management framework. e.g. pasid alloc,
+	  free, reclaim in VM crash/down and per-VM PASID quota to prevent
+	  PASID abuse.
+	  c) Adds IOMMU uAPI version check and page table format check to ensure
+	  version compatibility and hardware compatibility.
+	  d) Adds vSVA vfio support for IOMMU-backed mdevs.
+	  RFC v2: https://lore.kernel.org/kvm/1571919983-3231-1-git-send-email-yi.l.liu@intel.com/
+
+	- RFC v1 -> v2:
+	  Dropped vfio: VFIO_IOMMU_ATTACH/DETACH_PASID_TABLE.
+	  RFC v1: https://lore.kernel.org/kvm/1562324772-3084-1-git-send-email-yi.l.liu@intel.com/
+
+---
+Eric Auger (1):
+  vfio: Document dual stage control
+
+Liu Yi L (8):
+  iommu: Report domain nesting info
+  iommu/smmu: Report empty domain nesting info
+  vfio/type1: Report iommu nesting info to userspace
+  vfio/type1: Support binding guest page tables to PASID
+  vfio/type1: Allow invalidating first-level/stage IOMMU cache
+  vfio/type1: Add vSVA support for IOMMU-backed mdevs
+  vfio/pci: Expose PCIe PASID capability to userspace
+  iommu/vt-d: Support reporting nesting capability info
+
+Yi Sun (1):
+  iommu: Pass domain to sva_unbind_gpasid()
+
+ Documentation/driver-api/vfio.rst           |  77 +++++
+ Documentation/userspace-api/iommu.rst       |   5 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  29 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  29 +-
+ drivers/iommu/intel/cap_audit.h             |   7 +
+ drivers/iommu/intel/iommu.c                 |  68 ++++-
+ drivers/iommu/intel/svm.c                   |   3 +-
+ drivers/iommu/iommu.c                       |   2 +-
+ drivers/vfio/pci/vfio_pci_config.c          |   2 +-
+ drivers/vfio/vfio_iommu_type1.c             | 321 +++++++++++++++++++-
+ include/linux/intel-iommu.h                 |   3 +-
+ include/linux/iommu.h                       |   3 +-
+ include/uapi/linux/iommu.h                  |  72 +++++
+ include/uapi/linux/vfio.h                   |  57 ++++
+ 14 files changed, 651 insertions(+), 27 deletions(-)
+
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
