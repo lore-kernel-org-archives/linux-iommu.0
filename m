@@ -2,196 +2,79 @@ Return-Path: <SRS0=VFJV=IA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE43C433DB
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 20:20:24 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D8EC433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 23:57:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E667464F23
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 20:20:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E667464F23
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4E1E564F1A
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 23:57:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E1E564F1A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8E3E9431B8;
-	Tue,  2 Mar 2021 20:20:23 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BF9474D751;
+	Tue,  2 Mar 2021 23:57:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EL87gJlGm3Ud; Tue,  2 Mar 2021 20:20:22 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dHwYUvTKPFHO; Tue,  2 Mar 2021 23:57:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 881E1431B3;
-	Tue,  2 Mar 2021 20:20:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7DAD74A5F2;
+	Tue,  2 Mar 2021 23:57:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72910C000A;
-	Tue,  2 Mar 2021 20:20:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FDC1C000B;
+	Tue,  2 Mar 2021 23:57:47 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7228DC0001
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 20:20:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6DE7C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 23:57:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 545F26F483
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 20:20:21 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 9B52A6F5BA
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 23:57:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="JURshcwl";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="nxt4kqWs"
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IXSMvH0BrYMU for <iommu@lists.linux-foundation.org>;
- Tue,  2 Mar 2021 20:20:20 +0000 (UTC)
+ with ESMTP id JXme3ZO0jF_b for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Mar 2021 23:57:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7BF6360733
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 20:20:20 +0000 (UTC)
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
- by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122KF4iM061553;
- Tue, 2 Mar 2021 20:20:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=MySXm0Dugl+sP25rrPs2V0sxZ1PfMnqZsXjwK8peeOg=;
- b=JURshcwlAS1pVWjY2DLPHN1MQbBxulHVFZ3wT9zfKX9qOxRWjm/AEqx6sqBxhkDCn5KX
- /FtP0KguBt+wbkyrkmeDKix9y1XwD78QiM5lSOFui97u3yUghGfAdCI3tMFshYLZ7QwZ
- cd14wXIq/xs7Z6yq30YMNIuxnotyi7YxGfPT6KGXeobMZc5UkbQ0s8V/dnA7i7LIXCRx
- OQncyIZeFlRWf/nRs8RsHyt8wmvozbYXH3aSuHsSegT59D1e5ElEq6xMXhmvqQRxfnQR
- LFzpGO43y/90Rv85ezh5sDJUrDvpIkpsANwu2fKEajGu3q+jB0Hwb2cdYajCHkeoMxhS WA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by aserp2130.oracle.com with ESMTP id 36ybkb95e4-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 02 Mar 2021 20:20:14 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 122KF3a1009505;
- Tue, 2 Mar 2021 20:20:14 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com
- (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
- by aserp3020.oracle.com with ESMTP id 370000cnrt-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 02 Mar 2021 20:20:13 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ou3dN8J29r1YxdTHTSOu24yx9MS2ka//xg9qMqmMIBRUdaQEQazQd7chSE4A0I8mxUd9PRx0j1gX/9HGEAEh1pwCg5669iRQtoKIDGueLGz6ltHRGklnNdqs6bNBTHWpl+2onowb+fHlNviUN9CBz+K5pAaljf9gAzATHgD7HIBFJcSYP4xctR9DJtUp4ieZXPGmxcDJmkLuOMV9MUK2JaZwd1UGa42g+eii4lytNcG1ekVUe1eLpiQkihAKhsu/l9oP+Ziik/yxGph3nq3kABCxKOicO98N0Jts+Z8cnDB9t4zLfEb6kUfRgFL7qod8kd3Gmka6QqK3ZLbHYqeTEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MySXm0Dugl+sP25rrPs2V0sxZ1PfMnqZsXjwK8peeOg=;
- b=aN0FrIq8HmlFaOmCrdNXxeoYltf/iiqqMiyzLnsc4PC+0G8vRBZXCdCGvOTRQOSK2Dm9wKrvqeTxjiKGEpJGRO+N3vp3VAwI16G/r4+pEifFEu4jOgHxMVPZcFc8be5w1wFL4cRf8FK9P20v6moleAe1EsuojGStt7w1fOFB4HIMsaoUJdPGVU1KDw8Bs296rtVxTf2pb26tihoeKJfYe21yjv0e/eRxeyuMtBIskmHYTjBlbAXwrLX89T999g+ruu2zbDrmWDXCV0GGhlMjLEBz0tygKW2d6zDCiGdgTQKgyJVGnEr3hqOa2idW2rBKXGHyiyVXgGm9cIoZUhVV8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MySXm0Dugl+sP25rrPs2V0sxZ1PfMnqZsXjwK8peeOg=;
- b=nxt4kqWsnaewjduBnlFnLHCz4ecN+1fJo7Q1WRCcsFjIfyUew4S9zH59MjmzwyKW+cS9DUi0q+Ai61xjAgDMTpWfI1k06/r9K0SjmyoSZgd9hupK4BPirDFIsMNpc1FxxK8+uPfnTLY6fYmxgBxQ3Tlgc77odfA3YAW+z5DRScU=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none; vger.kernel.org; dmarc=none action=none header.from=oracle.com; 
-Received: from SN6PR10MB3006.namprd10.prod.outlook.com (2603:10b6:805:cf::13)
- by SA2PR10MB4411.namprd10.prod.outlook.com (2603:10b6:806:116::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Tue, 2 Mar
- 2021 20:20:12 +0000
-Received: from SN6PR10MB3006.namprd10.prod.outlook.com
- ([fe80::607a:91ec:c8b0:af82]) by SN6PR10MB3006.namprd10.prod.outlook.com
- ([fe80::607a:91ec:c8b0:af82%3]) with mapi id 15.20.3890.029; Tue, 2 Mar 2021
- 20:20:12 +0000
-Subject: Re: [PATCH] swiotlb: Fix type of max_slot
-To: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Jianxiong Gao <jxgao@google.com>
-References: <1614705688-10567-1-git-send-email-hayashi.kunihiko@socionext.com>
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Message-ID: <436bf276-5b16-62af-6a32-70f91fce7557@oracle.com>
-Date: Tue, 2 Mar 2021 15:20:08 -0500
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.0
-In-Reply-To: <1614705688-10567-1-git-send-email-hayashi.kunihiko@socionext.com>
-Content-Language: en-US
-X-Originating-IP: [209.6.208.110]
-X-ClientProxiedBy: SJ0PR03CA0250.namprd03.prod.outlook.com
- (2603:10b6:a03:3a0::15) To SN6PR10MB3006.namprd10.prod.outlook.com
- (2603:10b6:805:cf::13)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 84736606BD
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 23:57:43 +0000 (UTC)
+IronPort-SDR: PPHaSLI+gI5MDUVv5qqOjlHbArFtnH11ZvR980QG+GSCB2Dp4iQ+PCkyuf6W26PGvkdmrUNX8H
+ uJMdec407CIw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9911"; a="166284556"
+X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; d="scan'208";a="166284556"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Mar 2021 15:57:42 -0800
+IronPort-SDR: S0atkEhHe5QVcK/OxbPKNZW/z5LfE0FY6XFO2CehcbNjKAsohSRyQXxhW3q44ygYAAz1Quy7B/
+ f4DtrSfSaMtA==
+X-IronPort-AV: E=Sophos;i="5.81,218,1610438400"; d="scan'208";a="369148566"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Mar 2021 15:57:42 -0800
+Date: Tue, 2 Mar 2021 15:59:57 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v13 06/10] iommu: Add a page fault handler
+Message-ID: <20210302155957.620db372@jacob-builder>
+In-Reply-To: <20210302092644.2553014-7-jean-philippe@linaro.org>
+References: <20210302092644.2553014-1-jean-philippe@linaro.org>
+ <20210302092644.2553014-7-jean-philippe@linaro.org>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from Konrads-MacBook-Pro.local (209.6.208.110) by
- SJ0PR03CA0250.namprd03.prod.outlook.com (2603:10b6:a03:3a0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Tue, 2 Mar 2021 20:20:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 20748b9a-153a-45ee-40d7-08d8ddb89520
-X-MS-TrafficTypeDiagnostic: SA2PR10MB4411:
-X-Microsoft-Antispam-PRVS: <SA2PR10MB4411BF8939CB123D11BFB07E89999@SA2PR10MB4411.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iu2vC3pTRQnDLq6AR38/9+crCZsLjkDXQLh7IgftT4KFiJqcDWIzCne8/twn9p0oKyUMoWAufWi++lmT8WQ6qk4Mr9Kq7FmWugSSn6Hjbx2O7xsywjbrJxBaXZi/dJwvPWeopgBin/q9CqV1fuhw4M1mEfJP1ZEC9FPdac45Z58aBsAV/YdaDJzs5+kgBm5JycXtS0lNYK69zQ9Ql9VVcdN8eJPEw8XyTjDO75UXu+Vt0FxYahyJvn8e+VyacsWpzi8kWXLjZtR7n3N7ZEc+SLa7OJ45OnhY/TZglL5tAIwa4v7cQXOlKppcF/3PMpkuJNAnXAzj17Ibi2Gx4VD40UiJ/hau0s4lWj8W82EZrfVP7tbAtLyGB8MaP7cL8LMa57VrxjOlJqunLEt4qbCXkuoe+lIoosksqlSxc0Q43TeIpKGZ7ea1bO8bf8cn86dJA/J02czXPClyqSlOxcCboEr3qty5j3fXwP7ENirjILYk7MbHrvFaziUjkb483YCXqPKet7nH4/PNmJMw0xNS8D2hq8I2mN1CzEdH8pWXiN8g0MVOAJBjmG/oZPhMPDEdYrngVWFbdijfFXRZvBZe2OMdNximzQp13Jwj7bwTGWU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:SN6PR10MB3006.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(346002)(136003)(366004)(39860400002)(396003)(376002)(2906002)(31696002)(5660300002)(36756003)(186003)(6512007)(83380400001)(86362001)(31686004)(16526019)(8936002)(316002)(26005)(53546011)(2616005)(66556008)(66946007)(6486002)(4326008)(66476007)(478600001)(8676002)(956004)(6506007)(110136005)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QVZDV1FDd2JzS1I2ZWVkVEh6U1ppUkhoWUVOTzNyVVhsam5RWDhyMm1FVk02?=
- =?utf-8?B?Q0NRVnFueWx6RnpuWHFGU0pkYjZneFFZaUowWFl6aWtKUFNBdmZEZHJKbEJr?=
- =?utf-8?B?a29zVUpJdDV1KzVFd3ExWTBoWEhWRHN0bFo1aW5FamRONnF0U0d3d3BsYlRC?=
- =?utf-8?B?VGczN1dWa0pKVHBRcWNPQ2hQK2R0WlJPaFdHY0J6NFJFbGQwenZzZThuZ2J0?=
- =?utf-8?B?d1J6VWtqdHJGN01EZThsaCtrTFUxd3NIQlZJam5KVytlUEhXeUVKVkNrYy9U?=
- =?utf-8?B?SFZBZDJ5OEllSnpvU0VjMFlzc08yNUdKbmNxejVyUnVIdEpqUWd6NThNQU9D?=
- =?utf-8?B?MUlDd2svRExTZnk1QktjNFhtVVpCNXNrN2trR1RkUnk2RGRVS1lHOUUwTURo?=
- =?utf-8?B?SldxQU9Hd1R6UGpMRmtabnFCZDR5ak40aHQ4TEZqOWY0ZkdEVGNHbW9XUkVX?=
- =?utf-8?B?M0duS0ZpUzdTV290WVJ2Wk0wcGtXakVqdFlSSXdmMFJRYmJ1Mnhxa0xtdmJF?=
- =?utf-8?B?V3hSSWNCZ0J6cisxbDNWTEp3Zk9hYjg2UUhEWHl5U1FOZU1SbU13ZGtiRFJo?=
- =?utf-8?B?QUJIQThlK2FsUG84RmhFOUJQSzFVU3FlZFpTV0d0dm1oZEJVazZFM1FPZEdm?=
- =?utf-8?B?TzdLR2xxVlJLVlN0WHZnYk1zbWNVY1JKKzZ1SFNFRnRZbE9Vd0R4T2lXSlNL?=
- =?utf-8?B?WXI0cVRHdHFpRW84MGJWQXc1MWY0eTY1b0VNa1pBaWhsZEhPWDRKU2cybGZ2?=
- =?utf-8?B?L2l2bmd5alRFL1M5dmN0eFJLSmhWdFJObS9MNlB0QkI2emVRaHFJbWFwOHZs?=
- =?utf-8?B?T1g4U1pSR0xmZDVaWXVqc3NHTWxYMVRZQzlzbVpLODRoZFpSejQwY1h4SlJz?=
- =?utf-8?B?czVnYjRKcVpBUjFUcThnWTJIa1NZTzlRTjBNenZTUEhXUlQ0dGZhU2g0SFRi?=
- =?utf-8?B?blBPeFdEYVltNWphZDRoQnBOQXE0c3ZvcWdFUVhuK2FRNHlhK0tMeTVPZncr?=
- =?utf-8?B?bmlHRU1tL2d1dkpMRUV0blF3d1NnbHBtL2tZOUtSRDhJSEFheFhHWnZWRHM2?=
- =?utf-8?B?NXczbjBLNThBREVQQklVUjhkSjYxOEV6RjgzZ3Q3OE1EOEZNeDZ3c25NVHdE?=
- =?utf-8?B?SUN4YlJ4VmpvamhIbHhaNnNoNU4vYmk0Y1NWZ21KYlMwUXU1NEthcmxHTy9B?=
- =?utf-8?B?NmhsSkJmMmtaeGdLQ1BHa0FzNjBQU3I3bkRkV3VWbVZGVW0xc2pQM2orTWZK?=
- =?utf-8?B?NVVscUpReithV0t5RVY2MXdZaDlmVzI5NzNNM0pFajJvUGhTVW5qSzNYMU5r?=
- =?utf-8?B?UklrQXhlbWt4aVViOXEzT0VoUnFEQ1NweVNkbUwrbEkyd29LblA4ZEIxdXJv?=
- =?utf-8?B?bjV5d1JuM1ZGTExvUENxd0taSkVWZGVBbzRwLzNJd1RzVURnWEltVXZPS0ZG?=
- =?utf-8?B?eEtZSGZVbkIxUmZqOEl3eVk2RlRNaTQyM0tYU3JPTW92M0h3blZTS3hwS05B?=
- =?utf-8?B?S0tDZXF4SDlTSCt6cUY4TTdRSmM5aWlsbXp0d2pldzdoOW1BdFBFQit5a2hM?=
- =?utf-8?B?em5aKzA2T2dENE5HWk1aU1JLV1ZGdHhUYU01YlRoOGZEQ0JydDFvTEl4L2FC?=
- =?utf-8?B?VmJLbkk2SEkvdFRVSFl4M2xGeHcxQm1ublhGeFh4eklrSTBhOVhEQzNkR0Rq?=
- =?utf-8?B?QW0wRlFTOVhqd3pQTHplQlY4c0REMDU4bnNrcHplbkczT05zam13S2x1K2Fu?=
- =?utf-8?Q?bB80lSorLzjn2bfH6l9vC96hu9U9qfGSZ1MPGeG?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20748b9a-153a-45ee-40d7-08d8ddb89520
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3006.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2021 20:20:12.1013 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: r9TMxRsNL6sYXQsgyScmQu6lvT1qkUrJjvYdy2g4ezeKnXRZk3cdo5TditgTx8BlNo33VoLY+lMqxwf2lqSWAA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4411
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9911
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- mlxlogscore=999
- phishscore=0 bulkscore=0 mlxscore=0 spamscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103020153
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9911
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- impostorscore=0
- suspectscore=0 phishscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1011 mlxlogscore=999 adultscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103020153
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: vivek.gautam@arm.com, guohanjun@huawei.com, will@kernel.org, "Raj,
+ Ashok" <ashok.raj@intel.com>, linux-acpi@vger.kernel.org,
+ zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org,
+ kevin.tian@intel.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+ rjw@rjwysocki.net, iommu@lists.linux-foundation.org, sudeep.holla@arm.com,
+ robin.murphy@arm.com, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -204,47 +87,684 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 3/2/21 12:21 PM, Kunihiko Hayashi wrote:
-> After the refactoring phase, the type of max_slot has changed from unsigned
-> long to unsigned int. The return type of the function get_max_slots() and
-> the 4th argument type of iommu_is_span_boundary() are different from the
-> type of max_slot. Finally, asserts BUG_ON in iommu_is_span_boundary().
+Hi Jean-Philippe,
+
+A few comments from the p.o.v of converting VT-d to this framework. Mostly
+about potential optimization. I think VT-d SVA code will be able to use this
+work.
++Ashok provided many insight.
+
+FWIW,
+Reviewed-by:Jacob Pan <jacob.jun.pan@linux.intel.com>
+
+On Tue,  2 Mar 2021 10:26:42 +0100, Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+
+> Some systems allow devices to handle I/O Page Faults in the core mm. For
+> example systems implementing the PCIe PRI extension or Arm SMMU stall
+> model. Infrastructure for reporting these recoverable page faults was
+> added to the IOMMU core by commit 0c830e6b3282 ("iommu: Introduce device
+> fault report API"). Add a page fault handler for host SVA.
 > 
-> Cc: Christoph Hellwig <hch@lst.de>
-> Fixes: 567d877f9a7d ("swiotlb: refactor swiotlb_tbl_map_single")
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-
-I think this is all good. Looking at Linus's master I see:
-
-
-537         unsigned long max_slots = get_max_slots(boundary_mask);
-
-?
-
+> IOMMU driver can now instantiate several fault workqueues and link them
+> to IOPF-capable devices. Drivers can choose between a single global
+> workqueue, one per IOMMU device, one per low-level fault queue, one per
+> domain, etc.
+> 
+> When it receives a fault event, most commonly in an IRQ handler, the
+> IOMMU driver reports the fault using iommu_report_device_fault(), which
+> calls the registered handler. The page fault handler then calls the mm
+> fault handler, and reports either success or failure with
+> iommu_page_response(). After the handler succeeds, the hardware retries
+> the access.
+> 
+> The iopf_param pointer could be embedded into iommu_fault_param. But
+> putting iopf_param into the iommu_param structure allows us not to care
+> about ordering between calls to iopf_queue_add_device() and
+> iommu_register_device_fault_handler().
+> 
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->   kernel/dma/swiotlb.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/Makefile        |   1 +
+>  drivers/iommu/iommu-sva-lib.h |  53 ++++
+>  include/linux/iommu.h         |   2 +
+>  drivers/iommu/io-pgfault.c    | 461 ++++++++++++++++++++++++++++++++++
+>  4 files changed, 517 insertions(+)
+>  create mode 100644 drivers/iommu/io-pgfault.c
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 369e4c3..c10e855 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -534,7 +534,7 @@ static int find_slots(struct device *dev, phys_addr_t orig_addr,
->   	unsigned long boundary_mask = dma_get_seg_boundary(dev);
->   	dma_addr_t tbl_dma_addr =
->   		phys_to_dma_unencrypted(dev, io_tlb_start) & boundary_mask;
-> -	unsigned int max_slots = get_max_slots(boundary_mask);
-> +	unsigned long max_slots = get_max_slots(boundary_mask);
->   	unsigned int iotlb_align_mask =
->   		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
->   	unsigned int nslots = nr_slots(alloc_size), stride;
-> 
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 61bd30cd8369..60fafc23dee6 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -28,3 +28,4 @@ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+>  obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+>  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+>  obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o
+> +obj-$(CONFIG_IOMMU_SVA_LIB) += io-pgfault.o
+> diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+> index b40990aef3fd..031155010ca8 100644
+> --- a/drivers/iommu/iommu-sva-lib.h
+> +++ b/drivers/iommu/iommu-sva-lib.h
+> @@ -12,4 +12,57 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm,
+> ioasid_t min, ioasid_t max); void iommu_sva_free_pasid(struct mm_struct
+> *mm); struct mm_struct *iommu_sva_find(ioasid_t pasid);
+>  
+> +/* I/O Page fault */
+> +struct device;
+> +struct iommu_fault;
+> +struct iopf_queue;
+> +
+> +#ifdef CONFIG_IOMMU_SVA_LIB
+> +int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
+> +
+> +int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+> +int iopf_queue_remove_device(struct iopf_queue *queue,
+> +			     struct device *dev);
+> +int iopf_queue_flush_dev(struct device *dev);
+> +struct iopf_queue *iopf_queue_alloc(const char *name);
+> +void iopf_queue_free(struct iopf_queue *queue);
+> +int iopf_queue_discard_partial(struct iopf_queue *queue);
+> +
+> +#else /* CONFIG_IOMMU_SVA_LIB */
+> +static inline int iommu_queue_iopf(struct iommu_fault *fault, void
+> *cookie) +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iopf_queue_add_device(struct iopf_queue *queue,
+> +					struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iopf_queue_remove_device(struct iopf_queue *queue,
+> +					   struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iopf_queue_flush_dev(struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline struct iopf_queue *iopf_queue_alloc(const char *name)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void iopf_queue_free(struct iopf_queue *queue)
+> +{
+> +}
+> +
+> +static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
+> +{
+> +	return -ENODEV;
+> +}
+> +#endif /* CONFIG_IOMMU_SVA_LIB */
+>  #endif /* _IOMMU_SVA_LIB_H */
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 45c4eb372f56..86d688c4418f 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -367,6 +367,7 @@ struct iommu_fault_param {
+>   * struct dev_iommu - Collection of per-device IOMMU data
+>   *
+>   * @fault_param: IOMMU detected device fault reporting data
+> + * @iopf_param:	 I/O Page Fault queue and data
+>   * @fwspec:	 IOMMU fwspec data
+>   * @iommu_dev:	 IOMMU device this device is linked to
+>   * @priv:	 IOMMU Driver private data
+> @@ -377,6 +378,7 @@ struct iommu_fault_param {
+>  struct dev_iommu {
+>  	struct mutex lock;
+>  	struct iommu_fault_param	*fault_param;
+> +	struct iopf_device_param	*iopf_param;
+>  	struct iommu_fwspec		*fwspec;
+>  	struct iommu_device		*iommu_dev;
+>  	void				*priv;
+> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+> new file mode 100644
+> index 000000000000..1df8c1dcae77
+> --- /dev/null
+> +++ b/drivers/iommu/io-pgfault.c
+> @@ -0,0 +1,461 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Handle device page faults
+> + *
+> + * Copyright (C) 2020 ARM Ltd.
+> + */
+> +
+> +#include <linux/iommu.h>
+> +#include <linux/list.h>
+> +#include <linux/sched/mm.h>
+> +#include <linux/slab.h>
+> +#include <linux/workqueue.h>
+> +
+> +#include "iommu-sva-lib.h"
+> +
+> +/**
+> + * struct iopf_queue - IO Page Fault queue
+> + * @wq: the fault workqueue
+> + * @devices: devices attached to this queue
+> + * @lock: protects the device list
+> + */
+> +struct iopf_queue {
+> +	struct workqueue_struct		*wq;
+> +	struct list_head		devices;
+> +	struct mutex			lock;
+> +};
+> +
+> +/**
+> + * struct iopf_device_param - IO Page Fault data attached to a device
+> + * @dev: the device that owns this param
+> + * @queue: IOPF queue
+> + * @queue_list: index into queue->devices
+> + * @partial: faults that are part of a Page Request Group for which the
+> last
+> + *           request hasn't been submitted yet.
+> + */
+> +struct iopf_device_param {
+> +	struct device			*dev;
+> +	struct iopf_queue		*queue;
+> +	struct list_head		queue_list;
+> +	struct list_head		partial;
+> +};
+> +
+> +struct iopf_fault {
+> +	struct iommu_fault		fault;
+> +	struct list_head		list;
+> +};
+> +
+> +struct iopf_group {
+> +	struct iopf_fault		last_fault;
+> +	struct list_head		faults;
+> +	struct work_struct		work;
+> +	struct device			*dev;
+> +};
+> +
+> +static int iopf_complete_group(struct device *dev, struct iopf_fault
+> *iopf,
+> +			       enum iommu_page_response_code status)
+> +{
+> +	struct iommu_page_response resp = {
+> +		.version		= IOMMU_PAGE_RESP_VERSION_1,
+> +		.pasid			= iopf->fault.prm.pasid,
+> +		.grpid			= iopf->fault.prm.grpid,
+> +		.code			= status,
+> +	};
+> +
+> +	if ((iopf->fault.prm.flags &
+> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) &&
+> +	    (iopf->fault.prm.flags &
+> IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID))
+> +		resp.flags = IOMMU_PAGE_RESP_PASID_VALID;
+> +
+> +	return iommu_page_response(dev, &resp);
+> +}
+> +
+> +static enum iommu_page_response_code
+> +iopf_handle_single(struct iopf_fault *iopf)
+> +{
+> +	vm_fault_t ret;
+> +	struct mm_struct *mm;
+> +	struct vm_area_struct *vma;
+> +	unsigned int access_flags = 0;
+> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+> +	struct iommu_fault_page_request *prm = &iopf->fault.prm;
+> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+> +
+> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+> +		return status;
+> +
+> +	mm = iommu_sva_find(prm->pasid);
+> +	if (IS_ERR_OR_NULL(mm))
+> +		return status;
+> +
+> +	mmap_read_lock(mm);
+> +
+> +	vma = find_extend_vma(mm, prm->addr);
+> +	if (!vma)
+> +		/* Unmapped area */
+> +		goto out_put_mm;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_READ)
+> +		access_flags |= VM_READ;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
+> +		access_flags |= VM_WRITE;
+> +		fault_flags |= FAULT_FLAG_WRITE;
+> +	}
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
+> +		access_flags |= VM_EXEC;
+> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
+> +	}
+> +
+> +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
+> +		fault_flags |= FAULT_FLAG_USER;
+> +
+> +	if (access_flags & ~vma->vm_flags)
+> +		/* Access fault */
+> +		goto out_put_mm;
+> +
+> +	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
+> +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
+> +		IOMMU_PAGE_RESP_SUCCESS;
+> +
+> +out_put_mm:
+> +	mmap_read_unlock(mm);
+> +	mmput(mm);
+> +
+> +	return status;
+> +}
+> +
+> +static void iopf_handle_group(struct work_struct *work)
+> +{
+> +	struct iopf_group *group;
+> +	struct iopf_fault *iopf, *next;
+> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_SUCCESS;
+> +
+> +	group = container_of(work, struct iopf_group, work);
+> +
+> +	list_for_each_entry_safe(iopf, next, &group->faults, list) {
+> +		/*
+> +		 * For the moment, errors are sticky: don't handle
+> subsequent
+> +		 * faults in the group if there is an error.
+> +		 */
+> +		if (status == IOMMU_PAGE_RESP_SUCCESS)
+> +			status = iopf_handle_single(iopf);
+> +
+> +		if (!(iopf->fault.prm.flags &
+> +		      IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE))
+> +			kfree(iopf);
+> +	}
+> +
+> +	iopf_complete_group(group->dev, &group->last_fault, status);
+> +	kfree(group);
+> +}
+> +
+> +/**
+> + * iommu_queue_iopf - IO Page Fault handler
+> + * @fault: fault event
+> + * @cookie: struct device, passed to iommu_register_device_fault_handler.
+> + *
+> + * Add a fault to the device workqueue, to be handled by mm.
+> + *
+> + * This module doesn't handle PCI PASID Stop Marker; IOMMU drivers must
+> discard
+> + * them before reporting faults. A PASID Stop Marker (LRW = 0b100)
+> doesn't
+> + * expect a response. It may be generated when disabling a PASID
+> (issuing a
+> + * PASID stop request) by some PCI devices.
+> + *
+> + * The PASID stop request is issued by the device driver before
+> unbind(). Once
+> + * it completes, no page request is generated for this PASID anymore and
+> + * outstanding ones have been pushed to the IOMMU (as per PCIe 4.0r1.0 -
+> 6.20.1
+> + * and 10.4.1.2 - Managing PASID TLP Prefix Usage). Some PCI devices
+> will wait
+> + * for all outstanding page requests to come back with a response before
+> + * completing the PASID stop request. Others do not wait for page
+> responses, and
+> + * instead issue this Stop Marker that tells us when the PASID can be
+> + * reallocated.
+> + *
+> + * It is safe to discard the Stop Marker because it is an optimization.
+> + * a. Page requests, which are posted requests, have been flushed to the
+> IOMMU
+> + *    when the stop request completes.
+> + * b. The IOMMU driver flushes all fault queues on unbind() before
+> freeing the
+> + *    PASID.
+> + *
+> + * So even though the Stop Marker might be issued by the device *after*
+> the stop
+> + * request completes, outstanding faults will have been dealt with by
+> the time
+> + * the PASID is freed.
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+> +{
+> +	int ret;
+> +	struct iopf_group *group;
+> +	struct iopf_fault *iopf, *next;
+> +	struct iopf_device_param *iopf_param;
+> +
+> +	struct device *dev = cookie;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	lockdep_assert_held(&param->lock);
+> +
+> +	if (fault->type != IOMMU_FAULT_PAGE_REQ)
+> +		/* Not a recoverable page fault */
+> +		return -EOPNOTSUPP;
+> +
+> +	/*
+> +	 * As long as we're holding param->lock, the queue can't be
+> unlinked
+> +	 * from the device and therefore cannot disappear.
+> +	 */
+> +	iopf_param = param->iopf_param;
+> +	if (!iopf_param)
+> +		return -ENODEV;
+> +
+> +	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
+> +		iopf = kzalloc(sizeof(*iopf), GFP_KERNEL);
+> +		if (!iopf)
+> +			return -ENOMEM;
+> +
+> +		iopf->fault = *fault;
+> +
+> +		/* Non-last request of a group. Postpone until the last
+> one */
+Would be nice to have an option here to allow non-deferred handle_mm_fault.
+Some devices may have a large group.
 
+FYI, VT-d also needs to send page response before the last one (LPIG).
+"A Page Group Response Descriptor is issued by software in response to a
+page request with data or a page request (with or without data) that
+indicated that it was the last request in a group."
+
+But I think we deal with that when we convert. Perhaps just treat the
+request with data as LPIG.
+
+Also adding a trace event would be nice, similar to CPU page fault.
+> +		list_add(&iopf->list, &iopf_param->partial);
+> +
+> +		return 0;
+> +	}
+> +
+> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
+> +	if (!group) {
+> +		/*
+> +		 * The caller will send a response to the hardware. But
+> we do
+> +		 * need to clean up before leaving, otherwise partial
+> faults
+> +		 * will be stuck.
+> +		 */
+> +		ret = -ENOMEM;
+> +		goto cleanup_partial;
+> +	}
+> +
+> +	group->dev = dev;
+> +	group->last_fault.fault = *fault;
+> +	INIT_LIST_HEAD(&group->faults);
+> +	list_add(&group->last_fault.list, &group->faults);
+> +	INIT_WORK(&group->work, iopf_handle_group);
+> +
+> +	/* See if we have partial faults for this group */
+> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list)
+> {
+> +		if (iopf->fault.prm.grpid == fault->prm.grpid)
+Just curious, the iopf handler is registered per arm_smmu_master dev. Is
+the namespace of group ID also within an arm_smmu_master? Can one
+arm_smmu_master support multiple devices?
+
+For VT-d, group ID is per PCI device.
+
+> +			/* Insert *before* the last fault */
+> +			list_move(&iopf->list, &group->faults);
+> +	}
+> +
+This is fine with devices supports small number of outstanding PRQs.
+VT-d is setting the limit to 32. But the incoming DSA device will support
+512.
+
+So if we pre-sort IOPF by group ID and put them in a per group list, would
+it be faster? I mean once the LPIG comes in, we just need to search the
+list of groups instead of all partial faults. I am not against what is done
+here, just exploring optimization.
+
+> +	queue_work(iopf_param->queue->wq, &group->work);
+> +	return 0;
+> +
+> +cleanup_partial:
+> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list)
+> {
+> +		if (iopf->fault.prm.grpid == fault->prm.grpid) {
+> +			list_del(&iopf->list);
+> +			kfree(iopf);
+> +		}
+> +	}
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_queue_iopf);
+> +
+> +/**
+> + * iopf_queue_flush_dev - Ensure that all queued faults have been
+> processed
+> + * @dev: the endpoint whose faults need to be flushed.
+> + *
+> + * The IOMMU driver calls this before releasing a PASID, to ensure that
+> all
+> + * pending faults for this PASID have been handled, and won't hit the
+> address
+> + * space of the next process that uses this PASID. The driver must make
+> sure
+> + * that no new fault is added to the queue. In particular it must flush
+> its
+> + * low-level queue before calling this function.
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iopf_queue_flush_dev(struct device *dev)
+> +{
+> +	int ret = 0;
+> +	struct iopf_device_param *iopf_param;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	if (!param)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&param->lock);
+> +	iopf_param = param->iopf_param;
+> +	if (iopf_param)
+> +		flush_workqueue(iopf_param->queue->wq);
+> +	else
+> +		ret = -ENODEV;
+> +	mutex_unlock(&param->lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
+> +
+> +/**
+> + * iopf_queue_discard_partial - Remove all pending partial fault
+> + * @queue: the queue whose partial faults need to be discarded
+> + *
+> + * When the hardware queue overflows, last page faults in a group may
+> have been
+> + * lost and the IOMMU driver calls this to discard all partial faults.
+> The
+> + * driver shouldn't be adding new faults to this queue concurrently.
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iopf_queue_discard_partial(struct iopf_queue *queue)
+> +{
+> +	struct iopf_fault *iopf, *next;
+> +	struct iopf_device_param *iopf_param;
+> +
+> +	if (!queue)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&queue->lock);
+> +	list_for_each_entry(iopf_param, &queue->devices, queue_list) {
+> +		list_for_each_entry_safe(iopf, next,
+> &iopf_param->partial,
+> +					 list) {
+> +			list_del(&iopf->list);
+> +			kfree(iopf);
+> +		}
+> +	}
+> +	mutex_unlock(&queue->lock);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_discard_partial);
+> +
+> +/**
+> + * iopf_queue_add_device - Add producer to the fault queue
+> + * @queue: IOPF queue
+> + * @dev: device to add
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
+> +{
+> +	int ret = -EBUSY;
+> +	struct iopf_device_param *iopf_param;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	if (!param)
+> +		return -ENODEV;
+> +
+> +	iopf_param = kzalloc(sizeof(*iopf_param), GFP_KERNEL);
+> +	if (!iopf_param)
+> +		return -ENOMEM;
+> +
+> +	INIT_LIST_HEAD(&iopf_param->partial);
+> +	iopf_param->queue = queue;
+> +	iopf_param->dev = dev;
+> +
+> +	mutex_lock(&queue->lock);
+> +	mutex_lock(&param->lock);
+> +	if (!param->iopf_param) {
+> +		list_add(&iopf_param->queue_list, &queue->devices);
+> +		param->iopf_param = iopf_param;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&param->lock);
+> +	mutex_unlock(&queue->lock);
+> +
+> +	if (ret)
+> +		kfree(iopf_param);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_add_device);
+> +
+> +/**
+> + * iopf_queue_remove_device - Remove producer from fault queue
+> + * @queue: IOPF queue
+> + * @dev: device to remove
+> + *
+> + * Caller makes sure that no more faults are reported for this device.
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iopf_queue_remove_device(struct iopf_queue *queue, struct device
+> *dev) +{
+> +	int ret = -EINVAL;
+> +	struct iopf_fault *iopf, *next;
+> +	struct iopf_device_param *iopf_param;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	if (!param || !queue)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&queue->lock);
+> +	mutex_lock(&param->lock);
+> +	iopf_param = param->iopf_param;
+> +	if (iopf_param && iopf_param->queue == queue) {
+> +		list_del(&iopf_param->queue_list);
+> +		param->iopf_param = NULL;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&param->lock);
+> +	mutex_unlock(&queue->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Just in case some faults are still stuck */
+> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list)
+> +		kfree(iopf);
+> +
+> +	kfree(iopf_param);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_remove_device);
+> +
+> +/**
+> + * iopf_queue_alloc - Allocate and initialize a fault queue
+> + * @name: a unique string identifying the queue (for workqueue)
+> + *
+> + * Return: the queue on success and NULL on error.
+> + */
+> +struct iopf_queue *iopf_queue_alloc(const char *name)
+> +{
+> +	struct iopf_queue *queue;
+> +
+> +	queue = kzalloc(sizeof(*queue), GFP_KERNEL);
+> +	if (!queue)
+> +		return NULL;
+> +
+> +	/*
+> +	 * The WQ is unordered because the low-level handler enqueues
+> faults by
+> +	 * group. PRI requests within a group have to be ordered, but
+> once
+> +	 * that's dealt with, the high-level function can handle groups
+> out of
+> +	 * order.
+> +	 */
+> +	queue->wq = alloc_workqueue("iopf_queue/%s", WQ_UNBOUND, 0,
+> name);
+> +	if (!queue->wq) {
+> +		kfree(queue);
+> +		return NULL;
+> +	}
+> +
+> +	INIT_LIST_HEAD(&queue->devices);
+> +	mutex_init(&queue->lock);
+> +
+> +	return queue;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_alloc);
+> +
+> +/**
+> + * iopf_queue_free - Free IOPF queue
+> + * @queue: queue to free
+> + *
+> + * Counterpart to iopf_queue_alloc(). The driver must not be queuing
+> faults or
+> + * adding/removing devices on this queue anymore.
+> + */
+> +void iopf_queue_free(struct iopf_queue *queue)
+> +{
+> +	struct iopf_device_param *iopf_param, *next;
+> +
+> +	if (!queue)
+> +		return;
+> +
+> +	list_for_each_entry_safe(iopf_param, next, &queue->devices,
+> queue_list)
+> +		iopf_queue_remove_device(queue, iopf_param->dev);
+> +
+> +	destroy_workqueue(queue->wq);
+> +	kfree(queue);
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_free);
+
+
+Thanks,
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
