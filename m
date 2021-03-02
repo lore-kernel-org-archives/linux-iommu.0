@@ -7,73 +7,71 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A02C433E6
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 11:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77397C433DB
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 11:57:02 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B532764F31
-	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 11:56:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B532764F31
+	by mail.kernel.org (Postfix) with ESMTPS id D8DA564F59
+	for <iommu@archiver.kernel.org>; Tue,  2 Mar 2021 11:57:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8DA564F59
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 501CB83EA3;
-	Tue,  2 Mar 2021 11:56:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 730E381A1C;
+	Tue,  2 Mar 2021 11:57:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZEFfTdTleI16; Tue,  2 Mar 2021 11:56:12 +0000 (UTC)
+	with ESMTP id S9QFm-io5DXe; Tue,  2 Mar 2021 11:57:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EAE8083E11;
-	Tue,  2 Mar 2021 11:56:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 55BEA8104C;
+	Tue,  2 Mar 2021 11:57:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8BFFC000B;
-	Tue,  2 Mar 2021 11:56:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8601C0001
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A2C2C000B;
+	Tue,  2 Mar 2021 11:57:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B824BC0001
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D47F96F5FC
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9946981A1C
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HchHcrr4rIFD for <iommu@lists.linux-foundation.org>;
- Tue,  2 Mar 2021 11:56:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jqaQZUSvcjQG for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Mar 2021 11:56:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id F1F4F606B1
- for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:08 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B14564F2C;
- Tue,  2 Mar 2021 11:56:07 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2D1A18104C
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Mar 2021 11:56:57 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BDA8964F51;
+ Tue,  2 Mar 2021 11:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1614686168;
- bh=Tdzb6+vy7YGxj/DKItB+Vfi57PKkpa66F/H/L/K5cps=;
+ s=k20201202; t=1614686216;
+ bh=gHCNSIIJBpDDyHuxZ94L+MAHMGyBEwM33M/mylZiORs=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Nn+T5eY6zM9Asd2fIi8oVf4KJOHTkLJBqBryWNAIeox2Trm1DgS7ifuL5Q1fJEzVm
- dF7V+Vf4+8/3738nASrUmI5/AuIiTkV28qEYCt9Hrg2uVIMogmJjy+ae5Hm2Sifjvj
- J0iMXIk8LXv+qKtUbcS4FegtlJXWHgYLRO+00XqTs3w+1AxH3S5xFCb/eeBpO+CPF7
- P538+TfNEerW435V+DvB5PQBpOmK7Zr7ePrff9R0+hZUUOP/xqxhLjCbUISlONN3Uy
- 22PCa40zD4+ponz/qyN+vYpxYN999k6qwd1yM0OFdS0rycrCdsPql8bYQbHr2litE8
- Rnd0O//JqK6Bg==
+ b=WFdgLGGV+QL8pvSAPKHii4jUCUSimpqoIrACdhNQHZAStnsCuxnHJarSZNOlAeIk4
+ +YAcrX3shcA64ogxve0ShiRvgNf2lpdihNhato9zFVUmW7iL30tJuuZYaWJH98uVtV
+ OjtmB9sbN5mKN2P9/HQy43I7f2ecmm/DjuAGEMn6JwhZgYUbHRqqaXRws/3LByj5/b
+ nvgl7jgcXTBlZ9YO1heww9qsuQ5E548HVEGRT3qoNbIm4vTEtrxYRUHiVgw7u2X4fG
+ XIkJa0sg6Mv6hsr5K7nj1l3dkotQg6a3Y9495x6w4kO55tk+2nQ4GcLL86kiiAXrSe
+ JtWVC7yyMo67Q==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 25/52] iommu/amd: Fix performance counter
- initialization
-Date: Tue,  2 Mar 2021 06:55:06 -0500
-Message-Id: <20210302115534.61800-25-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 07/47] iommu/vt-d: Clear PRQ overflow only when
+ PRQ is empty
+Date: Tue,  2 Mar 2021 06:56:06 -0500
+Message-Id: <20210302115646.62291-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210302115534.61800-1-sashal@kernel.org>
-References: <20210302115534.61800-1-sashal@kernel.org>
+In-Reply-To: <20210302115646.62291-1-sashal@kernel.org>
+References: <20210302115646.62291-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Tj <ml.linux@elloe.vision>,
- iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,115 +89,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit 6778ff5b21bd8e78c8bd547fd66437cf2657fd9b ]
+[ Upstream commit 28a77185f1cd0650b664f54614143aaaa3a7a615 ]
 
-Certain AMD platforms enable power gating feature for IOMMU PMC,
-which prevents the IOMMU driver from updating the counter while
-trying to validate the PMC functionality in the init_iommu_perf_ctr().
-This results in disabling PMC support and the following error message:
+It is incorrect to always clear PRO when it's set w/o first checking
+whether the overflow condition has been cleared. Current code assumes
+that if an overflow condition occurs it must have been cleared by earlier
+loop. However since the code runs in a threaded context, the overflow
+condition could occur even after setting the head to the tail under some
+extreme condition. To be sane, we should read both head/tail again when
+seeing a pending PRO and only clear PRO after all pending PRs have been
+handled.
 
-    "AMD-Vi: Unable to read/write to IOMMU perf counter"
-
-To workaround this issue, disable power gating temporarily by programming
-the counter source to non-zero value while validating the counter,
-and restore the prior state afterward.
-
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Tested-by: Tj (Elloe Linux) <ml.linux@elloe.vision>
-Link: https://lore.kernel.org/r/20210208122712.5048-1-suravee.suthikulpanit@amd.com
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=201753
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/linux-iommu/MWHPR11MB18862D2EA5BD432BF22D99A48CA09@MWHPR11MB1886.namprd11.prod.outlook.com/
+Link: https://lore.kernel.org/r/20210126080730.2232859-2-baolu.lu@linux.intel.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/init.c | 45 ++++++++++++++++++++++++++++++----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ drivers/iommu/intel/svm.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 83d8ab2aed9f..01da76dc1caa 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -12,6 +12,7 @@
- #include <linux/acpi.h>
- #include <linux/list.h>
- #include <linux/bitmap.h>
-+#include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/syscore_ops.h>
- #include <linux/interrupt.h>
-@@ -254,6 +255,8 @@ static enum iommu_init_state init_state = IOMMU_START_STATE;
- static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
-+static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
-+				u8 fxn, u64 *value, bool is_write);
- 
- static bool amd_iommu_pre_enabled = true;
- 
-@@ -1712,13 +1715,11 @@ static int __init init_iommu_all(struct acpi_table_header *table)
- 	return 0;
- }
- 
--static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
--				u8 fxn, u64 *value, bool is_write);
--
--static void init_iommu_perf_ctr(struct amd_iommu *iommu)
-+static void __init init_iommu_perf_ctr(struct amd_iommu *iommu)
- {
-+	int retry;
- 	struct pci_dev *pdev = iommu->dev;
--	u64 val = 0xabcd, val2 = 0, save_reg = 0;
-+	u64 val = 0xabcd, val2 = 0, save_reg, save_src;
- 
- 	if (!iommu_feature(iommu, FEATURE_PC))
- 		return;
-@@ -1726,17 +1727,39 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
- 	amd_iommu_pc_present = true;
- 
- 	/* save the value to restore, if writable */
--	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, false))
-+	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, false) ||
-+	    iommu_pc_get_set_reg(iommu, 0, 0, 8, &save_src, false))
- 		goto pc_false;
- 
--	/* Check if the performance counters can be written to */
--	if ((iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true)) ||
--	    (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false)) ||
--	    (val != val2))
-+	/*
-+	 * Disable power gating by programing the performance counter
-+	 * source to 20 (i.e. counts the reads and writes from/to IOMMU
-+	 * Reserved Register [MMIO Offset 1FF8h] that are ignored.),
-+	 * which never get incremented during this init phase.
-+	 * (Note: The event is also deprecated.)
-+	 */
-+	val = 20;
-+	if (iommu_pc_get_set_reg(iommu, 0, 0, 8, &val, true))
- 		goto pc_false;
- 
-+	/* Check if the performance counters can be written to */
-+	val = 0xabcd;
-+	for (retry = 5; retry; retry--) {
-+		if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true) ||
-+		    iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false) ||
-+		    val2)
-+			break;
-+
-+		/* Wait about 20 msec for power gating to disable and retry. */
-+		msleep(20);
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 43f392d27d31..b200a3acc6ed 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -1079,8 +1079,17 @@ prq_advance:
+ 	 * Clear the page request overflow bit and wake up all threads that
+ 	 * are waiting for the completion of this handling.
+ 	 */
+-	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO)
+-		writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
++	if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO) {
++		pr_info_ratelimited("IOMMU: %s: PRQ overflow detected\n",
++				    iommu->name);
++		head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
++		tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
++		if (head == tail) {
++			writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
++			pr_info_ratelimited("IOMMU: %s: PRQ overflow cleared",
++					    iommu->name);
++		}
 +	}
-+
- 	/* restore */
--	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, true))
-+	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, true) ||
-+	    iommu_pc_get_set_reg(iommu, 0, 0, 8, &save_src, true))
-+		goto pc_false;
-+
-+	if (val != val2)
- 		goto pc_false;
  
- 	pci_info(pdev, "IOMMU performance counters supported\n");
+ 	if (!completion_done(&iommu->prq_complete))
+ 		complete(&iommu->prq_complete);
 -- 
 2.30.1
 
