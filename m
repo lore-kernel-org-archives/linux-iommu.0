@@ -2,78 +2,104 @@ Return-Path: <SRS0=nNEG=IB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37596C433DB
-	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 19:40:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72905C433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 19:45:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9202664EEC
-	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 19:40:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9202664EEC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E2AFD64EDF
+	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 19:45:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2AFD64EDF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 31AB74B058;
-	Wed,  3 Mar 2021 19:40:01 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8B51D83F1B;
+	Wed,  3 Mar 2021 19:45:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id APOFSVM359Qc; Wed,  3 Mar 2021 19:40:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B73554AD93;
-	Wed,  3 Mar 2021 19:39:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id t18n3N28PUrB; Wed,  3 Mar 2021 19:45:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6EB1983AB9;
+	Wed,  3 Mar 2021 19:45:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 88D4FC000A;
-	Wed,  3 Mar 2021 19:39:59 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2A0EC0001
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:39:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5123CC000A;
+	Wed,  3 Mar 2021 19:45:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E44C2C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:45:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CCBE54013C
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:39:58 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CABCB83CA7
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:45:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BeltBRKVcU52 for <iommu@lists.linux-foundation.org>;
- Wed,  3 Mar 2021 19:39:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vpSoW8OSRQ9J for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Mar 2021 19:45:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 24CEB400E1
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:39:58 +0000 (UTC)
-IronPort-SDR: yKu6uN2FT5kqB6uo9vzPpy4XxgoBCtbfAnCCbvJPHVK740nEIhzRlaLa5V/RCj3/pEHW4UoLj7
- 0X34HYqpUbpA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="187384193"
-X-IronPort-AV: E=Sophos;i="5.81,220,1610438400"; d="scan'208";a="187384193"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Mar 2021 11:39:56 -0800
-IronPort-SDR: OdWGxtDOTrbt2xAehg361Kyac1/DrJMpD2/y6cI5y2BRW5S4BA85lehFEoc8rHcWhexqlqbAbe
- RjtgNnQeWrjg==
-X-IronPort-AV: E=Sophos;i="5.81,220,1610438400"; d="scan'208";a="384112777"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Mar 2021 11:39:56 -0800
-Date: Wed, 3 Mar 2021 11:42:12 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
+Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
+ [216.228.121.143])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6616683AB9
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 19:45:34 +0000 (UTC)
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+ id <B603fe75d0005>; Wed, 03 Mar 2021 11:45:33 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 3 Mar
+ 2021 19:45:27 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 3 Mar 2021 19:45:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IvCSz8nvfc7lCW5PyLxPuLPz5EDB8yav5WbaLvVgBh2aGziTea9RXfYmzLRYZI3Wp3fQvXLVoH8jEFJcbxD1TjbCBMw0VCHAP6B6UQQaPK8AaNjrWGnfFW1KrLGGCSpfLMK2b02ZC5DS3odD8gv7t+V+Hn5WEA/dzgR+Igmt4Y15eLQDXY8zq8LUbPWtJxZr8vBjJGdAp4pGm8wp6+lCZ3pvRwEcwIxL4nI/NpRvfjJgrmS3sTyjMBiOQcC+avZvCSSBg33tyEHQzeLgC/CqJ1IlGEvs+F2DTiun2qR+i8/eXaB+WDmZEaf6h+Nm0oaQ40i1PNO8vm0JwAUUmbcZ0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ESjraPQ1U+x3dvWd7l3HBKlTBu3ySX2nWO4QM44ApEU=;
+ b=jSR3cs3NmxaL0zez1GjX7GjJU1t0Kn0y/Tr8s6tLQnFHKw4jd3ts3ewv/GcPQTnGE3Moz7zRan74v7eu0QnUg2VXW1qugMRHWbxYiCobtPl/MrDWFbd+rCpMwW16xScy5HaZ+sukjw9NtUTJLjD1qG0obCuo5X+yfQwyI5lE931py6MaRFJ5B+QKSq8kYVMWrYK5j+/tKgsqZLWPUAS9twP0I5CH/8KtYxLwZdF00/eQdMXFLZl6oRGSGOTC3a3EGxt90dqBUmiNs0yMm56vNtpfPX2ePGWI/eMnWQB+UNTVSOsSf6TnO0WdchfmiU3Eqc9P1nwcW0jVX0+0yobkqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1436.namprd12.prod.outlook.com (2603:10b6:3:78::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3890.19; Wed, 3 Mar 2021 19:45:25 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3912.017; Wed, 3 Mar 2021
+ 19:45:25 +0000
+Date: Wed, 3 Mar 2021 15:45:23 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Subject: Re: [Patch v8 04/10] vfio/type1: Support binding guest page tables
  to PASID
-Message-ID: <20210303114212.1cd86579@jacob-builder>
-In-Reply-To: <20210302171551.GK4247@nvidia.com>
+Message-ID: <20210303194523.GX4247@nvidia.com>
 References: <20210302203545.436623-1-yi.l.liu@intel.com>
  <20210302203545.436623-5-yi.l.liu@intel.com>
- <20210302125628.GI4247@nvidia.com>
- <20210302091319.1446a47b@jacob-builder>
- <20210302171551.GK4247@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <20210302125628.GI4247@nvidia.com> <20210302091319.1446a47b@jacob-builder>
+ <20210302171551.GK4247@nvidia.com> <20210303114212.1cd86579@jacob-builder>
+Content-Disposition: inline
+In-Reply-To: <20210303114212.1cd86579@jacob-builder>
+X-ClientProxiedBy: BL1PR13CA0005.namprd13.prod.outlook.com
+ (2603:10b6:208:256::10) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by
+ BL1PR13CA0005.namprd13.prod.outlook.com (2603:10b6:208:256::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.13 via Frontend
+ Transport; Wed, 3 Mar 2021 19:45:25 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lHXQx-006HY0-UI; Wed, 03 Mar 2021 15:45:23 -0400
+X-Header: ProcessedBy-CMR-outbound
 Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
- kvm@vger.kernel.org, vivek.gautam@arm.com, Jason Wang <jasowang@redhat.com>,
+ kvm@vger.kernel.org, vivek.gautam@arm.com, jasowang@redhat.com,
  stefanha@gmail.com, yi.y.sun@intel.com, alex.williamson@redhat.com,
  iommu@lists.linux-foundation.org, Lingshan.Zhu@intel.com, hao.wu@intel.com,
  jun.j.tian@intel.com
@@ -94,82 +120,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
-
-On Tue, 2 Mar 2021 13:15:51 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, Mar 02, 2021 at 09:13:19AM -0800, Jacob Pan wrote:
-> > Hi Jason,
+On Wed, Mar 03, 2021 at 11:42:12AM -0800, Jacob Pan wrote:
+> Hi Jason,
+> 
+> On Tue, 2 Mar 2021 13:15:51 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Tue, Mar 02, 2021 at 09:13:19AM -0800, Jacob Pan wrote:
+> > > Hi Jason,
+> > > 
+> > > On Tue, 2 Mar 2021 08:56:28 -0400, Jason Gunthorpe <jgg@nvidia.com>
+> > > wrote: 
+> > > > On Wed, Mar 03, 2021 at 04:35:39AM +0800, Liu Yi L wrote:  
+> > > > >  
+> > > > > +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
+> > > > > +{
+> > > > > +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> > > > > +	unsigned long arg = *(unsigned long *)dc->data;
+> > > > > +
+> > > > > +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev,
+> > > > > +					  (void __user *)arg);    
+> > > > 
+> > > > This arg buisness is really tortured. The type should be set at the
+> > > > ioctl, not constantly passed down as unsigned long or worse void *.
+> > > > 
+> > > > And why is this passing a __user pointer deep into an iommu_* API??
+> > > >   
+> > > The idea was that IOMMU UAPI (not API) is independent of VFIO or other
+> > > user driver frameworks. The design is documented here:
+> > > Documentation/userspace-api/iommu.rst
+> > > IOMMU UAPI handles the type and sanitation of user provided data.  
 > > 
-> > On Tue, 2 Mar 2021 08:56:28 -0400, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Wed, Mar 03, 2021 at 04:35:39AM +0800, Liu Yi L wrote:  
-> > > >  
-> > > > +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
-> > > > +{
-> > > > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > > > +	unsigned long arg = *(unsigned long *)dc->data;
-> > > > +
-> > > > +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev,
-> > > > +					  (void __user *)arg);    
-> > > 
-> > > This arg buisness is really tortured. The type should be set at the
-> > > ioctl, not constantly passed down as unsigned long or worse void *.
-> > > 
-> > > And why is this passing a __user pointer deep into an iommu_* API??
-> > >   
-> > The idea was that IOMMU UAPI (not API) is independent of VFIO or other
-> > user driver frameworks. The design is documented here:
-> > Documentation/userspace-api/iommu.rst
-> > IOMMU UAPI handles the type and sanitation of user provided data.  
-> 
-> Why? If it is uapi it has defined types and those types should be
-> completely clear from the C code, not obfuscated.
-> 
-From the user's p.o.v., it is plain c code nothing obfuscated. As for
-kernel handling of the data types, it has to be answered by the bigger
-question of how we deal with sharing IOMMU among multiple subsystems with
-UAPIs.
+> > Why? If it is uapi it has defined types and those types should be
+> > completely clear from the C code, not obfuscated.
+> > 
+> From the user's p.o.v., it is plain c code nothing obfuscated. As for
+> kernel handling of the data types, it has to be answered by the bigger
+> question of how we deal with sharing IOMMU among multiple subsystems with
+> UAPIs.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+	t=1614800733; bh=ESjraPQ1U+x3dvWd7l3HBKlTBu3ySX2nWO4QM44ApEU=;
+	h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+	 From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+	 X-MS-Exchange-MessageSentRepresentingType:X-Header;
+	b=Jyxs64SLsrGfmoPaAHc58Bpre6/+/wDGs/dAMDviWTwRc+2Miw0+jOBGQXNLz/lE8
+	 KbS/K02BZmgn/jJwl994Po6nS3kGgTg0of6AFSd2MqtaZPMx+aMJ3prec9hwpHaXmN
+	 SiosC+FviWoFQHmEvWSQoVeEMS093zQ+sjcsymUkMXYHGYQRqebW101Mii6/0hT3iv
+	 Su4YvAyaKmOpWT8sayI4K0ICIhRxWAOT5P78FrXofij9o3X9T9F/9Bo+S5BWSCMzMr
+	 +dM2KsTd4Ecac9hNemigs87T/tiCh50XaZoc8WMRFWGYMpha6KFdCV5wWL0Yzauyt7
+	 H7uCWkmg/QTCw==
 
-> I haven't looked at the design doc yet, but this is a just a big red
-> flag, you shouldn't be tunneling one subsytems uAPI through another
-> subsystem.
->
-> If you need to hook two subsystems together it should be more
-> directly, like VFIO takes in the IOMMU FD and 'registers' itself in
-> some way with the IOMMU then you can do the IOMMU actions through the
-> IOMMU FD and it can call back to VFIO as needed.
-> 
-> At least in this way we can swap VFIO for other things in the API.
-> 
-> Having every subsystem that wants to implement IOMMU also implement
-> tunneled ops seems very backwards.
->
-Let me try to understand your proposal, you are saying:
-1. Create a new user interface such that FDs can be obtained as a reference
-to an IOMMU.
-2. Handle over the IOMMU FD to VFIO or other subsystem which wish to
-register for IOMMU service.
+As I said, don't obfuscate types like this in the kernel. It is not
+good style.
 
-However, IOMMU is a system device which has little value to be exposed to
-the userspace. Not to mention the device-IOMMU affinity/topology. VFIO
-nicely abstracts IOMMU from the userspace, why do we want to reverse that?
+> However, IOMMU is a system device which has little value to be exposed to
+> the userspace. Not to mention the device-IOMMU affinity/topology. VFIO
+> nicely abstracts IOMMU from the userspace, why do we want to reverse that?
 
-With this UAPI layering approach, we converge common code at the IOMMU
-layer. Without introducing new user interfaces, we can support multiple
-subsystems that want to use IOMMU service. e.g. VDPA and VFIO.
+The other patch was talking about a /dev/ioasid - why can't this stuff
+be run over that?
 
-> > Could you be more specific about your concerns?  
-> 
-> Avoid using unsigned long, void * and flex arrays to describe
-> concretely typed things.
-> 
-> Jason
-
-
-Thanks,
-
-Jacob
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
