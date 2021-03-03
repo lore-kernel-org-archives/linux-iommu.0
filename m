@@ -2,75 +2,80 @@ Return-Path: <SRS0=nNEG=IB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AD7C433E0
-	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 04:33:38 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEA0C433DB
+	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 05:05:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E39D64E87
-	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 04:33:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E39D64E87
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=socionext.com
+	by mail.kernel.org (Postfix) with ESMTPS id 05BEE64EBA
+	for <iommu@archiver.kernel.org>; Wed,  3 Mar 2021 05:05:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05BEE64EBA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4914048DF1;
-	Wed,  3 Mar 2021 04:33:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9617E43200;
+	Wed,  3 Mar 2021 05:05:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D7KWYwirb0QX; Wed,  3 Mar 2021 04:33:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CE0D54E3C5;
-	Wed,  3 Mar 2021 04:33:34 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QOtx5p1wpmQb; Wed,  3 Mar 2021 05:05:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 86E824321F;
+	Wed,  3 Mar 2021 05:05:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AF712C000A;
-	Wed,  3 Mar 2021 04:33:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B518EC000A
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 04:33:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F0D2C000A;
+	Wed,  3 Mar 2021 05:05:39 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E84A3C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 05:05:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 99F9E839BC
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 04:33:32 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C91BC6F60C
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 05:05:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rOMisFFbfJBq for <iommu@lists.linux-foundation.org>;
- Wed,  3 Mar 2021 04:33:31 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OE6RPO9NMQ5t for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Mar 2021 05:05:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4A9C5838C0
- for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 04:33:31 +0000 (UTC)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
- by mx.socionext.com with ESMTP; 03 Mar 2021 13:33:29 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
- by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 2A3F62059025;
- Wed,  3 Mar 2021 13:33:29 +0900 (JST)
-Received: from 172.31.9.53 (172.31.9.53) by m-FILTER with ESMTP;
- Wed, 3 Mar 2021 13:33:29 +0900
-Received: from yuzu.css.socionext.com (yuzu [172.31.8.45])
- by iyokan2.css.socionext.com (Postfix) with ESMTP id A14AEB1D40;
- Wed,  3 Mar 2021 13:33:28 +0900 (JST)
-Received: from [10.213.132.48] (unknown [10.213.132.48])
- by yuzu.css.socionext.com (Postfix) with ESMTP id 7A78112053F;
- Wed,  3 Mar 2021 13:33:28 +0900 (JST)
-Date: Wed, 03 Mar 2021 13:33:28 +0900
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH] swiotlb: Fix type of max_slot
-In-Reply-To: <436bf276-5b16-62af-6a32-70f91fce7557@oracle.com>
-References: <1614705688-10567-1-git-send-email-hayashi.kunihiko@socionext.com>
- <436bf276-5b16-62af-6a32-70f91fce7557@oracle.com>
-Message-Id: <20210303133328.4D12.4A936039@socionext.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 235606F5F0
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Mar 2021 05:05:36 +0000 (UTC)
+IronPort-SDR: dHqNuJnkhLysNXCd6XfPm9XZ2TS116fWJmq5QSbgpGmcaH041AKK/1tCInydCqobAE4KQbvmRE
+ UuixB+BRoWcQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9911"; a="174224749"
+X-IronPort-AV: E=Sophos;i="5.81,219,1610438400"; d="scan'208";a="174224749"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Mar 2021 21:05:35 -0800
+IronPort-SDR: 6N2e6t3C0vD1bK+9VPpST7R5y91de6mZdMt1BziH1esbyl/T8rJwFrl5hzdiW7ThZb24DUVddq
+ Ibnt9yW1gSFA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,219,1610438400"; d="scan'208";a="428035582"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 02 Mar 2021 21:05:33 -0800
+Subject: Re: [PATCH v2 1/4] iommu/vt-d: Enable write protect for supervisor SVM
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+References: <1614680040-1989-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1614680040-1989-2-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <9190a39d-13c2-c288-e8cd-a1c8adb8e600@linux.intel.com>
+Date: Wed, 3 Mar 2021 12:56:37 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-Mailer: Becky! ver. 2.70 [ja]
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Jianxiong Gao <jxgao@google.com>
+In-Reply-To: <1614680040-1989-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Sanjay Kumar <sanjay.k.kumar@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,59 +88,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 2 Mar 2021 15:20:08 -0500
-Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> wrote:
-
-> On 3/2/21 12:21 PM, Kunihiko Hayashi wrote:
-> > After the refactoring phase, the type of max_slot has changed from unsigned
-> > long to unsigned int. The return type of the function get_max_slots() and
-> > the 4th argument type of iommu_is_span_boundary() are different from the
-> > type of max_slot. Finally, asserts BUG_ON in iommu_is_span_boundary().
-> > > Cc: Christoph Hellwig <hch@lst.de>
-> > Fixes: 567d877f9a7d ("swiotlb: refactor swiotlb_tbl_map_single")
-> > Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+On 3/2/21 6:13 PM, Jacob Pan wrote:
+> Write protect bit, when set, inhibits supervisor writes to the read-only
+> pages. In supervisor shared virtual addressing (SVA), where page tables
+> are shared between CPU and DMA, IOMMU PASID entry WPE bit should match
+> CR0.WP bit in the CPU.
+> This patch sets WPE bit for supervisor PASIDs if CR0.WP is set.
 > 
-> I think this is all good. Looking at Linus's master I see:
+> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/intel/pasid.c | 26 ++++++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
 > 
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index 0cceaabc3ce6..0b7e0e726ade 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -410,6 +410,15 @@ static inline void pasid_set_sre(struct pasid_entry *pe)
+>   	pasid_set_bits(&pe->val[2], 1 << 0, 1);
+>   }
+>   
+> +/*
+> + * Setup the WPE(Write Protect Enable) field (Bit 132) of a
+> + * scalable mode PASID entry.
+> + */
+> +static inline void pasid_set_wpe(struct pasid_entry *pe)
+> +{
+> +	pasid_set_bits(&pe->val[2], 1 << 4, 1 << 4);
+> +}
+> +
+>   /*
+>    * Setup the P(Present) field (Bit 0) of a scalable mode PASID
+>    * entry.
+> @@ -553,6 +562,20 @@ static void pasid_flush_caches(struct intel_iommu *iommu,
+>   	}
+>   }
+>   
+> +static inline int pasid_enable_wpe(struct pasid_entry *pte)
+> +{
+> +	unsigned long cr0 = read_cr0();
+> +
+> +	/* CR0.WP is normally set but just to be sure */
+> +	if (unlikely(!(cr0 & X86_CR0_WP))) {
+> +		pr_err_ratelimited("No CPU write protect!\n");
+> +		return -EINVAL;
+> +	}
+> +	pasid_set_wpe(pte);
+> +
+> +	return 0;
+> +};
+> +
+>   /*
+>    * Set up the scalable mode pasid table entry for first only
+>    * translation type.
+> @@ -584,6 +607,9 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+>   			return -EINVAL;
+>   		}
+>   		pasid_set_sre(pte);
+> +		if (pasid_enable_wpe(pte))
+> +			return -EINVAL;
+> +
+>   	}
+>   
+>   	if (flags & PASID_FLAG_FL5LP) {
 > 
-> 537         unsigned long max_slots = get_max_slots(boundary_mask);
-> 
-> ?
 
-Thanks for the information, and sorry for that.
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-I found it in next-20210226:
-567d877f9a7d ("swiotlb: refactor swiotlb_tbl_map_single")
-
-And it has already fixed in next-20210301:
-26a7e094783d ("swiotlb: refactor swiotlb_tbl_map_single")
-
-$ git diff 567d877f9a7d..26a7e094783d
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 381c24e..6962cb4 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -496,7 +496,7 @@ static int find_slots(struct device *dev, size_t alloc_size)
-        unsigned long boundary_mask = dma_get_seg_boundary(dev);
-        dma_addr_t tbl_dma_addr =
-                phys_to_dma_unencrypted(dev, io_tlb_start) & boundary_mask;
--       unsigned int max_slots = get_max_slots(boundary_mask);
-+       unsigned long max_slots = get_max_slots(boundary_mask);
-        unsigned int nslots = nr_slots(alloc_size), stride = 1;
-        unsigned int index, wrap, count = 0, i;
-        unsigned long flags;
-
-Thank you,
-
----
-Best Regards,
-Kunihiko Hayashi
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
