@@ -2,130 +2,74 @@ Return-Path: <SRS0=KoUT=IC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC5DC433DB
-	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 12:52:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B00BC433DB
+	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 15:25:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8B0864F2B
-	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 12:52:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8B0864F2B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id DC86464F93
+	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 15:25:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC86464F93
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6DF0084225;
-	Thu,  4 Mar 2021 12:52:20 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 991BF43272;
+	Thu,  4 Mar 2021 15:25:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D_iqt4TXEPNz; Thu,  4 Mar 2021 12:52:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 60EA8840E3;
-	Thu,  4 Mar 2021 12:52:19 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cw7y-zPn8bn6; Thu,  4 Mar 2021 15:25:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 31D2242FC7;
+	Thu,  4 Mar 2021 15:25:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D5DAC000A;
-	Thu,  4 Mar 2021 12:52:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79511C0001
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 12:52:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0761EC000B;
+	Thu,  4 Mar 2021 15:25:39 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8A837C0001;
+ Thu,  4 Mar 2021 15:25:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7507584225
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 12:52:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6E1004325C;
+ Thu,  4 Mar 2021 15:25:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5DWnNMqKJ569 for <iommu@lists.linux-foundation.org>;
- Thu,  4 Mar 2021 12:52:17 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RVCtZgw_E61y; Thu,  4 Mar 2021 15:25:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
- [216.228.121.143])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BC6C2840E3
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 12:52:17 +0000 (UTC)
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
- id <B6040d8010000>; Thu, 04 Mar 2021 04:52:17 -0800
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 4 Mar
- 2021 12:52:16 +0000
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL104.nvidia.com
- (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 4 Mar
- 2021 12:52:04 +0000
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2 via Frontend Transport; Thu, 4 Mar 2021 12:52:04 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y3rvkD2htfyw2GGFofzfce8bBOxZUDFm7SU/d/ebOw1uMIvPAOZPsWuIrk4V44iDxyTdRr1iK01CLwCxP8kRC3tgzQo5DXjosN/gVCwU/a026fk8i4oUzB+SQLcVdR1YC1d5KN2ChelqSxfjj5oJ4pzBmeTKaVmYqByD0MXnWEPgk/d9smtF0RDo1P7Ga+ABwyBwJtNeXbcTCD3g24ViQ1eoJkzyqsE8d1cRdeqCUkx1mlY43/wEMP5UTZnmgFe5SNFlm2zq5zeSBbSz+Kvk4rKy9iTMLFQ4JHf4deyrvpBsIxx+n8B+cqPsL40eYfpSeInC1IEryWiSirPuSiowJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qxxqEAnlNQ1w50HDAHhTXHasozbopSC2lFlIm5C4DOU=;
- b=JO4ZOJ2OpZmYmYJorLYvU83AVBAhVNEJ6vMS3tbNuqG13HqtPQQenR1eOjAjnQaGWHgVkTUV8g8uDpev4LzapOCIQ3ekX7KscSbE3WEKa7adL6HjEI3E7qo5YTOP3rDxA7Y/4Q7H7UXgg15UfJd1uAuDy9rqALL69X0KAQmwYyfSAGWc46wFlrfOuLRsLlnj7uug4+9+CWwGEZSTM+ytG3/RfnTxY1+ubvMRtZb8OBoMxECZK4HEu7tWhj8qOWUfbdQDWWd1thI/z2J55GVB+jkRZKtIWidjY/wIKsNRQuBL4jH1H0NcBJ9gkJUEttENXTeE4gEHT+8Osfm8rJ1vfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4546.namprd12.prod.outlook.com (2603:10b6:5:2ae::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Thu, 4 Mar
- 2021 12:52:02 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3912.017; Thu, 4 Mar 2021
- 12:52:02 +0000
-Date: Thu, 4 Mar 2021 08:52:01 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [Patch v8 04/10] vfio/type1: Support binding guest page tables
- to PASID
-Message-ID: <20210304125201.GA4247@nvidia.com>
-References: <20210302203545.436623-1-yi.l.liu@intel.com>
- <20210302203545.436623-5-yi.l.liu@intel.com>
- <20210302125628.GI4247@nvidia.com> <20210302091319.1446a47b@jacob-builder>
- <20210302171551.GK4247@nvidia.com> <20210303114212.1cd86579@jacob-builder>
- <20210303194523.GX4247@nvidia.com>
- <BN6PR11MB4068D05B70842124234A7AF4C3979@BN6PR11MB4068.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <BN6PR11MB4068D05B70842124234A7AF4C3979@BN6PR11MB4068.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0156.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::11) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0C43242FC7;
+ Thu,  4 Mar 2021 15:25:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D51141FB;
+ Thu,  4 Mar 2021 07:25:34 -0800 (PST)
+Received: from [10.57.48.219] (unknown [10.57.48.219])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2435D3F766;
+ Thu,  4 Mar 2021 07:25:32 -0800 (PST)
+Subject: Re: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>
+References: <20210301084257.945454-1-hch@lst.de>
+ <20210301084257.945454-15-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <1658805c-ed28-b650-7385-a56fab3383e3@arm.com>
+Date: Thu, 4 Mar 2021 15:25:27 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by
- BL1PR13CA0156.namprd13.prod.outlook.com (2603:10b6:208:2bd::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.9 via Frontend
- Transport; Thu, 4 Mar 2021 12:52:02 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lHnST-006atm-Fx; Thu, 04 Mar 2021 08:52:01 -0400
-X-Header: ProcessedBy-CMR-outbound
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1614862337; bh=qxxqEAnlNQ1w50HDAHhTXHasozbopSC2lFlIm5C4DOU=;
- h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
- From:To:CC:Subject:Message-ID:References:Content-Type:
- Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
- X-MS-Exchange-MessageSentRepresentingType:X-Header;
- b=fCwQmhAsaFr4M6reM+Gp+1piwPVPgQBNO5lFK/AiNZDrE9aVJgpvZH+wctUULKkLW
- eeugqowh6vZ/WxhisMtkTnsz0hccDLDPt/mcKePhNcE2JOzR5QrgEKyE9sUCOtWItM
- a9I3ufd0dV5icoWKYqu3kdqaYgAjBsKb3aM+4UMlxtH2YFPJTtYp/ybZmcqXqvZhGe
- sBz4ejzAuCaC726flKN2JVgm844DQXSz9MS5uep8UexaH1fplCN8fQuxcAj+v1fYZW
- BnMOX5oGviS1/mSv/dmpQh7fHoCBV4nkuUmqeejG7Cvwrze+V4Pc6gWtIbow0+W4fO
- qfiUMilgHQeKQ==
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Zhu,
- Lingshan" <lingshan.zhu@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian, Jun
- J" <jun.j.tian@intel.com>
+In-Reply-To: <20210301084257.945454-15-hch@lst.de>
+Content-Language: en-GB
+Cc: kvm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+ linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+ freedreno@lists.freedesktop.org, David Woodhouse <dwmw2@infradead.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -138,34 +82,424 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 04, 2021 at 07:20:22AM +0000, Liu, Yi L wrote:
-> > > However, IOMMU is a system device which has little value to be exposed
-> > to
-> > > the userspace. Not to mention the device-IOMMU affinity/topology. VFIO
-> > > nicely abstracts IOMMU from the userspace, why do we want to reverse
-> > that?
-> > 
-> > The other patch was talking about a /dev/ioasid - why can't this stuff
-> > be run over that?
+On 2021-03-01 08:42, Christoph Hellwig wrote:
+> Use explicit methods for setting and querying the information instead.
+
+Now that everyone's using iommu-dma, is there any point in bouncing this 
+through the drivers at all? Seems like it would make more sense for the 
+x86 drivers to reflect their private options back to iommu_dma_strict 
+(and allow Intel's caching mode to override it as well), then have 
+iommu_dma_init_domain just test !iommu_dma_strict && 
+domain->ops->flush_iotlb_all.
+
+Robin.
+
+> Also remove the now unused iommu_domain_get_attr functionality.
 > 
-> The stuff in this patch are actually iommu domain operations, which are
-> finally supported by iommu domain ops. While /dev/ioasid in another patch
-> is created for IOASID allocation/free to fit the PASID allocation requirement
-> from both vSVA and vDPA. It has no idea about iommu domain and neither the
-> device information. Without such info, /dev/ioasid is unable to run this
-> stuff.
-
-Why can't it know? My point was that VFIO should interact with
-/dev/ioasid to exchange the information both sides need and once
-exchanged the control over IOMMU should be done through /dev/ioasid,
-not inside VFIO.
-
-Jason
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   drivers/iommu/amd/iommu.c                   | 23 ++-------
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 47 ++++++-----------
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 56 +++++----------------
+>   drivers/iommu/dma-iommu.c                   |  8 ++-
+>   drivers/iommu/intel/iommu.c                 | 27 ++--------
+>   drivers/iommu/iommu.c                       | 19 +++----
+>   include/linux/iommu.h                       | 17 ++-----
+>   7 files changed, 51 insertions(+), 146 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index a69a8b573e40d0..37a8e51db17656 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1771,24 +1771,11 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
+>   	return acpihid_device_group(dev);
+>   }
+>   
+> -static int amd_iommu_domain_get_attr(struct iommu_domain *domain,
+> -		enum iommu_attr attr, void *data)
+> +static bool amd_iommu_dma_use_flush_queue(struct iommu_domain *domain)
+>   {
+> -	switch (domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		return -ENODEV;
+> -	case IOMMU_DOMAIN_DMA:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			*(int *)data = !amd_iommu_unmap_flush;
+> -			return 0;
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> +	if (domain->type != IOMMU_DOMAIN_DMA)
+> +		return false;
+> +	return !amd_iommu_unmap_flush;
+>   }
+>   
+>   /*****************************************************************************
+> @@ -2257,7 +2244,7 @@ const struct iommu_ops amd_iommu_ops = {
+>   	.release_device = amd_iommu_release_device,
+>   	.probe_finalize = amd_iommu_probe_finalize,
+>   	.device_group = amd_iommu_device_group,
+> -	.domain_get_attr = amd_iommu_domain_get_attr,
+> +	.dma_use_flush_queue = amd_iommu_dma_use_flush_queue,
+>   	.get_resv_regions = amd_iommu_get_resv_regions,
+>   	.put_resv_regions = generic_iommu_put_resv_regions,
+>   	.is_attach_deferred = amd_iommu_is_attach_deferred,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 8594b4a8304375..bf96172e8c1f71 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2449,33 +2449,21 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>   	return group;
+>   }
+>   
+> -static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+> -				    enum iommu_attr attr, void *data)
+> +static bool arm_smmu_dma_use_flush_queue(struct iommu_domain *domain)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>   
+> -	switch (domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	case IOMMU_DOMAIN_DMA:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			*(int *)data = smmu_domain->non_strict;
+> -			return 0;
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> +	if (domain->type != IOMMU_DOMAIN_DMA)
+> +		return false;
+> +	return smmu_domain->non_strict;
+> +}
+> +
+> +
+> +static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+> +{
+> +	if (domain->type != IOMMU_DOMAIN_DMA)
+> +		return;
+> +	to_smmu_domain(domain)->non_strict = true;
+>   }
+>   
+>   static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+> @@ -2505,13 +2493,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>   		}
+>   		break;
+>   	case IOMMU_DOMAIN_DMA:
+> -		switch(attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			smmu_domain->non_strict = *(int *)data;
+> -			break;
+> -		default:
+> -			ret = -ENODEV;
+> -		}
+> +		ret = -ENODEV;
+>   		break;
+>   	default:
+>   		ret = -EINVAL;
+> @@ -2619,7 +2601,8 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.probe_device		= arm_smmu_probe_device,
+>   	.release_device		= arm_smmu_release_device,
+>   	.device_group		= arm_smmu_device_group,
+> -	.domain_get_attr	= arm_smmu_domain_get_attr,
+> +	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+> +	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+>   	.domain_set_attr	= arm_smmu_domain_set_attr,
+>   	.of_xlate		= arm_smmu_of_xlate,
+>   	.get_resv_regions	= arm_smmu_get_resv_regions,
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index d8c6bfde6a6158..e7893e96f5177a 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1481,42 +1481,20 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>   	return group;
+>   }
+>   
+> -static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+> -				    enum iommu_attr attr, void *data)
+> +static bool arm_smmu_dma_use_flush_queue(struct iommu_domain *domain)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>   
+> -	switch(domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> -		case DOMAIN_ATTR_IO_PGTABLE_CFG: {
+> -			struct io_pgtable_domain_attr *pgtbl_cfg = data;
+> -			*pgtbl_cfg = smmu_domain->pgtbl_cfg;
+> +	if (domain->type != IOMMU_DOMAIN_DMA)
+> +		return false;
+> +	return smmu_domain->pgtbl_cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT;
+> +}
+>   
+> -			return 0;
+> -		}
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	case IOMMU_DOMAIN_DMA:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE: {
+> -			bool non_strict = smmu_domain->pgtbl_cfg.quirks &
+> -					  IO_PGTABLE_QUIRK_NON_STRICT;
+> -			*(int *)data = non_strict;
+> -			return 0;
+> -		}
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> +static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+> +{
+> +	if (domain->type != IOMMU_DOMAIN_DMA)
+> +		return;
+> +	to_smmu_domain(domain)->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>   }
+>   
+>   static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+> @@ -1557,16 +1535,7 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>   		}
+>   		break;
+>   	case IOMMU_DOMAIN_DMA:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			if (*(int *)data)
+> -				smmu_domain->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+> -			else
+> -				smmu_domain->pgtbl_cfg.quirks &= ~IO_PGTABLE_QUIRK_NON_STRICT;
+> -			break;
+> -		default:
+> -			ret = -ENODEV;
+> -		}
+> +		ret = -ENODEV;
+>   		break;
+>   	default:
+>   		ret = -EINVAL;
+> @@ -1631,7 +1600,8 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.probe_device		= arm_smmu_probe_device,
+>   	.release_device		= arm_smmu_release_device,
+>   	.device_group		= arm_smmu_device_group,
+> -	.domain_get_attr	= arm_smmu_domain_get_attr,
+> +	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+> +	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+>   	.domain_set_attr	= arm_smmu_domain_set_attr,
+>   	.of_xlate		= arm_smmu_of_xlate,
+>   	.get_resv_regions	= arm_smmu_get_resv_regions,
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 9ab6ee22c11088..d3fe5aad9d6ecf 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -305,8 +305,8 @@ static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
+>   	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
+>   	domain = cookie->fq_domain;
+>   	/*
+> -	 * The IOMMU driver supporting DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+> -	 * implies that ops->flush_iotlb_all must be non-NULL.
+> +	 * The IOMMU driver supporting a DMA flush queue implies that
+> +	 * ops->flush_iotlb_all must be non-NULL.
+>   	 */
+>   	domain->ops->flush_iotlb_all(domain);
+>   }
+> @@ -329,7 +329,6 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	unsigned long order, base_pfn;
+>   	struct iova_domain *iovad;
+> -	int attr;
+>   
+>   	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+>   		return -EINVAL;
+> @@ -365,8 +364,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>   
+>   	init_iova_domain(iovad, 1UL << order, base_pfn);
+>   
+> -	if (!cookie->fq_domain && !iommu_domain_get_attr(domain,
+> -			DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) && attr) {
+> +	if (!cookie->fq_domain && iommu_dma_use_flush_queue(domain)) {
+>   		if (init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
+>   					  iommu_dma_entry_dtor))
+>   			pr_warn("iova flush queue initialization failed\n");
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index ee0932307d646b..eaa80c33f4bc91 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5453,13 +5453,13 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> -static bool domain_use_flush_queue(void)
+> +static bool intel_iommu_dma_use_flush_queue(struct iommu_domain *domain)
+>   {
+>   	struct dmar_drhd_unit *drhd;
+>   	struct intel_iommu *iommu;
+>   	bool r = true;
+>   
+> -	if (intel_iommu_strict)
+> +	if (domain->type != IOMMU_DOMAIN_DMA || intel_iommu_strict)
+>   		return false;
+>   
+>   	/*
+> @@ -5483,27 +5483,6 @@ static bool domain_use_flush_queue(void)
+>   	return r;
+>   }
+>   
+> -static int
+> -intel_iommu_domain_get_attr(struct iommu_domain *domain,
+> -			    enum iommu_attr attr, void *data)
+> -{
+> -	switch (domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		return -ENODEV;
+> -	case IOMMU_DOMAIN_DMA:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> -			*(int *)data = domain_use_flush_queue();
+> -			return 0;
+> -		default:
+> -			return -ENODEV;
+> -		}
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> -}
+> -
+>   /*
+>    * Check that the device does not live on an external facing PCI port that is
+>    * marked as untrusted. Such devices should not be able to apply quirks and
+> @@ -5576,7 +5555,7 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.capable		= intel_iommu_capable,
+>   	.domain_alloc		= intel_iommu_domain_alloc,
+>   	.domain_free		= intel_iommu_domain_free,
+> -	.domain_get_attr        = intel_iommu_domain_get_attr,
+> +	.dma_use_flush_queue	= intel_iommu_dma_use_flush_queue,
+>   	.domain_set_attr	= intel_iommu_domain_set_attr,
+>   	.attach_dev		= intel_iommu_attach_device,
+>   	.detach_dev		= intel_iommu_detach_device,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 23daaea7883b75..0f12c4d58cdc42 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1512,12 +1512,8 @@ static int iommu_group_alloc_default_domain(struct bus_type *bus,
+>   	if (!group->domain)
+>   		group->domain = dom;
+>   
+> -	if (!iommu_dma_strict) {
+> -		int attr = 1;
+> -		iommu_domain_set_attr(dom,
+> -				      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+> -				      &attr);
+> -	}
+> +	if (!iommu_dma_strict && dom->ops->dma_enable_flush_queue)
+> +		dom->ops->dma_enable_flush_queue(dom);
+>   
+>   	return 0;
+>   }
+> @@ -2664,14 +2660,13 @@ static int __init iommu_init(void)
+>   }
+>   core_initcall(iommu_init);
+>   
+> -int iommu_domain_get_attr(struct iommu_domain *domain,
+> -			  enum iommu_attr attr, void *data)
+> +bool iommu_dma_use_flush_queue(struct iommu_domain *domain)
+>   {
+> -	if (!domain->ops->domain_get_attr)
+> -		return -EINVAL;
+> -	return domain->ops->domain_get_attr(domain, attr, data);
+> +	if (!domain->ops->dma_use_flush_queue)
+> +		return false;
+> +	return domain->ops->dma_use_flush_queue(domain);
+>   }
+> -EXPORT_SYMBOL_GPL(iommu_domain_get_attr);
+> +EXPORT_SYMBOL_GPL(iommu_dma_use_flush_queue);
+>   
+>   int iommu_domain_set_attr(struct iommu_domain *domain,
+>   			  enum iommu_attr attr, void *data)
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index c15a8658daad64..f30de33c6ff56e 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -108,7 +108,6 @@ enum iommu_cap {
+>   
+>   enum iommu_attr {
+>   	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+> -	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+>   	DOMAIN_ATTR_IO_PGTABLE_CFG,
+>   	DOMAIN_ATTR_MAX,
+>   };
+> @@ -194,7 +193,8 @@ struct iommu_iotlb_gather {
+>    * @probe_finalize: Do final setup work after the device is added to an IOMMU
+>    *                  group and attached to the groups domain
+>    * @device_group: find iommu group for a particular device
+> - * @domain_get_attr: Query domain attributes
+> + * @dma_use_flush_queue: Returns %true if a DMA flush queue is used
+> + * @dma_enable_flush_queue: Try to enable the DMA flush queue
+>    * @domain_set_attr: Change domain attributes
+>    * @get_resv_regions: Request list of reserved regions for a device
+>    * @put_resv_regions: Free list of reserved regions for a device
+> @@ -244,8 +244,8 @@ struct iommu_ops {
+>   	void (*release_device)(struct device *dev);
+>   	void (*probe_finalize)(struct device *dev);
+>   	struct iommu_group *(*device_group)(struct device *dev);
+> -	int (*domain_get_attr)(struct iommu_domain *domain,
+> -			       enum iommu_attr attr, void *data);
+> +	bool (*dma_use_flush_queue)(struct iommu_domain *domain);
+> +	void (*dma_enable_flush_queue)(struct iommu_domain *domain);
+>   	int (*domain_set_attr)(struct iommu_domain *domain,
+>   			       enum iommu_attr attr, void *data);
+>   
+> @@ -491,8 +491,7 @@ extern int iommu_page_response(struct device *dev,
+>   extern int iommu_group_id(struct iommu_group *group);
+>   extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+>   
+> -extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+> -				 void *data);
+> +bool iommu_dma_use_flush_queue(struct iommu_domain *domain);
+>   extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+>   				 void *data);
+>   
+> @@ -861,12 +860,6 @@ static inline int iommu_group_id(struct iommu_group *group)
+>   	return -ENODEV;
+>   }
+>   
+> -static inline int iommu_domain_get_attr(struct iommu_domain *domain,
+> -					enum iommu_attr attr, void *data)
+> -{
+> -	return -EINVAL;
+> -}
+> -
+>   static inline int iommu_domain_set_attr(struct iommu_domain *domain,
+>   					enum iommu_attr attr, void *data)
+>   {
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
