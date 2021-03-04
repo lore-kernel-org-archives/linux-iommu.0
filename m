@@ -2,184 +2,75 @@ Return-Path: <SRS0=KoUT=IC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA00C433DB
-	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 07:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09719C433E0
+	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 07:56:17 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1FCF564EF9
-	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 07:20:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FCF564EF9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0D6F964EFC
+	for <iommu@archiver.kernel.org>; Thu,  4 Mar 2021 07:56:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D6F964EFC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D55C74EBD7;
-	Thu,  4 Mar 2021 07:20:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A5ACA4EBCC;
+	Thu,  4 Mar 2021 07:56:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t9F91B3mXL-9; Thu,  4 Mar 2021 07:20:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 715264EBB7;
-	Thu,  4 Mar 2021 07:20:31 +0000 (UTC)
+	with ESMTP id 6H93kSTA8TAY; Thu,  4 Mar 2021 07:56:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id C955E4EBC8;
+	Thu,  4 Mar 2021 07:56:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5523AC000B;
-	Thu,  4 Mar 2021 07:20:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2FF01C0001
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:20:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A83AAC000B;
+	Thu,  4 Mar 2021 07:56:13 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6B664C0001
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:56:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0762B4EBCC
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:20:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 594DB6F5B8
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:56:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wtYtF1b801px for <iommu@lists.linux-foundation.org>;
- Thu,  4 Mar 2021 07:20:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DMyJQFUbGJei for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Mar 2021 07:56:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 51F504EBB7
- for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:20:28 +0000 (UTC)
-IronPort-SDR: GnlKOBwlvgGKp8kumt5JiW5zrb/7V8hTTV3y1zL9l0Os4JX1TJ2kb6680opeelBTg9x+vJj0Ym
- LqqceSwNtSVg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9912"; a="174475692"
-X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; d="scan'208";a="174475692"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Mar 2021 23:20:27 -0800
-IronPort-SDR: oww1WiYP4qwvVkq51tniETF3SCAvC5NfLvnXNISC2HgfhgpSgMGG6IlS8btQi39Sdl+9BKV45D
- wrgvNrcKbU1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,222,1610438400"; d="scan'208";a="369654221"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
- by orsmga006.jf.intel.com with ESMTP; 03 Mar 2021 23:20:27 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 3 Mar 2021 23:20:26 -0800
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 3 Mar 2021 23:20:26 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Wed, 3 Mar 2021 23:20:26 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Wed, 3 Mar 2021 23:20:25 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GdxErzO867sg/GVCPCamURwcmdL/CkTkvVOgd0iwlvCiDpP9QDcuJjO74xE3+XAQ/TH59+O0eeM0kGTaS5fMQ2+o05exGi/wyGnf2KhJJ9921QCH+CMR61mF+f0ln1SnpyD/vwtc9B+g9IpTl+N34D9dcCNOmrp7ZhYUHCsxpzpcrTdDSz0HwHFRP/37nmEOaxme2WGNx/f4Tmbdg2nWDsisgPzXmzMLYH8xU8j6MJ7GwIjgOLMax+REkR9qzrfN6Glpr2WeqwnyjT7Pwi6H0NQ9hlaVeD53bGsad2mYCJhTCkpDNFzyLw0atrTYafHESGWHWGJ4WbHnIZNJMry54w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ibnv5LHIF3NZNlviCpcvTt5TC1S0fR9q1oZPmP8aICQ=;
- b=SgXdR6aRv3UHAN/6o1rLem6oH2xk049aj66NPJdVbcIaKg+UzwZaxuMDHnrd/LfxDjaG8OY8aACixujgattH6eFpTbUNfnSEIyk31SiaT+szonfLUWv8TS67Xv91mCvxrOPKjoyP43XvTlIQ7DE7FlNg5srYdNkPSOPzMp/khj5N2RXHkK9HiFVnKSZO+lzXlh5vUxgi6gfSkyATaWWw3bpdAx1qm60IGp4gQ9dYehHWGRwm7/Rq/+7hYPUO187Jmyg/QgaIvjJxPWxtnQ8PxKBOE0h9a6Jphz2vu8WWORFZnN95ydXg5FLSfXu+lAYSJ2/Cst4kjQBa1HIypFFuqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ibnv5LHIF3NZNlviCpcvTt5TC1S0fR9q1oZPmP8aICQ=;
- b=ADj7Kv5cgJYHlRlIkNDB9aaY2zhccV6To/neOB1/PEhWJx5nhNkuK2WeXx9WoSFUCVpAT4NKgisydWyUz3QBEmi+lU4T1qh5Cnor3E5zAGV/Xv+fJg5ikDF94wrxDqEQFatEW8kVq1o4/8q4F0eM5fld41yevCoVIXRS+ZS5kiM=
-Received: from BN6PR11MB4068.namprd11.prod.outlook.com (2603:10b6:405:7c::31)
- by BN6PR11MB1793.namprd11.prod.outlook.com (2603:10b6:404:102::20)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Thu, 4 Mar
- 2021 07:20:24 +0000
-Received: from BN6PR11MB4068.namprd11.prod.outlook.com
- ([fe80::5404:7a7d:4c2a:1c1d]) by BN6PR11MB4068.namprd11.prod.outlook.com
- ([fe80::5404:7a7d:4c2a:1c1d%3]) with mapi id 15.20.3912.021; Thu, 4 Mar 2021
- 07:20:23 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: RE: [Patch v8 04/10] vfio/type1: Support binding guest page tables to
- PASID
-Thread-Topic: [Patch v8 04/10] vfio/type1: Support binding guest page tables
- to PASID
-Thread-Index: AQHXD2DTqHwsu8SEs0ulXYEOOzE5O6pwqCkAgABHw4CAAAC2gIABuzgAgAAA5ICAALYpYA==
-Date: Thu, 4 Mar 2021 07:20:22 +0000
-Message-ID: <BN6PR11MB4068D05B70842124234A7AF4C3979@BN6PR11MB4068.namprd11.prod.outlook.com>
-References: <20210302203545.436623-1-yi.l.liu@intel.com>
- <20210302203545.436623-5-yi.l.liu@intel.com>
- <20210302125628.GI4247@nvidia.com> <20210302091319.1446a47b@jacob-builder>
- <20210302171551.GK4247@nvidia.com> <20210303114212.1cd86579@jacob-builder>
- <20210303194523.GX4247@nvidia.com>
-In-Reply-To: <20210303194523.GX4247@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.147.221]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9f1a62ad-089f-464c-1d7e-08d8deddfa07
-x-ms-traffictypediagnostic: BN6PR11MB1793:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR11MB17931CF0CAEC836BE1BBA3D8C3979@BN6PR11MB1793.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fVP9S8VszTY+vDthyo+I6/ua5IQvmfaL70Iz/hocMDMGdlqFrgIjxhUH/5Fr4AegMSgV5at8Sz3jVGwuTr1E10LRYqBmuloTJJR+AqgqtlGre5vVjzrbWK0pqFH27ArFrhwZcKV8gOwC4OC/mA7A5ppfV5Q0UkLdQp5WKw4Zl4WQDAi6TqvOnXAUDVFySadOAQrV7Dpi/t9sqSy2nfPmKBjUiVcW0ntNdh9tWILmFsl8Aay2fDo2dwUWEX1wrMiPRNqv4XAMb7J04fU8RzDPPPElmmcSOexU7MfiUDWIzL2Aejr2AE5UfYpPcb6UHS0Stij7ZFZ4AH6ZXf8gzV97T20sCegcf1QBGaboKaVcDfXU3n0yXbUCboTn9ded/021mfMENbGvMMWgzsK9SrfTRIDI2l+CVx0wH8n5CBGuFwwPFGfa7YlIHOhqVliMbcp0WtSvidKT7PYtWiyEWjsm70tNopAEM3h35O1ZpT8bU1sTZELjlLaKgPRpTKIvhPEcvMXJTYBJnzO5yiowAWN4pw==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN6PR11MB4068.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(39860400002)(376002)(366004)(346002)(136003)(396003)(26005)(9686003)(54906003)(33656002)(2906002)(8676002)(316002)(110136005)(478600001)(71200400001)(7416002)(66556008)(76116006)(186003)(64756008)(5660300002)(66946007)(66476007)(7696005)(86362001)(8936002)(55016002)(52536014)(6506007)(66446008)(4326008);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?SVIQvrlk9TNHkrtxCO1XL/kzqGwOq1mt0MqyzrFD0A/JD/fCi+ibrMyhRF6X?=
- =?us-ascii?Q?TKsqZ8qQRl6cMzbQFJdiIW3iBNx9pKC7YDKZjXhMA0BPawn9aTuW0IpIWuBr?=
- =?us-ascii?Q?LhSkHtYMpvCJ4FuwTfQg9UIbeCZcBbCCD1Jnm8LESrju6nB8qKoZITCE4vvX?=
- =?us-ascii?Q?1lXUEbaHf9VBvgbPP0YRmlJpH+VYBIVKFTwHqsOEOmGEK+AxBLjAyRMnJi6C?=
- =?us-ascii?Q?T+JTHbsWOHaiKdTXKuePW9SDEEJVsu7w/h7n06r1W5omLalKRZi+xez4Y4Yp?=
- =?us-ascii?Q?kPqVqkJVzuep22ELFF4L9r9bdf9pRhm4nilp1b+eWX7ww0ZoeyDJG5L4FcTN?=
- =?us-ascii?Q?GPFlEvUzC3J8PSGTI+NzPHvfFLz01dNgeUPtLYXe6wCi9X/Hc1YHHqcvDtSB?=
- =?us-ascii?Q?eb5PeCSyvuMPPo32vRgdzohSQW+06GJMWbAPVlOjC1K8N3C/1IjFPlAJ0iM/?=
- =?us-ascii?Q?g8rEewFtQLtLJwiY9Jy0wM3Y3d652NYGEt1MIntXNQlMku5EwU5F05BH3C5x?=
- =?us-ascii?Q?fS2Wj5BwTdq5Bxr/5p4dL2ezTJSIg+24QiWUXMLrvvwD26sDefaAqqFtQWWR?=
- =?us-ascii?Q?wwEm/hT8TYRV8IYabwLZsdSbCR/2KB2PzeQYGMXRjYMeoU1WD2KieihBtdwz?=
- =?us-ascii?Q?OFS8RJ6SZXG4844/sZXnpBdisirB/cLkI8C89U3XVg7QviwPL0BhmT+jumby?=
- =?us-ascii?Q?25ADjnY44ne3nVrQtUv4RuszmakQoOgyWpGz2d/2MD7cuEOs8hAYdzYuCJL0?=
- =?us-ascii?Q?dm6h9cy56a7S5mN/vsWU2COv4FuYdziExzal4083TrG959HuI+unkLFksCqQ?=
- =?us-ascii?Q?3o2pgQQqGJDJVYSLU4fCqZi7caHbZHSi9ccsqtj+NOhYOHHUtRCKCWYL9DFq?=
- =?us-ascii?Q?td3IEuSj6pDbPQqIoJ7NVObSULLOVcwcsgSrKRlKg2ogWiiNHqFqTE3I+G+O?=
- =?us-ascii?Q?E9akGNhbPwV4VQ+Q9TF7ZZZVr564VozRmmj6kuSCA/hEJxwwV+sZIj4lr0E5?=
- =?us-ascii?Q?USSBiGMyRuPEmd06VX/dev9EnyJUeQsYyx9j702F12kBHAQbANWHw+2ayQbR?=
- =?us-ascii?Q?dxaUgGPivkVEp3/ictVCly0CT/8szGBheEGhgUlClFhZ4l4ekgyrAZI2O2Ik?=
- =?us-ascii?Q?cmA72fbb3nqF8hYDx4mxa4NYIyIGPtyygS8pst2r1YQR8PWsl9/YoZLtzzCr?=
- =?us-ascii?Q?Pff0DK/VEe/2Bi86jJVIEN9e0ssmIuXYNqIhA/sEqpNRNDw6f/Y+OQVLZFOs?=
- =?us-ascii?Q?VlYSGSVI/eSGGtbtrzTs0K9/ot9JloF3s7bBh/4wZ/fG4+Hn8D/9/raGMj3E?=
- =?us-ascii?Q?mDfm1Fv1sBB/i/9xxV3qR64x?=
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0C32B6F5B4
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Mar 2021 07:56:09 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Drjn91ccYz7swm;
+ Thu,  4 Mar 2021 15:54:21 +0800 (CST)
+Received: from [127.0.0.1] (10.40.193.166) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Thu, 4 Mar 2021
+ 15:55:53 +0800
+Subject: Re: [PATCH v14 07/13] iommu/smmuv3: Implement cache_invalidate
+To: Eric Auger <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <will@kernel.org>,
+ <maz@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+ <alex.williamson@redhat.com>, <tn@semihalf.com>, <zhukeqian1@huawei.com>
+References: <20210223205634.604221-1-eric.auger@redhat.com>
+ <20210223205634.604221-8-eric.auger@redhat.com>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <c10c6405-5efe-5a41-2b3a-f3af85a528ba@hisilicon.com>
+Date: Thu, 4 Mar 2021 15:55:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB4068.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f1a62ad-089f-464c-1d7e-08d8deddfa07
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2021 07:20:23.0238 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: H+XbNzZXwETTL0IrELMk/voetBJoTeVo3Y+3ITJmtBK2BtiMr6xw6/EYErTE7qu9nGVp3aeiGSveAQHwKiKN4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1793
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Zhu,
- Lingshan" <lingshan.zhu@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian, Jun
- J" <jun.j.tian@intel.com>
+In-Reply-To: <20210223205634.604221-8-eric.auger@redhat.com>
+X-Originating-IP: [10.40.193.166]
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
+ jiangkunkun@huawei.com, linuxarm@openeuler.org, vsethi@nvidia.com,
+ vivek.gautam@arm.com, zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -192,79 +83,376 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0983890096392754869=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
+--===============0983890096392754869==
+Content-Type: multipart/alternative;
+	boundary="------------38F5B11153F44543AD4AF9C9"
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Thursday, March 4, 2021 3:45 AM
-> 
-> On Wed, Mar 03, 2021 at 11:42:12AM -0800, Jacob Pan wrote:
-> > Hi Jason,
-> >
-> > On Tue, 2 Mar 2021 13:15:51 -0400, Jason Gunthorpe <jgg@nvidia.com>
-> wrote:
-> >
-> > > On Tue, Mar 02, 2021 at 09:13:19AM -0800, Jacob Pan wrote:
-> > > > Hi Jason,
-> > > >
-> > > > On Tue, 2 Mar 2021 08:56:28 -0400, Jason Gunthorpe <jgg@nvidia.com>
-> > > > wrote:
-> > > > > On Wed, Mar 03, 2021 at 04:35:39AM +0800, Liu Yi L wrote:
-> > > > > >
-> > > > > > +static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
-> > > > > > +{
-> > > > > > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > > > > > +	unsigned long arg = *(unsigned long *)dc->data;
-> > > > > > +
-> > > > > > +	return iommu_uapi_sva_bind_gpasid(dc->domain, dev,
-> > > > > > +					  (void __user *)arg);
-> > > > >
-> > > > > This arg buisness is really tortured. The type should be set at the
-> > > > > ioctl, not constantly passed down as unsigned long or worse void *.
-> > > > >
-> > > > > And why is this passing a __user pointer deep into an iommu_* API??
-> > > > >
-> > > > The idea was that IOMMU UAPI (not API) is independent of VFIO or
-> other
-> > > > user driver frameworks. The design is documented here:
-> > > > Documentation/userspace-api/iommu.rst
-> > > > IOMMU UAPI handles the type and sanitation of user provided data.
-> > >
-> > > Why? If it is uapi it has defined types and those types should be
-> > > completely clear from the C code, not obfuscated.
-> > >
-> > From the user's p.o.v., it is plain c code nothing obfuscated. As for
-> > kernel handling of the data types, it has to be answered by the bigger
-> > question of how we deal with sharing IOMMU among multiple
-> subsystems with
-> > UAPIs.
-> 
-> As I said, don't obfuscate types like this in the kernel. It is not
-> good style.
-> 
-> > However, IOMMU is a system device which has little value to be exposed
-> to
-> > the userspace. Not to mention the device-IOMMU affinity/topology. VFIO
-> > nicely abstracts IOMMU from the userspace, why do we want to reverse
-> that?
-> 
-> The other patch was talking about a /dev/ioasid - why can't this stuff
-> be run over that?
+--------------38F5B11153F44543AD4AF9C9
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 
-The stuff in this patch are actually iommu domain operations, which are
-finally supported by iommu domain ops. While /dev/ioasid in another patch
-is created for IOASID allocation/free to fit the PASID allocation requirement
-from both vSVA and vDPA. It has no idea about iommu domain and neither the
-device information. Without such info, /dev/ioasid is unable to run this
-stuff.
+Hi Eric,
 
-Thanks,
-Yi Liu
+
+在 2021/2/24 4:56, Eric Auger 写道:
+> Implement domain-selective, pasid selective and page-selective
+> IOTLB invalidations.
+>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>
+> ---
+>
+> v13 -> v14:
+> - Add domain invalidation
+> - do global inval when asid is not provided with addr
+>    granularity
+>
+> v7 -> v8:
+> - ASID based invalidation using iommu_inv_pasid_info
+> - check ARCHID/PASID flags in addr based invalidation
+> - use __arm_smmu_tlb_inv_context and __arm_smmu_tlb_inv_range_nosync
+>
+> v6 -> v7
+> - check the uapi version
+>
+> v3 -> v4:
+> - adapt to changes in the uapi
+> - add support for leaf parameter
+> - do not use arm_smmu_tlb_inv_range_nosync or arm_smmu_tlb_inv_context
+>    anymore
+>
+> v2 -> v3:
+> - replace __arm_smmu_tlb_sync by arm_smmu_cmdq_issue_sync
+>
+> v1 -> v2:
+> - properly pass the asid
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 74 +++++++++++++++++++++
+>   1 file changed, 74 insertions(+)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 4c19a1114de4..df3adc49111c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2949,6 +2949,79 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
+>   	mutex_unlock(&smmu_domain->init_mutex);
+>   }
+>   
+> +static int
+> +arm_smmu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+> +			  struct iommu_cache_invalidate_info *inv_info)
+> +{
+> +	struct arm_smmu_cmdq_ent cmd = {.opcode = CMDQ_OP_TLBI_NSNH_ALL};
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +
+> +	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -EINVAL;
+> +
+> +	if (!smmu)
+> +		return -EINVAL;
+> +
+> +	if (inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
+> +		return -EINVAL;
+> +
+> +	if (inv_info->cache & IOMMU_CACHE_INV_TYPE_PASID ||
+> +	    inv_info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB) {
+> +		return -ENOENT;
+> +	}
+> +
+> +	if (!(inv_info->cache & IOMMU_CACHE_INV_TYPE_IOTLB))
+> +		return -EINVAL;
+> +
+> +	/* IOTLB invalidation */
+> +
+> +	switch (inv_info->granularity) {
+> +	case IOMMU_INV_GRANU_PASID:
+> +	{
+> +		struct iommu_inv_pasid_info *info =
+> +			&inv_info->granu.pasid_info;
+> +
+> +		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
+> +			return -ENOENT;
+> +		if (!(info->flags & IOMMU_INV_PASID_FLAGS_ARCHID))
+> +			return -EINVAL;
+> +
+> +		__arm_smmu_tlb_inv_context(smmu_domain, info->archid);
+> +		return 0;
+> +	}
+> +	case IOMMU_INV_GRANU_ADDR:
+> +	{
+> +		struct iommu_inv_addr_info *info = &inv_info->granu.addr_info;
+> +		size_t size = info->nb_granules * info->granule_size;
+> +		bool leaf = info->flags & IOMMU_INV_ADDR_FLAGS_LEAF;
+> +
+> +		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
+> +			return -ENOENT;
+> +
+> +		if (!(info->flags & IOMMU_INV_ADDR_FLAGS_ARCHID))
+> +			break;
+> +
+> +		arm_smmu_tlb_inv_range_domain(info->addr, size,
+> +					      info->granule_size, leaf,
+> +					      info->archid, smmu_domain);
+
+Is it possible to add a check before the function to make sure that 
+info->granule_size can be recognized by SMMU?
+There is a scenario which will cause TLBI issue: RIL feature is enabled 
+on guest but is disabled on host, and then on
+host it just invalidate 4K/2M/1G once a time, but from QEMU, 
+info->nb_granules is always 1 and info->granule_size = size,
+if size is not equal to 4K or 2M or 1G (for example size = granule_size 
+is 5M), it will only part of the size it wants to invalidate.
+
+I think maybe we can add a check here: if RIL is not enabled and also 
+size is not the granule_size (4K/2M/1G) supported by
+SMMU hardware, can we just simply use the smallest granule_size 
+supported by hardware all the time?
+
+> +
+> +		arm_smmu_cmdq_issue_sync(smmu);
+> +		return 0;
+> +	}
+> +	case IOMMU_INV_GRANU_DOMAIN:
+> +		break;
+
+I check the qemu code 
+(https://github.com/eauger/qemu/tree/v5.2.0-2stage-rfcv8), for opcode 
+CMD_TLBI_NH_ALL or CMD_TLBI_NSNH_ALL from guest OS
+it calls smmu_inv_notifiers_all() to unamp all notifiers of all mr's, 
+but it seems not set event.entry.granularity which i think it should set 
+IOMMU_INV_GRAN_ADDR.
+BTW, for opcode CMD_TLBI_NH_ALL or CMD_TLBI_NSNH_ALL, it needs to unmap 
+size = 0x1000000000000 on 48bit system (it may spend much time),  maybe 
+it is better
+to set it as IOMMU_INV_GRANU_DOMAIN, then in host OS, send TLBI_NH_ALL 
+directly when IOMMU_INV_GRANU_DOMAIN.
+
+
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Global S1 invalidation */
+> +	cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> +	arm_smmu_cmdq_issue_sync(smmu);
+> +	return 0;
+> +}
+> +
+>   static bool arm_smmu_dev_has_feature(struct device *dev,
+>   				     enum iommu_dev_features feat)
+>   {
+> @@ -3048,6 +3121,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.put_resv_regions	= generic_iommu_put_resv_regions,
+>   	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+>   	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+> +	.cache_invalidate	= arm_smmu_cache_invalidate,
+>   	.dev_has_feat		= arm_smmu_dev_has_feature,
+>   	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+>   	.dev_enable_feat	= arm_smmu_dev_enable_feature,
+
+
+--------------38F5B11153F44543AD4AF9C9
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <p>Hi Eric, <br>
+    </p>
+    <br>
+    <div class="moz-cite-prefix">在 2021/2/24 4:56, Eric Auger 写道:<br>
+    </div>
+    <blockquote cite="mid:20210223205634.604221-8-eric.auger@redhat.com"
+      type="cite">
+      <pre wrap="">Implement domain-selective, pasid selective and page-selective
+IOTLB invalidations.
+
+Signed-off-by: Eric Auger <a class="moz-txt-link-rfc2396E" href="mailto:eric.auger@redhat.com">&lt;eric.auger@redhat.com&gt;</a>
+
+---
+
+v13 -&gt; v14:
+- Add domain invalidation
+- do global inval when asid is not provided with addr
+  granularity
+
+v7 -&gt; v8:
+- ASID based invalidation using iommu_inv_pasid_info
+- check ARCHID/PASID flags in addr based invalidation
+- use __arm_smmu_tlb_inv_context and __arm_smmu_tlb_inv_range_nosync
+
+v6 -&gt; v7
+- check the uapi version
+
+v3 -&gt; v4:
+- adapt to changes in the uapi
+- add support for leaf parameter
+- do not use arm_smmu_tlb_inv_range_nosync or arm_smmu_tlb_inv_context
+  anymore
+
+v2 -&gt; v3:
+- replace __arm_smmu_tlb_sync by arm_smmu_cmdq_issue_sync
+
+v1 -&gt; v2:
+- properly pass the asid
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 74 +++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4c19a1114de4..df3adc49111c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2949,6 +2949,79 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
+ 	mutex_unlock(&amp;smmu_domain-&gt;init_mutex);
+ }
+ 
++static int
++arm_smmu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
++			  struct iommu_cache_invalidate_info *inv_info)
++{
++	struct arm_smmu_cmdq_ent cmd = {.opcode = CMDQ_OP_TLBI_NSNH_ALL};
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu = smmu_domain-&gt;smmu;
++
++	if (smmu_domain-&gt;stage != ARM_SMMU_DOMAIN_NESTED)
++		return -EINVAL;
++
++	if (!smmu)
++		return -EINVAL;
++
++	if (inv_info-&gt;version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
++		return -EINVAL;
++
++	if (inv_info-&gt;cache &amp; IOMMU_CACHE_INV_TYPE_PASID ||
++	    inv_info-&gt;cache &amp; IOMMU_CACHE_INV_TYPE_DEV_IOTLB) {
++		return -ENOENT;
++	}
++
++	if (!(inv_info-&gt;cache &amp; IOMMU_CACHE_INV_TYPE_IOTLB))
++		return -EINVAL;
++
++	/* IOTLB invalidation */
++
++	switch (inv_info-&gt;granularity) {
++	case IOMMU_INV_GRANU_PASID:
++	{
++		struct iommu_inv_pasid_info *info =
++			&amp;inv_info-&gt;granu.pasid_info;
++
++		if (info-&gt;flags &amp; IOMMU_INV_ADDR_FLAGS_PASID)
++			return -ENOENT;
++		if (!(info-&gt;flags &amp; IOMMU_INV_PASID_FLAGS_ARCHID))
++			return -EINVAL;
++
++		__arm_smmu_tlb_inv_context(smmu_domain, info-&gt;archid);
++		return 0;
++	}
++	case IOMMU_INV_GRANU_ADDR:
++	{
++		struct iommu_inv_addr_info *info = &amp;inv_info-&gt;granu.addr_info;
++		size_t size = info-&gt;nb_granules * info-&gt;granule_size;
++		bool leaf = info-&gt;flags &amp; IOMMU_INV_ADDR_FLAGS_LEAF;
++
++		if (info-&gt;flags &amp; IOMMU_INV_ADDR_FLAGS_PASID)
++			return -ENOENT;
++
++		if (!(info-&gt;flags &amp; IOMMU_INV_ADDR_FLAGS_ARCHID))
++			break;
++
++		arm_smmu_tlb_inv_range_domain(info-&gt;addr, size,
++					      info-&gt;granule_size, leaf,
++					      info-&gt;archid, smmu_domain);</pre>
+    </blockquote>
+    <br>
+    Is it possible to add a check before the function to make sure that
+    info-&gt;granule_size can be recognized by SMMU?<br>
+    There is a scenario which will cause TLBI issue: RIL feature is
+    enabled on guest but is disabled on host, and then on<br>
+    host it just invalidate 4K/2M/1G once a time, but from QEMU,
+    info-&gt;nb_granules is always 1 and info-&gt;granule_size = size, <br>
+    if size is not equal to 4K or 2M or 1G (for example size =
+    granule_size is 5M), it will only part of the size it wants to
+    invalidate.<br>
+    <br>
+    I think maybe we can add a check here: if RIL is not enabled and
+    also size is not the granule_size (4K/2M/1G) supported by <br>
+    SMMU hardware, can we just simply use the smallest granule_size
+    supported by hardware all the time?<br>
+    <br>
+    <blockquote cite="mid:20210223205634.604221-8-eric.auger@redhat.com"
+      type="cite">
+      <pre wrap="">
++
++		arm_smmu_cmdq_issue_sync(smmu);
++		return 0;
++	}
++	case IOMMU_INV_GRANU_DOMAIN:
++		break;</pre>
+    </blockquote>
+    <br>
+    I check the qemu code (<span style="color: rgb(0, 0, 0); font-family: 微软雅黑; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: pre-wrap; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;"><a class="moz-txt-link-freetext" href="https://github.com/eauger/qemu/tree/v5.2.0-2stage-rfcv8">https://github.com/eauger/qemu/tree/v5.2.0-2stage-rfcv8</a></span>),
+    for opcode CMD_TLBI_NH_ALL or CMD_TLBI_NSNH_ALL from guest OS <br>
+    it calls smmu_inv_notifiers_all() to unamp all notifiers of all
+    mr's, but it seems not set event.entry.granularity which i think it
+    should set IOMMU_INV_GRAN_ADDR.<br>
+    BTW, for opcode CMD_TLBI_NH_ALL or CMD_TLBI_NSNH_ALL, it needs to
+    unmap size = 0x1000000000000 on 48bit system (it may spend much
+    time),  maybe it is better<br>
+    to set it as IOMMU_INV_GRANU_DOMAIN, then in host OS, send
+    TLBI_NH_ALL directly when IOMMU_INV_GRANU_DOMAIN.<br>
+    <br>
+    <br>
+    <blockquote cite="mid:20210223205634.604221-8-eric.auger@redhat.com"
+      type="cite">
+      <pre wrap="">
++	default:
++		return -EINVAL;
++	}
++
++	/* Global S1 invalidation */
++	cmd.tlbi.vmid   = smmu_domain-&gt;s2_cfg.vmid;
++	arm_smmu_cmdq_issue_cmd(smmu, &amp;cmd);
++	arm_smmu_cmdq_issue_sync(smmu);
++	return 0;
++}
++
+ static bool arm_smmu_dev_has_feature(struct device *dev,
+ 				     enum iommu_dev_features feat)
+ {
+@@ -3048,6 +3121,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+ 	.detach_pasid_table	= arm_smmu_detach_pasid_table,
++	.cache_invalidate	= arm_smmu_cache_invalidate,
+ 	.dev_has_feat		= arm_smmu_dev_has_feature,
+ 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+ 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
+</pre>
+    </blockquote>
+    <br>
+  </body>
+</html>
+
+--------------38F5B11153F44543AD4AF9C9--
+
+--===============0983890096392754869==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0983890096392754869==--
