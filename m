@@ -2,102 +2,85 @@ Return-Path: <SRS0=uIbQ=ID=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1177C433E0
-	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 09:33:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468FBC433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 10:00:24 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 762D864FE2
-	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 09:33:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 762D864FE2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D54BE64FE9
+	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 10:00:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D54BE64FE9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2C14B432F8;
-	Fri,  5 Mar 2021 09:33:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8D5534ECC8;
+	Fri,  5 Mar 2021 10:00:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wHCLk_kHxcIS; Fri,  5 Mar 2021 09:33:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 90971432F5;
-	Fri,  5 Mar 2021 09:33:30 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tgbsH4O8uopo; Fri,  5 Mar 2021 10:00:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 60FAC4EC39;
+	Fri,  5 Mar 2021 10:00:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 694EAC000B;
-	Fri,  5 Mar 2021 09:33:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A5BAEC000A
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 09:33:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2ED59C000A;
+	Fri,  5 Mar 2021 10:00:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 79441C0001;
+ Fri,  5 Mar 2021 10:00:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 93F7D84517
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 09:33:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5D2034EC3D;
+ Fri,  5 Mar 2021 10:00:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DX865T7tkGR3 for <iommu@lists.linux-foundation.org>;
- Fri,  5 Mar 2021 09:33:28 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com
- [IPv6:2607:f8b0:4864:20::632])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 37CE384523
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 09:33:28 +0000 (UTC)
-Received: by mail-pl1-x632.google.com with SMTP id g20so1132573plo.2
- for <iommu@lists.linux-foundation.org>; Fri, 05 Mar 2021 01:33:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=071QAobtSSyS3q3zEjiKt+LVt7ITEnn/GaTUJ5hV4o4=;
- b=IzucMZR88QD6urDAiZZnklVQ8eRy76oFkrItz3i2qR7bEquJ9XCSd78VHovPg7lT9S
- 1UsdlYoscWdncRzlzOWcT81hBd9cMMatX5+2wu+JuDS3L7vSVaZBlOR3FSSjUt6SGS/W
- xOohpIwHVcHosYuwsVmHuf2nSC3qcBoELR8ovx65T+ZKYmRqr16gYO2YVXqTCMzG8JVJ
- 8Pwuu4E6BMp6NAUn38/3+F5fwz7zsly8OsxW+FEBDdrOQ2LwUBz8a/gFOZrCQjzI5/iT
- WFsSm6TRpquWLShnj2Enb4x7dE6mhYA8GEvunbfPDXcytRYvd4E6/wdMgeC/gMVtjhCd
- G46A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=071QAobtSSyS3q3zEjiKt+LVt7ITEnn/GaTUJ5hV4o4=;
- b=R8r0IdaYx42ixtSDzTQrOwrv61YY57PRQrhSzzq/mZPRCvHbF7yynl4pDrT0hrn79O
- HZHd6och1W6Mm3uFVszkQ4hKQbDn9wcX66r1Ecse8saRU4OZtEXpP/+KTBZE5aZHqzX0
- SPlFND9q9kmxATq3MQOMaUse7EIwO435FNQpF4Bi69+6YXCtsUtJ1kCf4QjerxiANGg/
- a+TGOOA3GjRL5YOL1dm2cPvm5uTLAUfM7LcqbKQ8LOrrDvm9vVAQPL1iheVhll4WuRWm
- lFIQidk4/V+zMMW1kXvcYYxkmmpzM4EsxjhI8S8H5XZOi3enGQKWmx4S7d3TJOdwET93
- MY4Q==
-X-Gm-Message-State: AOAM531U2xeNhfmRubjM+jKauuzUOVpKkTp9IR1aNxANCoNubuq2MH1O
- pLRn4Rt2q2EFHrjOt0Dota0=
-X-Google-Smtp-Source: ABdhPJzmaozEOIDI52r3mby1d+g9iMAhFCDQjfvPbdJBK6aEVxozV2ZXFrfkyiVRew1gYNq1IsqtKw==
-X-Received: by 2002:a17:902:c382:b029:e4:33bb:8a3f with SMTP id
- g2-20020a170902c382b02900e433bb8a3fmr8134655plg.9.1614936807572; 
- Fri, 05 Mar 2021 01:33:27 -0800 (PST)
-Received: from ubt.spreadtrum.com ([117.18.48.82])
- by smtp.gmail.com with ESMTPSA id f3sm1873967pfe.25.2021.03.05.01.33.21
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 05 Mar 2021 01:33:27 -0800 (PST)
-From: Chunyan Zhang <zhang.lyra@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v5 2/2] iommu: add Unisoc IOMMU basic driver
-Date: Fri,  5 Mar 2021 17:32:16 +0800
-Message-Id: <20210305093216.201897-3-zhang.lyra@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210305093216.201897-1-zhang.lyra@gmail.com>
-References: <20210305093216.201897-1-zhang.lyra@gmail.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cnDfTMDsUQUD; Fri,  5 Mar 2021 10:00:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 40EAE4EC39;
+ Fri,  5 Mar 2021 10:00:19 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B9C7C64F56;
+ Fri,  5 Mar 2021 10:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1614938418;
+ bh=q7+GpxBp+H0eRgTkIdpsEpb4AOMic5EYKdk6TlKfzNU=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=VdQgZNulq90gd29Xtg9/oNfQ2d54P/SpjBprppu6WHUCh5dXm1SSl0GGu+C3Db9Uo
+ pzwAKH5nDVAuHW4QcGz/8GQB5Uwy2F1AF4JKaBAKwYloGiPn5yGUdPVMFOmSFrGY4q
+ 1BFHvZTVShuR2OJT0m5VHBTe69UQAbmD/qup6iCvMDYVTI30coAfWYG48n1Nx0Zwfg
+ ff6QcANvdoSlC3az1tKSteLjGyz8Je2PCg+wq1tAcIFASs2XSsNRO2eEn2wRIe4a5a
+ tAI98WNSpofbBZCB1IrCBc5S9hoqSYa/Hnq02bUaEneKTqhx6nKn4Ab9WNOF3O7t4d
+ jOwVlaHOUjTTQ==
+Date: Fri, 5 Mar 2021 10:00:12 +0000
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [Freedreno] [PATCH 16/17] iommu: remove DOMAIN_ATTR_IO_PGTABLE_CFG
+Message-ID: <20210305100012.GB22536@willie-the-truck>
+References: <20210301084257.945454-1-hch@lst.de>
+ <20210301084257.945454-17-hch@lst.de>
+ <d567ad5c-5f89-effa-7260-88c6d86b4695@arm.com>
+ <CAF6AEGtTs-=aO-Ntp0Qn6mYDSv4x0-q3y217QxU7kZ6H1b1fiQ@mail.gmail.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Chunyan Zhang <zhang.lyra@gmail.com>,
- Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
- Chunyan Zhang <chunyan.zhang@unisoc.com>, Sheng Xu <sheng.xu@unisoc.com>,
- iommu@lists.linux-foundation.org, Kevin Tang <kevin.tang@unisoc.com>,
- Baolin Wang <baolin.wang7@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <CAF6AEGtTs-=aO-Ntp0Qn6mYDSv4x0-q3y217QxU7kZ6H1b1fiQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: freedreno <freedreno@lists.freedesktop.org>, kvm@vger.kernel.org,
+ Michael Ellerman <mpe@ellerman.id.au>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>, Li Yang <leoyang.li@nxp.com>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ netdev@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ virtualization@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,636 +98,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+On Thu, Mar 04, 2021 at 03:11:08PM -0800, Rob Clark wrote:
+> On Thu, Mar 4, 2021 at 7:48 AM Robin Murphy <robin.murphy@arm.com> wrote:
+> >
+> > On 2021-03-01 08:42, Christoph Hellwig wrote:
+> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> >
+> > Moreso than the previous patch, where the feature is at least relatively
+> > generic (note that there's a bunch of in-flight development around
+> > DOMAIN_ATTR_NESTING), I'm really not convinced that it's beneficial to
+> > bloat the generic iommu_ops structure with private driver-specific
+> > interfaces. The attribute interface is a great compromise for these
+> > kinds of things, and you can easily add type-checked wrappers around it
+> > for external callers (maybe even make the actual attributes internal
+> > between the IOMMU core and drivers) if that's your concern.
+> 
+> I suppose if this is *just* for the GPU we could move it into adreno_smmu_priv..
+> 
+> But one thing I'm not sure about is whether
+> IO_PGTABLE_QUIRK_ARM_OUTER_WBWA is something that other devices
+> *should* be using as well, but just haven't gotten around to yet.
 
-This IOMMU module can be used by Unisoc's multimedia devices, such as
-display, Image codec(jpeg) and a few signal processors, including
-VSP(video), GSP(graphic), ISP(image), and CPP(camera pixel processor), etc.
+The intention is certainly that this would be a place to collate per-domain
+pgtable quirks, so I'd prefer not to tie that to the GPU.
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
----
- drivers/iommu/Kconfig      |  12 +
- drivers/iommu/Makefile     |   1 +
- drivers/iommu/sprd-iommu.c | 577 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 590 insertions(+)
- create mode 100644 drivers/iommu/sprd-iommu.c
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 192ef8f61310..2ef0b3918440 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -408,4 +408,16 @@ config VIRTIO_IOMMU
- 
- 	  Say Y here if you intend to run this kernel as a guest.
- 
-+config SPRD_IOMMU
-+	tristate "Unisoc IOMMU Support"
-+	depends on ARCH_SPRD || COMPILE_TEST
-+	select IOMMU_API
-+	help
-+	  Support for IOMMU on Unisoc's SoCs, this IOMMU can be used by
-+	  Unisoc's multimedia devices, such as display, Image codec(jpeg)
-+	  and a few signal processors, including VSP(video), GSP(graphic),
-+	  ISP(image), and CPP(camera pixel processor), etc.
-+
-+	  Say Y here if you want to use the multimedia devices listed above.
-+
- endif # IOMMU_SUPPORT
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 61bd30cd8369..5925b6af2123 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -28,3 +28,4 @@ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
- obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o
-+obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-new file mode 100644
-index 000000000000..7100ed17dcce
---- /dev/null
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -0,0 +1,577 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Unisoc IOMMU driver
-+ *
-+ * Copyright (C) 2020 Unisoc, Inc.
-+ * Author: Chunyan Zhang <chunyan.zhang@unisoc.com>
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/errno.h>
-+#include <linux/iommu.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/regmap.h>
-+#include <linux/slab.h>
-+
-+#define SPRD_IOMMU_PAGE_SHIFT	12
-+#define SPRD_IOMMU_PAGE_SIZE	SZ_4K
-+
-+#define SPRD_EX_CFG		0x0
-+#define SPRD_IOMMU_VAOR_BYPASS	BIT(4)
-+#define SPRD_IOMMU_GATE_EN	BIT(1)
-+#define SPRD_IOMMU_EN		BIT(0)
-+#define SPRD_EX_UPDATE		0x4
-+#define SPRD_EX_FIRST_VPN	0x8
-+#define SPRD_EX_VPN_RANGE	0xc
-+#define SPRD_EX_FIRST_PPN	0x10
-+#define SPRD_EX_DEFAULT_PPN	0x14
-+
-+#define SPRD_IOMMU_VERSION	0x0
-+#define SPRD_VERSION_MASK	GENMASK(15, 8)
-+#define SPRD_VERSION_SHIFT	0x8
-+#define SPRD_VAU_CFG		0x4
-+#define SPRD_VAU_UPDATE		0x8
-+#define SPRD_VAU_AUTH_CFG	0xc
-+#define SPRD_VAU_FIRST_PPN	0x10
-+#define SPRD_VAU_DEFAULT_PPN_RD	0x14
-+#define SPRD_VAU_DEFAULT_PPN_WR	0x18
-+#define SPRD_VAU_FIRST_VPN	0x1c
-+#define SPRD_VAU_VPN_RANGE	0x20
-+
-+enum sprd_iommu_version {
-+	SPRD_IOMMU_EX,
-+	SPRD_IOMMU_VAU,
-+};
-+
-+/*
-+ * struct sprd_iommu_device - high-level sprd IOMMU device representation,
-+ * including hardware information and configuration, also driver data, etc
-+ *
-+ * @ver: sprd IOMMU IP version
-+ * @prot_page_va: protect page base virtual address
-+ * @prot_page_pa: protect page base physical address, data would be
-+ *		  written to here while translation fault
-+ * @base: mapped base address for accessing registers
-+ * @dev: pointer to basic device structure
-+ * @iommu: IOMMU core representation
-+ * @group: IOMMU group
-+ * @eb: gate clock which controls IOMMU access
-+ */
-+struct sprd_iommu_device {
-+	enum sprd_iommu_version	ver;
-+	u32			*prot_page_va;
-+	dma_addr_t		prot_page_pa;
-+	void __iomem		*base;
-+	struct device		*dev;
-+	struct iommu_device	iommu;
-+	struct iommu_group	*group;
-+	struct clk		*eb;
-+};
-+
-+struct sprd_iommu_domain {
-+	spinlock_t		pgtlock; /* lock for page table */
-+	struct iommu_domain	domain;
-+	u32			*pgt_va; /* page table virtual address base */
-+	dma_addr_t		pgt_pa; /* page table physical address base */
-+	struct sprd_iommu_device	*sdev;
-+};
-+
-+static const struct iommu_ops sprd_iommu_ops;
-+
-+static struct sprd_iommu_domain *to_sprd_domain(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct sprd_iommu_domain, domain);
-+}
-+
-+static inline void
-+sprd_iommu_write(struct sprd_iommu_device *sdev, unsigned int reg, u32 val)
-+{
-+	writel_relaxed(val, sdev->base + reg);
-+}
-+
-+static inline u32
-+sprd_iommu_read(struct sprd_iommu_device *sdev, unsigned int reg)
-+{
-+	return readl_relaxed(sdev->base + reg);
-+}
-+
-+static inline void
-+sprd_iommu_update_bits(struct sprd_iommu_device *sdev, unsigned int reg,
-+		  u32 mask, u32 shift, u32 val)
-+{
-+	u32 t = sprd_iommu_read(sdev, reg);
-+
-+	t = (t & (~(mask << shift))) | ((val & mask) << shift);
-+	sprd_iommu_write(sdev, reg, t);
-+}
-+
-+static inline int
-+sprd_iommu_get_version(struct sprd_iommu_device *sdev)
-+{
-+	int ver = (sprd_iommu_read(sdev, SPRD_IOMMU_VERSION) &
-+		   SPRD_VERSION_MASK) >> SPRD_VERSION_SHIFT;
-+
-+	switch (ver) {
-+	case SPRD_IOMMU_EX:
-+	case SPRD_IOMMU_VAU:
-+		return ver;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static size_t
-+sprd_iommu_pgt_size(struct iommu_domain *domain)
-+{
-+	return ((domain->geometry.aperture_end -
-+		 domain->geometry.aperture_start + 1) >>
-+		SPRD_IOMMU_PAGE_SHIFT) * sizeof(u32);
-+}
-+
-+static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
-+{
-+	struct sprd_iommu_domain *dom;
-+
-+	if (domain_type != IOMMU_DOMAIN_DMA && domain_type != IOMMU_DOMAIN_UNMANAGED)
-+		return NULL;
-+
-+	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
-+	if (!dom)
-+		return NULL;
-+
-+	if (iommu_get_dma_cookie(&dom->domain)) {
-+		kfree(dom);
-+		return NULL;
-+	}
-+
-+	spin_lock_init(&dom->pgtlock);
-+
-+	dom->domain.geometry.aperture_start = 0;
-+	dom->domain.geometry.aperture_end = SZ_256M - 1;
-+
-+	return &dom->domain;
-+}
-+
-+static void sprd_iommu_domain_free(struct iommu_domain *domain)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+
-+	iommu_put_dma_cookie(domain);
-+	kfree(dom);
-+}
-+
-+static void sprd_iommu_first_vpn(struct sprd_iommu_domain *dom)
-+{
-+	struct sprd_iommu_device *sdev = dom->sdev;
-+	u32 val;
-+	unsigned int reg;
-+
-+	if (sdev->ver == SPRD_IOMMU_EX)
-+		reg = SPRD_EX_FIRST_VPN;
-+	else
-+		reg = SPRD_VAU_FIRST_VPN;
-+
-+	val = dom->domain.geometry.aperture_start >> SPRD_IOMMU_PAGE_SHIFT;
-+	sprd_iommu_write(sdev, reg, val);
-+}
-+
-+static void sprd_iommu_vpn_range(struct sprd_iommu_domain *dom)
-+{
-+	struct sprd_iommu_device *sdev = dom->sdev;
-+	u32 val;
-+	unsigned int reg;
-+
-+	if (sdev->ver == SPRD_IOMMU_EX)
-+		reg = SPRD_EX_VPN_RANGE;
-+	else
-+		reg = SPRD_VAU_VPN_RANGE;
-+
-+	val = (dom->domain.geometry.aperture_end -
-+	       dom->domain.geometry.aperture_start) >> SPRD_IOMMU_PAGE_SHIFT;
-+	sprd_iommu_write(sdev, reg, val);
-+}
-+
-+static void sprd_iommu_first_ppn(struct sprd_iommu_domain *dom)
-+{
-+	u32 val = dom->pgt_pa >> SPRD_IOMMU_PAGE_SHIFT;
-+	struct sprd_iommu_device *sdev = dom->sdev;
-+	unsigned int reg;
-+
-+	if (sdev->ver == SPRD_IOMMU_EX)
-+		reg = SPRD_EX_FIRST_PPN;
-+	else
-+		reg = SPRD_VAU_FIRST_PPN;
-+
-+	sprd_iommu_write(sdev, reg, val);
-+}
-+
-+static void sprd_iommu_default_ppn(struct sprd_iommu_device *sdev)
-+{
-+	u32 val = sdev->prot_page_pa >> SPRD_IOMMU_PAGE_SHIFT;
-+
-+	if (sdev->ver == SPRD_IOMMU_EX) {
-+		sprd_iommu_write(sdev, SPRD_EX_DEFAULT_PPN, val);
-+	} else if (sdev->ver == SPRD_IOMMU_VAU) {
-+		sprd_iommu_write(sdev, SPRD_VAU_DEFAULT_PPN_RD, val);
-+		sprd_iommu_write(sdev, SPRD_VAU_DEFAULT_PPN_WR, val);
-+	}
-+}
-+
-+static void sprd_iommu_hw_en(struct sprd_iommu_device *sdev, bool en)
-+{
-+	unsigned int reg_cfg;
-+	u32 mask, val;
-+
-+	if (sdev->ver == SPRD_IOMMU_EX)
-+		reg_cfg = SPRD_EX_CFG;
-+	else
-+		reg_cfg = SPRD_VAU_CFG;
-+
-+	mask = SPRD_IOMMU_EN | SPRD_IOMMU_GATE_EN;
-+	val = en ? mask : 0;
-+	sprd_iommu_update_bits(sdev, reg_cfg, mask, 0, val);
-+}
-+
-+static int sprd_iommu_attach_device(struct iommu_domain *domain,
-+				    struct device *dev)
-+{
-+	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	size_t pgt_size = sprd_iommu_pgt_size(domain);
-+
-+	if (dom->sdev) {
-+		pr_err("There's already a device attached to this domain.\n");
-+		return -EINVAL;
-+	}
-+
-+	dom->pgt_va = dma_alloc_coherent(sdev->dev, pgt_size, &dom->pgt_pa, GFP_KERNEL);
-+	if (!dom->pgt_va)
-+		return -ENOMEM;
-+
-+	dom->sdev = sdev;
-+
-+	sprd_iommu_first_ppn(dom);
-+	sprd_iommu_first_vpn(dom);
-+	sprd_iommu_vpn_range(dom);
-+	sprd_iommu_default_ppn(sdev);
-+	sprd_iommu_hw_en(sdev, true);
-+
-+	return 0;
-+}
-+
-+static void sprd_iommu_detach_device(struct iommu_domain *domain,
-+					     struct device *dev)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	struct sprd_iommu_device *sdev = dom->sdev;
-+	size_t pgt_size = sprd_iommu_pgt_size(domain);
-+
-+	if (!sdev)
-+		return;
-+
-+	dma_free_coherent(sdev->dev, pgt_size, dom->pgt_va, dom->pgt_pa);
-+	sprd_iommu_hw_en(sdev, false);
-+	dom->sdev = NULL;
-+}
-+
-+static int sprd_iommu_map(struct iommu_domain *domain, unsigned long iova,
-+			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	unsigned int page_num = size >> SPRD_IOMMU_PAGE_SHIFT;
-+	unsigned long flags;
-+	unsigned int i;
-+	u32 *pgt_base_iova;
-+	u32 pabase = (u32)paddr;
-+	unsigned long start = domain->geometry.aperture_start;
-+	unsigned long end = domain->geometry.aperture_end;
-+
-+	if (!dom->sdev) {
-+		pr_err("No sprd_iommu_device attached to the domain\n");
-+		return -EINVAL;
-+	}
-+
-+	if (iova < start || (iova + size) > (end + 1)) {
-+		dev_err(dom->sdev->dev, "(iova(0x%lx) + sixe(%zx)) are not in the range!\n",
-+			iova, size);
-+		return -EINVAL;
-+	}
-+
-+	pgt_base_iova = dom->pgt_va + ((iova - start) >> SPRD_IOMMU_PAGE_SHIFT);
-+
-+	spin_lock_irqsave(&dom->pgtlock, flags);
-+	for (i = 0; i < page_num; i++) {
-+		pgt_base_iova[i] = pabase >> SPRD_IOMMU_PAGE_SHIFT;
-+		pabase += SPRD_IOMMU_PAGE_SIZE;
-+	}
-+	spin_unlock_irqrestore(&dom->pgtlock, flags);
-+
-+	return 0;
-+}
-+
-+static size_t sprd_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-+			size_t size, struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	unsigned long flags;
-+	u32 *pgt_base_iova;
-+	unsigned int page_num = size >> SPRD_IOMMU_PAGE_SHIFT;
-+	unsigned long start = domain->geometry.aperture_start;
-+	unsigned long end = domain->geometry.aperture_end;
-+
-+	if (iova < start || (iova + size) > (end + 1))
-+		return -EINVAL;
-+
-+	pgt_base_iova = dom->pgt_va + ((iova - start) >> SPRD_IOMMU_PAGE_SHIFT);
-+
-+	spin_lock_irqsave(&dom->pgtlock, flags);
-+	memset(pgt_base_iova, 0, page_num * sizeof(u32));
-+	spin_unlock_irqrestore(&dom->pgtlock, flags);
-+
-+	return 0;
-+}
-+
-+static void sprd_iommu_sync_map(struct iommu_domain *domain,
-+				unsigned long iova, size_t size)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	unsigned int reg;
-+
-+	if (dom->sdev->ver == SPRD_IOMMU_EX)
-+		reg = SPRD_EX_UPDATE;
-+	else
-+		reg = SPRD_VAU_UPDATE;
-+
-+	/* clear IOMMU TLB buffer after page table updated */
-+	sprd_iommu_write(dom->sdev, reg, 0xffffffff);
-+}
-+
-+static void sprd_iommu_sync(struct iommu_domain *domain,
-+			    struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	sprd_iommu_sync_map(domain, 0, 0);
-+}
-+
-+static phys_addr_t sprd_iommu_iova_to_phys(struct iommu_domain *domain,
-+					   dma_addr_t iova)
-+{
-+	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
-+	unsigned long flags;
-+	phys_addr_t pa;
-+	unsigned long start = domain->geometry.aperture_start;
-+	unsigned long end = domain->geometry.aperture_end;
-+
-+	if (WARN_ON(iova < start || iova > end))
-+		return 0;
-+
-+	spin_lock_irqsave(&dom->pgtlock, flags);
-+	pa = *(dom->pgt_va + ((iova - start) >> SPRD_IOMMU_PAGE_SHIFT));
-+	pa = (pa << SPRD_IOMMU_PAGE_SHIFT) + ((iova - start) & (SPRD_IOMMU_PAGE_SIZE - 1));
-+	spin_unlock_irqrestore(&dom->pgtlock, flags);
-+
-+	return pa;
-+}
-+
-+static struct iommu_device *sprd_iommu_probe_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct sprd_iommu_device *sdev;
-+
-+	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
-+		return ERR_PTR(-ENODEV);
-+
-+	sdev = dev_iommu_priv_get(dev);
-+
-+	return &sdev->iommu;
-+}
-+
-+static void sprd_iommu_release_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+
-+	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
-+		return;
-+
-+	iommu_fwspec_free(dev);
-+}
-+
-+static struct iommu_group *sprd_iommu_device_group(struct device *dev)
-+{
-+	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
-+
-+	return iommu_group_ref_get(sdev->group);
-+}
-+
-+static int sprd_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+{
-+	struct platform_device *pdev;
-+
-+	if (!dev_iommu_priv_get(dev)) {
-+		pdev = of_find_device_by_node(args->np);
-+		dev_iommu_priv_set(dev, platform_get_drvdata(pdev));
-+		platform_device_put(pdev);
-+	}
-+
-+	return 0;
-+}
-+
-+
-+static const struct iommu_ops sprd_iommu_ops = {
-+	.domain_alloc	= sprd_iommu_domain_alloc,
-+	.domain_free	= sprd_iommu_domain_free,
-+	.attach_dev	= sprd_iommu_attach_device,
-+	.detach_dev	= sprd_iommu_detach_device,
-+	.map		= sprd_iommu_map,
-+	.unmap		= sprd_iommu_unmap,
-+	.iotlb_sync_map	= sprd_iommu_sync_map,
-+	.iotlb_sync	= sprd_iommu_sync,
-+	.iova_to_phys	= sprd_iommu_iova_to_phys,
-+	.probe_device	= sprd_iommu_probe_device,
-+	.release_device	= sprd_iommu_release_device,
-+	.device_group	= sprd_iommu_device_group,
-+	.of_xlate	= sprd_iommu_of_xlate,
-+	.pgsize_bitmap	= ~0UL << SPRD_IOMMU_PAGE_SHIFT,
-+};
-+
-+static const struct of_device_id sprd_iommu_of_match[] = {
-+	{ .compatible = "sprd,iommu-v1" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, sprd_iommu_of_match);
-+
-+/*
-+ * Clock is not required, access to some of IOMMUs is controlled by gate
-+ * clk, enabled clocks for that kind of IOMMUs before accessing.
-+ * Return 0 for success or no clocks found.
-+ */
-+static int sprd_iommu_clk_enable(struct sprd_iommu_device *sdev)
-+{
-+	struct clk *eb;
-+
-+	eb = clk_get_optional(sdev->dev, 0);
-+	if (!eb)
-+		return 0;
-+
-+	if (IS_ERR(eb))
-+		return PTR_ERR(eb);
-+
-+	sdev->eb = eb;
-+	return clk_prepare_enable(eb);
-+}
-+
-+static void sprd_iommu_clk_disable(struct sprd_iommu_device *sdev)
-+{
-+	if (sdev->eb)
-+		clk_disable_unprepare(sdev->eb);
-+}
-+
-+static int sprd_iommu_probe(struct platform_device *pdev)
-+{
-+	struct sprd_iommu_device *sdev;
-+	struct device *dev = &pdev->dev;
-+	void __iomem *base;
-+	int ret;
-+
-+	sdev = devm_kzalloc(dev, sizeof(*sdev), GFP_KERNEL);
-+	if (!sdev)
-+		return -ENOMEM;
-+
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base)) {
-+		dev_err(dev, "Failed to get ioremap resource.\n");
-+		return PTR_ERR(base);
-+	}
-+	sdev->base = base;
-+
-+	sdev->prot_page_va = dma_alloc_coherent(dev, SPRD_IOMMU_PAGE_SIZE,
-+						&sdev->prot_page_pa, GFP_KERNEL);
-+	if (!sdev->prot_page_va)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, sdev);
-+	sdev->dev = dev;
-+
-+	/* All the client devices are in the same iommu-group */
-+	sdev->group = iommu_group_alloc();
-+	if (IS_ERR(sdev->group)) {
-+		ret = PTR_ERR(sdev->group);
-+		goto free_page;
-+	}
-+
-+	ret = iommu_device_sysfs_add(&sdev->iommu, dev, NULL, dev_name(dev));
-+	if (ret)
-+		goto put_group;
-+
-+	iommu_device_set_ops(&sdev->iommu, &sprd_iommu_ops);
-+	iommu_device_set_fwnode(&sdev->iommu, &dev->of_node->fwnode);
-+
-+	ret = iommu_device_register(&sdev->iommu);
-+	if (ret)
-+		goto remove_sysfs;
-+
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, &sprd_iommu_ops);
-+
-+	ret = sprd_iommu_clk_enable(sdev);
-+	if (ret)
-+		goto unregister_iommu;
-+
-+	ret = sprd_iommu_get_version(sdev);
-+	if (ret < 0) {
-+		dev_err(dev, "IOMMU version(%d) is invalid.\n", ret);
-+		goto disable_clk;
-+	}
-+	sdev->ver = ret;
-+
-+	return 0;
-+
-+disable_clk:
-+	sprd_iommu_clk_disable(sdev);
-+unregister_iommu:
-+	iommu_device_unregister(&sdev->iommu);
-+remove_sysfs:
-+	iommu_device_sysfs_remove(&sdev->iommu);
-+put_group:
-+	iommu_group_put(sdev->group);
-+free_page:
-+	dma_free_coherent(sdev->dev, SPRD_IOMMU_PAGE_SIZE, sdev->prot_page_va, sdev->prot_page_pa);
-+	return ret;
-+}
-+
-+static int sprd_iommu_remove(struct platform_device *pdev)
-+{
-+	struct sprd_iommu_device *sdev = platform_get_drvdata(pdev);
-+
-+	dma_free_coherent(sdev->dev, SPRD_IOMMU_PAGE_SIZE, sdev->prot_page_va, sdev->prot_page_pa);
-+
-+	iommu_group_put(sdev->group);
-+	sdev->group = NULL;
-+
-+	bus_set_iommu(&platform_bus_type, NULL);
-+
-+	platform_set_drvdata(pdev, NULL);
-+	iommu_device_sysfs_remove(&sdev->iommu);
-+	iommu_device_unregister(&sdev->iommu);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver sprd_iommu_driver = {
-+	.driver	= {
-+		.name		= "sprd-iommu",
-+		.of_match_table	= sprd_iommu_of_match,
-+		.suppress_bind_attrs = true,
-+	},
-+	.probe	= sprd_iommu_probe,
-+	.remove	= sprd_iommu_remove,
-+};
-+module_platform_driver(sprd_iommu_driver);
-+
-+MODULE_DESCRIPTION("IOMMU driver for Unisoc SoCs");
-+MODULE_ALIAS("platform:sprd-iommu");
-+MODULE_LICENSE("GPL");
--- 
-2.25.1
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
