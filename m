@@ -2,78 +2,85 @@ Return-Path: <SRS0=uIbQ=ID=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D08C433DB
-	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 17:44:04 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F179C433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 18:19:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8874E65085
-	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 17:44:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8874E65085
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id DAD73650A4
+	for <iommu@archiver.kernel.org>; Fri,  5 Mar 2021 18:19:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAD73650A4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6705881C21;
-	Fri,  5 Mar 2021 17:44:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9CAA24EC41;
+	Fri,  5 Mar 2021 18:19:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Djr8LS-RLkOP; Fri,  5 Mar 2021 17:44:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F3D388001F;
-	Fri,  5 Mar 2021 17:44:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Wei4Potjq8Ut; Fri,  5 Mar 2021 18:19:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5FB134EC3F;
+	Fri,  5 Mar 2021 18:19:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D06EEC000A;
-	Fri,  5 Mar 2021 17:44:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACBF6C0001
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 17:43:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 369CFC000B;
+	Fri,  5 Mar 2021 18:19:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8E0FC0001
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 18:19:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 89B3460678
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 17:43:57 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id AAA0D430E5
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 18:19:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4gwQv58slCJ9 for <iommu@lists.linux-foundation.org>;
- Fri,  5 Mar 2021 17:43:56 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PWGue4Kk47WD for <iommu@lists.linux-foundation.org>;
+ Fri,  5 Mar 2021 18:19:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E4B406062B
- for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 17:43:55 +0000 (UTC)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DsZdv3rkwz67vV5;
- Sat,  6 Mar 2021 01:36:03 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 5 Mar 2021 18:43:51 +0100
-Received: from [10.47.8.182] (10.47.8.182) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 5 Mar 2021
- 17:43:50 +0000
-Subject: Re: [PATCH] iommu/dma: Resurrect the "forcedac" option
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>
-References: <7eece8e0ea7bfbe2cd0e30789e0d46df573af9b0.1614961776.git.robin.murphy@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <76a931ab-fd2a-284e-61ef-9e26bceb4890@huawei.com>
-Date: Fri, 5 Mar 2021 17:41:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A9CE242FBD
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Mar 2021 18:19:14 +0000 (UTC)
+IronPort-SDR: +1PIvSCw13EKr+Kf2/IfTLyEZRFaL+sM5BxbECpA2KZ0UwCPsHiHvgO+UthPnXAeLiyybG8MZX
+ dIQ/2yGQ2wYA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9914"; a="187051278"
+X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; d="scan'208";a="187051278"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Mar 2021 10:19:13 -0800
+IronPort-SDR: Yve4Xs/BQQO/dPrUERl1ezaSRoE42oOdpR/DR9drzbbAJMBbkvwbwxAPL/sU8t0amziAK3gbiO
+ W9p6P5svTYjw==
+X-IronPort-AV: E=Sophos;i="5.81,225,1610438400"; d="scan'208";a="436593317"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Mar 2021 10:19:13 -0800
+Date: Fri, 5 Mar 2021 10:20:48 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [RFC PATCH 15/18] cgroup: Introduce ioasids controller
+Message-ID: <20210305102048.7c274968@jacob-builder>
+In-Reply-To: <YEHsOR/XjDxQapE6@myrica>
+References: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1614463286-97618-16-git-send-email-jacob.jun.pan@linux.intel.com>
+ <YD+u3CXhwOi2LC+4@slm.duckdns.org>
+ <20210303131726.7a8cb169@jacob-builder>
+ <20210303160205.151d114e@jacob-builder> <YECtMZNqSgh7jkGP@myrica>
+ <20210304094603.4ab6c1c4@jacob-builder> <YEHsOR/XjDxQapE6@myrica>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <7eece8e0ea7bfbe2cd0e30789e0d46df573af9b0.1614961776.git.robin.murphy@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.8.182]
-X-ClientProxiedBy: lhreml713-chm.china.huawei.com (10.201.108.64) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: dwmw2@infradead.org, linux-kernel@vger.kernel.org, murphyt7@tcd.ie,
- iommu@lists.linux-foundation.org, will@kernel.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
+ iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@nvidia.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,142 +93,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 05/03/2021 16:32, Robin Murphy wrote:
-> In converting intel-iommu over to the common IOMMU DMA ops, it quietly
-> lost the functionality of its "forcedac" option. Since this is a handy
-> thing both for testing and for performance optimisation on certain
-> platforms, reimplement it under the common IOMMU parameter namespace.
-> 
-> For the sake of fixing the inadvertent breakage of the Intel-specific
-> parameter, remove the dmar_forcedac remnants and hook it up as an alias
-> while documenting the transition to the new common parameter.
-> 
+Hi Jean-Philippe,
 
-Do you think that having a kconfig option to control the default for 
-this can help identify the broken platforms which rely on forcedac=0? 
-But seems a bit trivial for that, though.
+On Fri, 5 Mar 2021 09:30:49 +0100, Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
 
-Or are we bothered (finding them)?
+> On Thu, Mar 04, 2021 at 09:46:03AM -0800, Jacob Pan wrote:
+> > Hi Jean-Philippe,
+> > 
+> > On Thu, 4 Mar 2021 10:49:37 +0100, Jean-Philippe Brucker
+> > <jean-philippe@linaro.org> wrote:
+> >   
+> > > On Wed, Mar 03, 2021 at 04:02:05PM -0800, Jacob Pan wrote:  
+> > > > Hi Jacob,
+> > > > 
+> > > > On Wed, 3 Mar 2021 13:17:26 -0800, Jacob Pan
+> > > > <jacob.jun.pan@linux.intel.com> wrote:
+> > > >     
+> > > > > Hi Tejun,
+> > > > > 
+> > > > > On Wed, 3 Mar 2021 10:44:28 -0500, Tejun Heo <tj@kernel.org>
+> > > > > wrote: 
+> > > > > > On Sat, Feb 27, 2021 at 02:01:23PM -0800, Jacob Pan wrote:      
+> > > > > > > IOASIDs are used to associate DMA requests with virtual
+> > > > > > > address spaces. They are a system-wide limited resource made
+> > > > > > > available to the userspace applications. Let it be VMs or
+> > > > > > > user-space device drivers.
+> > > > > > > 
+> > > > > > > This RFC patch introduces a cgroup controller to address the
+> > > > > > > following problems:
+> > > > > > > 1. Some user applications exhaust all the available IOASIDs
+> > > > > > > thus depriving others of the same host.
+> > > > > > > 2. System admins need to provision VMs based on their needs
+> > > > > > > for IOASIDs, e.g. the number of VMs with assigned devices
+> > > > > > > that perform DMA requests with PASID.        
+> > > > > > 
+> > > > > > Please take a look at the proposed misc controller:
+> > > > > > 
+> > > > > >  http://lkml.kernel.org/r/20210302081705.1990283-2-vipinsh@google.com
+> > > > > > 
+> > > > > > Would that fit your bill?      
+> > > > > The interface definitely can be reused. But IOASID has a different
+> > > > > behavior in terms of migration and ownership checking. I guess
+> > > > > SEV key IDs are not tied to a process whereas IOASIDs are.
+> > > > > Perhaps this can be solved by adding
+> > > > > +	.can_attach	= ioasids_can_attach,
+> > > > > +	.cancel_attach	= ioasids_cancel_attach,
+> > > > > Let me give it a try and come back.
+> > > > >     
+> > > > While I am trying to fit the IOASIDs cgroup in to the misc cgroup
+> > > > proposal. I'd like to have a direction check on whether this idea of
+> > > > using cgroup for IOASID/PASID resource management is viable.    
+> > > 
+> > > Yes, even for host SVA it would be good to have a cgroup. Currently
+> > > the number of shared address spaces is naturally limited by number of
+> > > processes, which can be controlled with rlimit and cgroup. But on Arm
+> > > the hardware limit on shared address spaces is 64k (number of ASIDs),
+> > > easily exhausted with the default PASID and PID limits. So a cgroup
+> > > for managing this resource is more than welcome.
+> > > 
+> > > It looks like your current implementation is very dependent on
+> > > IOASID_SET_TYPE_MM?  I'll need to do more reading about cgroup to see
+> > > how easily it can be adapted to host SVA which uses
+> > > IOASID_SET_TYPE_NULL. 
+> > Right, I was assuming have three use cases of IOASIDs:
+> > 1. host supervisor SVA (not a concern, just one init_mm to bind)
+> > 2. host user SVA, either one IOASID per process or perhaps some private
+> > IOASID for private address space
+> > 3. VM use for guest SVA, each IOASID is bound to a guest process
+> > 
+> > My current cgroup proposal applies to #3 with IOASID_SET_TYPE_MM, which
+> > is allocated by the new /dev/ioasid interface.
+> > 
+> > For #2, I was thinking you can limit the host process via PIDs cgroup?
+> > i.e. limit fork.  
+> 
+> That works but isn't perfect, because the hardware resource of shared
+> address spaces can be much lower that PID limit - 16k ASIDs on Arm. To
+> allow an admin to fairly distribute that resource we could introduce
+> another cgroup just to limit the number of shared address spaces, but
+> limiting the number of IOASIDs does the trick.
+> 
+make sense. it would be cleaner to have a single approach to limit IOASIDs
+(as Jason asked).
+
+> > So the host IOASIDs are currently allocated from the system pool
+> > with quota of chosen by iommu_sva_init() in my patch, 0 means unlimited
+> > use whatever is available. https://lkml.org/lkml/2021/2/28/18  
+> 
+> Yes that's sensible, but it would be good to plan the cgroup user
+> interface to work for #2 as well, even if we don't implement it right
+> away.
+> 
+will do it in the next version.
+
+> Thanks,
+> Jean
+
 
 Thanks,
-john
 
-> Fixes: c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   Documentation/admin-guide/kernel-parameters.txt | 15 ++++++++-------
->   drivers/iommu/dma-iommu.c                       | 13 ++++++++++++-
->   drivers/iommu/intel/iommu.c                     |  5 ++---
->   include/linux/dma-iommu.h                       |  2 ++
->   4 files changed, 24 insertions(+), 11 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 04545725f187..835f810f2f26 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1869,13 +1869,6 @@
->   			bypassed by not enabling DMAR with this option. In
->   			this case, gfx device will use physical address for
->   			DMA.
-> -		forcedac [X86-64]
-> -			With this option iommu will not optimize to look
-> -			for io virtual address below 32-bit forcing dual
-> -			address cycle on pci bus for cards supporting greater
-> -			than 32-bit addressing. The default is to look
-> -			for translation below 32-bit and if not available
-> -			then look in the higher range.
->   		strict [Default Off]
->   			With this option on every unmap_single operation will
->   			result in a hardware IOTLB flush operation as opposed
-> @@ -1964,6 +1957,14 @@
->   		nobypass	[PPC/POWERNV]
->   			Disable IOMMU bypass, using IOMMU for PCI devices.
->   
-> +	iommu.forcedac=	[ARM64, X86] Control IOVA allocation for PCI devices.
-> +			Format: { "0" | "1" }
-> +			0 - Try to allocate a 32-bit DMA address first, before
-> +			  falling back to the full range if needed.
-> +			1 - Allocate directly from the full usable range,
-> +			  forcing Dual Address Cycle for PCI cards supporting
-> +			  greater than 32-bit addressing.
-> +
->   	iommu.strict=	[ARM64] Configure TLB invalidation behaviour
->   			Format: { "0" | "1" }
->   			0 - Lazy mode.
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 9ab6ee22c110..260bf3de1992 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -52,6 +52,17 @@ struct iommu_dma_cookie {
->   };
->   
->   static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
-> +bool iommu_dma_forcedac __read_mostly;
-> +
-> +static int __init iommu_dma_forcedac_setup(char *str)
-> +{
-> +	int ret = kstrtobool(str, &iommu_dma_forcedac);
-> +
-> +	if (!ret && iommu_dma_forcedac)
-> +		pr_info("Forcing DAC for PCI devices\n");
-> +	return ret;
-> +}
-> +early_param("iommu.forcedac", iommu_dma_forcedac_setup);
->   
->   void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
->   		struct iommu_domain *domain)
-> @@ -438,7 +449,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->   		dma_limit = min(dma_limit, (u64)domain->geometry.aperture_end);
->   
->   	/* Try to get PCI devices a SAC address */
-> -	if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
-> +	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
->   		iova = alloc_iova_fast(iovad, iova_len,
->   				       DMA_BIT_MASK(32) >> shift, false);
->   
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index ee0932307d64..1c32522220bc 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -360,7 +360,6 @@ int intel_iommu_enabled = 0;
->   EXPORT_SYMBOL_GPL(intel_iommu_enabled);
->   
->   static int dmar_map_gfx = 1;
-> -static int dmar_forcedac;
->   static int intel_iommu_strict;
->   static int intel_iommu_superpage = 1;
->   static int iommu_identity_mapping;
-> @@ -451,8 +450,8 @@ static int __init intel_iommu_setup(char *str)
->   			dmar_map_gfx = 0;
->   			pr_info("Disable GFX device mapping\n");
->   		} else if (!strncmp(str, "forcedac", 8)) {
-> -			pr_info("Forcing DAC for PCI devices\n");
-> -			dmar_forcedac = 1;
-> +			pr_warn("intel_iommu=forcedac deprecated; use iommu.forcedac instead\n");
-> +			iommu_dma_forcedac = true;
->   		} else if (!strncmp(str, "strict", 6)) {
->   			pr_info("Disable batched IOTLB flush\n");
->   			intel_iommu_strict = 1;
-> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> index 706b68d1359b..13d1f4c14d7b 100644
-> --- a/include/linux/dma-iommu.h
-> +++ b/include/linux/dma-iommu.h
-> @@ -40,6 +40,8 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
->   void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
->   		struct iommu_domain *domain);
->   
-> +extern bool iommu_dma_forcedac;
-> +
->   #else /* CONFIG_IOMMU_DMA */
->   
->   struct iommu_domain;
-> 
-
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
