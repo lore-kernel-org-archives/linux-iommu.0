@@ -7,64 +7,74 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57142C433DB
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 12:50:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 754EAC433E0
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 15:57:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF56265274
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 12:50:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF56265274
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id BE05665253
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 15:57:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE05665253
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 933734018A;
-	Tue,  9 Mar 2021 12:50:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8EBBF6F4FD;
+	Tue,  9 Mar 2021 15:57:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lbasxGxlN1Ef; Tue,  9 Mar 2021 15:57:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 63DC56F54A;
+	Tue,  9 Mar 2021 15:57:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FF94C000B;
+	Tue,  9 Mar 2021 15:57:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EF32C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 15:57:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5E76E430DE
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 15:57:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vQqlYNC9CtU9; Tue,  9 Mar 2021 12:50:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7181740177;
-	Tue,  9 Mar 2021 12:50:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 48808C000A;
-	Tue,  9 Mar 2021 12:50:40 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D2A8C0001
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 12:50:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 584A6834BA
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 12:50:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wFOAs8Im1paE for <iommu@lists.linux-foundation.org>;
- Tue,  9 Mar 2021 12:50:37 +0000 (UTC)
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id b_ffl8P6rtVQ for <iommu@lists.linux-foundation.org>;
+ Tue,  9 Mar 2021 15:57:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1CA3883449
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 12:50:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 092291042;
- Tue,  9 Mar 2021 04:50:36 -0800 (PST)
-Received: from [10.57.55.135] (unknown [10.57.55.135])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C1F493F70D;
- Tue,  9 Mar 2021 04:50:34 -0800 (PST)
-Subject: Re: [PATCH v3] iommu: Check dev->iommu in iommu_dev_xxx functions
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-References: <20210303173611.520-1-shameerali.kolothum.thodi@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ed0f8327-a23d-c9fd-672d-a431b3327593@arm.com>
-Date: Tue, 9 Mar 2021 12:50:29 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D90A2430DD
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 15:57:28 +0000 (UTC)
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Dw0511sW8z67w3k;
+ Tue,  9 Mar 2021 23:49:25 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 9 Mar 2021 16:57:25 +0100
+Received: from [10.210.172.22] (10.210.172.22) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 9 Mar 2021 15:57:24 +0000
+Subject: Re: [PATCH 2/2] iommu/iova: Improve restart logic
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>
+References: <03931d86c0ad71f44b29394e3a8d38bfc32349cd.1614962123.git.robin.murphy@arm.com>
+ <076b3484d1e5057b95d8c387c894bd6ad2514043.1614962123.git.robin.murphy@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <c1181e3b-cdf3-c658-1c57-8ec86d034f4b@huawei.com>
+Date: Tue, 9 Mar 2021 15:55:23 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <20210303173611.520-1-shameerali.kolothum.thodi@huawei.com>
-Content-Language: en-GB
-Cc: jean-philippe@linaro.org, will@kernel.org, linuxarm@openeuler.org,
- prime.zeng@hisilicon.com
+In-Reply-To: <076b3484d1e5057b95d8c387c894bd6ad2514043.1614962123.git.robin.murphy@arm.com>
+Content-Language: en-US
+X-Originating-IP: [10.210.172.22]
+X-ClientProxiedBy: lhreml748-chm.china.huawei.com (10.201.108.198) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Linuxarm <linuxarm@huawei.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, vjitta@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,56 +87,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wMy0wMyAxNzozNiwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToKPiBUaGUgZGV2aWNl
-IGlvbW11IHByb2JlL2F0dGFjaCBtaWdodCBoYXZlIGZhaWxlZCBsZWF2aW5nIGRldi0+aW9tbXUK
-PiB0byBOVUxMIGFuZCBkZXZpY2UgZHJpdmVycyBtYXkgc3RpbGwgaW52b2tlIHRoZXNlIGZ1bmN0
-aW9ucyByZXN1bHRpbmcKPiBpbiBhIGNyYXNoIGluIGlvbW11IHZlbmRvciBkcml2ZXIgY29kZS4K
-PiAKPiBIZW5jZSBtYWtlIHN1cmUgd2UgY2hlY2sgdGhhdC4KClJldmlld2VkLWJ5OiBSb2JpbiBN
-dXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgoKPiBGaXhlczrCoGEzYTE5NTkyOWQ0MCAoImlv
-bW11OiBBZGQgQVBJcyBmb3IgbXVsdGlwbGUgZG9tYWlucyBwZXIgZGV2aWNlIikKPiBTaWduZWQt
-b2ZmLWJ5OiBTaGFtZWVyIEtvbG90aHVtIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdl
-aS5jb20+Cj4gLS0tCj4gdjIgLS0+IHYzCj4gICAtUmVtb3ZlZCBpb21tdV9vcHMgZnJvbSBzdHJ1
-Y3QgZGV2X2lvbW11Lgo+IHYxIC0tPiB2MjoKPiAgIC1BZGRlZCBpb21tdV9vcHMgdG8gc3RydWN0
-IGRldl9pb21tdSBiYXNlZCBvbiB0aGUgZGlzY3Vzc2lvbiB3aXRoIFJvYmluLgo+ICAgLVJlYmFz
-ZWQgYWdhaW5zdCBpb21tdS10cmVlIGNvcmUgYnJhbmNoLgo+IC0tLQo+ICAgZHJpdmVycy9pb21t
-dS9pb21tdS5jIHwgMjQgKysrKysrKysrKysrKysrLS0tLS0tLS0tCj4gICAxIGZpbGUgY2hhbmdl
-ZCwgMTUgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gaW5kZXggZDBiMGEx
-NWRiYTg0Li5lMTBjZmE5OTA1N2MgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5j
-Cj4gKysrIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gQEAgLTI4NzgsMTAgKzI4NzgsMTIgQEAg
-RVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfZndzcGVjX2FkZF9pZHMpOwo+ICAgICovCj4gICBpbnQg
-aW9tbXVfZGV2X2VuYWJsZV9mZWF0dXJlKHN0cnVjdCBkZXZpY2UgKmRldiwgZW51bSBpb21tdV9k
-ZXZfZmVhdHVyZXMgZmVhdCkKPiAgIHsKPiAtCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9
-IGRldi0+YnVzLT5pb21tdV9vcHM7Cj4gKwlpZiAoZGV2LT5pb21tdSAmJiBkZXYtPmlvbW11LT5p
-b21tdV9kZXYpIHsKPiArCQljb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICpvcHMgPSBkZXYtPmlvbW11
-LT5pb21tdV9kZXYtPm9wczsKPiAgIAo+IC0JaWYgKG9wcyAmJiBvcHMtPmRldl9lbmFibGVfZmVh
-dCkKPiAtCQlyZXR1cm4gb3BzLT5kZXZfZW5hYmxlX2ZlYXQoZGV2LCBmZWF0KTsKPiArCQlpZiAo
-b3BzLT5kZXZfZW5hYmxlX2ZlYXQpCj4gKwkJCXJldHVybiBvcHMtPmRldl9lbmFibGVfZmVhdChk
-ZXYsIGZlYXQpOwo+ICsJfQo+ICAgCj4gICAJcmV0dXJuIC1FTk9ERVY7Cj4gICB9Cj4gQEAgLTI4
-OTQsMTAgKzI4OTYsMTIgQEAgRVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfZGV2X2VuYWJsZV9mZWF0
-dXJlKTsKPiAgICAqLwo+ICAgaW50IGlvbW11X2Rldl9kaXNhYmxlX2ZlYXR1cmUoc3RydWN0IGRl
-dmljZSAqZGV2LCBlbnVtIGlvbW11X2Rldl9mZWF0dXJlcyBmZWF0KQo+ICAgewo+IC0JY29uc3Qg
-c3RydWN0IGlvbW11X29wcyAqb3BzID0gZGV2LT5idXMtPmlvbW11X29wczsKPiArCWlmIChkZXYt
-PmlvbW11ICYmIGRldi0+aW9tbXUtPmlvbW11X2Rldikgewo+ICsJCWNvbnN0IHN0cnVjdCBpb21t
-dV9vcHMgKm9wcyA9IGRldi0+aW9tbXUtPmlvbW11X2Rldi0+b3BzOwo+ICAgCj4gLQlpZiAob3Bz
-ICYmIG9wcy0+ZGV2X2Rpc2FibGVfZmVhdCkKPiAtCQlyZXR1cm4gb3BzLT5kZXZfZGlzYWJsZV9m
-ZWF0KGRldiwgZmVhdCk7Cj4gKwkJaWYgKG9wcy0+ZGV2X2Rpc2FibGVfZmVhdCkKPiArCQkJcmV0
-dXJuIG9wcy0+ZGV2X2Rpc2FibGVfZmVhdChkZXYsIGZlYXQpOwo+ICsJfQo+ICAgCj4gICAJcmV0
-dXJuIC1FQlVTWTsKPiAgIH0KPiBAQCAtMjkwNSwxMCArMjkwOSwxMiBAQCBFWFBPUlRfU1lNQk9M
-X0dQTChpb21tdV9kZXZfZGlzYWJsZV9mZWF0dXJlKTsKPiAgIAo+ICAgYm9vbCBpb21tdV9kZXZf
-ZmVhdHVyZV9lbmFibGVkKHN0cnVjdCBkZXZpY2UgKmRldiwgZW51bSBpb21tdV9kZXZfZmVhdHVy
-ZXMgZmVhdCkKPiAgIHsKPiAtCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IGRldi0+YnVz
-LT5pb21tdV9vcHM7Cj4gKwlpZiAoZGV2LT5pb21tdSAmJiBkZXYtPmlvbW11LT5pb21tdV9kZXYp
-IHsKPiArCQljb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICpvcHMgPSBkZXYtPmlvbW11LT5pb21tdV9k
-ZXYtPm9wczsKPiAgIAo+IC0JaWYgKG9wcyAmJiBvcHMtPmRldl9mZWF0X2VuYWJsZWQpCj4gLQkJ
-cmV0dXJuIG9wcy0+ZGV2X2ZlYXRfZW5hYmxlZChkZXYsIGZlYXQpOwo+ICsJCWlmIChvcHMtPmRl
-dl9mZWF0X2VuYWJsZWQpCj4gKwkJCXJldHVybiBvcHMtPmRldl9mZWF0X2VuYWJsZWQoZGV2LCBm
-ZWF0KTsKPiArCX0KPiAgIAo+ICAgCXJldHVybiBmYWxzZTsKPiAgIH0KPiAKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 05/03/2021 16:35, Robin Murphy wrote:
+
+Hi Robin,
+
+> When restarting after searching below the cached node fails, resetting
+> the start point to the anchor node is often overly pessimistic. If
+> allocations are made with mixed limits - particularly in the case of the
+> opportunistic 32-bit allocation for PCI devices - this could mean
+> significant time wasted walking through the whole populated upper range
+> just to reach the initial limit. 
+
+Right
+
+> We can improve on that by implementing
+> a proper tree traversal to find the first node above the relevant limit,
+> and set the exact start point.
+
+Thanks for this. However, as mentioned in the other thread, this does 
+not help our performance regression Re: commit 4e89dce72521.
+
+And mentioning this "retry" approach again, in case it was missed, from 
+my experiment on the affected HW, it also has generally a dreadfully low 
+success rate - less than 1% for the 32b range retry. Retry rate is about 
+20%. So I am saying from this 20%, less than 1% of those succeed.
+
+Failing faster sounds key.
+
+Thanks,
+John
+
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/iommu/iova.c | 39 ++++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 38 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index c28003e1d2ee..471c48dd71e7 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -154,6 +154,43 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>   		iovad->cached_node = rb_next(&free->node);
+>   }
+>   
+> +static struct rb_node *iova_find_limit(struct iova_domain *iovad, unsigned long limit_pfn)
+> +{
+> +	struct rb_node *node, *next;
+> +	/*
+> +	 * Ideally what we'd like to judge here is whether limit_pfn is close
+> +	 * enough to the highest-allocated IOVA that starting the allocation
+> +	 * walk from the anchor node will be quicker than this initial work to
+> +	 * find an exact starting point (especially if that ends up being the
+> +	 * anchor node anyway). This is an incredibly crude approximation which
+> +	 * only really helps the most likely case, but is at least trivially easy.
+> +	 */
+> +	if (limit_pfn > iovad->dma_32bit_pfn)
+> +		return &iovad->anchor.node;
+> +
+> +	node = iovad->rbroot.rb_node;
+> +	while (to_iova(node)->pfn_hi < limit_pfn)
+> +		node = node->rb_right;
+> +
+> +search_left:
+> +	while (node->rb_left && to_iova(node->rb_left)->pfn_lo >= limit_pfn)
+> +		node = node->rb_left;
+> +
+> +	if (!node->rb_left)
+> +		return node;
+> +
+> +	next = node->rb_left;
+> +	while (next->rb_right) {
+> +		next = next->rb_right;
+> +		if (to_iova(next)->pfn_lo >= limit_pfn) {
+> +			node = next;
+> +			goto search_left;
+> +		}
+> +	}
+> +
+> +	return node;
+> +}
+> +
+>   /* Insert the iova into domain rbtree by holding writer lock */
+>   static void
+>   iova_insert_rbtree(struct rb_root *root, struct iova *iova,
+> @@ -219,7 +256,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
+>   			high_pfn = limit_pfn;
+>   			low_pfn = retry_pfn;
+> -			curr = &iovad->anchor.node;
+> +			curr = iova_find_limit(iovad, limit_pfn);
+>   			curr_iova = to_iova(curr);
+>   			goto retry;
+>   		}
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
