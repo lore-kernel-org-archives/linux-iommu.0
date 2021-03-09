@@ -2,98 +2,168 @@ Return-Path: <SRS0=6QSB=IH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883ECC433E0
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 18:00:04 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1A2C433E0
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 18:35:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1282A6522F
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 18:00:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1282A6522F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 85D5B6522E
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 18:35:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 85D5B6522E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BDED84C51B;
-	Tue,  9 Mar 2021 18:00:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5385F83D04;
+	Tue,  9 Mar 2021 18:35:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cq6KpZDZdzk4; Tue,  9 Mar 2021 18:00:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4B7A44A061;
-	Tue,  9 Mar 2021 18:00:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gu-46kDJ0ek4; Tue,  9 Mar 2021 18:35:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id E200082FCE;
+	Tue,  9 Mar 2021 18:35:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2261AC000B;
-	Tue,  9 Mar 2021 18:00:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA751C000A;
+	Tue,  9 Mar 2021 18:35:09 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8DBBFC0001
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 18:00:00 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C479C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 18:35:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6F5FD430FD
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 18:00:00 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 89B5943101
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 18:35:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QbHPDuxXvXlY for <iommu@lists.linux-foundation.org>;
- Tue,  9 Mar 2021 17:59:59 +0000 (UTC)
+ with ESMTP id XtAeL7JfQ22i for <iommu@lists.linux-foundation.org>;
+ Tue,  9 Mar 2021 18:35:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com
- [IPv6:2607:f8b0:4864:20::336])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A431D4308F
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 17:59:59 +0000 (UTC)
-Received: by mail-ot1-x336.google.com with SMTP id j22so7849779otp.2
- for <iommu@lists.linux-foundation.org>; Tue, 09 Mar 2021 09:59:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=yDPCYluFrdjMuzSEcawbKVQhqqsYOAVXybwEkOdxycU=;
- b=fQQzGb/jC1+8DjdcNxsptTS92WplKKRFklYa26EweJxZelK+27rO4Dk3Z+c0CcoG0i
- ex6lvP02F6oP23QRdP1abDLhXK+leEIvngG7dxSPifhRUVltVm0o/jlN4lgIbZQMSGfC
- +Q1rQe9M8OUTe+Jfi28FRJZ9Kro9wwNnlntZekOUY38dTsiRA1vPTiL5fXNkSVVyh8K+
- t3IJjkXzGkhvzgm40JVKnCLUJezdQUyyK7kR2BsDjle84ERuGhTM1b5v7WGGrcWhVLsv
- FJdeLG2DUkH9/8Iqp4xXALIgFo1/j5y+60UcIzb/pOS7MShzZtw17n3lj6Ue2wmRdsga
- 4Cbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=yDPCYluFrdjMuzSEcawbKVQhqqsYOAVXybwEkOdxycU=;
- b=gmsBDT+gLQrC4bxy3e0BLVTiPI+1Gljy4KkJR65jEhywGefsba56MUnLSxjuX81ypT
- VCuX3pFbK7J33sag2WErXxrclVk1ynwaXLsPM87KCHlhl/g28r786qiJVxPUEdk9fP/y
- 9VQdx18z58DdPLUNj7UqI0hBF79sIRzRiEyGLEKx8NMRiChEBwZBkW0nLFXAP8wIeMRE
- EXaXPWbmbkNeYdu4B6VZTPM0oh/1df9eBEcLqjTgy/osnMYsRR4NLqUq95wcstF4o8+P
- loPgwEXwuy3YO1BRBRmS6idFR8fS1vft86Vf/o4/VMNpyS4A7U0pxlg7sL3YCYoLZGKb
- vm8A==
-X-Gm-Message-State: AOAM531S1JgwAzvDB93NxURFkAB5l93U1y8JZzFxx3Xp4ABognMa2CY9
- mZm58qGI3EweHeIvOyHzFn4H70ndhW+BgX0bI60=
-X-Google-Smtp-Source: ABdhPJwEwsQ2caBdS22GuC0IAzNDOpvTy7t2RPblLIObbiLdaz9uhek4Vj9BBKsWFEIVLdwuEa4xRZ7j1/P0+lG9We8=
-X-Received: by 2002:a9d:760a:: with SMTP id k10mr25146289otl.23.1615312798691; 
- Tue, 09 Mar 2021 09:59:58 -0800 (PST)
-MIME-Version: 1.0
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on2060a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8a::60a])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 033014308F
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 18:35:06 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hOhsvljRD9j4POiUyttxhXXCvvpjsElFYbF6CkVK03Pkrj1VGZEs2oHZ02HdI9NjbD7FNU5ao9nv0hN0YskEkEuZqCwIA/n0iRXrFZKV5pKkqzytMriXxX7b2ygeowvB13QVkaI2qEAx8DUgtSBBbkKmHd5HVIFLkjrPRZzw/5hfodwwqW4yMIqLKNUerWWa72qfcwLuRcNC2ll5kHkFlNA/W/LDRUTfGHvKAtCumJVH3FQwVmH8evYNPDmAa4HKJY2Qoj0AKjcYsW1w0J53mzLoLe9TUYroHtixx/dmbXK73Y4RrFiTE+onkBCNOpyk2PF7Vhs+l9xvRsomTZ2UTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XLKu4AKaIBe1cLw7fAym+S+LtLdK9VE5sIgD5twS+hE=;
+ b=HJDSXErpqWyKScosMQFFqggw8PV6A+oh0IjBjbhpOray2ohbXdpaMovQg5oQu7/Q51JZff3pLwkDW4lo5a3f3U4ehGPbA0syWoNH9/v1BFd06Xsn2al6gS9AmGHyJfeHzF136ToWUSeBlla1d/PPuBCzgjEtOfOJchoNsALwNo/67OXTn8c02z+b708CHeqM7iiIuqc+inz9xmCQpmck/Y6uOEwA12O3Kh1NkQpdsMpGVgN3UYQGiLUnt2RJDLSfD7X//tojLi9SNMEAdimPZerFbOeKFo6paWu3apWP2/1ACYxNtfX15nEoSIaq1JcwD9HbZ2wrQeZpBBJarQ0U8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XLKu4AKaIBe1cLw7fAym+S+LtLdK9VE5sIgD5twS+hE=;
+ b=SnhksxCnjK42xs2+6lgJJfqWO/TKjddSHp46ttTAUoPor8skze9FyOYhmuaJw66dPZTUQNaApFZ6GeX9rORqC0SxpkxD7MWZtXPd/J292uj1kOFVqoLeeJTqGuDrGPjxVctbln3LeheIQcNloH+iJjCIjV+SE2FnKeyA+m/wcZA=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB3775.namprd12.prod.outlook.com (2603:10b6:208:159::19)
+ by MN2PR12MB4319.namprd12.prod.outlook.com (2603:10b6:208:1dc::10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.26; Tue, 9 Mar
+ 2021 18:35:04 +0000
+Received: from MN2PR12MB3775.namprd12.prod.outlook.com
+ ([fe80::c1ff:dcf1:9536:a1f2]) by MN2PR12MB3775.namprd12.prod.outlook.com
+ ([fe80::c1ff:dcf1:9536:a1f2%2]) with mapi id 15.20.3912.027; Tue, 9 Mar 2021
+ 18:35:04 +0000
+Subject: Re: [PATCH 1/1] drm/amdkfd: fix build error with AMD_IOMMU_V2=m
+To: Alex Deucher <alexdeucher@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <4c692eff-9d57-278e-8da4-36bc2c293506@amd.com>
  <20210309032356.20800-1-Felix.Kuehling@amd.com>
  <CAK8P3a1EeHimbufajcHzV+-bBarWtLHzzFSsa=qdUDsip=Wz_A@mail.gmail.com>
  <8023bb6b-b6aa-230c-afa5-871ce32782c6@amd.com> <YEexf0/V/YF394bf@myrica>
-In-Reply-To: <YEexf0/V/YF394bf@myrica>
-From: Alex Deucher <alexdeucher@gmail.com>
-Date: Tue, 9 Mar 2021 12:59:47 -0500
-Message-ID: <CADnq5_OTeK7-nN57+F+WE+Hdg86uiuTN8c_n0bmCtx40N_wraQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] drm/amdkfd: fix build error with AMD_IOMMU_V2=m
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+ <CADnq5_OTeK7-nN57+F+WE+Hdg86uiuTN8c_n0bmCtx40N_wraQ@mail.gmail.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Message-ID: <7831d401-d1ec-13bb-0b3f-b0e0a1a63f7c@amd.com>
+Date: Tue, 9 Mar 2021 19:34:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
+In-Reply-To: <CADnq5_OTeK7-nN57+F+WE+Hdg86uiuTN8c_n0bmCtx40N_wraQ@mail.gmail.com>
+Content-Language: en-US
+X-Originating-IP: [2a02:908:1252:fb60:f611:3416:fc43:bd62]
+X-ClientProxiedBy: AM0PR04CA0033.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::46) To MN2PR12MB3775.namprd12.prod.outlook.com
+ (2603:10b6:208:159::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2a02:908:1252:fb60:f611:3416:fc43:bd62]
+ (2a02:908:1252:fb60:f611:3416:fc43:bd62) by
+ AM0PR04CA0033.eurprd04.prod.outlook.com (2603:10a6:208:122::46) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
+ Transport; Tue, 9 Mar 2021 18:35:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 53716659-85f8-43db-04cf-08d8e32a0e34
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4319:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4319E335410E7B375992556C83929@MN2PR12MB4319.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: t9B97TRDGypuZBmvzmzslSsWC2uiXRqZfytHfMR6BVxDkZaCXD57zxyR1KXDH6KdXM6af5kzs8vnRyJsPYbeppWnvhQhB4kGwtG6BvEKbb9Bw/G3dVHMMymRdZatxROGCEvfqRMo4tf8n238TRtvcbxwwMIyQApHsisZzt1uaqD1mQY7qfrL1ennNamkLFlD605ZYj4U0k1LriQPWI7m/Dcos7OQwHXLrcjWmKc8iciwmtcHUnGKUGJ+8uIiKiPT/LYN6IgSevr1idmK3bZzctLhxjjj2MzVIJ0rJB0Ine8UHwIdQ/jop5POo4DX+4zEeiOjMvvRTt1wFg7dDuNvO3QVHAqCpV8Nnis5hB3F3TbDFeBe0CJdKzLr83C4n4VefmCdScsVtUs+LY+Xt1Ij//VHZ8gfQ/hRcqUNmEzvh4pgCYh58vYQP+iQJ4yGIZ1nmOu6sx55mnUyjKvifdZ+veR9ByagiwuWj1EWYXXPKin7MFsyRqdz5Jz0VDW7sF37nC6wkv4Blb6+YMy8Y6O+FIneo1CIKayj5wiNPkrZH6hwYnMafnN7Eb4U/SBVYyeLC9AnN+Qi+jdf1JY2ao4xX+a8PUiuPAI2bBElwrpY5Ck=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB3775.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(5660300002)(6666004)(31696002)(4326008)(86362001)(16526019)(186003)(316002)(6486002)(31686004)(8936002)(2906002)(8676002)(66946007)(66476007)(53546011)(52116002)(66556008)(110136005)(54906003)(478600001)(36756003)(2616005)(43740500002)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?ZENBRXZjREJ2SXZUM2lDUEN0bzBYdXdidngvaU5JVml4SkdEcDVFWEhQeHdq?=
+ =?utf-8?B?VDJOSVBaRTQrL1k4OEZEbWN3NXRtVndJSVBGb21LZlZaRHNCVUZpNDJpNkRk?=
+ =?utf-8?B?YjdncytpU1FCVE4zU1hFdmxqcGNxdjJNSFBhT01US3lzVjE5UDRGTExSd0tS?=
+ =?utf-8?B?NlVvZTNuQ05SWXFHZmtnWkVGTzI5Y0ZqclhiTXJqRUFodW1YVTNnUEI1bFBJ?=
+ =?utf-8?B?MWNzWFVYYTFLVmpBWndrT3plWEZKNkY3UFU4ZUxwTXNPbzF5V1VaT2wyTUJl?=
+ =?utf-8?B?QjB4eWw4UXk4R251V1BiUmFlRGd6VGg2eVp3cFFvNERNT2M1dmtxa1RjajBD?=
+ =?utf-8?B?V3B3ZzhIYXFwZEdjdGc3ME01YVFIZ3ZqTlVkeFRvdnYrdjFGdzVaMXlmSnJM?=
+ =?utf-8?B?bzZHRFFVWVpKNXF1WXF2UitXeEJTR0tXcGErenZpa0ZtVGwyVCtvQ2R0akRm?=
+ =?utf-8?B?dWcwRzNUNVJYZVBEZldoM2owbHI1aWFBYy81MDdOTU40VkVOZno3eC9zRUJv?=
+ =?utf-8?B?WHlqOFdMWW1lMkR6akpTUTZxd3hadnRTZ0R4VCt6U0J6b2tGaHNZbFN6WGN4?=
+ =?utf-8?B?MmVLYmJKWGtaWmkwdVNDb1laeHp2cDN3UkhEaVdRQVlLN3JLWE1UU280WXJm?=
+ =?utf-8?B?ZVl2RkpnWmdtQjBLbVh3ZTEwd3I1bWJtRDQzNGtycGhZUnZQWjBaTWhxRUVo?=
+ =?utf-8?B?b0ZpbVlSTm0wWWV2Z1hEalBIblFHS2UvWk5kbi8wbWFSbjUzdzg5WWI4cWxE?=
+ =?utf-8?B?SFVwa0pyUVA2aDBQTkowSlJMUkVDQXFpL1loRlpCb3FYSDRPSkFoUlR6QjhV?=
+ =?utf-8?B?NXJacU94TlRITVpPZmY5Qmh3L2x2ZTkwMjZTaFgrQTIrU1M5dzFkTUYvaDVT?=
+ =?utf-8?B?SHlmNFJqMHlvU0R4RWJBT3RtM1dKSGNqSGF2U3VsSVBsSHVwSllONVllUmxX?=
+ =?utf-8?B?ck00OURLb0k3bGlRcndGS0NFd0NPb1ZrUjY5NnZEdUx6NmlWbjVlTmRZdk4y?=
+ =?utf-8?B?a2FmR2VJOHhSOE9kWlZBRTBJQy9Zb3Q1eTUzRmZpekFNazE1TTRBSlFJVnFM?=
+ =?utf-8?B?Z2RyVkpGMlZuUEVFVmdQcXJ3Zis0dkUvT051ZU1yNHdjVWVmQjRrVklUQzE1?=
+ =?utf-8?B?YWZUdk9BMEVWaGdxQnhNUDRiWVNWSGNhUVY4TXBlTFVUVXFkWGtSdkNpNDQ3?=
+ =?utf-8?B?VWJPaDNiUEdSWnBzYU9mamRlU2p5RzN6QVJGNnJJYU1ERExNMlBnNjFhbjQx?=
+ =?utf-8?B?VWl6MHduSFBuRkZ6eUJhL3cvcHA5UEh5aDJWQjI2QjN2VUVkNndZdlU0QWdp?=
+ =?utf-8?B?bFBNSWFwNC9kNEJFWXhSOHpBaTNuakI5VC9scDhNOERKK0V5TG9QYnNZbDNW?=
+ =?utf-8?B?VnR2NUk0dTU3K3ZFSEFxTmZjcnFqSmhVNHRBcGxmdTVDc2gxOTVqUkM2ckYr?=
+ =?utf-8?B?OEhMVE5LVFA0RGtzUjV3SzRzMWk5cXVXZjlsbW1vS1lISDN1bDRXMkNXNXZY?=
+ =?utf-8?B?Z1hLOVl3dy9UNHRGWVZtU3RmSHlMTVc5MnJYZUU2YWVlWUsrbndQVDFRMmVi?=
+ =?utf-8?B?RDA2MHJMQ2RUa202NWxkZlFOU202YnJXeThoUjZsbE1qN0FVeS9IbFM1cFcv?=
+ =?utf-8?B?NTExK0xBaVhpNzB1Q3ZWN0ViWjhGWTlRZ0VBNEprYWJ5NXpXbXQ3RjZvbTJ6?=
+ =?utf-8?B?MWx4bUZua25pcW40Yk1ab0dmcHE5THVnRjgxc25haGlmRTQ3TEZoSEJGbnlk?=
+ =?utf-8?B?bE8wKytyMmZjOTdYb0tMUFYrZGpSQjNjdGRKQVRTMXhvZ3BJR2U0eWVRdXpD?=
+ =?utf-8?B?cHg2K1lIRGd4TTk4dWxRQkJRTXlJUG5wT2RjbStqUzNsbGc1K0ZuMVdVSVoy?=
+ =?utf-8?Q?MHEjRUzpwNL2x?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53716659-85f8-43db-04cf-08d8e32a0e34
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3775.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2021 18:35:04.1475 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: I2YuCrS+sGHVZzZ26bir1tV21Ay6Il8HEiG89vW6hwfb8c8w2NZuQKojr/7q3u8C
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4319
 Cc: Arnd Bergmann <arnd@kernel.org>, David Airlie <airlied@linux.ie>,
  Felix Kuehling <felix.kuehling@amd.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  dri-devel <dri-devel@lists.freedesktop.org>,
  "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
  amd-gfx list <amd-gfx@lists.freedesktop.org>,
- Alex Deucher <alexander.deucher@amd.com>, Will Deacon <will@kernel.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+ Alex Deucher <alexander.deucher@amd.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,52 +176,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 9, 2021 at 12:55 PM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
->
-> Hi Felix,
->
-> On Tue, Mar 09, 2021 at 11:30:19AM -0500, Felix Kuehling wrote:
-> > > I think the proper fix would be to not rely on custom hooks into a particular
-> > > IOMMU driver, but to instead ensure that the amdgpu driver can do everything
-> > > it needs through the regular linux/iommu.h interfaces. I realize this
-> > > is more work,
-> > > but I wonder if you've tried that, and why it didn't work out.
-> >
-> > As far as I know this hasn't been tried. I see that intel-iommu has its
-> > own SVM thing, which seems to be similar to what our IOMMUv2 does. I
-> > guess we'd have to abstract that into a common API.
->
-> The common API was added in 26b25a2b98e4 and implemented by the Intel
-> driver in 064a57d7ddfc. To support it an IOMMU driver implements new IOMMU
-> ops:
->         .dev_has_feat()
->         .dev_feat_enabled()
->         .dev_enable_feat()
->         .dev_disable_feat()
->         .sva_bind()
->         .sva_unbind()
->         .sva_get_pasid()
->
-> And a device driver calls iommu_dev_enable_feature(IOMMU_DEV_FEAT_SVA)
-> followed by iommu_sva_bind_device().
->
-> If I remember correctly the biggest obstacle for KFD is the PASID
-> allocation, done by the GPU driver instead of the IOMMU driver, but there
-> may be others.
+Am 09.03.21 um 18:59 schrieb Alex Deucher:
+> On Tue, Mar 9, 2021 at 12:55 PM Jean-Philippe Brucker
+> <jean-philippe@linaro.org> wrote:
+>> Hi Felix,
+>>
+>> On Tue, Mar 09, 2021 at 11:30:19AM -0500, Felix Kuehling wrote:
+>>>> I think the proper fix would be to not rely on custom hooks into a particular
+>>>> IOMMU driver, but to instead ensure that the amdgpu driver can do everything
+>>>> it needs through the regular linux/iommu.h interfaces. I realize this
+>>>> is more work,
+>>>> but I wonder if you've tried that, and why it didn't work out.
+>>> As far as I know this hasn't been tried. I see that intel-iommu has its
+>>> own SVM thing, which seems to be similar to what our IOMMUv2 does. I
+>>> guess we'd have to abstract that into a common API.
+>> The common API was added in 26b25a2b98e4 and implemented by the Intel
+>> driver in 064a57d7ddfc. To support it an IOMMU driver implements new IOMMU
+>> ops:
+>>          .dev_has_feat()
+>>          .dev_feat_enabled()
+>>          .dev_enable_feat()
+>>          .dev_disable_feat()
+>>          .sva_bind()
+>>          .sva_unbind()
+>>          .sva_get_pasid()
+>>
+>> And a device driver calls iommu_dev_enable_feature(IOMMU_DEV_FEAT_SVA)
+>> followed by iommu_sva_bind_device().
+>>
+>> If I remember correctly the biggest obstacle for KFD is the PASID
+>> allocation, done by the GPU driver instead of the IOMMU driver, but there
+>> may be others.
+> IIRC, we tried to make the original IOMMUv2 functionality generic but
+> other vendors were not interested at the time, so it ended up being
+> AMD specific and since nothing else was using the pasid allocations we
+> put them in the GPU driver.  I guess if this is generic now, it could
+> be moved to a common API and taken out of the driver.
 
-IIRC, we tried to make the original IOMMUv2 functionality generic but
-other vendors were not interested at the time, so it ended up being
-AMD specific and since nothing else was using the pasid allocations we
-put them in the GPU driver.  I guess if this is generic now, it could
-be moved to a common API and taken out of the driver.
+There has been quite some effort for this already for generic PASID 
+interface etc.. But it looks like that effort is stalled by now.
 
-Alex
+Anyway at least I'm perfectly fine to have the IOMMUv2 || !IOMMUv2 
+dependency on the core amdgpu driver for x86.
+
+That should solve the build problem at hand quite nicely.
+
+Regards,
+Christian.
+
+>
+> Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
