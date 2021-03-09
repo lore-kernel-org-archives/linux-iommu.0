@@ -2,74 +2,104 @@ Return-Path: <SRS0=6QSB=IH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A088C433E0
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 06:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB9EC433DB
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 06:41:02 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFFEF6519D
-	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 06:22:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFFEF6519D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7B6FC6529C
+	for <iommu@archiver.kernel.org>; Tue,  9 Mar 2021 06:41:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B6FC6529C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AEDF76F5BD;
-	Tue,  9 Mar 2021 06:22:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3E6AA6F4E9;
+	Tue,  9 Mar 2021 06:41:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UtCAbl-zUKCH; Tue,  9 Mar 2021 06:22:38 +0000 (UTC)
+	with ESMTP id tBNPQM01aCq7; Tue,  9 Mar 2021 06:41:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 868FD6F5D7;
-	Tue,  9 Mar 2021 06:22:38 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 12AFC605CC;
+	Tue,  9 Mar 2021 06:41:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6428BC000A;
-	Tue,  9 Mar 2021 06:22:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46775C0001
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:22:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3261C000A;
+	Tue,  9 Mar 2021 06:41:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A11EC0001
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:40:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 286C940178
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:22:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with UTF8SMTP id 309FB8354D
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:40:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tYPfgPkTGC4M for <iommu@lists.linux-foundation.org>;
- Tue,  9 Mar 2021 06:22:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E9B514016D
- for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:22:35 +0000 (UTC)
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DvlSv01FRz17Hqs;
- Tue,  9 Mar 2021 14:20:47 +0800 (CST)
-Received: from DESKTOP-7FEPK9S.china.huawei.com (10.174.184.135) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 9 Mar 2021 14:22:24 +0800
-From: Shenming Lu <lushenming@huawei.com>
-To: Alex Williamson <alex.williamson@redhat.com>, Cornelia Huck
- <cohuck@redhat.com>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>, Eric Auger <eric.auger@redhat.com>,
- <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux-foundation.org>,
- <linux-api@vger.kernel.org>
-Subject: [RFC PATCH v2 6/6] vfio: Add nested IOPF support
-Date: Tue, 9 Mar 2021 14:22:07 +0800
-Message-ID: <20210309062207.505-7-lushenming@huawei.com>
-X-Mailer: git-send-email 2.27.0.windows.1
-In-Reply-To: <20210309062207.505-1-lushenming@huawei.com>
-References: <20210309062207.505-1-lushenming@huawei.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id 83IxbF_PXSoK for <iommu@lists.linux-foundation.org>;
+ Tue,  9 Mar 2021 06:40:58 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from z11.mailgun.us (z11.mailgun.us [104.130.96.11])
+ by smtp1.osuosl.org (Postfix) with UTF8SMTPS id 9108B83542
+ for <iommu@lists.linux-foundation.org>; Tue,  9 Mar 2021 06:40:56 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1615272058; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=EhG3KsTQoCjy4nAe8WbAaYFX/7mUkiPY+Ifi3+SDrmg=;
+ b=eR5zvtrRyOrGFpCX+bHgdKf5ZRkuI47lsU+c5RbHRNbTfF7f80qnHT+QILqqt//fIXEO7Sml
+ xwSq0q0XWvkQ/yuuRtOweIZWvVwe+ET9jpZnZYwY3ewC1WTE5kUAWZgA4fSSNooDTLgUhhBe
+ 23fQvnjT2/ZKm34VIJ1Myd85ivs=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 6047186d2a5e6d1bfaf8bec3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 09 Mar 2021 06:40:45
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 62037C43468; Tue,  9 Mar 2021 06:40:45 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 1D56AC433CA;
+ Tue,  9 Mar 2021 06:40:44 +0000 (UTC)
 MIME-Version: 1.0
-X-Originating-IP: [10.174.184.135]
-X-CFilter-Loop: Reflected
-Cc: Kevin Tian <kevin.tian@intel.com>, Christoph Hellwig <hch@infradead.org>,
- lushenming@huawei.com, wanghaibin.wang@huawei.com
+Date: Tue, 09 Mar 2021 12:10:44 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
+ flag
+In-Reply-To: <4988e2ef35f76a0c2f1fe3f66f023a3b@codeaurora.org>
+References: <cover.1610372717.git.saiprakash.ranjan@codeaurora.org>
+ <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
+ <20210129090516.GB3998@willie-the-truck>
+ <5d23fce629323bcda71594010824aad0@codeaurora.org>
+ <20210201111556.GA7172@willie-the-truck>
+ <CAF6AEGsARmkAFsjaQLfa2miMgeijo183MWDKGtW_ti-UCpzBqA@mail.gmail.com>
+ <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
+ <7e9aade14d0b7f69285852ade4a5a9f4@codeaurora.org>
+ <20210203214612.GB19847@willie-the-truck>
+ <4988e2ef35f76a0c2f1fe3f66f023a3b@codeaurora.org>
+Message-ID: <9362873a3bcf37cdd073a6128f29c683@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ freedreno <freedreno@lists.freedesktop.org>, David Airlie <airlied@linux.ie>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS , 
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, Sean Paul <sean@poorly.run>,
+ Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,227 +112,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-To set up nested mode, drivers such as vfio_pci have to register
-a handler to receive stage/level 1 faults from the IOMMU, but
-since currently each device can only have one iommu dev fault
-handler, and if stage 2 IOPF is already enabled (VFIO_IOMMU_ENABLE_IOPF),
-we choose to update the registered handler (a combined one) via
-flags (set IOPF_REPORT_NESTED_L1_CONCERNED), and further deliver
-the received stage 1 faults in the handler to the guest through
-a newly added vfio_device_ops callback.
+Hi,
 
-Signed-off-by: Shenming Lu <lushenming@huawei.com>
----
- drivers/vfio/vfio.c             | 83 +++++++++++++++++++++++++++++++++
- drivers/vfio/vfio_iommu_type1.c | 37 +++++++++++++++
- include/linux/vfio.h            |  9 ++++
- 3 files changed, 129 insertions(+)
+On 2021-02-05 17:38, Sai Prakash Ranjan wrote:
+> On 2021-02-04 03:16, Will Deacon wrote:
+>> On Tue, Feb 02, 2021 at 11:56:27AM +0530, Sai Prakash Ranjan wrote:
+>>> On 2021-02-01 23:50, Jordan Crouse wrote:
+>>> > On Mon, Feb 01, 2021 at 08:20:44AM -0800, Rob Clark wrote:
+>>> > > On Mon, Feb 1, 2021 at 3:16 AM Will Deacon <will@kernel.org> wrote:
+>>> > > > On Fri, Jan 29, 2021 at 03:12:59PM +0530, Sai Prakash Ranjan wrote:
+>>> > > > > On 2021-01-29 14:35, Will Deacon wrote:
+>>> > > > > > On Mon, Jan 11, 2021 at 07:45:04PM +0530, Sai Prakash Ranjan wrote:
+>>> > > > > > > +#define IOMMU_LLC        (1 << 6)
+>>> > > > > >
+>>> > > > > > On reflection, I'm a bit worried about exposing this because I think it
+>>> > > > > > will
+>>> > > > > > introduce a mismatched virtual alias with the CPU (we don't even have a
+>>> > > > > > MAIR
+>>> > > > > > set up for this memory type). Now, we also have that issue for the PTW,
+>>> > > > > > but
+>>> > > > > > since we always use cache maintenance (i.e. the streaming API) for
+>>> > > > > > publishing the page-tables to a non-coheren walker, it works out.
+>>> > > > > > However,
+>>> > > > > > if somebody expects IOMMU_LLC to be coherent with a DMA API coherent
+>>> > > > > > allocation, then they're potentially in for a nasty surprise due to the
+>>> > > > > > mismatched outer-cacheability attributes.
+>>> > > > > >
+>>> > > > >
+>>> > > > > Can't we add the syscached memory type similar to what is done on android?
+>>> > > >
+>>> > > > Maybe. How does the GPU driver map these things on the CPU side?
+>>> > >
+>>> > > Currently we use writecombine mappings for everything, although there
+>>> > > are some cases that we'd like to use cached (but have not merged
+>>> > > patches that would give userspace a way to flush/invalidate)
+>>> > >
+>>> >
+>>> > LLC/system cache doesn't have a relationship with the CPU cache.  Its
+>>> > just a
+>>> > little accelerator that sits on the connection from the GPU to DDR and
+>>> > caches
+>>> > accesses. The hint that Sai is suggesting is used to mark the buffers as
+>>> > 'no-write-allocate' to prevent GPU write operations from being cached in
+>>> > the LLC
+>>> > which a) isn't interesting and b) takes up cache space for read
+>>> > operations.
+>>> >
+>>> > Its easiest to think of the LLC as a bonus accelerator that has no cost
+>>> > for
+>>> > us to use outside of the unfortunate per buffer hint.
+>>> >
+>>> > We do have to worry about the CPU cache w.r.t I/O coherency (which is a
+>>> > different hint) and in that case we have all of concerns that Will
+>>> > identified.
+>>> >
+>>> 
+>>> For mismatched outer cacheability attributes which Will mentioned, I 
+>>> was
+>>> referring to [1] in android kernel.
+>> 
+>> I've lost track of the conversation here :/
+>> 
+>> When the GPU has a buffer mapped with IOMMU_LLC, is the buffer also 
+>> mapped
+>> into the CPU and with what attributes? Rob said "writecombine for
+>> everything" -- does that mean ioremap_wc() / MEMREMAP_WC?
+>> 
+> 
+> Rob answered this.
+> 
+>> Finally, we need to be careful when we use the word "hint" as 
+>> "allocation
+>> hint" has a specific meaning in the architecture, and if we only 
+>> mismatch on
+>> those then we're actually ok. But I think IOMMU_LLC is more than just 
+>> a
+>> hint, since it actually drives eviction policy (i.e. it enables 
+>> writeback).
+>> 
+>> Sorry for the pedantry, but I just want to make sure we're all talking
+>> about the same things!
+>> 
+> 
+> Sorry for the confusion which probably was caused by my mentioning of
+> android, NWA(no write allocate) is an allocation hint which we can 
+> ignore
+> for now as it is not introduced yet in upstream.
+> 
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 77b29bbd3027..c6a01d947d0d 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -2389,6 +2389,89 @@ int vfio_iommu_dev_fault_handler(struct iommu_fault *fault, void *data)
- }
- EXPORT_SYMBOL_GPL(vfio_iommu_dev_fault_handler);
- 
-+int vfio_iommu_dev_fault_handler_unregister_nested(struct device *dev)
-+{
-+	struct vfio_container *container;
-+	struct vfio_group *group;
-+	struct vfio_iommu_driver *driver;
-+	int ret;
-+
-+	if (!dev)
-+		return -EINVAL;
-+
-+	group = vfio_group_get_from_dev(dev);
-+	if (!group)
-+		return -ENODEV;
-+
-+	ret = vfio_group_add_container_user(group);
-+	if (ret)
-+		goto out;
-+
-+	container = group->container;
-+	driver = container->iommu_driver;
-+	if (likely(driver && driver->ops->unregister_hdlr_nested))
-+		ret = driver->ops->unregister_hdlr_nested(container->iommu_data,
-+							  dev);
-+	else
-+		ret = -ENOTTY;
-+
-+	vfio_group_try_dissolve_container(group);
-+
-+out:
-+	vfio_group_put(group);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommu_dev_fault_handler_unregister_nested);
-+
-+/*
-+ * Register/Update the VFIO page fault handler
-+ * to receive nested stage/level 1 faults.
-+ */
-+int vfio_iommu_dev_fault_handler_register_nested(struct device *dev)
-+{
-+	struct vfio_container *container;
-+	struct vfio_group *group;
-+	struct vfio_iommu_driver *driver;
-+	int ret;
-+
-+	if (!dev)
-+		return -EINVAL;
-+
-+	group = vfio_group_get_from_dev(dev);
-+	if (!group)
-+		return -ENODEV;
-+
-+	ret = vfio_group_add_container_user(group);
-+	if (ret)
-+		goto out;
-+
-+	container = group->container;
-+	driver = container->iommu_driver;
-+	if (likely(driver && driver->ops->register_hdlr_nested))
-+		ret = driver->ops->register_hdlr_nested(container->iommu_data,
-+							dev);
-+	else
-+		ret = -ENOTTY;
-+
-+	vfio_group_try_dissolve_container(group);
-+
-+out:
-+	vfio_group_put(group);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommu_dev_fault_handler_register_nested);
-+
-+int vfio_transfer_dev_fault(struct device *dev, struct iommu_fault *fault)
-+{
-+	struct vfio_device *device = dev_get_drvdata(dev);
-+
-+	if (unlikely(!device->ops->transfer))
-+		return -EOPNOTSUPP;
-+
-+	return device->ops->transfer(device->device_data, fault);
-+}
-+EXPORT_SYMBOL_GPL(vfio_transfer_dev_fault);
-+
- /**
-  * Module/class support
-  */
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 8d14ced649a6..62ad4a47de4a 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -3581,6 +3581,13 @@ static int vfio_iommu_type1_dma_map_iopf(void *iommu_data,
- 	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
- 	struct iommu_page_response resp = {0};
- 
-+	/*
-+	 * When configured in nested mode, further deliver
-+	 * stage/level 1 faults to the guest.
-+	 */
-+	if (iommu->nesting && !(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_L2))
-+		return vfio_transfer_dev_fault(dev, fault);
-+
- 	mutex_lock(&iommu->lock);
- 
- 	dma = vfio_find_dma(iommu, iova, PAGE_SIZE);
-@@ -3654,6 +3661,34 @@ static int vfio_iommu_type1_dma_map_iopf(void *iommu_data,
- 	return 0;
- }
- 
-+static int vfio_iommu_type1_register_hdlr_nested(void *iommu_data,
-+						 struct device *dev)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+
-+	if (iommu->iopf_enabled)
-+		return iommu_update_device_fault_handler(dev, ~0,
-+					IOPF_REPORT_NESTED_L1_CONCERNED);
-+	else
-+		return iommu_register_device_fault_handler(dev,
-+					vfio_iommu_dev_fault_handler,
-+					IOPF_REPORT_NESTED |
-+					IOPF_REPORT_NESTED_L1_CONCERNED,
-+					dev);
-+}
-+
-+static int vfio_iommu_type1_unregister_hdlr_nested(void *iommu_data,
-+						   struct device *dev)
-+{
-+	struct vfio_iommu *iommu = iommu_data;
-+
-+	if (iommu->iopf_enabled)
-+		return iommu_update_device_fault_handler(dev,
-+					~IOPF_REPORT_NESTED_L1_CONCERNED, 0);
-+	else
-+		return iommu_unregister_device_fault_handler(dev);
-+}
-+
- static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_type1 = {
- 	.name			= "vfio-iommu-type1",
- 	.owner			= THIS_MODULE,
-@@ -3670,6 +3705,8 @@ static const struct vfio_iommu_driver_ops vfio_iommu_driver_ops_type1 = {
- 	.group_iommu_domain	= vfio_iommu_type1_group_iommu_domain,
- 	.notify			= vfio_iommu_type1_notify,
- 	.dma_map_iopf		= vfio_iommu_type1_dma_map_iopf,
-+	.register_hdlr_nested	= vfio_iommu_type1_register_hdlr_nested,
-+	.unregister_hdlr_nested	= vfio_iommu_type1_unregister_hdlr_nested,
- };
- 
- static int __init vfio_iommu_type1_init(void)
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index 73af317a4343..60e935e4851b 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -29,6 +29,7 @@
-  * @match: Optional device name match callback (return: 0 for no-match, >0 for
-  *         match, -errno for abort (ex. match with insufficient or incorrect
-  *         additional args)
-+ * @transfer: Optional. Transfer the received faults to the guest for nested mode.
-  */
- struct vfio_device_ops {
- 	char	*name;
-@@ -43,6 +44,7 @@ struct vfio_device_ops {
- 	int	(*mmap)(void *device_data, struct vm_area_struct *vma);
- 	void	(*request)(void *device_data, unsigned int count);
- 	int	(*match)(void *device_data, char *buf);
-+	int	(*transfer)(void *device_data, struct iommu_fault *fault);
- };
- 
- extern struct iommu_group *vfio_iommu_group_get(struct device *dev);
-@@ -102,6 +104,10 @@ struct vfio_iommu_driver_ops {
- 	int		(*dma_map_iopf)(void *iommu_data,
- 					struct iommu_fault *fault,
- 					struct device *dev);
-+	int		(*register_hdlr_nested)(void *iommu_data,
-+						struct device *dev);
-+	int		(*unregister_hdlr_nested)(void *iommu_data,
-+						  struct device *dev);
- };
- 
- extern int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops);
-@@ -164,6 +170,9 @@ struct kvm;
- extern void vfio_group_set_kvm(struct vfio_group *group, struct kvm *kvm);
- 
- extern int vfio_iommu_dev_fault_handler(struct iommu_fault *fault, void *data);
-+extern int vfio_iommu_dev_fault_handler_unregister_nested(struct device *dev);
-+extern int vfio_iommu_dev_fault_handler_register_nested(struct device *dev);
-+extern int vfio_transfer_dev_fault(struct device *dev, struct iommu_fault *fault);
- 
- /*
-  * Sub-module helpers
+Any chance of taking this forward? We do not want to miss out on small 
+fps
+gain when the product gets released.
+
+Thanks,
+Sai
 -- 
-2.19.1
-
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
