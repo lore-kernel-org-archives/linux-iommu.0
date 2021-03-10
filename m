@@ -2,76 +2,100 @@ Return-Path: <SRS0=kCyf=II=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD44C433DB
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 18:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A13C433E0
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 19:13:54 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E461464FC6
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 18:40:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E461464FC6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9160C64F60
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 19:13:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9160C64F60
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 85E7F4EC5B;
-	Wed, 10 Mar 2021 18:40:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3EF964EC57;
+	Wed, 10 Mar 2021 19:13:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A9GMYW3kTMEd; Wed, 10 Mar 2021 18:40:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E26164EBB7;
-	Wed, 10 Mar 2021 18:40:09 +0000 (UTC)
+	with ESMTP id jNUE-tKTalSZ; Wed, 10 Mar 2021 19:13:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6F23146F1F;
+	Wed, 10 Mar 2021 19:13:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B693CC000A;
-	Wed, 10 Mar 2021 18:40:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BFBC4C0001;
- Wed, 10 Mar 2021 18:40:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 461C3C000B;
+	Wed, 10 Mar 2021 19:13:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C27EEC0001
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 19:13:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AE1116E56C;
- Wed, 10 Mar 2021 18:40:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A69CA4AC93
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 19:13:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MNbmdUZNL4L1; Wed, 10 Mar 2021 18:40:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 71629605B2;
- Wed, 10 Mar 2021 18:40:07 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 837CE1FB;
- Wed, 10 Mar 2021 10:40:06 -0800 (PST)
-Received: from [10.57.52.136] (unknown [10.57.52.136])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A6053F800;
- Wed, 10 Mar 2021 10:40:03 -0800 (PST)
-Subject: Re: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-To: Christoph Hellwig <hch@lst.de>
-References: <20210301084257.945454-1-hch@lst.de>
- <20210301084257.945454-15-hch@lst.de>
- <1658805c-ed28-b650-7385-a56fab3383e3@arm.com> <20210310091501.GC5928@lst.de>
- <20210310092533.GA6819@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <fdacf87a-be14-c92c-4084-1d1dd4fc7766@arm.com>
-Date: Wed, 10 Mar 2021 18:39:57 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BkhF48JaJUDf for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Mar 2021 19:13:46 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com
+ [IPv6:2a00:1450:4864:20::135])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6BC7B46F1F
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 19:13:46 +0000 (UTC)
+Received: by mail-lf1-x135.google.com with SMTP id u4so35444228lfs.0
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 11:13:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=TGVo84MkssIIGFaMlWeB/GdWruWqeKFsQWqj4qPbSMU=;
+ b=HbsI8I4tO0QXv6SbFoersQnW7puDohAmS/pM6fJaJGkWRSDeZFhNtTCNZEeEzA6s+X
+ w2Xp3MfPGHCIZI8D3kxV8emCwmZBLGtFVt9BJbPcvCb77qeFQqHINFY39+LXwMJz7YDo
+ BH6NshzUCP5G985lVE7NGXKZQLR/bgCjoeUATpkxGHpSlnVKYealzTtrIgNiETrsJiag
+ jkc4Yvb0+n6QSSBWBu82vYWbspP7U15YPQwg5glY//VxIi9WmTWSomUZulhKKFC8HbIj
+ NGVjufjAZgw1q1Wu8EdF/QCZpEN3KeUo46kx0SdRb0bHdnsYa4uHvrBtck4Z7AHFa+Nz
+ JnjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=TGVo84MkssIIGFaMlWeB/GdWruWqeKFsQWqj4qPbSMU=;
+ b=s6snx/UNvKrbkO5NzxqO+Z8hE4HWEPugwO8PaFD0D1oZ1Af8JUPFZN1uEbbhTPemjP
+ ckNYJN4zUsP/vC6PGnqFvAyeWeFhwYkcbxzUsU88vYkFQaeanWIjwJUYGmYSZCTiu7tK
+ VmaZOojwKeFrT/pCh/Sl4pPtT44mKqXONJvOI//SomkTijtPhx2w62K6x5oPr1xf7fGw
+ d04ut8DACHQX0/HBmkxNSeNPo5udBp6pk++z/4iLs/pJF43B7s8MfDk0rr6FDtYybt/L
+ xDqRr+Hl44z/2i5oCv/QaCMJcKr6kIwWgyjPV0CBr2guO+KSo8FpuzHAz5ldedZp23EW
+ OD+g==
+X-Gm-Message-State: AOAM533sAPCk9iXqfl1kYaR+S7Bi/WoNzdqGrwvWNZsvosl7BUvwrhYy
+ 0pVr4BwUfLV7/s7s5geAAg8=
+X-Google-Smtp-Source: ABdhPJxAxsuCKlrBzioldvdKtUXE1MFNfDCFzDMOqQfbX+L9cAYHE5rvNAvBmQKSPjyj37EoksplAw==
+X-Received: by 2002:a05:6512:1156:: with SMTP id
+ m22mr2808559lfg.637.1615403624284; 
+ Wed, 10 Mar 2021 11:13:44 -0800 (PST)
+Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru.
+ [109.252.193.52])
+ by smtp.googlemail.com with ESMTPSA id k6sm63089lfm.19.2021.03.10.11.13.43
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 10 Mar 2021 11:13:43 -0800 (PST)
+Subject: Re: [PATCH] iommu/tegra-smmu: Fix mc errors on tegra124-nyan
+To: Nicolin Chen <nicoleotsuka@gmail.com>, joro@8bytes.org,
+ thierry.reding@gmail.com, will@kernel.org, guillaume.tucker@collabora.com
+References: <20210218220702.1962-1-nicoleotsuka@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <a8a7a0af-895f-9d79-410d-5dd03ebbd6dd@gmail.com>
+Date: Wed, 10 Mar 2021 22:13:42 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-In-Reply-To: <20210310092533.GA6819@lst.de>
-Content-Language: en-GB
-Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>,
- linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Michael Ellerman <mpe@ellerman.id.au>,
- virtualization@lists.linux-foundation.org, freedreno@lists.freedesktop.org,
- David Woodhouse <dwmw2@infradead.org>, linux-arm-msm@vger.kernel.org
+In-Reply-To: <20210218220702.1962-1-nicoleotsuka@gmail.com>
+Content-Language: en-US
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,229 +108,111 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-03-10 09:25, Christoph Hellwig wrote:
-> On Wed, Mar 10, 2021 at 10:15:01AM +0100, Christoph Hellwig wrote:
->> On Thu, Mar 04, 2021 at 03:25:27PM +0000, Robin Murphy wrote:
->>> On 2021-03-01 08:42, Christoph Hellwig wrote:
->>>> Use explicit methods for setting and querying the information instead.
->>>
->>> Now that everyone's using iommu-dma, is there any point in bouncing this
->>> through the drivers at all? Seems like it would make more sense for the x86
->>> drivers to reflect their private options back to iommu_dma_strict (and
->>> allow Intel's caching mode to override it as well), then have
->>> iommu_dma_init_domain just test !iommu_dma_strict &&
->>> domain->ops->flush_iotlb_all.
->>
->> Hmm.  I looked at this, and kill off ->dma_enable_flush_queue for
->> the ARM drivers and just looking at iommu_dma_strict seems like a
->> very clear win.
->>
->> OTOH x86 is a little more complicated.  AMD and intel defaul to lazy
->> mode, so we'd have to change the global iommu_dma_strict if they are
->> initialized.  Also Intel has not only a "static" option to disable
->> lazy mode, but also a "dynamic" one where it iterates structure.  So
->> I think on the get side we're stuck with the method, but it still
->> simplifies the whole thing.
-> 
-> Actually... Just mirroring the iommu_dma_strict value into
-> struct iommu_domain should solve all of that with very little
-> boilerplate code.
-
-Yes, my initial thought was to directly replace the attribute with a
-common flag at iommu_domain level, but since in all cases the behaviour
-is effectively global rather than actually per-domain, it seemed
-reasonable to take it a step further. This passes compile-testing for
-arm64 and x86, what do you think?
-
-Robin.
-
------>8-----
-Subject: [PATCH] iommu: Consolidate strict invalidation handling
-
-Now that everyone is using iommu-dma, the global invalidation policy
-really doesn't need to be woven through several parts of the core API
-and individual drivers, we can just look it up directly at the one point
-that we now make the flush queue decision. If the x86 drivers reflect
-their internal options and overrides back to iommu_dma_strict, that can
-become the canonical source.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-  drivers/iommu/amd/iommu.c   |  2 ++
-  drivers/iommu/dma-iommu.c   |  8 +-------
-  drivers/iommu/intel/iommu.c | 12 ++++++++++++
-  drivers/iommu/iommu.c       | 35 +++++++++++++++++++++++++++--------
-  include/linux/iommu.h       |  2 ++
-  5 files changed, 44 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a69a8b573e40..1db29e59d468 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1856,6 +1856,8 @@ int __init amd_iommu_init_dma_ops(void)
-  	else
-  		pr_info("Lazy IO/TLB flushing enabled\n");
-  
-+	iommu_set_dma_strict(amd_iommu_unmap_flush);
-+
-  	return 0;
-  
-  }
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index af765c813cc8..789a950cc125 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -304,10 +304,6 @@ static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
-  
-  	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
-  	domain = cookie->fq_domain;
--	/*
--	 * The IOMMU driver supporting DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
--	 * implies that ops->flush_iotlb_all must be non-NULL.
--	 */
-  	domain->ops->flush_iotlb_all(domain);
-  }
-  
-@@ -334,7 +330,6 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
-  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-  	unsigned long order, base_pfn;
-  	struct iova_domain *iovad;
--	int attr;
-  
-  	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
-  		return -EINVAL;
-@@ -371,8 +366,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
-  	init_iova_domain(iovad, 1UL << order, base_pfn);
-  
-  	if (!cookie->fq_domain && (!dev || !dev_is_untrusted(dev)) &&
--	    !iommu_domain_get_attr(domain, DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) &&
--	    attr) {
-+	    domain->ops->flush_iotlb_all && !iommu_get_dma_strict()) {
-  		if (init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all,
-  					  iommu_dma_entry_dtor))
-  			pr_warn("iova flush queue initialization failed\n");
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b5c746f0f63b..f5b452cd1266 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4377,6 +4377,17 @@ int __init intel_iommu_init(void)
-  
-  	down_read(&dmar_global_lock);
-  	for_each_active_iommu(iommu, drhd) {
-+		if (!intel_iommu_strict && cap_caching_mode(iommu->cap)) {
-+			/*
-+			 * The flush queue implementation does not perform page-selective
-+			 * invalidations that are required for efficient TLB flushes in
-+			 * virtual environments. The benefit of batching is likely to be
-+			 * much lower than the overhead of synchronizing the virtual and
-+			 * physical IOMMU page-tables.
-+			 */
-+			pr_warn("IOMMU batching is disabled due to virtualization");
-+			intel_iommu_strict = 1;
-+		}
-  		iommu_device_sysfs_add(&iommu->iommu, NULL,
-  				       intel_iommu_groups,
-  				       "%s", iommu->name);
-@@ -4384,6 +4395,7 @@ int __init intel_iommu_init(void)
-  	}
-  	up_read(&dmar_global_lock);
-  
-+	iommu_set_dma_strict(intel_iommu_strict);
-  	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
-  	if (si_domain && !hw_pass_through)
-  		register_memory_notifier(&intel_iommu_memory_nb);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2f3399203813..80afcf50cd3c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -69,6 +69,7 @@ static const char * const iommu_group_resv_type_string[] = {
-  };
-  
-  #define IOMMU_CMD_LINE_DMA_API		BIT(0)
-+#define IOMMU_CMD_LINE_STRICT		BIT(1)
-  
-  static void iommu_set_cmd_line_dma_api(void)
-  {
-@@ -80,6 +81,16 @@ static bool iommu_cmd_line_dma_api(void)
-  	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
-  }
-  
-+static void iommu_set_cmd_line_strict(void)
-+{
-+	iommu_cmd_line |= IOMMU_CMD_LINE_STRICT;
-+}
-+
-+static bool iommu_cmd_line_strict(void)
-+{
-+	return !!(iommu_cmd_line & IOMMU_CMD_LINE_STRICT);
-+}
-+
-  static int iommu_alloc_default_domain(struct iommu_group *group,
-  				      struct device *dev);
-  static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-@@ -337,10 +348,25 @@ early_param("iommu.passthrough", iommu_set_def_domain_type);
-  
-  static int __init iommu_dma_setup(char *str)
-  {
--	return kstrtobool(str, &iommu_dma_strict);
-+	int ret = kstrtobool(str, &iommu_dma_strict);
-+
-+	if (!ret)
-+		iommu_set_cmd_line_strict();
-+	return ret;
-  }
-  early_param("iommu.strict", iommu_dma_setup);
-  
-+void iommu_set_dma_strict(bool val)
-+{
-+	if (val || !iommu_cmd_line_strict())
-+		iommu_dma_strict = val;
-+}
-+
-+bool iommu_get_dma_strict(void)
-+{
-+	return iommu_dma_strict;
-+}
-+
-  static ssize_t iommu_group_attr_show(struct kobject *kobj,
-  				     struct attribute *__attr, char *buf)
-  {
-@@ -1520,13 +1546,6 @@ static int iommu_group_alloc_default_domain(struct bus_type *bus,
-  	if (!group->domain)
-  		group->domain = dom;
-  
--	if (!iommu_dma_strict) {
--		int attr = 1;
--		iommu_domain_set_attr(dom,
--				      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
--				      &attr);
--	}
--
-  	return 0;
-  }
-  
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index eb5e3f14c5ad..11bbfa273d98 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -495,6 +495,8 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
-  				 void *data);
-  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
-  				 void *data);
-+extern void iommu_set_dma_strict(bool val);
-+extern bool iommu_get_dma_strict(void);
-  
-  /* Window handling function prototypes */
-  extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
--- 
-2.21.0.dirty
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MTkuMDIuMjAyMSAwMTowNywgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gQ29tbWl0IDI1OTM4
+YzczY2Q3OSAoImlvbW11L3RlZ3JhLXNtbXU6IFJld29yayB0ZWdyYV9zbW11X3Byb2JlX2Rldmlj
+ZSgpIikKPiByZW1vdmVkIGNlcnRhaW4gaGFjayBpbiB0aGUgdGVncmFfc21tdV9wcm9iZSgpIGJ5
+IHJlbHlpbmcgb24gSU9NTVUgY29yZSB0bwo+IG9mX3hsYXRlIFNNTVUncyBTSUQgcGVyIGRldmlj
+ZSwgc28gYXMgdG8gZ2V0IHJpZCBvZiB0ZWdyYV9zbW11X2ZpbmQoKSBhbmQKPiB0ZWdyYV9zbW11
+X2NvbmZpZ3VyZSgpIHRoYXQgYXJlIHR5cGljYWxseSBkb25lIGluIHRoZSBJT01NVSBjb3JlIGFs
+c28uCj4gCj4gVGhpcyBhcHByb2FjaCB3b3JrcyBmb3IgYm90aCBleGlzdGluZyBkZXZpY2VzIHRo
+YXQgaGF2ZSBEVCBub2RlcyBhbmQgb3RoZXIKPiBkZXZpY2VzIChsaWtlIFBDSSBkZXZpY2UpIHRo
+YXQgZG9uJ3QgZXhpc3QgaW4gRFQsIG9uIFRlZ3JhMjEwIGFuZCBUZWdyYTMKPiB1cG9uIHRlc3Rp
+bmcuIEhvd2V2ZXIsIFBhZ2UgRmF1bHQgZXJyb3JzIGFyZSByZXBvcnRlZCBvbiB0ZWdyYTEyNC1O
+eWFuOgo+IAo+ICAgdGVncmEtbWMgNzAwMTkwMDAubWVtb3J5LWNvbnRyb2xsZXI6IGRpc3BsYXkw
+YTogcmVhZCBAMHhmZTA1NmI0MDoKPiAJIEVNRU0gYWRkcmVzcyBkZWNvZGUgZXJyb3IgKFNNTVUg
+dHJhbnNsYXRpb24gZXJyb3IgWy0tU10pCj4gICB0ZWdyYS1tYyA3MDAxOTAwMC5tZW1vcnktY29u
+dHJvbGxlcjogZGlzcGxheTBhOiByZWFkIEAweGZlMDU2YjQwOgo+IAkgUGFnZSBmYXVsdCAoU01N
+VSB0cmFuc2xhdGlvbiBlcnJvciBbLS1TXSkKPiAKPiBBZnRlciBkZWJ1Z2dpbmcsIEkgZm91bmQg
+dGhhdCB0aGUgbWVudGlvbmVkIGNvbW1pdCBjaGFuZ2VkIHNvbWUgZnVuY3Rpb24KPiBjYWxsYmFj
+ayBzZXF1ZW5jZSBvZiB0ZWdyYS1zbW11J3MsIHJlc3VsdGluZyBpbiBlbmFibGluZyBTTU1VIGZv
+ciBkaXNwbGF5Cj4gY2xpZW50IGJlZm9yZSBkaXNwbGF5IGRyaXZlciBnZXRzIGluaXRpYWxpemVk
+LiBJIGNvdWxkbid0IHJlcHJvZHVjZSBleGFjdAo+IHNhbWUgaXNzdWUgb24gVGVncmEyMTAgYXMg
+VGVncmExMjQgKGFybS0zMikgZGlmZmVycyBhdCBhcmNoLWxldmVsIGNvZGUuCj4gCj4gQWN0dWFs
+bHkgdGhpcyBQYWdlIEZhdWx0IGlzIGEga25vd24gaXNzdWUsIGFzIG9uIG1vc3Qgb2YgVGVncmEg
+cGxhdGZvcm1zLAo+IGRpc3BsYXkgZ2V0cyBlbmFibGVkIGJ5IHRoZSBib290bG9hZGVyIGZvciB0
+aGUgc3BsYXNoIHNjcmVlbiBmZWF0dXJlLCBzbwo+IGl0IGtlZXBzIGZpbGxpbmcgdGhlIGZyYW1l
+YnVmZmVyIG1lbW9yeS4gQSBwcm9wZXIgZml4IHRvIHRoaXMgaXNzdWUgaXMgdG8KPiAxOjEgbGlu
+ZWFyIG1hcCB0aGUgZnJhbWVidWZmZXIgbWVtb3J5IHRvIElPVkEgc3BhY2Ugc28gdGhlIFNNTVUg
+d2lsbCBoYXZlCj4gdGhlIHNhbWUgYWRkcmVzcyBhcyB0aGUgcGh5c2ljYWwgYWRkcmVzcyBpbiBp
+dHMgcGFnZSB0YWJsZS4gWWV0LCBUaGllcnJ5Cj4gaGFzIGJlZW4gd29ya2luZyBvbiB0aGUgc29s
+dXRpb24gYWJvdmUgZm9yIGEgeWVhciwgYW5kIGl0IGhhc24ndCBtZXJnZWQuCj4gCj4gVGhlcmVm
+b3JlLCBsZXQncyBwYXJ0aWFsbHkgcmV2ZXJ0IHRoZSBtZW50aW9uZWQgY29tbWl0IHRvIGZpeCB0
+aGUgZXJyb3JzLgo+IAo+IFRoZSByZWFzb24gd2h5IHdlIGRvIGEgcGFydGlhbCByZXZlcnQgaGVy
+ZSBpcyB0aGF0IHdlIGNhbiBzdGlsbCBzZXQgcHJpdgo+IGluIC0+b2ZfeGxhdGUoKSBjYWxsYmFj
+ayBmb3IgUENJIGRldmljZXMuIE1lYW53aGlsZSwgZGV2aWNlcyBleGlzdGluZyBpbgo+IERULCBs
+aWtlIGRpc3BsYXksIHdpbGwgZ28gdGhyb3VnaCB0ZWdyYV9zbW11X2NvbmZpZ3VyZSgpIGF0IHRo
+ZSBzdGFnZSBvZgo+IGJ1c19zZXRfaW9tbXUoKSB3aGVuIFNNTVUgZ2V0cyBwcm9iZWQoKSwgYXMg
+d2hhdCBpdCBkaWQgYmVmb3JlIHdlIG1lcmdlZAo+IHRoZSBtZW50aW9uZWQgY29tbWl0Lgo+IAo+
+IE9uY2Ugd2UgaGF2ZSB0aGUgbGluZWFyIG1hcCBzb2x1dGlvbiBmb3IgZnJhbWVidWZmZXIgbWVt
+b3J5LCB0aGlzIGNoYW5nZQo+IGNhbiBiZSBjbGVhbmVkIGF3YXkuCj4gCj4gW0JpZyB0aGFuayB0
+byBHdWlsbGF1bWUgd2hvIHJlcG9ydGVkIGFuZCBoZWxwZWQgZGVidWdnaW5nL3ZlcmlmaWNhdGlv
+bl0KPiAKPiBGaXhlczogMjU5MzhjNzNjZDc5ICgiaW9tbXUvdGVncmEtc21tdTogUmV3b3JrIHRl
+Z3JhX3NtbXVfcHJvYmVfZGV2aWNlKCkiKQo+IFJlcG9ydGVkLWJ5OiBHdWlsbGF1bWUgVHVja2Vy
+IDxndWlsbGF1bWUudHVja2VyQGNvbGxhYm9yYS5jb20+Cj4gU2lnbmVkLW9mZi1ieTogTmljb2xp
+biBDaGVuIDxuaWNvbGVvdHN1a2FAZ21haWwuY29tPgo+IC0tLQo+IAo+IEd1aWxsYXVtZSwgd291
+bGQgeW91IHBsZWFzZSBnaXZlIGEgIlRlc3RlZC1ieSIgdG8gdGhpcyBjaGFuZ2U/IFRoYW5rcyEK
+PiAKPiAgZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMgfCA3MiArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrLQo+ICAxIGZpbGUgY2hhbmdlZCwgNzEgaW5zZXJ0aW9ucygrKSwg
+MSBkZWxldGlvbigtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUu
+YyBiL2RyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCj4gaW5kZXggNGEzZjA5NWExYzI2Li45N2Vi
+NjJmNjY3ZDIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKPiArKysg
+Yi9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYwo+IEBAIC03OTgsMTAgKzc5OCw3MCBAQCBzdGF0
+aWMgcGh5c19hZGRyX3QgdGVncmFfc21tdV9pb3ZhX3RvX3BoeXMoc3RydWN0IGlvbW11X2RvbWFp
+biAqZG9tYWluLAo+ICAJcmV0dXJuIFNNTVVfUEZOX1BIWVMocGZuKSArIFNNTVVfT0ZGU0VUX0lO
+X1BBR0UoaW92YSk7Cj4gIH0KPiAgCj4gK3N0YXRpYyBzdHJ1Y3QgdGVncmFfc21tdSAqdGVncmFf
+c21tdV9maW5kKHN0cnVjdCBkZXZpY2Vfbm9kZSAqbnApCj4gK3sKPiArCXN0cnVjdCBwbGF0Zm9y
+bV9kZXZpY2UgKnBkZXY7Cj4gKwlzdHJ1Y3QgdGVncmFfbWMgKm1jOwo+ICsKPiArCXBkZXYgPSBv
+Zl9maW5kX2RldmljZV9ieV9ub2RlKG5wKTsKPiArCWlmICghcGRldikKPiArCQlyZXR1cm4gTlVM
+TDsKPiArCj4gKwltYyA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOwo+ICsJaWYgKCFtYykK
+PiArCQlyZXR1cm4gTlVMTDsKPiArCj4gKwlyZXR1cm4gbWMtPnNtbXU7Cj4gK30KPiArCj4gK3N0
+YXRpYyBpbnQgdGVncmFfc21tdV9jb25maWd1cmUoc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXUsIHN0
+cnVjdCBkZXZpY2UgKmRldiwKPiArCQkJCXN0cnVjdCBvZl9waGFuZGxlX2FyZ3MgKmFyZ3MpCj4g
+K3sKPiArCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IHNtbXUtPmlvbW11Lm9wczsKPiAr
+CWludCBlcnI7Cj4gKwo+ICsJZXJyID0gaW9tbXVfZndzcGVjX2luaXQoZGV2LCAmZGV2LT5vZl9u
+b2RlLT5md25vZGUsIG9wcyk7Cj4gKwlpZiAoZXJyIDwgMCkgewo+ICsJCWRldl9lcnIoZGV2LCAi
+ZmFpbGVkIHRvIGluaXRpYWxpemUgZndzcGVjOiAlZFxuIiwgZXJyKTsKPiArCQlyZXR1cm4gZXJy
+Owo+ICsJfQo+ICsKPiArCWVyciA9IG9wcy0+b2ZfeGxhdGUoZGV2LCBhcmdzKTsKPiArCWlmIChl
+cnIgPCAwKSB7Cj4gKwkJZGV2X2VycihkZXYsICJmYWlsZWQgdG8gcGFyc2UgU1cgZ3JvdXAgSUQ6
+ICVkXG4iLCBlcnIpOwo+ICsJCWlvbW11X2Z3c3BlY19mcmVlKGRldik7Cj4gKwkJcmV0dXJuIGVy
+cjsKPiArCX0KPiArCj4gKwlyZXR1cm4gMDsKPiArfQo+ICsKPiAgc3RhdGljIHN0cnVjdCBpb21t
+dV9kZXZpY2UgKnRlZ3JhX3NtbXVfcHJvYmVfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikKPiAg
+ewo+IC0Jc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXUgPSBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2KTsK
+PiArCXN0cnVjdCBkZXZpY2Vfbm9kZSAqbnAgPSBkZXYtPm9mX25vZGU7Cj4gKwlzdHJ1Y3QgdGVn
+cmFfc21tdSAqc21tdSA9IE5VTEw7Cj4gKwlzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzIGFyZ3M7Cj4g
+Kwl1bnNpZ25lZCBpbnQgaW5kZXggPSAwOwo+ICsJaW50IGVycjsKPiArCj4gKwl3aGlsZSAob2Zf
+cGFyc2VfcGhhbmRsZV93aXRoX2FyZ3MobnAsICJpb21tdXMiLCAiI2lvbW11LWNlbGxzIiwgaW5k
+ZXgsCj4gKwkJCQkJICAmYXJncykgPT0gMCkgewo+ICsJCXNtbXUgPSB0ZWdyYV9zbW11X2ZpbmQo
+YXJncy5ucCk7Cj4gKwkJaWYgKHNtbXUpIHsKPiArCQkJZXJyID0gdGVncmFfc21tdV9jb25maWd1
+cmUoc21tdSwgZGV2LCAmYXJncyk7Cj4gKwkJCW9mX25vZGVfcHV0KGFyZ3MubnApOwo+ICAKPiAr
+CQkJaWYgKGVyciA8IDApCj4gKwkJCQlyZXR1cm4gRVJSX1BUUihlcnIpOwo+ICsKPiArCQkJYnJl
+YWs7Cj4gKwkJfQo+ICsKPiArCQlvZl9ub2RlX3B1dChhcmdzLm5wKTsKPiArCQlpbmRleCsrOwo+
+ICsJfQo+ICsKPiArCXNtbXUgPSBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2KTsKPiAgCWlmICghc21t
+dSkKPiAgCQlyZXR1cm4gRVJSX1BUUigtRU5PREVWKTsKPiAgCj4gQEAgLTEwMjgsNiArMTA4OCwx
+NiBAQCBzdHJ1Y3QgdGVncmFfc21tdSAqdGVncmFfc21tdV9wcm9iZShzdHJ1Y3QgZGV2aWNlICpk
+ZXYsCj4gIAlpZiAoIXNtbXUpCj4gIAkJcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7Cj4gIAo+ICsJ
+LyoKPiArCSAqIFRoaXMgaXMgYSBiaXQgb2YgYSBoYWNrLiBJZGVhbGx5IHdlJ2Qgd2FudCB0byBz
+aW1wbHkgcmV0dXJuIHRoaXMKPiArCSAqIHZhbHVlLiBIb3dldmVyIHRoZSBJT01NVSByZWdpc3Ry
+YXRpb24gcHJvY2VzcyB3aWxsIGF0dGVtcHQgdG8gYWRkCj4gKwkgKiBhbGwgZGV2aWNlcyB0byB0
+aGUgSU9NTVUgd2hlbiBidXNfc2V0X2lvbW11KCkgaXMgY2FsbGVkLiBJbiBvcmRlcgo+ICsJICog
+bm90IHRvIHJlbHkgb24gZ2xvYmFsIHZhcmlhYmxlcyB0byB0cmFjayB0aGUgSU9NTVUgaW5zdGFu
+Y2UsIHdlCj4gKwkgKiBzZXQgaXQgaGVyZSBzbyB0aGF0IGl0IGNhbiBiZSBsb29rZWQgdXAgZnJv
+bSB0aGUgLnByb2JlX2RldmljZSgpCj4gKwkgKiBjYWxsYmFjayB2aWEgdGhlIElPTU1VIGRldmlj
+ZSdzIC5kcnZkYXRhIGZpZWxkLgo+ICsJICovCj4gKwltYy0+c21tdSA9IHNtbXU7Cj4gKwo+ICAJ
+c2l6ZSA9IEJJVFNfVE9fTE9OR1Moc29jLT5udW1fYXNpZHMpICogc2l6ZW9mKGxvbmcpOwo+ICAK
+PiAgCXNtbXUtPmFzaWRzID0gZGV2bV9remFsbG9jKGRldiwgc2l6ZSwgR0ZQX0tFUk5FTCk7Cj4g
+CgpJIGZvdW5kIHRoYXQgdGhpcyBwYXRjaCBpbnRyb2R1Y2VkIGEgc2VyaW91cyByZWdyZXNzaW9u
+IG9uIFRlZ3JhMzAgdXNpbmcKdG9kYXkncyBsaW51eC1uZXh0LiBUZWdyYTMwIGhhcyB0d28gM2Qg
+aC93IGJsb2NrcyBjb25uZWN0ZWQgaW4gU0xJIGFuZApvbmx5IG9uZSBvZiB0aGUgYmxvY2tzIGlz
+IG5vdyBhdHRhY2hlZCB0byBJT01NVSBkb21haW4sIG1lYW5pbmcgdGhhdCBHUFUKaXMgdW51c2Fi
+bGUgbm93LiBBbGwgM2QsIDJkIGFuZCBkaXNwbGF5IGRldmljZXMgc2hhcmUgdGhlIHNhbWUgIkRS
+TSIKZ3JvdXAgb24gVGVncmEzMC4KCk5pY29saW4sIHBsZWFzZSBsZXQgbWUga25vdyBpZiBoYXZl
+IGFueSBzdWdnZXN0aW9ucy4gSSBtYXkgdGFrZSBhIGNsb3Nlcgpsb29rIGEgZGF5IGxhdGVyLCBm
+b3Igbm93IEknbGwganVzdCByZXZlcnQgdGhpcyBwYXRjaCBsb2NhbGx5LiBUaGFua3MgaW4KYWR2
+YW5jZS4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
